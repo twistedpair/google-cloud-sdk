@@ -18,7 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Dict
 from googlecloudsdk.core.resource import custom_printer_base as cp
+from surface.run.integrations.types.describe import Params
 
 PRINTER_FORMAT = 'typesdescribe'
 
@@ -40,7 +42,7 @@ class TypesDescribePrinter(cp.CustomPrinterBase):
       $ gcloud run integrations types create --type=<TYPE>
   """
 
-  def Transform(self, record):
+  def Transform(self, record: Dict[str, str]) -> cp.Lines:
     """Converts the record into a custom format.
 
     Args:
@@ -70,15 +72,14 @@ class TypesDescribePrinter(cp.CustomPrinterBase):
     ]
     return cp.Lines(lines)
 
-  def _FormatParams(self, params):
+  def _FormatParams(self, params: Params) -> cp.Lines:
     """Formats all the required and optional parameters for an integration.
 
     Required parameters should come before optional parameters as defined
     in the PRD.
 
     Args:
-      params: describe.Params.  Class contains a list of required
-        and optional params.
+      params: Class contains a list of required and optional params.
 
     Returns:
       custom_printer_base.Lines, formatted output of all the parameters.
@@ -92,7 +93,7 @@ class TypesDescribePrinter(cp.CustomPrinterBase):
 
     return cp.Lines(formatted)
 
-  def _FormatParam(self, param, setting):
+  def _FormatParam(self, param: Dict[str, str], setting: str) -> cp.Labeled:
     """Formats individual parameter for an integration.
 
     Example output:
@@ -100,8 +101,8 @@ class TypesDescribePrinter(cp.CustomPrinterBase):
         This is a description of param1.
 
     Args:
-      param: dict, contains keys such as 'name' and 'description'
-      setting: str, is either 'required' or 'optional'
+      param: contains keys such as 'name' and 'description'
+      setting: is either 'required' or 'optional'
 
     Returns:
       custom_printer_base.Lines, formatted output of a singular parameter.

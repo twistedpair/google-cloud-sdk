@@ -99,22 +99,26 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
               parsed_security_policy['adaptiveProtectionConfig']
               ['layer7DdosDefenseConfig']['ruleVisibility']))
   if 'advancedOptionsConfig' in parsed_security_policy:
+    advanced_options_config = parsed_security_policy['advancedOptionsConfig']
     security_policy.advancedOptionsConfig = (
         messages.SecurityPolicyAdvancedOptionsConfig())
-    if 'jsonParsing' in parsed_security_policy['advancedOptionsConfig']:
+    if 'jsonParsing' in advanced_options_config:
       security_policy.advancedOptionsConfig.jsonParsing = (
           messages.SecurityPolicyAdvancedOptionsConfig
           .JsonParsingValueValuesEnum(
-              parsed_security_policy['advancedOptionsConfig']['jsonParsing']))
-    if 'jsonCustomConfig' in parsed_security_policy['advancedOptionsConfig']:
+              advanced_options_config['jsonParsing']))
+    if 'jsonCustomConfig' in advanced_options_config:
       security_policy.advancedOptionsConfig.jsonCustomConfig = (
           messages.SecurityPolicyAdvancedOptionsConfigJsonCustomConfig(
-              contentTypes=parsed_security_policy['advancedOptionsConfig']
+              contentTypes=advanced_options_config
               ['jsonCustomConfig'].get('contentTypes', [])))
-    if 'logLevel' in parsed_security_policy['advancedOptionsConfig']:
+    if 'logLevel' in advanced_options_config:
       security_policy.advancedOptionsConfig.logLevel = (
           messages.SecurityPolicyAdvancedOptionsConfig.LogLevelValueValuesEnum(
-              parsed_security_policy['advancedOptionsConfig']['logLevel']))
+              advanced_options_config['logLevel']))
+    if 'userIpRequestHeaders' in advanced_options_config:
+      security_policy.advancedOptionsConfig.userIpRequestHeaders = (
+          advanced_options_config['userIpRequestHeaders'])
   if 'ddosProtectionConfig' in parsed_security_policy:
     security_policy.ddosProtectionConfig = (
         messages.SecurityPolicyDdosProtectionConfig(
@@ -429,7 +433,8 @@ def CreateAdaptiveProtectionConfigWithAutoDeployConfig(
   return adaptive_protection_config
 
 
-def CreateAdvancedOptionsConfig(client, args, existing_advanced_options_config):
+def CreateAdvancedOptionsConfig(client, args, existing_advanced_options_config,
+                                support_user_ip):
   """Returns a SecurityPolicyAdvancedOptionsConfig message."""
 
   messages = client.messages
@@ -451,6 +456,9 @@ def CreateAdvancedOptionsConfig(client, args, existing_advanced_options_config):
     advanced_options_config.logLevel = (
         messages.SecurityPolicyAdvancedOptionsConfig.LogLevelValueValuesEnum(
             args.log_level))
+
+  if support_user_ip and args.IsSpecified('user_ip_request_headers'):
+    advanced_options_config.userIpRequestHeaders = args.user_ip_request_headers
 
   return advanced_options_config
 

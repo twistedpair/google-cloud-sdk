@@ -685,7 +685,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -950,7 +950,7 @@ class RetryConfig(_messages.Message):
       `max_doublings` times, then increases linearly, and finally retries at
       intervals of max_backoff_duration up to retry_count times. For example,
       if min_backoff_duration is 10s, max_backoff_duration is 300s, and
-      `max_doublings` is 3, then the a job will first be retried in 10s. The
+      `max_doublings` is 3, then the job will first be retried in 10s. The
       retry interval will double three times, and then increase linearly by
       2^3 * 10s. Finally, the job will retry at intervals of
       max_backoff_duration until the job has been attempted retry_count times.

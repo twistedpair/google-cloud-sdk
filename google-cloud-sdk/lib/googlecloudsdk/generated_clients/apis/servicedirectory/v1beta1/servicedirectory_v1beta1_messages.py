@@ -231,6 +231,18 @@ class CloudAuditOptions(_messages.Message):
   logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
+class Component(_messages.Message):
+  r"""Component associated with this workload.
+
+  Fields:
+    resource: Required. Schemaless uri for the component Example :
+      //compute.googleapis.com/projects/1234/zones/us-
+      east1-c/instanceGroups/mig1
+  """
+
+  resource = _messages.StringField(1)
+
+
 class Condition(_messages.Message):
   r"""A condition to be met.
 
@@ -392,51 +404,6 @@ class CounterOptions(_messages.Message):
   customFields = _messages.MessageField('CustomField', 1, repeated=True)
   field = _messages.StringField(2)
   metric = _messages.StringField(3)
-
-
-class Criteria(_messages.Message):
-  r"""Criteria to apply to identify components belonging to this workload.
-  Used to auto-populate the components field.
-
-  Enums:
-    KeyValueValuesEnum: Required. Key for criteria.
-    TypeValueValuesEnum: Required. Type of compute this workload is composed
-      of.
-
-  Fields:
-    key: Required. Key for criteria.
-    type: Required. Type of compute this workload is composed of.
-    value: Required. Criteria value to match against for the associated
-      criteria key. Example: //compute.googleapis.com/projects/123/regions/us-
-      west1/backend_services/bs1
-  """
-
-  class KeyValueValuesEnum(_messages.Enum):
-    r"""Required. Key for criteria.
-
-    Values:
-      CRITERIA_KEY_UNSPECIFIED: Default. Criteria.key is unspecified.
-      COMPONENT_NAME: The criteria key is Component Name.
-      BACKEND_SERVICE: The criteria key is Backend Service.
-    """
-    CRITERIA_KEY_UNSPECIFIED = 0
-    COMPONENT_NAME = 1
-    BACKEND_SERVICE = 2
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. Type of compute this workload is composed of.
-
-    Values:
-      CRITERIA_TYPE_UNSPECIFIED: Default. The criteria type is unspecified.
-      MANAGED_INSTANCE_GROUPS: The criteria type is mananged instacne group
-        (MIGs).
-    """
-    CRITERIA_TYPE_UNSPECIFIED = 0
-    MANAGED_INSTANCE_GROUPS = 1
-
-  key = _messages.EnumField('KeyValueValuesEnum', 1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
-  value = _messages.StringField(3)
 
 
 class CustomField(_messages.Message):
@@ -736,7 +703,7 @@ class InternalAttributes(_messages.Message):
       responsible for this workload.
 
   Fields:
-    managedRegistration: A boolean attribute.
+    managedRegistration: Output only. Defines if Workload is managed.
     managerType: Output only. The GCP resource/product responsible for this
       workload.
   """
@@ -836,7 +803,7 @@ class ListWorkloadsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1356,6 +1323,11 @@ class Service(_messages.Message):
       service. This includes team members who are responsible for business
       outcomes, customer escalations, or P&L of a service
     createTime: Output only. The timestamp when the service was created.
+    criteria: Optional. Criteria to apply to identify components belonging to
+      this service. Only one criteria allowed. Eg. create service representing
+      forwarding rule fr1: [ { type: FORWARDING_RULE, key: COMPONENT_NAME,
+      value: '//compute.googleapis.com/projects/123/zones/us-
+      east1-c/forwardingRules/fr1' } ]
     description: Optional. Human readable explanation of the service and what
       it does.
     devOwners: Optional. List of contacts for developers of this service. This
@@ -1447,18 +1419,59 @@ class Service(_messages.Message):
   attributes = _messages.MessageField('Attributes', 1)
   businessOwners = _messages.MessageField('ContactInfo', 2, repeated=True)
   createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  devOwners = _messages.MessageField('ContactInfo', 5, repeated=True)
-  displayName = _messages.StringField(6)
-  endpoints = _messages.MessageField('Endpoint', 7, repeated=True)
-  hostname = _messages.StringField(8)
-  metadata = _messages.MessageField('MetadataValue', 9)
-  name = _messages.StringField(10)
-  operatorOwners = _messages.MessageField('ContactInfo', 11, repeated=True)
-  serviceIdentities = _messages.MessageField('ServiceIdentity', 12, repeated=True)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  workloads = _messages.StringField(15, repeated=True)
+  criteria = _messages.MessageField('ServiceCriteria', 4, repeated=True)
+  description = _messages.StringField(5)
+  devOwners = _messages.MessageField('ContactInfo', 6, repeated=True)
+  displayName = _messages.StringField(7)
+  endpoints = _messages.MessageField('Endpoint', 8, repeated=True)
+  hostname = _messages.StringField(9)
+  metadata = _messages.MessageField('MetadataValue', 10)
+  name = _messages.StringField(11)
+  operatorOwners = _messages.MessageField('ContactInfo', 12, repeated=True)
+  serviceIdentities = _messages.MessageField('ServiceIdentity', 13, repeated=True)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  workloads = _messages.StringField(16, repeated=True)
+
+
+class ServiceCriteria(_messages.Message):
+  r"""Criteria to apply to identify components belonging to this service.
+
+  Enums:
+    KeyValueValuesEnum: Required. Key for criteria.
+    TypeValueValuesEnum: Required. Type of compute this service represents.
+
+  Fields:
+    key: Required. Key for criteria.
+    type: Required. Type of compute this service represents.
+    value: Required. Criteria value to match against for the associated
+      criteria key. Example: //compute.googleapis.com/projects/123/regions/us-
+      west1/forwardingRules/fr1
+  """
+
+  class KeyValueValuesEnum(_messages.Enum):
+    r"""Required. Key for criteria.
+
+    Values:
+      CRITERIA_KEY_UNSPECIFIED: Default. Criteria.key is unspecified.
+      COMPONENT_NAME: The criteria key is Component Name.
+    """
+    CRITERIA_KEY_UNSPECIFIED = 0
+    COMPONENT_NAME = 1
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of compute this service represents.
+
+    Values:
+      CRITERIA_TYPE_UNSPECIFIED: Default. The criteria type is unspecified.
+      FORWARDING_RULE: Criteria type of Forwarding Rule.
+    """
+    CRITERIA_TYPE_UNSPECIFIED = 0
+    FORWARDING_RULE = 1
+
+  key = _messages.EnumField('KeyValueValuesEnum', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  value = _messages.StringField(3)
 
 
 class ServiceIdentity(_messages.Message):
@@ -2435,10 +2448,12 @@ class Workload(_messages.Message):
     businessOwners: Optional. List of contacts for business owners of this
       workload. This includes team members who are responsible for business
       outcomes, customer escalations, or P&L of a service.
-    components: Optional. List of components (as schemeless URIs) that are
-      part of this Workload. Example for Google Compute Engine components: [
-      //compute.googleapis.com/projects/1234/zones/us-east1-c/instances/mig1,
-      //compute.googleapis.com/projects/1234/zones/us-east1-a/instances/mig2]
+    components: Output only. Components that are part of this workload (output
+      only). Example for Google Compute Engine components: [
+      //compute.googleapis.com/projects/1234/zones/us-
+      east1-c/instanceGroups/mig1,
+      //compute.googleapis.com/projects/1234/zones/us-
+      east1-a/instanceGroups/mig2 ]
     createTime: Output only. The timestamp when this workload was created in
       Service Directory.
     criteria: Optional. Criteria to apply to identify components belonging to
@@ -2448,20 +2463,20 @@ class Workload(_messages.Message):
       resources of workloadType behind backend service bs1: [ { type:
       MANAGED_INSTANCE_GROUPS key: BACKEND_SERVICE, value:
       '//compute.googleapis.com/projects/123/zones/us-
-      east1-c/backend_services/bs1' } ] Eg. select all resources of
+      east1-c/backendServices/bs1' } ] Eg. select all resources of
       workloadType behind backend services in bs1 or bs2: [ { type:
       MANAGED_INSTANCE_GROUPS, key: BACKEND_SERVICE, value:
       '//compute.googleapis.com/projects/123/zones/us-
-      east1-c/backend_services/bs1' }, { type : MANAGED_INSTANCE_GROUPS, key:
+      east1-c/backendServices/bs1' }, { type : MANAGED_INSTANCE_GROUPS, key:
       BACKEND_SERVICE, value:
       '//compute.googleapis.com/projects/123/regions/us-
-      east1/backend_services/bs2' }, ] Eg. select resources explicitly by name
+      east1/backendServices/bs2' }, ] Eg. select resources explicitly by name
       to be part of the workload: [ { type : MANAGED_INSTANCE_GROUPS, key:
       COMPONENT_NAME, value: '//compute.googleapis.com/projects/1234/zones/us-
-      east1-c/instancegroups/mig1' }, { type : MANAGED_INSTANCE_GROUPS, key:
+      east1-c/instanceGroups/mig1' }, { type : MANAGED_INSTANCE_GROUPS, key:
       COMPONENT_NAME, value:
       '//compute.googleapis.com/projects/1234/regions/us-
-      east1/instancegroups/mig2' } ]
+      east1/instanceGroups/mig2' } ]
     devOwners: Optional. List of contacts for developer owners of this
       workload. This includes application engineers and architects writing and
       updating this workload.
@@ -2485,9 +2500,9 @@ class Workload(_messages.Message):
   """
 
   businessOwners = _messages.MessageField('ContactInfo', 1, repeated=True)
-  components = _messages.StringField(2, repeated=True)
+  components = _messages.MessageField('Component', 2, repeated=True)
   createTime = _messages.StringField(3)
-  criteria = _messages.MessageField('Criteria', 4, repeated=True)
+  criteria = _messages.MessageField('WorkloadCriteria', 4, repeated=True)
   devOwners = _messages.MessageField('ContactInfo', 5, repeated=True)
   displayName = _messages.StringField(6)
   internalAttributes = _messages.MessageField('InternalAttributes', 7)
@@ -2497,6 +2512,51 @@ class Workload(_messages.Message):
   securityAttributes = _messages.MessageField('SecurityAttributes', 11)
   uid = _messages.StringField(12)
   updateTime = _messages.StringField(13)
+
+
+class WorkloadCriteria(_messages.Message):
+  r"""Criteria to apply to identify components belonging to this workload.
+  Used to auto-populate the components field.
+
+  Enums:
+    KeyValueValuesEnum: Required. Key for criteria.
+    TypeValueValuesEnum: Required. Type of compute this workload is composed
+      of.
+
+  Fields:
+    key: Required. Key for criteria.
+    type: Required. Type of compute this workload is composed of.
+    value: Required. Criteria value to match against for the associated
+      criteria key. Example: //compute.googleapis.com/projects/123/regions/us-
+      west1/backendServices/bs1
+  """
+
+  class KeyValueValuesEnum(_messages.Enum):
+    r"""Required. Key for criteria.
+
+    Values:
+      CRITERIA_KEY_UNSPECIFIED: Default. Criteria.key is unspecified.
+      COMPONENT_NAME: The criteria key is Component Name.
+      BACKEND_SERVICE: The criteria key is Backend Service.
+    """
+    CRITERIA_KEY_UNSPECIFIED = 0
+    COMPONENT_NAME = 1
+    BACKEND_SERVICE = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of compute this workload is composed of.
+
+    Values:
+      CRITERIA_TYPE_UNSPECIFIED: Default. The criteria type is unspecified.
+      MANAGED_INSTANCE_GROUPS: The criteria type is mananged instacne group
+        (MIGs).
+    """
+    CRITERIA_TYPE_UNSPECIFIED = 0
+    MANAGED_INSTANCE_GROUPS = 1
+
+  key = _messages.EnumField('KeyValueValuesEnum', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  value = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

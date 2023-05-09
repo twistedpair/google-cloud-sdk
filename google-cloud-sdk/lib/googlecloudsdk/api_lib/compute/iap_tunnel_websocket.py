@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import logging
 import threading
 import time
 
@@ -234,8 +235,11 @@ class IapTunnelWebSocket(object):
         self._unsent_data.put(bytes_to_send, timeout=
                               MAX_WEBSOCKET_SEND_WAIT_TIME_SEC)
 
-        log.debug('ENQUEUED data_len [%d] bytes_to_send[:20] [%r]',
-                  len(bytes_to_send), bytes_to_send[:20])
+        # Needed since the gcloud logging methods will log to file regardless
+        # of the verbosity level set by the user.
+        if log.GetVerbosity() == logging.DEBUG:
+          log.debug('ENQUEUED data_len [%d] bytes_to_send[:20] [%r]',
+                    len(bytes_to_send), bytes_to_send[:20])
         return
       except queue.Full:
         # Throws Full if timeout was reached

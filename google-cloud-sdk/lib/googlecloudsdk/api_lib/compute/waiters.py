@@ -370,27 +370,6 @@ class OperationData(object):
         pass
 
 
-def _CheckIfServiceMethodsInvolvedInInstancesCUJ(service, method):
-  """Determine whether a service is involved in compute.instances CUJ."""
-  service_methods = {
-      'ZoneOperationsService': ['Wait'],
-      'ProjectsService': ['Get'],
-      'ZonesService': ['List', 'Get'],
-  }
-
-  service_name = service.__class__.__name__
-
-  if service_name == 'InstancesService':
-    return True
-
-  if (
-      service_name in service_methods
-      and method in service_methods[service_name]
-  ):
-    return True
-  return False
-
-
 def WaitForOperations(
     operations_data,
     http,
@@ -517,15 +496,11 @@ def WaitForOperations(
     requests = resource_requests + operation_requests
     if not requests:
       break
-    enable_single_request = False
     if (
         not properties.VALUES.compute.force_batch_request.GetBool()
         and len(requests) == 1
     ):
       service, method, request_body = requests[0]
-      if not _CheckIfServiceMethodsInvolvedInInstancesCUJ(service, method):
-        enable_single_request = True
-    if enable_single_request:
       responses, request_errors = single_request_helper.MakeSingleRequest(
           service=service, method=method, request_body=request_body)
     else:

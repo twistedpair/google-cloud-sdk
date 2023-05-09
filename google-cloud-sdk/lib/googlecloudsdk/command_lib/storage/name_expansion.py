@@ -102,6 +102,7 @@ class NameExpansionIterator:
     return wildcard_iterator.get_wildcard_iterator(
         url,
         all_versions=self.all_versions,
+        fetch_encrypted_object_hashes=True,
         fields_scope=self._fields_scope,
         ignore_symlinks=self._ignore_symlinks,
         preserve_symlinks=self._preserve_symlinks,

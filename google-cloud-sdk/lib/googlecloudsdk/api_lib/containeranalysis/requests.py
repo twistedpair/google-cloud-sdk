@@ -41,7 +41,7 @@ def GetMessagesV1beta1():
   return apis.GetMessagesModule('containeranalysis', 'v1beta1')
 
 
-def ListOccurrencesV1beta1(project, res_filter, page_size=None):
+def ListOccurrencesV1beta1(project, res_filter, page_size=1000):
   """List occurrences for resources in a project."""
   client = GetClientV1beta1()
   messages = GetMessagesV1beta1()
@@ -59,7 +59,13 @@ def ListOccurrencesV1beta1(project, res_filter, page_size=None):
   )
 
 
-def ListOccurrences(project, res_filter):
+def ListOccurrencesWithFiltersV1beta1(project, filters):
+  """List occurrences for resources in a project with multiple filters."""
+  results = [ListOccurrencesV1beta1(project, f) for f in filters]
+  return itertools.chain(*results)
+
+
+def ListOccurrences(project, res_filter, page_size=1000):
   """List occurrences for resources in a project."""
   client = GetClient()
   messages = GetMessages()
@@ -70,7 +76,7 @@ def ListOccurrences(project, res_filter):
       request=messages.ContaineranalysisProjectsOccurrencesListRequest(
           parent=project_ref.RelativeName(), filter=res_filter),
       field='occurrences',
-      batch_size=1000,
+      batch_size=page_size,
       batch_size_attribute='pageSize')
 
 

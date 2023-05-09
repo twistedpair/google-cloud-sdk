@@ -90,12 +90,15 @@ class Backup(_messages.Message):
         backup.
       READY: Backup is available for use.
       DELETING: Backup is being deleted.
+      INVALID: Backup is not valid and cannot be used for creating new
+        instances or restoring existing instances.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     FINALIZING = 2
     READY = 3
     DELETING = 4
+    INVALID = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1376,7 +1379,7 @@ class ListSnapshotsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

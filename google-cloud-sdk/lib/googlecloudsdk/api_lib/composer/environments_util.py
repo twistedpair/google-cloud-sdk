@@ -51,6 +51,8 @@ class CreateEnvironmentFlags:
       environment specified as relative resource name.
     subnetwork: str or None, the Compute Engine subnetwork to which to connect
       the environment specified as relative resource name.
+    network_attachment: str or None, the Compute Engine network attachment that
+      is used as PSC Network entry point.
     env_variables: dict(str->str), a dict of user-provided environment variables
       to provide to the Airflow scheduler, worker, and webserver processes.
     airflow_config_overrides: dict(str->str), a dict of user-provided Airflow
@@ -156,8 +158,21 @@ class CreateEnvironmentFlags:
       interpret snapshot_creation_schedule
     enable_cloud_data_lineage_integration: bool or None, whether Cloud Data
       Lineage integration should be enabled
-    enable_high_resilience: bool or None, whether high resilience
-      should be enabled
+    enable_high_resilience: bool or None, whether high resilience should be
+      enabled
+    support_web_server_plugins: bool or None, whether to enable/disable the
+      support for web server plugins
+    dag_processor_cpu: float or None, CPU allocated to Airflow dag processor.
+      Can be specified only in Composer 2.5.
+    dag_processor_count: int or None, number of Airflow dag processors. Can be
+      specified only in Composer 2.5.
+    dag_processor_memory_gb: float or None, memory allocated to Airflow dag
+      processor. Can be specified only in Composer 2.5.
+    dag_processor_storage_gb: float or None, storage allocated to Airflow dag
+      processor. Can be specified only in Composer 2.5.
+    composer_internal_ipv4_cidr_block: str or None. The IP range in CIDR
+      notation to use internally by Cloud Composer. Can be specified only in
+      Composer 2.5.
   """
 
   # TODO(b/154131605): This a type that is an immutable data object. Can't use
@@ -173,6 +188,7 @@ class CreateEnvironmentFlags:
                machine_type=None,
                network=None,
                subnetwork=None,
+               network_attachment=None,
                env_variables=None,
                airflow_config_overrides=None,
                service_account=None,
@@ -230,7 +246,13 @@ class CreateEnvironmentFlags:
                snapshot_location=None,
                snapshot_schedule_timezone=None,
                enable_cloud_data_lineage_integration=None,
-               enable_high_resilience=None):
+               enable_high_resilience=None,
+               support_web_server_plugins=None,
+               dag_processor_cpu=None,
+               dag_processor_count=None,
+               dag_processor_memory_gb=None,
+               dag_processor_storage_gb=None,
+               composer_internal_ipv4_cidr_block=None):
     self.node_count = node_count
     self.environment_size = environment_size
     self.labels = labels
@@ -238,6 +260,7 @@ class CreateEnvironmentFlags:
     self.machine_type = machine_type
     self.network = network
     self.subnetwork = subnetwork
+    self.network_attachment = network_attachment
     self.env_variables = env_variables
     self.airflow_config_overrides = airflow_config_overrides
     self.service_account = service_account
@@ -294,8 +317,16 @@ class CreateEnvironmentFlags:
     self.snapshot_creation_schedule = snapshot_creation_schedule
     self.snapshot_location = snapshot_location
     self.snapshot_schedule_timezone = snapshot_schedule_timezone
-    self.enable_cloud_data_lineage_integration = enable_cloud_data_lineage_integration
+    self.enable_cloud_data_lineage_integration = (
+        enable_cloud_data_lineage_integration
+    )
     self.enable_high_resilience = enable_high_resilience
+    self.support_web_server_plugins = support_web_server_plugins
+    self.dag_processor_cpu = dag_processor_cpu
+    self.dag_processor_storage_gb = dag_processor_storage_gb
+    self.dag_processor_memory_gb = dag_processor_memory_gb
+    self.dag_processor_count = dag_processor_count
+    self.composer_internal_ipv4_cidr_block = composer_internal_ipv4_cidr_block
 
 
 def _CreateNodeConfig(messages, flags):
@@ -303,9 +334,10 @@ def _CreateNodeConfig(messages, flags):
   if not (flags.location or flags.machine_type or flags.network or
           flags.subnetwork or flags.service_account or flags.oauth_scopes or
           flags.tags or flags.disk_size_gb or flags.use_ip_aliases or
-          flags.cluster_secondary_range_name or
+          flags.cluster_secondary_range_name or flags.network_attachment or
           flags.services_secondary_range_name or flags.cluster_ipv4_cidr_block
-          or flags.services_ipv4_cidr_block or flags.enable_ip_masq_agent):
+          or flags.services_ipv4_cidr_block or flags.enable_ip_masq_agent or
+          flags.composer_internal_ipv4_cidr_block):
     return None
 
   config = messages.NodeConfig(
@@ -315,6 +347,12 @@ def _CreateNodeConfig(messages, flags):
       subnetwork=flags.subnetwork,
       serviceAccount=flags.service_account,
       diskSizeGb=flags.disk_size_gb)
+  if flags.network_attachment:
+    config.composerNetworkAttachment = flags.network_attachment
+  if flags.composer_internal_ipv4_cidr_block:
+    config.composerInternalIpv4CidrBlock = (
+        flags.composer_internal_ipv4_cidr_block
+    )
   if flags.oauth_scopes:
     config.oauthScopes = sorted([s.strip() for s in flags.oauth_scopes])
   if flags.tags:
@@ -397,7 +435,18 @@ def _CreateConfig(messages, flags, is_composer_v1):
     if flags.airflow_executor_type:
       config.softwareConfig.airflowExecutorType = ConvertToTypeEnum(
           messages.SoftwareConfig.AirflowExecutorTypeValueValuesEnum,
-          flags.airflow_executor_type)
+          flags.airflow_executor_type,
+      )
+    if flags.support_web_server_plugins is not None:
+      if flags.support_web_server_plugins:
+        config.softwareConfig.webServerPluginsMode = (
+            messages.SoftwareConfig.WebServerPluginsModeValueValuesEnum.PLUGINS_ENABLED
+        )
+      else:
+        config.softwareConfig.webServerPluginsMode = (
+            messages.SoftwareConfig.WebServerPluginsModeValueValuesEnum.PLUGINS_DISABLED
+        )
+
     if flags.scheduler_count and is_composer_v1:
       config.softwareConfig.schedulerCount = flags.scheduler_count
     if flags.enable_cloud_data_lineage_integration:
@@ -499,7 +548,9 @@ def _CreateConfig(messages, flags, is_composer_v1):
       flags.web_server_memory_gb or flags.scheduler_storage_gb or
       flags.worker_storage_gb or flags.web_server_storage_gb or
       flags.min_workers or flags.max_workers or flags.triggerer_memory_gb or
-      flags.triggerer_cpu or flags.enable_triggerer or flags.triggerer_count)
+      flags.triggerer_cpu or flags.enable_triggerer or flags.triggerer_count or
+      flags.dag_processor_cpu or flags.dag_processor_count or
+      flags.dag_processor_memory_gb or flags.dag_processor_storage_gb)
   if composer_v2_flag_used or (flags.scheduler_count and not is_composer_v1):
     config.workloadsConfig = _CreateWorkloadConfig(messages, flags)
   return config
@@ -537,6 +588,19 @@ def _CreateWorkloadConfig(messages, flags):
         memoryGb=flags.triggerer_memory_gb,
         count=triggerer_count
     )
+  if (
+      flags.dag_processor_cpu
+      or flags.dag_processor_count
+      or flags.dag_processor_memory_gb
+      or flags.dag_processor_storage_gb
+  ):
+    workload_resources['dagProcessor'] = messages.DagProcessorResource(
+        cpu=flags.dag_processor_cpu,
+        memoryGb=flags.dag_processor_memory_gb,
+        storageGb=flags.dag_processor_storage_gb,
+        count=flags.dag_processor_count,
+    )
+
   return messages.WorkloadsConfig(**workload_resources)
 
 

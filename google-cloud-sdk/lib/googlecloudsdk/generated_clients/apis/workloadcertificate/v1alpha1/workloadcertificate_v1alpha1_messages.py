@@ -93,7 +93,7 @@ class ListWorkloadRegistrationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -717,7 +717,7 @@ class WorkloadcertificateProjectsLocationsWorkloadRegistrationsCreateRequest(_me
       request body.
     workloadRegistrationId: Required. Client defined WorkloadRegistration
       name. This can be any unique string that matches the regex
-      ^[a-zA-Z0-9-._~%!$&'()*+,;=@]+$ and has 1-63 characters in length.
+      ^[a-zA-Z0-9-._~%!$&'()*+,;=@]{1,63}$.
   """
 
   parent = _messages.StringField(1, required=True)

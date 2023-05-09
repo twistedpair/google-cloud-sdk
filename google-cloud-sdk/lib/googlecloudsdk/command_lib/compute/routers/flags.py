@@ -442,9 +442,8 @@ def AddReplaceCustomLearnedRoutesArgs(parser):
       metavar='PRIORITY',
       help="""An integral value `0` <= priority <= `65535`, to be applied to all
               custom learned route IP address ranges for this peer. If not
-              specified, a Google-managed priority value 100 is used. The routes
-              with lowest priority value win.""",
-      hidden=True,
+              specified, a Google-managed priority value of 100 is used. The
+              routes with the lowest priority value win.""",
   )
 
   parser.add_argument(
@@ -457,7 +456,6 @@ def AddReplaceCustomLearnedRoutesArgs(parser):
               IP address range must be a valid CIDR-formatted prefix. If an IP
               address is provided without a subnet mask, it is interpreted as a
               /32 singular IP address range for IPv4, and /128 for IPv6.""",
-      hidden=True,
   )
 
 
@@ -468,9 +466,7 @@ def AddIncrementalCustomLearnedRoutesArgs(parser):
     parser: The parser to parse arguments.
   """
 
-  incremental_args = parser.add_mutually_exclusive_group(
-      required=False, hidden=True
-  )
+  incremental_args = parser.add_mutually_exclusive_group(required=False)
 
   incremental_args.add_argument(
       '--add-custom-learned-route-ranges',
@@ -483,7 +479,6 @@ def AddIncrementalCustomLearnedRoutesArgs(parser):
               If an IP address is provided without a subnet mask, it is
               interpreted as a /32 singular IP address range for IPv4, and /128
               for IPv6.""",
-      hidden=True,
   )
 
   incremental_args.add_argument(
@@ -497,7 +492,6 @@ def AddIncrementalCustomLearnedRoutesArgs(parser):
               If an IP address is provided without a subnet mask, it is
               interpreted as a /32 singular IP address range for IPv4, and /128
               for IPv6.""",
-      hidden=True,
   )
 
 

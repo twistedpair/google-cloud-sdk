@@ -183,15 +183,19 @@ class ConsumerPscConfig(_messages.Message):
   r"""Allow the producer to specify which consumers can connect to it.
 
   Fields:
-    network: The consumer network where PSC connections are allowed to be
-      created in. Note, this network does not need be in the
-      ConsumerPscConfig.project in the case of SharedVPC.
+    disableGlobalAccess: This is used in PSC consumer ForwardingRule to
+      control whether the PSC endpoint can be accessed from another region.
+    network: The resource path of the consumer network where PSC connections
+      are allowed to be created in. Note, this network does not need be in the
+      ConsumerPscConfig.project in the case of SharedVPC. Example:
+      projects/{projectNumOrId}/global/networks/{networkId}.
     project: The consumer project where PSC connections are allowed to be
       created in.
   """
 
-  network = _messages.StringField(1)
-  project = _messages.StringField(2)
+  disableGlobalAccess = _messages.BooleanField(1)
+  network = _messages.StringField(2)
+  project = _messages.StringField(3)
 
 
 class ConsumerPscConnection(_messages.Message):
@@ -206,6 +210,9 @@ class ConsumerPscConnection(_messages.Message):
     error: The most recent error during operating this connection.
     errorType: The error type indicates whether the error is consumer facing,
       producer facing or system internal.
+    forwardingRule: The URI of the consumer forwarding rule created. Example:
+      projects/{projectNumOrId}/regions/us-east1/networks/{resourceId}.
+    gceOperation: The last Compute Engine operation to setup PSC connection.
     ip: The IP literal allocated on the consumer network for the PSC
       forwarding rule that is created to connect to the producer service
       attachment in this service connection map.
@@ -256,12 +263,14 @@ class ConsumerPscConnection(_messages.Message):
 
   error = _messages.MessageField('GoogleRpcStatus', 1)
   errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 2)
-  ip = _messages.StringField(3)
-  network = _messages.StringField(4)
-  project = _messages.StringField(5)
-  pscConnectionId = _messages.StringField(6)
-  serviceAttachmentUri = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  forwardingRule = _messages.StringField(3)
+  gceOperation = _messages.StringField(4)
+  ip = _messages.StringField(5)
+  network = _messages.StringField(6)
+  project = _messages.StringField(7)
+  pscConnectionId = _messages.StringField(8)
+  serviceAttachmentUri = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class DeactivateSpokeRequest(_messages.Message):
@@ -570,6 +579,11 @@ class Hub(_messages.Message):
     name: Immutable. The name of the hub. Hub names must be unique. They use
       the following form:
       `projects/{project_number}/locations/global/hubs/{hub_id}`
+    routeTables: Output only. The route tables that belong to this hub. They
+      use the following form: `projects/{project_number}/locations/global/hubs
+      /{hub_id}/routeTables/{route_table_id}` This field is read-only. Network
+      Connectivity Center automatically populates it based on the route tables
+      nested under the hub.
     routingVpcs: The VPC networks associated with this hub's spokes. This
       field is read-only. Network Connectivity Center automatically populates
       it based on the set of spokes attached to the hub.
@@ -643,11 +657,12 @@ class Hub(_messages.Message):
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  routingVpcs = _messages.MessageField('RoutingVPC', 5, repeated=True)
-  spokeSummary = _messages.MessageField('SpokeSummary', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  uniqueId = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  routeTables = _messages.StringField(5, repeated=True)
+  routingVpcs = _messages.MessageField('RoutingVPC', 6, repeated=True)
+  spokeSummary = _messages.MessageField('SpokeSummary', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -1080,7 +1095,7 @@ class ListSpokesResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -2866,8 +2881,9 @@ class ProducerPscConfig(_messages.Message):
   r"""The PSC configurations on producer side.
 
   Fields:
-    serviceAttachmentUri: The URI of a service attachment included in this
-      connection map.
+    serviceAttachmentUri: The resource path of a service attachment. Example:
+      projects/{projectNumOrId}/regions/{region}/serviceAttachments/{resourceI
+      d}.
   """
 
   serviceAttachmentUri = _messages.StringField(1)
@@ -2879,7 +2895,9 @@ class PscConfig(_messages.Message):
 
   Fields:
     limit: Max number of PSC connections for this policy.
-    subnetworks: Subnetwork to use for IP address management.
+    subnetworks: The resource paths of subnetworks to use for IP address
+      management. Example:
+      projects/{projectNumOrId}/regions/{region}/subnetworks/{resourceId}.
   """
 
   limit = _messages.IntegerField(1)
@@ -2898,9 +2916,12 @@ class PscConnection(_messages.Message):
     consumerAddress: The resource reference of the consumer address.
     consumerForwardingRule: The resource reference of the PSC Forwarding Rule
       within the consumer VPC.
+    consumerTargetProject: The project where the PSC connection is created.
     error: The most recent error during operating this connection.
     errorType: The error type indicates whether the error is consumer facing,
       producer facing or system internal.
+    gceOperation: The last Compute Engine operation to setup PSC connection.
+    pscConnectionId: The PSC connection id of the PSC forwarding rule.
     state: State of the PSC Connection
   """
 
@@ -2939,9 +2960,12 @@ class PscConnection(_messages.Message):
 
   consumerAddress = _messages.StringField(1)
   consumerForwardingRule = _messages.StringField(2)
-  error = _messages.MessageField('GoogleRpcStatus', 3)
-  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  consumerTargetProject = _messages.StringField(3)
+  error = _messages.MessageField('GoogleRpcStatus', 4)
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 5)
+  gceOperation = _messages.StringField(6)
+  pscConnectionId = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class RejectSpokeRequest(_messages.Message):
@@ -3276,11 +3300,11 @@ class ServiceClass(_messages.Message):
 
 
 class ServiceConnectionMap(_messages.Message):
-  r"""The ServiceConnectionMap resource. Next id: 13
+  r"""The ServiceConnectionMap resource. Next id: 14
 
   Enums:
-    InfrastructureValueValuesEnum: The infrastructure used for connections
-      between consumers/producers.
+    InfrastructureValueValuesEnum: Output only. The infrastructure used for
+      connections between consumers/producers.
 
   Messages:
     LabelsValue: User-defined labels.
@@ -3291,8 +3315,8 @@ class ServiceConnectionMap(_messages.Message):
       side.
     createTime: Output only. Time when the ServiceConnectionMap was created.
     description: A description of this resource.
-    infrastructure: The infrastructure used for connections between
-      consumers/producers.
+    infrastructure: Output only. The infrastructure used for connections
+      between consumers/producers.
     labels: User-defined labels.
     name: Immutable. The name of a ServiceConnectionMap. Format: projects/{pro
       ject}/locations/{location}/serviceConnectionMaps/{service_connection_map
@@ -3304,11 +3328,15 @@ class ServiceConnectionMap(_messages.Message):
       class.
     serviceClassUri: Output only. The service class uri this
       ServiceConnectionMap is for.
+    token: The token provided by the consumer. This token authenticates that
+      the consumer can create a connecton within the specified project and
+      network.
     updateTime: Output only. Time when the ServiceConnectionMap was updated.
   """
 
   class InfrastructureValueValuesEnum(_messages.Enum):
-    r"""The infrastructure used for connections between consumers/producers.
+    r"""Output only. The infrastructure used for connections between
+    consumers/producers.
 
     Values:
       INFRASTRUCTURE_UNSPECIFIED: An invalid infrastructure as the default
@@ -3352,15 +3380,16 @@ class ServiceConnectionMap(_messages.Message):
   producerPscConfigs = _messages.MessageField('ProducerPscConfig', 8, repeated=True)
   serviceClass = _messages.StringField(9)
   serviceClassUri = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  token = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class ServiceConnectionPolicy(_messages.Message):
   r"""The ServiceConnectionPolicy resource. Next id: 11
 
   Enums:
-    InfrastructureValueValuesEnum: The type of underlying resources used to
-      create the connection.
+    InfrastructureValueValuesEnum: Output only. The type of underlying
+      resources used to create the connection.
 
   Messages:
     LabelsValue: User-defined labels.
@@ -3368,16 +3397,15 @@ class ServiceConnectionPolicy(_messages.Message):
   Fields:
     createTime: Output only. Time when the ServiceConnectionMap was created.
     description: A description of this resource.
-    infrastructure: The type of underlying resources used to create the
-      connection.
+    infrastructure: Output only. The type of underlying resources used to
+      create the connection.
     labels: User-defined labels.
     name: Immutable. The name of a ServiceConnectionPolicy. Format: projects/{
       project}/locations/{location}/serviceConnectionPolicies/{service_connect
       ion_policy} See: https://google.aip.dev/122#fields-representing-
       resource-names
     network: The resource path of the consumer network. Example: -
-      projects/{projectNumOrId}/global/networks/{resourceId}. -
-      projects/{projectNumOrId}/locations/global/networks/{resourceId}.
+      projects/{projectNumOrId}/global/networks/{resourceId}.
     pscConfig: Configuration used for Private Service Connect connections.
       Used when Infrastructure is PSC.
     pscConnections: Output only. [Output only] Information about each Private
@@ -3392,7 +3420,8 @@ class ServiceConnectionPolicy(_messages.Message):
   """
 
   class InfrastructureValueValuesEnum(_messages.Enum):
-    r"""The type of underlying resources used to create the connection.
+    r"""Output only. The type of underlying resources used to create the
+    connection.
 
     Values:
       INFRASTRUCTURE_UNSPECIFIED: An invalid infrastructure as the default
@@ -3453,7 +3482,8 @@ class ServiceConnectionToken(_messages.Message):
       roject}/locations/{location}/ServiceConnectionTokens/{service_connection
       _token} See: https://google.aip.dev/122#fields-representing-resource-
       names
-    network: The network associated with this token.
+    network: The resource path of the network associated with this token.
+      Example: projects/{projectNumOrId}/global/networks/{resourceId}.
     token: Output only. The token generated by Automation.
     updateTime: Output only. Time when the ServiceConnectionToken was updated.
   """

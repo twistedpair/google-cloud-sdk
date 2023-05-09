@@ -49,6 +49,8 @@ class GkehubV1beta(base_api.BaseApiClient):
     self.projects_locations_namespaces_rbacrolebindings = self.ProjectsLocationsNamespacesRbacrolebindingsService(self)
     self.projects_locations_namespaces = self.ProjectsLocationsNamespacesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_scopes_namespaces_resourcequotas = self.ProjectsLocationsScopesNamespacesResourcequotasService(self)
+    self.projects_locations_scopes_namespaces = self.ProjectsLocationsScopesNamespacesService(self)
     self.projects_locations_scopes = self.ProjectsLocationsScopesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -1287,6 +1289,296 @@ class GkehubV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsScopesNamespacesResourcequotasService(base_api.BaseApiService):
+    """Service class for the projects_locations_scopes_namespaces_resourcequotas resource."""
+
+    _NAME = 'projects_locations_scopes_namespaces_resourcequotas'
+
+    def __init__(self, client):
+      super(GkehubV1beta.ProjectsLocationsScopesNamespacesResourcequotasService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a resource quota.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesNamespacesResourcequotasCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces/{namespacesId}/resourcequotas',
+        http_method='POST',
+        method_id='gkehub.projects.locations.scopes.namespaces.resourcequotas.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['resourceQuotaId'],
+        relative_path='v1beta/{+parent}/resourcequotas',
+        request_field='resourceQuota',
+        request_type_name='GkehubProjectsLocationsScopesNamespacesResourcequotasCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a resource quota.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesNamespacesResourcequotasDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces/{namespacesId}/resourcequotas/{resourcequotasId}',
+        http_method='DELETE',
+        method_id='gkehub.projects.locations.scopes.namespaces.resourcequotas.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsScopesNamespacesResourcequotasDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the details of a resource quota.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesNamespacesResourcequotasGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResourceQuota) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces/{namespacesId}/resourcequotas/{resourcequotasId}',
+        http_method='GET',
+        method_id='gkehub.projects.locations.scopes.namespaces.resourcequotas.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsScopesNamespacesResourcequotasGetRequest',
+        response_type_name='ResourceQuota',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists resource quotas.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesNamespacesResourcequotasListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListResourceQuotasResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces/{namespacesId}/resourcequotas',
+        http_method='GET',
+        method_id='gkehub.projects.locations.scopes.namespaces.resourcequotas.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/resourcequotas',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsScopesNamespacesResourcequotasListRequest',
+        response_type_name='ListResourceQuotasResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a resource quota.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesNamespacesResourcequotasPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces/{namespacesId}/resourcequotas/{resourcequotasId}',
+        http_method='PATCH',
+        method_id='gkehub.projects.locations.scopes.namespaces.resourcequotas.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='resourceQuota',
+        request_type_name='GkehubProjectsLocationsScopesNamespacesResourcequotasPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsScopesNamespacesService(base_api.BaseApiService):
+    """Service class for the projects_locations_scopes_namespaces resource."""
+
+    _NAME = 'projects_locations_scopes_namespaces'
+
+    def __init__(self, client):
+      super(GkehubV1beta.ProjectsLocationsScopesNamespacesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a fleet namespace.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesNamespacesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces',
+        http_method='POST',
+        method_id='gkehub.projects.locations.scopes.namespaces.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['scopeNamespaceId'],
+        relative_path='v1beta/{+parent}/namespaces',
+        request_field='namespace',
+        request_type_name='GkehubProjectsLocationsScopesNamespacesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a fleet namespace.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesNamespacesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces/{namespacesId}',
+        http_method='DELETE',
+        method_id='gkehub.projects.locations.scopes.namespaces.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsScopesNamespacesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the details of a fleet namespace.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesNamespacesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Namespace) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces/{namespacesId}',
+        http_method='GET',
+        method_id='gkehub.projects.locations.scopes.namespaces.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsScopesNamespacesGetRequest',
+        response_type_name='Namespace',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists fleet namespaces.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesNamespacesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListScopeNamespacesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces',
+        http_method='GET',
+        method_id='gkehub.projects.locations.scopes.namespaces.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/namespaces',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsScopesNamespacesListRequest',
+        response_type_name='ListScopeNamespacesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a fleet namespace.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesNamespacesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces/{namespacesId}',
+        http_method='PATCH',
+        method_id='gkehub.projects.locations.scopes.namespaces.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='namespace',
+        request_type_name='GkehubProjectsLocationsScopesNamespacesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsScopesService(base_api.BaseApiService):
     """Service class for the projects_locations_scopes resource."""
 
@@ -1378,6 +1670,33 @@ class GkehubV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}:getIamPolicy',
+        http_method='GET',
+        method_id='gkehub.projects.locations.scopes.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsScopesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Scopes.
 
@@ -1429,6 +1748,60 @@ class GkehubV1beta(base_api.BaseApiClient):
         request_field='scope',
         request_type_name='GkehubProjectsLocationsScopesPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}:setIamPolicy',
+        http_method='POST',
+        method_id='gkehub.projects.locations.scopes.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='GkehubProjectsLocationsScopesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}:testIamPermissions',
+        http_method='POST',
+        method_id='gkehub.projects.locations.scopes.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='GkehubProjectsLocationsScopesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

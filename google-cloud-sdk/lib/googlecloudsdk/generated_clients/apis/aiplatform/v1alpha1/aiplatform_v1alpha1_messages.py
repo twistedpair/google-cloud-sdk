@@ -11510,8 +11510,6 @@ class GoogleCloudAiplatformUiPublisherModel(_messages.Message):
       Architectures.
     categories: Required. The model shows in which categories.
     createTime: Output only. Timestamp when this PublisherModel was created.
-    defaultAction: Optional. If not set, the default action is to view the
-      detail page.
     displayName: Required. The display name of the PublisherModel. E.g., "Text
       Summarization". The display name can be up to 128 characters long and
       can consist of any UTF-8 characters.
@@ -11712,50 +11710,45 @@ class GoogleCloudAiplatformUiPublisherModel(_messages.Message):
   architectures = _messages.StringField(1, repeated=True)
   categories = _messages.EnumField('CategoriesValueListEntryValuesEnum', 2, repeated=True)
   createTime = _messages.StringField(3)
-  defaultAction = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToAction', 4)
-  displayName = _messages.StringField(5)
-  documentations = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelDocumentation', 6, repeated=True)
-  frameworks = _messages.StringField(7, repeated=True)
-  graphics = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelGraphic', 8, repeated=True)
-  inputTypes = _messages.EnumField('InputTypesValueListEntryValuesEnum', 9, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 10)
-  languages = _messages.StringField(11, repeated=True)
-  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 12)
-  license = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelLicense', 13)
-  modelStats = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelModelStats', 14)
-  name = _messages.StringField(15)
-  openSourceCategory = _messages.EnumField('OpenSourceCategoryValueValuesEnum', 16)
-  outputTypes = _messages.EnumField('OutputTypesValueListEntryValuesEnum', 17, repeated=True)
-  overview = _messages.StringField(18)
-  owners = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelOwner', 19, repeated=True)
-  parent = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelParent', 20)
-  skillLevels = _messages.StringField(21, repeated=True)
-  supportedActions = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToAction', 22, repeated=True)
-  supportedTasks = _messages.EnumField('SupportedTasksValueListEntryValuesEnum', 23, repeated=True)
-  tryItOut = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelTryItOut', 24)
-  updateTime = _messages.StringField(25)
-  versionExternalName = _messages.StringField(26)
-  versionId = _messages.StringField(27)
+  displayName = _messages.StringField(4)
+  documentations = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelDocumentation', 5, repeated=True)
+  frameworks = _messages.StringField(6, repeated=True)
+  graphics = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelGraphic', 7, repeated=True)
+  inputTypes = _messages.EnumField('InputTypesValueListEntryValuesEnum', 8, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 9)
+  languages = _messages.StringField(10, repeated=True)
+  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 11)
+  license = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelLicense', 12)
+  modelStats = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelModelStats', 13)
+  name = _messages.StringField(14)
+  openSourceCategory = _messages.EnumField('OpenSourceCategoryValueValuesEnum', 15)
+  outputTypes = _messages.EnumField('OutputTypesValueListEntryValuesEnum', 16, repeated=True)
+  overview = _messages.StringField(17)
+  owners = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelOwner', 18, repeated=True)
+  parent = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelParent', 19)
+  skillLevels = _messages.StringField(20, repeated=True)
+  supportedActions = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToAction', 21)
+  supportedTasks = _messages.EnumField('SupportedTasksValueListEntryValuesEnum', 22, repeated=True)
+  tryItOut = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelTryItOut', 23)
+  updateTime = _messages.StringField(24)
+  versionExternalName = _messages.StringField(25)
+  versionId = _messages.StringField(26)
 
 
 class GoogleCloudAiplatformUiPublisherModelCallToAction(_messages.Message):
   r"""Actions could take on this Publisher Model.
 
   Fields:
-    createApplication: Create application using the PublisherModel.
-    deploy: Deploy the PublisherModel to Vertex Endpoint.
-    openFineTuningPipeline: Open fine-tuning pipeline of the PublisherModel.
-    openGenerationAiStudio: Open in Generation AI Studio.
-    openGenie: Open Genie / Playground.
-    openNotebook: Open notebook of the PublisherModel.
-    openPromptTuningPipeline: Open prompt-tuning pipeline of the
+    createApplication: Optional. Create application using the PublisherModel.
+    deploy: Optional. Deploy the PublisherModel to Vertex Endpoint.
+    openFineTuningPipeline: Optional. Open fine-tuning pipeline of the
       PublisherModel.
-    overview: Required. A brief, one-line description of the action. E.g.,
-      "Open the fine-tuning pipeline for this model to make additional
-      customization".
-    title: Required. The title of the action. E.g., Deploy, Open Genie, Open
-      Notebook, Train with my own dataset, etc..
-    viewRestApi: To view Rest API docs.
+    openGenerationAiStudio: Optional. Open in Generation AI Studio.
+    openGenie: Optional. Open Genie / Playground.
+    openNotebook: Optional. Open notebook of the PublisherModel.
+    openPromptTuningPipeline: Optional. Open prompt-tuning pipeline of the
+      PublisherModel.
+    viewRestApi: Optional. To view Rest API docs.
   """
 
   createApplication = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 1)
@@ -11765,9 +11758,7 @@ class GoogleCloudAiplatformUiPublisherModelCallToAction(_messages.Message):
   openGenie = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 5)
   openNotebook = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 6)
   openPromptTuningPipeline = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 7)
-  overview = _messages.StringField(8)
-  title = _messages.StringField(9)
-  viewRestApi = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionViewRestApi', 10)
+  viewRestApi = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionViewRestApi', 8)
 
 
 class GoogleCloudAiplatformUiPublisherModelCallToActionDeploy(_messages.Message):
@@ -11791,6 +11782,7 @@ class GoogleCloudAiplatformUiPublisherModelCallToActionDeploy(_messages.Message)
     sharedResources: The resource name of the shared DeploymentResourcePool to
       deploy on. Format: `projects/{project}/locations/{location}/deploymentRe
       sourcePools/{deployment_resource_pool}`
+    title: Required. The title of the regional resource reference.
   """
 
   artifactUri = _messages.StringField(1)
@@ -11800,6 +11792,7 @@ class GoogleCloudAiplatformUiPublisherModelCallToActionDeploy(_messages.Message)
   largeModelReference = _messages.MessageField('GoogleCloudAiplatformUiLargeModelReference', 5)
   modelDisplayName = _messages.StringField(6)
   sharedResources = _messages.StringField(7)
+  title = _messages.StringField(8)
 
 
 class GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences(_messages.Message):
@@ -11811,6 +11804,7 @@ class GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReference
 
   Fields:
     references: Required.
+    title: Required. The title of the regional resource reference.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -11839,6 +11833,7 @@ class GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReference
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   references = _messages.MessageField('ReferencesValue', 1)
+  title = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformUiPublisherModelCallToActionViewRestApi(_messages.Message):
@@ -11846,9 +11841,11 @@ class GoogleCloudAiplatformUiPublisherModelCallToActionViewRestApi(_messages.Mes
 
   Fields:
     documentations: Required.
+    title: Required. The title of the view rest API.
   """
 
   documentations = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelDocumentation', 1, repeated=True)
+  title = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformUiPublisherModelDocumentation(_messages.Message):

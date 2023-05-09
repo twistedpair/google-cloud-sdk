@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_DATABASES_BACKUPSCHEDULES = (
+      'projects.databases.backupSchedules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/databases/{databasesId}/backupSchedules/'
+              '{backupSchedulesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_DATABASES_COLLECTIONGROUPS = (
       'projects.databases.collectionGroups',
       'projects/{projectsId}/databases/{databasesId}/collectionGroups/'
@@ -99,6 +110,17 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/locations/{locationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_BACKUPS = (
+      'projects.locations.backups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/backups/'
+              '{backupsId}',
       },
       ['name'],
       True

@@ -148,6 +148,9 @@ class WorkflowsClient(object):
         env_vars = labels_util.ParseCreateArgs(
             args, self.messages.Workflow.UserEnvVarsValue, 'env_vars_file'
         )
+      if args.IsSpecified('clear_env_vars'):
+        workflow.userEnvVars = None
+        updated_fields.append('userEnvVars')
       flags.SetUserEnvVars(env_vars, workflow, updated_fields)
 
       if args.IsSpecified('call_log_level'):

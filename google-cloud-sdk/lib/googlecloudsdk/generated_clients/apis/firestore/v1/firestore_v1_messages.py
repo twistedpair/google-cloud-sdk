@@ -702,6 +702,73 @@ class Filter(_messages.Message):
   unaryFilter = _messages.MessageField('UnaryFilter', 3)
 
 
+class FirestoreProjectsDatabasesBackupSchedulesCreateRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesBackupSchedulesCreateRequest object.
+
+  Fields:
+    googleFirestoreAdminV1BackupSchedule: A
+      GoogleFirestoreAdminV1BackupSchedule resource to be passed as the
+      request body.
+    parent: Required. The parent database. Format
+      `projects/{project}/databases/{database}`
+  """
+
+  googleFirestoreAdminV1BackupSchedule = _messages.MessageField('GoogleFirestoreAdminV1BackupSchedule', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class FirestoreProjectsDatabasesBackupSchedulesDeleteRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesBackupSchedulesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of backup schedule. Format `projects/{project}/da
+      tabases/{database}/backupSchedules/{backup_schedule}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FirestoreProjectsDatabasesBackupSchedulesGetRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesBackupSchedulesGetRequest object.
+
+  Fields:
+    name: Required. The name of the backup schedule. Format `projects/{project
+      }/databases/{database}/backupSchedules/{backup_schedule}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FirestoreProjectsDatabasesBackupSchedulesListRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesBackupSchedulesListRequest object.
+
+  Fields:
+    parent: Required. The parent database. Format is
+      `projects/{project}/databases/{database}`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class FirestoreProjectsDatabasesBackupSchedulesPatchRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesBackupSchedulesPatchRequest object.
+
+  Fields:
+    googleFirestoreAdminV1BackupSchedule: A
+      GoogleFirestoreAdminV1BackupSchedule resource to be passed as the
+      request body.
+    name: Output only. The unique backup schedule identifier across all
+      locations and databases for the given project. This will be auto-
+      assigned. Format is `projects/{project}/databases/{database}/backupSched
+      ules/{backup_schedule}`
+    updateMask: The list of fields to be updated.
+  """
+
+  googleFirestoreAdminV1BackupSchedule = _messages.MessageField('GoogleFirestoreAdminV1BackupSchedule', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class FirestoreProjectsDatabasesCollectionGroupsFieldsGetRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesCollectionGroupsFieldsGetRequest object.
 
@@ -1328,6 +1395,56 @@ class FirestoreProjectsDatabasesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class FirestoreProjectsDatabasesRestoreRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesRestoreRequest object.
+
+  Fields:
+    googleFirestoreAdminV1RestoreDatabaseRequest: A
+      GoogleFirestoreAdminV1RestoreDatabaseRequest resource to be passed as
+      the request body.
+    parent: Required. The project to restore the database in. Format is
+      `projects/{project_id}`.
+  """
+
+  googleFirestoreAdminV1RestoreDatabaseRequest = _messages.MessageField('GoogleFirestoreAdminV1RestoreDatabaseRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class FirestoreProjectsLocationsBackupsDeleteRequest(_messages.Message):
+  r"""A FirestoreProjectsLocationsBackupsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the backup to delete. format is
+      `projects/{project}/locations/{location}/backups/{backup}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FirestoreProjectsLocationsBackupsGetRequest(_messages.Message):
+  r"""A FirestoreProjectsLocationsBackupsGetRequest object.
+
+  Fields:
+    name: Required. Name of the backup to fetch. Format is
+      `projects/{project}/locations/{location}/backups/{backup}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FirestoreProjectsLocationsBackupsListRequest(_messages.Message):
+  r"""A FirestoreProjectsLocationsBackupsListRequest object.
+
+  Fields:
+    parent: Required. The location to list backups from. Format is
+      `projects/{project}/locations/{location}`. Use `{location} = '-'` to
+      list backups from all locations for the given project. This allows
+      listing backups from a single location or from all locations.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class FirestoreProjectsLocationsGetRequest(_messages.Message):
   r"""A FirestoreProjectsLocationsGetRequest object.
 
@@ -1356,6 +1473,93 @@ class FirestoreProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class GoogleFirestoreAdminV1Backup(_messages.Message):
+  r"""A Backup of a Cloud Firestore Database. The backup contains all
+  documents and index configurations for the given database at specific point
+  in time.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the backup.
+
+  Fields:
+    database: Output only. Name of the Firestore database that the backup is
+      from. Format is `projects/{project}/databases/{database}`.
+    databaseUid: Output only. The system-generated UUID4 for the Firestore
+      database that the backup is from.
+    expireTime: Output only. The timestamp at which this backup expires.
+    name: Output only. The unique resource name of the Backup. Format is
+      `projects/{project}/locations/{location}/backups/{backup}`.
+    snapshotTime: Output only. The backup contains an externally consistent
+      copy of the database at this time.
+    state: Output only. The current state of the backup.
+    stats: Output only. Statistics about the backup. This data only becomes
+      available after the backup is fully materialized to secondary storage.
+      This field will be empty till then.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the backup.
+
+    Values:
+      STATE_UNSPECIFIED: The state is unspecified.
+      CREATING: The pending backup is still being created. Operations on the
+        backup will be rejected in this state.
+      READY: The backup is complete and ready to use.
+      NOT_AVAILABLE: The backup is not available at this moment.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    NOT_AVAILABLE = 3
+
+  database = _messages.StringField(1)
+  databaseUid = _messages.StringField(2)
+  expireTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  snapshotTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  stats = _messages.MessageField('GoogleFirestoreAdminV1Stats', 7)
+
+
+class GoogleFirestoreAdminV1BackupSchedule(_messages.Message):
+  r"""A backup schedule for a Cloud Firestore Database. This resource is owned
+  by the database it is backing up, and is deleted along with the database.
+  The actual backups are not though.
+
+  Fields:
+    createTime: Output only. The timestamp at which this backup schedule was
+      created and effective since. No backups will be created for this
+      schedule before this time.
+    dailyRecurrence: For a schedule that runs daily at a specified time.
+    name: Output only. The unique backup schedule identifier across all
+      locations and databases for the given project. This will be auto-
+      assigned. Format is `projects/{project}/databases/{database}/backupSched
+      ules/{backup_schedule}`
+    retention: At what relative time in the future, compared to the creation
+      time of the backup should the backup be deleted, i.e. keep backups for 7
+      days.
+    updateTime: Output only. The timestamp at which this backup schedule was
+      most recently updated. When a backup schedule is first created, this is
+      the same as create_time.
+    weeklyRecurrence: For a schedule that runs weekly on a specific day and
+      time.
+  """
+
+  createTime = _messages.StringField(1)
+  dailyRecurrence = _messages.MessageField('GoogleFirestoreAdminV1DailyRecurrence', 2)
+  name = _messages.StringField(3)
+  retention = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+  weeklyRecurrence = _messages.MessageField('GoogleFirestoreAdminV1WeeklyRecurrence', 6)
+
+
+class GoogleFirestoreAdminV1DailyRecurrence(_messages.Message):
+  r"""Represent a recurring schedule that runs at a specific time every day.
+  The time zone is UTC.
+  """
+
 
 
 class GoogleFirestoreAdminV1Database(_messages.Message):
@@ -1998,6 +2202,33 @@ class GoogleFirestoreAdminV1IndexOperationMetadata(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
+class GoogleFirestoreAdminV1ListBackupSchedulesResponse(_messages.Message):
+  r"""The response for FirestoreAdmin.ListBackupSchedules.
+
+  Fields:
+    backupSchedules: List of all backup schedules.
+  """
+
+  backupSchedules = _messages.MessageField('GoogleFirestoreAdminV1BackupSchedule', 1, repeated=True)
+
+
+class GoogleFirestoreAdminV1ListBackupsResponse(_messages.Message):
+  r"""The response for FirestoreAdmin.ListBackups.
+
+  Fields:
+    backups: List of all backups for the project. Ordered by `location ASC,
+      create_time DESC, name ASC`.
+    unreachable: List of locations that existing backups were not able to be
+      fetched from. Instead of failing the entire requests when a single
+      location is unreachable, this response returns a partial result set and
+      list of locations unable to be reached here. The request can be retried
+      against a single location to get a concrete error.
+  """
+
+  backups = _messages.MessageField('GoogleFirestoreAdminV1Backup', 1, repeated=True)
+  unreachable = _messages.StringField(2, repeated=True)
+
+
 class GoogleFirestoreAdminV1ListDatabasesResponse(_messages.Message):
   r"""The list of databases for a project.
 
@@ -2049,6 +2280,43 @@ class GoogleFirestoreAdminV1Progress(_messages.Message):
 
   completedWork = _messages.IntegerField(1)
   estimatedWork = _messages.IntegerField(2)
+
+
+class GoogleFirestoreAdminV1RestoreDatabaseRequest(_messages.Message):
+  r"""The request message for FirestoreAdmin.RestoreDatabase.
+
+  Fields:
+    backup: Required. Backup to restore from. Must be from the same project as
+      the parent. Format is:
+      `projects/{project_id}/locations/{location}/backups/{backup}`
+    databaseId: Required. The ID to use for the database, which will become
+      the final component of the database's resource name. This database id
+      must not be associated with an existing database. This value should be
+      4-63 characters. Valid characters are /a-z-/ with first character a
+      letter and the last a letter or a number. Must not be UUID-like
+      /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/. "(default)" database id is
+      also valid.
+  """
+
+  backup = _messages.StringField(1)
+  databaseId = _messages.StringField(2)
+
+
+class GoogleFirestoreAdminV1Stats(_messages.Message):
+  r"""Backup specific statistics.
+
+  Fields:
+    documentCount: Output only. The total number of documents contained in the
+      backup.
+    indexCount: Output only. The total number of index entries contained in
+      the backup.
+    sizeBytes: Output only. Summation of the size of all documents and index
+      entries in the backup, measured in bytes.
+  """
+
+  documentCount = _messages.IntegerField(1)
+  indexCount = _messages.IntegerField(2)
+  sizeBytes = _messages.IntegerField(3)
 
 
 class GoogleFirestoreAdminV1TtlConfig(_messages.Message):
@@ -2118,6 +2386,43 @@ class GoogleFirestoreAdminV1TtlConfigDelta(_messages.Message):
 
 class GoogleFirestoreAdminV1UpdateDatabaseMetadata(_messages.Message):
   r"""Metadata related to the update database operation."""
+
+
+class GoogleFirestoreAdminV1WeeklyRecurrence(_messages.Message):
+  r"""Represents a recurring schedule that runs on a specified day of the
+  week. The time zone is UTC.
+
+  Enums:
+    DayValueValuesEnum: The day of week to run. DAY_OF_WEEK_UNSPECIFIED is not
+      allowed.
+
+  Fields:
+    day: The day of week to run. DAY_OF_WEEK_UNSPECIFIED is not allowed.
+  """
+
+  class DayValueValuesEnum(_messages.Enum):
+    r"""The day of week to run. DAY_OF_WEEK_UNSPECIFIED is not allowed.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  day = _messages.EnumField('DayValueValuesEnum', 1)
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):
@@ -2377,7 +2682,7 @@ class ListenResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

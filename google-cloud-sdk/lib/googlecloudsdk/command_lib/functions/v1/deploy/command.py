@@ -28,6 +28,7 @@ from googlecloudsdk.api_lib.functions import secrets as secrets_util
 from googlecloudsdk.api_lib.functions.v1 import env_vars as env_vars_api_util
 from googlecloudsdk.api_lib.functions.v1 import exceptions as function_exceptions
 from googlecloudsdk.api_lib.functions.v1 import util as api_util
+from googlecloudsdk.api_lib.functions.v2 import client as v2_client
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.calliope.arg_parsers import ArgumentTypeError
@@ -469,14 +470,18 @@ def Run(args, track=None):
     function.runtime = args.runtime
     updated_fields.append('runtime')
 
-    warning = api_util.ValidateRuntime(args.runtime)
-    if warning:
-      log.warning(warning)
-
   elif is_new_function:
     raise calliope_exceptions.RequiredArgumentException(
         'runtime', 'Flag `--runtime` is required for new functions.'
     )
+
+  warning = api_util.ValidateRuntimeOrRaise(
+      v2_client.FunctionsClient(base.ReleaseTrack.GA),
+      function.runtime,
+      function_ref.locationsId,
+  )
+  if warning:
+    log.warning(warning)
 
   vpc_connector_ref = args.CONCEPTS.vpc_connector.Parse()
 

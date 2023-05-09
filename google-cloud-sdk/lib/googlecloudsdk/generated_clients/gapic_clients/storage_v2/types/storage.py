@@ -2163,7 +2163,8 @@ class Bucket(proto.Message):
 
     Attributes:
         name (str):
-            Immutable. The name of the bucket.
+            Immutable. The name of the bucket. Format:
+            ``projects/{project}/buckets/{bucket}``
         bucket_id (str):
             Output only. The user-chosen part of the bucket name. The
             ``{bucket}`` portion of the ``name`` field. For globally

@@ -176,6 +176,8 @@ class CloudFunction(_messages.Message):
       backend for eligible deployments.
     IngressSettingsValueValuesEnum: The ingress settings for the function,
       controlling what traffic can reach it.
+    RuntimeUpdatePolicyValueValuesEnum: The policy that determines when
+      security updates are applied to the runtime environment.
     StatusValueValuesEnum: Output only. Status of the function deployment.
     VpcConnectorEgressSettingsValueValuesEnum: The egress settings for the
       connector, controlling what traffic is diverted through it.
@@ -295,6 +297,8 @@ class CloudFunction(_messages.Message):
       complete list of possible choices, see the [`gcloud` command reference](
       https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--
       runtime).
+    runtimeUpdatePolicy: The policy that determines when security updates are
+      applied to the runtime environment.
     secretEnvironmentVariables: Secret environment variables configuration.
     secretVolumes: Secret volumes configuration.
     serviceAccountEmail: The email of the function's service account. If
@@ -365,6 +369,22 @@ class CloudFunction(_messages.Message):
     ALLOW_ALL = 1
     ALLOW_INTERNAL_ONLY = 2
     ALLOW_INTERNAL_AND_GCLB = 3
+
+  class RuntimeUpdatePolicyValueValuesEnum(_messages.Enum):
+    r"""The policy that determines when security updates are applied to the
+    runtime environment.
+
+    Values:
+      RUNTIME_UPDATE_POLICY_UNSPECIFIED: Unspecified.
+      AUTOMATIC: Security patches are applied automatically to the runtime
+        without requiring the function to be redeployed.
+      DISABLED: Security patches are not automatically applied to the runtime.
+        The function must be regularly redeployed to keep the runtime
+        environment up to date
+    """
+    RUNTIME_UPDATE_POLICY_UNSPECIFIED = 0
+    AUTOMATIC = 1
+    DISABLED = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""Output only. Status of the function deployment.
@@ -502,19 +522,20 @@ class CloudFunction(_messages.Message):
   network = _messages.StringField(22)
   runDockerfile = _messages.StringField(23)
   runtime = _messages.StringField(24)
-  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 25, repeated=True)
-  secretVolumes = _messages.MessageField('SecretVolume', 26, repeated=True)
-  serviceAccountEmail = _messages.StringField(27)
-  sourceArchiveUrl = _messages.StringField(28)
-  sourceRepository = _messages.MessageField('SourceRepository', 29)
-  sourceToken = _messages.StringField(30)
-  sourceUploadUrl = _messages.StringField(31)
-  status = _messages.EnumField('StatusValueValuesEnum', 32)
-  timeout = _messages.StringField(33)
-  updateTime = _messages.StringField(34)
-  versionId = _messages.IntegerField(35)
-  vpcConnector = _messages.StringField(36)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 37)
+  runtimeUpdatePolicy = _messages.EnumField('RuntimeUpdatePolicyValueValuesEnum', 25)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 26, repeated=True)
+  secretVolumes = _messages.MessageField('SecretVolume', 27, repeated=True)
+  serviceAccountEmail = _messages.StringField(28)
+  sourceArchiveUrl = _messages.StringField(29)
+  sourceRepository = _messages.MessageField('SourceRepository', 30)
+  sourceToken = _messages.StringField(31)
+  sourceUploadUrl = _messages.StringField(32)
+  status = _messages.EnumField('StatusValueValuesEnum', 33)
+  timeout = _messages.StringField(34)
+  updateTime = _messages.StringField(35)
+  versionId = _messages.IntegerField(36)
+  vpcConnector = _messages.StringField(37)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 38)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -1410,7 +1431,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

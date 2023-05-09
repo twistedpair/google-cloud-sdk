@@ -27,9 +27,7 @@ class AcknowledgeRequest(_messages.Message):
 
 class AvroConfig(_messages.Message):
   r"""Configuration for writing message data in Avro format. Message payloads
-  and metadata will be written to files as an Avro binary. Unless
-  flatten_payload is set to true, message payloads will be written as base64
-  encoded strings.
+  and metadata will be written to files as an Avro binary.
 
   Fields:
     writeMetadata: When true, write the subscription name, message_id,
@@ -179,12 +177,11 @@ class CloudStorageConfig(_messages.Message):
       [object naming
       requirements](https://cloud.google.com/storage/docs/objects#naming).
     maxBytes: The maximum bytes that can be written to a Cloud Storage file
-      before a new file is created. Min 1 KB, max 10 GB, default 1 GB.
+      before a new file is created. Min 1 KB, max 10 GiB. The max_bytes limit
+      may be exceeded in cases where messages are larger than the limit.
     maxDuration: The maximum duration that can elapse before a new Cloud
-      Storage file is created. Min 1 minute, max 1 day, default 5 minutes.
-    maxMessages: The maximum number of messages that can be written to a Cloud
-      Storage file before a new file is created. Min 1 message, max 1M
-      messages, default 100K messages.
+      Storage file is created. Min 1 minute, max 10 minutes, default 5
+      minutes. May not exceed the subscription's acknowledgement deadline.
     state: Output only. An output-only field that indicates whether or not the
       subscription can receive messages.
     textConfig: If set, message data will be written to Cloud Storage in text
@@ -214,9 +211,8 @@ class CloudStorageConfig(_messages.Message):
   filenameSuffix = _messages.StringField(4)
   maxBytes = _messages.IntegerField(5)
   maxDuration = _messages.StringField(6)
-  maxMessages = _messages.IntegerField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  textConfig = _messages.MessageField('TextConfig', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  textConfig = _messages.MessageField('TextConfig', 8)
 
 
 class CommitSchemaRequest(_messages.Message):
@@ -628,6 +624,43 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class PubSubLiteExportConfig(_messages.Message):
+  r"""Configuration for a Pub/Sub Lite export subscription.
+
+  Enums:
+    StateValueValuesEnum: Output only. An output-only field that indicates
+      whether or not the subscription can receive messages.
+
+  Fields:
+    state: Output only. An output-only field that indicates whether or not the
+      subscription can receive messages.
+    topic: The name of the topic to which to write data, of the form
+      projects/{project_id}/locations/{location_id}/topics/{topic_id} Pushes
+      occur in the same region as the Pub/Sub Lite topic. If this is different
+      from the location the messages were published to, egress fees will be
+      incurred.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. An output-only field that indicates whether or not the
+    subscription can receive messages.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: The subscription can actively send messages
+      PERMISSION_DENIED: Cannot write to the destination because of permission
+        denied errors.
+      NOT_FOUND: Cannot write to the destination because it does not exist.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PERMISSION_DENIED = 2
+    NOT_FOUND = 3
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+  topic = _messages.StringField(2)
 
 
 class PublishRequest(_messages.Message):
@@ -1914,9 +1947,9 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Subscription(_messages.Message):
-  r"""A subscription resource. If none of `push_config` or `bigquery_config`
-  is set, then the subscriber will pull and ack messages using API methods. At
-  most one of these fields may be set.
+  r"""A subscription resource. If none of `push_config`, `bigquery_config`, or
+  `cloud_storage_config` is set, then the subscriber will pull and ack
+  messages using API methods. At most one of these fields may be set.
 
   Enums:
     StateValueValuesEnum: Output only. An output-only field indicating whether
@@ -1998,6 +2031,8 @@ class Subscription(_messages.Message):
       (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`), tildes (`~`),
       plus (`+`) or percent signs (`%`). It must be between 3 and 255
       characters in length, and it must not start with `"goog"`.
+    pubsubliteExportConfig: If delivery to Pub/Sub Lite is used with this
+      subscription, this field is used to configure it.
     pushConfig: If push delivery is used with this subscription, this field is
       used to configure it.
     retainAckedMessages: Indicates whether to retain acknowledged messages. If
@@ -2079,12 +2114,13 @@ class Subscription(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 10)
   messageRetentionDuration = _messages.StringField(11)
   name = _messages.StringField(12)
-  pushConfig = _messages.MessageField('PushConfig', 13)
-  retainAckedMessages = _messages.BooleanField(14)
-  retryPolicy = _messages.MessageField('RetryPolicy', 15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  topic = _messages.StringField(17)
-  topicMessageRetentionDuration = _messages.StringField(18)
+  pubsubliteExportConfig = _messages.MessageField('PubSubLiteExportConfig', 13)
+  pushConfig = _messages.MessageField('PushConfig', 14)
+  retainAckedMessages = _messages.BooleanField(15)
+  retryPolicy = _messages.MessageField('RetryPolicy', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  topic = _messages.StringField(18)
+  topicMessageRetentionDuration = _messages.StringField(19)
 
 
 class TestIamPermissionsRequest(_messages.Message):

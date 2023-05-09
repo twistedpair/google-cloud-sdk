@@ -3258,7 +3258,16 @@ class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoTopNValue(_me
 
 
 class GoogleCloudDataplexV1DataProfileSpec(_messages.Message):
-  r"""DataProfileScan related setting."""
+  r"""DataProfileScan related setting.
+
+  Fields:
+    samplingPercent: Optional. The percentage of the records to be selected
+      from the dataset for DataScan. Value can range between 0.0 and 100.0
+      with up to 3 significant decimal digits. Sampling is not applied if
+      sampling_percent is not specified, 0 or 100.
+  """
+
+  samplingPercent = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataQualityDimensionResult(_messages.Message):
@@ -3433,7 +3442,7 @@ class GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation(_messages.Me
   specified range.
 
   Enums:
-    StatisticValueValuesEnum:
+    StatisticValueValuesEnum: The aggregate metric to evaluate.
 
   Fields:
     maxValue: The maximum column statistic value allowed for a row to pass
@@ -3442,7 +3451,7 @@ class GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation(_messages.Me
     minValue: The minimum column statistic value allowed for a row to pass
       this validation.At least one of min_value and max_value need to be
       provided.
-    statistic: A StatisticValueValuesEnum attribute.
+    statistic: The aggregate metric to evaluate.
     strictMaxEnabled: Whether column statistic needs to be strictly lesser
       than ('<') the maximum, or if equality is allowed.Only relevant if a
       max_value has been defined. Default = false.
@@ -3452,7 +3461,7 @@ class GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation(_messages.Me
   """
 
   class StatisticValueValuesEnum(_messages.Enum):
-    r"""StatisticValueValuesEnum enum type.
+    r"""The aggregate metric to evaluate.
 
     Values:
       STATISTIC_UNDEFINED: Unspecified statistic type
@@ -3494,9 +3503,14 @@ class GoogleCloudDataplexV1DataQualitySpec(_messages.Message):
   Fields:
     rules: The list of rules to evaluate against a data source. At least one
       rule is required.
+    samplingPercent: Optional. The percentage of the records to be selected
+      from the dataset for DataScan. Value can range between 0.0 and 100.0
+      with up to 3 significant decimal digits. Sampling is not applied if
+      sampling_percent is not specified, 0 or 100.
   """
 
   rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 1, repeated=True)
+  samplingPercent = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataScan(_messages.Message):
@@ -6162,7 +6176,7 @@ class GoogleCloudLocationListLocationsResponse(_messages.Message):
 
 
 class GoogleCloudLocationLocation(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

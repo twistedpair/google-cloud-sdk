@@ -500,6 +500,47 @@ class EncryptionConfig(_messages.Message):
   kmsKey = _messages.StringField(1)
 
 
+class ErrorDetails(_messages.Message):
+  r"""Error details in public error message for
+  DataprocMetastore.QueryMetadata.
+
+  Messages:
+    DetailsValue: Additional structured details about this error.Keys define
+      the failure items. Value describes the exception or details of the item.
+
+  Fields:
+    details: Additional structured details about this error.Keys define the
+      failure items. Value describes the exception or details of the item.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValue(_messages.Message):
+    r"""Additional structured details about this error.Keys define the failure
+    items. Value describes the exception or details of the item.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  details = _messages.MessageField('DetailsValue', 1)
+
+
 class ExportMetadataRequest(_messages.Message):
   r"""Request message for DataprocMetastore.ExportMetadata.
 
@@ -968,7 +1009,7 @@ class ListServicesResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1051,16 +1092,13 @@ class LocationMetadata(_messages.Message):
   r"""Metadata about the service in a location.
 
   Fields:
-    multiRegionMetadata: The multi-region metadata if the current region is a
-      multi-region.
     supportedHiveMetastoreVersions: The versions of Hive Metastore that can be
       used when creating a new metastore service in this location. The server
       guarantees that exactly one HiveMetastoreVersion in the list will set
       is_default.
   """
 
-  multiRegionMetadata = _messages.MessageField('MultiRegionMetadata', 1)
-  supportedHiveMetastoreVersions = _messages.MessageField('HiveMetastoreVersion', 2, repeated=True)
+  supportedHiveMetastoreVersions = _messages.MessageField('HiveMetastoreVersion', 1, repeated=True)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -2157,18 +2195,6 @@ class MoveTableToDatabaseRequest(_messages.Message):
 
 class MoveTableToDatabaseResponse(_messages.Message):
   r"""Response message for DataprocMetastore.MoveTableToDatabase."""
-
-
-class MultiRegionMetadata(_messages.Message):
-  r"""The metadata for the multi-region that includes the constituent regions.
-  The metadata is only populated if the region is multi-region. For single
-  region, it will be empty.
-
-  Fields:
-    constituentRegions: The regions constituting the multi-region.
-  """
-
-  constituentRegions = _messages.StringField(1, repeated=True)
 
 
 class NetworkConfig(_messages.Message):

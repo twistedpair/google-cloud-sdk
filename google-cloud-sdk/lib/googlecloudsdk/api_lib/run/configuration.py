@@ -32,8 +32,6 @@ class Configuration(k8s_object.KubernetesObject):
   API_CATEGORY = 'serving.knative.dev'
   KIND = 'Configuration'
 
-  EXCLUDED_FIELDS = ['revisionTemplate', 'container']
-
   @classmethod
   def New(cls, client, namespace):
     """Produces a new Service object.
@@ -51,19 +49,9 @@ class Configuration(k8s_object.KubernetesObject):
 
   @property
   def template(self):
-    if hasattr(self.spec, 'revisionTemplate') and self.spec.revisionTemplate:
-      if not self.spec.revisionTemplate.metadata:
-        self.spec.revisionTemplate.metadata = k8s_object.MakeMeta(
-            self.MessagesModule())
-      return revision.Revision.Template(
-          self.spec.revisionTemplate, self.MessagesModule())
-    elif self.spec.template:
-      if not self.spec.template.metadata:
-        self.spec.template.metadata = k8s_object.MakeMeta(self.MessagesModule())
-      return revision.Revision.Template(
-          self.spec.template, self.MessagesModule())
-    else:
-      raise ValueError('Should have a template of some sort')
+    if not self.spec.template.metadata:
+      self.spec.template.metadata = k8s_object.MakeMeta(self.MessagesModule())
+    return revision.Revision.Template(self.spec.template, self.MessagesModule())
 
   @property
   def image(self):

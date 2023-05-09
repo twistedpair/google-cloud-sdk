@@ -53,6 +53,10 @@ CLOUD_URL_DELIMITER = '/'
 AZURE_DOMAIN = 'blob.core.windows.net'
 
 
+def is_named_pipe(path):
+  return stat.S_ISFIFO(os.stat(path).st_mode)
+
+
 class StorageUrl(six.with_metaclass(abc.ABCMeta)):
   """Abstract base class for file and Cloud Storage URLs."""
 
@@ -187,8 +191,9 @@ class FileUrl(StorageUrl):
   @property
   def is_stream(self):
     """Returns True if the URL points to a named pipe (FIFO) or other stream."""
-    return self.is_stdio or (os.path.exists(self.object_name) and
-                             stat.S_ISFIFO(os.stat(self.object_name).st_mode))
+    return self.is_stdio or (
+        os.path.exists(self.object_name) and is_named_pipe(self.object_name)
+    )
 
   @property
   def is_stdio(self):

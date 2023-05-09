@@ -338,6 +338,33 @@ class CloudkmsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def VerifyConnectivity(self, request, global_params=None):
+      r"""Verifies that Cloud KMS can successfully connect to the external key manager specified by an EkmConnection. If there is an error connecting to the EKM, this method returns a FAILED_PRECONDITION status containing structured information as described at https://cloud.google.com/kms/docs/reference/ekm_errors.
+
+      Args:
+        request: (CloudkmsProjectsLocationsEkmConnectionsVerifyConnectivityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VerifyConnectivityResponse) The response message.
+      """
+      config = self.GetMethodConfig('VerifyConnectivity')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    VerifyConnectivity.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ekmConnections/{ekmConnectionsId}:verifyConnectivity',
+        http_method='GET',
+        method_id='cloudkms.projects.locations.ekmConnections.verifyConnectivity',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:verifyConnectivity',
+        request_field='',
+        request_type_name='CloudkmsProjectsLocationsEkmConnectionsVerifyConnectivityRequest',
+        response_type_name='VerifyConnectivityResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsService(base_api.BaseApiService):
     """Service class for the projects_locations_keyRings_cryptoKeys_cryptoKeyVersions resource."""
 

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Dict, List
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.services import services_util
@@ -35,7 +36,7 @@ _API_ENABLEMENT_CONFIRMATION_TEXT = {
 }
 
 
-def GetIntegrationValidator(integration_type):
+def GetIntegrationValidator(integration_type: str):
   """Gets the integration validator based on the integration type."""
   type_metadata = types_utils.GetTypeMetadata(integration_type)
 
@@ -50,7 +51,7 @@ def GetIntegrationValidator(integration_type):
 class Validator:
   """Validates an integration is setup correctly for deployment."""
 
-  def __init__(self, type_metadata):
+  def __init__(self, type_metadata: types_utils.TypeMetadata):
     self.type_metadata = type_metadata
 
   def ValidateEnabledGcpApis(self):
@@ -82,14 +83,14 @@ class Validator:
         op = services_util.WaitOperation(op.name, serviceusage.GetOperation)
         services_util.PrintOperation(op)
 
-  def _GetDisabledGcpApis(self, project_id):
+  def _GetDisabledGcpApis(self, project_id: str) -> List[str]:
     """Returns all GCP APIs needed for an integration.
 
     Args:
-      project_id: The project's ID as a string.
+      project_id: The project's ID
 
     Returns:
-      A list of strings.  Each item is a GCP API that is not enabled.
+      A list where each item is a GCP API that is not enabled.
     """
     required_apis = set(self.type_metadata.required_apis).union(
         types_utils.BASELINE_APIS
@@ -104,11 +105,11 @@ class Validator:
     ]
     return apis_not_enabled
 
-  def _ConstructPrompt(self, apis_not_enabled):
+  def _ConstructPrompt(self, apis_not_enabled: List[str]) -> str:
     """Returns a prompt to enable APIs with any custom text per-API.
 
     Args:
-      apis_not_enabled: Set of APIs that are to be enabled.
+      apis_not_enabled: APIs that are to be enabled.
     Returns: prompt string to be displayed for confirmation.
     """
     if not apis_not_enabled:
@@ -126,7 +127,7 @@ class Validator:
     prompt += base_prompt
     return prompt
 
-  def ValidateCreateParameters(self, parameters, service):
+  def ValidateCreateParameters(self, parameters: Dict[str, str], service: str):
     """Validates parameters provided for creating an integration.
 
     Three things are done for all integrations created:
@@ -142,7 +143,7 @@ class Validator:
 
     Args:
       parameters: A dict where the key, value mapping is provided by the user.
-      service: str, the service to bind to the new integration.
+      service: The service to bind to the new integration.
     """
     self._ValidateProvidedParams(parameters)
     self._CheckServiceFlag(service, required=True)

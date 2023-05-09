@@ -34,6 +34,7 @@ def AddDisplayNameFlag(parser):
   help_text = """
     A user-friendly name for the conversion workspace. The display name can
     include letters, numbers, spaces, and hyphens, and must start with a letter.
+    The maximum length allowed is 60 characters.
     """
   parser.add_argument('--display-name', help=help_text)
 
@@ -66,7 +67,7 @@ def AddDatabaseEngineFlag(parser):
 def AddDatabaseVersionFlag(parser):
   """Adds the --source-database-version and --destination-database-version flags to the given parser."""
   help_text = """
-    Version number for the database engine.
+    Version number for the database engine. The version number must contain numbers and letters only. Example for Oracle 21c, version number will be 21c.
     """
   parser.add_argument(
       '--source-database-version', help=help_text, required=True
@@ -125,8 +126,8 @@ def AddImportFileFormatFlag(parser):
 def AddConfigFilesFlag(parser):
   """Adds a --config-files flag to the given parser."""
   help_text = """\
-    A list of files to import rules from. Either provide a single file or if
-    multiple files are provided, each file should correspond to one schema.
+    A list of files to import rules from. Either provide a single file path or if
+    multiple files are to be provided, each file should correspond to one schema.
     Provide file paths as a comma separated list.
     """
   parser.add_argument(
@@ -140,7 +141,12 @@ def AddConfigFilesFlag(parser):
 
 def AddFilterFlag(parser):
   """Adds a --filter flag to the given parser."""
-  help_text = 'Filter the entities based on AIP-160 standard.'
+  help_text = (
+      'Filter the entities based on (AIP-160)[https://google.aip.dev/160]'
+      ' standard. Example: to filter all tables whose name start with'
+      ' "Employee" and are present under schema "Company", use filter as'
+      ' "parent = Company and TABLE=Employee*"'
+  )
   parser.add_argument('--filter', help=help_text)
 
 

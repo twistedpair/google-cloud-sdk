@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://runapps.googleapis.com/v1alpha1/'
-DOCS_URL = 'https://cloud.google.com/run/docs/integrations/using-gcp-services'
+DOCS_URL = 'https://cloud.google.com/run/docs/integrate/using-gcp-services#integrations'
 
 
 class Collections(enum.Enum):

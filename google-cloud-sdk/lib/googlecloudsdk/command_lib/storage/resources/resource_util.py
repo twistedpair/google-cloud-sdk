@@ -34,6 +34,10 @@ METADATA_LINE_INDENT_STRING = ' ' * METADATA_LINE_INDENT_LENGTH
 # For transporting symlink info through an object's custom metadata.
 SYMLINK_METADATA_KEY = 'goog-reserved-file-is-symlink'
 
+UNSUPPORTED_OBJECT_WARNING_FORMAT = (
+    'Skipping item {} with unsupported object type: {}'
+)
+
 
 class UnsupportedObjectType(enum.Enum):
   GLACIER = 'GLACIER'
@@ -52,8 +56,10 @@ def get_unsupported_object_type(resource):
     (UnsupportedObjectType|None) If resource is unsupported, the unsupported
       type, else None.
   """
-  if (resource.storage_url.scheme == storage_url.ProviderPrefix.S3 and
-      getattr(resource, 'metadata', {}).get('StorageClass') == 'GLACIER'):
+  if (
+      resource.storage_url.scheme == storage_url.ProviderPrefix.S3
+      and resource.storage_class == 'GLACIER'
+  ):
     return UnsupportedObjectType.GLACIER
   return None
 

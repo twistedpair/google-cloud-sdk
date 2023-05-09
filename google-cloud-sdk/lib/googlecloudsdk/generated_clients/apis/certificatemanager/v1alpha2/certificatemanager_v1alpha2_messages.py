@@ -238,7 +238,8 @@ class Certificate(_messages.Message):
       DEFAULT: Certificates with default scope are served from core Google
         data centers. If unsure, choose this option.
       EDGE_CACHE: Certificates with scope EDGE_CACHE are special-purposed
-        certificates, served from non-core Google data centers.
+        certificates, served from Edge Points of Presence. See
+        https://cloud.google.com/vpc/docs/edge-locations.
     """
     DEFAULT = 0
     EDGE_CACHE = 1
@@ -1151,7 +1152,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

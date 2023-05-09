@@ -42,8 +42,6 @@ class Revision(container_resource.ContainerResource):
       READY_CONDITION,
   }
 
-  EXCLUDED_FIELDS = ['container']
-
   @classmethod
   def New(cls, client, namespace):
     """Produces a new Revision object.

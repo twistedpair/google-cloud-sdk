@@ -1123,6 +1123,100 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class ExtensionChain(_messages.Message):
+  r"""A single extension wrapper that contains the match conditions and
+  extensions that will be executed.
+
+  Fields:
+    extensions: Required. A set of extensions that will execute for the
+      matching request. Up to 3 extensions can be defined for each
+      ExtensionChain for LbTrafficExtension resource. LbRouteExtension chains
+      are limited to 1 extension per ExtensionChain
+    matchCondition: Required. Conditions under which this chain should be
+      invoked for a request.
+    name: Required. The name for this extension chain. The name will be logged
+      as part of HTTP request logs.
+  """
+
+  extensions = _messages.MessageField('ExtensionChainExtension', 1, repeated=True)
+  matchCondition = _messages.MessageField('ExtensionChainMatchCondition', 2)
+  name = _messages.StringField(3)
+
+
+class ExtensionChainExtension(_messages.Message):
+  r"""A single Extension in the chain that will execute for the matching
+  request.
+
+  Enums:
+    SupportedEventsValueListEntryValuesEnum:
+
+  Fields:
+    authority: Required. The :authority header in the gRPC request sent from
+      Envoy to the extension service.
+    failOpen: Optional. Determines how the proxy should behave if the call to
+      the extension fails or times out. When set to TRUE, request/response
+      processing continues without error. Any subsequent extensions in the
+      ExtensionChain will also execute. When set to FALSE: * If Response
+      Headers have not been delivered to the downstream client, a generic 500
+      error is returned to the client. The error response can be tailored by
+      configuring a custom error response in the Load Balancer, the error
+      response. * If Response Headers have been delivered, then the HTTP
+      stream to the downstream client will be reset. Default is False.
+    forwardHeaders: Optional. List of HTTP headers (from the client or
+      backend) to forward to the Extension. If omitted, all headers will be
+      sent.
+    name: Required. The name for this extension. The name will be logged as
+      part of HTTP request logs.
+    service: Required. The reference to the service that will run the
+      extension. Must be a reference to a Backend Service (https://cloud.googl
+      e.com/compute/docs/reference/rest/v1/backendServices).
+    supportedEvents: Required. A set of events during request or response
+      processing for which this extension should be called. Note that usage of
+      this field is only allowed for LbTrafficExtension resource.
+    timeout: Required. Specifies the timeout for each individual message on
+      the stream. The timeout must be between 10-1000 milliseconds.
+  """
+
+  class SupportedEventsValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedEventsValueListEntryValuesEnum enum type.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: Unspecified value. Do not use.
+      REQUEST_HEADERS: If included in 'supported_events', the extension will
+        be called when HTTP request headers arrive.
+      REQUEST_BODY: If included in 'supported_events', the extension will be
+        called when HTTP request body arrives.
+      RESPONSE_HEADERS: If included in 'supported_events', the extension will
+        be called when HTTP response headers arrive.
+      RESPONSE_BODY: If included in 'supported_events', the extension will be
+        called when HTTP response body arrives.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    REQUEST_HEADERS = 1
+    REQUEST_BODY = 2
+    RESPONSE_HEADERS = 3
+    RESPONSE_BODY = 4
+
+  authority = _messages.StringField(1)
+  failOpen = _messages.BooleanField(2)
+  forwardHeaders = _messages.StringField(3, repeated=True)
+  name = _messages.StringField(4)
+  service = _messages.StringField(5)
+  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 6, repeated=True)
+  timeout = _messages.StringField(7)
+
+
+class ExtensionChainMatchCondition(_messages.Message):
+  r"""Conditions under which this chain should be invoked for a request.
+
+  Fields:
+    celExpression: Required. A Common Expression Language expression that is
+      used to match requests for which the extension chain should be executed.
+  """
+
+  celExpression = _messages.StringField(1)
+
+
 class Gateway(_messages.Message):
   r"""Gateway represents the configuration for a proxy, typically a load
   balancer. It captures the ip:port over which the services are exposed by the
@@ -1270,20 +1364,20 @@ class GrpcRoute(_messages.Message):
       this route describes traffic. Format: [:] Hostname is the fully
       qualified domain name of a network host. This matches the RFC 1123
       definition of a hostname with 2 notable exceptions: - IPs are not
-      allowed. - A hostname may be prefixed with a wildcard label (*.). The
+      allowed. - A hostname may be prefixed with a wildcard label (`*.`). The
       wildcard label must appear by itself as the first label. Hostname can be
       "precise" which is a domain name without the terminating dot of a
-      network host (e.g. "foo.example.com") or "wildcard", which is a domain
-      name prefixed with a single wildcard label (e.g. *.example.com). Note
+      network host (e.g. `foo.example.com`) or "wildcard", which is a domain
+      name prefixed with a single wildcard label (e.g. `*.example.com`). Note
       that as per RFC1035 and RFC1123, a label must consist of lower case
       alphanumeric characters or '-', and must start and end with an
       alphanumeric character. No other punctuation is allowed. The routes
       associated with a Mesh or Gateway must have unique hostnames. If you
       attempt to attach multiple routes with conflicting hostnames, the
       configuration will be rejected. For example, while it is acceptable for
-      routes for the hostnames "*.foo.bar.com" and "*.bar.com" to be
+      routes for the hostnames `*.foo.bar.com` and `*.bar.com` to be
       associated with the same route, it is not possible to associate two
-      routes both with "*.bar.com" or both with "bar.com". If a port is
+      routes both with `*.bar.com` or both with `bar.com`. If a port is
       specified, then gRPC clients must use the channel URI with the port to
       match this rule (i.e. "xds:///service:123"), otherwise they must supply
       the URI without a port (i.e. "xds:///service").
@@ -1781,21 +1875,21 @@ class HttpRoute(_messages.Message):
       against the HTTP host header to select a HttpRoute to process the
       request. Hostname is the fully qualified domain name of a network host,
       as defined by RFC 1123 with the exception that: - IPs are not allowed. -
-      A hostname may be prefixed with a wildcard label (*.). The wildcard
+      A hostname may be prefixed with a wildcard label (`*.`). The wildcard
       label must appear by itself as the first label. Hostname can be
       "precise" which is a domain name without the terminating dot of a
-      network host (e.g. "foo.example.com") or "wildcard", which is a domain
-      name prefixed with a single wildcard label (e.g. *.example.com). Note
+      network host (e.g. `foo.example.com`) or "wildcard", which is a domain
+      name prefixed with a single wildcard label (e.g. `*.example.com`). Note
       that as per RFC1035 and RFC1123, a label must consist of lower case
       alphanumeric characters or '-', and must start and end with an
       alphanumeric character. No other punctuation is allowed. The routes
       associated with a Mesh or Gateways must have unique hostnames. If you
       attempt to attach multiple routes with conflicting hostnames, the
       configuration will be rejected. For example, while it is acceptable for
-      routes for the hostnames "*.foo.bar.com" and "*.bar.com" to be
+      routes for the hostnames `*.foo.bar.com` and `*.bar.com` to be
       associated with the same Mesh (or Gateways under the same scope), it is
-      not possible to associate two routes both with "*.bar.com" or both with
-      "bar.com".
+      not possible to associate two routes both with `*.bar.com` or both with
+      `bar.com`.
     labels: Optional. Set of label tags associated with the HttpRoute
       resource.
     meshes: Optional. Meshes defines a list of meshes this HttpRoute is
@@ -2337,6 +2431,142 @@ class InvalidateCacheResponse(_messages.Message):
   r"""The response used by the `InvalidateCache` method."""
 
 
+class LbRouteExtension(_messages.Message):
+  r"""Message describing LbRouteExtension object
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      LbRouteExtension resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    extensionChains: Required. A set of ordered extension chains that contain
+      the match conditions and extensions that will be executed. Match
+      conditions for each extension chain are evaluated in sequence for a
+      given request. The first extension chain that has a condition that
+      matches the request will execute. Any subsequent extension chains will
+      not execute.
+    forwardingRules: Optional. A list of references to the Forwarding Rules to
+      which this service extension will attach to in format:
+      projects/{project}/global/forwardingRules/{forwarding_rule} or
+      projects/{project}/regions/{region}/forwardingRules/{forwarding_rule}.
+      At least one of the forwarding rules and gateways is required. There can
+      be only one LBRouteExtension resource per Forwarding Rule.
+    gateways: Optional. A list of references to the Gateways to which this
+      service extension will attach to in format:
+      projects/{project}/locations/{location}/gateways/{gateway}. At least one
+      of the forwarding rules and gateways is required. There can be only one
+      LBRouteExtension resource per Gateway.
+    labels: Optional. Set of label tags associated with the LbRouteExtension
+      resource.
+    name: Required. Name of the LbRouteExtension resource. It matches pattern
+      `projects/{project}/locations/{location}/lbRouteExtensions/{lb_route_ext
+      ension}`.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the LbRouteExtension
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  extensionChains = _messages.MessageField('ExtensionChain', 2, repeated=True)
+  forwardingRules = _messages.StringField(3, repeated=True)
+  gateways = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class LbTrafficExtension(_messages.Message):
+  r"""Message describing LbTrafficExtension object
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      LbTrafficExtension resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    extensionChains: Required. A set of ordered extension chains that contain
+      the match conditions and extensions that will be executed. Match
+      conditions for each extension chain are evaluated in sequence for a
+      given request. The first extension chain that has a condition that
+      matches the request will execute. Any subsequent extension chains will
+      not execute.
+    forwardingRules: Optional. A list of references to the Forwarding Rules to
+      which this service extension will attach to in format:
+      projects/{project}/global/forwardingRules/{forwarding_rule} or
+      projects/{project}/regions/{region}/forwardingRules/{forwarding_rule}.
+      At least one of the forwarding rules and gateways is required. There can
+      be only one LBTrafficExtension resource per Forwarding Rule.
+    gateways: Optional. A list of references to the Gateways to which this
+      service extension will attach to in format:
+      projects/{project}/locations/{location}/gateways/{gateway}. At least one
+      of the forwarding rules and gateways is required. There can be only one
+      LBTrafficExtension resource per Gateway.
+    labels: Optional. Set of label tags associated with the LbTrafficExtension
+      resource.
+    name: Required. Name of the LbTrafficExtension resource. It matches
+      pattern `projects/{project}/locations/{location}/lbTrafficExtensions/{lb
+      _traffic_extension}`.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the LbTrafficExtension
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  extensionChains = _messages.MessageField('ExtensionChain', 2, repeated=True)
+  forwardingRules = _messages.StringField(3, repeated=True)
+  gateways = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
 class ListEdgeCacheKeysetsResponse(_messages.Message):
   r"""The response returned by the `ListEdgeCacheKeysets` method.
 
@@ -2406,10 +2636,12 @@ class ListGatewaysResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Locations that could not be reached.
   """
 
   gateways = _messages.MessageField('Gateway', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListGrpcRoutesResponse(_messages.Message):
@@ -2455,6 +2687,36 @@ class ListHttpRoutesResponse(_messages.Message):
 
   httpRoutes = _messages.MessageField('HttpRoute', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListLbRouteExtensionsResponse(_messages.Message):
+  r"""Message for response to listing LbRouteExtensions
+
+  Fields:
+    lbRouteExtensions: The list of LbRouteExtension
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  lbRouteExtensions = _messages.MessageField('LbRouteExtension', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListLbTrafficExtensionsResponse(_messages.Message):
+  r"""Message for response to listing LbTrafficExtensions
+
+  Fields:
+    lbTrafficExtensions: The list of LbTrafficExtension
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  lbTrafficExtensions = _messages.MessageField('LbTrafficExtension', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -2619,7 +2881,7 @@ class ListWasmPluginsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -2776,7 +3038,7 @@ class Mesh(_messages.Message):
       instructs the SIDECAR proxy to listen on the specified port of localhost
       (127.0.0.1) address. The SIDECAR proxy will expect all traffic to be
       redirected to this port regardless of its actual ip:port destination. If
-      unset, a port '15001' is used as the interception port. This will is
+      unset, a port '15001' is used as the interception port. This is
       applicable only for sidecar proxy deployments.
     labels: Optional. Set of label tags associated with the Mesh resource.
     name: Required. Name of the Mesh resource. It matches pattern
@@ -4182,6 +4444,235 @@ class NetworkservicesProjectsLocationsHttpRoutesTestIamPermissionsRequest(_messa
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest object.
+
+  Fields:
+    lbRouteExtension: A LbRouteExtension resource to be passed as the request
+      body.
+    lbRouteExtensionId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and lb_route_extension_id
+      from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  lbRouteExtension = _messages.MessageField('LbRouteExtension', 1)
+  lbRouteExtensionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsLbRouteExtensionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsLbRouteExtensionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListLbRouteExtensionsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest object.
+
+  Fields:
+    lbRouteExtension: A LbRouteExtension resource to be passed as the request
+      body.
+    name: Required. Name of the LbRouteExtension resource. It matches pattern
+      `projects/{project}/locations/{location}/lbRouteExtensions/{lb_route_ext
+      ension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the LbRouteExtension resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  lbRouteExtension = _messages.MessageField('LbRouteExtension', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsLbTrafficExtensionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbTrafficExtensionsCreateRequest
+  object.
+
+  Fields:
+    lbTrafficExtension: A LbTrafficExtension resource to be passed as the
+      request body.
+    lbTrafficExtensionId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and lb_traffic_extension_id
+      from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  lbTrafficExtension = _messages.MessageField('LbTrafficExtension', 1)
+  lbTrafficExtensionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsLbTrafficExtensionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbTrafficExtensionsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsLbTrafficExtensionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbTrafficExtensionsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsLbTrafficExtensionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbTrafficExtensionsListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListLbTrafficExtensionsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest
+  object.
+
+  Fields:
+    lbTrafficExtension: A LbTrafficExtension resource to be passed as the
+      request body.
+    name: Required. Name of the LbTrafficExtension resource. It matches
+      pattern `projects/{project}/locations/{location}/lbTrafficExtensions/{lb
+      _traffic_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the LbTrafficExtension resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  lbTrafficExtension = _messages.MessageField('LbTrafficExtension', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworkservicesProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsListRequest object.
 
@@ -4319,315 +4810,6 @@ class NetworkservicesProjectsLocationsMeshesSetIamPolicyRequest(_messages.Messag
 
 class NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetIamPol
-  icyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkservicesProjectsLocationsMulticastConsumerAssociationsSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastConsumerAssociationsSetIamPol
-  icyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastConsumerAssociationsTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastConsumerAssociationsTestIamPe
-  rmissionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastDomainActivationsGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsGetIamPolicy
-  Request object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkservicesProjectsLocationsMulticastDomainActivationsSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsSetIamPolicy
-  Request object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastDomainActivationsTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsTestIamPermi
-  ssionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastDomainsGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastDomainsGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkservicesProjectsLocationsMulticastDomainsSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastDomainsSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastDomainsTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsMulticastDomainsTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetIamPolicyRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkservicesProjectsLocationsMulticastGroupDefinitionsSetIamPolicyRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsMulticastGroupDefinitionsSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastGroupDefinitionsTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsTestIamPermis
-  sionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastGroupsGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastGroupsGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkservicesProjectsLocationsMulticastGroupsSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastGroupsSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastGroupsTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsMulticastGroupsTestIamPermissionsRequest
   object.
 
   Fields:
@@ -6143,7 +6325,7 @@ class ServiceLbPolicy(_messages.Message):
   Enums:
     LoadBalancingAlgorithmValueValuesEnum: Optional. The type of load
       balancing algorithm to be used. The default behavior is
-      BALANCE_OVER_REGION.
+      WATERFALL_BY_REGION.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the
@@ -6158,39 +6340,35 @@ class ServiceLbPolicy(_messages.Message):
     labels: Optional. Set of label tags associated with the ServiceLbPolicy
       resource.
     loadBalancingAlgorithm: Optional. The type of load balancing algorithm to
-      be used. The default behavior is BALANCE_OVER_REGION.
+      be used. The default behavior is WATERFALL_BY_REGION.
     name: Required. Name of the ServiceLbPolicy resource. It matches pattern `
       projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
       licy_name}`.
-    primaryBackends: Optional. primary_backends defines the list of backends
-      which are part of the Backend Service this ServiceLbPolicy is associated
-      with. Each primary backend should be a URL which points to either an IG
-      or NEG. e.g. 'projects/{project}/regions/{region}/instanceGroups/{ig-
-      name}' 'projects/{project}/global/networkEndpointGroups/{neg-name}'
-      'projects/{project}/regions/{region}/networkEndpointGroups/{neg-name}'
-    reduceSpikeOverload: Optional. Option to specify if traffic from each
-      client should be spread to all the IGs/NEGs in the region. NOTE: This
-      option and behavior are incompatible with
-      load_balancing_algorithm=NEAREST_ZONE_FIRST.
     updateTime: Output only. The timestamp when this resource was last
       updated.
   """
 
   class LoadBalancingAlgorithmValueValuesEnum(_messages.Enum):
     r"""Optional. The type of load balancing algorithm to be used. The default
-    behavior is BALANCE_OVER_REGION.
+    behavior is WATERFALL_BY_REGION.
 
     Values:
       LOAD_BALANCING_ALGORITHM_UNSPECIFIED: The type of the loadbalancing
         algorithm is unspecified.
-      BALANCE_OVER_REGION: Direct traffic to the nearest region with endpoints
-        and capacity before spilling over to other regions.
-      NEAREST_ZONE_FIRST: Attempt to keep traffic in a single zone closest to
+      SPRAY_TO_REGION: Direct traffic to the nearest region with endpoints and
+        capacity before spilling over to other regions and spread the traffic
+        from each client to all the MIGs/NEGs in a region.
+      WATERFALL_BY_REGION: Direct traffic to the nearest region with endpoints
+        and capacity before spilling over to other regions. All MIGs/NEGs
+        within a region are evenly loaded but each client might not spread the
+        traffic to all the MIGs/NEGs in the region.
+      WATERFALL_BY_ZONE: Attempt to keep traffic in a single zone closest to
         the client, before spilling over to other zones.
     """
     LOAD_BALANCING_ALGORITHM_UNSPECIFIED = 0
-    BALANCE_OVER_REGION = 1
-    NEAREST_ZONE_FIRST = 2
+    SPRAY_TO_REGION = 1
+    WATERFALL_BY_REGION = 2
+    WATERFALL_BY_ZONE = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -6223,9 +6401,7 @@ class ServiceLbPolicy(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   loadBalancingAlgorithm = _messages.EnumField('LoadBalancingAlgorithmValueValuesEnum', 5)
   name = _messages.StringField(6)
-  primaryBackends = _messages.StringField(7, repeated=True)
-  reduceSpikeOverload = _messages.BooleanField(8)
-  updateTime = _messages.StringField(9)
+  updateTime = _messages.StringField(7)
 
 
 class ServiceLbPolicyAutoCapacityDrain(_messages.Message):
@@ -6514,10 +6690,12 @@ class TcpRouteRouteAction(_messages.Message):
 
   Fields:
     destinations: Optional. The destination services to which traffic should
-      be forwarded. At least one destination service is required.
+      be forwarded. At least one destination service is required. Only one of
+      route destination or original destination can be set.
     originalDestination: Optional. If true, Router will use the destination IP
       and port of the original connection as the destination of the request.
-      Default is false.
+      Default is false. Only one of route destinations or original destination
+      can be set.
   """
 
   destinations = _messages.MessageField('TcpRouteRouteDestination', 1, repeated=True)
@@ -6719,11 +6897,11 @@ class TlsRouteRouteMatch(_messages.Message):
       against. Examples: "http/1.1", "h2". At least one of sni_host and alpn
       is required. Up to 5 alpns across all matches can be set.
     sniHost: Optional. SNI (server name indicator) to match against. SNI will
-      be matched against all wildcard domains, i.e. www.example.com will be
-      first matched against www.example.com, then *.example.com, then *.com.
-      Partial wildcards are not supported, and values like *w.example.com are
-      invalid. At least one of sni_host and alpn is required. Up to 5 sni
-      hosts across all matches can be set.
+      be matched against all wildcard domains, i.e. `www.example.com` will be
+      first matched against `www.example.com`, then `*.example.com`, then
+      `*.com.` Partial wildcards are not supported, and values like
+      *w.example.com are invalid. At least one of sni_host and alpn is
+      required. Up to 5 sni hosts across all matches can be set.
   """
 
   alpn = _messages.StringField(1, repeated=True)
@@ -7001,36 +7179,43 @@ class WasmPluginLogConfig(_messages.Message):
   WasmPlugin. If logging is enabled, logs will be exported to Cloud Logging.
 
   Enums:
-    MinLogLevelValueValuesEnum: Optional. Specificies the lowest level of the
-      logs which should be exported to Cloud Logging. This setting relates to
-      the logs generated by using logging statements in your Wasm code. This
-      field is can only be set if logging is enabled for the WasmPlugin.
+    MinLogLevelValueValuesEnum: Non-empty default. Specificies the lowest
+      level of the logs which should be exported to Cloud Logging. This
+      setting relates to the logs generated by using logging statements in
+      your Wasm code. This field is can only be set if logging is enabled for
+      the WasmPlugin. If the field is not provided when logging is enabled it
+      is set to INFO by default.
 
   Fields:
     enable: Optional. Specifies whether to enable logging for activity by this
       WasmPlugin. Defaults to false.
-    minLogLevel: Optional. Specificies the lowest level of the logs which
-      should be exported to Cloud Logging. This setting relates to the logs
-      generated by using logging statements in your Wasm code. This field is
-      can only be set if logging is enabled for the WasmPlugin.
-    sampleRate: Optional. Configures the sampling rate of activity logs, where
-      1.0 means all logged activity is reported and 0.0 means no activity is
-      reported. The default value is 1.0, and the value of the field must be
-      in [0, 1]. The setting relates to logs generated in your Wasm code. Note
-      that for the logs generated on the http request/response path the sample
-      rate is multiplied by the sample rate configured in the Media CDN
-      service using this Wasm plugin. For example: - 0.5 of http requests is
-      logged because of the setting on Media CDN service - among those
-      requests 0.5 of logs is exported due to the setting on Wasm plugin -
-      effectively 0.25 of logs on http request/response paths is exported This
-      field can only be specified if logging is enabled for this WasmPlugin.
+    minLogLevel: Non-empty default. Specificies the lowest level of the logs
+      which should be exported to Cloud Logging. This setting relates to the
+      logs generated by using logging statements in your Wasm code. This field
+      is can only be set if logging is enabled for the WasmPlugin. If the
+      field is not provided when logging is enabled it is set to INFO by
+      default.
+    sampleRate: Non-empty default. Configures the sampling rate of activity
+      logs, where 1.0 means all logged activity is reported and 0.0 means no
+      activity is reported. The default value is 1.0, and the value of the
+      field must be in [0, 1]. The setting relates to logs generated in your
+      Wasm code. Note that for the logs generated on the http request/response
+      path the sample rate is multiplied by the sample rate configured in the
+      Media CDN service using this Wasm plugin. For example: - 0.5 of http
+      requests is logged because of the setting on Media CDN service - among
+      those requests 0.5 of logs is exported due to the setting on Wasm plugin
+      - effectively 0.25 of logs on http request/response paths is exported
+      This field can only be specified if logging is enabled for this
+      WasmPlugin. If the field is not provided when logging is enabled it is
+      set to 1 by default.
   """
 
   class MinLogLevelValueValuesEnum(_messages.Enum):
-    r"""Optional. Specificies the lowest level of the logs which should be
-    exported to Cloud Logging. This setting relates to the logs generated by
-    using logging statements in your Wasm code. This field is can only be set
-    if logging is enabled for the WasmPlugin.
+    r"""Non-empty default. Specificies the lowest level of the logs which
+    should be exported to Cloud Logging. This setting relates to the logs
+    generated by using logging statements in your Wasm code. This field is can
+    only be set if logging is enabled for the WasmPlugin. If the field is not
+    provided when logging is enabled it is set to INFO by default.
 
     Values:
       LOG_LEVEL_UNSPECIFIED: Default value. Should not be used.

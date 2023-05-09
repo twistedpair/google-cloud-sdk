@@ -42,7 +42,6 @@ class ContaineranalysisV1(base_api.BaseApiClient):
     self.projects_notes_occurrences = self.ProjectsNotesOccurrencesService(self)
     self.projects_notes = self.ProjectsNotesService(self)
     self.projects_occurrences = self.ProjectsOccurrencesService(self)
-    self.projects_resources = self.ProjectsResourcesService(self)
     self.projects = self.ProjectsService(self)
 
   class ProjectsNotesOccurrencesService(base_api.BaseApiService):
@@ -639,43 +638,6 @@ class ContaineranalysisV1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsResourcesService(base_api.BaseApiService):
-    """Service class for the projects_resources resource."""
-
-    _NAME = 'projects_resources'
-
-    def __init__(self, client):
-      super(ContaineranalysisV1.ProjectsResourcesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GeneratePackagesSummary(self, request, global_params=None):
-      r"""Gets a summary of the packages within a given resource.
-
-      Args:
-        request: (ContaineranalysisProjectsResourcesGeneratePackagesSummaryRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (PackagesSummaryResponse) The response message.
-      """
-      config = self.GetMethodConfig('GeneratePackagesSummary')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GeneratePackagesSummary.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/resources/{resourcesId}:generatePackagesSummary',
-        http_method='POST',
-        method_id='containeranalysis.projects.resources.generatePackagesSummary',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:generatePackagesSummary',
-        request_field='generatePackagesSummaryRequest',
-        request_type_name='ContaineranalysisProjectsResourcesGeneratePackagesSummaryRequest',
-        response_type_name='PackagesSummaryResponse',
         supports_download=False,
     )
 

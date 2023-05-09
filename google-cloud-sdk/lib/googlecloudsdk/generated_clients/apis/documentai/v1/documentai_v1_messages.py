@@ -30,9 +30,8 @@ class DocumentaiProjectsLocationsFetchProcessorTypesRequest(_messages.Message):
   r"""A DocumentaiProjectsLocationsFetchProcessorTypesRequest object.
 
   Fields:
-    parent: Required. The project of processor type to list. The available
-      processor types may depend on the allow-listing on projects. Format:
-      `projects/{project}/locations/{location}`
+    parent: Required. The location of processor types to list. Format:
+      `projects/{project}/locations/{location}`.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -119,13 +118,12 @@ class DocumentaiProjectsLocationsProcessorTypesListRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of processor types to return. If unspecified,
-      at most 100 processor types will be returned. The maximum value is 500;
-      values above 500 will be coerced to 500.
+      at most `100` processor types will be returned. The maximum value is
+      `500`. Values above `500` will be coerced to `500`.
     pageToken: Used to retrieve the next page of results, empty if at the end
       of the list.
-    parent: Required. The location of processor type to list. The available
-      processor types may depend on the allow-listing on projects. Format:
-      `projects/{project}/locations/{location}`
+    parent: Required. The location of processor types to list. Format:
+      `projects/{project}/locations/{location}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -235,8 +233,8 @@ class DocumentaiProjectsLocationsProcessorsListRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of processors to return. If unspecified, at
-      most 50 processors will be returned. The maximum value is 100; values
-      above 100 will be coerced to 100.
+      most `50` processors will be returned. The maximum value is `100`.
+      Values above `100` will be coerced to `100`.
     pageToken: We will return the processors sorted by creation time. The page
       token will point to the next processor.
     parent: Required. The parent (project and location) which owns this
@@ -351,9 +349,9 @@ class DocumentaiProjectsLocationsProcessorsProcessorVersionsEvaluationsListReque
   object.
 
   Fields:
-    pageSize: The standard list page size. If unspecified, at most 5
-      evaluations will be returned. The maximum value is 100; values above 100
-      will be coerced to 100.
+    pageSize: The standard list page size. If unspecified, at most `5`
+      evaluations are returned. The maximum value is `100`. Values above `100`
+      are coerced to `100`.
     pageToken: A page token, received from a previous `ListEvaluations` call.
       Provide this to retrieve the subsequent page.
     parent: Required. The resource name of the ProcessorVersion to list
@@ -383,8 +381,8 @@ class DocumentaiProjectsLocationsProcessorsProcessorVersionsListRequest(_message
 
   Fields:
     pageSize: The maximum number of processor versions to return. If
-      unspecified, at most 10 processor versions will be returned. The maximum
-      value is 20; values above 20 will be coerced to 20.
+      unspecified, at most `10` processor versions will be returned. The
+      maximum value is `20`. Values above `20` will be coerced to `20`.
     pageToken: We will return the processor versions sorted by creation time.
       The page token will point to the next processor version.
     parent: Required. The parent (project, location and processor) to list all
@@ -649,71 +647,73 @@ class GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata(_messages.Message):
 
 
 class GoogleCloudDocumentaiUiv1beta3CreateLabelerPoolOperationMetadata(_messages.Message):
-  r"""The long running operation metadata for CreateLabelerPool.
+  r"""The long-running operation metadata for the CreateLabelerPool method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiUiv1beta3DeleteLabelerPoolOperationMetadata(_messages.Message):
-  r"""The long running operation metadata for DeleteLabelerPool.
+  r"""The long-running operation metadata for DeleteLabelerPool.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiUiv1beta3DeleteProcessorMetadata(_messages.Message):
-  r"""The long running operation metadata for delete processor method.
+  r"""The long-running operation metadata for the DeleteProcessor method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiUiv1beta3DeleteProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for delete processor version method.
+  r"""The long-running operation metadata for the DeleteProcessorVersion
+  method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiUiv1beta3DeployProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for deploy processor version method.
+  r"""The long-running operation metadata for the DeployProcessorVersion
+  method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiUiv1beta3DeployProcessorVersionResponse(_messages.Message):
-  r"""Response message for the deploy processor version method."""
+  r"""Response message for the DeployProcessorVersion method."""
 
 
 class GoogleCloudDocumentaiUiv1beta3DisableProcessorMetadata(_messages.Message):
-  r"""The long running operation metadata for disable processor method.
+  r"""The long-running operation metadata for the DisableProcessor method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiUiv1beta3DisableProcessorResponse(_messages.Message):
-  r"""Response message for the disable processor method. Intentionally empty
+  r"""Response message for the DisableProcessor method. Intentionally empty
   proto for adding fields in future.
   """
 
@@ -747,17 +747,17 @@ class GoogleCloudDocumentaiUiv1beta3DocumentIdGCSManagedDocumentId(_messages.Mes
 
 
 class GoogleCloudDocumentaiUiv1beta3EnableProcessorMetadata(_messages.Message):
-  r"""The long running operation metadata for enable processor method.
+  r"""The long-running operation metadata for the EnableProcessor method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiUiv1beta3EnableProcessorResponse(_messages.Message):
-  r"""Response message for the enable processor method. Intentionally empty
+  r"""Response message for the EnableProcessor method. Intentionally empty
   proto for adding fields in future.
   """
 
@@ -767,14 +767,14 @@ class GoogleCloudDocumentaiUiv1beta3EvaluateProcessorVersionMetadata(_messages.M
   r"""Metadata of the EvaluateProcessorVersion method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiUiv1beta3EvaluateProcessorVersionResponse(_messages.Message):
-  r"""Metadata of the EvaluateProcessorVersion method.
+  r"""Response of the EvaluateProcessorVersion method.
 
   Fields:
     evaluation: The resource name of the created evaluation.
@@ -920,11 +920,11 @@ class GoogleCloudDocumentaiUiv1beta3ImportDocumentsResponse(_messages.Message):
 
 
 class GoogleCloudDocumentaiUiv1beta3ImportProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for the ImportProcessorVersion
+  r"""The long-running operation metadata for the ImportProcessorVersion
   method.
 
   Fields:
-    commonMetadata: The basic metadata for the long running operation.
+    commonMetadata: The basic metadata for the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
@@ -1062,25 +1062,25 @@ class GoogleCloudDocumentaiUiv1beta3RevisionRef(_messages.Message):
 
 
 class GoogleCloudDocumentaiUiv1beta3SetDefaultProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for set default processor version
+  r"""The long-running operation metadata for the SetDefaultProcessorVersion
   method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiUiv1beta3SetDefaultProcessorVersionResponse(_messages.Message):
-  r"""Response message for set default processor version method."""
+  r"""Response message for the SetDefaultProcessorVersion method."""
 
 
 class GoogleCloudDocumentaiUiv1beta3TrainProcessorVersionMetadata(_messages.Message):
   r"""The metadata that represents a processor version being created.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
     testDatasetValidation: The test dataset validation information.
     trainingDatasetValidation: The training dataset validation information.
   """
@@ -1112,7 +1112,7 @@ class GoogleCloudDocumentaiUiv1beta3TrainProcessorVersionMetadataDatasetValidati
 
 
 class GoogleCloudDocumentaiUiv1beta3TrainProcessorVersionResponse(_messages.Message):
-  r"""The response for the TrainProcessorVersion method.
+  r"""The response for TrainProcessorVersion.
 
   Fields:
     processorVersion: The resource name of the processor version produced by
@@ -1123,18 +1123,18 @@ class GoogleCloudDocumentaiUiv1beta3TrainProcessorVersionResponse(_messages.Mess
 
 
 class GoogleCloudDocumentaiUiv1beta3UndeployProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for the undeploy processor version
+  r"""The long-running operation metadata for the UndeployProcessorVersion
   method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiUiv1beta3UndeployProcessorVersionResponse(_messages.Message):
-  r"""Response message for the undeploy processor version method."""
+  r"""Response message for the UndeployProcessorVersion method."""
 
 
 class GoogleCloudDocumentaiUiv1beta3UpdateDatasetOperationMetadata(_messages.Message):
@@ -1148,21 +1148,21 @@ class GoogleCloudDocumentaiUiv1beta3UpdateDatasetOperationMetadata(_messages.Mes
 
 
 class GoogleCloudDocumentaiUiv1beta3UpdateHumanReviewConfigMetadata(_messages.Message):
-  r"""The long running operation metadata for updating the human review
+  r"""The long-running operation metadata for updating the human review
   configuration.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiUiv1beta3UpdateLabelerPoolOperationMetadata(_messages.Message):
-  r"""The long running operation metadata for UpdateLabelerPool.
+  r"""The long-running operation metadata for UpdateLabelerPool.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
@@ -1210,7 +1210,7 @@ class GoogleCloudDocumentaiV1BatchDocumentsInputConfig(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1BatchProcessMetadata(_messages.Message):
-  r"""The long running operation metadata for batch process method.
+  r"""The long-running operation metadata for BatchProcessDocuments.
 
   Enums:
     StateValueValuesEnum: The state of the current batch processing.
@@ -1257,13 +1257,11 @@ class GoogleCloudDocumentaiV1BatchProcessMetadataIndividualProcessStatus(_messag
 
   Fields:
     humanReviewStatus: The status of human review on the processed document.
-    inputGcsSource: The source of the document, same as the [input_gcs_source]
-      field in the request when the batch process started. The batch process
-      is started by take snapshot of that document, since a user can move or
-      change that document during the process.
-    outputGcsDestination: The output_gcs_destination (in the request as
-      `output_gcs_destination`) of the processed document if it was
-      successful, otherwise empty.
+    inputGcsSource: The source of the document, same as the input_gcs_source
+      field in the request when the batch process started.
+    outputGcsDestination: The Cloud Storage output destination (in the request
+      as DocumentOutputConfig.GcsOutputConfig.gcs_uri) of the processed
+      document if it was successful, otherwise empty.
     status: The status processing the document.
   """
 
@@ -1274,11 +1272,12 @@ class GoogleCloudDocumentaiV1BatchProcessMetadataIndividualProcessStatus(_messag
 
 
 class GoogleCloudDocumentaiV1BatchProcessRequest(_messages.Message):
-  r"""Request message for batch process document method.
+  r"""Request message for BatchProcessDocuments.
 
   Fields:
-    documentOutputConfig: The overall output config for batch process.
-    inputDocuments: The input documents for batch process.
+    documentOutputConfig: The output configuration for the
+      BatchProcessDocuments method.
+    inputDocuments: The input documents for the BatchProcessDocuments method.
     skipHumanReview: Whether Human Review feature should be skipped for this
       request. Default to false.
   """
@@ -1289,7 +1288,7 @@ class GoogleCloudDocumentaiV1BatchProcessRequest(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1BatchProcessResponse(_messages.Message):
-  r"""Response message for batch process document method."""
+  r"""Response message for BatchProcessDocuments."""
 
 
 class GoogleCloudDocumentaiV1BoundingPoly(_messages.Message):
@@ -1345,59 +1344,61 @@ class GoogleCloudDocumentaiV1CommonOperationMetadata(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1DeleteProcessorMetadata(_messages.Message):
-  r"""The long running operation metadata for delete processor method.
+  r"""The long-running operation metadata for the DeleteProcessor method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1DeleteProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for delete processor version method.
+  r"""The long-running operation metadata for the DeleteProcessorVersion
+  method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1DeployProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for deploy processor version method.
+  r"""The long-running operation metadata for the DeployProcessorVersion
+  method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1DeployProcessorVersionRequest(_messages.Message):
-  r"""Request message for the deploy processor version method."""
+  r"""Request message for the DeployProcessorVersion method."""
 
 
 class GoogleCloudDocumentaiV1DeployProcessorVersionResponse(_messages.Message):
-  r"""Response message for the deploy processor version method."""
+  r"""Response message for the DeployProcessorVersion method."""
 
 
 class GoogleCloudDocumentaiV1DisableProcessorMetadata(_messages.Message):
-  r"""The long running operation metadata for disable processor method.
+  r"""The long-running operation metadata for the DisableProcessor method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1DisableProcessorRequest(_messages.Message):
-  r"""Request message for the disable processor method."""
+  r"""Request message for the DisableProcessor method."""
 
 
 class GoogleCloudDocumentaiV1DisableProcessorResponse(_messages.Message):
-  r"""Response message for the disable processor method. Intentionally empty
+  r"""Response message for the DisableProcessor method. Intentionally empty
   proto for adding fields in future.
   """
 
@@ -1432,10 +1433,9 @@ class GoogleCloudDocumentaiV1Document(_messages.Message):
       other.
     textStyles: Styles for the Document.text.
     uri: Optional. Currently supports Google Cloud Storage URI of the form
-      `gs://bucket_name/object_name`. Object versioning is not supported. See
-      [Google Cloud Storage Request
-      URIs](https://cloud.google.com/storage/docs/reference-uris) for more
-      info.
+      `gs://bucket_name/object_name`. Object versioning is not supported. For
+      more information, refer to [Google Cloud Storage Request
+      URIs](https://cloud.google.com/storage/docs/reference-uris).
   """
 
   content = _messages.BytesField(1)
@@ -1986,12 +1986,14 @@ class GoogleCloudDocumentaiV1DocumentPageToken(_messages.Message):
     detectedLanguages: A list of detected languages together with confidence.
     layout: Layout for Token.
     provenance: The history of this annotation.
+    styleInfo: Text style attributes.
   """
 
   detectedBreak = _messages.MessageField('GoogleCloudDocumentaiV1DocumentPageTokenDetectedBreak', 1)
   detectedLanguages = _messages.MessageField('GoogleCloudDocumentaiV1DocumentPageDetectedLanguage', 2, repeated=True)
   layout = _messages.MessageField('GoogleCloudDocumentaiV1DocumentPageLayout', 3)
   provenance = _messages.MessageField('GoogleCloudDocumentaiV1DocumentProvenance', 4)
+  styleInfo = _messages.MessageField('GoogleCloudDocumentaiV1DocumentPageTokenStyleInfo', 5)
 
 
 class GoogleCloudDocumentaiV1DocumentPageTokenDetectedBreak(_messages.Message):
@@ -2020,6 +2022,48 @@ class GoogleCloudDocumentaiV1DocumentPageTokenDetectedBreak(_messages.Message):
     HYPHEN = 3
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
+class GoogleCloudDocumentaiV1DocumentPageTokenStyleInfo(_messages.Message):
+  r"""Font and other text style attributes.
+
+  Fields:
+    backgroundColor: Color of the background.
+    bold: Whether the text is bold (equivalent to font_weight is at least
+      `700`).
+    fontSize: Font size in points (`1` point is `\xb9\u2044\u2087\u2082`
+      inches).
+    fontType: Name or style of the font.
+    fontWeight: TrueType weight on a scale `100` (thin) to `1000` (ultra-
+      heavy). Normal is `400`, bold is `700`.
+    handwritten: Whether the text is handwritten.
+    italic: Whether the text is italic.
+    letterSpacing: Letter spacing in points.
+    pixelFontSize: Font size in pixels, equal to _unrounded font_size_ *
+      _resolution_ \xf7 `72.0`.
+    smallcaps: Whether the text is in small caps.
+    strikeout: Whether the text is strikethrough.
+    subscript: Whether the text is a subscript.
+    superscript: Whether the text is a superscript.
+    textColor: Color of the text.
+    underlined: Whether the text is underlined.
+  """
+
+  backgroundColor = _messages.MessageField('GoogleTypeColor', 1)
+  bold = _messages.BooleanField(2)
+  fontSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  fontType = _messages.StringField(4)
+  fontWeight = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  handwritten = _messages.BooleanField(6)
+  italic = _messages.BooleanField(7)
+  letterSpacing = _messages.FloatField(8)
+  pixelFontSize = _messages.FloatField(9)
+  smallcaps = _messages.BooleanField(10)
+  strikeout = _messages.BooleanField(11)
+  subscript = _messages.BooleanField(12)
+  superscript = _messages.BooleanField(13)
+  textColor = _messages.MessageField('GoogleTypeColor', 14)
+  underlined = _messages.BooleanField(15)
 
 
 class GoogleCloudDocumentaiV1DocumentPageVisualElement(_messages.Message):
@@ -2374,21 +2418,21 @@ class GoogleCloudDocumentaiV1DocumentTextChange(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1EnableProcessorMetadata(_messages.Message):
-  r"""The long running operation metadata for enable processor method.
+  r"""The long-running operation metadata for the EnableProcessor method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1EnableProcessorRequest(_messages.Message):
-  r"""Request message for the enable processor method."""
+  r"""Request message for the EnableProcessor method."""
 
 
 class GoogleCloudDocumentaiV1EnableProcessorResponse(_messages.Message):
-  r"""Response message for the enable processor method. Intentionally empty
+  r"""Response message for the EnableProcessor method. Intentionally empty
   proto for adding fields in future.
   """
 
@@ -2398,7 +2442,7 @@ class GoogleCloudDocumentaiV1EvaluateProcessorVersionMetadata(_messages.Message)
   r"""Metadata of the EvaluateProcessorVersion method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1CommonOperationMetadata', 1)
@@ -2416,7 +2460,7 @@ class GoogleCloudDocumentaiV1EvaluateProcessorVersionRequest(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1EvaluateProcessorVersionResponse(_messages.Message):
-  r"""Metadata of the EvaluateProcessorVersion method.
+  r"""Response of the EvaluateProcessorVersion method.
 
   Fields:
     evaluation: The resource name of the created evaluation.
@@ -2613,7 +2657,7 @@ class GoogleCloudDocumentaiV1EvaluationReference(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1FetchProcessorTypesResponse(_messages.Message):
-  r"""Response message for fetch processor types.
+  r"""Response message for the FetchProcessorTypes method.
 
   Fields:
     processorTypes: The list of processor types.
@@ -2662,9 +2706,9 @@ class GoogleCloudDocumentaiV1HumanReviewStatus(_messages.Message):
 
   Fields:
     humanReviewOperation: The name of the operation triggered by the processed
-      document. This field is populated only when the [state] is
-      [HUMAN_REVIEW_IN_PROGRESS]. It has the same response type and metadata
-      as the long running operation returned by [ReviewDocument] method.
+      document. This field is populated only when the state is
+      `HUMAN_REVIEW_IN_PROGRESS`. It has the same response type and metadata
+      as the long-running operation returned by ReviewDocument.
     state: The state of human review on the processing request.
     stateMessage: A message providing more details about the human review
       state.
@@ -2677,14 +2721,14 @@ class GoogleCloudDocumentaiV1HumanReviewStatus(_messages.Message):
       STATE_UNSPECIFIED: Human review state is unspecified. Most likely due to
         an internal error.
       SKIPPED: Human review is skipped for the document. This can happen
-        because human review is not enabled on the processor or the processing
+        because human review isn't enabled on the processor or the processing
         request has been set to skip this document.
       VALIDATION_PASSED: Human review validation is triggered and passed, so
         no review is needed.
       IN_PROGRESS: Human review validation is triggered and the document is
         under review.
       ERROR: Some error happened during triggering human review, see the
-        [state_message] for details.
+        state_message for details.
     """
     STATE_UNSPECIFIED = 0
     SKIPPED = 1
@@ -2698,7 +2742,7 @@ class GoogleCloudDocumentaiV1HumanReviewStatus(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1ListEvaluationsResponse(_messages.Message):
-  r"""The response from ListEvaluations.
+  r"""The response from `ListEvaluations`.
 
   Fields:
     evaluations: The evaluations requested.
@@ -2711,7 +2755,7 @@ class GoogleCloudDocumentaiV1ListEvaluationsResponse(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1ListProcessorTypesResponse(_messages.Message):
-  r"""Response message for list processor types.
+  r"""Response message for the ListProcessorTypes method.
 
   Fields:
     nextPageToken: Points to the next page, otherwise empty.
@@ -2723,7 +2767,7 @@ class GoogleCloudDocumentaiV1ListProcessorTypesResponse(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1ListProcessorVersionsResponse(_messages.Message):
-  r"""Response message for list processors.
+  r"""Response message for the ListProcessorVersions method.
 
   Fields:
     nextPageToken: Points to the next processor, otherwise empty.
@@ -2735,7 +2779,7 @@ class GoogleCloudDocumentaiV1ListProcessorVersionsResponse(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1ListProcessorsResponse(_messages.Message):
-  r"""Response message for list processors.
+  r"""Response message for the ListProcessors method.
 
   Fields:
     nextPageToken: Points to the next processor, otherwise empty.
@@ -2760,12 +2804,13 @@ class GoogleCloudDocumentaiV1NormalizedVertex(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):
-  r"""Request message for the process document method.
+  r"""Request message for the ProcessDocument method.
 
   Fields:
-    fieldMask: Specifies which fields to include in ProcessResponse's
-      document. Only supports top level document and pages field so it must be
-      in the form of `{document_field_name}` or `pages.{page_field_name}`.
+    fieldMask: Specifies which fields to include in the
+      ProcessResponse.document output. Only supports top-level document and
+      pages field, so it must be in the form of `{document_field_name}` or
+      `pages.{page_field_name}`.
     inlineDocument: An inline document proto.
     rawDocument: A raw document content (bytes).
     skipHumanReview: Whether Human Review feature should be skipped for this
@@ -2779,7 +2824,7 @@ class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1ProcessResponse(_messages.Message):
-  r"""Response message for the process document method.
+  r"""Response message for the ProcessDocument method.
 
   Fields:
     document: The document payload, will populate fields based on the
@@ -2809,8 +2854,8 @@ class GoogleCloudDocumentaiV1Processor(_messages.Message):
     processEndpoint: Output only. Immutable. The http endpoint that can be
       called to invoke processing.
     state: Output only. The state of the processor.
-    type: The processor type, e.g., `OCR_PROCESSOR`, `INVOICE_PROCESSOR`, etc.
-      To get a list of processors types, see FetchProcessorTypes.
+    type: The processor type, such as: `OCR_PROCESSOR`, `INVOICE_PROCESSOR`.
+      To get a list of processor types, see FetchProcessorTypes.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -2873,7 +2918,7 @@ class GoogleCloudDocumentaiV1ProcessorType(_messages.Message):
       `projects/{project}/processorTypes/{processor_type}`
     sampleDocumentUris: A set of Cloud Storage URIs of sample documents for
       this processor.
-    type: The processor type, e.g., `OCR_PROCESSOR`, `INVOICE_PROCESSOR`, etc.
+    type: The processor type, such as: `OCR_PROCESSOR`, `INVOICE_PROCESSOR`.
   """
 
   class LaunchStageValueValuesEnum(_messages.Enum):
@@ -3032,10 +3077,10 @@ class GoogleCloudDocumentaiV1RawDocument(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1ReviewDocumentOperationMetadata(_messages.Message):
-  r"""The long running operation metadata for review document method.
+  r"""The long-running operation metadata for the ReviewDocument method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
     questionId: The Crowd Compute question ID.
   """
 
@@ -3044,7 +3089,7 @@ class GoogleCloudDocumentaiV1ReviewDocumentOperationMetadata(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1ReviewDocumentRequest(_messages.Message):
-  r"""Request message for review document method.
+  r"""Request message for the ReviewDocument method.
 
   Enums:
     PriorityValueValuesEnum: The priority of the human review task.
@@ -3076,7 +3121,7 @@ class GoogleCloudDocumentaiV1ReviewDocumentRequest(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1ReviewDocumentResponse(_messages.Message):
-  r"""Response message for review document method.
+  r"""Response message for the ReviewDocument method.
 
   Enums:
     StateValueValuesEnum: The state of the review operation.
@@ -3107,18 +3152,18 @@ class GoogleCloudDocumentaiV1ReviewDocumentResponse(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1SetDefaultProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for set default processor version
+  r"""The long-running operation metadata for the SetDefaultProcessorVersion
   method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1SetDefaultProcessorVersionRequest(_messages.Message):
-  r"""Request message for the set default processor version method.
+  r"""Request message for the SetDefaultProcessorVersion method.
 
   Fields:
     defaultProcessorVersion: Required. The resource name of child
@@ -3130,14 +3175,14 @@ class GoogleCloudDocumentaiV1SetDefaultProcessorVersionRequest(_messages.Message
 
 
 class GoogleCloudDocumentaiV1SetDefaultProcessorVersionResponse(_messages.Message):
-  r"""Response message for set default processor version method."""
+  r"""Response message for the SetDefaultProcessorVersion method."""
 
 
 class GoogleCloudDocumentaiV1TrainProcessorVersionMetadata(_messages.Message):
   r"""The metadata that represents a processor version being created.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
     testDatasetValidation: The test dataset validation information.
     trainingDatasetValidation: The training dataset validation information.
   """
@@ -3169,7 +3214,7 @@ class GoogleCloudDocumentaiV1TrainProcessorVersionMetadataDatasetValidation(_mes
 
 
 class GoogleCloudDocumentaiV1TrainProcessorVersionRequest(_messages.Message):
-  r"""Request message for the create processor version method.
+  r"""Request message for the TrainProcessorVersion method.
 
   Fields:
     baseProcessorVersion: Optional. The processor version to use as a base for
@@ -3178,7 +3223,7 @@ class GoogleCloudDocumentaiV1TrainProcessorVersionRequest(_messages.Message):
       ersions/{processorVersion}`.
     documentSchema: Optional. The schema the processor version will be trained
       with.
-    inputData: Optional. The input data used to train the `ProcessorVersion`.
+    inputData: Optional. The input data used to train the ProcessorVersion.
     processorVersion: Required. The processor version to be created.
   """
 
@@ -3189,7 +3234,7 @@ class GoogleCloudDocumentaiV1TrainProcessorVersionRequest(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1TrainProcessorVersionRequestInputData(_messages.Message):
-  r"""The input data used to train a new `ProcessorVersion`.
+  r"""The input data used to train a new ProcessorVersion.
 
   Fields:
     testDocuments: The documents used for testing the trained version.
@@ -3201,7 +3246,7 @@ class GoogleCloudDocumentaiV1TrainProcessorVersionRequestInputData(_messages.Mes
 
 
 class GoogleCloudDocumentaiV1TrainProcessorVersionResponse(_messages.Message):
-  r"""The response for the TrainProcessorVersion method.
+  r"""The response for TrainProcessorVersion.
 
   Fields:
     processorVersion: The resource name of the processor version produced by
@@ -3212,22 +3257,22 @@ class GoogleCloudDocumentaiV1TrainProcessorVersionResponse(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1UndeployProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for the undeploy processor version
+  r"""The long-running operation metadata for the UndeployProcessorVersion
   method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1UndeployProcessorVersionRequest(_messages.Message):
-  r"""Request message for the undeploy processor version method."""
+  r"""Request message for the UndeployProcessorVersion method."""
 
 
 class GoogleCloudDocumentaiV1UndeployProcessorVersionResponse(_messages.Message):
-  r"""Response message for the undeploy processor version method."""
+  r"""Response message for the UndeployProcessorVersion method."""
 
 
 class GoogleCloudDocumentaiV1Vertex(_messages.Message):
@@ -3322,10 +3367,9 @@ class GoogleCloudDocumentaiV1beta1Document(_messages.Message):
       other.
     textStyles: Styles for the Document.text.
     uri: Optional. Currently supports Google Cloud Storage URI of the form
-      `gs://bucket_name/object_name`. Object versioning is not supported. See
-      [Google Cloud Storage Request
-      URIs](https://cloud.google.com/storage/docs/reference-uris) for more
-      info.
+      `gs://bucket_name/object_name`. Object versioning is not supported. For
+      more information, refer to [Google Cloud Storage Request
+      URIs](https://cloud.google.com/storage/docs/reference-uris).
   """
 
   content = _messages.BytesField(1)
@@ -3837,12 +3881,14 @@ class GoogleCloudDocumentaiV1beta1DocumentPageToken(_messages.Message):
     detectedLanguages: A list of detected languages together with confidence.
     layout: Layout for Token.
     provenance: The history of this annotation.
+    styleInfo: Text style attributes.
   """
 
   detectedBreak = _messages.MessageField('GoogleCloudDocumentaiV1beta1DocumentPageTokenDetectedBreak', 1)
   detectedLanguages = _messages.MessageField('GoogleCloudDocumentaiV1beta1DocumentPageDetectedLanguage', 2, repeated=True)
   layout = _messages.MessageField('GoogleCloudDocumentaiV1beta1DocumentPageLayout', 3)
   provenance = _messages.MessageField('GoogleCloudDocumentaiV1beta1DocumentProvenance', 4)
+  styleInfo = _messages.MessageField('GoogleCloudDocumentaiV1beta1DocumentPageTokenStyleInfo', 5)
 
 
 class GoogleCloudDocumentaiV1beta1DocumentPageTokenDetectedBreak(_messages.Message):
@@ -3871,6 +3917,48 @@ class GoogleCloudDocumentaiV1beta1DocumentPageTokenDetectedBreak(_messages.Messa
     HYPHEN = 3
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
+class GoogleCloudDocumentaiV1beta1DocumentPageTokenStyleInfo(_messages.Message):
+  r"""Font and other text style attributes.
+
+  Fields:
+    backgroundColor: Color of the background.
+    bold: Whether the text is bold (equivalent to font_weight is at least
+      `700`).
+    fontSize: Font size in points (`1` point is `\xb9\u2044\u2087\u2082`
+      inches).
+    fontType: Name or style of the font.
+    fontWeight: TrueType weight on a scale `100` (thin) to `1000` (ultra-
+      heavy). Normal is `400`, bold is `700`.
+    handwritten: Whether the text is handwritten.
+    italic: Whether the text is italic.
+    letterSpacing: Letter spacing in points.
+    pixelFontSize: Font size in pixels, equal to _unrounded font_size_ *
+      _resolution_ \xf7 `72.0`.
+    smallcaps: Whether the text is in small caps.
+    strikeout: Whether the text is strikethrough.
+    subscript: Whether the text is a subscript.
+    superscript: Whether the text is a superscript.
+    textColor: Color of the text.
+    underlined: Whether the text is underlined.
+  """
+
+  backgroundColor = _messages.MessageField('GoogleTypeColor', 1)
+  bold = _messages.BooleanField(2)
+  fontSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  fontType = _messages.StringField(4)
+  fontWeight = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  handwritten = _messages.BooleanField(6)
+  italic = _messages.BooleanField(7)
+  letterSpacing = _messages.FloatField(8)
+  pixelFontSize = _messages.FloatField(9)
+  smallcaps = _messages.BooleanField(10)
+  strikeout = _messages.BooleanField(11)
+  subscript = _messages.BooleanField(12)
+  superscript = _messages.BooleanField(13)
+  textColor = _messages.MessageField('GoogleTypeColor', 14)
+  underlined = _messages.BooleanField(15)
 
 
 class GoogleCloudDocumentaiV1beta1DocumentPageVisualElement(_messages.Message):
@@ -4324,10 +4412,9 @@ class GoogleCloudDocumentaiV1beta2Document(_messages.Message):
       other.
     textStyles: Styles for the Document.text.
     uri: Optional. Currently supports Google Cloud Storage URI of the form
-      `gs://bucket_name/object_name`. Object versioning is not supported. See
-      [Google Cloud Storage Request
-      URIs](https://cloud.google.com/storage/docs/reference-uris) for more
-      info.
+      `gs://bucket_name/object_name`. Object versioning is not supported. For
+      more information, refer to [Google Cloud Storage Request
+      URIs](https://cloud.google.com/storage/docs/reference-uris).
   """
 
   content = _messages.BytesField(1)
@@ -4860,12 +4947,14 @@ class GoogleCloudDocumentaiV1beta2DocumentPageToken(_messages.Message):
     detectedLanguages: A list of detected languages together with confidence.
     layout: Layout for Token.
     provenance: The history of this annotation.
+    styleInfo: Text style attributes.
   """
 
   detectedBreak = _messages.MessageField('GoogleCloudDocumentaiV1beta2DocumentPageTokenDetectedBreak', 1)
   detectedLanguages = _messages.MessageField('GoogleCloudDocumentaiV1beta2DocumentPageDetectedLanguage', 2, repeated=True)
   layout = _messages.MessageField('GoogleCloudDocumentaiV1beta2DocumentPageLayout', 3)
   provenance = _messages.MessageField('GoogleCloudDocumentaiV1beta2DocumentProvenance', 4)
+  styleInfo = _messages.MessageField('GoogleCloudDocumentaiV1beta2DocumentPageTokenStyleInfo', 5)
 
 
 class GoogleCloudDocumentaiV1beta2DocumentPageTokenDetectedBreak(_messages.Message):
@@ -4894,6 +4983,48 @@ class GoogleCloudDocumentaiV1beta2DocumentPageTokenDetectedBreak(_messages.Messa
     HYPHEN = 3
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
+class GoogleCloudDocumentaiV1beta2DocumentPageTokenStyleInfo(_messages.Message):
+  r"""Font and other text style attributes.
+
+  Fields:
+    backgroundColor: Color of the background.
+    bold: Whether the text is bold (equivalent to font_weight is at least
+      `700`).
+    fontSize: Font size in points (`1` point is `\xb9\u2044\u2087\u2082`
+      inches).
+    fontType: Name or style of the font.
+    fontWeight: TrueType weight on a scale `100` (thin) to `1000` (ultra-
+      heavy). Normal is `400`, bold is `700`.
+    handwritten: Whether the text is handwritten.
+    italic: Whether the text is italic.
+    letterSpacing: Letter spacing in points.
+    pixelFontSize: Font size in pixels, equal to _unrounded font_size_ *
+      _resolution_ \xf7 `72.0`.
+    smallcaps: Whether the text is in small caps.
+    strikeout: Whether the text is strikethrough.
+    subscript: Whether the text is a subscript.
+    superscript: Whether the text is a superscript.
+    textColor: Color of the text.
+    underlined: Whether the text is underlined.
+  """
+
+  backgroundColor = _messages.MessageField('GoogleTypeColor', 1)
+  bold = _messages.BooleanField(2)
+  fontSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  fontType = _messages.StringField(4)
+  fontWeight = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  handwritten = _messages.BooleanField(6)
+  italic = _messages.BooleanField(7)
+  letterSpacing = _messages.FloatField(8)
+  pixelFontSize = _messages.FloatField(9)
+  smallcaps = _messages.BooleanField(10)
+  strikeout = _messages.BooleanField(11)
+  subscript = _messages.BooleanField(12)
+  superscript = _messages.BooleanField(13)
+  textColor = _messages.MessageField('GoogleTypeColor', 14)
+  underlined = _messages.BooleanField(15)
 
 
 class GoogleCloudDocumentaiV1beta2DocumentPageVisualElement(_messages.Message):
@@ -5273,7 +5404,7 @@ class GoogleCloudDocumentaiV1beta2Vertex(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1beta3BatchProcessMetadata(_messages.Message):
-  r"""The long running operation metadata for batch process method.
+  r"""The long-running operation metadata for BatchProcessDocuments.
 
   Enums:
     StateValueValuesEnum: The state of the current batch processing.
@@ -5320,17 +5451,15 @@ class GoogleCloudDocumentaiV1beta3BatchProcessMetadataIndividualProcessStatus(_m
 
   Fields:
     humanReviewOperation: The name of the operation triggered by the processed
-      document. If the human review process is not triggered, this field will
-      be empty. It has the same response type and metadata as the long running
-      operation returned by ReviewDocument method.
+      document. If the human review process isn't triggered, this field will
+      be empty. It has the same response type and metadata as the long-running
+      operation returned by the ReviewDocument method.
     humanReviewStatus: The status of human review on the processed document.
-    inputGcsSource: The source of the document, same as the [input_gcs_source]
-      field in the request when the batch process started. The batch process
-      is started by take snapshot of that document, since a user can move or
-      change that document during the process.
-    outputGcsDestination: The output_gcs_destination (in the request as
-      `output_gcs_destination`) of the processed document if it was
-      successful, otherwise empty.
+    inputGcsSource: The source of the document, same as the input_gcs_source
+      field in the request when the batch process started.
+    outputGcsDestination: The Cloud Storage output destination (in the request
+      as DocumentOutputConfig.GcsOutputConfig.gcs_uri) of the processed
+      document if it was successful, otherwise empty.
     status: The status processing the document.
   """
 
@@ -5342,7 +5471,7 @@ class GoogleCloudDocumentaiV1beta3BatchProcessMetadataIndividualProcessStatus(_m
 
 
 class GoogleCloudDocumentaiV1beta3BatchProcessResponse(_messages.Message):
-  r"""Response message for batch process document method."""
+  r"""Response message for BatchProcessDocuments."""
 
 
 class GoogleCloudDocumentaiV1beta3CommonOperationMetadata(_messages.Message):
@@ -5386,68 +5515,70 @@ class GoogleCloudDocumentaiV1beta3CommonOperationMetadata(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1beta3DeleteProcessorMetadata(_messages.Message):
-  r"""The long running operation metadata for delete processor method.
+  r"""The long-running operation metadata for the DeleteProcessor method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1beta3DeleteProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for delete processor version method.
+  r"""The long-running operation metadata for the DeleteProcessorVersion
+  method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1beta3DeployProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for deploy processor version method.
+  r"""The long-running operation metadata for the DeployProcessorVersion
+  method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1beta3DeployProcessorVersionResponse(_messages.Message):
-  r"""Response message for the deploy processor version method."""
+  r"""Response message for the DeployProcessorVersion method."""
 
 
 class GoogleCloudDocumentaiV1beta3DisableProcessorMetadata(_messages.Message):
-  r"""The long running operation metadata for disable processor method.
+  r"""The long-running operation metadata for the DisableProcessor method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1beta3DisableProcessorResponse(_messages.Message):
-  r"""Response message for the disable processor method. Intentionally empty
+  r"""Response message for the DisableProcessor method. Intentionally empty
   proto for adding fields in future.
   """
 
 
 
 class GoogleCloudDocumentaiV1beta3EnableProcessorMetadata(_messages.Message):
-  r"""The long running operation metadata for enable processor method.
+  r"""The long-running operation metadata for the EnableProcessor method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1beta3EnableProcessorResponse(_messages.Message):
-  r"""Response message for the enable processor method. Intentionally empty
+  r"""Response message for the EnableProcessor method. Intentionally empty
   proto for adding fields in future.
   """
 
@@ -5457,14 +5588,14 @@ class GoogleCloudDocumentaiV1beta3EvaluateProcessorVersionMetadata(_messages.Mes
   r"""Metadata of the EvaluateProcessorVersion method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1beta3EvaluateProcessorVersionResponse(_messages.Message):
-  r"""Metadata of the EvaluateProcessorVersion method.
+  r"""Response of the EvaluateProcessorVersion method.
 
   Fields:
     evaluation: The resource name of the created evaluation.
@@ -5481,9 +5612,9 @@ class GoogleCloudDocumentaiV1beta3HumanReviewStatus(_messages.Message):
 
   Fields:
     humanReviewOperation: The name of the operation triggered by the processed
-      document. This field is populated only when the [state] is
-      [HUMAN_REVIEW_IN_PROGRESS]. It has the same response type and metadata
-      as the long running operation returned by [ReviewDocument] method.
+      document. This field is populated only when the state is
+      `HUMAN_REVIEW_IN_PROGRESS`. It has the same response type and metadata
+      as the long-running operation returned by ReviewDocument.
     state: The state of human review on the processing request.
     stateMessage: A message providing more details about the human review
       state.
@@ -5496,14 +5627,14 @@ class GoogleCloudDocumentaiV1beta3HumanReviewStatus(_messages.Message):
       STATE_UNSPECIFIED: Human review state is unspecified. Most likely due to
         an internal error.
       SKIPPED: Human review is skipped for the document. This can happen
-        because human review is not enabled on the processor or the processing
+        because human review isn't enabled on the processor or the processing
         request has been set to skip this document.
       VALIDATION_PASSED: Human review validation is triggered and passed, so
         no review is needed.
       IN_PROGRESS: Human review validation is triggered and the document is
         under review.
       ERROR: Some error happened during triggering human review, see the
-        [state_message] for details.
+        state_message for details.
     """
     STATE_UNSPECIFIED = 0
     SKIPPED = 1
@@ -5517,11 +5648,11 @@ class GoogleCloudDocumentaiV1beta3HumanReviewStatus(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1beta3ImportProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for the ImportProcessorVersion
+  r"""The long-running operation metadata for the ImportProcessorVersion
   method.
 
   Fields:
-    commonMetadata: The basic metadata for the long running operation.
+    commonMetadata: The basic metadata for the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
@@ -5538,13 +5669,13 @@ class GoogleCloudDocumentaiV1beta3ImportProcessorVersionResponse(_messages.Messa
 
 
 class GoogleCloudDocumentaiV1beta3ReviewDocumentOperationMetadata(_messages.Message):
-  r"""The long running operation metadata for review document method.
+  r"""The long-running operation metadata for the ReviewDocument method.
 
   Enums:
     StateValueValuesEnum: Used only when Operation.done is false.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
     createTime: The creation time of the operation.
     questionId: The Crowd Compute question ID.
     state: Used only when Operation.done is false.
@@ -5580,7 +5711,7 @@ class GoogleCloudDocumentaiV1beta3ReviewDocumentOperationMetadata(_messages.Mess
 
 
 class GoogleCloudDocumentaiV1beta3ReviewDocumentResponse(_messages.Message):
-  r"""Response message for review document method.
+  r"""Response message for the ReviewDocument method.
 
   Enums:
     StateValueValuesEnum: The state of the review operation.
@@ -5611,25 +5742,25 @@ class GoogleCloudDocumentaiV1beta3ReviewDocumentResponse(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1beta3SetDefaultProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for set default processor version
+  r"""The long-running operation metadata for the SetDefaultProcessorVersion
   method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1beta3SetDefaultProcessorVersionResponse(_messages.Message):
-  r"""Response message for set default processor version method."""
+  r"""Response message for the SetDefaultProcessorVersion method."""
 
 
 class GoogleCloudDocumentaiV1beta3TrainProcessorVersionMetadata(_messages.Message):
   r"""The metadata that represents a processor version being created.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
     testDatasetValidation: The test dataset validation information.
     trainingDatasetValidation: The training dataset validation information.
   """
@@ -5661,7 +5792,7 @@ class GoogleCloudDocumentaiV1beta3TrainProcessorVersionMetadataDatasetValidation
 
 
 class GoogleCloudDocumentaiV1beta3TrainProcessorVersionResponse(_messages.Message):
-  r"""The response for the TrainProcessorVersion method.
+  r"""The response for TrainProcessorVersion.
 
   Fields:
     processorVersion: The resource name of the processor version produced by
@@ -5672,18 +5803,18 @@ class GoogleCloudDocumentaiV1beta3TrainProcessorVersionResponse(_messages.Messag
 
 
 class GoogleCloudDocumentaiV1beta3UndeployProcessorVersionMetadata(_messages.Message):
-  r"""The long running operation metadata for the undeploy processor version
+  r"""The long-running operation metadata for the UndeployProcessorVersion
   method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudDocumentaiV1beta3UndeployProcessorVersionResponse(_messages.Message):
-  r"""Response message for the undeploy processor version method."""
+  r"""Response message for the UndeployProcessorVersion method."""
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):
@@ -5700,7 +5831,7 @@ class GoogleCloudLocationListLocationsResponse(_messages.Message):
 
 
 class GoogleCloudLocationLocation(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

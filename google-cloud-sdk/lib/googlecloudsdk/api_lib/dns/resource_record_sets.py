@@ -89,6 +89,7 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
   dns_messages = apis.GetMessagesModule('dns', api_version)
   load_balancer_target = apis.GetMessagesModule(
       'dns', api_version).RRSetRoutingPolicyLoadBalancerTarget()
+  load_balancer_target.project = project
   load_balancer_target.loadBalancerType = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.LoadBalancerTypeValueValuesEnum(
       'regionalL4ilb')
   config = None
@@ -108,6 +109,7 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
           forwarding_rule, collection='compute.forwardingRules'
       ).AsDict()
       load_balancer_target.region = resource['region']
+      load_balancer_target.project = resource['project']
       config = compute_client.forwardingRules.Get(
           compute_messages.ComputeForwardingRulesGetRequest(
               project=resource['project'],
@@ -159,7 +161,6 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
   else:
     load_balancer_target.ipProtocol = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.IpProtocolValueValuesEnum(
         'udp')
-  load_balancer_target.project = project
   load_balancer_target.networkUrl = config.network
   if config.allPorts:
     load_balancer_target.port = '80'  # Any random port

@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import posix_util
+from googlecloudsdk.command_lib.storage import symlink_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
@@ -126,10 +127,14 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
             temporary_object_path, self._source_resource.crc32c_hash,
             downloaded_file_hash_digest)
 
+    preserve_symlinks = symlink_util.get_preserve_symlink_from_user_request(
+        self._user_request_args
+    )
     download_util.finalize_download(
         self._source_resource,
         temporary_object_path,
         final_destination_object_path,
+        convert_symlinks=preserve_symlinks,
         do_not_decompress_flag=self._do_not_decompress,
     )
     tracker_file_util.delete_download_tracker_files(
@@ -141,6 +146,7 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
         self._system_posix_data,
         self._source_resource,
         self._final_destination_resource,
+        preserve_symlinks=preserve_symlinks,
     )
 
     if self._print_created_message:

@@ -1080,6 +1080,11 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
       specified Artifact Registry repository using the builder service
       account's credentials. If any artifacts fail to be pushed, the build is
       marked FAILURE.
+    npmPackages: A list of npm packages to be uploaded to Artifact Registry
+      upon successful completion of all build steps. Npm packages in the
+      specified paths will be uploaded to the specified Artifact Registry
+      repository using the builder service account's credentials. If any
+      packages fail to be pushed, the build is marked FAILURE.
     objects: A list of objects to be uploaded to Cloud Storage upon successful
       completion of all build steps. Files in the workspace matching specified
       paths globs will be uploaded to the specified Cloud Storage location
@@ -1095,8 +1100,9 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
 
   images = _messages.StringField(1, repeated=True)
   mavenArtifacts = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsMavenArtifact', 2, repeated=True)
-  objects = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsArtifactObjects', 3)
-  pythonPackages = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsPythonPackage', 4, repeated=True)
+  npmPackages = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsNpmPackage', 3, repeated=True)
+  objects = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsArtifactObjects', 4)
+  pythonPackages = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsPythonPackage', 5, repeated=True)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsArtifactObjects(_messages.Message):
@@ -1145,6 +1151,22 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsMavenArtifact(_message
   path = _messages.StringField(3)
   repository = _messages.StringField(4)
   version = _messages.StringField(5)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsNpmPackage(_messages.Message):
+  r"""Npm package to upload to Artifact Registry upon successful completion of
+  all build steps.
+
+  Fields:
+    packagePath: Path to the package.json. e.g. workspace/path/to/package
+    repository: Artifact Registry repository, in the form "https://$REGION-
+      npm.pkg.dev/$PROJECT/$REPOSITORY" Npm package in the workspace specified
+      by path will be zipped and uploaded to Artifact Registry with this
+      location as a prefix.
+  """
+
+  packagePath = _messages.StringField(1)
+  repository = _messages.StringField(2)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsPythonPackage(_messages.Message):
@@ -1590,10 +1612,12 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
       NONE: No hash requested.
       SHA256: Use a sha256 hash.
       MD5: Use a md5 hash.
+      SHA512: Use a sha512 hash.
     """
     NONE = 0
     SHA256 = 1
     MD5 = 2
+    SHA512 = 3
 
   class SubstitutionOptionValueValuesEnum(_messages.Enum):
     r"""Option to specify behavior when there is an error in the substitution
@@ -1822,6 +1846,29 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1FileHashes(_messages.Message):
   fileHash = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Hash', 1, repeated=True)
 
 
+class ContaineranalysisGoogleDevtoolsCloudbuildV1GitSource(_messages.Message):
+  r"""Location of the source in any accessible Git repository.
+
+  Fields:
+    dir: Directory, relative to the source root, in which to run the build.
+      This must be a relative path. If a step's `dir` is specified and is an
+      absolute path, this value is ignored for that step's execution.
+    revision: The revision to fetch from the Git repository such as a branch,
+      a tag, a commit SHA, or any Git ref. Cloud Build uses `git fetch` to
+      fetch the revision from the Git repository; therefore make sure that the
+      string you provide for `revision` is parsable by the command. For
+      information on string values accepted by `git fetch`, see https://git-
+      scm.com/docs/gitrevisions#_specifying_revisions. For information on `git
+      fetch`, see https://git-scm.com/docs/git-fetch.
+    url: Location of the Git repo to build. This will be used as a `git
+      remote`, see https://git-scm.com/docs/git-remote.
+  """
+
+  dir = _messages.StringField(1)
+  revision = _messages.StringField(2)
+  url = _messages.StringField(3)
+
+
 class ContaineranalysisGoogleDevtoolsCloudbuildV1Hash(_messages.Message):
   r"""Container message for hash values.
 
@@ -1840,10 +1887,12 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Hash(_messages.Message):
       NONE: No hash requested.
       SHA256: Use a sha256 hash.
       MD5: Use a md5 hash.
+      SHA512: Use a sha512 hash.
     """
     NONE = 0
     SHA256 = 1
     MD5 = 2
+    SHA512 = 3
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)
@@ -1983,6 +2032,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Results(_messages.Message):
     images: Container images that were built as a part of the build.
     mavenArtifacts: Maven artifacts uploaded to Artifact Registry at the end
       of the build.
+    npmPackages: Npm packages uploaded to Artifact Registry at the end of the
+      build.
     numArtifacts: Number of non-container artifacts uploaded to Cloud Storage.
       Only populated when artifacts are uploaded to Cloud Storage.
     pythonPackages: Python artifacts uploaded to Artifact Registry at the end
@@ -1995,8 +2046,9 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Results(_messages.Message):
   buildStepOutputs = _messages.BytesField(4, repeated=True)
   images = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuiltImage', 5, repeated=True)
   mavenArtifacts = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1UploadedMavenArtifact', 6, repeated=True)
-  numArtifacts = _messages.IntegerField(7)
-  pythonPackages = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1UploadedPythonPackage', 8, repeated=True)
+  npmPackages = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1UploadedNpmPackage', 7, repeated=True)
+  numArtifacts = _messages.IntegerField(8)
+  pythonPackages = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1UploadedPythonPackage', 9, repeated=True)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1Secret(_messages.Message):
@@ -2088,6 +2140,7 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Source(_messages.Message):
   r"""Location of the source in a supported storage service.
 
   Fields:
+    gitSource: If provided, get the source from this Git repository.
     repoSource: If provided, get the source from this location in a Cloud
       Source Repository.
     storageSource: If provided, get the source from this location in Google
@@ -2098,9 +2151,10 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Source(_messages.Message):
       builders/tree/master/gcs-fetcher).
   """
 
-  repoSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1RepoSource', 1)
-  storageSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource', 2)
-  storageSourceManifest = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest', 3)
+  gitSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1GitSource', 1)
+  repoSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1RepoSource', 2)
+  storageSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource', 3)
+  storageSourceManifest = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest', 4)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1SourceProvenance(_messages.Message):
@@ -2232,6 +2286,22 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1UploadedMavenArtifact(_messages
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded artifact.
+  """
+
+  fileHashes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1FileHashes', 1)
+  pushTiming = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 2)
+  uri = _messages.StringField(3)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1UploadedNpmPackage(_messages.Message):
+  r"""An npm package uploaded to Artifact Registry using the NpmPackage
+  directive.
+
+  Fields:
+    fileHashes: Hash types and values of the npm package.
+    pushTiming: Output only. Stores timing information for pushing the
+      specified artifact.
+    uri: URI of the uploaded npm package.
   """
 
   fileHashes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1FileHashes', 1)
@@ -2574,6 +2644,21 @@ class ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest(_messages.Me
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class ContaineranalysisProjectsResourcesGeneratePackagesSummaryRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsResourcesGeneratePackagesSummaryRequest
+  object.
+
+  Fields:
+    generatePackagesSummaryRequest: A GeneratePackagesSummaryRequest resource
+      to be passed as the request body.
+    name: Required. The name of the resource to get a packages summary for in
+      the form of `projects/[PROJECT_ID]/resources/[RESOURCE_URL]`.
+  """
+
+  generatePackagesSummaryRequest = _messages.MessageField('GeneratePackagesSummaryRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class Deployable(_messages.Message):
@@ -3258,6 +3343,14 @@ class FixableTotalByDigest(_messages.Message):
   totalCount = _messages.IntegerField(4)
 
 
+class GeneratePackagesSummaryRequest(_messages.Message):
+  r"""GeneratePackagesSummaryRequest is the request body for the
+  GeneratePackagesSummary API method. It just takes a single name argument,
+  referring to the resource.
+  """
+
+
+
 class GenericSignedAttestation(_messages.Message):
   r"""An attestation wrapper that uses the Grafeas `Signature` message. This
   attestation must define the `serialized_payload` that the `signatures`
@@ -3620,9 +3713,15 @@ class Hash(_messages.Message):
     Values:
       HASH_TYPE_UNSPECIFIED: Unknown.
       SHA256: A SHA-256 hash.
+      GO_MODULE_H1: Dirhash of a Go module's source code which is then hex-
+        encoded. See b/244466565 and https://github.com/in-
+        toto/attestation/pull/108.
+      SHA512: A SHA-512 hash.
     """
     HASH_TYPE_UNSPECIFIED = 0
     SHA256 = 1
+    GO_MODULE_H1 = 2
+    SHA512 = 3
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)
@@ -3853,6 +3952,21 @@ class License(_messages.Message):
 
   comments = _messages.StringField(1)
   expression = _messages.StringField(2)
+
+
+class LicensesSummary(_messages.Message):
+  r"""Per license count
+
+  Fields:
+    count: The number of fixable vulnerabilities associated with this
+      resource.
+    license: The license of the package. Note that the format of this value is
+      not guaranteed. It may be nil, an empty string, a boolean value (A | B),
+      a differently formed boolean value (A OR B), etc...
+  """
+
+  count = _messages.IntegerField(1)
+  license = _messages.StringField(2)
 
 
 class Link(_messages.Message):
@@ -4354,6 +4468,20 @@ class PackageIssue(_messages.Message):
   fixedLocation = _messages.MessageField('VulnerabilityLocation', 3)
   packageType = _messages.StringField(4)
   severityName = _messages.StringField(5)
+
+
+class PackagesSummaryResponse(_messages.Message):
+  r"""A summary of the packages found within the given resource.
+
+  Fields:
+    licensesSummary: A listing by license name of each of the licenses and
+      their counts.
+    resourceUrl: The unique URL of the image or the container for which this
+      summary applies.
+  """
+
+  licensesSummary = _messages.MessageField('LicensesSummary', 1, repeated=True)
+  resourceUrl = _messages.StringField(2)
 
 
 class PgpSignedAttestation(_messages.Message):

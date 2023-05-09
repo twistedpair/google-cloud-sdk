@@ -76,12 +76,24 @@ class CustomClass(_messages.Message):
     customClassId: If this custom class is a resource, the custom_class_id is
       the resource id of the CustomClass. Case sensitive.
     items: A collection of class items.
+    kmsKeyName: Output only. The [KMS key
+      name](https://cloud.google.com/kms/docs/resource-hierarchy#keys) with
+      which the content of the ClassItem is encrypted. The expected format is
+      `projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/
+      {crypto_key}`.
+    kmsKeyVersionName: Output only. The [KMS key version
+      name](https://cloud.google.com/kms/docs/resource-hierarchy#key_versions)
+      with which content of the ClassItem is encrypted. The expected format is
+      `projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/
+      {crypto_key}/cryptoKeyVersions/{crypto_key_version}`.
     name: The resource name of the custom class.
   """
 
   customClassId = _messages.StringField(1)
   items = _messages.MessageField('ClassItem', 2, repeated=True)
-  name = _messages.StringField(3)
+  kmsKeyName = _messages.StringField(3)
+  kmsKeyVersionName = _messages.StringField(4)
+  name = _messages.StringField(5)
 
 
 class Empty(_messages.Message):
@@ -380,13 +392,25 @@ class PhraseSet(_messages.Message):
       recommend using a binary search approach to finding the optimal value
       for your use case as well as adding phrases both with and without boost
       to your requests.
+    kmsKeyName: Output only. The [KMS key
+      name](https://cloud.google.com/kms/docs/resource-hierarchy#keys) with
+      which the content of the PhraseSet is encrypted. The expected format is
+      `projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/
+      {crypto_key}`.
+    kmsKeyVersionName: Output only. The [KMS key version
+      name](https://cloud.google.com/kms/docs/resource-hierarchy#key_versions)
+      with which content of the PhraseSet is encrypted. The expected format is
+      `projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/
+      {crypto_key}/cryptoKeyVersions/{crypto_key_version}`.
     name: The resource name of the phrase set.
     phrases: A list of word and phrases.
   """
 
   boost = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  name = _messages.StringField(2)
-  phrases = _messages.MessageField('Phrase', 3, repeated=True)
+  kmsKeyName = _messages.StringField(2)
+  kmsKeyVersionName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  phrases = _messages.MessageField('Phrase', 5, repeated=True)
 
 
 class RecognitionAudio(_messages.Message):

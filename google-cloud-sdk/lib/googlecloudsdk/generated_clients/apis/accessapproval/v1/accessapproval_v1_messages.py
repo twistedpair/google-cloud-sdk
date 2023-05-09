@@ -75,6 +75,12 @@ class AccessApprovalSettings(_messages.Message):
       relating to approval requests should be sent. Notifications relating to
       a resource will be sent to all emails in the settings of ancestor
       resources of that resource. A maximum of 50 email addresses are allowed.
+    preferNoBroadApprovalRequests: This preference is communicated to Google
+      personnel when sending an approval request but can be overridden if
+      necessary.
+    preferredRequestExpirationDays: This preference is shared with Google
+      personnel, but can be overridden if said personnel deems necessary. The
+      approver ultimately can set the expiration at approval time.
   """
 
   activeKeyVersion = _messages.StringField(1)
@@ -84,6 +90,8 @@ class AccessApprovalSettings(_messages.Message):
   invalidKeyVersion = _messages.BooleanField(5)
   name = _messages.StringField(6)
   notificationEmails = _messages.StringField(7, repeated=True)
+  preferNoBroadApprovalRequests = _messages.BooleanField(8)
+  preferredRequestExpirationDays = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class AccessLocations(_messages.Message):

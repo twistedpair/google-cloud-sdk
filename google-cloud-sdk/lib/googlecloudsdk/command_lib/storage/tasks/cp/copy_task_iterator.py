@@ -339,6 +339,21 @@ class CopyTaskIterator:
       self._total_file_count += 1
       self._total_size += size or 0
 
+  def _print_skip_and_maybe_send_to_manifest(self, message, source):
+    """Prints why task is being skipped and maybe records in manifest."""
+    log.status.Print(message)
+    if (
+        self._user_request_args
+        and self._user_request_args.manifest_path
+        and self._task_status_queue
+    ):
+      manifest_util.send_skip_message(
+          self._task_status_queue,
+          source.resource,
+          self._raw_destination,
+          message,
+      )
+
   def __iter__(self):
     self._raise_error_if_source_matches_destination()
 
@@ -349,25 +364,22 @@ class CopyTaskIterator:
       if self._skip_unsupported:
         unsupported_type = resource_util.get_unsupported_object_type(
             source.resource)
-      else:
-        unsupported_type = None
-
-      if unsupported_type or (source.resource.storage_url.url_string
-                              in self._already_completed_sources):
         if unsupported_type:
-          message = 'Skipping item {} with unsupported object type: {}'.format(
-              source.resource.storage_url, unsupported_type.value)
-          if (self._user_request_args and
-              self._user_request_args.manifest_path and
-              self._task_status_queue):
-            manifest_util.send_skip_message(self._task_status_queue,
-                                            source.resource,
-                                            self._raw_destination, message)
-        else:
-          message = ('Skipping item {} because manifest marks it as'
-                     ' skipped or completed.').format(
-                         source.resource.storage_url)
-        log.status.Print(message)
+          message = resource_util.UNSUPPORTED_OBJECT_WARNING_FORMAT.format(
+              source.resource.storage_url, unsupported_type.value
+          )
+          self._print_skip_and_maybe_send_to_manifest(message, source)
+          continue
+
+      if (
+          source.resource.storage_url.url_string
+          in self._already_completed_sources
+      ):
+        message = (
+            'Skipping item {} because manifest marks it as'
+            ' skipped or completed.'
+        ).format(source.resource.storage_url)
+        self._print_skip_and_maybe_send_to_manifest(message, source)
         continue
 
       destination_resource = self._get_copy_destination(self._raw_destination,

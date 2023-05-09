@@ -122,8 +122,11 @@ class IapTunnelWebSocketHelper(object):
   def Send(self, send_data):
     """Send data on WebSocket connection."""
     try:
-      log.debug('SEND data_len [%d] send_data[:20] %r', len(send_data),
-                send_data[:20])
+      # Needed since the gcloud logging methods will log to file regardless
+      # of the verbosity level set by the user.
+      if log.GetVerbosity() == logging.DEBUG:
+        log.debug('SEND data_len [%d] send_data[:20] %r', len(send_data),
+                  send_data[:20])
       self._websocket.send(send_data, opcode=websocket.ABNF.OPCODE_BINARY)
     except EnvironmentError:
       self.Close()
@@ -200,8 +203,11 @@ class IapTunnelWebSocketHelper(object):
 
   def _OnData(self, binary_data, opcode, unused_finished=0):
     """Callback for WebSocket Data messages."""
-    log.debug('RECV opcode [%r] data_len [%d] binary_data[:20] [%r]', opcode,
-              len(binary_data), binary_data[:20])
+    # Needed since the gcloud logging methods will log to file regardless
+    # of the verbosity level set by the user.
+    if log.GetVerbosity() == logging.DEBUG:
+      log.debug('RECV opcode [%r] data_len [%d] binary_data[:20] [%r]', opcode,
+                len(binary_data), binary_data[:20])
     try:
       # Even though we will only be processing BINARY messages, a bug in the
       # underlying websocket library will report the last opcode in a

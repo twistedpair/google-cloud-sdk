@@ -354,6 +354,9 @@ class CloneContext(_messages.Message):
     pitrTimestampMs: Reserved for future use.
     pointInTime: Timestamp, if specified, identifies the time to which the
       source instance is cloned.
+    preferredZone: (Point-in-time recovery for PostgreSQL only) Clone to an
+      instance in the specified zone. If no zone is specified, clone to the
+      same zone as the source instance.
   """
 
   allocatedIpRange = _messages.StringField(1)
@@ -363,6 +366,7 @@ class CloneContext(_messages.Message):
   kind = _messages.StringField(5)
   pitrTimestampMs = _messages.IntegerField(6)
   pointInTime = _messages.StringField(7)
+  preferredZone = _messages.StringField(8)
 
 
 class ConnectSettings(_messages.Message):
@@ -1149,7 +1153,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class ExportContext(_messages.Message):
   r"""Database instance export context.
 
@@ -1212,7 +1215,10 @@ class ExportContext(_messages.Message):
       bakType: Type of this bak file will be export, FULL or DIFF, SQL Server
         only
       copyOnly: Whether or not the export will be exeucted with COPY_ONLY, SQL
-        Server only
+        Server only deprecated as the behavior should default to copy_only =
+        true use differential_base instead
+      differentialBase: Whether or not the backup can be use as differential
+        base only non copy only backup can be served as differential base
       stripeCount: Option for specifying how many stripes to use for the
         export. If blank, and the value of the striped field is true, the
         number of stripes is automatically chosen.
@@ -1234,8 +1240,9 @@ class ExportContext(_messages.Message):
 
     bakType = _messages.EnumField('BakTypeValueValuesEnum', 1)
     copyOnly = _messages.BooleanField(2)
-    stripeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-    striped = _messages.BooleanField(4)
+    differentialBase = _messages.BooleanField(3)
+    stripeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+    striped = _messages.BooleanField(5)
 
   class CsvExportOptionsValue(_messages.Message):
     r"""Options for exporting data as CSV. `MySQL` and `PostgreSQL` instances
@@ -1272,6 +1279,7 @@ class ExportContext(_messages.Message):
       tables: Tables to export, or that were exported, from the specified
         database. If you specify tables, specify one and only one database.
         For PostgreSQL instances, you can specify only one table.
+      threads: The number of threads to use for parallel export.
     """
 
     class MysqlExportOptionsValue(_messages.Message):
@@ -1291,6 +1299,7 @@ class ExportContext(_messages.Message):
     mysqlExportOptions = _messages.MessageField('MysqlExportOptionsValue', 1)
     schemaOnly = _messages.BooleanField(2)
     tables = _messages.StringField(3, repeated=True)
+    threads = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
   bakExportOptions = _messages.MessageField('BakExportOptionsValue', 1)
   csvExportOptions = _messages.MessageField('CsvExportOptionsValue', 2)
@@ -1528,6 +1537,7 @@ class ImportContext(_messages.Message):
   Messages:
     BakImportOptionsValue: Import parameters specific to SQL Server .BAK files
     CsvImportOptionsValue: Options for importing data as CSV.
+    SqlImportOptionsValue: Options for importing data from SQL statements.
 
   Fields:
     bakImportOptions: Import parameters specific to SQL Server .BAK files
@@ -1542,6 +1552,7 @@ class ImportContext(_messages.Message):
     importUser: The PostgreSQL user for this import operation. PostgreSQL
       instances only.
     kind: This is always `sql#importContext`.
+    sqlImportOptions: Options for importing data from SQL statements.
     uri: Path to the import file in Cloud Storage, in the form
       `gs://bucketName/fileName`. Compressed gzip files (.gz) are supported
       when `fileType` is `SQL`. The instance must have write permissions to
@@ -1647,13 +1658,23 @@ class ImportContext(_messages.Message):
     quoteCharacter = _messages.StringField(5)
     table = _messages.StringField(6)
 
+  class SqlImportOptionsValue(_messages.Message):
+    r"""Options for importing data from SQL statements.
+
+    Fields:
+      threads: The number of threads to use for parallel import.
+    """
+
+    threads = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
   bakImportOptions = _messages.MessageField('BakImportOptionsValue', 1)
   csvImportOptions = _messages.MessageField('CsvImportOptionsValue', 2)
   database = _messages.StringField(3)
   fileType = _messages.EnumField('FileTypeValueValuesEnum', 4)
   importUser = _messages.StringField(5)
   kind = _messages.StringField(6)
-  uri = _messages.StringField(7)
+  sqlImportOptions = _messages.MessageField('SqlImportOptionsValue', 7)
+  uri = _messages.StringField(8)
 
 
 class InsightsConfig(_messages.Message):
@@ -2488,14 +2509,14 @@ class Settings(_messages.Message):
       updating an existing instance, it is left unchanged in the instance.
     DataDiskTypeValueValuesEnum: The type of data disk: `PD_SSD` (default) or
       `PD_HDD`. Not used for First Generation instances.
+    EditionValueValuesEnum: The edition of the instance, can be STANDARD or
+      ENTERPRISE.
     PricingPlanValueValuesEnum: The pricing plan for this instance. This can
       be either `PER_USE` or `PACKAGE`. Only `PER_USE` is supported for Second
       Generation instances.
     ReplicationTypeValueValuesEnum: The type of replication this instance
       uses. This can be either `ASYNCHRONOUS` or `SYNCHRONOUS`. (Deprecated)
       This property was only applicable to First Generation instances.
-    WorkloadTierValueValuesEnum: The workload tier for this instance. Can be
-      STANDARD or PREMIUM.
 
   Messages:
     UserLabelsValue: User-provided labels, represented as a dictionary where
@@ -2546,6 +2567,7 @@ class Settings(_messages.Message):
     deletionProtectionEnabled: Configuration to protect against accidental
       instance deletion.
     denyMaintenancePeriods: Deny maintenance periods
+    edition: The edition of the instance, can be STANDARD or ENTERPRISE.
     insightsConfig: Insights configuration, for now relevant only for
       Postgres.
     instanceVersion: The current software version the instance is running on.
@@ -2587,8 +2609,6 @@ class Settings(_messages.Message):
     timeZone: Server timezone, relevant only for Cloud SQL for SQL Server.
     userLabels: User-provided labels, represented as a dictionary where each
       label is a single key value pair.
-    workloadTier: The workload tier for this instance. Can be STANDARD or
-      PREMIUM.
   """
 
   class ActivationPolicyValueValuesEnum(_messages.Enum):
@@ -2664,6 +2684,18 @@ class Settings(_messages.Message):
     PD_HDD = 2
     OBSOLETE_LOCAL_SSD = 3
 
+  class EditionValueValuesEnum(_messages.Enum):
+    r"""The edition of the instance, can be STANDARD or ENTERPRISE.
+
+    Values:
+      EDITION_UNSPECIFIED: The instance did not specify the edition.
+      STANDARD: The instance is a standard edition.
+      ENTERPRISE: The instance is an enterprise edition.
+    """
+    EDITION_UNSPECIFIED = 0
+    STANDARD = 1
+    ENTERPRISE = 2
+
   class PricingPlanValueValuesEnum(_messages.Enum):
     r"""The pricing plan for this instance. This can be either `PER_USE` or
     `PACKAGE`. Only `PER_USE` is supported for Second Generation instances.
@@ -2696,18 +2728,6 @@ class Settings(_messages.Message):
     SQL_REPLICATION_TYPE_UNSPECIFIED = 0
     SYNCHRONOUS = 1
     ASYNCHRONOUS = 2
-
-  class WorkloadTierValueValuesEnum(_messages.Enum):
-    r"""The workload tier for this instance. Can be STANDARD or PREMIUM.
-
-    Values:
-      WORKLOAD_TIER_UNSPECIFIED: The instance did not specify a workload tier.
-      STANDARD: The instance is using a standard workload tier.
-      PREMIUM: The instance is using a premium workload tier.
-    """
-    WORKLOAD_TIER_UNSPECIFIED = 0
-    STANDARD = 1
-    PREMIUM = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
@@ -2750,25 +2770,27 @@ class Settings(_messages.Message):
   databaseReplicationEnabled = _messages.BooleanField(14)
   deletionProtectionEnabled = _messages.BooleanField(15)
   denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 16, repeated=True)
-  insightsConfig = _messages.MessageField('InsightsConfig', 17)
-  instanceVersion = _messages.StringField(18)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 19)
-  kind = _messages.StringField(20)
-  locationPreference = _messages.MessageField('LocationPreference', 21)
-  maintenanceVersion = _messages.StringField(22)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 23)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 24)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 25)
-  recreateReplicasOnPrimaryCrash = _messages.BooleanField(26)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 27)
-  settingsVersion = _messages.IntegerField(28)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 29)
-  storageAutoResize = _messages.BooleanField(30)
-  storageAutoResizeLimit = _messages.IntegerField(31)
-  tier = _messages.StringField(32)
-  timeZone = _messages.StringField(33)
-  userLabels = _messages.MessageField('UserLabelsValue', 34)
-  workloadTier = _messages.EnumField('WorkloadTierValueValuesEnum', 35)
+  edition = _messages.EnumField('EditionValueValuesEnum', 17)
+  insightsConfig = _messages.MessageField('InsightsConfig', 18)
+  instanceVersion = _messages.StringField(19)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 20)
+  kind = _messages.StringField(21)
+  locationPreference = _messages.MessageField('LocationPreference', 22)
+  maintenanceVersion = _messages.StringField(23)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 24)
+  passwordValidationPolicy = _messages.MessageField(
+      'PasswordValidationPolicy', 25
+  )
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 26)
+  recreateReplicasOnPrimaryCrash = _messages.BooleanField(27)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 28)
+  settingsVersion = _messages.IntegerField(29)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 30)
+  storageAutoResize = _messages.BooleanField(31)
+  storageAutoResizeLimit = _messages.IntegerField(32)
+  tier = _messages.StringField(33)
+  timeZone = _messages.StringField(34)
+  userLabels = _messages.MessageField('UserLabelsValue', 35)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -2970,7 +2992,8 @@ class SqlExternalSyncSettingError(_messages.Message):
       BINLOG_NOT_ENABLED: <no description>
       INCOMPATIBLE_DATABASE_VERSION: <no description>
       REPLICA_ALREADY_SETUP: <no description>
-      INSUFFICIENT_PRIVILEGE: <no description>
+      INSUFFICIENT_PRIVILEGE: The replication user is missing privileges that
+        are required.
       UNSUPPORTED_MIGRATION_TYPE: Unsupported migration type.
       NO_PGLOGICAL_INSTALLED: No pglogical extension installed on databases,
         applicable for postgres.
@@ -3002,7 +3025,7 @@ class SqlExternalSyncSettingError(_messages.Message):
       UNSUPPORTED_DEFINER: The customer has a definer that will break EM
         setup.
       SQLSERVER_SERVERNAME_MISMATCH: SQL Server @@SERVERNAME does not match
-        actual host name
+        actual host name.
       PRIMARY_ALREADY_SETUP: The primary instance has been setup and will fail
         the setup.
       UNSUPPORTED_BINLOG_FORMAT: The primary instance has unsupported binary
@@ -3014,6 +3037,8 @@ class SqlExternalSyncSettingError(_messages.Message):
       LIMITED_SUPPORT_TABLES: Source has tables with limited support eg:
         PostgreSQL tables without primary keys.
       EXISTING_DATA_IN_REPLICA: The replica instance contains existing data.
+      MISSING_OPTIONAL_PRIVILEGES: The replication user is missing privileges
+        that are optional.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3044,6 +3069,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     UNSUPPORTED_STORAGE_ENGINE = 26
     LIMITED_SUPPORT_TABLES = 27
     EXISTING_DATA_IN_REPLICA = 28
+    MISSING_OPTIONAL_PRIVILEGES = 29
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -3162,6 +3188,19 @@ class SqlInstancesGetDiskShrinkConfigResponse(_messages.Message):
   kind = _messages.StringField(1)
   message = _messages.StringField(2)
   minimalTargetSizeGb = _messages.IntegerField(3)
+
+
+class SqlInstancesGetLatestRecoveryTimeResponse(_messages.Message):
+  r"""Instance get latest recovery time response.
+
+  Fields:
+    kind: This is always `sql#getLatestRecoveryTime`.
+    latestRecoveryTime: Timestamp, identifies the latest recovery time of the
+      source instance.
+  """
+
+  kind = _messages.StringField(1)
+  latestRecoveryTime = _messages.StringField(2)
 
 
 class SqlInstancesGetRequest(_messages.Message):
@@ -3573,6 +3612,18 @@ class SqlOutOfDiskReport(_messages.Message):
 
 class SqlProjectsInstancesGetDiskShrinkConfigRequest(_messages.Message):
   r"""A SqlProjectsInstancesGetDiskShrinkConfigRequest object.
+
+  Fields:
+    instance: Cloud SQL instance ID. This does not include the project ID.
+    project: Project ID of the project that contains the instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class SqlProjectsInstancesGetLatestRecoveryTimeRequest(_messages.Message):
+  r"""A SqlProjectsInstancesGetLatestRecoveryTimeRequest object.
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
@@ -4041,6 +4092,7 @@ class Tier(_messages.Message):
   Fields:
     DiskQuota: The maximum disk size of this tier in bytes.
     RAM: The maximum RAM usage of this tier in bytes.
+    edition: Edition can be STANDARD or ENTERPRISE.
     kind: This is always `sql#tier`.
     region: The applicable regions for this tier.
     tier: An identifier for the machine type, for example, `db-custom-1-3840`.
@@ -4049,9 +4101,10 @@ class Tier(_messages.Message):
 
   DiskQuota = _messages.IntegerField(1)
   RAM = _messages.IntegerField(2)
-  kind = _messages.StringField(3)
-  region = _messages.StringField(4, repeated=True)
-  tier = _messages.StringField(5)
+  edition = _messages.StringField(3)
+  kind = _messages.StringField(4)
+  region = _messages.StringField(5, repeated=True)
+  tier = _messages.StringField(6)
 
 
 class TiersListResponse(_messages.Message):

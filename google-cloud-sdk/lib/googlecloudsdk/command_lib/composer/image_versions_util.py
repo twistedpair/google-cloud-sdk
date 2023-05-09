@@ -31,6 +31,9 @@ from googlecloudsdk.core.util import semver
 # Envs must be running at least this version of Composer to be upgradeable.
 MIN_UPGRADEABLE_COMPOSER_VER = '1.0.0'
 
+# Required for version comparisons
+COMPOSER_LATEST_VERSION_PLACEHOLDER = '2.1.12'
+
 UpgradeValidator = collections.namedtuple('UpgradeValidator',
                                           ['upgrade_valid', 'error'])
 
@@ -189,6 +192,8 @@ def IsVersionComposer25Compatible(image_version):
     version_item = _ImageVersionItem(image_version)
     if version_item and version_item.composer_ver:
       composer_version = version_item.composer_ver
+      if composer_version == 'latest':
+        composer_version = COMPOSER_LATEST_VERSION_PLACEHOLDER
       return IsVersionInRange(
           composer_version, flags.MIN_COMPOSER25_VERSION, None,
           True)
@@ -211,11 +216,13 @@ def IsVersionTriggererCompatible(image_version):
     if version_item and version_item.airflow_ver and version_item.composer_ver:
       airflow_version = version_item.airflow_ver
       composer_version = version_item.composer_ver
+      if composer_version == 'latest':
+        composer_version = COMPOSER_LATEST_VERSION_PLACEHOLDER
       return IsVersionInRange(
-          airflow_version,
-          flags.MIN_TRIGGERER_AIRFLOW_VERSION, None, True) and IsVersionInRange(
-              composer_version, flags.MIN_TRIGGERER_COMPOSER_VERSION, None,
-              True)
+          composer_version, flags.MIN_TRIGGERER_COMPOSER_VERSION, None, True
+      ) and IsVersionInRange(
+          airflow_version, flags.MIN_TRIGGERER_AIRFLOW_VERSION, None, True
+      )
   return False
 
 

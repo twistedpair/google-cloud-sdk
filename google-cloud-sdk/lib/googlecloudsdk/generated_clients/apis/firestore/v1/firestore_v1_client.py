@@ -39,14 +39,161 @@ class FirestoreV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_databases_backupSchedules = self.ProjectsDatabasesBackupSchedulesService(self)
     self.projects_databases_collectionGroups_fields = self.ProjectsDatabasesCollectionGroupsFieldsService(self)
     self.projects_databases_collectionGroups_indexes = self.ProjectsDatabasesCollectionGroupsIndexesService(self)
     self.projects_databases_collectionGroups = self.ProjectsDatabasesCollectionGroupsService(self)
     self.projects_databases_documents = self.ProjectsDatabasesDocumentsService(self)
     self.projects_databases_operations = self.ProjectsDatabasesOperationsService(self)
     self.projects_databases = self.ProjectsDatabasesService(self)
+    self.projects_locations_backups = self.ProjectsLocationsBackupsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsDatabasesBackupSchedulesService(base_api.BaseApiService):
+    """Service class for the projects_databases_backupSchedules resource."""
+
+    _NAME = 'projects_databases_backupSchedules'
+
+    def __init__(self, client):
+      super(FirestoreV1.ProjectsDatabasesBackupSchedulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a backup schedule on a database. At most two backup schedules can be configured on a database, one daily backup schedule with retention up to 7 days and one weekly backup schedule with retention up to 14 weeks.
+
+      Args:
+        request: (FirestoreProjectsDatabasesBackupSchedulesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1BackupSchedule) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/backupSchedules',
+        http_method='POST',
+        method_id='firestore.projects.databases.backupSchedules.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/backupSchedules',
+        request_field='googleFirestoreAdminV1BackupSchedule',
+        request_type_name='FirestoreProjectsDatabasesBackupSchedulesCreateRequest',
+        response_type_name='GoogleFirestoreAdminV1BackupSchedule',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a backup schedule.
+
+      Args:
+        request: (FirestoreProjectsDatabasesBackupSchedulesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/backupSchedules/{backupSchedulesId}',
+        http_method='DELETE',
+        method_id='firestore.projects.databases.backupSchedules.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='FirestoreProjectsDatabasesBackupSchedulesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about a backup schedule.
+
+      Args:
+        request: (FirestoreProjectsDatabasesBackupSchedulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1BackupSchedule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/backupSchedules/{backupSchedulesId}',
+        http_method='GET',
+        method_id='firestore.projects.databases.backupSchedules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='FirestoreProjectsDatabasesBackupSchedulesGetRequest',
+        response_type_name='GoogleFirestoreAdminV1BackupSchedule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List backup schedules.
+
+      Args:
+        request: (FirestoreProjectsDatabasesBackupSchedulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1ListBackupSchedulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/backupSchedules',
+        http_method='GET',
+        method_id='firestore.projects.databases.backupSchedules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/backupSchedules',
+        request_field='',
+        request_type_name='FirestoreProjectsDatabasesBackupSchedulesListRequest',
+        response_type_name='GoogleFirestoreAdminV1ListBackupSchedulesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a backup schedule.
+
+      Args:
+        request: (FirestoreProjectsDatabasesBackupSchedulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1BackupSchedule) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/backupSchedules/{backupSchedulesId}',
+        http_method='PATCH',
+        method_id='firestore.projects.databases.backupSchedules.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleFirestoreAdminV1BackupSchedule',
+        request_type_name='FirestoreProjectsDatabasesBackupSchedulesPatchRequest',
+        response_type_name='GoogleFirestoreAdminV1BackupSchedule',
+        supports_download=False,
+    )
 
   class ProjectsDatabasesCollectionGroupsFieldsService(base_api.BaseApiService):
     """Service class for the projects_databases_collectionGroups_fields resource."""
@@ -1050,6 +1197,124 @@ class FirestoreV1(base_api.BaseApiClient):
         request_field='googleFirestoreAdminV1Database',
         request_type_name='FirestoreProjectsDatabasesPatchRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Restore(self, request, global_params=None):
+      r"""Create a new database by restore from an existing backup. The new database must be in the same cloud region or multi-region location as the existing backup. This behaves similar to FirestoreAdmin.CreateDatabase except instead of creating a new empty database, a new database is created with the database type, index configuration, and documents from an existing backup. The long-running operation can be used to track the progress of the restore, with the Operation's metadata field type being the RestoreDatabaseMetadata. The response type is the Database if the restore was successful. The new database is not readable or writeable until the LRO has completed. Cancelling the returned operation will stop the restore and delete the in-progress database, if the restore is still active.
+
+      Args:
+        request: (FirestoreProjectsDatabasesRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases:restore',
+        http_method='POST',
+        method_id='firestore.projects.databases.restore',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/databases:restore',
+        request_field='googleFirestoreAdminV1RestoreDatabaseRequest',
+        request_type_name='FirestoreProjectsDatabasesRestoreRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBackupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_backups resource."""
+
+    _NAME = 'projects_locations_backups'
+
+    def __init__(self, client):
+      super(FirestoreV1.ProjectsLocationsBackupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a backup.
+
+      Args:
+        request: (FirestoreProjectsLocationsBackupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
+        http_method='DELETE',
+        method_id='firestore.projects.locations.backups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='FirestoreProjectsLocationsBackupsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about a backup.
+
+      Args:
+        request: (FirestoreProjectsLocationsBackupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1Backup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
+        http_method='GET',
+        method_id='firestore.projects.locations.backups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='FirestoreProjectsLocationsBackupsGetRequest',
+        response_type_name='GoogleFirestoreAdminV1Backup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the backups.
+
+      Args:
+        request: (FirestoreProjectsLocationsBackupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1ListBackupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backups',
+        http_method='GET',
+        method_id='firestore.projects.locations.backups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/backups',
+        request_field='',
+        request_type_name='FirestoreProjectsLocationsBackupsListRequest',
+        response_type_name='GoogleFirestoreAdminV1ListBackupsResponse',
         supports_download=False,
     )
 

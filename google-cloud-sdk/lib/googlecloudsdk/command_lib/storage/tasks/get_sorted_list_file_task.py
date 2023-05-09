@@ -24,6 +24,7 @@ import itertools
 import os
 import threading
 
+from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import rsync_command_util
 from googlecloudsdk.command_lib.storage import wildcard_iterator
@@ -64,6 +65,7 @@ class GetSortedContainerContentsTask(task.Task):
     file_iterator = iter(
         wildcard_iterator.get_wildcard_iterator(
             self._container_path,
+            fields_scope=cloud_api.FieldsScope.RSYNC,
             files_only=True,
         )
     )

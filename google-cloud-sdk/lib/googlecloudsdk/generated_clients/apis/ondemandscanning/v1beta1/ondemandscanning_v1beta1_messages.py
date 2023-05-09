@@ -332,10 +332,12 @@ class CVSS(_messages.Message):
       ATTACK_COMPLEXITY_UNSPECIFIED: <no description>
       ATTACK_COMPLEXITY_LOW: <no description>
       ATTACK_COMPLEXITY_HIGH: <no description>
+      ATTACK_COMPLEXITY_MEDIUM: <no description>
     """
     ATTACK_COMPLEXITY_UNSPECIFIED = 0
     ATTACK_COMPLEXITY_LOW = 1
     ATTACK_COMPLEXITY_HIGH = 2
+    ATTACK_COMPLEXITY_MEDIUM = 3
 
   class AttackVectorValueValuesEnum(_messages.Enum):
     r"""Base Metrics Represents the intrinsic characteristics of a
@@ -376,11 +378,15 @@ class CVSS(_messages.Message):
       IMPACT_HIGH: <no description>
       IMPACT_LOW: <no description>
       IMPACT_NONE: <no description>
+      IMPACT_PARTIAL: <no description>
+      IMPACT_COMPLETE: <no description>
     """
     IMPACT_UNSPECIFIED = 0
     IMPACT_HIGH = 1
     IMPACT_LOW = 2
     IMPACT_NONE = 3
+    IMPACT_PARTIAL = 4
+    IMPACT_COMPLETE = 5
 
   class ConfidentialityImpactValueValuesEnum(_messages.Enum):
     r"""ConfidentialityImpactValueValuesEnum enum type.
@@ -390,11 +396,15 @@ class CVSS(_messages.Message):
       IMPACT_HIGH: <no description>
       IMPACT_LOW: <no description>
       IMPACT_NONE: <no description>
+      IMPACT_PARTIAL: <no description>
+      IMPACT_COMPLETE: <no description>
     """
     IMPACT_UNSPECIFIED = 0
     IMPACT_HIGH = 1
     IMPACT_LOW = 2
     IMPACT_NONE = 3
+    IMPACT_PARTIAL = 4
+    IMPACT_COMPLETE = 5
 
   class IntegrityImpactValueValuesEnum(_messages.Enum):
     r"""IntegrityImpactValueValuesEnum enum type.
@@ -404,11 +414,15 @@ class CVSS(_messages.Message):
       IMPACT_HIGH: <no description>
       IMPACT_LOW: <no description>
       IMPACT_NONE: <no description>
+      IMPACT_PARTIAL: <no description>
+      IMPACT_COMPLETE: <no description>
     """
     IMPACT_UNSPECIFIED = 0
     IMPACT_HIGH = 1
     IMPACT_LOW = 2
     IMPACT_NONE = 3
+    IMPACT_PARTIAL = 4
+    IMPACT_COMPLETE = 5
 
   class PrivilegesRequiredValueValuesEnum(_messages.Enum):
     r"""PrivilegesRequiredValueValuesEnum enum type.

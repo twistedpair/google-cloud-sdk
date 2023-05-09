@@ -678,60 +678,6 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def ListMigratable(self, request, global_params=None):
-      r"""Lists migratable Order resources that the user has access to, within the scope of the parent resource.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersListMigratableRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudCommerceConsumerProcurementV1alpha1ListMigratableOrdersResponse) The response message.
-      """
-      config = self.GetMethodConfig('ListMigratable')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ListMigratable.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders:listMigratable',
-        http_method='GET',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.listMigratable',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['newParent', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/orders:listMigratable',
-        request_field='',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersListMigratableRequest',
-        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1ListMigratableOrdersResponse',
-        supports_download=False,
-    )
-
-    def Migrate(self, request, global_params=None):
-      r"""Migrates an existing Order resource to a different billing account.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersMigrateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Migrate')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Migrate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}:migrate',
-        http_method='POST',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.migrate',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:migrate',
-        request_field='googleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersMigrateRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
     def Modify(self, request, global_params=None):
       r"""Modifies an existing Order resource.
 

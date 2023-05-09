@@ -33,6 +33,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.resources import resource_util
 from googlecloudsdk.command_lib.storage.tasks import patch_file_posix_task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
@@ -45,6 +46,7 @@ from googlecloudsdk.core.util import files
 import six
 
 
+_CSV_COLUMNS_COUNT = 9
 _NO_MATCHES_MESSAGE = 'Did not find existing container at: {}'
 
 
@@ -154,9 +156,18 @@ def get_csv_line_from_resource(resource):
   """
   url = resource.storage_url.url_string
   if isinstance(resource, resource_reference.FileObjectResource):
-    size = atime = mtime = uid = gid = mode_base_eight = crc32c = md5 = None
+    size = None
+    storage_class = None
+    atime = None
+    mtime = None
+    uid = None
+    gid = None
+    mode_base_eight = None
+    crc32c = None
+    md5 = None
   else:
     size = resource.size
+    storage_class = resource.storage_class
     atime, mtime, uid, gid, mode = (
         posix_util.get_posix_attributes_from_cloud_resource(resource)
     )
@@ -166,6 +177,7 @@ def get_csv_line_from_resource(resource):
   line_values = [
       url,
       size,
+      storage_class,
       atime,
       mtime,
       uid,
@@ -189,10 +201,11 @@ def parse_csv_line_to_resource(line):
   """
   if not line:
     return None
-  # Capping splits at 8 prevents commas in URL from being caught.
+  # Capping splits prevents commas in URL from being caught.
   (
       url_string,
       size_string,
+      storage_class_string,
       atime_string,
       mtime_string,
       uid_string,
@@ -200,7 +213,7 @@ def parse_csv_line_to_resource(line):
       mode_base_eight_string,
       crc32c_string,
       md5_string,
-  ) = line.rstrip().rsplit(',', 8)
+  ) = line.rstrip().rsplit(',', _CSV_COLUMNS_COUNT)
 
   url_object = storage_url.storage_url_from_string(url_string)
   if isinstance(url_object, storage_url.FileUrl):
@@ -208,6 +221,7 @@ def parse_csv_line_to_resource(line):
   cloud_object = resource_reference.ObjectResource(
       url_object,
       size=int(size_string) if size_string else None,
+      storage_class=storage_class_string if storage_class_string else None,
       crc32c_hash=crc32c_string if crc32c_string else None,
       md5_hash=md5_string if md5_string else None,
       custom_fields={},
@@ -366,19 +380,60 @@ class _IterateResource(enum.Enum):
   BOTH = 'both'
 
 
-def _maybe_get_full_source_metadata(source_object, destination_object):
-  """Gets full source metadata for cloud-to-cloud copies."""
-  if isinstance(source_object.storage_url, storage_url.CloudUrl) and isinstance(
-      destination_object.storage_url, storage_url.CloudUrl
+def _get_copy_task(
+    user_request_args,
+    source_object,
+    source_container=None,
+    destination_object=None,
+    destination_container=None,
+    skip_unsupported=False,
+):
+  """Generates copy tasks with generic settings and logic."""
+  if skip_unsupported:
+    unsupported_type = resource_util.get_unsupported_object_type(source_object)
+    if unsupported_type:
+      log.status.Print(
+          resource_util.UNSUPPORTED_OBJECT_WARNING_FORMAT.format(
+              source_object, unsupported_type.value
+          )
+      )
+      return
+
+  if isinstance(source_object, resource_reference.CloudResource) and (
+      isinstance(destination_container, resource_reference.CloudResource)
+      or isinstance(destination_object, resource_reference.CloudResource)
   ):
-    # TODO(b/267498851): Set fields_scope to full if preserving POSIX.
-    return api_factory.get_api(
+    if (
+        user_request_args.resource_args
+        and user_request_args.resource_args.preserve_acl
+    ):
+      fields_scope = cloud_api.FieldsScope.FULL
+    else:
+      fields_scope = cloud_api.FieldsScope.RSYNC
+    copy_source = api_factory.get_api(
         source_object.storage_url.scheme
     ).get_object_metadata(
         source_object.storage_url.bucket_name,
         source_object.storage_url.object_name,
+        fields_scope=fields_scope,
     )
-  return source_object
+  else:
+    copy_source = source_object
+
+  if destination_object:
+    copy_destination = destination_object
+  else:
+    # Must have destination_container if not destination_object.
+    copy_destination = _get_copy_destination_resource(
+        source_object, source_container, destination_container
+    )
+  return copy_task_factory.get_copy_task(
+      copy_source,
+      copy_destination,
+      do_not_decompress=True,
+      user_request_args=user_request_args,
+      verbose=True,
+  )
 
 
 def _compare_equal_urls_to_get_task_and_iteration_instruction(
@@ -387,6 +442,7 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
     destination_object,
     compare_only_hashes=False,
     skip_if_destination_has_later_modification_time=False,
+    skip_unsupported=False,
 ):
   """Similar to get_task_and_iteration_instruction except for equal URLs."""
   if user_request_args.no_clobber:
@@ -416,12 +472,11 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
     # Possible performance improvement would be adding infra to pass the known
     # POSIX info to upload tasks to avoid an `os.stat` call.
     return (
-        copy_task_factory.get_copy_task(
-            _maybe_get_full_source_metadata(source_object, destination_object),
-            destination_object,
-            do_not_decompress=True,
-            user_request_args=user_request_args,
-            verbose=True,
+        _get_copy_task(
+            user_request_args,
+            source_object,
+            destination_object=destination_object,
+            skip_unsupported=skip_unsupported,
         ),
         _IterateResource.BOTH,
     )
@@ -527,6 +582,7 @@ def _get_task_and_iteration_instruction(
     delete_unmatched_destination_objects=False,
     ignore_symlinks=False,
     skip_if_destination_has_later_modification_time=False,
+    skip_unsupported=False,
 ):
   """Compares resources and returns next rsync step.
 
@@ -549,6 +605,7 @@ def _get_task_and_iteration_instruction(
     ignore_symlinks (bool): Skip operations involving symlinks.
     skip_if_destination_has_later_modification_time (bool): Don't act if mtime
       metadata indicates we'd be overwriting with an older version of an object.
+    skip_unsupported (bool): Skip copying unsupported object types.
 
   Returns:
     A pair of with a task and iteration instruction.
@@ -591,16 +648,12 @@ def _get_task_and_iteration_instruction(
 
   if not destination_object:
     return (
-        copy_task_factory.get_copy_task(
-            _maybe_get_full_source_metadata(
-                source_object, destination_container
-            ),
-            _get_copy_destination_resource(
-                source_object, source_container, destination_container
-            ),
-            do_not_decompress=True,
-            user_request_args=user_request_args,
-            verbose=True,
+        _get_copy_task(
+            user_request_args,
+            source_object,
+            source_container=source_container,
+            destination_container=destination_container,
+            skip_unsupported=skip_unsupported,
         ),
         _IterateResource.SOURCE,
     )
@@ -615,14 +668,12 @@ def _get_task_and_iteration_instruction(
   )
   if source_url < destination_url:
     return (
-        copy_task_factory.get_copy_task(
-            _maybe_get_full_source_metadata(source_object, destination_object),
-            _get_copy_destination_resource(
-                source_object, source_container, destination_container
-            ),
-            do_not_decompress=True,
-            user_request_args=user_request_args,
-            verbose=True,
+        _get_copy_task(
+            user_request_args,
+            source_object,
+            source_container=source_container,
+            destination_container=destination_container,
+            skip_unsupported=skip_unsupported,
         ),
         _IterateResource.SOURCE,
     )
@@ -646,6 +697,7 @@ def _get_task_and_iteration_instruction(
       skip_if_destination_has_later_modification_time=(
           skip_if_destination_has_later_modification_time
       ),
+      skip_unsupported=skip_unsupported,
   )
 
 
@@ -659,6 +711,7 @@ def get_operation_iterator(
     delete_unmatched_destination_objects=False,
     ignore_symlinks=False,
     skip_if_destination_has_later_modification_time=False,
+    skip_unsupported=False,
     task_status_queue=None,
 ):
   """Returns task with next rsync operation (patch, delete, copy, etc)."""
@@ -686,6 +739,7 @@ def get_operation_iterator(
           skip_if_destination_has_later_modification_time=(
               skip_if_destination_has_later_modification_time
           ),
+          skip_unsupported=skip_unsupported,
       )
       if task:
         operation_count += 1

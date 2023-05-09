@@ -21,9 +21,12 @@ from __future__ import unicode_literals
 
 import os
 
+from typing import List, Mapping, Optional
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
+from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_client
+from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages
 
 BASELINE_APIS = ('runapps.googleapis.com',)
 LATEST_DEPLOYMENT_FIELD = 'latestDeployment'
@@ -42,7 +45,7 @@ class ServiceType:
   INGRESS = 'ingress'
 
 
-def _ServiceTypeFromStr(s):
+def _ServiceTypeFromStr(s: str) -> ServiceType:
   """Converts string into service type."""
   types = {
       'backing': ServiceType.BACKING,
@@ -59,17 +62,6 @@ def _ServiceTypeFromStr(s):
 class Parameters:
   """Each integration has a list of parameters that are stored in this class.
 
-  Types denoted here for when Python2 is no longer supported and we can have
-  the types defined directly in code.
-    name: str
-    description: str
-    data_type: str
-    update_allowed: typing.Optional[bool] = True
-    required: typing.Optional[bool] = False
-    hidden: typing.Optional[bool] = False
-    create_allowed: typing.Optional[bool] = True
-    default: typing.Optional[any] = None
-
   Attributes:
     name: Name of the parameter.
     description: Explanation of the parameter that is visible to the
@@ -85,8 +77,12 @@ class Parameters:
     default: The value provided for the param if the user has not provided one.
   """
 
-  def __init__(self, name, description, data_type, update_allowed=True,
-               required=False, hidden=False, create_allowed=True, default=None):
+  def __init__(self, name: str, description: str, data_type: str,
+               update_allowed: bool = True,
+               required: bool = False,
+               hidden: bool = False,
+               create_allowed: bool = True,
+               default: Optional[object] = None):
     self.name = name
     self.description = description
     self.data_type = data_type
@@ -99,21 +95,6 @@ class Parameters:
 
 class TypeMetadata:
   """Metadata for each integration type supported by Runapps.
-
-  Types denoted here for when Python2 is no longer supported and we can have
-  the types defined directly in code.
-    integration_type: str
-    resource_type: str
-    description: str
-    example_command: str
-    service_type: ServiceType
-    required_apis: set[str]
-    parameters: list[Parameters]
-    update_exclusive_groups: typing.Optional[list[UpdateExclusiveGroup]] = None
-    disable_service_flags: typing.Optional[bool] = False
-    singleton_name: typing.Optional[str] = None
-    required_field: typing.Optional[str] = None
-    visible: typing.Optional[bool] = False
 
   Attributes:
     integration_type: Name of integration type.
@@ -135,16 +116,22 @@ class TypeMetadata:
       special configuration.
   """
 
-  def __init__(self, integration_type, resource_type, description,
-               example_command, service_type, required_apis, parameters,
-               update_exclusive_groups=None, disable_service_flags=False,
-               singleton_name=None, required_field=None, visible=False):
+  def __init__(self, integration_type: str, resource_type: str,
+               description: str, example_command: str,
+               service_type: ServiceType, required_apis: List[str],
+               parameters: List[Parameters],
+               update_exclusive_groups:
+               Optional[List[UpdateExclusiveGroup]] = None,
+               disable_service_flags: bool = False,
+               singleton_name: Optional[str] = None,
+               required_field: Optional[str] = None,
+               visible: bool = False):
     self.integration_type = integration_type
     self.resource_type = resource_type
     self.description = description
     self.example_command = example_command
     self.service_type = _ServiceTypeFromStr(service_type)
-    self.required_apis = required_apis
+    self.required_apis = set(required_apis)
     self.parameters = [Parameters(**param) for param in parameters]
     self.disable_service_flags = disable_service_flags
     self.singleton_name = singleton_name
@@ -158,7 +145,7 @@ class TypeMetadata:
         UpdateExclusiveGroup(**group) for group in update_exclusive_groups]
 
 
-def _GetTypeMetadata():
+def _GetTypeMetadata() -> List[TypeMetadata]:
   """Returns metadata for each integration type.
 
   This loads the metadata from a yaml file at most once and will return the
@@ -168,7 +155,7 @@ def _GetTypeMetadata():
     array, the type metadata list
   """
   global _TYPE_METADATA
-  if not _TYPE_METADATA:
+  if _TYPE_METADATA is None:
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, 'metadata.yaml')
     metadata = yaml.load_path(filename)
@@ -179,14 +166,14 @@ def _GetTypeMetadata():
   return _TYPE_METADATA
 
 
-def IntegrationTypes(client):
+def IntegrationTypes(client: runapps_v1alpha1_client) -> List[str]:
   """Gets the type definitions for Cloud Run Integrations.
 
   Currently it's just returning some builtin defnitions because the API is
   not implemented yet.
 
   Args:
-    client: GAPIC API client, the api client to use.
+    client: The api client to use.
 
   Returns:
     array of integration type.
@@ -199,7 +186,7 @@ def IntegrationTypes(client):
   ]
 
 
-def GetTypeMetadata(integration_type):
+def GetTypeMetadata(integration_type: str) -> Optional[TypeMetadata]:
   """Returns metadata associated to an integration type.
 
   Args:
@@ -216,7 +203,7 @@ def GetTypeMetadata(integration_type):
   return None
 
 
-def _IntegrationVisible(integration):
+def _IntegrationVisible(integration: TypeMetadata) -> bool:
   """Returns whether or not the integration is visible.
 
   Args:
@@ -231,7 +218,9 @@ def _IntegrationVisible(integration):
   return integration.visible or show_experimental_integrations
 
 
-def GetResourceTypeFromConfig(resource_config):
+def GetResourceTypeFromConfig(
+    resource_config: Mapping[str, runapps_v1alpha1_messages.ResourceConfig]
+    ) -> str:
   """Gets the resource type.
 
   The input is converted from proto with potentially two fields.
@@ -240,14 +229,11 @@ def GetResourceTypeFromConfig(resource_config):
   two keys and we only want the one with the "oneof" property.
 
   Args:
-    resource_config: dict, the resource configuration.
+    resource_config: The resource configuration.
 
   Returns:
-    str, the integration type.
+    The integration type.
   """
-  if resource_config is None:
-    raise exceptions.ConfigurationError('resource config is none.')
-
   keys = [
       key for key in resource_config.keys() if key != LATEST_DEPLOYMENT_FIELD
   ]
@@ -259,11 +245,13 @@ def GetResourceTypeFromConfig(resource_config):
   return keys[0]
 
 
-def GetIntegrationFromResource(resource_config):
+def GetIntegrationFromResource(
+    resource_config: Mapping[str, runapps_v1alpha1_messages.ResourceConfig]
+    ) -> Optional[TypeMetadata]:
   """Returns the integration type definition associated to the given resource.
 
   Args:
-    resource_config: dict, the resource configuration.
+    resource_config: The resource configuration.
 
   Returns:
     The integration type definition.
@@ -284,11 +272,13 @@ def GetIntegrationFromResource(resource_config):
   return match
 
 
-def GetIntegrationType(resource_config):
+def GetIntegrationType(
+    resource_config: Mapping[str, runapps_v1alpha1_messages.ResourceConfig]
+    ) -> str:
   """Returns the integration type associated to the given resource type.
 
   Args:
-    resource_config: dict, the resource configuration.
+    resource_config: The resource configuration.
 
   Returns:
     The integration type.
@@ -299,11 +289,11 @@ def GetIntegrationType(resource_config):
   return type_def.integration_type
 
 
-def CheckValidIntegrationType(integration_type):
+def CheckValidIntegrationType(integration_type: str) -> None:
   """Checks if IntegrationType is supported.
 
   Args:
-    integration_type: str, integration type to validate.
+    integration_type: integration type to validate.
   Rasies: ArgumentError
   """
   if GetTypeMetadata(integration_type) is None:

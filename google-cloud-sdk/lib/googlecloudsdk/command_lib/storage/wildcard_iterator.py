@@ -40,7 +40,7 @@ from googlecloudsdk.core.util import debug_output
 import six
 
 
-_NON_FILE_ERROR_FORMAT = 'Expected files or objects. Received: {}'
+_FILES_ONLY_ERROR_FORMAT = 'Expected files but got stream: {}'
 COMPRESS_WILDCARDS_REGEX = re.compile(r'\*{3,}')
 WILDCARD_REGEX = re.compile(r'[*?\[\]]')
 
@@ -84,8 +84,8 @@ def get_wildcard_iterator(
       encrypted cloud objects in order to fetch their hash values.
     fields_scope (cloud_api.FieldsScope): Determines amount of metadata returned
       by API.
-    files_only (bool): Don't return container or stream types for cloud and
-      local files. Still returns symlinks.
+    files_only (bool): Skips containers. Raises error for stream types. Still
+      returns symlinks.
     get_bucket_metadata (bool): If true, perform a bucket GET request when
       fetching bucket resources.
     ignore_symlinks (bool): Skip over symlinks instead of following them.
@@ -174,7 +174,8 @@ class FileWildcardIterator(WildcardIterator):
     Args:
       url (FileUrl): A FileUrl instance representing a file path.
       exclude_patterns (Patterns|None): See get_wildcard_iterator.
-      files_only (bool): Return files and symlinks, not folders and streams.
+      files_only (bool): Returns files and symlinks, skips folders, errors on
+        streams.
       ignore_symlinks (bool): Skip over symlinks instead of following them.
       preserve_symlinks (bool): Preserve symlinks instead of following them.
     """
@@ -193,7 +194,7 @@ class FileWildcardIterator(WildcardIterator):
     if self._url.is_stdio:
       if self._files_only:
         raise command_errors.InvalidUrlError(
-            _NON_FILE_ERROR_FORMAT.format(self._url.object_name)
+            _FILES_ONLY_ERROR_FORMAT.format(self._url.object_name)
         )
       yield resource_reference.FileObjectResource(self._url)
 
@@ -208,9 +209,11 @@ class FileWildcardIterator(WildcardIterator):
       if self._exclude_patterns and self._exclude_patterns.match(path):
         continue
       if self._files_only and not os.path.isfile(path):
-        raise command_errors.InvalidUrlError(
-            _NON_FILE_ERROR_FORMAT.format(self._url.object_name)
-        )
+        if storage_url.is_named_pipe(path):
+          raise command_errors.InvalidUrlError(
+              _FILES_ONLY_ERROR_FORMAT.format(self._url.object_name)
+          )
+        continue
 
       # Follow symlinks unless pointing to directory or exclude flag is present.
       # However, include even directory symlinks (as files) when symlinks are
@@ -271,7 +274,7 @@ class CloudWildcardIterator(WildcardIterator):
         encrypted objects in order to fetch their hash values.
       fields_scope (cloud_api.FieldsScope): Determines amount of metadata
         returned by API.
-      files_only (bool): Only return cloud objects (not prefixes or buckets).
+      files_only (bool): Returns cloud objects, not prefixes or buckets.
       get_bucket_metadata (bool): If true, perform a bucket GET request when
         fetching bucket resources. Otherwise, bucket URLs without wildcards may
         be returned without verifying the buckets exist.
@@ -289,9 +292,7 @@ class CloudWildcardIterator(WildcardIterator):
 
   def __iter__(self):
     if self._files_only and (self._url.is_provider() or self._url.is_bucket()):
-      raise command_errors.InvalidUrlError(
-          _NON_FILE_ERROR_FORMAT.format(self._url)
-      )
+      return
     if self._url.is_provider():
       for bucket_resource in self._client.list_buckets(self._fields_scope):
         yield bucket_resource
@@ -302,16 +303,17 @@ class CloudWildcardIterator(WildcardIterator):
         else:  # URL is an object or prefix.
           for obj_resource in self._fetch_objects(
               bucket_or_unknown_resource.storage_url.bucket_name):
-            if self._exclude_patterns and self._exclude_patterns.match(
-                obj_resource.storage_url.versionless_url_string
+            if (
+                self._exclude_patterns
+                and self._exclude_patterns.match(
+                    obj_resource.storage_url.versionless_url_string
+                )
+                or self._files_only
+                and not isinstance(
+                    obj_resource, resource_reference.ObjectResource
+                )
             ):
               continue
-            if self._files_only and not isinstance(
-                obj_resource, resource_reference.ObjectResource
-            ):
-              raise command_errors.InvalidUrlError(
-                  _NON_FILE_ERROR_FORMAT.format(self._url)
-              )
             yield obj_resource
 
   def _decrypt_resource_if_necessary(self, resource):

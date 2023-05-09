@@ -121,8 +121,7 @@ class AttributePropagationSettings(_messages.Message):
     r"""OutputCredentialsValueListEntryValuesEnum enum type.
 
     Values:
-      OUTPUT_CREDENTIALS_UNSPECIFIED: Output credential not provided. This is
-        unsupported in IAP. An output credential is required.
+      OUTPUT_CREDENTIALS_UNSPECIFIED: An output credential is required.
       HEADER: Propagate attributes in the headers with "x-goog-iap-attr-"
         prefix.
       JWT: Propagate attributes in the JWT of the form: `"additional_claims":
@@ -846,7 +845,7 @@ class ReauthSettings(_messages.Message):
     Values:
       METHOD_UNSPECIFIED: Reauthentication disabled.
       LOGIN: Prompts the user to log in again.
-      PASSWORD: Deprecated.
+      PASSWORD: <no description>
       SECURE_KEY: User must use their secure key 2nd factor device.
       ENROLLED_SECOND_FACTORS: User can use any enabled 2nd factor.
     """

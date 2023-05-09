@@ -861,9 +861,9 @@ class JsonClient(cloud_api.CloudApi):
       global_params = self.messages.StandardQueryParameters(
           fields=(
               'prefixes,items/name,items/size,items/generation,'
-              'items/timeCreated,items/metadata/{},items/metadata{},'
+              'items/storageClass,items/timeCreated,items/metadata/{},'
               'items/metadata/{},items/metadata/{},items/metadata/{},'
-              'nextPageToken'
+              'items/metadata/{},nextPageToken'
           ).format(
               posix_util.ATIME_METADATA_KEY,
               posix_util.GID_METADATA_KEY,

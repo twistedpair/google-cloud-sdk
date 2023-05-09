@@ -25,7 +25,7 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 ## Helper functions to add args / flags for Replications gcloud commands ##
 def AddReplicationVolumeArg(parser, reverse_op=False):
   group_help = (
-      'The Volume to take a Replication of'
+      'The Volume that the Replication is based on'
       if not reverse_op
       else 'The source Volume to reverse the Replication direction of'
   )

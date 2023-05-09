@@ -40,12 +40,14 @@ def PrivateConnectionAttributeConfig(name='private_connection'):
 
 def ServiceAttachmentAttributeConfig(name='service_attachment'):
   return concepts.ResourceParameterAttributeConfig(
-      name=name, help_text='The service attachment of the {resource}.')
+      name=name, help_text='The service attachment of the {resource}.'
+  )
 
 
 def ConversionWorkspaceAttributeConfig(name='conversion_workspace'):
   return concepts.ResourceParameterAttributeConfig(
-      name=name, help_text='The conversion workspace of the {resource}.')
+      name=name, help_text='The conversion workspace of the {resource}.'
+  )
 
 
 def RegionAttributeConfig():
@@ -133,7 +135,7 @@ def AddConnectionProfileResourceArg(parser, verb, positional=True):
       required=True).AddToParser(parser)
 
 
-def AddCloudSqlConnectionProfileResouceArgs(parser, verb):
+def AddCloudSqlConnectionProfileResourceArgs(parser, verb):
   """Add resource arguments for a database migration CloudSQL connection profile.
 
   Args:
@@ -240,24 +242,27 @@ def AddPostgresqlConnectionProfileResourceArg(parser, verb, positional=True):
   else:
     name = '--connection-profile'
 
-  connectivity_parser = parser.add_group(mutex=True, hidden=True)
+  connectivity_parser = parser.add_group(mutex=True)
   connectivity_parser.add_argument(
       '--static-ip-connectivity',
       action='store_true',
-      help="""use static ip connectivity""")
+      help="""use static ip connectivity""",
+  )
 
   resource_specs = [
       presentation_specs.ResourcePresentationSpec(
           name,
           GetConnectionProfileResourceSpec(),
           'The connection profile {}.'.format(verb),
-          required=True),
+          required=True,
+      ),
       presentation_specs.ResourcePresentationSpec(
           '--psc-service-attachment',
           GetServiceAttachmentResourceSpec(),
           'Resource ID of the service attachment.',
           flag_name_overrides={'region': ''},
-          group=connectivity_parser)
+          group=connectivity_parser,
+      ),
   ]
   concept_parsers.ConceptParser(
       resource_specs,
@@ -349,9 +354,8 @@ def AddHeterogeneousMigrationJobResourceArgs(parser, verb, required=False):
       presentation_specs.ResourcePresentationSpec(
           '--conversion-workspace',
           GetConversionWorkspaceResourceSpec(),
-          'ID of the conversion workspaces to be used for the migration job',
+          'Name of the conversion workspaces to be used for the migration job',
           flag_name_overrides={'region': ''},
-          hidden=True,
       ),
   ]
   concept_parsers.ConceptParser(
@@ -401,20 +405,23 @@ def AddPrivateConnectionResourceArg(parser, verb, positional=True):
   vpc_peering_config_parser.add_argument(
       '--subnet',
       help="""A free subnet for peering. (CIDR of /29).""",
-      required=True)
+      required=True,
+  )
 
   resource_specs = [
       presentation_specs.ResourcePresentationSpec(
           name,
           GetPrivateConnectionResourceSpec(),
           'The private connection {}.'.format(verb),
-          required=True),
+          required=True,
+      ),
       presentation_specs.ResourcePresentationSpec(
           '--vpc',
           GetVpcResourceSpec(),
-          'Resource ID of the private connection.',
+          'Resource name of the private connection.',
           group=vpc_peering_config_parser,
-          required=True)
+          required=True,
+      ),
   ]
   concept_parsers.ConceptParser(resource_specs).AddToParser(parser)
 
@@ -438,7 +445,8 @@ def AddPrivateConnectionDeleteResourceArg(parser, verb, positional=True):
           name,
           GetPrivateConnectionResourceSpec(),
           'The private connection {}.'.format(verb),
-          required=True)
+          required=True,
+      )
   ]
   concept_parsers.ConceptParser(resource_specs).AddToParser(parser)
 
@@ -460,7 +468,8 @@ def AddConversionWorkspaceResourceArg(parser, verb, positional=True):
       name,
       GetConversionWorkspaceResourceSpec(),
       'The conversion workspace {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddConversionWorkspaceSeedResourceArg(parser, verb, positional=True):
@@ -484,19 +493,22 @@ def AddConversionWorkspaceSeedResourceArg(parser, verb, positional=True):
           name,
           GetConversionWorkspaceResourceSpec(),
           'The conversion workspace {}.'.format(verb),
-          required=True),
+          required=True,
+      ),
       presentation_specs.ResourcePresentationSpec(
           '--source-connection-profile',
           GetConnectionProfileResourceSpec(),
           'The connection profile {} from.'.format(verb),
           flag_name_overrides={'region': ''},
-          group=connection_profile),
+          group=connection_profile,
+      ),
       presentation_specs.ResourcePresentationSpec(
           '--destination-connection-profile',
           GetConnectionProfileResourceSpec(),
           'The connection profile {} from.'.format(verb),
           flag_name_overrides={'region': ''},
-          group=connection_profile)
+          group=connection_profile,
+      ),
   ]
   concept_parsers.ConceptParser(
       resource_specs,

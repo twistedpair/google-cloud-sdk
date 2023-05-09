@@ -351,6 +351,8 @@ class CloudSqlSettings(_messages.Message):
     DataDiskTypeValueValuesEnum: The type of storage: `PD_SSD` (default) or
       `PD_HDD`.
     DatabaseVersionValueValuesEnum: The database engine type and version.
+    EditionValueValuesEnum: Optional. The edition of the given Cloud SQL
+      instance.
 
   Messages:
     DatabaseFlagsValue: The database flags passed to the Cloud SQL instance at
@@ -386,6 +388,7 @@ class CloudSqlSettings(_messages.Message):
       startup. An object containing a list of "key": value pairs. Example: {
       "name": "wrench", "mass": "1.3kg", "count": "3" }.
     databaseVersion: The database engine type and version.
+    edition: Optional. The edition of the given Cloud SQL instance.
     ipConfig: The settings for IP Management. This allows to enable or disable
       the instance IP and manage which external networks can connect to the
       instance. The IPv4 address cannot be disabled.
@@ -482,6 +485,18 @@ class CloudSqlSettings(_messages.Message):
     POSTGRES_13 = 8
     POSTGRES_14 = 9
 
+  class EditionValueValuesEnum(_messages.Enum):
+    r"""Optional. The edition of the given Cloud SQL instance.
+
+    Values:
+      EDITION_UNSPECIFIED: The instance did not specify the edition.
+      STANDARD: The instance is a standard edition.
+      ENTERPRISE: The instance is an enterprise edition.
+    """
+    EDITION_UNSPECIFIED = 0
+    STANDARD = 1
+    ENTERPRISE = 2
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DatabaseFlagsValue(_messages.Message):
     r"""The database flags passed to the Cloud SQL instance at startup. An
@@ -545,15 +560,16 @@ class CloudSqlSettings(_messages.Message):
   dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 7)
   databaseFlags = _messages.MessageField('DatabaseFlagsValue', 8)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 9)
-  ipConfig = _messages.MessageField('SqlIpConfig', 10)
-  rootPassword = _messages.StringField(11)
-  rootPasswordSet = _messages.BooleanField(12)
-  secondaryZone = _messages.StringField(13)
-  sourceId = _messages.StringField(14)
-  storageAutoResizeLimit = _messages.IntegerField(15)
-  tier = _messages.StringField(16)
-  userLabels = _messages.MessageField('UserLabelsValue', 17)
-  zone = _messages.StringField(18)
+  edition = _messages.EnumField('EditionValueValuesEnum', 10)
+  ipConfig = _messages.MessageField('SqlIpConfig', 11)
+  rootPassword = _messages.StringField(12)
+  rootPasswordSet = _messages.BooleanField(13)
+  secondaryZone = _messages.StringField(14)
+  sourceId = _messages.StringField(15)
+  storageAutoResizeLimit = _messages.IntegerField(16)
+  tier = _messages.StringField(17)
+  userLabels = _messages.MessageField('UserLabelsValue', 18)
+  zone = _messages.StringField(19)
 
 
 class ColumnEntity(_messages.Message):
@@ -2054,6 +2070,33 @@ class DatamigrationProjectsLocationsPrivateConnectionsDeleteRequest(_messages.Me
   requestId = _messages.StringField(2)
 
 
+class DatamigrationProjectsLocationsPrivateConnectionsGetIamPolicyRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsPrivateConnectionsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class DatamigrationProjectsLocationsPrivateConnectionsGetRequest(_messages.Message):
   r"""A DatamigrationProjectsLocationsPrivateConnectionsGetRequest object.
 
@@ -2092,6 +2135,41 @@ class DatamigrationProjectsLocationsPrivateConnectionsListRequest(_messages.Mess
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class DatamigrationProjectsLocationsPrivateConnectionsSetIamPolicyRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsPrivateConnectionsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DatamigrationProjectsLocationsPrivateConnectionsTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  DatamigrationProjectsLocationsPrivateConnectionsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class DemoteDestinationRequest(_messages.Message):
@@ -2786,7 +2864,7 @@ class ListPrivateConnectionsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -2890,6 +2968,14 @@ class MigrationJob(_messages.Message):
       "mass": "1.3kg", "count": "3" }`.
 
   Fields:
+    cmekKeyName: The CMEK (customer-managed encryption key) fully qualified
+      key name used for the migration job. This field supports all migration
+      jobs types except for: * Mysql to Mysql (use the cmek field in the
+      cloudsql connection profile instead). * PostrgeSQL to PostgreSQL (use
+      the cmek field in the cloudsql connection profile instead). * PostgreSQL
+      to AlloyDB (use the kms_key_name field in the alloydb connection profile
+      instead). Each Cloud CMEK key has the following format: projects/[PROJEC
+      T]/locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]
     conversionWorkspace: The conversion workspace used by the migration.
     createTime: Output only. The timestamp when the migration job resource was
       created. A timestamp in RFC3339 UTC "Zulu" format, accurate to
@@ -3037,29 +3123,30 @@ class MigrationJob(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  conversionWorkspace = _messages.MessageField('ConversionWorkspaceInfo', 1)
-  createTime = _messages.StringField(2)
-  destination = _messages.StringField(3)
-  destinationDatabase = _messages.MessageField('DatabaseType', 4)
-  displayName = _messages.StringField(5)
-  dumpFlags = _messages.MessageField('DumpFlags', 6)
-  dumpPath = _messages.StringField(7)
-  duration = _messages.StringField(8)
-  endTime = _messages.StringField(9)
-  error = _messages.MessageField('Status', 10)
-  filter = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  name = _messages.StringField(13)
-  performanceConfig = _messages.MessageField('PerformanceConfig', 14)
-  phase = _messages.EnumField('PhaseValueValuesEnum', 15)
-  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 16)
-  source = _messages.StringField(17)
-  sourceDatabase = _messages.MessageField('DatabaseType', 18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 20)
-  type = _messages.EnumField('TypeValueValuesEnum', 21)
-  updateTime = _messages.StringField(22)
-  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 23)
+  cmekKeyName = _messages.StringField(1)
+  conversionWorkspace = _messages.MessageField('ConversionWorkspaceInfo', 2)
+  createTime = _messages.StringField(3)
+  destination = _messages.StringField(4)
+  destinationDatabase = _messages.MessageField('DatabaseType', 5)
+  displayName = _messages.StringField(6)
+  dumpFlags = _messages.MessageField('DumpFlags', 7)
+  dumpPath = _messages.StringField(8)
+  duration = _messages.StringField(9)
+  endTime = _messages.StringField(10)
+  error = _messages.MessageField('Status', 11)
+  filter = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  name = _messages.StringField(14)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 15)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 16)
+  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 17)
+  source = _messages.StringField(18)
+  sourceDatabase = _messages.MessageField('DatabaseType', 19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 21)
+  type = _messages.EnumField('TypeValueValuesEnum', 22)
+  updateTime = _messages.StringField(23)
+  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 24)
 
 
 class MigrationJobVerificationError(_messages.Message):
@@ -3125,6 +3212,9 @@ class MigrationJobVerificationError(_messages.Message):
       UNSUPPORTED_DATABASE_FDW_CONFIG: The source uses an unsupported Foreign
         Data Wrapper configuration.
       ERROR_RDBMS: There was an underlying RDBMS error.
+      SOURCE_SIZE_EXCEEDS_THRESHOLD: The source DB size in Bytes exceeds a
+        certain threshold. The migration might require an increase of quota,
+        or might not be supported.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3150,6 +3240,7 @@ class MigrationJobVerificationError(_messages.Message):
     UNSUPPORTED_DATABASE_LOCALE = 21
     UNSUPPORTED_DATABASE_FDW_CONFIG = 22
     ERROR_RDBMS = 23
+    SOURCE_SIZE_EXCEEDS_THRESHOLD = 24
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)
@@ -3745,8 +3836,8 @@ class PrivateConnectivity(_messages.Message):
 
 class PrivateServiceConnectConnectivity(_messages.Message):
   r"""Private Service Connect connectivity
-  (https://cloud.google.com/vpc/docs/private-service-connect#benefits-
-  services)
+  (https://cloud.google.com/vpc/docs/private-service-connect#service-
+  attachments)
 
   Fields:
     serviceAttachment: Required. A service attachment that exposes a database,

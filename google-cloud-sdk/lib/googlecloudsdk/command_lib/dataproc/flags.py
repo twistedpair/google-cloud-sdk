@@ -631,6 +631,21 @@ def _AutoscalingPolicyResourceSpec(api_version):
   )
 
 
+def _SessionTemplateResourceSpec(api_version):
+  return concepts.ResourceSpec(
+      'dataproc.projects.locations.sessionTemplates',
+      api_version=api_version,
+      resource_name='session template',
+      disable_auto_completers=True,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=_LocationAttributeConfig(),
+      sessionTemplatesId=concepts.ResourceParameterAttributeConfig(
+          name='session_template',
+          help_text='The session template name.',
+      ),
+  )
+
+
 def AddAutoscalingPolicyResourceArg(parser, verb, api_version):
   """Adds a workflow template resource argument.
 
@@ -643,6 +658,21 @@ def AddAutoscalingPolicyResourceArg(parser, verb, api_version):
       'autoscaling_policy',
       _AutoscalingPolicyResourceSpec(api_version),
       'The autoscaling policy to {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddSessionTemplateResourceArg(parser, verb, api_version):
+  """Adds a session template resource argument.
+
+  Args:
+    parser: The argparse parser for the command.
+    verb: The verb to apply to the resource, such as 'to update'.
+    api_version: api version, for example v1
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'session_template',
+      _SessionTemplateResourceSpec(api_version),
+      'The session template to {}.'.format(verb),
       required=True).AddToParser(parser)
 
 

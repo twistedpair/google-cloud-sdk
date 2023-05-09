@@ -1124,6 +1124,15 @@ class DeidentifyConfig(_messages.Message):
       performed.
     text: Configures de-identification of text wherever it is found in the
       source_dataset.
+    useRegionalDataProcessing: Ensures in-flight data remains in the region of
+      origin during de-identification. Using this option results in a
+      significant reduction of throughput, and is not compatible with
+      `LOCATION` or `ORGANIZATION_NAME` infoTypes. If the deprecated [`DicomCo
+      nfig`](google.cloud.healthcare.v1beta1.deidentify.DeidentifyConfig.dicom
+      _config) or [`FhirConfig`](google.cloud.healthcare.v1beta1.deidentify.De
+      identifyConfig.fhir_config) are used, then `LOCATION` must be excluded
+      within `TextConfig`, and must also be excluded within `ImageConfig` if
+      image redaction is required.
   """
 
   annotation = _messages.MessageField('AnnotationConfig', 1)
@@ -1134,6 +1143,7 @@ class DeidentifyConfig(_messages.Message):
   image = _messages.MessageField('ImageConfig', 6)
   operationMetadata = _messages.MessageField('DeidentifyOperationMetadata', 7)
   text = _messages.MessageField('TextConfig', 8)
+  useRegionalDataProcessing = _messages.BooleanField(9)
 
 
 class DeidentifyDatasetRequest(_messages.Message):
@@ -2042,10 +2052,19 @@ class FhirNotificationConfig(_messages.Message):
       only the resource name will be sent. Clients should always check the
       "payloadType" label from a Pub/Sub message to determine whether it needs
       to fetch the full resource as a separate operation.
+    sendPreviousResourceOnDelete: Whether to send full FHIR resource to this
+      pubsub topic for deleting FHIR resource. Note that setting this to true
+      does not guarantee that all previous resources will be sent in the
+      format of full FHIR resource. When a resource change is too large or
+      during heavy traffic, only the resource name will be sent. Clients
+      should always check the "payloadType" label from a Pub/Sub message to
+      determine whether it needs to fetch the full previous resource as a
+      separate operation.
   """
 
   pubsubTopic = _messages.StringField(1)
   sendFullResource = _messages.BooleanField(2)
+  sendPreviousResourceOnDelete = _messages.BooleanField(3)
 
 
 class FhirOutput(_messages.Message):
@@ -2150,11 +2169,11 @@ class FhirStore(_messages.Message):
     name: Output only. Resource name of the FHIR store, of the form
       `projects/{project_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`
       .
-    notificationConfig: If non-empty, publish all resource modifications of
-      this FHIR store to this destination. The Pub/Sub message attributes
-      contain a map with a string describing the action that has triggered the
-      notification. For example, "action":"CreateResource". Deprecated. Use
-      `notification_configs` instead.
+    notificationConfig: Deprecated. Use `notification_configs` instead. If
+      non-empty, publish all resource modifications of this FHIR store to this
+      destination. The Pub/Sub message attributes contain a map with a string
+      describing the action that has triggered the notification. For example,
+      "action":"CreateResource".
     notificationConfigs: Specifies where and whether to send notifications
       upon changes to a Fhir store.
     searchConfig: Configuration for how FHIR resources can be searched.
@@ -6625,7 +6644,7 @@ class ListUserDataMappingsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

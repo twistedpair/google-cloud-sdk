@@ -42,7 +42,8 @@ def GetInstanceRef(args, client):
   return client.resource_parser.Parse(
       args.instance,
       params={'project': properties.VALUES.core.project.GetOrFail},
-      collection='sql.instances')
+      collection='sql.instances',
+  )
 
 
 def GetDatabaseArgs(args, flags):
@@ -53,7 +54,8 @@ def GetDatabaseArgs(args, flags):
       command_line_args.extend([flags['database'], args.database])
     except KeyError:
       raise exceptions.InvalidArgumentException(
-          '--database', 'This instance does not support the database argument.')
+          '--database', 'This instance does not support the database argument.'
+      )
   return command_line_args
 
 
@@ -61,7 +63,8 @@ def ConnectToInstance(cmd_args, sql_user):
   """Connects to the instance using the relevant CLI."""
   try:
     log.status.write(
-        'Connecting to database with SQL user [{0}].'.format(sql_user))
+        'Connecting to database with SQL user [{0}].'.format(sql_user)
+    )
     execution_utils.Exec(cmd_args)
   except OSError:
     log.error('Failed to execute command "{0}"'.format(' '.join(cmd_args)))
@@ -80,12 +83,15 @@ def _GetAndValidateCmekKeyName(args, is_primary):
   else:
     # Check for partially specified disk-encryption-key.
     for keyword in [
-        'disk-encryption-key', 'disk-encryption-key-keyring',
-        'disk-encryption-key-location', 'disk-encryption-key-project'
+        'disk-encryption-key',
+        'disk-encryption-key-keyring',
+        'disk-encryption-key-location',
+        'disk-encryption-key-project',
     ]:
       if getattr(args, keyword.replace('-', '_'), None):
-        raise exceptions.InvalidArgumentException('--disk-encryption-key',
-                                                  'not fully specified.')
+        raise exceptions.InvalidArgumentException(
+            '--disk-encryption-key', 'not fully specified.'
+        )
 
 
 def _GetZone(args):
@@ -110,56 +116,66 @@ def IsBetaOrNewer(release_track):
 def _ParseActivationPolicy(sql_messages, policy):
   if policy:
     return sql_messages.Settings.ActivationPolicyValueValuesEnum.lookup_by_name(
-        policy.replace('-', '_').upper())
+        policy.replace('-', '_').upper()
+    )
   return None
 
 
 def _ParseAvailabilityType(sql_messages, availability_type):
   if availability_type:
     return sql_messages.Settings.AvailabilityTypeValueValuesEnum.lookup_by_name(
-        availability_type.upper())
+        availability_type.upper()
+    )
   return None
 
 
 def ParseDatabaseVersion(sql_messages, database_version):
   if database_version:
     return sql_messages.DatabaseInstance.DatabaseVersionValueValuesEnum.lookup_by_name(
-        database_version.upper())
+        database_version.upper()
+    )
   return None
 
 
 def _ParsePricingPlan(sql_messages, pricing_plan):
   if pricing_plan:
     return sql_messages.Settings.PricingPlanValueValuesEnum.lookup_by_name(
-        pricing_plan.upper())
+        pricing_plan.upper()
+    )
   return None
 
 
 def _ParseReplicationType(sql_messages, replication):
   if replication:
     return sql_messages.Settings.ReplicationTypeValueValuesEnum.lookup_by_name(
-        replication.upper())
+        replication.upper()
+    )
   return None
 
 
 def _ParseStorageType(sql_messages, storage_type):
   if storage_type:
     return sql_messages.Settings.DataDiskTypeValueValuesEnum.lookup_by_name(
-        storage_type.upper())
+        storage_type.upper()
+    )
   return None
 
 
-def _ParseWorkloadTier(sql_messages, workload_tier):
-  if workload_tier:
-    return sql_messages.Settings.WorkloadTierValueValuesEnum.lookup_by_name(
-        workload_tier.upper())
+def _ParseEdition(sql_messages, edition):
+  if edition:
+    return sql_messages.Settings.EditionValueValuesEnum.lookup_by_name(
+        edition.upper()
+    )
   return None
 
 
 # The caller must make sure that the connector_enforcement is specified.
 def _ParseConnectorEnforcement(sql_messages, connector_enforcement):
-  return (sql_messages.Settings.ConnectorEnforcementValueValuesEnum
-          .lookup_by_name(connector_enforcement.upper()))
+  return (
+      sql_messages.Settings.ConnectorEnforcementValueValuesEnum.lookup_by_name(
+          connector_enforcement.upper()
+      )
+  )
 
 
 # TODO(b/122660263): Remove when V1 instances are no longer supported.
@@ -167,7 +183,8 @@ def ShowV1DeprecationWarning(plural=False):
   message = (
       'Upgrade your First Generation instance{} to Second Generation before we '
       'auto-upgrade {} on March 4, 2020, ahead of the full decommission of '
-      'First Generation on March 25, 2020.')
+      'First Generation on March 25, 2020.'
+  )
   if plural:
     log.warning(message.format('s', 'them'))
   else:
@@ -186,8 +203,10 @@ def ShowZoneDeprecationWarnings(args):
 
   # TODO(b/73362371): Remove this check; user must specify a location flag.
   if not (region_specified or zone_specified):
-    log.warning('Starting with release 233.0.0, you will need to specify '
-                'either a region or a zone to create an instance.')
+    log.warning(
+        'Starting with release 233.0.0, you will need to specify '
+        'either a region or a zone to create an instance.'
+    )
 
 
 def ShowCmekWarning(resource_type_label, instance_type_label=None):
@@ -195,19 +214,22 @@ def ShowCmekWarning(resource_type_label, instance_type_label=None):
     log.warning(
         'Your {} will be encrypted with a customer-managed key. If anyone '
         'destroys this key, all data encrypted with it will be permanently '
-        'lost.'.format(resource_type_label))
+        'lost.'.format(resource_type_label)
+    )
   else:
     log.warning(
-        'Your {} will be encrypted with {}\'s customer-managed encryption key. '
+        "Your {} will be encrypted with {}'s customer-managed encryption key. "
         'If anyone destroys this key, all data encrypted with it will be '
-        'permanently lost.'.format(resource_type_label, instance_type_label))
+        'permanently lost.'.format(resource_type_label, instance_type_label)
+    )
 
 
 def _ShowCmekPrompt():
   log.warning(
       'You are creating a Cloud SQL instance encrypted with a customer-managed '
       'key. If anyone destroys a customer-managed key, all data encrypted with '
-      'it will be permanently lost.\n')
+      'it will be permanently lost.\n'
+  )
   console_io.PromptContinue(cancel_on_no=True)
 
 
@@ -215,11 +237,13 @@ class _BaseInstances(object):
   """Common utility functions for sql instance commands."""
 
   @classmethod
-  def _ConstructBaseSettingsFromArgs(cls,
-                                     sql_messages,
-                                     args,
-                                     instance=None,
-                                     release_track=DEFAULT_RELEASE_TRACK):
+  def _ConstructBaseSettingsFromArgs(
+      cls,
+      sql_messages,
+      args,
+      instance=None,
+      release_track=DEFAULT_RELEASE_TRACK,
+  ):
     """Constructs instance settings from the command line arguments.
 
     Args:
@@ -253,23 +277,27 @@ class _BaseInstances(object):
         tier=reducers.MachineType(instance, args.tier, args.memory, args.cpu),
         pricingPlan=_ParsePricingPlan(sql_messages, args.pricing_plan),
         replicationType=_ParseReplicationType(sql_messages, args.replication),
-        activationPolicy=_ParseActivationPolicy(sql_messages,
-                                                args.activation_policy))
+        activationPolicy=_ParseActivationPolicy(
+            sql_messages, args.activation_policy
+        ),
+    )
 
     if args.authorized_gae_apps:
       settings.authorizedGaeApplications = args.authorized_gae_apps
 
     if any([
-        args.assign_ip is not None, args.require_ssl is not None,
-        args.authorized_networks
+        args.assign_ip is not None,
+        args.require_ssl is not None,
+        args.authorized_networks,
     ]):
       settings.ipConfiguration = sql_messages.IpConfiguration()
       if args.assign_ip is not None:
         cls.SetIpConfigurationEnabled(settings, args.assign_ip)
 
       if args.authorized_networks:
-        cls.SetAuthorizedNetworks(settings, args.authorized_networks,
-                                  sql_messages.AclEntry)
+        cls.SetAuthorizedNetworks(
+            settings, args.authorized_networks, sql_messages.AclEntry
+        )
 
       if args.require_ssl is not None:
         settings.ipConfiguration.requireSsl = args.require_ssl
@@ -279,7 +307,8 @@ class _BaseInstances(object):
           kind='sql#locationPreference',
           followGaeApplication=args.follow_gae_app,
           zone=_GetZone(args),
-          secondaryZone=_GetSecondaryZone(args))
+          secondaryZone=_GetSecondaryZone(args),
+      )
 
     if args.storage_size:
       settings.dataDiskSizeGb = int(args.storage_size / constants.BYTES_TO_GB)
@@ -289,25 +318,30 @@ class _BaseInstances(object):
 
     if args.IsSpecified('availability_type'):
       settings.availabilityType = _ParseAvailabilityType(
-          sql_messages, args.availability_type)
+          sql_messages, args.availability_type
+      )
 
     if args.IsSpecified('network'):
       if not settings.ipConfiguration:
         settings.ipConfiguration = sql_messages.IpConfiguration()
       settings.ipConfiguration.privateNetwork = reducers.PrivateNetworkUrl(
-          args.network)
+          args.network
+      )
 
     if args.IsKnownAndSpecified('enable_google_private_path'):
       if not settings.ipConfiguration:
         settings.ipConfiguration = sql_messages.IpConfiguration()
-      settings.ipConfiguration.enablePrivatePathForGoogleCloudServices = args.enable_google_private_path
+      settings.ipConfiguration.enablePrivatePathForGoogleCloudServices = (
+          args.enable_google_private_path
+      )
 
     if args.deletion_protection is not None:
       settings.deletionProtectionEnabled = args.deletion_protection
 
     if args.IsSpecified('connector_enforcement'):
       settings.connectorEnforcement = _ParseConnectorEnforcement(
-          sql_messages, args.connector_enforcement)
+          sql_messages, args.connector_enforcement
+      )
 
     # BETA args.
     if IsBetaOrNewer(release_track):
@@ -315,16 +349,22 @@ class _BaseInstances(object):
         # Resize limit should be settable if the original instance has resize
         # turned on, or if the instance to be created has resize flag.
         if (instance and instance.settings.storageAutoResize) or (
-            args.storage_auto_increase):
+            args.storage_auto_increase
+        ):
           # If the limit is set to None, we want it to be set to 0. This is a
           # backend requirement.
           settings.storageAutoResizeLimit = (
-              args.storage_auto_increase_limit or 0)
+              args.storage_auto_increase_limit or 0
+          )
         else:
           raise exceptions.RequiredArgumentException(
-              '--storage-auto-increase', 'To set the storage capacity limit '
-              'using [--storage-auto-increase-limit], '
-              '[--storage-auto-increase] must be enabled.')
+              '--storage-auto-increase',
+              (
+                  'To set the storage capacity limit '
+                  'using [--storage-auto-increase-limit], '
+                  '[--storage-auto-increase] must be enabled.'
+              ),
+          )
 
       if args.IsKnownAndSpecified('enable_private_service_connect'):
         if not settings.ipConfiguration:
@@ -332,7 +372,8 @@ class _BaseInstances(object):
         if not settings.ipConfiguration.pscConfig:
           settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
         settings.ipConfiguration.pscConfig.pscEnabled = (
-            args.enable_private_service_connect)
+            args.enable_private_service_connect
+        )
 
       if args.IsSpecified('allowed_psc_projects'):
         if not settings.ipConfiguration:
@@ -340,7 +381,8 @@ class _BaseInstances(object):
         if not settings.ipConfiguration.pscConfig:
           settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
         settings.ipConfiguration.pscConfig.allowedConsumerProjects = (
-            args.allowed_psc_projects)
+            args.allowed_psc_projects
+        )
 
       if args.IsKnownAndSpecified('clear_allowed_psc_projects'):
         if not settings.ipConfiguration:
@@ -351,102 +393,104 @@ class _BaseInstances(object):
 
       if args.recreate_replicas_on_primary_crash is not None:
         settings.recreateReplicasOnPrimaryCrash = (
-            args.recreate_replicas_on_primary_crash)
+            args.recreate_replicas_on_primary_crash
+        )
 
     if _IsAlpha(release_track):
-      if args.IsSpecified('workload_tier'):
-        settings.workloadTier = _ParseWorkloadTier(sql_messages,
-                                                   args.workload_tier)
+      if args.IsSpecified('edition'):
+        settings.edition = _ParseEdition(sql_messages, args.edition)
     return settings
 
   @classmethod
-  def _ConstructCreateSettingsFromArgs(cls,
-                                       sql_messages,
-                                       args,
-                                       instance=None,
-                                       release_track=DEFAULT_RELEASE_TRACK):
+  def _ConstructCreateSettingsFromArgs(
+      cls,
+      sql_messages,
+      args,
+      instance=None,
+      release_track=DEFAULT_RELEASE_TRACK,
+  ):
     """Constructs create settings object from base settings and args."""
     original_settings = instance.settings if instance else None
-    settings = cls._ConstructBaseSettingsFromArgs(sql_messages, args, instance,
-                                                  release_track)
+    settings = cls._ConstructBaseSettingsFromArgs(
+        sql_messages, args, instance, release_track
+    )
 
-    backup_configuration = (
-        reducers.BackupConfiguration(
-            sql_messages,
-            instance,
-            backup_enabled=args.backup,
-            backup_location=args.backup_location,
-            backup_start_time=args.backup_start_time,
-            enable_bin_log=args.enable_bin_log,
-            enable_point_in_time_recovery=args.enable_point_in_time_recovery,
-            retained_backups_count=args.retained_backups_count,
-            retained_transaction_log_days=args.retained_transaction_log_days))
+    backup_configuration = reducers.BackupConfiguration(
+        sql_messages,
+        instance,
+        backup_enabled=args.backup,
+        backup_location=args.backup_location,
+        backup_start_time=args.backup_start_time,
+        enable_bin_log=args.enable_bin_log,
+        enable_point_in_time_recovery=args.enable_point_in_time_recovery,
+        retained_backups_count=args.retained_backups_count,
+        retained_transaction_log_days=args.retained_transaction_log_days,
+    )
     if backup_configuration:
       cls.AddBackupConfigToSettings(settings, backup_configuration)
 
-    settings.databaseFlags = (
-        reducers.DatabaseFlags(
-            sql_messages, original_settings,
-            database_flags=args.database_flags))
+    settings.databaseFlags = reducers.DatabaseFlags(
+        sql_messages, original_settings, database_flags=args.database_flags
+    )
 
-    settings.maintenanceWindow = (
-        reducers.MaintenanceWindow(
-            sql_messages,
-            instance,
-            maintenance_release_channel=args.maintenance_release_channel,
-            maintenance_window_day=args.maintenance_window_day,
-            maintenance_window_hour=args.maintenance_window_hour))
+    settings.maintenanceWindow = reducers.MaintenanceWindow(
+        sql_messages,
+        instance,
+        maintenance_release_channel=args.maintenance_release_channel,
+        maintenance_window_day=args.maintenance_window_day,
+        maintenance_window_hour=args.maintenance_window_hour,
+    )
 
-    if args.deny_maintenance_period_start_date and args.deny_maintenance_period_end_date:
+    if (
+        args.deny_maintenance_period_start_date
+        and args.deny_maintenance_period_end_date
+    ):
       settings.denyMaintenancePeriods = []
       settings.denyMaintenancePeriods.append(
           reducers.DenyMaintenancePeriod(
               sql_messages,
               instance,
-              deny_maintenance_period_start_date=args
-              .deny_maintenance_period_start_date,
-              deny_maintenance_period_end_date=args
-              .deny_maintenance_period_end_date,
-              deny_maintenance_period_time=args.deny_maintenance_period_time))
+              deny_maintenance_period_start_date=args.deny_maintenance_period_start_date,
+              deny_maintenance_period_end_date=args.deny_maintenance_period_end_date,
+              deny_maintenance_period_time=args.deny_maintenance_period_time,
+          )
+      )
 
-    settings.insightsConfig = (
-        reducers.InsightsConfig(
-            sql_messages,
-            insights_config_query_insights_enabled=args
-            .insights_config_query_insights_enabled,
-            insights_config_query_string_length=args
-            .insights_config_query_string_length,
-            insights_config_record_application_tags=args
-            .insights_config_record_application_tags,
-            insights_config_record_client_address=args
-            .insights_config_record_client_address,
-            insights_config_query_plans_per_minute=args
-            .insights_config_query_plans_per_minute))
+    settings.insightsConfig = reducers.InsightsConfig(
+        sql_messages,
+        insights_config_query_insights_enabled=args.insights_config_query_insights_enabled,
+        insights_config_query_string_length=args.insights_config_query_string_length,
+        insights_config_record_application_tags=args.insights_config_record_application_tags,
+        insights_config_record_client_address=args.insights_config_record_client_address,
+        insights_config_query_plans_per_minute=args.insights_config_query_plans_per_minute,
+    )
 
     if args.storage_type:
       settings.dataDiskType = _ParseStorageType(
-          sql_messages, STORAGE_TYPE_PREFIX + args.storage_type)
+          sql_messages, STORAGE_TYPE_PREFIX + args.storage_type
+      )
 
     if args.active_directory_domain is not None:
-      settings.activeDirectoryConfig = (
-          reducers.ActiveDirectoryConfig(sql_messages,
-                                         args.active_directory_domain))
+      settings.activeDirectoryConfig = reducers.ActiveDirectoryConfig(
+          sql_messages, args.active_directory_domain
+      )
 
-    settings.passwordValidationPolicy = (
-        reducers.PasswordPolicy(
-            sql_messages,
-            password_policy_min_length=args.password_policy_min_length,
-            password_policy_complexity=args.password_policy_complexity,
-            password_policy_reuse_interval=args.password_policy_reuse_interval,
-            password_policy_disallow_username_substring=args
-            .password_policy_disallow_username_substring,
-            password_policy_password_change_interval=args
-            .password_policy_password_change_interval,
-            enable_password_policy=args.enable_password_policy))
+    settings.passwordValidationPolicy = reducers.PasswordPolicy(
+        sql_messages,
+        password_policy_min_length=args.password_policy_min_length,
+        password_policy_complexity=args.password_policy_complexity,
+        password_policy_reuse_interval=args.password_policy_reuse_interval,
+        password_policy_disallow_username_substring=args.password_policy_disallow_username_substring,
+        password_policy_password_change_interval=args.password_policy_password_change_interval,
+        enable_password_policy=args.enable_password_policy,
+    )
 
     settings.sqlServerAuditConfig = reducers.SqlServerAuditConfig(
-        sql_messages, args.audit_bucket_path, args.audit_retention_interval,
-        args.audit_upload_interval)
+        sql_messages,
+        args.audit_bucket_path,
+        args.audit_retention_interval,
+        args.audit_upload_interval,
+    )
 
     if args.time_zone is not None:
       settings.timeZone = args.time_zone
@@ -458,7 +502,8 @@ class _BaseInstances(object):
     # BETA args.
     if IsBetaOrNewer(release_track):
       settings.userLabels = labels_util.ParseCreateArgs(
-          args, sql_messages.Settings.UserLabelsValue)
+          args, sql_messages.Settings.UserLabelsValue
+      )
 
       if args.allocated_ip_range_name:
         if not settings.ipConfiguration:
@@ -489,7 +534,8 @@ class _BaseInstances(object):
           kind='sql#locationPreference',
           followGaeApplication=args.follow_gae_app,
           zone=_GetZone(args),
-          secondaryZone=_GetSecondaryZone(args))
+          secondaryZone=_GetSecondaryZone(args),
+      )
 
     if args.clear_authorized_networks:
       if not settings.ipConfiguration:
@@ -499,90 +545,86 @@ class _BaseInstances(object):
     if args.enable_database_replication is not None:
       settings.databaseReplicationEnabled = args.enable_database_replication
 
-    backup_configuration = (
-        reducers.BackupConfiguration(
-            sql_messages,
-            instance,
-            backup_enabled=not args.no_backup,
-            backup_location=args.backup_location,
-            backup_start_time=args.backup_start_time,
-            enable_bin_log=args.enable_bin_log,
-            enable_point_in_time_recovery=args.enable_point_in_time_recovery,
-            retained_backups_count=args.retained_backups_count,
-            retained_transaction_log_days=args.retained_transaction_log_days))
+    backup_configuration = reducers.BackupConfiguration(
+        sql_messages,
+        instance,
+        backup_enabled=not args.no_backup,
+        backup_location=args.backup_location,
+        backup_start_time=args.backup_start_time,
+        enable_bin_log=args.enable_bin_log,
+        enable_point_in_time_recovery=args.enable_point_in_time_recovery,
+        retained_backups_count=args.retained_backups_count,
+        retained_transaction_log_days=args.retained_transaction_log_days,
+    )
 
     if backup_configuration:
       cls.AddBackupConfigToSettings(settings, backup_configuration)
 
-    settings.databaseFlags = (
-        reducers.DatabaseFlags(
-            sql_messages,
-            original_settings,
-            database_flags=args.database_flags,
-            clear_database_flags=args.clear_database_flags))
+    settings.databaseFlags = reducers.DatabaseFlags(
+        sql_messages,
+        original_settings,
+        database_flags=args.database_flags,
+        clear_database_flags=args.clear_database_flags,
+    )
 
-    settings.maintenanceWindow = (
-        reducers.MaintenanceWindow(
-            sql_messages,
-            instance,
-            maintenance_release_channel=args.maintenance_release_channel,
-            maintenance_window_day=args.maintenance_window_day,
-            maintenance_window_hour=args.maintenance_window_hour))
+    settings.maintenanceWindow = reducers.MaintenanceWindow(
+        sql_messages,
+        instance,
+        maintenance_release_channel=args.maintenance_release_channel,
+        maintenance_window_day=args.maintenance_window_day,
+        maintenance_window_hour=args.maintenance_window_hour,
+    )
 
     if args.remove_deny_maintenance_period:
       settings.denyMaintenancePeriods = []
 
-    if (args.deny_maintenance_period_start_date or
-        args.deny_maintenance_period_end_date or
-        args.deny_maintenance_period_time):
+    if (
+        args.deny_maintenance_period_start_date
+        or args.deny_maintenance_period_end_date
+        or args.deny_maintenance_period_time
+    ):
       settings.denyMaintenancePeriods = []
       settings.denyMaintenancePeriods.append(
           reducers.DenyMaintenancePeriod(
               sql_messages,
               instance,
-              deny_maintenance_period_start_date=args
-              .deny_maintenance_period_start_date,
-              deny_maintenance_period_end_date=args
-              .deny_maintenance_period_end_date,
-              deny_maintenance_period_time=args.deny_maintenance_period_time))
+              deny_maintenance_period_start_date=args.deny_maintenance_period_start_date,
+              deny_maintenance_period_end_date=args.deny_maintenance_period_end_date,
+              deny_maintenance_period_time=args.deny_maintenance_period_time,
+          )
+      )
 
-    settings.insightsConfig = (
-        reducers.InsightsConfig(
-            sql_messages,
-            insights_config_query_insights_enabled=args
-            .insights_config_query_insights_enabled,
-            insights_config_query_string_length=args
-            .insights_config_query_string_length,
-            insights_config_record_application_tags=args
-            .insights_config_record_application_tags,
-            insights_config_record_client_address=args
-            .insights_config_record_client_address,
-            insights_config_query_plans_per_minute=args
-            .insights_config_query_plans_per_minute))
+    settings.insightsConfig = reducers.InsightsConfig(
+        sql_messages,
+        insights_config_query_insights_enabled=args.insights_config_query_insights_enabled,
+        insights_config_query_string_length=args.insights_config_query_string_length,
+        insights_config_record_application_tags=args.insights_config_record_application_tags,
+        insights_config_record_client_address=args.insights_config_record_client_address,
+        insights_config_query_plans_per_minute=args.insights_config_query_plans_per_minute,
+    )
 
     if args.active_directory_domain is not None:
-      settings.activeDirectoryConfig = (
-          reducers.ActiveDirectoryConfig(sql_messages,
-                                         args.active_directory_domain))
+      settings.activeDirectoryConfig = reducers.ActiveDirectoryConfig(
+          sql_messages, args.active_directory_domain
+      )
 
-    settings.passwordValidationPolicy = (
-        reducers.PasswordPolicy(
-            sql_messages,
-            password_policy_min_length=args.password_policy_min_length,
-            password_policy_complexity=args.password_policy_complexity,
-            password_policy_reuse_interval=args.password_policy_reuse_interval,
-            password_policy_disallow_username_substring=args
-            .password_policy_disallow_username_substring,
-            password_policy_password_change_interval=args
-            .password_policy_password_change_interval,
-            enable_password_policy=args.enable_password_policy,
-            clear_password_policy=args.clear_password_policy))
+    settings.passwordValidationPolicy = reducers.PasswordPolicy(
+        sql_messages,
+        password_policy_min_length=args.password_policy_min_length,
+        password_policy_complexity=args.password_policy_complexity,
+        password_policy_reuse_interval=args.password_policy_reuse_interval,
+        password_policy_disallow_username_substring=args.password_policy_disallow_username_substring,
+        password_policy_password_change_interval=args.password_policy_password_change_interval,
+        enable_password_policy=args.enable_password_policy,
+        clear_password_policy=args.clear_password_policy,
+    )
 
     settings.sqlServerAuditConfig = reducers.SqlServerAuditConfig(
         sql_messages,
         bucket=args.audit_bucket_path,
         retention_interval=args.audit_retention_interval,
-        upload_interval=args.audit_upload_interval)
+        upload_interval=args.audit_upload_interval,
+    )
 
     if args.threads_per_core is not None:
       settings.advancedMachineFeatures = sql_messages.AdvancedMachineFeatures()
@@ -591,8 +633,9 @@ class _BaseInstances(object):
     # BETA args.
     if IsBetaOrNewer(release_track):
       labels_diff = labels_util.ExplicitNullificationDiff.FromUpdateArgs(args)
-      labels_update = labels_diff.Apply(sql_messages.Settings.UserLabelsValue,
-                                        instance.settings.userLabels)
+      labels_update = labels_diff.Apply(
+          sql_messages.Settings.UserLabelsValue, instance.settings.userLabels
+      )
       if labels_update.needs_update:
         settings.userLabels = labels_update.labels
 
@@ -647,50 +690,65 @@ class _BaseInstances(object):
     return instance_resource
 
   @classmethod
-  def ConstructCreateInstanceFromArgs(cls,
-                                      sql_messages,
-                                      args,
-                                      original=None,
-                                      instance_ref=None,
-                                      release_track=DEFAULT_RELEASE_TRACK):
+  def ConstructCreateInstanceFromArgs(
+      cls,
+      sql_messages,
+      args,
+      original=None,
+      instance_ref=None,
+      release_track=DEFAULT_RELEASE_TRACK,
+  ):
     """Constructs Instance for create request from base instance and args."""
     ShowZoneDeprecationWarnings(args)
     instance_resource = cls._ConstructBaseInstanceFromArgs(
-        sql_messages, args, original, instance_ref)
+        sql_messages, args, original, instance_ref
+    )
 
-    instance_resource.region = reducers.Region(args.region, _GetZone(args),
-                                               _GetSecondaryZone(args))
+    instance_resource.region = reducers.Region(
+        args.region, _GetZone(args), _GetSecondaryZone(args)
+    )
     instance_resource.databaseVersion = ParseDatabaseVersion(
-        sql_messages, args.database_version)
+        sql_messages, args.database_version
+    )
     instance_resource.masterInstanceName = args.master_instance_name
     instance_resource.rootPassword = args.root_password
 
     # BETA: Set the host port and return early if external master instance.
     if IsBetaOrNewer(release_track) and args.IsSpecified('source_ip_address'):
       on_premises_configuration = reducers.OnPremisesConfiguration(
-          sql_messages, args.source_ip_address, args.source_port)
+          sql_messages, args.source_ip_address, args.source_port
+      )
       instance_resource.onPremisesConfiguration = on_premises_configuration
       return instance_resource
 
     instance_resource.settings = cls._ConstructCreateSettingsFromArgs(
-        sql_messages, args, original, release_track)
+        sql_messages, args, original, release_track
+    )
 
     if args.master_instance_name:
-      replication = sql_messages.Settings.ReplicationTypeValueValuesEnum.ASYNCHRONOUS
+      replication = (
+          sql_messages.Settings.ReplicationTypeValueValuesEnum.ASYNCHRONOUS
+      )
       if args.replica_type == 'FAILOVER':
         instance_resource.replicaConfiguration = (
             sql_messages.ReplicaConfiguration(
                 kind='sql#demoteMasterMysqlReplicaConfiguration',
-                failoverTarget=True))
+                failoverTarget=True,
+            )
+        )
     else:
-      replication = sql_messages.Settings.ReplicationTypeValueValuesEnum.SYNCHRONOUS
+      replication = (
+          sql_messages.Settings.ReplicationTypeValueValuesEnum.SYNCHRONOUS
+      )
     if not args.replication:
       instance_resource.settings.replicationType = replication
 
     if args.failover_replica_name:
       instance_resource.failoverReplica = (
           sql_messages.DatabaseInstance.FailoverReplicaValue(
-              name=args.failover_replica_name))
+              name=args.failover_replica_name
+          )
+      )
 
     if args.collation:
       instance_resource.settings.collation = args.collation
@@ -700,55 +758,83 @@ class _BaseInstances(object):
       # Ensure that the primary instance name is specified.
       if not args.IsSpecified('master_instance_name'):
         raise exceptions.RequiredArgumentException(
-            '--master-instance-name', 'To create a read replica of an external '
-            'master instance, [--master-instance-name] must be specified')
+            '--master-instance-name',
+            (
+                'To create a read replica of an external '
+                'master instance, [--master-instance-name] must be specified'
+            ),
+        )
 
       # TODO(b/78648703): Remove when mutex required status is fixed.
       # Ensure that the primary replication user password is specified.
-      if not (args.IsSpecified('master_password') or
-              args.IsSpecified('prompt_for_master_password')):
+      if not (
+          args.IsSpecified('master_password')
+          or args.IsSpecified('prompt_for_master_password')
+      ):
         raise exceptions.RequiredArgumentException(
-            '--master-password', 'To create a read replica of an external '
-            'master instance, [--master-password] or '
-            '[--prompt-for-master-password] must be specified')
+            '--master-password',
+            (
+                'To create a read replica of an external '
+                'master instance, [--master-password] or '
+                '[--prompt-for-master-password] must be specified'
+            ),
+        )
 
       # Get password if not specified on command line.
       if args.prompt_for_master_password:
         args.master_password = console_io.PromptPassword(
-            'Master Instance Password: ')
+            'Master Instance Password: '
+        )
 
       instance_resource.replicaConfiguration = reducers.ReplicaConfiguration(
-          sql_messages, args.master_username, args.master_password,
-          args.master_dump_file_path, args.master_ca_certificate_path,
-          args.client_certificate_path, args.client_key_path)
+          sql_messages,
+          args.master_username,
+          args.master_password,
+          args.master_dump_file_path,
+          args.master_ca_certificate_path,
+          args.client_certificate_path,
+          args.client_key_path,
+      )
 
     is_primary = instance_resource.masterInstanceName is None
     key_name = _GetAndValidateCmekKeyName(args, is_primary)
     if key_name:
       config = sql_messages.DiskEncryptionConfiguration(
-          kind='sql#diskEncryptionConfiguration', kmsKeyName=key_name)
+          kind='sql#diskEncryptionConfiguration', kmsKeyName=key_name
+      )
       instance_resource.diskEncryptionConfiguration = config
 
     return instance_resource
 
   @classmethod
-  def ConstructPatchInstanceFromArgs(cls,
-                                     sql_messages,
-                                     args,
-                                     original,
-                                     instance_ref=None,
-                                     release_track=DEFAULT_RELEASE_TRACK):
+  def ConstructPatchInstanceFromArgs(
+      cls,
+      sql_messages,
+      args,
+      original,
+      instance_ref=None,
+      release_track=DEFAULT_RELEASE_TRACK,
+  ):
     """Constructs Instance for patch request from base instance and args."""
     instance_resource = cls._ConstructBaseInstanceFromArgs(
-        sql_messages, args, original, instance_ref)
+        sql_messages, args, original, instance_ref
+    )
 
     instance_resource.databaseVersion = ParseDatabaseVersion(
-        sql_messages, args.database_version)
+        sql_messages, args.database_version
+    )
 
     instance_resource.maintenanceVersion = args.maintenance_version
 
     instance_resource.settings = cls._ConstructPatchSettingsFromArgs(
-        sql_messages, args, original, release_track)
+        sql_messages, args, original, release_track
+    )
+
+    if IsBetaOrNewer(release_track):
+      if args.upgrade_sql_network_architecture:
+        instance_resource.sqlNetworkArchitecture = (
+            sql_messages.DatabaseInstance.SqlNetworkArchitectureValueValuesEnum.NEW_NETWORK_ARCHITECTURE
+        )
 
     return instance_resource
 

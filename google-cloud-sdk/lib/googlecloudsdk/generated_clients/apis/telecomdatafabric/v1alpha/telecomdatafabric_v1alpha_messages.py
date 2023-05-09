@@ -85,6 +85,32 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CreateDeploymentRequest(_messages.Message):
+  r"""Message for creating a Deployment
+
+  Fields:
+    deployment: Required. The resource being created
+    deploymentId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and deployment_id from the
+      method_signature of Create RPC
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  deployment = _messages.MessageField('Deployment', 1)
+  deploymentId = _messages.StringField(2)
+  requestId = _messages.StringField(3)
+
+
 class DataAdapter(_messages.Message):
   r"""Message describing DataAdapter object
 
@@ -1318,7 +1344,7 @@ class ListStreamIngestionPipelinesResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1807,46 +1833,14 @@ class PipelineScheduler(_messages.Message):
 class PublicTemplate(_messages.Message):
   r"""Message describing Template object
 
-  Messages:
-    LabelsValue: Labels as key value pairs
-
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: Labels as key value pairs
-    name: name of resource
-    parameters: Parameters will be used by template during provisioning.
-    updateTime: Output only. [Output only] Update time stamp
+    name: Output only. name of resource
+    parameters: Output only. Parameters will be used by template during
+      provisioning.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  parameters = _messages.MessageField('TemplateParameter', 4, repeated=True)
-  updateTime = _messages.StringField(5)
+  name = _messages.StringField(1)
+  parameters = _messages.MessageField('TemplateParameter', 2, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -2695,6 +2689,19 @@ class TelecomdatafabricProjectsLocationsDeploymentsPatchRequest(_messages.Messag
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class TelecomdatafabricProjectsLocationsDeploymentsPreviewRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsDeploymentsPreviewRequest object.
+
+  Fields:
+    createDeploymentRequest: A CreateDeploymentRequest resource to be passed
+      as the request body.
+    parent: Required. Value for parent.
+  """
+
+  createDeploymentRequest = _messages.MessageField('CreateDeploymentRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class TelecomdatafabricProjectsLocationsGetRequest(_messages.Message):

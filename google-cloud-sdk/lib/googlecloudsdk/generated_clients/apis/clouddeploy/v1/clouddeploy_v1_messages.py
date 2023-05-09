@@ -1830,7 +1830,7 @@ class DeploymentJobs(_messages.Message):
   r"""Deployment job composition.
 
   Fields:
-    deployJob: Output only. The deploy Job. This is the first job run in the
+    deployJob: Output only. The deploy Job. This is the deploy job in the
       phase.
     verifyJob: Output only. The verify Job. Runs after a deploy if the deploy
       succeeds.
@@ -2277,7 +2277,7 @@ class ListTargetsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

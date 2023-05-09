@@ -52,11 +52,12 @@ class FunctionsClient(object):
         batch_size_attribute='pageSize',
     )
 
-  def ListRuntimes(self, region):
+  def ListRuntimes(self, region, query_filter=None):
     """Lists available GCF Gen 2 Runtimes in a region.
 
     Args:
       region: str, The region targeted to list runtimes in.
+      query_filter: str, Filters to apply to the list runtimes request.
 
     Returns:
       v2alpha|v2beta.ListRuntimesResponse, The list runtimes request
@@ -67,7 +68,8 @@ class FunctionsClient(object):
     request = self.messages.CloudfunctionsProjectsLocationsRuntimesListRequest(
         parent='projects/{project}/locations/{region}'.format(
             project=project, region=region
-        )
+        ),
+        filter=query_filter,
     )
 
     return self.client.projects_locations_runtimes.List(request)

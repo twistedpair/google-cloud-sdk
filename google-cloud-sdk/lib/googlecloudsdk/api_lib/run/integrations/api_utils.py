@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import re
 
+from typing import Any, Dict, Optional
 from apitools.base.py import encoding as apitools_encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis
@@ -60,19 +61,27 @@ def GetMessages():
   return apis.GetMessagesModule(API_NAME, API_VERSION)
 
 
-def GetApplication(client, app_ref):
-  """Calls ApplicationGet API of Runapps of the specified reference.
+def GetApplication(
+    client: runapps_v1alpha1_client.RunappsV1alpha1,
+    app_ref: resources) -> Optional[runapps_v1alpha1_messages.Application]:
+  """Calls GetApplication API of Runapps for the specified reference.
 
   Args:
-    client: GAPIC API client, the api client to use.
-    app_ref: googlecloudsdk.core.resources.Resource, the resource reference of
-      the application.
+    client: The api client to use.
+    app_ref: The resource reference of the application.
+
+  Raises:
+    exceptions.UnsupportedIntegrationsLocationError: if the region does not
+      exist for the user.
 
   Returns:
-    The Application object. Or None if not found.
+    The application.  If the application does not exist, then
+    None is returned.
   """
-  request = client.MESSAGES_MODULE.RunappsProjectsLocationsApplicationsGetRequest(
-      name=app_ref.RelativeName())
+  request = (
+      client.MESSAGES_MODULE.RunappsProjectsLocationsApplicationsGetRequest(
+          name=app_ref.RelativeName())
+  )
   try:
     return client.projects_locations_applications.Get(request)
   except apitools_exceptions.HttpNotFoundError:
@@ -84,7 +93,7 @@ def GetApplication(client, app_ref):
 def ListApplications(
     client: runapps_v1alpha1_client.RunappsV1alpha1,
     app_ref: resources) -> runapps_v1alpha1_messages.ListApplicationsResponse:
-  """Calls ListApplications API of Runapps of the specified reference."""
+  """Calls ListApplications API of Runapps for the specified reference."""
   request = (client.MESSAGES_MODULE
              .RunappsProjectsLocationsApplicationsListRequest(
                  parent=app_ref.RelativeName()))
@@ -98,27 +107,25 @@ def ListApplications(
   return response
 
 
-def ApplicationToDict(application):
-  """Converts application resource to a dictionary.
-
-  Args:
-    application: The application object.
-
-  Returns:
-    The application data in a dictionary format.
-  """
+def ApplicationToDict(
+    application: runapps_v1alpha1_messages.Application) -> Dict[str, Any]:
+  """Converts application resource to a dictionary."""
   app_dict = apitools_encoding.MessageToDict(application)
   app_dict.setdefault(APP_DICT_CONFIG_KEY,
                       {}).setdefault(APP_CONFIG_DICT_RESOURCES_KEY, {})
   return app_dict
 
 
-def GetApplicationStatus(client, app_ref, resource_name=None):
-  """Calls ApplicationGetStatus API of Runapps of the specified reference.
+def GetApplicationStatus(
+    client: runapps_v1alpha1_client.RunappsV1alpha1,
+    app_ref: resources,
+    resource_name: Optional[str] = None
+    ) -> Optional[runapps_v1alpha1_messages.ApplicationStatus]:
+  """Calls GetApplicationStatus API of Runapps for the specified reference.
 
   Args:
-    client: GAPIC API client, the api client to use.
-    app_ref: googlecloudsdk.core.resources.Resource, the resource reference of
+    client: the api client to use.
+    app_ref: the resource reference of
       the application.
     resource_name: name of the resource to get status for. If not given, all
       resources in the application will be queried.
@@ -136,17 +143,21 @@ def GetApplicationStatus(client, app_ref, resource_name=None):
     return None
 
 
-def CreateApplication(client, app_ref, application):
-  """Calls ApplicationCreate API of Runapps of the specified reference.
+def CreateApplication(
+    client: runapps_v1alpha1_client.RunappsV1alpha1,
+    app_ref: resources,
+    application: runapps_v1alpha1_messages.Application
+    ) -> runapps_v1alpha1_messages.Operation:
+  """Calls CreateApplicaton API of Runapps for the specified reference.
 
   Args:
-    client: GAPIC API client, the api client to use.
-    app_ref: googlecloudsdk.core.resources.Resource, the resource reference of
+    client: the api client to use.
+    app_ref: the resource reference of
       the application.
-    application: run_apps.v1alpha1.Application, the application to create
+    application: the application to create
 
   Returns:
-    run_apps.v1alpha1.Operation, the LRO of this request.
+    the LRO of this request.
   """
   return client.projects_locations_applications.Create(
       client.MESSAGES_MODULE.RunappsProjectsLocationsApplicationsCreateRequest(
@@ -155,18 +166,22 @@ def CreateApplication(client, app_ref, application):
           parent=app_ref.Parent().RelativeName()))
 
 
-def PatchApplication(client, app_ref, application, update_mask=None):
-  """Calls ApplicationPatch API of Runapps of the specified reference.
+def PatchApplication(
+    client: runapps_v1alpha1_client.RunappsV1alpha1,
+    app_ref: resources,
+    application: runapps_v1alpha1_messages.Application,
+    update_mask: Optional[str] = None) -> runapps_v1alpha1_messages.Operation:
+  """Calls ApplicationPatch API of Runapps for the specified reference.
 
   Args:
-    client: GAPIC API client, the api client to use.
-    app_ref: googlecloudsdk.core.resources.Resource, the resource reference of
+    client: the api client to use.
+    app_ref: the resource reference of
       the application.
-    application: run_apps.v1alpha1.Application, the application to patch
-    update_mask: str, comma separated string listing the fields to be updated.
+    application: the application to patch
+    update_mask: comma separated string listing the fields to be updated.
 
   Returns:
-    run_apps.v1alpha1.Operation, the LRO of this request.
+    the LRO of this request.
   """
   return client.projects_locations_applications.Patch(
       client.MESSAGES_MODULE.RunappsProjectsLocationsApplicationsPatchRequest(
@@ -175,18 +190,22 @@ def PatchApplication(client, app_ref, application, update_mask=None):
           name=app_ref.RelativeName()))
 
 
-def CreateDeployment(client, app_ref, deployment, validate_only=False):
-  """Calls ApplicationDeploymentCreate API of Runapps.
+def CreateDeployment(
+    client: runapps_v1alpha1_client.RunappsV1alpha1,
+    app_ref: resources,
+    deployment: runapps_v1alpha1_messages.Deployment,
+    validate_only: Optional[bool] = False
+    ) -> runapps_v1alpha1_messages.Operation:
+  """Calls CreateDeployment API of Runapps.
 
   Args:
-    client: GAPIC API client, the api client to use.
-    app_ref: googlecloudsdk.core.resources.Resource, the resource reference of
-      the application the deployment belongs to
-    deployment: run_apps.v1alpha1.Deployment, the deployment object
-    validate_only: bool, whether to only validate the deployment
+    client: the api client to use.
+    app_ref: the resource reference of the application the deployment belongs to
+    deployment: the deployment object
+    validate_only: whether to only validate the deployment
 
   Returns:
-    run_apps.v1alpha1.Operation, the LRO of this request.
+    the LRO of this request.
   """
   return client.projects_locations_applications_deployments.Create(
       client.MESSAGES_MODULE
@@ -198,17 +217,18 @@ def CreateDeployment(client, app_ref, deployment, validate_only=False):
       )
 
 
-def GetDeployment(client, deployment_name):
+def GetDeployment(
+    client: runapps_v1alpha1_client.RunappsV1alpha1,
+    deployment_name: str) -> Optional[runapps_v1alpha1_messages.Deployment]:
   """Calls GetDeployment API of Runapps.
 
   Args:
-    client: GAPIC API client, the api client to use.
-    deployment_name: str, the canonical name of the deployment.  For example:
+    client: the api client to use.
+    deployment_name: the canonical name of the deployment.  For example:
       projects/<project>/locations/<location>/applications/<app>/deployment/<id>
 
   Returns:
-    run_apps.v1alpha1.Deployment, the Deployment object.  None is returned if
-      the deployment cannot be found.
+    the Deployment object.  None is returned if the deployment cannot be found.
   """
   try:
     return client.projects_locations_applications_deployments.Get(
@@ -220,32 +240,38 @@ def GetDeployment(client, deployment_name):
     return None
 
 
-def WaitForApplicationOperation(client, operation):
+def WaitForApplicationOperation(
+    client: runapps_v1alpha1_client.RunappsV1alpha1,
+    operation: runapps_v1alpha1_messages.Operation
+    ) -> runapps_v1alpha1_messages.Application:
   """Waits for an operation to complete.
 
   Args:
-    client:  GAPIC API client, client used to make requests.
-    operation: run_apps.v1alpha1.operation object to wait for.
+    client:  client used to make requests.
+    operation: object to wait for.
 
   Returns:
-    run_apps.v1alpha1.application, from operation.
+    the application from the operation.
   """
 
   return _WaitForOperation(client, operation,
                            client.projects_locations_applications)
 
 
-def WaitForDeploymentOperation(client, operation, tracker, tracker_update_func):
+def WaitForDeploymentOperation(
+    client: runapps_v1alpha1_client.RunappsV1alpha1,
+    operation: runapps_v1alpha1_messages.Operation,
+    tracker, tracker_update_func) -> runapps_v1alpha1_messages.Deployment:
   """Waits for an operation to complete.
 
   Args:
-    client:  GAPIC API client, client used to make requests.
-    operation: run_apps.v1alpha1.operation, object to wait for.
+    client: client used to make requests.
+    operation: object to wait for.
     tracker: The ProgressTracker that tracks the operation progress.
     tracker_update_func: function to update the tracker on polling.
 
   Returns:
-    run_apps.v1alpha1.Deployment, from operation.
+    the deployment from thex operation.
   """
 
   return _WaitForOperation(client, operation,
@@ -253,16 +279,16 @@ def WaitForDeploymentOperation(client, operation, tracker, tracker_update_func):
                            tracker, tracker_update_func)
 
 
-def _WaitForOperation(client,
-                      operation,
+def _WaitForOperation(client: runapps_v1alpha1_client.RunappsV1alpha1,
+                      operation: runapps_v1alpha1_messages.Operation,
                       resource_type,
                       tracker=None,
                       tracker_update_func=None):
   """Waits for an operation to complete.
 
   Args:
-    client:  GAPIC API client, client used to make requests.
-    operation: run_apps.v1alpha1.operation, object to wait for.
+    client:  client used to make requests.
+    operation: object to wait for.
     resource_type: type, the expected type of resource response
     tracker: The ProgressTracker that tracks the operation progress.
     tracker_update_func: function to update the tracker on polling.
@@ -305,13 +331,16 @@ def _WaitForOperation(client,
         .format(_POLLING_TIMEOUT_MS / 1000))
 
 
-def GetDeploymentOperationMetadata(messages, operation):
+def GetDeploymentOperationMetadata(
+    messages,
+    operation: runapps_v1alpha1_messages.Operation
+    ) -> runapps_v1alpha1_messages.DeploymentOperationMetadata:
   """Get the metadata message for the deployment operation.
 
   Args:
     messages: Module containing the definitions of messages for the Runapps
       API.
-    operation: runapps.v1alpha1.operation.
+    operation: The LRO
 
   Returns:
     The DeploymentOperationMetadata object.
@@ -322,13 +351,14 @@ def GetDeploymentOperationMetadata(messages, operation):
       apitools_encoding.MessageToPyValue(operation.metadata))
 
 
-def ListLocations(client, proj_id):
+def ListLocations(
+    client: runapps_v1alpha1_client.RunappsV1alpha1,
+    proj_id: str) -> runapps_v1alpha1_messages.ListLocationsResponse:
   """Get the list of all available regions from control plane.
 
   Args:
-    client: (base_api.BaseApiClient), instance of a client to use for the list
-      request.
-    proj_id: string, project id of the project to query.
+    client: instance of a client to use for the list request.
+    proj_id: project id of the project to query.
 
   Returns:
     A list of location resources.
@@ -339,12 +369,12 @@ def ListLocations(client, proj_id):
   return client.projects_locations.List(request)
 
 
-def _HandleLocationError(region, error):
+def _HandleLocationError(region: str, error: Exception) -> Exception:
   """Get the metadata message for the deployment operation.
 
   Args:
-    region: string, target region of the request.
-    error: The original HttpError.
+    region: target region of the request.
+    error: original HttpError.
 
   Raises:
     UnsupportedIntegrationsLocationError if it's location error. Otherwise

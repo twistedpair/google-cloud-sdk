@@ -1823,33 +1823,6 @@ class NetworkservicesV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastConsumerAssociations/{multicastConsumerAssociationsId}:getIamPolicy',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastConsumerAssociations.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists MulticastConsumerAssociations in a given project and location.
 
@@ -1901,60 +1874,6 @@ class NetworkservicesV1(base_api.BaseApiClient):
         request_field='multicastConsumerAssociation',
         request_type_name='NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastConsumerAssociationsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastConsumerAssociations/{multicastConsumerAssociationsId}:setIamPolicy',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastConsumerAssociations.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='NetworkservicesProjectsLocationsMulticastConsumerAssociationsSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastConsumerAssociationsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastConsumerAssociations/{multicastConsumerAssociationsId}:testIamPermissions',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastConsumerAssociations.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='NetworkservicesProjectsLocationsMulticastConsumerAssociationsTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -2049,33 +1968,6 @@ class NetworkservicesV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainActivationsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastDomainActivations/{multicastDomainActivationsId}:getIamPolicy',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastDomainActivations.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainActivationsGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists MulticastDomainActivations in a given project and location.
 
@@ -2127,60 +2019,6 @@ class NetworkservicesV1(base_api.BaseApiClient):
         request_field='multicastDomainActivation',
         request_type_name='NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainActivationsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastDomainActivations/{multicastDomainActivationsId}:setIamPolicy',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastDomainActivations.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainActivationsSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainActivationsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastDomainActivations/{multicastDomainActivationsId}:testIamPermissions',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastDomainActivations.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainActivationsTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -2275,33 +2113,6 @@ class NetworkservicesV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastDomains/{multicastDomainsId}:getIamPolicy',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastDomains.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainsGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists MulticastDomains in a given project and location.
 
@@ -2353,60 +2164,6 @@ class NetworkservicesV1(base_api.BaseApiClient):
         request_field='multicastDomain',
         request_type_name='NetworkservicesProjectsLocationsMulticastDomainsPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastDomains/{multicastDomainsId}:setIamPolicy',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastDomains.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainsSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastDomains/{multicastDomainsId}:testIamPermissions',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastDomains.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainsTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -2501,33 +2258,6 @@ class NetworkservicesV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastGroupDefinitions/{multicastGroupDefinitionsId}:getIamPolicy',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastGroupDefinitions.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists MulticastGroupDefinitions in a given project and location.
 
@@ -2579,60 +2309,6 @@ class NetworkservicesV1(base_api.BaseApiClient):
         request_field='multicastGroupDefinition',
         request_type_name='NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupDefinitionsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastGroupDefinitions/{multicastGroupDefinitionsId}:setIamPolicy',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastGroupDefinitions.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupDefinitionsSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupDefinitionsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastGroupDefinitions/{multicastGroupDefinitionsId}:testIamPermissions',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastGroupDefinitions.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupDefinitionsTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -2727,33 +2403,6 @@ class NetworkservicesV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastGroups/{multicastGroupsId}:getIamPolicy',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastGroups.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupsGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists MulticastGroups in a given project and location.
 
@@ -2805,60 +2454,6 @@ class NetworkservicesV1(base_api.BaseApiClient):
         request_field='multicastGroup',
         request_type_name='NetworkservicesProjectsLocationsMulticastGroupsPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastGroups/{multicastGroupsId}:setIamPolicy',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastGroups.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupsSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/multicastGroups/{multicastGroupsId}:testIamPermissions',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastGroups.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupsTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

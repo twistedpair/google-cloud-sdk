@@ -20,9 +20,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import base64
+
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage.gcs_grpc import metadata_util
+from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.core import log
 
@@ -32,6 +35,20 @@ def get_full_bucket_name(bucket_name):
   return 'projects/_/buckets/{}'.format(bucket_name)
 
 
+def _get_encryption_request_params(gapic_client, decryption_key):
+  if (decryption_key is not None
+      and decryption_key.type == encryption_util.KeyType.CSEK):
+    return gapic_client.types.CommonObjectRequestParams(
+        encryption_algorithm=encryption_util.ENCRYPTION_ALGORITHM,
+        encryption_key_bytes=base64.b64decode(
+            decryption_key.key.encode('utf-8')),
+        encryption_key_sha256_bytes=base64.b64decode(
+            decryption_key.sha256.encode('utf-8')),
+    )
+  else:
+    return None
+
+
 def download_object(gapic_client,
                     cloud_resource,
                     download_stream,
@@ -39,15 +56,24 @@ def download_object(gapic_client,
                     progress_callback,
                     start_byte,
                     end_byte,
-                    download_strategy):
+                    download_strategy,
+                    decryption_key):
   """Downloads the object using gRPC."""
   # Initialize request arguments.
   bucket_name = get_full_bucket_name(cloud_resource.storage_url.bucket_name)
+
   request = gapic_client.types.ReadObjectRequest(
       bucket=bucket_name,
       object_=cloud_resource.storage_url.object_name,
+      generation=(
+          int(cloud_resource.generation) if cloud_resource.generation else None
+      ),
       read_offset=start_byte,
-      read_limit=end_byte - start_byte + 1 if end_byte is not None else 0)
+      read_limit=end_byte - start_byte + 1 if end_byte is not None else 0,
+      common_object_request_params=_get_encryption_request_params(
+          gapic_client, decryption_key
+      ),
+  )
 
   # Make the request.
   stream = gapic_client.storage.read_object(request=request)

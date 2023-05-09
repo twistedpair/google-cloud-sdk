@@ -254,6 +254,14 @@ MANGED_CONFIG_TYPE_NOT_SUPPORTED = """\
 Invalid managed config type '{type}' for argument --managed-config. Valid values are: autofleet, disabled'
 """
 
+SECURITY_POSTURE_MODE_NOT_SUPPORTED = """\
+Invalid mode '{mode}' for '--security-posture' (must be one of 'disabled', 'standard').
+"""
+
+WORKLOAD_VULNERABILITY_SCANNING_MODE_NOT_SUPPORTED = """\
+Invalid mode '{mode}' for '--workload-vulnerability-scanning' (must be one of 'disabled', 'standard').
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
@@ -669,6 +677,9 @@ class CreateClusterOptions(object):
       network_performance_config=None,
       enble_insecure_kubelet_readonly_port=None,
       enable_k8s_beta_apis=None,
+      security_posture=None,
+      workload_vulnerability_scanning=None,
+      enable_runtime_vulnerability_insight=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -858,6 +869,11 @@ class CreateClusterOptions(object):
         enble_insecure_kubelet_readonly_port
     )
     self.enable_k8s_beta_apis = enable_k8s_beta_apis
+    self.security_posture = security_posture
+    self.workload_vulnerability_scanning = workload_vulnerability_scanning
+    self.enable_runtime_vulnerability_insight = (
+        enable_runtime_vulnerability_insight
+    )
 
 
 class UpdateClusterOptions(object):
@@ -985,6 +1001,9 @@ class UpdateClusterOptions(object):
       network_performance_config=None,
       enble_insecure_kubelet_readonly_port=None,
       enable_k8s_beta_apis=None,
+      security_posture=None,
+      workload_vulnerability_scanning=None,
+      enable_runtime_vulnerability_insight=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1109,6 +1128,11 @@ class UpdateClusterOptions(object):
         enble_insecure_kubelet_readonly_port
     )
     self.enable_k8s_beta_apis = enable_k8s_beta_apis
+    self.security_posture = security_posture
+    self.workload_vulnerability_scanning = workload_vulnerability_scanning
+    self.enable_runtime_vulnerability_insight = (
+        enable_runtime_vulnerability_insight
+    )
 
 
 class SetMasterAuthOptions(object):
@@ -2023,6 +2047,55 @@ class APIAdapter(object):
       else:
         cluster.securityPostureConfig.mode = (
             self.messages.SecurityPostureConfig.ModeValueValuesEnum.DISABLED
+        )
+
+    if options.security_posture is not None:
+      if cluster.securityPostureConfig is None:
+        cluster.securityPostureConfig = self.messages.SecurityPostureConfig()
+      if options.security_posture.lower() == 'standard':
+        cluster.securityPostureConfig.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.BASIC
+        )
+      elif options.security_posture.lower() == 'disabled':
+        cluster.securityPostureConfig.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.DISABLED
+        )
+      else:
+        raise util.Error(
+            SECURITY_POSTURE_MODE_NOT_SUPPORTED.format(
+                mode=options.security_posture.lower()
+            )
+        )
+
+    if options.workload_vulnerability_scanning is not None:
+      if cluster.securityPostureConfig is None:
+        cluster.securityPostureConfig = self.messages.SecurityPostureConfig()
+      if options.workload_vulnerability_scanning.lower() == 'standard':
+        cluster.securityPostureConfig.vulnerabilityMode = (
+            self.messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum.VULNERABILITY_BASIC
+        )
+      elif options.workload_vulnerability_scanning.lower() == 'disabled':
+        cluster.securityPostureConfig.vulnerabilityMode = (
+            self.messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum.VULNERABILITY_DISABLED
+        )
+      else:
+        raise util.Error(
+            WORKLOAD_VULNERABILITY_SCANNING_MODE_NOT_SUPPORTED.format(
+                mode=options.workload_vulnerability_scanning.lower()
+            )
+        )
+
+    if options.enable_runtime_vulnerability_insight is not None:
+      if cluster.runtimeVulnerabilityInsightConfig is None:
+        cluster.runtimeVulnerabilityInsightConfig = (
+            self.messages.RuntimeVulnerabilityInsightConfig())
+      if options.enable_runtime_vulnerability_insight:
+        cluster.runtimeVulnerabilityInsightConfig.mode = (
+            self.messages.RuntimeVulnerabilityInsightConfig.ModeValueValuesEnum.PREMIUM_VULNERABILITY_SCAN
+        )
+      else:
+        cluster.runtimeVulnerabilityInsightConfig.mode = (
+            self.messages.RuntimeVulnerabilityInsightConfig.ModeValueValuesEnum.DISABLED
         )
 
     if options.network_performance_config:
@@ -3206,6 +3279,61 @@ class APIAdapter(object):
         )
       update = self.messages.ClusterUpdate(
           desiredSecurityPostureConfig=security_posture_config)
+
+    if options.security_posture is not None:
+      security_posture_config = self.messages.SecurityPostureConfig()
+      if options.security_posture.lower() == 'standard':
+        security_posture_config.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.BASIC
+        )
+      elif options.security_posture.lower() == 'disabled':
+        security_posture_config.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.DISABLED
+        )
+      else:
+        raise util.Error(
+            SECURITY_POSTURE_MODE_NOT_SUPPORTED.format(
+                mode=options.security_posture.lower()
+            )
+        )
+      update = self.messages.ClusterUpdate(
+          desiredSecurityPostureConfig=security_posture_config
+      )
+
+    if options.workload_vulnerability_scanning is not None:
+      security_posture_config = self.messages.SecurityPostureConfig()
+      if options.workload_vulnerability_scanning.lower() == 'standard':
+        security_posture_config.vulnerabilityMode = (
+            self.messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum.VULNERABILITY_BASIC
+        )
+      elif options.workload_vulnerability_scanning.lower() == 'disabled':
+        security_posture_config.vulnerabilityMode = (
+            self.messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum.VULNERABILITY_DISABLED
+        )
+      else:
+        raise util.Error(
+            WORKLOAD_VULNERABILITY_SCANNING_MODE_NOT_SUPPORTED.format(
+                mode=options.workload_vulnerability_scanning.lower()
+            )
+        )
+      update = self.messages.ClusterUpdate(
+          desiredSecurityPostureConfig=security_posture_config
+      )
+
+    if options.enable_runtime_vulnerability_insight is not None:
+      runtime_vulnerability_insight_config = (
+          self.messages.RuntimeVulnerabilityInsightConfig())
+      if options.enable_runtime_vulnerability_insight:
+        runtime_vulnerability_insight_config.mode = (
+            self.messages.RuntimeVulnerabilityInsightConfig.ModeValueValuesEnum.PREMIUM_VULNERABILITY_SCAN
+        )
+      else:
+        runtime_vulnerability_insight_config.mode = (
+            self.messages.RuntimeVulnerabilityInsightConfig.ModeValueValuesEnum.DISABLED
+        )
+      update = self.messages.ClusterUpdate(
+          desiredRuntimeVulnerabilityInsightConfig=(
+              runtime_vulnerability_insight_config))
 
     if options.network_performance_config:
       perf = self._GetClusterNetworkPerformanceConfig(options)

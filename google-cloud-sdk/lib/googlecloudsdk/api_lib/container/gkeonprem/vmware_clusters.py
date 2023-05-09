@@ -36,6 +36,14 @@ class ClustersClient(client.ClientBase):
 
   def List(self, args):
     """Lists Clusters in the GKE On-Prem VMware API."""
+    # If location is not specified, and container_vmware/location is not set,
+    # list clusters of all locations within a project.
+    if (
+        'location' not in args.GetSpecifiedArgsDict()
+        and not properties.VALUES.container_vmware.location.Get()
+    ):
+      args.location = '-'
+
     list_req = (
         self._messages.GkeonpremProjectsLocationsVmwareClustersListRequest(
             parent=self._location_name(args)

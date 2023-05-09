@@ -310,7 +310,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns all Workstations using the specified config.
+      r"""Returns all Workstations using the specified workstation configuration.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstationsListRequest) input message
@@ -337,7 +337,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Returns all Workstations using the specified config on which the caller has the "workstations.workstations.use" permission.
+      r"""Returns all workstations using the specified workstation configuration on which the caller has the "workstations.workstations.use" permission.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstationsListUsableRequest) input message

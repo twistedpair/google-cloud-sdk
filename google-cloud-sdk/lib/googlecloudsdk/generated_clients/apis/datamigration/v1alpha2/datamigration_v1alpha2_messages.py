@@ -1137,7 +1137,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1427,6 +1427,13 @@ class MigrationJobVerificationError(_messages.Message):
         of restart request.
       TABLES_WITH_LIMITED_SUPPORT: The source has tables with limited support.
         E.g. PostgreSQL tables without primary keys.
+      UNSUPPORTED_DATABASE_LOCALE: The source uses an unsupported locale.
+      UNSUPPORTED_DATABASE_FDW_CONFIG: The source uses an unsupported Foreign
+        Data Wrapper configuration.
+      ERROR_RDBMS: There was an underlying RDBMS error.
+      SOURCE_SIZE_EXCEEDS_THRESHOLD: The source DB size in Bytes exceeds a
+        certain threshold. The migration might require an increase of quota,
+        or might not be supported.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -1438,6 +1445,10 @@ class MigrationJobVerificationError(_messages.Message):
     UNSUPPORTED_DEFINER = 7
     CANT_RESTART_RUNNING_MIGRATION = 8
     TABLES_WITH_LIMITED_SUPPORT = 9
+    UNSUPPORTED_DATABASE_LOCALE = 10
+    UNSUPPORTED_DATABASE_FDW_CONFIG = 11
+    ERROR_RDBMS = 12
+    SOURCE_SIZE_EXCEEDS_THRESHOLD = 13
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)

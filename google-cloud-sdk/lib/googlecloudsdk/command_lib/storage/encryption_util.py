@@ -36,6 +36,7 @@ _CMEK_REGEX = re.compile('projects/([^/]+)/'
                          'locations/([a-zA-Z0-9_-]{1,63})/'
                          'keyRings/([a-zA-Z0-9_-]{1,63})/'
                          'cryptoKeys/([a-zA-Z0-9_-]{1,63})$')
+ENCRYPTION_ALGORITHM = 'AES256'
 
 
 class KeyType(enum.Enum):

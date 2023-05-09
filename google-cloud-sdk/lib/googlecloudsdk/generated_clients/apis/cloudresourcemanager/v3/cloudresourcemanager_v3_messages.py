@@ -839,8 +839,9 @@ class CloudresourcemanagerTagKeysListRequest(_messages.Message):
       unspecified, the server will use 100 as the default.
     pageToken: Optional. A pagination token returned from a previous call to
       `ListTagKey` that indicates where this listing should continue from.
-    parent: Required. The resource name of the new TagKey's parent. Must be of
-      the form `folders/{folder_id}` or `organizations/{org_id}`.
+    parent: Required. The resource name of the TagKey's parent. Must be of the
+      form `organizations/{org_id}` or `projects/{project_id}` or
+      `projects/{project_number}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1186,13 +1187,14 @@ class EffectiveTag(_messages.Message):
       given resource. If the tag value is inherited from one of the resource's
       ancestors, inherited will be true. If false, then the tag value is
       directly attached to the resource, inherited will be false.
-    namespacedTagKey: The namespaced_name of the TagKey. Now only supported in
-      the format of `{organization_id}/{tag_key_short_name}`. Other formats
-      will be supported when we add non-org parented tags.
-    namespacedTagValue: Namespaced name of the TagValue. Now only supported in
-      the format
-      `{organization_id}/{tag_key_short_name}/{tag_value_short_name}`. Other
-      formats will be supported when we add non-org parented tags.
+    namespacedTagKey: The namespaced name of the TagKey. Can be in the form
+      `{organization_id}/{tag_key_short_name}` or
+      `{project_id}/{tag_key_short_name}` or
+      `{project_number}/{tag_key_short_name}`.
+    namespacedTagValue: The namespaced name of the TagValue. Can be in the
+      form `{organization_id}/{tag_key_short_name}/{tag_value_short_name}` or
+      `{project_id}/{tag_key_short_name}/{tag_value_short_name}` or
+      `{project_number}/{tag_key_short_name}/{tag_value_short_name}`.
     tagKey: The name of the TagKey, in the format `tagKeys/{id}`, such as
       `tagKeys/123`.
     tagKeyParentName: The parent name of the tag key. Must be in the format
@@ -2270,8 +2272,11 @@ class TagKey(_messages.Message):
       `tagKeys/{tag_key_id}`, where `tag_key_id` is the generated numeric id
       for the TagKey.
     namespacedName: Output only. Immutable. Namespaced name of the TagKey.
-    parent: Immutable. The resource name of the new TagKey's parent. Must be
-      of the form `organizations/{org_id}`.
+    parent: Immutable. The resource name of the TagKey's parent. A TagKey can
+      be parented by an Organization or a Project. For a TagKey parented by an
+      Organization, its parent must be in the form `organizations/{org_id}`.
+      For a TagKey parented by a Project, its parent can be in the form
+      `projects/{project_id}` or `projects/{project_number}`.
     purpose: Optional. A purpose denotes that this Tag is intended for use in
       policies of a specific policy engine, and will involve that policy
       engine in management operations involving this Tag. A purpose does not
@@ -2362,10 +2367,11 @@ class TagValue(_messages.Message):
       conditions. This field is always set in server responses. See
       UpdateTagValueRequest for details.
     name: Immutable. Resource name for TagValue in the format `tagValues/456`.
-    namespacedName: Output only. Namespaced name of the TagValue. Now only
-      supported in the format
-      `{organization_id}/{tag_key_short_name}/{short_name}`. Other formats
-      will be supported when we add non-org parented tags.
+    namespacedName: Output only. The namespaced name of the TagValue. Can be
+      in the form
+      `{organization_id}/{tag_key_short_name}/{tag_value_short_name}` or
+      `{project_id}/{tag_key_short_name}/{tag_value_short_name}` or
+      `{project_number}/{tag_key_short_name}/{tag_value_short_name}`.
     parent: Immutable. The resource name of the new TagValue's parent TagKey.
       Must be of the form `tagKeys/{tag_key_id}`.
     shortName: Required. Immutable. User-assigned short name for TagValue. The

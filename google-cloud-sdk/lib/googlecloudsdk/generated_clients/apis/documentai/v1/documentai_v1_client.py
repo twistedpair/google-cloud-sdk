@@ -543,7 +543,7 @@ class DocumentaiV1(base_api.BaseApiClient):
     )
 
     def Train(self, request, global_params=None):
-      r"""Trains a new processor version. Operation metadata is returned as cloud_documentai_core.TrainProcessorVersionMetadata.
+      r"""Trains a new processor version. Operation metadata is returned as TrainProcessorVersionMetadata.
 
       Args:
         request: (DocumentaiProjectsLocationsProcessorsProcessorVersionsTrainRequest) input message
@@ -634,7 +634,7 @@ class DocumentaiV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a processor from the type processor that the user chose. The processor will be at "ENABLED" state by default after its creation.
+      r"""Creates a processor from the ProcessorType provided. The processor will be at `ENABLED` state by default after its creation.
 
       Args:
         request: (DocumentaiProjectsLocationsProcessorsCreateRequest) input message
@@ -860,7 +860,7 @@ class DocumentaiV1(base_api.BaseApiClient):
           }
 
     def FetchProcessorTypes(self, request, global_params=None):
-      r"""Fetches processor types. Note that we do not use ListProcessorTypes here because it is not paginated.
+      r"""Fetches processor types. Note that we don't use ListProcessorTypes here, because it isn't paginated.
 
       Args:
         request: (DocumentaiProjectsLocationsFetchProcessorTypesRequest) input message

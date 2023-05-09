@@ -161,8 +161,6 @@ class ListMeta(_messages.Message):
       version of this object. It can be used by clients to determine when
       objects have changed. If the message is passed back to the server, it
       must be left unmodified.
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#concurrency-control-and-consistency
     selfLink: URL representing this object.
   """
 
@@ -188,6 +186,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
+      `run.googleapis.com/container-dependencies`: Revision. *
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
@@ -195,19 +194,18 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
-      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/network-
-      interfaces`: Revision, Execution. * `run.googleapis.com/post-key-
-      revocation-action-type`: Revision. * `run.googleapis.com/secrets`:
-      Revision, Execution. * `run.googleapis.com/secure-session-agent`:
-      Revision. * `run.googleapis.com/sessionAffinity`: Revision. *
+      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
+      stage`: Service, Job. * `run.googleapis.com/network-interfaces`:
+      Revision, Execution. * `run.googleapis.com/post-key-revocation-action-
+      type`: Revision. * `run.googleapis.com/secrets`: Revision, Execution. *
+      `run.googleapis.com/secure-session-agent`: Revision. *
+      `run.googleapis.com/sessionAffinity`: Revision. *
       `run.googleapis.com/startup-cpu-boost`: Revision. *
       `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
-      `run.googleapis.com/vpc-access-egress`: Revision, Execution. Execution.
-      More info: https://kubernetes.io/docs/user-guide/annotations
+      `run.googleapis.com/vpc-access-egress`: Revision, Execution.
     LabelsValue: Map of string keys and values that can be used to organize
       and categorize (scope and select) objects. May match selectors of
-      replication controllers and routes. More info:
-      https://kubernetes.io/docs/user-guide/labels
+      replication controllers and routes.
 
   Fields:
     annotations: Unstructured key value map stored with a resource that may be
@@ -222,6 +220,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
+      `run.googleapis.com/container-dependencies`: Revision. *
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
@@ -229,20 +228,18 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
-      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/network-
-      interfaces`: Revision, Execution. * `run.googleapis.com/post-key-
-      revocation-action-type`: Revision. * `run.googleapis.com/secrets`:
-      Revision, Execution. * `run.googleapis.com/secure-session-agent`:
-      Revision. * `run.googleapis.com/sessionAffinity`: Revision. *
+      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
+      stage`: Service, Job. * `run.googleapis.com/network-interfaces`:
+      Revision, Execution. * `run.googleapis.com/post-key-revocation-action-
+      type`: Revision. * `run.googleapis.com/secrets`: Revision, Execution. *
+      `run.googleapis.com/secure-session-agent`: Revision. *
+      `run.googleapis.com/sessionAffinity`: Revision. *
       `run.googleapis.com/startup-cpu-boost`: Revision. *
       `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
-      `run.googleapis.com/vpc-access-egress`: Revision, Execution. Execution.
-      More info: https://kubernetes.io/docs/user-guide/annotations
+      `run.googleapis.com/vpc-access-egress`: Revision, Execution.
     clusterName: Not supported by Cloud Run
     creationTimestamp: UTC timestamp representing the server time when this
-      object was created. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#metadata
+      object was created.
     deletionGracePeriodSeconds: Not supported by Cloud Run
     deletionTimestamp: The read-only soft deletion timestamp for this
       resource. In Cloud Run, users are not able to set this field. Instead,
@@ -253,12 +250,10 @@ class ObjectMeta(_messages.Message):
       generation of the desired state.
     labels: Map of string keys and values that can be used to organize and
       categorize (scope and select) objects. May match selectors of
-      replication controllers and routes. More info:
-      https://kubernetes.io/docs/user-guide/labels
-    name: Required. The name of the resource. In Cloud Run, name is required
-      when creating top-level resources (Service, Job), must be unique within
-      a Cloud Run project/region, and cannot be changed once created. More
-      info: https://kubernetes.io/docs/user-guide/identifiers#names
+      replication controllers and routes.
+    name: Required. The name of the resource. Name is required when creating
+      top-level resources (Service, Job), must be unique within a Cloud Run
+      project/region, and cannot be changed once created.
     namespace: Required. Defines the space within each name must be unique
       within a Cloud Run region. In Cloud Run, it must be project ID or
       number.
@@ -269,12 +264,9 @@ class ObjectMeta(_messages.Message):
       change detection, and the watch operation on a resource or set of
       resources. Clients must treat these values as opaque and passed
       unmodified back to the server or omit the value to disable conflict-
-      detection. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#concurrency-control-and-consistency
+      detection.
     selfLink: URL representing this object.
-    uid: Unique, system-generated identifier for this resource. More info:
-      https://kubernetes.io/docs/user-guide/identifiers#uids
+    uid: Unique, system-generated identifier for this resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -290,6 +282,7 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
     `run.googleapis.com/client-name`: All resources. *
     `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
+    `run.googleapis.com/container-dependencies`: Revision. *
     `run.googleapis.com/cpu-throttling`: Revision. *
     `run.googleapis.com/custom-audiences`: Service. *
     `run.googleapis.com/description`: Service. *
@@ -297,15 +290,15 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/encryption-key`: Revision, Execution. *
     `run.googleapis.com/execution-environment`: Revision, Execution. *
     `run.googleapis.com/gc-traffic-tags`: Service. *
-    `run.googleapis.com/ingress`: Service. * `run.googleapis.com/network-
-    interfaces`: Revision, Execution. * `run.googleapis.com/post-key-
-    revocation-action-type`: Revision. * `run.googleapis.com/secrets`:
-    Revision, Execution. * `run.googleapis.com/secure-session-agent`:
-    Revision. * `run.googleapis.com/sessionAffinity`: Revision. *
+    `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
+    stage`: Service, Job. * `run.googleapis.com/network-interfaces`: Revision,
+    Execution. * `run.googleapis.com/post-key-revocation-action-type`:
+    Revision. * `run.googleapis.com/secrets`: Revision, Execution. *
+    `run.googleapis.com/secure-session-agent`: Revision. *
+    `run.googleapis.com/sessionAffinity`: Revision. *
     `run.googleapis.com/startup-cpu-boost`: Revision. *
     `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
-    `run.googleapis.com/vpc-access-egress`: Revision, Execution. Execution.
-    More info: https://kubernetes.io/docs/user-guide/annotations
+    `run.googleapis.com/vpc-access-egress`: Revision, Execution.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -332,8 +325,7 @@ class ObjectMeta(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""Map of string keys and values that can be used to organize and
     categorize (scope and select) objects. May match selectors of replication
-    controllers and routes. More info: https://kubernetes.io/docs/user-
-    guide/labels
+    controllers and routes.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -446,14 +438,10 @@ class RunNamespacesDomainmappingsDeleteRequest(_messages.Message):
     kind: Cloud Run currently ignores this parameter.
     name: The name of the domain mapping being deleted. If needed, replace
       {namespace_id} with the project ID.
-    orphanDependents: Deprecated. Specifies the cascade behavior on delete.
-      Cloud Run only supports cascading behavior, so this must be false. This
-      attribute is deprecated, and is now replaced with PropagationPolicy See
-      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    orphanDependents: Deprecated. This attribute is deprecated, must be false,
+      and is now replaced with PropagationPolicy.
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
+      currently ignores this setting, and deletes in the background.
   """
 
   apiVersion = _messages.StringField(1)
@@ -538,14 +526,10 @@ class RunProjectsLocationsDomainmappingsDeleteRequest(_messages.Message):
     kind: Cloud Run currently ignores this parameter.
     name: The name of the domain mapping being deleted. If needed, replace
       {namespace_id} with the project ID.
-    orphanDependents: Deprecated. Specifies the cascade behavior on delete.
-      Cloud Run only supports cascading behavior, so this must be false. This
-      attribute is deprecated, and is now replaced with PropagationPolicy See
-      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    orphanDependents: Deprecated. This attribute is deprecated, must be false,
+      and is now replaced with PropagationPolicy.
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
+      currently ignores this setting, and deletes in the background.
   """
 
   apiVersion = _messages.StringField(1)

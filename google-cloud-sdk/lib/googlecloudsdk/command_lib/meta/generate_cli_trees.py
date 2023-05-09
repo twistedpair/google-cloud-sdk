@@ -1199,6 +1199,9 @@ def LoadOrGenerate(command, directories=None, tarball=None, force=False,
   if command_name.endswith('_lite'):
     command_name = command_name[:-5]
 
+  if command_name.endswith('.py'):
+    command_name = command_name[:-3]
+
   # Don't repeat failed attempts.
   if CliTreeGenerator.AlreadyFailed(command_name):
     if verbose:

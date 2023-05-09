@@ -29,6 +29,7 @@ import random
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage import manifest_util
+from googlecloudsdk.command_lib.storage import symlink_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_util
@@ -111,18 +112,44 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
 
     source_url = self._source_resource.storage_url
     original_source_path = source_url.object_name
+
+    # If the uploaded file is a symlink that we're preserving, then create a
+    # temporary file with placeholder content.
+    should_create_symlink_placeholder = (
+        symlink_util.get_preserve_symlink_from_user_request(
+            self._user_request_args
+        )
+        and self._source_resource.is_symlink
+    )
+    if should_create_symlink_placeholder:
+      placeholder_file_path = symlink_util.get_symlink_placeholder_file(
+          self._source_resource.storage_url.object_name
+      )
+    else:
+      placeholder_file_path = None
+
     should_gzip_locally = gzip_util.should_gzip_locally(
         getattr(self._user_request_args, 'gzip_settings', None),
         original_source_path)
 
     if source_url.is_stream:
-      size = None
       source_path = original_source_path
+    elif should_gzip_locally and placeholder_file_path:
+      source_path = gzip_util.get_temporary_gzipped_file(
+          placeholder_file_path
+      )
+    elif should_gzip_locally:
+      source_path = gzip_util.get_temporary_gzipped_file(
+          original_source_path
+      )
+    elif should_create_symlink_placeholder:
+      source_path = placeholder_file_path
     else:
-      if should_gzip_locally:
-        source_path = gzip_util.get_temporary_gzipped_file(original_source_path)
-      else:
-        source_path = original_source_path
+      source_path = original_source_path
+
+    if source_url.is_stream:
+      size = None
+    else:
       size = os.path.getsize(source_path)
 
     component_count = copy_component_util.get_component_count(
@@ -157,6 +184,9 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
       if should_gzip_locally:
         # Delete temporary gzipped version of source file.
         os.remove(source_path)
+      if should_create_symlink_placeholder:
+        # Delete temporary symlink placeholder version of source file.
+        os.remove(placeholder_file_path)
       if self._delete_source:
         # Delete original source file.
         os.remove(self._source_resource.storage_url.object_name)

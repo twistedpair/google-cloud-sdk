@@ -140,6 +140,29 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SCOPES_NAMESPACES = (
+      'projects.locations.scopes.namespaces',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/scopes/'
+              '{scopesId}/namespaces/{namespacesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SCOPES_NAMESPACES_RESOURCEQUOTAS = (
+      'projects.locations.scopes.namespaces.resourcequotas',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/scopes/'
+              '{scopesId}/namespaces/{namespacesId}/resourcequotas/'
+              '{resourcequotasId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

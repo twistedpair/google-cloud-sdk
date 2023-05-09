@@ -23,7 +23,6 @@ import subprocess
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
@@ -501,25 +500,16 @@ def _UseExecAuth():
 
   # Allow env flag to override behavior
   if use_gke_gcloud_auth_plugin is not None:
-    if use_gke_gcloud_auth_plugin.lower() == 'true':
-      return True
     if use_gke_gcloud_auth_plugin.lower() == 'false':
       return False
-    else:
+    elif use_gke_gcloud_auth_plugin.lower() != 'true':
       log.warning(
           'Ignoring unsupported env value found for {}={}'.format(
               env_flag, use_gke_gcloud_auth_plugin.lower()
           )
       )
 
-  # Enable ExecAuth for all Googlers
-  return _IsGoogler()
-
-
-def _IsGoogler():
-  """Returns a bool noting if User is a Googler."""
-  email = properties.VALUES.core.account.Get()
-  return (email is not None and email.lower().endswith('@google.com'))
+  return True
 
 
 def _GetGkeGcloudPluginCommandAndPrintWarning():

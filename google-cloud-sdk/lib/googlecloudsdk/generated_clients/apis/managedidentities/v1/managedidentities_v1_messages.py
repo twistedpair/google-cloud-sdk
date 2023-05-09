@@ -265,6 +265,13 @@ class DetachTrustRequest(_messages.Message):
   trust = _messages.MessageField('Trust', 1)
 
 
+class DisableMigrationRequest(_messages.Message):
+  r"""DisableMigrationRequest is the request message for DisableMigration
+  method.
+  """
+
+
+
 class Domain(_messages.Message):
   r"""Represents a managed Microsoft Active Directory domain. If the domain is
   being changed, it will be placed into the UPDATING state, which indicates
@@ -409,6 +416,17 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class EnableMigrationRequest(_messages.Message):
+  r"""EnableMigrationRequest is the request message for EnableMigration
+  method.
+
+  Fields:
+    migratingDomains: Required. List of the on-prem domains to be migrated.
+  """
+
+  migratingDomains = _messages.MessageField('OnPremDomainDetails', 1, repeated=True)
 
 
 class Expr(_messages.Message):
@@ -1250,7 +1268,7 @@ class ListSqlIntegrationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1643,6 +1661,21 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsDetachTrustRequest(_message
   name = _messages.StringField(2, required=True)
 
 
+class ManagedidentitiesProjectsLocationsGlobalDomainsDisableMigrationRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsDisableMigrationRequest
+  object.
+
+  Fields:
+    disableMigrationRequest: A DisableMigrationRequest resource to be passed
+      as the request body.
+    domain: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+  """
+
+  disableMigrationRequest = _messages.MessageField('DisableMigrationRequest', 1)
+  domain = _messages.StringField(2, required=True)
+
+
 class ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest(_messages.Message):
   r"""A
   ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest
@@ -1657,6 +1690,21 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest(_m
 
   domain = _messages.StringField(1, required=True)
   domainJoinMachineRequest = _messages.MessageField('DomainJoinMachineRequest', 2)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsEnableMigrationRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsEnableMigrationRequest
+  object.
+
+  Fields:
+    domain: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+    enableMigrationRequest: A EnableMigrationRequest resource to be passed as
+      the request body.
+  """
+
+  domain = _messages.StringField(1, required=True)
+  enableMigrationRequest = _messages.MessageField('EnableMigrationRequest', 2)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsExtendSchemaRequest(_messages.Message):
@@ -2139,6 +2187,19 @@ class ManagedidentitiesProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class OnPremDomainDetails(_messages.Message):
+  r"""OnPremDomainDetails is the message which contains details of on-prem
+  domain which is trusted and needs to be migrated.
+
+  Fields:
+    disableSidFiltering: Optional. Option to disable SID filtering.
+    domainName: Required. FQDN of the on-prem domain being migrated.
+  """
+
+  disableSidFiltering = _messages.BooleanField(1)
+  domainName = _messages.StringField(2)
 
 
 class Operation(_messages.Message):

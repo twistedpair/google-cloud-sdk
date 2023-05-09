@@ -24,4 +24,5 @@ def AddDatabaseServiceFlag(parser):
   parser.add_argument(
       '--database-service',
       required=True,
-      help='database service for the oracle connection profile.')
+      help='database service for the oracle connection profile.',
+  )

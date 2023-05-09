@@ -286,6 +286,8 @@ definitions:
       override_resource_collection: {type: boolean}
       # Whether the flag is required or not.
       required: {type: boolean}
+      # Whether or not the resource arg is plural and should be generated as a list.
+      repeated: {type: boolean}
 
   arg:
     required: [help_text]
@@ -423,10 +425,7 @@ definitions:
           # The group arguments.
           params:
             type: array
-            items:
-              oneOf:
-              - $ref: "#/definitions/argument"
-              - $ref: "#/definitions/resource_arg"
+            items: {$ref: "#/definitions/argument"}
             minItems: 1
 
 type: object

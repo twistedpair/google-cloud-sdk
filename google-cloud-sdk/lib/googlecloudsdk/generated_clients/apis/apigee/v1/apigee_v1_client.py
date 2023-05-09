@@ -1301,7 +1301,7 @@ class ApigeeV1(base_api.BaseApiClient):
         request: (ApigeeOrganizationsAppgroupsAppsKeysApiproductsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleProtobufEmpty) The response message.
+        (GoogleCloudApigeeV1AppGroupAppKey) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -1317,7 +1317,7 @@ class ApigeeV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='ApigeeOrganizationsAppgroupsAppsKeysApiproductsDeleteRequest',
-        response_type_name='GoogleProtobufEmpty',
+        response_type_name='GoogleCloudApigeeV1AppGroupAppKey',
         supports_download=False,
     )
 

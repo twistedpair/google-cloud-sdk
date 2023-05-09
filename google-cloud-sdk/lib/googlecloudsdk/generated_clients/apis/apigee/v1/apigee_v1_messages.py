@@ -1963,7 +1963,7 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDeployRequest(_messages.Messag
       necessary if the new deployment will be capturing traffic from another
       environment under a shared environment group or if traffic will be
       rerouted to a different environment due to a base path removal. The
-      [GenerateDeployChangeReport API](GenerateDeployChangeReport) may be used
+      [generateDeployChangeReport API](generateDeployChangeReport) may be used
       to examine routing changes before issuing the deployment request, and
       its response will indicate if a sequenced rollout is recommended for the
       deployment.
@@ -5479,8 +5479,7 @@ class GoogleCloudApigeeV1AppGroup(_messages.Message):
     attributes: A list of attributes
     channelId: channel identifier identifies the owner maintaing this
       grouping.
-    correlationId: correlation id, is an opaque identifier that can be used by
-      the caller to tag this AppGroup.
+    channelUri: A reference to the associated storefront/marketplace.
     createdAt: Output only. Created time as milliseconds since epoch.
     displayName: app group name displayed in the UI
     lastModifiedAt: Output only. Modified time as milliseconds since epoch.
@@ -5495,7 +5494,7 @@ class GoogleCloudApigeeV1AppGroup(_messages.Message):
   appGroupId = _messages.StringField(1)
   attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 2, repeated=True)
   channelId = _messages.StringField(3)
-  correlationId = _messages.StringField(4)
+  channelUri = _messages.StringField(4)
   createdAt = _messages.IntegerField(5)
   displayName = _messages.StringField(6)
   lastModifiedAt = _messages.IntegerField(7)
@@ -6996,8 +6995,6 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
       resource files * Creating, updating, or deleting target servers
     StateValueValuesEnum: Output only. State of the environment. Values other
       than ACTIVE means the resource is not ready to use.
-    TypeValueValuesEnum: Optional. EnvironmentType selected for the
-      environment.
 
   Fields:
     apiProxyType: Optional. API Proxy type supported by the environment. The
@@ -7027,7 +7024,6 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
       environment.
     state: Output only. State of the environment. Values other than ACTIVE
       means the resource is not ready to use.
-    type: Optional. EnvironmentType selected for the environment.
   """
 
   class ApiProxyTypeValueValuesEnum(_messages.Enum):
@@ -7091,27 +7087,6 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
     DELETING = 3
     UPDATING = 4
 
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Optional. EnvironmentType selected for the environment.
-
-    Values:
-      ENVIRONMENT_TYPE_UNSPECIFIED: Environment type not specified.
-      BASE: Base environment has limited capacity and capabilities and are
-        usually used when you are getting started with Apigee or while
-        experimenting. Refer to Apigee's public documentation for more
-        details.
-      INTERMEDIATE: This is the default type and it supports API management
-        features and higher capacity than Base environment. Refer to Apigee's
-        public documentation for more details.
-      FLEX: Flex environment supports advanced capabilites and even higher
-        capacity than Intermediate environment. Refer to Apigee's public
-        documentation for more details.
-    """
-    ENVIRONMENT_TYPE_UNSPECIFIED = 0
-    BASE = 1
-    INTERMEDIATE = 2
-    FLEX = 3
-
   apiProxyType = _messages.EnumField('ApiProxyTypeValueValuesEnum', 1)
   createdAt = _messages.IntegerField(2)
   deploymentType = _messages.EnumField('DeploymentTypeValueValuesEnum', 3)
@@ -7123,7 +7098,6 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
   nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 9)
   properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12)
 
 
 class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
@@ -7926,9 +7900,10 @@ class GoogleCloudApigeeV1KeyValueMap(_messages.Message):
   r"""Collection of key/value string pairs.
 
   Fields:
-    encrypted: Optional. Flag that specifies whether entry values will be
-      encrypted. You must set this value to `true`. Apigee X and hybrid do not
-      support unencrytped key value maps.
+    encrypted: Required. Flag that specifies whether entry values will be
+      encrypted. This field is retained for backward compatibility and the
+      value of encrypted will always be `true`. Apigee X and hybrid do not
+      support unencrypted key value maps.
     name: Required. ID of the key value map.
     resourceName: Output only. Resource URI on which the key value map is
       based.
@@ -11258,8 +11233,8 @@ class GoogleCloudApigeeV1UpdateAppGroupAppKeyRequest(_messages.Message):
       `approve` or `revoke` respectively. The `Content-Type` header, if set,
       must be set to `application/octet-stream`, with empty body.
     apiProducts: The list of API products that will be associated with the
-      credential. Note that Api products will get overwritten with this list,
-      and will not get appended.
+      credential. This list will be appended to the existing list of
+      associated API Products for this App Key. Duplicates will be ignored.
     appGroupAppKey: The new AppGroupKey to be amended. Note that the status
       can be updated only via action.
   """

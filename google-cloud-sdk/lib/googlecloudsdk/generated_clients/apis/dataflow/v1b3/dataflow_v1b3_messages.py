@@ -3535,6 +3535,9 @@ class Job(_messages.Message):
       a job's requested state to `JOB_STATE_CANCELLED` or `JOB_STATE_DONE`,
       irrevocably terminating the job if it has not already reached a terminal
       state.
+    runtimeUpdatableParams: This field may ONLY be modified at runtime using
+      the projects.jobs.update method to adjust job behavior. This field has
+      no effect when specified at job creation.
     satisfiesPzs: Reserved for future use. This field is set only in responses
       from the server; it is ignored if it is set in any requests.
     stageStates: This field may be mutated by the Cloud Dataflow service;
@@ -3792,14 +3795,15 @@ class Job(_messages.Message):
   replaceJobId = _messages.StringField(15)
   replacedByJobId = _messages.StringField(16)
   requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 17)
-  satisfiesPzs = _messages.BooleanField(18)
-  stageStates = _messages.MessageField('ExecutionStageState', 19, repeated=True)
-  startTime = _messages.StringField(20)
-  steps = _messages.MessageField('Step', 21, repeated=True)
-  stepsLocation = _messages.StringField(22)
-  tempFiles = _messages.StringField(23, repeated=True)
-  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 24)
-  type = _messages.EnumField('TypeValueValuesEnum', 25)
+  runtimeUpdatableParams = _messages.MessageField('RuntimeUpdatableParams', 18)
+  satisfiesPzs = _messages.BooleanField(19)
+  stageStates = _messages.MessageField('ExecutionStageState', 20, repeated=True)
+  startTime = _messages.StringField(21)
+  steps = _messages.MessageField('Step', 22, repeated=True)
+  stepsLocation = _messages.StringField(23)
+  tempFiles = _messages.StringField(24, repeated=True)
+  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 25)
+  type = _messages.EnumField('TypeValueValuesEnum', 26)
 
 
 class JobExecutionDetails(_messages.Message):
@@ -5070,6 +5074,9 @@ class ParameterMetadata(_messages.Message):
       BIGQUERY_TABLE: The parameter specifies a BigQuery table.
       JAVASCRIPT_UDF_FILE: The parameter specifies a JavaScript UDF in Cloud
         Storage.
+      SERVICE_ACCOUNT: The parameter specifies a Service Account email.
+      MACHINE_TYPE: The parameter specifies a Machine Type.
+      KMS_KEY_NAME: The parameter specifies a KMS Key name.
     """
     DEFAULT = 0
     TEXT = 1
@@ -5083,6 +5090,9 @@ class ParameterMetadata(_messages.Message):
     PUBSUB_SUBSCRIPTION = 9
     BIGQUERY_TABLE = 10
     JAVASCRIPT_UDF_FILE = 11
+    SERVICE_ACCOUNT = 12
+    MACHINE_TYPE = 13
+    KMS_KEY_NAME = 14
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomMetadataValue(_messages.Message):
@@ -5669,6 +5679,22 @@ class RuntimeMetadata(_messages.Message):
 
   parameters = _messages.MessageField('ParameterMetadata', 1, repeated=True)
   sdkInfo = _messages.MessageField('SDKInfo', 2)
+
+
+class RuntimeUpdatableParams(_messages.Message):
+  r"""Additional job parameters that can only be updated during runtime using
+  the projects.jobs.update method. These fields have no effect when specified
+  during job creation.
+
+  Fields:
+    maxNumWorkers: The maximum number of workers to cap autoscaling at. This
+      field is currently only supported for Streaming Engine jobs.
+    minNumWorkers: The minimum number of workers to scale down to. This field
+      is currently only supported for Streaming Engine jobs.
+  """
+
+  maxNumWorkers = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minNumWorkers = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class SDKInfo(_messages.Message):

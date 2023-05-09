@@ -85,6 +85,8 @@ class Cluster(_messages.Message):
       provided, auth feature is disabled for the cluster.
     createTime: Output only. The timestamp associated with the cluster
       creation request.
+    discoveryEndpoints: Endpoints on each network, for Redis clients to
+      connect to the cluster.
     displayName: Optional. An arbitrary and optional user-provided name for
       the cluster.
     name: Required. Unique name of the resource in this scope including
@@ -93,7 +95,8 @@ class Cluster(_messages.Message):
     privateServiceConnect: Optional. Populate to use private service connect
       network option.
     replicaCount: Optional. The number of replica nodes per shard.
-    sizeGb: Optional. Redis memory size in GB for the entire cluster.
+    shardCount: Required. Number of shards for the Redis cluster.
+    sizeGb: Output only. Redis memory size in GB for the entire cluster.
     state: Output only. The current state of this cluster. Can be CREATING,
       READY, UPDATING, DELETING and SUSPENDED
     transitEncryptionMode: Optional. The in-transit encryption for the Redis
@@ -147,14 +150,41 @@ class Cluster(_messages.Message):
 
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  privateServiceConnect = _messages.MessageField('PrivateServiceConnect', 5)
-  replicaCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 9)
-  uid = _messages.StringField(10)
+  discoveryEndpoints = _messages.MessageField(
+      'DiscoveryEndpoint', 3, repeated=True
+  )
+  displayName = _messages.StringField(4)
+  name = _messages.StringField(5)
+  privateServiceConnect = _messages.MessageField('PrivateServiceConnect', 6)
+  replicaCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  transitEncryptionMode = _messages.EnumField(
+      'TransitEncryptionModeValueValuesEnum', 11
+  )
+  uid = _messages.StringField(12)
+
+
+class DiscoveryEndpoint(_messages.Message):
+  r"""Endpoints on each network, for Redis clients to connect to the cluster.
+
+  Fields:
+    address: Output only. Address of the exposed Redis endpoint used by
+      clients to connect to the service. The address could be either IP or
+      hostname.
+    network: Required. The consumer network where the IP address resides, in
+      the form of projects/{project_id}/global/networks/{network_id}.
+    port: Output only. The port number of the exposed Redis endpoint.
+    projectId: Optional. The project where PSC endpoint will be accessed from.
+      If value not specified in a request, the project in which the cluster is
+      created will be used.
+  """
+
+  address = _messages.StringField(1)
+  network = _messages.StringField(2)
+  port = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(4)
 
 
 class Empty(_messages.Message):
@@ -163,7 +193,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class ExportInstanceRequest(_messages.Message):
@@ -683,7 +712,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1866,7 +1895,6 @@ class ZoneMetadata(_messages.Message):
   r"""Defines specific information for a particular zone. Currently empty and
   reserved for future use only.
   """
-
 
 
 encoding.AddCustomJsonFieldMapping(

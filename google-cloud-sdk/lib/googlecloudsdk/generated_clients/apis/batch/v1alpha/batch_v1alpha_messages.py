@@ -249,15 +249,18 @@ class BatchProjectsLocationsJobsListRequest(_messages.Message):
 
   Fields:
     filter: List filter.
+    orderBy: Sort results. Supported are "name", "name desc", "create_time",
+      "create_time desc", and "".
     pageSize: Page size.
     pageToken: Page token.
     parent: Parent path.
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class BatchProjectsLocationsJobsTaskGroupsTasksGetRequest(_messages.Message):
@@ -276,6 +279,8 @@ class BatchProjectsLocationsJobsTaskGroupsTasksListRequest(_messages.Message):
   Fields:
     filter: Task filter, null filter matches all Tasks. Filter string should
       be of the format State=TaskStatus.State e.g. State=RUNNING
+    orderBy: Sort results. Supported are "name", "name desc", "create_time",
+      "create_time desc", and "".
     pageSize: Page size.
     pageToken: Page token.
     parent: Required. Name of a TaskGroup from which Tasks are being
@@ -284,9 +289,10 @@ class BatchProjectsLocationsJobsTaskGroupsTasksListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class BatchProjectsLocationsListRequest(_messages.Message):
@@ -307,6 +313,29 @@ class BatchProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class BatchProjectsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A BatchProjectsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class BatchProjectsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A BatchProjectsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class BatchProjectsLocationsOperationsGetRequest(_messages.Message):
@@ -333,6 +362,10 @@ class BatchProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class CancelOperationRequest(_messages.Message):
+  r"""The request message for Operations.CancelOperation."""
 
 
 class ComputeResource(_messages.Message):
@@ -425,6 +458,15 @@ class Disk(_messages.Message):
   sizeGb = _messages.IntegerField(3)
   snapshot = _messages.StringField(4)
   type = _messages.StringField(5)
+
+
+class Empty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+  """
+
 
 
 class Environment(_messages.Message):
@@ -995,7 +1037,7 @@ class ListTasksResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

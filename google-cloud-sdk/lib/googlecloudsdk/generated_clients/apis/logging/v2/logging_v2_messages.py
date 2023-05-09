@@ -1000,7 +1000,7 @@ class ListViewsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -6665,9 +6665,7 @@ class Parameter(_messages.Message):
 
 
 class QueryDataRequest(_messages.Message):
-  r"""The parameters to QueryData. See go/oa:query-api-design for the design
-  of this endpoint and the related ValidateQuery and ReadQueryResults
-  endpoints.
+  r"""The parameters to QueryData.
 
   Fields:
     disableQueryCaching: Optional. If set to true, turns off all query caching
@@ -6675,13 +6673,8 @@ class QueryDataRequest(_messages.Message):
     querySteps: The query steps to execute. Each query step will correspond to
       a handle in the result proto.
     resourceNames: Required. Names of one or more log views to run a SQL
-      query. In the future, resource paths for metrics and other data types
-      will be supported here as well.Examples: projects/[PROJECT_ID]/locations
-      /[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] organizations/[ORGANI
-      ZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] b
-      illingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUC
-      KET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locations/[LOCATION_ID]/buck
-      ets/[BUCKET_ID]/views/[VIEW_ID]Requires appropriate permissions on each
+      query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BU
+      CKET_ID]/views/[VIEW_ID]Requires appropriate permissions on each
       resource such as 'logging.views.access' on log view resources.
   """
 
@@ -6729,13 +6722,9 @@ class QueryLogEntriesRequest(_messages.Message):
     queryRestriction: Optional. Restrictions being requested.
     resourceNames: Required. Names of one or more log views to run a SQL
       query. Currently, only a single view is supported. Multiple view
-      selection may be supported in the future.Examples: projects/[PROJECT_ID]
-      /locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] organizatio
-      ns/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[
-      VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/bu
-      ckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locations/[LOCATIO
-      N_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires 'logging.views.access'
-      on the specified view resources.
+      selection may be supported in the future.Example: projects/[PROJECT_ID]/
+      locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires
+      'logging.views.access' on the specified view resources.
     resultReference: Optional. Reference to a result from a previous query. If
       the results have expired the query will return a NOT_FOUND error.
     validateOnly: Optional. If set to true, the query is not executed.
@@ -6945,11 +6934,16 @@ class ReadQueryResultsRequest(_messages.Message):
     pageToken: Optional. Page token returned by a previous call to
       ReadQueryResults to paginate through the response rows.
     queryStepHandle: Required. A query step handle returned by QueryData.
+    resourceNames: Required. Names of one or more log views that were used in
+      the original query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID
+      ]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires appropriate permissions on
+      each resource such as 'logging.views.access' on log view resources.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   queryStepHandle = _messages.StringField(3)
+  resourceNames = _messages.StringField(4, repeated=True)
 
 
 class RedactLogEntriesImpact(_messages.Message):
@@ -7517,11 +7511,13 @@ class ValidateQueryResponse(_messages.Message):
   r"""The response data from ValidateQuery.
 
   Fields:
-    validateResults: One set of query metadata per query step in the request.
-      Result rows will not be populated.
+    validateResult: The operation does basic syntactic validation on all steps
+      and will return an error if an issue is found. Only the first query step
+      is validated through BigQuery, however, and only if it's a SqlQueryStep.
+      If the first step is not SQL, this field will be empty.
   """
 
-  validateResults = _messages.MessageField('QueryResults', 1, repeated=True)
+  validateResult = _messages.MessageField('QueryResults', 1)
 
 
 class WriteLogEntriesRequest(_messages.Message):

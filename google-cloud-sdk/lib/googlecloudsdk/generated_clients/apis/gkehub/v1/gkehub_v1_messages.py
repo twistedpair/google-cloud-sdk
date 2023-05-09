@@ -33,9 +33,10 @@ class ApplianceCluster(_messages.Message):
   Clusters.
 
   Fields:
-    resourceLink: Immutable. Self-link of the GCP resource for the Appliance
-      Cluster. For example: //transferappliance.googleapis.com/projects/my-
-      project/locations/us-west1-a/appliances/my-appliance
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      Appliance Cluster. For example:
+      //transferappliance.googleapis.com/projects/my-project/locations/us-
+      west1-a/appliances/my-appliance
   """
 
   resourceLink = _messages.StringField(1)
@@ -263,6 +264,79 @@ class CloudAuditOptions(_messages.Message):
 
   authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
   logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+
+
+class ClusterUpgradeFleetSpec(_messages.Message):
+  r"""**ClusterUpgrade**: The configuration for the fleet-level ClusterUpgrade
+  feature.
+
+  Fields:
+    gkeUpgradeOverrides: Allow users to override some properties of each GKE
+      upgrade.
+    postConditions: Required. Post conditions to evaluate to mark an upgrade
+      COMPLETE. Required.
+    upstreamFleets: This fleet consumes upgrades that have COMPLETE status
+      code in the upstream fleets. See UpgradeStatus.Code for code
+      definitions. The fleet name should be either fleet project number or id.
+      This is defined as repeated for future proof reasons. Initial
+      implementation will enforce at most one upstream fleet.
+  """
+
+  gkeUpgradeOverrides = _messages.MessageField('ClusterUpgradeGKEUpgradeOverride', 1, repeated=True)
+  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 2)
+  upstreamFleets = _messages.StringField(3, repeated=True)
+
+
+class ClusterUpgradeFleetState(_messages.Message):
+  r"""**ClusterUpgrade**: The state for the fleet-level ClusterUpgrade
+  feature.
+
+  Messages:
+    IgnoredValue: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format: `projects/{p}/locations/{l}/membership/{m}`.
+
+  Fields:
+    downstreamFleets: This fleets whose upstream_fleets contain the current
+      fleet. The fleet name should be either fleet project number or id.
+    gkeState: Feature state for GKE clusters.
+    ignored: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format: `projects/{p}/locations/{l}/membership/{m}`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IgnoredValue(_messages.Message):
+    r"""A list of memberships ignored by the feature. For example, manually
+    upgraded clusters can be ignored if they are newer than the default
+    versions of its release channel. The membership resource is in the format:
+    `projects/{p}/locations/{l}/membership/{m}`.
+
+    Messages:
+      AdditionalProperty: An additional property for a IgnoredValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type IgnoredValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IgnoredValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ClusterUpgradeIgnoredMembership attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ClusterUpgradeIgnoredMembership', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  downstreamFleets = _messages.StringField(1, repeated=True)
+  gkeState = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureState', 2)
+  ignored = _messages.MessageField('IgnoredValue', 3)
 
 
 class ClusterUpgradeGKEUpgrade(_messages.Message):
@@ -547,6 +621,7 @@ class CommonFeatureSpec(_messages.Message):
 
   Fields:
     appdevexperience: Appdevexperience specific spec.
+    clusterupgrade: ClusterUpgrade (fleet-based) feature spec.
     fleetobservability: FleetObservability feature spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
@@ -554,10 +629,11 @@ class CommonFeatureSpec(_messages.Message):
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 1)
-  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 2)
-  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 3)
-  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 4)
-  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 5)
+  clusterupgrade = _messages.MessageField('ClusterUpgradeFleetSpec', 2)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 3)
+  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 4)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 5)
+  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 6)
 
 
 class CommonFeatureState(_messages.Message):
@@ -565,15 +641,17 @@ class CommonFeatureState(_messages.Message):
 
   Fields:
     appdevexperience: Appdevexperience specific state.
+    clusterupgrade: ClusterUpgrade fleet-level state.
     fleetobservability: FleetObservability feature state.
     helloworld: Hello World-specific state.
     state: Output only. The "running state" of the Feature in this Hub.
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
-  fleetobservability = _messages.MessageField('FleetObservabilityFeatureState', 2)
-  helloworld = _messages.MessageField('HelloWorldFeatureState', 3)
-  state = _messages.MessageField('FeatureState', 4)
+  clusterupgrade = _messages.MessageField('ClusterUpgradeFleetState', 2)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureState', 3)
+  helloworld = _messages.MessageField('HelloWorldFeatureState', 4)
+  state = _messages.MessageField('FeatureState', 5)
 
 
 class CommonFleetDefaultMemberConfigSpec(_messages.Message):
@@ -1555,8 +1633,8 @@ class EdgeCluster(_messages.Message):
   r"""EdgeCluster contains information specific to Google Edge Clusters.
 
   Fields:
-    resourceLink: Immutable. Self-link of the GCP resource for the Edge
-      Cluster. For example: //edgecontainer.googleapis.com/projects/my-
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      Edge Cluster. For example: //edgecontainer.googleapis.com/projects/my-
       project/locations/us-west1-a/clusters/my-cluster
   """
 
@@ -1612,7 +1690,7 @@ class Feature(_messages.Message):
   r"""Feature represents the settings and status of any Hub Feature.
 
   Messages:
-    LabelsValue: GCP labels for this Feature.
+    LabelsValue: Labels for this Feature.
     MembershipSpecsValue: Optional. Membership-specific configuration for this
       Feature. If this Feature does not support any per-Membership
       configuration, this field may be unused. The keys indicate which
@@ -1655,7 +1733,7 @@ class Feature(_messages.Message):
     deleteTime: Output only. When the Feature resource was deleted.
     fleetDefaultMemberConfig: Optional. Feature configuration applicable to
       all memberships of the fleet.
-    labels: GCP labels for this Feature.
+    labels: Labels for this Feature.
     membershipSpecs: Optional. Membership-specific configuration for this
       Feature. If this Feature does not support any per-Membership
       configuration, this field may be unused. The keys indicate which
@@ -1702,7 +1780,7 @@ class Feature(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""GCP labels for this Feature.
+    r"""Labels for this Feature.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2009,8 +2087,8 @@ class GkeCluster(_messages.Message):
   Fields:
     clusterMissing: Output only. If cluster_missing is set then it denotes
       that the GKE cluster no longer exists in the GKE Control Plane.
-    resourceLink: Immutable. Self-link of the GCP resource for the GKE
-      cluster. For example: //container.googleapis.com/projects/my-
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      GKE cluster. For example: //container.googleapis.com/projects/my-
       project/locations/us-west1-a/clusters/my-cluster Zonal clusters are also
       supported.
   """
@@ -2614,6 +2692,32 @@ class GkehubProjectsLocationsScopesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class GkehubProjectsLocationsScopesGetIamPolicyRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class GkehubProjectsLocationsScopesGetRequest(_messages.Message):
   r"""A GkehubProjectsLocationsScopesGetRequest object.
 
@@ -2642,6 +2746,38 @@ class GkehubProjectsLocationsScopesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsScopesSetIamPolicyRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class GkehubProjectsLocationsScopesTestIamPermissionsRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -3184,7 +3320,7 @@ class ListScopesResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -3285,7 +3421,7 @@ class Membership(_messages.Message):
       Membership is running on.
 
   Messages:
-    LabelsValue: Optional. GCP labels for this membership.
+    LabelsValue: Optional. Labels for this membership.
 
   Fields:
     authority: Optional. How to identify workloads from this Membership. See
@@ -3304,7 +3440,7 @@ class Membership(_messages.Message):
       the UID of the `kube-system` namespace object.
     infrastructureType: Optional. The infrastructure type this Membership is
       running on.
-    labels: Optional. GCP labels for this membership.
+    labels: Optional. Labels for this membership.
     lastConnectionTime: Output only. For clusters using Connect, the timestamp
       of the most recent connection established with Google Cloud. This time
       is updated every several minutes, not continuously. For clusters that do
@@ -3345,7 +3481,7 @@ class Membership(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. GCP labels for this membership.
+    r"""Optional. Labels for this membership.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3612,9 +3748,10 @@ class MultiCloudCluster(_messages.Message):
     clusterMissing: Output only. If cluster_missing is set then it denotes
       that API(gkemulticloud.googleapis.com) resource for this GKE Multi-Cloud
       cluster no longer exists.
-    resourceLink: Immutable. Self-link of the GCP resource for the GKE Multi-
-      Cloud cluster. For example: //gkemulticloud.googleapis.com/projects/my-
-      project/locations/us-west1-a/awsClusters/my-cluster
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      GKE Multi-Cloud cluster. For example:
+      //gkemulticloud.googleapis.com/projects/my-project/locations/us-
+      west1-a/awsClusters/my-cluster
       //gkemulticloud.googleapis.com/projects/my-project/locations/us-
       west1-a/azureClusters/my-cluster
       //gkemulticloud.googleapis.com/projects/my-project/locations/us-
@@ -3650,9 +3787,10 @@ class OnPremCluster(_messages.Message):
       that API(gkeonprem.googleapis.com) resource for this GKE On-Prem cluster
       no longer exists.
     clusterType: Immutable. The on prem cluster's type.
-    resourceLink: Immutable. Self-link of the GCP resource for the GKE On-Prem
-      cluster. For example: //gkeonprem.googleapis.com/projects/my-
-      project/locations/us-west1-a/vmwareClusters/my-cluster
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      GKE On-Prem cluster. For example:
+      //gkeonprem.googleapis.com/projects/my-project/locations/us-
+      west1-a/vmwareClusters/my-cluster
       //gkeonprem.googleapis.com/projects/my-project/locations/us-
       west1-a/bareMetalClusters/my-cluster
   """
@@ -4057,6 +4195,7 @@ class Scope(_messages.Message):
   r"""Scope represents a Scope in a Fleet.
 
   Fields:
+    allMemberships: If true, all Memberships in the Fleet bind to this Scope.
     createTime: Output only. When the scope was created.
     deleteTime: Output only. When the scope was deleted.
     name: The resource name for the scope
@@ -4068,20 +4207,21 @@ class Scope(_messages.Message):
     updateTime: Output only. When the scope was last updated.
   """
 
-  createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  state = _messages.MessageField('ScopeLifecycleState', 4)
-  uid = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  allMemberships = _messages.BooleanField(1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  state = _messages.MessageField('ScopeLifecycleState', 5)
+  uid = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class ScopeFeatureSpec(_messages.Message):
   r"""ScopeFeatureSpec contains feature specs for a fleet scope.
 
   Fields:
-    clusterupgrade: A ClusterUpgradeScopeSpec attribute.
-    helloworld: A HelloWorldScopeSpec attribute.
+    clusterupgrade: Spec for the ClusterUpgrade feature at the scope level
+    helloworld: Spec for the HelloWorld feature at the scope level
   """
 
   clusterupgrade = _messages.MessageField('ClusterUpgradeScopeSpec', 1)
@@ -4092,8 +4232,8 @@ class ScopeFeatureState(_messages.Message):
   r"""ScopeFeatureState contains Scope-wide Feature status information.
 
   Fields:
-    clusterupgrade: A ClusterUpgradeScopeState attribute.
-    helloworld: A HelloWorldScopeState attribute.
+    clusterupgrade: State for the ClusterUpgrade feature at the scope level
+    helloworld: State for the HelloWorld feature at the scope level
     state: Output only. The "running state" of the Feature in this Scope.
   """
 

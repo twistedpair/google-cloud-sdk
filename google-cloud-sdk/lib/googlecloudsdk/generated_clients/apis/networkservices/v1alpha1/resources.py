@@ -129,6 +129,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_LBROUTEEXTENSIONS = (
+      'projects.locations.lbRouteExtensions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'lbRouteExtensions/{lbRouteExtensionsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_LBTRAFFICEXTENSIONS = (
+      'projects.locations.lbTrafficExtensions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'lbTrafficExtensions/{lbTrafficExtensionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MESHES = (
       'projects.locations.meshes',
       '{+name}',

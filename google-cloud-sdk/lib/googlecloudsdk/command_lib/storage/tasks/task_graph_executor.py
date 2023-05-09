@@ -68,9 +68,6 @@ else:
     # Uses platform default.
     multiprocessing_context = multiprocessing.get_context()
 
-  # TODO(b/194410545): Is it possible to disable importing the multiprocessing
-  # module after this point?
-
 
 _TASK_QUEUE_LOCK = threading.Lock()
 

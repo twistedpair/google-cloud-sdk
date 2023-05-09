@@ -362,18 +362,16 @@ class BundleInstallSpec(_messages.Message):
 
   Enums:
     ManagementValueValuesEnum: Management specifies how the bundle will be
-      managed by the controller. TODO (b/271878194): Remove this
+      managed by the controller.
 
   Fields:
     exemptedNamespaces: the set of namespaces to be exempted from the bundle
-      TODO (b/271878194): Decrement this
     management: Management specifies how the bundle will be managed by the
-      controller. TODO (b/271878194): Remove this
+      controller.
   """
 
   class ManagementValueValuesEnum(_messages.Enum):
     r"""Management specifies how the bundle will be managed by the controller.
-    TODO (b/271878194): Remove this
 
     Values:
       MANAGEMENT_UNSPECIFIED: No Management strategy has been specified.
@@ -1199,7 +1197,7 @@ class DataplaneV2FeatureSpec(_messages.Message):
   Feature proto requires a spec.
 
   Fields:
-    enableEncryption: Enable dataplane-v2 based encryption for the multiple
+    enableEncryption: Enable dataplane-v2 based encryption for multiple
       clusters.
   """
 
@@ -1296,7 +1294,7 @@ class Feature(_messages.Message):
   r"""Feature represents the settings and status of any feature.
 
   Messages:
-    LabelsValue: GCP labels for this feature.
+    LabelsValue: Labels for this feature.
 
   Fields:
     anthosobservabilityFeatureSpec: The specification for Anthos
@@ -1320,7 +1318,7 @@ class Feature(_messages.Message):
     helloworldFeatureSpec: A Hello World feature for codelab examples and
       testing.
     identityserviceFeatureSpec: The specification for Anthos Identity Service.
-    labels: GCP labels for this feature.
+    labels: Labels for this feature.
     meteringFeatureSpec: The specification for the Metering feature.
     multiclusteringressFeatureSpec: The specification for Ingress for Anthos.
     multiclusterservicediscoveryFeatureSpec: The specification for GKE Multi-
@@ -1341,7 +1339,7 @@ class Feature(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""GCP labels for this feature.
+    r"""Labels for this feature.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1824,8 +1822,8 @@ class GitConfig(_messages.Message):
   r"""Git repo configuration for a single cluster.
 
   Fields:
-    gcpServiceAccountEmail: The GCP Service Account Email used for auth when
-      secret_type is gcpServiceAccount.
+    gcpServiceAccountEmail: The Google Cloud Service Account Email used for
+      auth when secret_type is gcpServiceAccount.
     httpsProxy: URL for the HTTPS proxy to be used when communicating with the
       Git repo.
     policyDir: The path within the Git repository that represents the top
@@ -2419,7 +2417,7 @@ class ListReferencesResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -2697,8 +2695,8 @@ class OciConfig(_messages.Message):
   r"""OCI repo configuration for a single cluster
 
   Fields:
-    gcpServiceAccountEmail: The GCP Service Account Email used for auth when
-      secret_type is gcpServiceAccount.
+    gcpServiceAccountEmail: The Google Cloud Service Account Email used for
+      auth when secret_type is gcpServiceAccount.
     policyDir: The absolute path of the directory that contains the local
       resources. Default: the root directory of the image.
     secretType: Type of secret configured for access to the Git repo.
@@ -3266,16 +3264,15 @@ class PolicyControllerFeatureState(_messages.Message):
       track. Currently these include (also serving as map keys): 1.
       "admission" 2. "audit" 3. "mutation"
     ContentStatesValue: The state of the template library and any specified
-      bundles TODO (b/271878194): Remove this
+      bundles
 
   Fields:
     componentStates: On-cluster states of the components we would like to
       track. Currently these include (also serving as map keys): 1.
       "admission" 2. "audit" 3. "mutation"
     contentStates: The state of the template library and any specified bundles
-      TODO (b/271878194): Remove this
     policyContentState: The overall content state observed by the Hub Feature
-      controller. TODO (b/271878194): Decrement this
+      controller.
     state: The overall Policy Controller lifecycle state observed by the Hub
       Feature controller.
   """
@@ -3367,8 +3364,7 @@ class PolicyControllerFeatureState(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ContentStatesValue(_messages.Message):
-    r"""The state of the template library and any specified bundles TODO
-    (b/271878194): Remove this
+    r"""The state of the template library and any specified bundles
 
     Messages:
       AdditionalProperty: An additional property for a ContentStatesValue
@@ -3435,7 +3431,7 @@ class PolicyControllerHubConfig(_messages.Message):
       that reference to objects other than the object currently being
       evaluated.
     templateLibraryConfig: Configures the library templates to install along
-      with Policy Controller. TODO (b/271878194): Remove this
+      with Policy Controller.
   """
 
   class InstallSpecValueValuesEnum(_messages.Enum):
@@ -4288,18 +4284,18 @@ class TemplateLibraryConfig(_messages.Message):
 
   Enums:
     InstallationValueValuesEnum: Configures the manner in which the template
-      library is installed on the cluster. TODO (b/271878194): Decrement this
+      library is installed on the cluster.
 
   Fields:
     included: Whether the standard template library should be installed or
-      not. TODO (b/271878194): Remove this
+      not.
     installation: Configures the manner in which the template library is
-      installed on the cluster. TODO (b/271878194): Decrement this
+      installed on the cluster.
   """
 
   class InstallationValueValuesEnum(_messages.Enum):
     r"""Configures the manner in which the template library is installed on
-    the cluster. TODO (b/271878194): Decrement this
+    the cluster.
 
     Values:
       INSTALLATION_UNSPECIFIED: No installation strategy has been specified.

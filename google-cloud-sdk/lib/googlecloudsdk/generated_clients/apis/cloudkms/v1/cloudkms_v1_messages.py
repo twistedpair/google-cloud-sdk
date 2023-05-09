@@ -567,6 +567,17 @@ class CloudkmsProjectsLocationsEkmConnectionsTestIamPermissionsRequest(_messages
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class CloudkmsProjectsLocationsEkmConnectionsVerifyConnectivityRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsEkmConnectionsVerifyConnectivityRequest
+  object.
+
+  Fields:
+    name: Required. The name of the EkmConnection to verify.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudkmsProjectsLocationsGenerateRandomBytesRequest(_messages.Message):
   r"""A CloudkmsProjectsLocationsGenerateRandomBytesRequest object.
 
@@ -2600,7 +2611,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -3236,6 +3247,10 @@ class UpdateCryptoKeyPrimaryVersionRequest(_messages.Message):
   """
 
   cryptoKeyVersionId = _messages.StringField(1)
+
+
+class VerifyConnectivityResponse(_messages.Message):
+  r"""Response message for EkmService.VerifyConnectivity."""
 
 
 class WrappingPublicKey(_messages.Message):

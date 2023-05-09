@@ -406,6 +406,35 @@ class ComposerV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def StopAirflowCommand(self, request, global_params=None):
+      r"""Stops Airflow CLI command execution.
+
+      Args:
+        request:
+          (ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest) input
+          message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (StopAirflowCommandResponse) The response message.
+      """
+      config = self.GetMethodConfig('StopAirflowCommand')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    StopAirflowCommand.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:stopAirflowCommand',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.stopAirflowCommand',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1beta1/{+environment}:stopAirflowCommand',
+        request_field='stopAirflowCommandRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest',
+        response_type_name='StopAirflowCommandResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsImageVersionsService(base_api.BaseApiService):
     """Service class for the projects_locations_imageVersions resource."""
 

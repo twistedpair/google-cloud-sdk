@@ -832,7 +832,8 @@ class Instance(_messages.Message):
     determined by our system based on the latest supported minor version.
 
     Values:
-      MEMCACHE_VERSION_UNSPECIFIED: <no description>
+      MEMCACHE_VERSION_UNSPECIFIED: Memcache version is not specified by
+        customer
       MEMCACHE_1_5: Memcached 1.5 version.
     """
     MEMCACHE_VERSION_UNSPECIFIED = 0
@@ -975,7 +976,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

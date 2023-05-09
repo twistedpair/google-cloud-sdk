@@ -3371,6 +3371,63 @@ def AddSecurityPostureFlag(parser):
   )
 
 
+def AddWorkloadVulnScanningEnumFlag(parser):
+  """Adds Kubernetes Security Posture's Workload Vulnerability Scanning flag to the parser."""
+  parser.add_argument(
+      '--workload-vulnerability-scanning',
+      choices=['disabled', 'standard'],
+      default=None,
+      hidden=True,
+      help=textwrap.dedent("""\
+      Sets the mode of the Kubernetes security posture API's workload
+      vulnerability scanning.
+
+      To enable in standard mode explicitly set the flag to
+      `--workload-vulnerability-scanning=standard`.
+
+      To disable in an existing cluster, explicitly set the flag to
+      `--workload-vulnerability-scanning=disabled`.
+      """),
+  )
+
+
+def AddSecurityPostureEnumFlag(parser):
+  """Adds Kubernetes Security Posture's enablement flag to the parser."""
+  parser.add_argument(
+      '--security-posture',
+      choices=['disabled', 'standard'],
+      default=None,
+      hidden=True,
+      help=textwrap.dedent("""\
+      Sets the mode of the Kubernetes security posture API's off-cluster features.
+
+      To enable in standard mode explicitly set the flag to
+      `--security-posture=standard`
+
+      To disable in an existing cluster, explicitly set the flag to
+      `--security-posture=disabled`.
+      """),
+  )
+
+
+def AddRuntimeVulnerabilityInsightFlag(parser):
+  """Adds Runtime Vulnerability Insight Config's enablement flag to the parser."""
+  parser.add_argument(
+      '--enable-runtime-vulnerability-insight',
+      default=None,
+      action='store_true',
+      hidden=True,
+      help=textwrap.dedent(
+          """\
+      Enables the GKE Runtime Vulnerability Insight API's features.
+
+      To disable in an existing cluster, explicitly set flag to
+      `--no-enable-runtime-vulnerability-insight`.
+      """
+      ),
+  )
+
+
 def AddEnableKubeletReadonlyPortFlag(parser):
   """Adds Kubernetes Read Only Port's enablement flag to the parser."""
   parser.add_argument(
@@ -4701,6 +4758,14 @@ def AddGetCredentialsArgs(parser):
   parser.add_argument(
       '--internal-ip',
       help='Whether to use the internal IP address of the cluster endpoint.',
+      action='store_true')
+
+
+def AddDnsEndpointFlag(parser, hidden=True):
+  parser.add_argument(
+      '--dns-endpoint',
+      hidden=hidden,
+      help='Whether to use the DNS endpoint for the cluster address.',
       action='store_true')
 
 

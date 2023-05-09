@@ -272,9 +272,9 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
       `version`. * `autoscaling.min_node_count`. *
       `autoscaling.max_node_count`. * `config.config_encryption.kms_key_arn`.
       * `config.security_group_ids`. * `config.root_volume.iops`. *
-      `config.root_volume.kms_key_arn`. * `config.root_volume.volume_type`. *
-      `config.root_volume.size_gib`. * `config.proxy_config`. *
-      `config.proxy_config.secret_arn`. *
+      `config.root_volume.throughput`. * `config.root_volume.kms_key_arn`. *
+      `config.root_volume.volume_type`. * `config.root_volume.size_gib`. *
+      `config.proxy_config`. * `config.proxy_config.secret_arn`. *
       `config.proxy_config.secret_version`. * `config.ssh_config`. *
       `config.ssh_config.ec2_key_pair`. * `config.instance_placement.tenancy`.
       * `config.iam_instance_profile`. * `config.labels`. * `config.tags`. *
@@ -429,6 +429,7 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       `control_plane.root_volume.size_gib`. *
       `control_plane.root_volume.volume_type`. *
       `control_plane.root_volume.iops`. *
+      `control_plane.root_volume.throughput`. *
       `control_plane.root_volume.kms_key_arn`. * `control_plane.ssh_config`. *
       `control_plane.ssh_config.ec2_key_pair`. *
       `control_plane.instance_placement.tenancy`. *
@@ -1924,6 +1925,8 @@ class GoogleCloudGkemulticloudV1AwsVolumeTemplate(_messages.Message):
     sizeGib: Optional. The size of the volume, in GiBs. When unspecified, a
       default value is provided. See the specific reference in the parent
       resource.
+    throughput: Optional. The throughput that the volume supports, in MiB/s.
+      Only valid if volume_type is GP3.
     volumeType: Optional. Type of the EBS volume. When unspecified, it
       defaults to GP2 volume.
   """
@@ -1944,7 +1947,8 @@ class GoogleCloudGkemulticloudV1AwsVolumeTemplate(_messages.Message):
   iops = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   kmsKeyArn = _messages.StringField(2)
   sizeGib = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  volumeType = _messages.EnumField('VolumeTypeValueValuesEnum', 4)
+  throughput = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  volumeType = _messages.EnumField('VolumeTypeValueValuesEnum', 5)
 
 
 class GoogleCloudGkemulticloudV1AzureAuthorization(_messages.Message):

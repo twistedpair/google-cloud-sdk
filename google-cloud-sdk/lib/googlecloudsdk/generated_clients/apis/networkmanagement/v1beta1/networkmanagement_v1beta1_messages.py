@@ -100,7 +100,7 @@ class AbortInfo(_messages.Message):
 
 
 class AppEngineVersionEndpoint(_messages.Message):
-  r"""Wrapper for app engine service version attributes.
+  r"""Wrapper for the App Engine service version attributes.
 
   Fields:
     uri: An [App Engine](https://cloud.google.com/appengine) [service
@@ -696,10 +696,10 @@ class Endpoint(_messages.Message):
     projectId: Project ID where the endpoint is located. The Project ID can be
       derived from the URI if you provide a VM instance or network URI. The
       following are two cases where you must provide the project ID: 1. Only
-      the IP address is specified, and the IP address is within a GCP project.
-      2. When you are using Shared VPC and the IP address that you provide is
-      from the service project. In this case, the network that the IP address
-      resides in is defined in the host project.
+      the IP address is specified, and the IP address is within a Google Cloud
+      project. 2. When you are using Shared VPC and the IP address that you
+      provide is from the service project. In this case, the network that the
+      IP address resides in is defined in the host project.
   """
 
   class ForwardingRuleTargetValueValuesEnum(_messages.Enum):
@@ -757,12 +757,11 @@ class Endpoint(_messages.Message):
 
     Values:
       NETWORK_TYPE_UNSPECIFIED: Default type if unspecified.
-      GCP_NETWORK: A network hosted within Google Cloud Platform. To receive
-        more detailed output, specify the URI for the source or destination
+      GCP_NETWORK: A network hosted within Google Cloud. To receive more
+        detailed output, specify the URI for the source or destination
         network.
-      NON_GCP_NETWORK: A network hosted outside of Google Cloud Platform. This
-        can be an on-premises network, or a network hosted by another cloud
-        provider.
+      NON_GCP_NETWORK: A network hosted outside of Google Cloud. This can be
+        an on-premises network, or a network hosted by another cloud provider.
     """
     NETWORK_TYPE_UNSPECIFIED = 0
     GCP_NETWORK = 1
@@ -1187,7 +1186,7 @@ class LoadBalancerInfo(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

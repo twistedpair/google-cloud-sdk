@@ -37,17 +37,17 @@ def UpdateDisplayName(unused_instance_ref, args, patch_request):
   return patch_request
 
 
-def UpdateSizeGb(unused_instance_ref, args, patch_request):
-  """Python hook to add size to the redis cluster update request."""
-  if args.IsSpecified('size_gb'):
-    patch_request.cluster.sizeGb = args.size_gb
-    patch_request = AddFieldToUpdateMask('size_gb', patch_request)
-  return patch_request
-
-
 def UpdateReplicaCount(unused_instance_ref, args, patch_request):
   """Hook to add replica count to the redis cluster update request."""
   if args.IsSpecified('replica_count'):
     patch_request.cluster.replicaCount = args.replica_count
     patch_request = AddFieldToUpdateMask('replica_count', patch_request)
+  return patch_request
+
+
+def UpdateShardCount(unused_instance_ref, args, patch_request):
+  """Hook to add shard count to the redis cluster update request."""
+  if args.IsSpecified('shard_count'):
+    patch_request.cluster.shardCount = args.shard_count
+    patch_request = AddFieldToUpdateMask('shard_count', patch_request)
   return patch_request

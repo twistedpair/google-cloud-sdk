@@ -146,7 +146,16 @@ def ConstructPatch(is_composer_v1,
                    snapshot_location=None,
                    snapshot_schedule_timezone=None,
                    snapshot_creation_schedule=None,
-                   cloud_data_lineage_integration_enabled=None):
+                   cloud_data_lineage_integration_enabled=None,
+                   support_web_server_plugins=None,
+                   dag_processor_cpu=None,
+                   dag_processor_count=None,
+                   dag_processor_memory_gb=None,
+                   dag_processor_storage_gb=None,
+                   disable_vpc_connectivity=None,
+                   network=None,
+                   subnetwork=None,
+                   network_attachment=None):
   """Constructs an environment patch.
 
   Args:
@@ -240,6 +249,27 @@ def ConstructPatch(is_composer_v1,
       snapshots will be created
     cloud_data_lineage_integration_enabled: bool or None, whether the feature
       should be enabled
+    support_web_server_plugins: bool or None, whether to enable/disable the
+      support for web server plugins
+    dag_processor_cpu: float or None, CPU allocated to Airflow dag processor.
+      Can be specified only in Composer 2.5.
+    dag_processor_count: int or None, number of Airflow dag processors. Can be
+      specified only in Composer 2.5.
+    dag_processor_memory_gb: float or None, memory allocated to Airflow dag
+      processor. Can be specified only in Composer 2.5.
+    dag_processor_storage_gb: float or None, storage allocated to Airflow dag
+      processor. Can be specified only in Composer 2.5.
+    disable_vpc_connectivity: bool or None, defines whether to disable
+      connectivity with a user's VPC network.
+      Can be specified only in Composer 2.5.
+    network: str or None, the Compute Engine network to which to connect the
+      environment specified as relative resource name.
+      Can be specified only in Composer 2.5.
+    subnetwork: str or None, the Compute Engine subnetwork to which to connect
+      the environment specified as relative resource name.
+      Can be specified only in Composer 2.5.
+    network_attachment: str or None, the Compute Engine network attachment that
+      is used as PSC Network entry point.
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -302,6 +332,23 @@ def ConstructPatch(is_composer_v1,
                                             snapshot_location,
                                             snapshot_schedule_timezone,
                                             release_track)
+  if support_web_server_plugins is not None:
+    return _ConstructWebServerPluginsModePatch(
+        support_web_server_plugins, release_track
+    )
+  if (
+      disable_vpc_connectivity is not None
+      or network
+      or subnetwork
+      or network_attachment
+  ):
+    return _ConstructVpcConnectivityPatch(
+        disable_vpc_connectivity,
+        network,
+        subnetwork,
+        network_attachment,
+        release_track,
+    )
   if airflow_database_retention_days is not None:
     return _ConstructAirflowDatabaseRetentionDaysPatch(
         airflow_database_retention_days, release_track)
@@ -312,7 +359,8 @@ def ConstructPatch(is_composer_v1,
       worker_memory_gb or web_server_memory_gb or scheduler_storage_gb or
       worker_storage_gb or web_server_storage_gb or min_workers or
       max_workers or scheduler_count or triggerer_cpu or triggerer_memory_gb or
-      triggerer_count is not None):
+      triggerer_count is not None or dag_processor_count or dag_processor_cpu or
+      dag_processor_memory_gb or dag_processor_storage_gb):
     if is_composer_v1:
       raise command_util.Error(
           'You cannot use Workloads Config flags introduced in Composer 2.X'
@@ -334,7 +382,11 @@ def ConstructPatch(is_composer_v1,
           release_track=release_track,
           triggerer_cpu=triggerer_cpu,
           triggerer_memory_gb=triggerer_memory_gb,
-          triggerer_count=triggerer_count)
+          triggerer_count=triggerer_count,
+          dag_processor_cpu=dag_processor_cpu,
+          dag_processor_memory_gb=dag_processor_memory_gb,
+          dag_processor_count=dag_processor_count,
+          dag_processor_storage_gb=dag_processor_storage_gb)
   if maintenance_window_start and maintenance_window_end and maintenance_window_recurrence:
     return _ConstructMaintenanceWindowPatch(
         maintenance_window_start,
@@ -346,6 +398,52 @@ def ConstructPatch(is_composer_v1,
         cloud_data_lineage_integration_enabled, release_track)
   raise command_util.Error(
       'Cannot update Environment with no update type specified.')
+
+
+def _ConstructVpcConnectivityPatch(
+    disable_vpc_connectivity,
+    network,
+    subnetwork,
+    network_attachment,
+    release_track=base.ReleaseTrack.GA,
+):
+  """Constructs an environment patch for vpc connectivity.
+
+  Args:
+    disable_vpc_connectivity: bool or None, defines whether to disable
+      connectivity with a user's VPC network.
+      Can be specified only in Composer 2.5.
+    network: str or None, the Compute Engine network to which to connect the
+      environment specified as relative resource name.
+      Can be specified only in Composer 2.5.
+    subnetwork: str or None, the Compute Engine subnetwork to which to connect
+      the environment specified as relative resource name.
+      Can be specified only in Composer 2.5.
+    network_attachment: str or None, the Compute Engine network attachment that
+      is used as PSC Network entry point.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Composer client library will be used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  node_config = messages.NodeConfig()
+  config = messages.EnvironmentConfig(nodeConfig=node_config)
+  update_mask = None
+  if disable_vpc_connectivity:
+    update_mask = 'config.node_config.network_attachment,config.node_config.network,config.node_config.subnetwork'
+  elif network_attachment:
+    update_mask = 'config.node_config.network_attachment'
+    node_config.composerNetworkAttachment = network_attachment
+  elif network and subnetwork:
+    update_mask = 'config.node_config.network,config.node_config.subnetwork'
+    node_config.network = network
+    node_config.subnetwork = subnetwork
+  return (
+      update_mask,
+      messages.Environment(config=config),
+  )
 
 
 def _ConstructNodeCountPatch(node_count, release_track=base.ReleaseTrack.GA):
@@ -571,6 +669,37 @@ def _ConstructScheduledSnapshotPatch(enable_scheduled_snapshot_creation,
       config=config)
 
 
+def _ConstructWebServerPluginsModePatch(
+    support_web_server_plugins, release_track=base.ReleaseTrack.GA
+):
+  """Constructs an environment patch for web server plugins mode patch.
+
+  Args:
+    support_web_server_plugins: bool, defines if plugins are enabled or not.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Composer client library will be used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  software_config = messages.SoftwareConfig()
+
+  if support_web_server_plugins:
+    software_config.webServerPluginsMode = (
+        messages.SoftwareConfig.WebServerPluginsModeValueValuesEnum.PLUGINS_ENABLED
+    )
+  else:
+    software_config.webServerPluginsMode = (
+        messages.SoftwareConfig.WebServerPluginsModeValueValuesEnum.PLUGINS_DISABLED
+    )
+
+  config = messages.EnvironmentConfig(softwareConfig=software_config)
+
+  return 'config.software_config.web_server_plugins_mode', messages.Environment(
+      config=config)
+
+
 def _ConstructImageVersionPatch(update_image_version,
                                 release_track=base.ReleaseTrack.GA):
   """Constructs an environment patch for environment image version.
@@ -683,7 +812,9 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
                                worker_storage_gb, web_server_storage_gb,
                                worker_min_count, worker_max_count,
                                scheduler_count, release_track, triggerer_cpu,
-                               triggerer_memory_gb, triggerer_count):
+                               triggerer_memory_gb, triggerer_count,
+                               dag_processor_cpu, dag_processor_memory_gb,
+                               dag_processor_count, dag_processor_storage_gb):
   """Constructs an environment patch for Airflow web server machine type.
 
   Args:
@@ -719,6 +850,14 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
       Can be specified only in Airflow 2.2.x and greater.
     triggerer_count: int or None, number of triggerers in the Environment. Can
       be specified only in Airflow 2.2.x and greater
+    dag_processor_cpu: float or None, CPU allocated to Airflow dag processor.
+      Can be specified only in Composer 2.5.
+    dag_processor_count: int or None, number of Airflow dag processors. Can be
+      specified only in Composer 2.5.
+    dag_processor_memory_gb: float or None, memory allocated to Airflow dag
+      processor. Can be specified only in Composer 2.5.
+    dag_processor_storage_gb: float or None, storage allocated to Airflow dag
+      processor. Can be specified only in Composer 2.5.
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -741,11 +880,21 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
           storageGb=worker_storage_gb,
           minCount=worker_min_count,
           maxCount=worker_max_count))
-  if release_track != base.ReleaseTrack.GA and (triggerer_count is not None or
-                                                triggerer_cpu or
-                                                triggerer_memory_gb):
-    workload_resources['triggerer'] = messages.TriggererResource(
-        cpu=triggerer_cpu, memoryGb=triggerer_memory_gb, count=triggerer_count)
+  if release_track != base.ReleaseTrack.GA:
+    if (triggerer_count is not None or
+        triggerer_cpu or
+        triggerer_memory_gb):
+      workload_resources['triggerer'] = messages.TriggererResource(
+          cpu=triggerer_cpu, memoryGb=triggerer_memory_gb, count=triggerer_count
+      )
+
+    if dag_processor_count is not None:
+      workload_resources['dagProcessor'] = messages.DagProcessorResource(
+          cpu=dag_processor_cpu,
+          memoryGb=dag_processor_memory_gb,
+          storageGb=dag_processor_memory_gb,
+          count=dag_processor_count,
+      )
 
   config = messages.EnvironmentConfig(
       workloadsConfig=messages.WorkloadsConfig(**workload_resources))
@@ -783,6 +932,14 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
       mask.append('config.workloads_config.worker.max_count')
     if scheduler_count:
       mask.append('config.workloads_config.scheduler.count')
+    if dag_processor_count:
+      mask.append('config.workloads_config.dag_processor.count')
+    if dag_processor_memory_gb:
+      mask.append('config.workloads_config.dag_processor.memory_gb')
+    if dag_processor_storage_gb:
+      mask.append('config.workloads_config.dag_processor.storage_gb')
+    if dag_processor_cpu:
+      mask.append('config.workloads_config.dag_processor.cpu')
     if triggerer_cpu or triggerer_memory_gb or triggerer_count is not None:
       mask.append('config.workloads_config.triggerer')
     return ','.join(mask), messages.Environment(config=config)

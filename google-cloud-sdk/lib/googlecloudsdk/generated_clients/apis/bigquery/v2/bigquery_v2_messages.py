@@ -1528,6 +1528,12 @@ class HivePartitioningOptions(_messages.Message):
   r"""A HivePartitioningOptions object.
 
   Fields:
+    fields: [Output-only] For permanent external tables, this field is
+      populated with the hive partition keys in the order they were inferred.
+      The types of the partition keys can be deduced by checking the table
+      schema (which will include the partition keys). Not every API will
+      populate this field in the output. For example, Tables.Get will populate
+      it, but Tables.List will not contain this field.
     mode: [Optional] When set, what mode of hive partitioning to use when
       reading data. The following modes are supported. (1) AUTO: automatically
       infer partition key name(s) and type(s). (2) STRINGS: automatically
@@ -1553,9 +1559,10 @@ class HivePartitioningOptions(_messages.Message):
       gs://bucket/path_to_table/ (trailing slash does not matter).
   """
 
-  mode = _messages.StringField(1)
-  requirePartitionFilter = _messages.BooleanField(2)
-  sourceUriPrefix = _messages.StringField(3)
+  fields = _messages.StringField(1, repeated=True)
+  mode = _messages.StringField(2)
+  requirePartitionFilter = _messages.BooleanField(3)
+  sourceUriPrefix = _messages.StringField(4)
 
 
 class IndexUnusedReason(_messages.Message):

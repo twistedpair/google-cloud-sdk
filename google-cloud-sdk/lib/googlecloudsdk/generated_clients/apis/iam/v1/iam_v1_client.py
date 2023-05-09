@@ -1150,6 +1150,33 @@ class IamV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AddAttestationCondition(self, request, global_params=None):
+      r"""Adds an AttestationCondition to the AttestationPolicy of a WorkloadIdentityPoolNamespace or a WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAddAttestationConditionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddAttestationCondition')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddAttestationCondition.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}:addAttestationCondition',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.addAttestationCondition',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:addAttestationCondition',
+        request_field='addAttestationConditionRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAddAttestationConditionRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new WorkloadIdentityPoolManagedIdentity in a WorkloadIdentityPoolNamespace.
 
@@ -1285,6 +1312,33 @@ class IamV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RemoveAttestationCondition(self, request, global_params=None):
+      r"""Removes an AttestationCondition from the AttestationPolicy of a WorkloadIdentityPoolNamespace or a WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRemoveAttestationConditionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveAttestationCondition')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveAttestationCondition.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}:removeAttestationCondition',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.removeAttestationCondition',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:removeAttestationCondition',
+        request_field='removeAttestationConditionRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRemoveAttestationConditionRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Undelete(self, request, global_params=None):
       r"""Undeletes a WorkloadIdentityPoolManagedIdentity, as long as it was deleted fewer than 30 days ago.
 
@@ -1321,6 +1375,33 @@ class IamV1(base_api.BaseApiClient):
       super(IamV1.ProjectsLocationsWorkloadIdentityPoolsNamespacesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AddAttestationCondition(self, request, global_params=None):
+      r"""Adds an AttestationCondition to the AttestationPolicy of a WorkloadIdentityPoolNamespace or a WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddAttestationConditionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddAttestationCondition')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddAttestationCondition.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}:addAttestationCondition',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.addAttestationCondition',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:addAttestationCondition',
+        request_field='addAttestationConditionRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddAttestationConditionRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Creates a new WorkloadIdentityPoolNamespace in a WorkloadIdentityPool.
@@ -1453,6 +1534,33 @@ class IamV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='workloadIdentityPoolNamespace',
         request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveAttestationCondition(self, request, global_params=None):
+      r"""Removes an AttestationCondition from the AttestationPolicy of a WorkloadIdentityPoolNamespace or a WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveAttestationConditionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveAttestationCondition')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveAttestationCondition.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}:removeAttestationCondition',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.removeAttestationCondition',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:removeAttestationCondition',
+        request_field='removeAttestationConditionRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveAttestationConditionRequest',
         response_type_name='Operation',
         supports_download=False,
     )

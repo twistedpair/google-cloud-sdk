@@ -18,9 +18,10 @@ class ApplianceCluster(_messages.Message):
   Clusters.
 
   Fields:
-    resourceLink: Immutable. Self-link of the GCP resource for the Appliance
-      Cluster. For example: //transferappliance.googleapis.com/projects/my-
-      project/locations/us-west1-a/appliances/my-appliance
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      Appliance Cluster. For example:
+      //transferappliance.googleapis.com/projects/my-project/locations/us-
+      west1-a/appliances/my-appliance
   """
 
   resourceLink = _messages.StringField(1)
@@ -510,8 +511,8 @@ class EdgeCluster(_messages.Message):
   r"""EdgeCluster contains information specific to Google Edge Clusters.
 
   Fields:
-    resourceLink: Immutable. Self-link of the GCP resource for the Edge
-      Cluster. For example: //edgecontainer.googleapis.com/projects/my-
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      Edge Cluster. For example: //edgecontainer.googleapis.com/projects/my-
       project/locations/us-west1-a/clusters/my-cluster
   """
 
@@ -595,8 +596,8 @@ class GkeCluster(_messages.Message):
   Fields:
     clusterMissing: Output only. If cluster_missing is set then it denotes
       that the GKE cluster no longer exists in the GKE Control Plane.
-    resourceLink: Immutable. Self-link of the GCP resource for the GKE
-      cluster. For example: //container.googleapis.com/projects/my-
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      GKE cluster. For example: //container.googleapis.com/projects/my-
       project/locations/us-west1-a/clusters/my-cluster Zonal clusters are also
       supported.
   """
@@ -1106,7 +1107,7 @@ class ListReferencesResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1207,7 +1208,7 @@ class Membership(_messages.Message):
       Membership is running on.
 
   Messages:
-    LabelsValue: Optional. GCP labels for this membership.
+    LabelsValue: Optional. Labels for this membership.
 
   Fields:
     authority: Optional. How to identify workloads from this Membership. See
@@ -1227,12 +1228,14 @@ class Membership(_messages.Message):
       set to the UID of the `kube-system` namespace object.
     infrastructureType: Optional. The infrastructure type this Membership is
       running on.
-    labels: Optional. GCP labels for this membership.
+    labels: Optional. Labels for this membership.
     lastConnectionTime: Output only. For clusters using Connect, the timestamp
       of the most recent connection established with Google Cloud. This time
       is updated every several minutes, not continuously. For clusters that do
       not use GKE Connect, or that have never connected successfully, this
       field will be unset.
+    monitoringConfig: Optional. The monitoring config information for this
+      membership.
     name: Output only. The full, unique name of this Membership resource in
       the format `projects/*/locations/*/memberships/{membership_id}`, set
       during creation. `membership_id` must be a valid RFC 1123 compliant DNS
@@ -1266,7 +1269,7 @@ class Membership(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. GCP labels for this membership.
+    r"""Optional. Labels for this membership.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1297,10 +1300,11 @@ class Membership(_messages.Message):
   infrastructureType = _messages.EnumField('InfrastructureTypeValueValuesEnum', 7)
   labels = _messages.MessageField('LabelsValue', 8)
   lastConnectionTime = _messages.StringField(9)
-  name = _messages.StringField(10)
-  state = _messages.MessageField('MembershipState', 11)
-  uniqueId = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  monitoringConfig = _messages.MessageField('MonitoringConfig', 10)
+  name = _messages.StringField(11)
+  state = _messages.MessageField('MembershipState', 12)
+  uniqueId = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class MembershipEndpoint(_messages.Message):
@@ -1385,6 +1389,35 @@ class MembershipState(_messages.Message):
   code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
+class MonitoringConfig(_messages.Message):
+  r"""This field informs Fleet-based applications/services/UIs with the
+  necessary information for where each underlying Cluster reports its metrics.
+
+  Fields:
+    cluster: Immutable. Cluster name used to report metrics. For Anthos on
+      VMWare/Baremetal, it would be in format `memberClusters/cluster_name`;
+      And for Anthos on MultiCloud, it would be in format `{azureClusters,
+      awsClusters}/cluster_name`.
+    clusterHash: Immutable. Cluster hash, this is a unique string generated by
+      google code, which does not contain any PII, which we can use to
+      reference the cluster. This is expected to be created by the monitoring
+      stack and persisted into the Cluster object as well as to GKE-Hub.
+    kubernetesMetricsPrefix: Kubernetes system metrics, if available, are
+      written to this prefix. This defaults to kubernetes.io for GKE, and
+      kubernetes.io/anthos for Anthos eventually. Noted: Anthos MultiCloud
+      will have kubernetes.io prefix today but will migration to be under
+      kubernetes.io/anthos
+    location: Immutable. Location used to report Metrics
+    projectId: Immutable. Project used to report Metrics
+  """
+
+  cluster = _messages.StringField(1)
+  clusterHash = _messages.StringField(2)
+  kubernetesMetricsPrefix = _messages.StringField(3)
+  location = _messages.StringField(4)
+  projectId = _messages.StringField(5)
+
+
 class MultiCloudCluster(_messages.Message):
   r"""MultiCloudCluster contains information specific to GKE Multi-Cloud
   clusters.
@@ -1393,9 +1426,10 @@ class MultiCloudCluster(_messages.Message):
     clusterMissing: Output only. If cluster_missing is set then it denotes
       that API(gkemulticloud.googleapis.com) resource for this GKE Multi-Cloud
       cluster no longer exists.
-    resourceLink: Immutable. Self-link of the GCP resource for the GKE Multi-
-      Cloud cluster. For example: //gkemulticloud.googleapis.com/projects/my-
-      project/locations/us-west1-a/awsClusters/my-cluster
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      GKE Multi-Cloud cluster. For example:
+      //gkemulticloud.googleapis.com/projects/my-project/locations/us-
+      west1-a/awsClusters/my-cluster
       //gkemulticloud.googleapis.com/projects/my-project/locations/us-
       west1-a/azureClusters/my-cluster
       //gkemulticloud.googleapis.com/projects/my-project/locations/us-
@@ -1418,9 +1452,10 @@ class OnPremCluster(_messages.Message):
       that API(gkeonprem.googleapis.com) resource for this GKE On-Prem cluster
       no longer exists.
     clusterType: Immutable. The on prem cluster's type.
-    resourceLink: Immutable. Self-link of the GCP resource for the GKE On-Prem
-      cluster. For example: //gkeonprem.googleapis.com/projects/my-
-      project/locations/us-west1-a/vmwareClusters/my-cluster
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      GKE On-Prem cluster. For example:
+      //gkeonprem.googleapis.com/projects/my-project/locations/us-
+      west1-a/vmwareClusters/my-cluster
       //gkeonprem.googleapis.com/projects/my-project/locations/us-
       west1-a/bareMetalClusters/my-cluster
   """

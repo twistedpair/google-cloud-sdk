@@ -960,7 +960,7 @@ class Connection(_messages.Message):
   etag = _messages.StringField(4)
   githubConfig = _messages.MessageField('GitHubConfig', 5)
   githubEnterpriseConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2GitHubEnterpriseConfig', 6)
-  gitlabConfig = _messages.MessageField('GitLabConfig', 7)
+  gitlabConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2GitLabConfig', 7)
   installationState = _messages.MessageField('InstallationState', 8)
   name = _messages.StringField(9)
   reconciling = _messages.BooleanField(10)
@@ -1100,15 +1100,13 @@ class EventSource(_messages.Message):
       source.
     id: identification to Resource.
     repository: Output only. Resource name of GCB v2 repo.
-    secret: Output only. Secret Manager secret.
     subscription: Output only. Resource name of PubSub subscription.
   """
 
   eventSource = _messages.StringField(1)
   id = _messages.StringField(2)
   repository = _messages.StringField(3)
-  secret = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 4)
-  subscription = _messages.StringField(5)
+  subscription = _messages.StringField(4)
 
 
 class ExecutionEnvironment(_messages.Message):
@@ -1219,42 +1217,6 @@ class GitHubConfig(_messages.Message):
   authorizerCredential = _messages.MessageField('OAuthCredential', 2)
 
 
-class GitLabConfig(_messages.Message):
-  r"""Configuration for connections to gitlab.com or an instance of GitLab
-  Enterprise.
-
-  Fields:
-    authorizerCredential: Required. A GitLab personal access token with the
-      `api` scope access.
-    hostUri: The URI of the GitLab Enterprise host this connection is for. If
-      not specified, the default value is https://gitlab.com.
-    readAuthorizerCredential: A GitLab personal access token with `read_api`
-      scope access. Required if the GitLab Enterprise server verion is older
-      than 13.10. See at
-      https://docs.gitlab.com/ee/api/project_access_tokens.html#create-a-
-      project-access-token.
-    serverVersion: Output only. Version of the GitLab Enterprise server
-      running on the `host_uri`.
-    serviceDirectoryConfig: Configuration for using Service Directory to
-      privately connect to a GitLab Enterprise server. This should only be set
-      if the GitLab Enterprise server is hosted on-premises and not reachable
-      by public internet. If this field is left empty, calls to the GitLab
-      Enterprise server will be made over the public internet.
-    sslCa: SSL certificate to use for requests to GitLab Enterprise.
-    webhookSecretSecretVersion: Required. Immutable. SecretManager resource
-      containing the webhook secret of a GitLab Enterprise project, formatted
-      as `projects/*/secrets/*/versions/*`.
-  """
-
-  authorizerCredential = _messages.MessageField('UserCredential', 1)
-  hostUri = _messages.StringField(2)
-  readAuthorizerCredential = _messages.MessageField('UserCredential', 3)
-  serverVersion = _messages.StringField(4)
-  serviceDirectoryConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2ServiceDirectoryConfig', 5)
-  sslCa = _messages.StringField(6)
-  webhookSecretSecretVersion = _messages.StringField(7)
-
-
 class GitRef(_messages.Message):
   r"""Git ref configuration for filters.
 
@@ -1315,6 +1277,42 @@ class GoogleDevtoolsCloudbuildV2GitHubEnterpriseConfig(_messages.Message):
   serviceDirectoryConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2ServiceDirectoryConfig', 11)
   sslCa = _messages.StringField(12)
   webhookSecretSecretVersion = _messages.StringField(13)
+
+
+class GoogleDevtoolsCloudbuildV2GitLabConfig(_messages.Message):
+  r"""Configuration for connections to gitlab.com or an instance of GitLab
+  Enterprise.
+
+  Fields:
+    authorizerCredential: Required. A GitLab personal access token with the
+      `api` scope access.
+    hostUri: The URI of the GitLab Enterprise host this connection is for. If
+      not specified, the default value is https://gitlab.com.
+    readAuthorizerCredential: A GitLab personal access token with `read_api`
+      scope access. Required if the GitLab Enterprise server verion is older
+      than 13.10. See at
+      https://docs.gitlab.com/ee/api/project_access_tokens.html#create-a-
+      project-access-token.
+    serverVersion: Output only. Version of the GitLab Enterprise server
+      running on the `host_uri`.
+    serviceDirectoryConfig: Configuration for using Service Directory to
+      privately connect to a GitLab Enterprise server. This should only be set
+      if the GitLab Enterprise server is hosted on-premises and not reachable
+      by public internet. If this field is left empty, calls to the GitLab
+      Enterprise server will be made over the public internet.
+    sslCa: SSL certificate to use for requests to GitLab Enterprise.
+    webhookSecretSecretVersion: Required. Immutable. SecretManager resource
+      containing the webhook secret of a GitLab Enterprise project, formatted
+      as `projects/*/secrets/*/versions/*`.
+  """
+
+  authorizerCredential = _messages.MessageField('UserCredential', 1)
+  hostUri = _messages.StringField(2)
+  readAuthorizerCredential = _messages.MessageField('UserCredential', 3)
+  serverVersion = _messages.StringField(4)
+  serviceDirectoryConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2ServiceDirectoryConfig', 5)
+  sslCa = _messages.StringField(6)
+  webhookSecretSecretVersion = _messages.StringField(7)
 
 
 class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
@@ -1591,7 +1589,7 @@ class ListWorkflowsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -2360,17 +2358,15 @@ class Resource(_messages.Message):
 
   Fields:
     repo: Resource name of v2 GCB repo.
-    secret: Secret Manager Secret.
     secretVersion: Secret manager secret.
     topic: Resource name of PubSub topic.
     url: SCM Repo URL.
   """
 
   repo = _messages.StringField(1)
-  secret = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 2)
-  secretVersion = _messages.StringField(3)
-  topic = _messages.StringField(4)
-  url = _messages.StringField(5)
+  secretVersion = _messages.StringField(2)
+  topic = _messages.StringField(3)
+  url = _messages.StringField(4)
 
 
 class Result(_messages.Message):
@@ -3008,13 +3004,11 @@ class WebhookSecret(_messages.Message):
 
   Fields:
     id: identification to secret Resource.
-    secret: Output only. Secret Manager secret.
     secretVersion: Output only. Secret Manager version.
   """
 
   id = _messages.StringField(1)
-  secret = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 2)
-  secretVersion = _messages.StringField(3)
+  secretVersion = _messages.StringField(2)
 
 
 class WhenExpression(_messages.Message):
@@ -3229,8 +3223,6 @@ class WorkflowTrigger(_messages.Message):
   Fields:
     createTime: Output only. Creation time of the WorkflowTrigger.
     custom: The CEL filters that triggers the Workflow.
-    eventSource: The event source the WorkflowTrigger listens to. It is
-      deprecated and will be removed soon.
     eventType: Optional. The type of the events the WorkflowTrigger accepts.
     gitRef: Optional. The Git ref matching the SCM repo branch/tag.
     id: Immutable. id given by the users to the Workflow.
@@ -3275,18 +3267,17 @@ class WorkflowTrigger(_messages.Message):
 
   createTime = _messages.StringField(1)
   custom = _messages.MessageField('CEL', 2, repeated=True)
-  eventSource = _messages.MessageField('EventSource', 3)
-  eventType = _messages.EnumField('EventTypeValueValuesEnum', 4)
-  gitRef = _messages.MessageField('GitRef', 5)
-  id = _messages.StringField(6)
-  params = _messages.MessageField('Param', 7, repeated=True)
-  pullRequest = _messages.MessageField('PullRequest', 8)
-  source = _messages.MessageField('EventSource', 9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  statusMessage = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
-  uuid = _messages.StringField(13)
-  webhookSecret = _messages.MessageField('WebhookSecret', 14)
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 3)
+  gitRef = _messages.MessageField('GitRef', 4)
+  id = _messages.StringField(5)
+  params = _messages.MessageField('Param', 6, repeated=True)
+  pullRequest = _messages.MessageField('PullRequest', 7)
+  source = _messages.MessageField('EventSource', 8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  statusMessage = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+  uuid = _messages.StringField(12)
+  webhookSecret = _messages.MessageField('WebhookSecret', 13)
 
 
 class WorkspaceBinding(_messages.Message):

@@ -90,12 +90,15 @@ class Backup(_messages.Message):
         backup.
       READY: Backup is available for use.
       DELETING: Backup is being deleted.
+      INVALID: Backup is not valid and cannot be used for creating new
+        instances or restoring existing instances.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     FINALIZING = 2
     READY = 3
     DELETING = 4
+    INVALID = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -199,6 +202,17 @@ class DenyMaintenancePeriod(_messages.Message):
   endDate = _messages.MessageField('Date', 1)
   startDate = _messages.MessageField('Date', 2)
   time = _messages.MessageField('TimeOfDay', 3)
+
+
+class DirectoryServicesConfig(_messages.Message):
+  r"""Directory Services configuration for Kerberos-based authentication.
+
+  Fields:
+    managedActiveDirectory: Configuration for Managed Service for Microsoft
+      Active Directory.
+  """
+
+  managedActiveDirectory = _messages.MessageField('ManagedActiveDirectoryConfig', 1)
 
 
 class Empty(_messages.Message):
@@ -1260,6 +1274,8 @@ class Instance(_messages.Message):
     capacityStepSizeGb: Output only. The increase/decrease capacity step size.
     createTime: Output only. The time when the instance was created.
     description: The description of the instance (2048 characters or less).
+    directoryServices: Directory Services configuration for Kerberos-based
+      authentication. Should only be set if protocol is "NFS_V4_1".
     etag: Server-specified ETag for the instance resource to prevent
       simultaneous updates from overwriting each other.
     fileShares: File system shares on the instance. For this version, only a
@@ -1401,21 +1417,22 @@ class Instance(_messages.Message):
   capacityStepSizeGb = _messages.IntegerField(2)
   createTime = _messages.StringField(3)
   description = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  fileShares = _messages.MessageField('FileShareConfig', 6, repeated=True)
-  kmsKeyName = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  maxCapacityGb = _messages.IntegerField(9)
-  maxShareCount = _messages.IntegerField(10)
-  multiShareEnabled = _messages.BooleanField(11)
-  name = _messages.StringField(12)
-  networks = _messages.MessageField('NetworkConfig', 13, repeated=True)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 14)
-  satisfiesPzs = _messages.BooleanField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  statusMessage = _messages.StringField(17)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 18, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 19)
+  directoryServices = _messages.MessageField('DirectoryServicesConfig', 5)
+  etag = _messages.StringField(6)
+  fileShares = _messages.MessageField('FileShareConfig', 7, repeated=True)
+  kmsKeyName = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  maxCapacityGb = _messages.IntegerField(10)
+  maxShareCount = _messages.IntegerField(11)
+  multiShareEnabled = _messages.BooleanField(12)
+  name = _messages.StringField(13)
+  networks = _messages.MessageField('NetworkConfig', 14, repeated=True)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 15)
+  satisfiesPzs = _messages.BooleanField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  statusMessage = _messages.StringField(18)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 19, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 20)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -1513,7 +1530,7 @@ class ListSnapshotsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1682,6 +1699,22 @@ class MaintenanceWindow(_messages.Message):
   weeklyCycle = _messages.MessageField('WeeklyCycle', 2)
 
 
+class ManagedActiveDirectoryConfig(_messages.Message):
+  r"""ManagedActiveDirectoryConfig contains all the parameters for connecting
+  to Managed Active Directory.
+
+  Fields:
+    computer: The computer name is used as a prefix to the mount remote
+      target. Example: if the computer_name is `my-computer`, the mount
+      command will look like: `$mount -o vers=4,sec=krb5 my-
+      computer.filestore.:`.
+    domain: Fully qualified domain name.
+  """
+
+  computer = _messages.StringField(1)
+  domain = _messages.StringField(2)
+
+
 class NetworkConfig(_messages.Message):
   r"""Network configuration for the instance.
 
@@ -1758,6 +1791,7 @@ class NfsExportOptions(_messages.Message):
     AccessModeValueValuesEnum: Either READ_ONLY, for allowing only read
       requests on the exported directory, or READ_WRITE, for allowing both
       read and write requests. The default is READ_WRITE.
+    SecurityFlavorsValueListEntryValuesEnum:
     SquashModeValueValuesEnum: Either NO_ROOT_SQUASH, for allowing root access
       on the exported directory, or ROOT_SQUASH, for not allowing root access.
       The default is NO_ROOT_SQUASH.
@@ -1780,6 +1814,8 @@ class NfsExportOptions(_messages.Message):
       file share. Overlapping IP ranges are not allowed, both within and
       across NfsExportOptions. An error will be returned. The limit is 64 IP
       ranges/addresses for each FileShareConfig among all NfsExportOptions.
+    securityFlavors: The security flavors allowed for mount operations. The
+      default is AUTH_SYS.
     squashMode: Either NO_ROOT_SQUASH, for allowing root access on the
       exported directory, or ROOT_SQUASH, for not allowing root access. The
       default is NO_ROOT_SQUASH.
@@ -1798,6 +1834,25 @@ class NfsExportOptions(_messages.Message):
     ACCESS_MODE_UNSPECIFIED = 0
     READ_ONLY = 1
     READ_WRITE = 2
+
+  class SecurityFlavorsValueListEntryValuesEnum(_messages.Enum):
+    r"""SecurityFlavorsValueListEntryValuesEnum enum type.
+
+    Values:
+      SECURITY_FLAVOR_UNSPECIFIED: SecurityFlavor not set.
+      AUTH_SYS: The user's UNIX user-id and group-ids are transferred "in the
+        clear" (not encrypted) on the network, unauthenticated by the NFS
+        server (default).
+      KRB5: End-user authentication through Kerberos V5.
+      KRB5I: krb5 plus integrity protection (data packets are tamper proof).
+      KRB5P: krb5i plus privacy protection (data packets are tamper proof and
+        encrypted).
+    """
+    SECURITY_FLAVOR_UNSPECIFIED = 0
+    AUTH_SYS = 1
+    KRB5 = 2
+    KRB5I = 3
+    KRB5P = 4
 
   class SquashModeValueValuesEnum(_messages.Enum):
     r"""Either NO_ROOT_SQUASH, for allowing root access on the exported
@@ -1818,7 +1873,8 @@ class NfsExportOptions(_messages.Message):
   anonGid = _messages.IntegerField(2)
   anonUid = _messages.IntegerField(3)
   ipRanges = _messages.StringField(4, repeated=True)
-  squashMode = _messages.EnumField('SquashModeValueValuesEnum', 5)
+  securityFlavors = _messages.EnumField('SecurityFlavorsValueListEntryValuesEnum', 5, repeated=True)
+  squashMode = _messages.EnumField('SquashModeValueValuesEnum', 6)
 
 
 class Operation(_messages.Message):

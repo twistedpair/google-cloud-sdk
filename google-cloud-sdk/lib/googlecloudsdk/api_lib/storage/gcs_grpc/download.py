@@ -35,7 +35,8 @@ class GrpcDownload(gcs_download.GcsDownload):
                end_byte,
                digesters,
                progress_callback,
-               download_strategy):
+               download_strategy,
+               decryption_key):
     """Initializes a GrpcDownload instance.
 
     Args:
@@ -50,6 +51,8 @@ class GrpcDownload(gcs_download.GcsDownload):
       progress_callback (function): See cloud_api.CloudApi.download_object.
       download_strategy (cloud_api.DownloadStrategy): Download strategy used to
         perform the download.
+      decryption_key (encryption_util.EncryptionKey|None): The decryption key
+        to be used to download the object if the object is encrypted.
     """
     super(__class__, self).__init__(download_stream, start_byte, end_byte)
     self._gapic_client = gapic_client
@@ -57,6 +60,7 @@ class GrpcDownload(gcs_download.GcsDownload):
     self._digesters = digesters
     self._progress_callback = progress_callback
     self._download_strategy = download_strategy
+    self._decryption_key = decryption_key
 
   def should_retry(self, exc_type, exc_value, exc_traceback):
     """See super class."""
@@ -73,6 +77,7 @@ class GrpcDownload(gcs_download.GcsDownload):
         start_byte=self._start_byte,
         end_byte=self._end_byte,
         download_strategy=self._download_strategy,
+        decryption_key=self._decryption_key,
     )
 
   @retry_util.grpc_default_retryer

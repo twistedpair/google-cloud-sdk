@@ -18,8 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.run import configuration
-from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import traffic
@@ -43,9 +41,6 @@ class Service(k8s_object.KubernetesObject):
   """
   API_CATEGORY = 'serving.knative.dev'
   KIND = 'Service'
-  # Field names that are present in Cloud Run messages, but should not be
-  # initialized because they are here for legacy reasons.
-  EXCLUDED_FIELDS = ['manual', 'release', 'runLatest', 'pinned', 'container']
 
   @classmethod
   def New(cls, client, namespace):
@@ -63,26 +58,11 @@ class Service(k8s_object.KubernetesObject):
     return ret
 
   @property
-  def configuration(self):
-    """Configuration (configuration.Configuration) of the service, if any."""
-    ret = None
-    if hasattr(self._m.spec, 'pinned'):
-      options = (self._m.spec.pinned, self._m.spec.runLatest)
-      ret = next((o.configuration for o in options if o is not None), None)
-    if ret:
-      return configuration.Configuration.SpecOnly(ret, self._messages)
-    return None
-
-  @property
   def template(self):
-    if self.configuration:
-      return self.configuration.template
-    else:
-      ret = revision.Revision.Template(
-          self.spec.template, self.MessagesModule())
-      if not ret.IsFullObject():
-        ret.metadata = k8s_object.MakeMeta(self.MessagesModule())
-      return ret
+    ret = revision.Revision.Template(self.spec.template, self.MessagesModule())
+    if not ret.IsFullObject():
+      ret.metadata = k8s_object.MakeMeta(self.MessagesModule())
+    return ret
 
   @property
   def template_annotations(self):
@@ -199,8 +179,3 @@ class Service(k8s_object.KubernetesObject):
   @description.setter
   def description(self, value):
     self.annotations[u'run.googleapis.com/description'] = value
-
-  def UserImage(self):
-    """Human-readable "what's deployed"."""
-    user_image = self.annotations.get(container_resource.USER_IMAGE_ANNOTATION)
-    return self.template.UserImage(user_image)

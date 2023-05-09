@@ -21,32 +21,39 @@ import itertools
 from apitools.base.py import encoding
 
 
-def DecorateV1FunctionWithUpgradeInfo(v1_func, upgrade_info):
-  """Decorate gen1 function in v1 format with given upgrade info.
+def decorate_v1_function_with_v2_api_info(v1_func, v2_func):
+  # type: (v1_messages.CloudFunction, v2_messages.Function) -> dict[str, Any]
+  """Decorate gen1 function in v1 API format with additional info from its v2 API format.
+
+  Currently only the `environment` and `upgradeInfo` fields are copied over.
 
   Args:
     v1_func: A gen1 function retrieved from v1 API.
-    upgrade_info: An object containing a function's eligibility for gen1 to gen2
-      migration and current state of migration for function undergoing
-      migration. See http://shortn/_wrB4FUk8nE.
+    v2_func: The same gen1 function but as returned by the v2 API.
 
   Returns:
-    Gen1 function with upgrade info decorated.
+    The given Gen1 function encoded as a dict in the v1 format but with the
+      `upgradeInfo` and `environment` properties from the v2 format added.
   """
   v1_dict = encoding.MessageToDict(v1_func)
-  v1_dict["upgradeInfo"] = upgrade_info
+  if v2_func and v2_func.environment:
+    v1_dict["environment"] = str(v2_func.environment)
+  if v2_func and v2_func.upgradeInfo:
+    v1_dict["upgradeInfo"] = encoding.MessageToDict(v2_func.upgradeInfo)
   return v1_dict
 
 
-def DecorateV1GeneratorWithUpgradeInfo(v1_generator, v2_generator):
-  """Decorate upgrade info for 1st gen functions given the results from v2 API.
+def decorate_v1_generator_with_v2_api_info(v1_generator, v2_generator):
+  """Decorate gen1 functions in v1 API format with additional info from its v2 API format.
+
+  Currently only the `environment` and `upgradeInfo` fields are copied over.
 
   Args:
     v1_generator: Generator, generating gen1 function retrieved from v1 API.
     v2_generator: Generator, generating gen1 function retrieved from v2 API.
 
   Yields:
-    Gen1 function with upgrade info decorated.
+    Gen1 function encoded as a dict with upgrade info decorated.
   """
   gen1_generator = sorted(
       itertools.chain(v1_generator, v2_generator), key=lambda f: f.name
@@ -61,4 +68,4 @@ def DecorateV1GeneratorWithUpgradeInfo(v1_generator, v2_generator):
       yield func_list[0]
     else:
       v1_func, v2_func = func_list
-      yield DecorateV1FunctionWithUpgradeInfo(v1_func, v2_func.upgradeInfo)
+      yield decorate_v1_function_with_v2_api_info(v1_func, v2_func)

@@ -21,12 +21,17 @@ from __future__ import unicode_literals
 
 def AddNoAsyncFlag(parser):
   """Adds a --no-async flag to the given parser."""
-  help_text = ('Waits for the operation in progress to complete before '
-               'returning.')
+  help_text = (
+      'Waits for the operation in progress to complete before returning.'
+  )
   parser.add_argument('--no-async', action='store_true', help=help_text)
 
 
 def AddDisplayNameFlag(parser):
   """Adds a --display-name flag to the given parser."""
-  help_text = """Friendly name for the private connection."""
+  help_text = (
+      'A user-friendly name for the private connection. The display name can'
+      ' include letters, numbers, spaces, and hyphens, and must start with a'
+      ' letter. The maximum length allowed is 60 characters.'
+  )
   parser.add_argument('--display-name', help=help_text, required=True)

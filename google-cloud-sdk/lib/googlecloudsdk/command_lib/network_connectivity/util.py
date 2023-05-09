@@ -46,6 +46,7 @@ LIST_FORMAT = """
 LIST_SPOKES_FORMAT = """
     table(
       name.basename(),
+      name.segment(1):label=PROJECT,
       name.segment(3):label=LOCATION,
       spokeType:label=TYPE,
       state,

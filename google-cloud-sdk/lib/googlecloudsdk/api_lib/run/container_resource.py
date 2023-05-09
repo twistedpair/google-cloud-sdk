@@ -21,8 +21,6 @@ from __future__ import unicode_literals
 import functools
 from googlecloudsdk.api_lib.run import k8s_object
 
-# Annotation for the user-specified image.
-USER_IMAGE_ANNOTATION = k8s_object.CLIENT_GROUP + '/user-image'
 CLOUDSQL_ANNOTATION = k8s_object.RUN_GROUP + '/cloudsql-instances'
 VPC_ACCESS_ANNOTATION = 'run.googleapis.com/vpc-access-connector'
 SANDBOX_ANNOTATION = 'run.googleapis.com/execution-environment'
@@ -67,40 +65,6 @@ class ContainerResource(k8s_object.KubernetesObject):
   @image.setter
   def image(self, value):
     self.container.image = value
-
-  def UserImage(self, service_user_image=None):
-    """Human-readable "what's deployed".
-
-    Sometimes references a client.knative.dev/user-image annotation on the
-    revision or service to determine what the user intended to deploy. In that
-    case, we can display that, and show the user the hash prefix as a note that
-    it's at that specific hash.
-
-    Arguments:
-      service_user_image: Optional[str], the contents of the user image annot on
-        the service.
-
-    Returns:
-      a string representing the user deployment intent.
-    """
-    if not self.image:
-      return None
-    if '@' not in self.image:
-      return self.image
-    user_image = (
-        self.annotations.get(USER_IMAGE_ANNOTATION) or service_user_image)
-    if not user_image:
-      return self.image
-    # The image should  be in the format base@sha256:hashhashhash
-    base, h = self.image.split('@')
-    if ':' in h:
-      _, h = h.split(':')
-    if not user_image.startswith(base):
-      # The user-image is out of date.
-      return self.image
-    if len(h) > 8:
-      h = h[:8] + '...'
-    return user_image + ' at ' + h
 
   def _EnsureResources(self):
     limits_cls = self._messages.ResourceRequirements.LimitsValue

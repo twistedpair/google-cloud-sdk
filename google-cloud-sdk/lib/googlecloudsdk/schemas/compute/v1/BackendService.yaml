@@ -210,6 +210,12 @@ properties:
       field is only allowed when the loadBalancingScheme of
       the backend service is INTERNAL_SELF_MANAGED.
     $ref: Duration.yaml
+  metadatas:
+    description: |-
+      Deployment metadata associated with the resource to be
+      set by a GKE hub controller and read by the backend
+      RCTH
+    $ref: MetadatasValue.yaml
   name:
     description: |-
       Name of the resource. Provided by the client when the

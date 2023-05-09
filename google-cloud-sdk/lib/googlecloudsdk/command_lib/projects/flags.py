@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.resource_manager import completers
@@ -39,6 +40,21 @@ def GetProjectIDNumberFlag(verb):
       metavar='PROJECT_ID_OR_NUMBER',
       completer=completers.ProjectCompleter,
       help='ID or number for the project you want to {0}.'.format(verb))
+
+
+def GetRecommendFlag():
+  return base.Argument(
+      '--recommend',
+      metavar='RECOMMEND',
+      type=arg_parsers.ArgBoolean(),
+      default=False,
+      hidden=True,
+      required=False,
+      help=(
+          'Shows warning if project deletion is HIGH-RISK based on '
+          'Active Assist recommendations. Disabled by default.'
+      ),
+  )
 
 
 def ProjectAttributeConfig():

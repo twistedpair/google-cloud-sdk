@@ -28,7 +28,7 @@ APPLY_SPEC_VERSION_1 = """
 applySpecVersion: 1
 spec:
   configSync:
-    enabled: false
+    enabled: true
     sourceFormat: hierarchy
     policyDir:
     preventDrift: false

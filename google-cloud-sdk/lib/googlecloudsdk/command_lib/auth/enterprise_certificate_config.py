@@ -118,14 +118,14 @@ class PKCS11Config(object):
 
 class KeyChainConfig(object):
 
-  def __init__(self, cert_issuer):
-    self.cert_issuer = cert_issuer
+  def __init__(self, issuer):
+    self.issuer = issuer
 
 
 class MyStoreConfig(object):
 
-  def __init__(self, cert_issuer, store, provider):
-    self.cert_issuer = cert_issuer
+  def __init__(self, issuer, store, provider):
+    self.issuer = issuer
     self.store = store
     self.provider = provider
 

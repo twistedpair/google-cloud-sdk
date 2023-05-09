@@ -895,3 +895,56 @@ class PersonalAuthUtils(object):
       return True
     except ImportError:
       return False
+
+
+def ReadSessionTemplate(dataproc, template_file_name=None):
+  """Returns session template read from YAML file.
+
+  Args:
+    dataproc: Wrapper for dataproc resources, client and messages.
+    template_file_name: If set, location of the YAML file to read from.
+      Otherwise, reads from stdin.
+
+  Raises:
+    argparse.ArgumentError if duration formats are invalid or out of bounds.
+  """
+  data = console_io.ReadFromFileOrStdin(template_file_name or '-', binary=False)
+  template = export_util.Import(
+      message_type=dataproc.messages.SessionTemplate, stream=data)
+
+  return template
+
+
+def CreateSessionTemplate(dataproc, name, template):
+  """Returns the server-resolved template after creating the given template.
+
+  Args:
+    dataproc: Wrapper for dataproc resources, client and messages.
+    name: The session template resource name.
+    template: The SessionTemplate message to create.
+  """
+  parent = '/'.join(name.split('/')[0:4])
+  template.name = name
+
+  request = (
+      dataproc.messages.DataprocProjectsLocationsSessionTemplatesCreateRequest(
+          parent=parent,
+          sessionTemplate=template))
+  template = dataproc.client.projects_locations_sessionTemplates.Create(request)
+  log.status.Print('Created [{0}].'.format(template.name))
+  return template
+
+
+def UpdateSessionTemplate(dataproc, name, template):
+  """Returns the server-resolved template after updating the given template.
+
+  Args:
+    dataproc: Wrapper for dataproc resources, client and messages.
+    name: The session template resource name.
+    template: The SessionTemplate message to create.
+  """
+  template.name = name
+
+  template = dataproc.client.projects_locations_sessionTemplates.Patch(template)
+  log.status.Print('Updated [{0}].'.format(template.name))
+  return template

@@ -221,8 +221,8 @@ def AddMoveArguments(parser):
   parser.add_argument(
       '--target-project',
       required=True,
-      help='The target project to move address in. It can be either project '
-      'name or project numerical ID. It must not be the same as the current '
+      help='The target project to move address to. It can be either a project '
+      'name or a project numerical ID. It must not be the same as the current '
       'project.')
   parser.add_argument(
       '--new-name',

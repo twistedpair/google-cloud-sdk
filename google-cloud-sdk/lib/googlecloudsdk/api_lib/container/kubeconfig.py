@@ -194,7 +194,7 @@ class Kubeconfig(object):
         list(kubeconfig.contexts.items()) + list(self.contexts.items()))
 
 
-def Cluster(name, server, ca_path=None, ca_data=None):
+def Cluster(name, server, ca_path=None, ca_data=None, has_dns_endpoint=False):
   """Generate and return a cluster kubeconfig object."""
   cluster = {
       'server': server,
@@ -203,7 +203,7 @@ def Cluster(name, server, ca_path=None, ca_data=None):
     raise Error('cannot specify both ca_path and ca_data')
   if ca_path:
     cluster['certificate-authority'] = ca_path
-  elif ca_data:
+  elif ca_data is not None and not has_dns_endpoint:
     cluster['certificate-authority-data'] = ca_data
   else:
     cluster['insecure-skip-tls-verify'] = True
@@ -222,7 +222,8 @@ def User(name,
          cert_path=None,
          cert_data=None,
          key_path=None,
-         key_data=None):
+         key_data=None,
+         dns_endpoint=None):
   """Generates and returns a user kubeconfig object.
 
   Args:
@@ -236,6 +237,7 @@ def User(name,
     cert_data: str, base64 encoded client certificate data.
     key_path: str, path to client key file.
     key_data: str, base64 encoded client key data.
+    dns_endpoint: str, cluster's DNS endpoint.
   Returns:
     dict, valid kubeconfig user entry.
 
@@ -263,7 +265,7 @@ def User(name,
           expiry_key=auth_provider_expiry_key,
           token_key=auth_provider_token_key)
     else:
-      user['exec'] = _ExecAuthPlugin()
+      user['exec'] = _ExecAuthPlugin(dns_endpoint)
 
   if cert_path and cert_data:
     raise Error('cannot specify both cert_path and cert_data')
@@ -323,8 +325,18 @@ ACTION REQUIRED: gke-gcloud-auth-plugin, \
 which is needed for continued use of kubectl, was not found or is not executable. \
 """ + GKE_GCLOUD_AUTH_INSTALL_HINT
 
+GCLOUD_DNS_AUTH_PLUGIN_NOT_FOUND = """\
+ACTION REQUIRED: /google/bin/releases/gkfe/gkfe-plugin/main, \
+which is needed for continued use of kubectl, was not found or is not executable. \
+"""
 
-def _ExecAuthPlugin():
+DNS_ENDPOINT_OR_USE_APPLICATION_DEFAULT_CREDENTIALS = """\
+Only one of --dns-endpoint or USE_APPLICATION_DEFAULT_CREDENTIALS should be set \
+at a time. \
+"""
+
+
+def _ExecAuthPlugin(dns_endpoint=None):
   """Generate and return an exec auth plugin config.
 
   Constructs an exec auth plugin config entry readable by kubectl.
@@ -338,10 +350,30 @@ def _ExecAuthPlugin():
   GKE GCloud Exec Auth Plugin code is at
   https://github.com/kubernetes/cloud-provider-gcp/tree/master/cmd/gke-gcloud-auth-plugin
 
+  Args:
+    dns_endpoint: str, DNS endpoint.
   Returns:
     dict, valid exec auth plugin config entry.
+  Raises:
+    Error: Only one of --dns-endpoint or USE_APPLICATION_DEFAULT_CREDENTIALS
+    should be set at a time.
   """
-  command = _GetGkeGcloudPluginCommandAndPrintWarning()
+
+  use_application_default_credentials = (
+      properties.VALUES.container.use_app_default_credentials.GetBool()
+  )
+  is_googler = False
+  if dns_endpoint:
+    is_googler = _IsGoogleInternalUser()
+
+    if use_application_default_credentials:
+      raise Error(DNS_ENDPOINT_OR_USE_APPLICATION_DEFAULT_CREDENTIALS)
+
+  command = (
+      _GetGcloudClusterDNSEndpointPluginCommandAndPrintWarning()
+      if is_googler
+      else _GetGkeGcloudPluginCommandAndPrintWarning()
+  )
 
   exec_cfg = {
       'command': command,
@@ -350,7 +382,9 @@ def _ExecAuthPlugin():
       'provideClusterInfo': True,
   }
 
-  if properties.VALUES.container.use_app_default_credentials.GetBool():
+  if is_googler:
+    exec_cfg['args'] = ['--cluster_id=' + dns_endpoint]
+  if use_application_default_credentials:
     exec_cfg['args'] = ['--use_application_default_credentials']
   return exec_cfg
 
@@ -473,6 +507,34 @@ def _GetGkeGcloudPluginCommandAndPrintWarning():
   return command
 
 
+def _GetGcloudClusterDNSEndpointPluginCommandAndPrintWarning():
+  """Get Gcloud Cluster DNS Endpoint Plugin Command to be used.
+
+  Returns Gcloud Cluster DNS Endpoint Plugin Command to be used. Also,
+  prints warning if plugin is not present or doesn't work correctly.
+
+  Returns:
+    string, Gcloud Cluster DNS Endpoint Plugin Command to be used.
+  """
+  bin_name = '/google/bin/releases/gkfe/gkfe-plugin/main'
+  if platforms.OperatingSystem.IsWindows():
+    bin_name = '/google/bin/releases/gkfe/gkfe-plugin/main.exe'
+  command = bin_name
+
+  # Check if command is in PATH and executable. Else, print critical(RED)
+  # warning as kubectl will break if command is not executable.
+  try:
+    subprocess.run([command, '--version'],
+                   timeout=5,
+                   check=False,
+                   stdout=subprocess.DEVNULL,
+                   stderr=subprocess.DEVNULL)
+  except Exception:  # pylint: disable=broad-except
+    log.critical(GCLOUD_DNS_AUTH_PLUGIN_NOT_FOUND)
+
+  return command
+
+
 def Context(name, cluster, user):
   """Generate and return a context kubeconfig object."""
   return {
@@ -494,3 +556,9 @@ def EmptyKubeconfig():
       'preferences': {},
       'users': [],
   }
+
+
+def _IsGoogleInternalUser():
+  """Returns a bool noting if User is a Googler."""
+  email = properties.VALUES.core.account.Get()
+  return (email is not None and email.lower().endswith('@google.com'))

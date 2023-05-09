@@ -926,6 +926,33 @@ class TelecomdatafabricV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Preview(self, request, global_params=None):
+      r"""Gets View of a Deployment.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsDeploymentsPreviewRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DeploymentView) The response message.
+      """
+      config = self.GetMethodConfig('Preview')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Preview.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/deployments:preview',
+        http_method='POST',
+        method_id='telecomdatafabric.projects.locations.deployments.preview',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/deployments:preview',
+        request_field='createDeploymentRequest',
+        request_type_name='TelecomdatafabricProjectsLocationsDeploymentsPreviewRequest',
+        response_type_name='DeploymentView',
+        supports_download=False,
+    )
+
   class ProjectsLocationsIaasMetricsCollectorsService(base_api.BaseApiService):
     """Service class for the projects_locations_iaasMetricsCollectors resource."""
 

@@ -30,6 +30,7 @@ from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core.util import text
 
 import six
 
@@ -401,6 +402,7 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
         'override_resource_collection': data.get(
             'override_resource_collection', False),
         'required': data.get('required', True),
+        'repeated': data.get('repeated', False),
         'request_api_version': api_version,
     }
 
@@ -414,7 +416,7 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
                display_name_hook=None, request_id_field=None,
                resource_method_params=None, parse_resource_into_request=True,
                use_relative_name=True, override_resource_collection=False,
-               required=True, **unused_kwargs):
+               required=True, repeated=False, **unused_kwargs):
     self.flag_name_override = arg_name
     self.group_help = group_help
     self.is_positional = is_positional
@@ -430,6 +432,7 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
     self.use_relative_name = use_relative_name
     self.override_resource_collection = override_resource_collection
     self.required = required
+    self.repeated = repeated
 
     # All resource spec types have these values
     self.name = data['name']
@@ -475,6 +478,12 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
       result = result.result
     return result
 
+  def _Plural(self, name, plural_name=None):
+    if name is None:
+      return None
+    count = 2 if self.repeated else 1
+    return text.Pluralize(count, name, plural_name)
+
   def _GetAnchorArgName(self, method=None):
     """Get the anchor argument name for the resource spec."""
     resource_spec = self._GenerateResourceSpec(
@@ -483,9 +492,10 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
     if self.flag_name_override:
       flag_name = self.flag_name_override
     elif hasattr(resource_spec, 'anchor'):
-      flag_name = resource_spec.anchor.name
+      flag_name = self._Plural(resource_spec.anchor.name)
     else:
-      flag_name = self.name or resource_spec.name
+      flag_name = (self._Plural(self.name, self._plural_name) or
+                   self._Plural(resource_spec.name, resource_spec.plural_name))
 
     # If left unspecified, decide whether the resource is positional based on
     # the method.
@@ -503,8 +513,11 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
   def _GetResourceMap(self, ref):
     message_resource_map = {}
     for message_field_name, param_str in self.resource_method_params.items():
-      value = util.FormatResourceAttrStr(param_str, ref)
-      message_resource_map[message_field_name] = value
+      if isinstance(ref, list):
+        values = [util.FormatResourceAttrStr(param_str, r) for r in ref]
+      else:
+        values = util.FormatResourceAttrStr(param_str, ref)
+      message_resource_map[message_field_name] = values
     return message_resource_map
 
   def _GenerateFallthroughsMap(self, command_level_fallthroughs_data):
@@ -526,13 +539,14 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
     return command_level_fallthroughs
 
   def _GenerateConceptParser(self, method, resource_spec, attribute_names,
-                             shared_resource_flags=None):
+                             repeated=False, shared_resource_flags=None):
     """Generates a ConceptParser from YAMLConceptArgument.
 
     Args:
       method: registry.APIMethod, helps determine the arg name
       resource_spec: concepts.ResourceSpec, used to create PresentationSpec
       attribute_names: names of resource attributes
+      repeated: bool, whether or not the resource arg should be plural
       shared_resource_flags: [string], list of flags being generated elsewhere
 
     Returns:
@@ -570,7 +584,8 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
             self.group_help,
             prefixes=False,
             required=self.required,
-            flag_name_overrides=no_gen)],
+            flag_name_overrides=no_gen,
+            plural=repeated)],
         command_level_fallthroughs=command_level_fallthroughs)
 
 
@@ -664,7 +679,8 @@ class YAMLResourceArgument(YAMLConceptArgument):
         method and method.resource_argument_collection)
 
     return self._GenerateConceptParser(
-        method, resource_spec, self.attribute_names, shared_resource_flags)
+        method, resource_spec, self.attribute_names,
+        self.repeated, shared_resource_flags)
 
   def Parse(self, method, message, namespace):
     ref = self.ParseResourceArg(method, namespace)
@@ -771,7 +787,8 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
         method and method.resource_argument_collection)
 
     return self._GenerateConceptParser(
-        method, resource_spec, self.attribute_names, shared_resource_flags)
+        method, resource_spec, self.attribute_names,
+        self.repeated, shared_resource_flags)
 
   def Parse(self, method, message, namespace):
     ref = self.ParseResourceArg(method, namespace)

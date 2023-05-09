@@ -1471,13 +1471,456 @@ apis:
     v1alpha:
       discovery_doc: messagestreams_v1alpha.json
       default: true
+  apphub:
+    v1alpha:
+      discovery_doc: apphub_v1alpha.json
+      default: true
 canonical_surfaces:
-  accessapproval: access-approval
-  aiplatform: ai-platform
-  anthospolicycontrollerstatus_pa: container fleet policycontroller
-  baremetalsolution: bmt
-  binaryauthorization: container binauthz
-  clouddeploy: deploy
-  cloudfunctions: functions
-  datapipelines: datapipelines
-  # TODO(b/279468611)
+  accessapproval:
+    name: accessapproval
+    command: access-approval
+  accesscontextmanager:
+    name: accesscontextmanager
+    command: access-context-manager
+  ai:
+    name: ai
+    command: ai
+  aiplatform:
+    name: aiplatform
+    command: ai-platform
+  alloydb:
+    name: alloydb
+    command: alloydb
+  anthosevents:
+    name: anthosevents
+    command: anthos
+  anthospolicycontrollerstatus_pa:
+    name: anthospolicycontrollerstatus_pa
+    command: container fleet policycontroller
+  apigateway:
+    name: apigateway
+    command: api-gateway
+  apigee:
+    name: apigee
+    command: apigee
+  appengine:
+    name: appengine
+    command: app
+  artifactregistry:
+    name: artifactregistry
+    command: artifacts
+  assuredworkloads:
+    name: assuredworkloads
+    command: assured
+  baremetalsolution:
+    name: baremetalsolution
+    command: bms
+  batch:
+    name: batch
+    command: batch
+    hidden: true
+  beyondcorp:
+    name: beyondcorp
+    hidden: true
+  bigquery:
+    name: bigquery
+    hidden: true
+  bigtableadmin:
+    name: bigtableadmin
+    command: bigtable
+  binaryauthorization:
+    name: binaryauthorization
+    command: container binauthz
+  blueprints:
+    name: config
+    command: blueprints
+  categorymanager:
+    name: categorymanager
+    hidden: true
+  certificatemanager:
+    name: certificatemanager
+    command: certificate-manager
+  cloudasset:
+    name: cloudasset
+    command: asset
+  cloudbilling:
+    name: cloudbilling
+    command: billing
+  cloudbuild:
+    name: cloudbuild
+    command: builds
+  cloudcommerceconsumerprocurement:
+    name: cloudcommerceconsumerprocurement
+    command: commerce-procurement
+  clouddebugger:
+    name: clouddebugger
+    command: debug
+  clouddeploy:
+    name: clouddeploy
+    command: deploy
+  clouderrorreporting:
+    name: clouderrorreporting
+    command: error-reporting
+  cloudfunctions:
+    name: cloudfunctions
+    command: functions
+  cloudidentity:
+    name: cloudidentity
+    command: identity
+  cloudiot:
+    name: cloudiot
+    command: iot
+  cloudkms:
+    name: cloudkms
+    command: kms
+  cloudresourcemanager:
+    name: cloudresourcemanager
+    command: projects
+  cloudresourcesearch:
+    name: cloudresourcesearch
+    hidden: true
+  cloudscheduler:
+    name: cloudscheduler
+    command: scheduler
+  cloudtasks:
+    name: cloudtasks
+    command: tasks
+  cloudtrace:
+    name: cloudtrace
+    command: trace
+  composer:
+    name: composer
+    command: composer
+  compute:
+    name: compute
+    help_text: |-
+      'Overrides API endpoint for `gcloud compute` command group. '
+      'For Private Service Connect usage, see '
+      'https://cloud.google.com/vpc/docs/configure-private-service-connect-apis#using-endpoints'
+  container:
+    name: container
+    command: container
+  containeranalysis:
+    name: containeranalysis
+    hidden: true
+  datacatalog:
+    name: datacatalog
+    command: data-catalog
+  dataflow:
+    name: dataflow
+    command: dataflow
+  datafusion:
+    name: datafusion
+    command: data-fusion
+  datamigration:
+    name: datamigration
+    command: database-migration
+  datapol:
+    name: datapol
+    hidden: true
+  datapipelines:
+    name: datapipelines
+    command: datapipelines
+  dataplex:
+    name: dataplex
+    command: dataplex
+  dataproc:
+    name: dataproc
+    command: dataproc
+  datastore:
+    name: datastore
+    command: datastore
+  datastream:
+    name: datastream
+    command: datastream
+  deploymentmanager:
+    name: deploymentmanager
+    command: deployment-manager
+  discovery:
+    name: discovery
+    hidden: true
+  dns:
+    name: dns
+    command: dns
+  domains:
+    name: domains
+    command: domains
+  edgecontainer:
+    name: edgecontainer
+    command: edge-container
+  edgenetwork:
+    name: edgenetwork
+    command: edge-cloud networking
+  eventarc:
+    name: eventarc
+    command: eventarc
+  eventarcpublishing:
+    name: eventarcpublishing
+    command:  eventarc publish
+  events:
+    name: events
+    command: events
+  file:
+    name: file
+    command: filestore
+  firestore:
+    name: firestore
+    command: firestore
+  gameservices:
+    name: gameservices
+    command: gamer
+  genomics:
+    name: genomics
+    command: genomics
+  gkebackup:
+    name: gkebackup
+    hidden: true
+  gkehub:
+    name: gkehub
+    hidden: true
+  gkemulticloud:
+    name: gkemulticloud
+    help_text: |-
+      'Overrides API endpoint for `gcloud container aws`, '
+      '`gcloud container azure` and `gcloud container attached` '
+      'command groups.'
+  gkeonprem:
+    name: gkeonprem
+    hidden: true
+  healthcare:
+    name: healthcare
+    command: healthcare
+  iam:
+    name: iam
+    command: iam
+  iamcredentials:
+    name: iamcredentials
+    command: iam
+  iap:
+    name: iap
+    command: iap
+  ids:
+    name: ids
+    command: ids
+  krmapihosting:
+    name: krmapihosting
+    command: anthos config controller
+  kubernetespolicy:
+    name: kubernetespolicy
+    hidden: true
+  language:
+    name: language
+    command: ml language
+  lifesciences:
+    name: lifesciences
+    command: lifesciences
+  logging:
+    name: logging
+    command: logging
+  looker:
+    name: looker
+    command: looker
+  managedidentities:
+    name: managedidentities
+    command: active-directory
+  manager:
+    name: manager
+    hidden: true
+  marketplacesolutions:
+    name: marketplacesolutions
+    command: mps
+  mediaasset:
+    name: mediaasset
+    command: media
+  memcache:
+    name: memcache
+    command: memcache
+  messagestreams:
+    name: messagestreams
+    command: messagestreams
+    hidden: true
+  metastore:
+    name: metastore
+    command: metastore
+  ml:
+    name: ml
+    hidden: true
+  monitoring:
+    name: monitoring
+    command: monitoring
+  netapp:
+    name: netapp
+    command: netapp
+  networkconnectivity:
+    name: networkconnectivity
+    command: network-connectivity
+  networkmanagement:
+    name: networkmanagement
+    command: network-management
+  networksecurity:
+    name: networksecurity
+    command: network-security
+  networkservices:
+    name: networkservices
+    command: network-services
+  notebooks:
+    name: notebooks
+    command: notebooks
+  ondemandscanning:
+    name: ondemandscanning
+    hidden: true
+  orgpolicy:
+    name: orgpolicy
+    command: org-policies
+  osconfig:
+    name: osconfig
+    hidden: true
+  oslogin:
+    name: oslogin
+    hidden: true
+  policyanalyzer:
+    name: policyanalyzer
+    command: policy-intelligence
+  policysimulator:
+    name: policysimulator
+    hidden: true
+  policytroubleshooter:
+    name: policytroubleshooter
+    hidden: true
+  privateca:
+    name: privateca
+    command: privateca
+  publicca:
+    name: publicca
+    command: publicca
+  pubsub:
+    name: pubsub
+    command: pubsub
+  pubsublite:
+    name: pubsublite
+    hidden: true
+  recaptcha:
+    name: recaptchaenterprise
+    command: recaptcha
+  recommender:
+    name: recommender
+    command: recommender
+  redis:
+    name: redis
+    command: redis
+  remotebuildexecution:
+    name: remotebuildexecution
+    hidden: true
+  replicapoolupdater:
+    name: replicapoolupdater
+    hidden: true
+  resourcesettings:
+    name: resourcesettings
+    command: resource-settings
+  run:
+    name: run
+    command: run
+  runapps:
+    name: runapps
+    hidden: true
+  runtimeconfig:
+    name: runtimeconfig
+    command: runtime-config
+  sasportal:
+    name: sasportal
+    hidden: true
+  scc:
+    name: securitycenter
+    command: scc
+  sddc:
+    name: sddc
+    command: vmware sddc
+  secrets:
+    name: secretmanager
+    command: secrets
+  securedlandingzone:
+    name: securedlandingzone
+    command: scc slz-overwatch
+    hidden: true
+  securesourcemanager:
+    name: securesourcemanager
+    hidden: true
+  servicedirectory:
+    name: servicedirectory
+    command: service-directory
+  servicemanagement:
+    name: servicemanagement
+    command: endpoints
+  serviceregistry:
+    name: serviceregistry
+    hidden: true
+  serviceusage:
+    name: serviceusage
+    hidden: true
+  source:
+    name: source
+    hidden: true
+  sourcerepo:
+    name: sourcerepo
+    command: source
+  spanner:
+    name: spanner
+    help_text: |-
+      'Overrides API endpoint for `gcloud spanner` command group. '
+      'For spanner emulator usage, see '
+      'https://cloud.google.com/spanner/docs/emulator#using_the_gcloud_cli_with_the_emulator'
+  speech:
+    name: speech
+    command: ml speech
+  sql:
+    name: sql
+    command: sql
+  storage:
+    name: storage
+    command: storage
+  storageinsights:
+    name: storageinsights
+    command: storage insights
+    hidden: true
+  stream:
+    name: stream
+    hidden: true
+  telcoautomation:
+    name: telcoautomation
+    hidden: true
+  telecomdatafabric:
+    name: telecomdatafabric
+    hidden: true
+  testing:
+    name: testing
+    command: firebase test
+  toolresults:
+    name: toolresults
+    hidden: true
+  tpu:
+    name: tpu
+    hidden: true
+  transfer:
+    name: transfer
+    command: transfer
+  vision:
+    name: vision
+    command: ml vision
+  vmwareengine:
+    name: vmwareengine
+    command: vmware
+  vpcaccess:
+    name: vpcaccess
+    hidden: true
+  workflowexecutions:
+    name: workflowexecutions
+    command: workflows executions
+  workflows:
+    name: workflows
+    command: workflows
+  workloadcertificate:
+    name: workloadcertificate
+    hidden: true
+  workstations:
+    name: workstations
+    hidden: true

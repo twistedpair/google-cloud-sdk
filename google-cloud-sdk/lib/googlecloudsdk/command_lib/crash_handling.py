@@ -112,7 +112,9 @@ def ReportError(is_crash):
   Args:
     is_crash: bool, True if this is a crash, False if it is a user error.
   """
-  if properties.VALUES.core.disable_usage_reporting.GetBool():
+
+  if (not properties.IsDefaultUniverse() or
+      properties.VALUES.core.disable_usage_reporting.GetBool()):
     return
 
   # traceback prints the exception that is currently being handled

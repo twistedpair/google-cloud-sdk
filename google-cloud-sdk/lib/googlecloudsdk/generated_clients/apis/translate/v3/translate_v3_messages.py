@@ -973,7 +973,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1061,8 +1061,6 @@ class Model(_messages.Message):
     dataset: The dataset from which the model is trained, in form of
       `projects/{project-number-or-
       id}/locations/{location_id}/datasets/{dataset_id}`
-    deployTime: Output only. Timestamp when the model training finished and
-      ready to be used for translation.
     displayName: The name of the model to show in the interface. The name can
       be up to 32 characters long and can consist only of ASCII Latin letters
       A-Z and a-z, underscores (_), and ASCII digits 0-9.
@@ -1083,15 +1081,14 @@ class Model(_messages.Message):
 
   createTime = _messages.StringField(1)
   dataset = _messages.StringField(2)
-  deployTime = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  name = _messages.StringField(5)
-  sourceLanguageCode = _messages.StringField(6)
-  targetLanguageCode = _messages.StringField(7)
-  testExampleCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  trainExampleCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(10)
-  validateExampleCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  sourceLanguageCode = _messages.StringField(5)
+  targetLanguageCode = _messages.StringField(6)
+  testExampleCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  trainExampleCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(9)
+  validateExampleCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
 class Operation(_messages.Message):

@@ -79,12 +79,13 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
   r"""A DatacatalogEntriesLookupRequest object.
 
   Fields:
-    fullyQualifiedName: Fully qualified name (FQN) of the resource. FQNs take
-      two forms: * For non-regionalized resources:
-      `{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` * For
-      regionalized resources: `{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_RESOU
-      RCE_SEPARATED_WITH_DOTS}` Example for a DPMS table: `dataproc_metastore:
-      {PROJECT_ID}.{LOCATION_ID}.{INSTANCE_ID}.{DATABASE_ID}.{TABLE_ID}`
+    fullyQualifiedName: [Fully Qualified Name
+      (FQN)](https://cloud.google.com//data-catalog/docs/fully-qualified-
+      names) of the resource. FQNs take two forms: * For non-regionalized
+      resources: `{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` *
+      For regionalized resources: `{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_R
+      ESOURCE_SEPARATED_WITH_DOTS}` Example for a DPMS table: `dataproc_metast
+      ore:{PROJECT_ID}.{LOCATION_ID}.{INSTANCE_ID}.{DATABASE_ID}.{TABLE_ID}`
     linkedResource: The full name of the Google Cloud Platform resource the
       Data Catalog entry represents. For more information, see [Full Resource
       Name] (https://cloud.google.com/apis/design/resource_names#full_resource
@@ -1798,15 +1799,11 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       encoded in UTF-8. Default value is an empty string.
     filesetSpec: Specification that applies to a fileset resource. Valid only
       for entries with the `FILESET` type.
-    fullyQualifiedName: Fully qualified name (FQN) of the resource. Set
-      automatically for entries representing resources from synced systems.
-      Settable only during creation and read-only afterwards. Can be used for
-      search and lookup of the entries. FQNs take two forms: * For non-
-      regionalized resources:
-      `{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` * For
-      regionalized resources: `{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_RESOU
-      RCE_SEPARATED_WITH_DOTS}` Example for a DPMS table: `dataproc_metastore:
-      {PROJECT_ID}.{LOCATION_ID}.{INSTANCE_ID}.{DATABASE_ID}.{TABLE_ID}`
+    fullyQualifiedName: [Fully Qualified Name
+      (FQN)](https://cloud.google.com//data-catalog/docs/fully-qualified-
+      names) of the resource. Set automatically for entries representing
+      resources from synced systems. Settable only during creation, and read-
+      only later. Can be used for search and lookup of the entries.
     gcsFilesetSpec: Specification that applies to a Cloud Storage fileset.
       Valid only for entries with the `FILESET` type.
     integratedSystem: Output only. Indicates the entry's source system that
@@ -2802,6 +2799,7 @@ class GoogleCloudDatacatalogV1SearchCatalogResponse(_messages.Message):
     nextPageToken: Pagination token that can be used in subsequent calls to
       retrieve the next page of results.
     results: Search results.
+    totalSize: The approximate total number of entries matched by the query.
     unreachable: Unreachable locations. Search results don't include data from
       those locations. To get additional information on an error, repeat the
       search request and restrict it to specific locations by setting the
@@ -2810,7 +2808,8 @@ class GoogleCloudDatacatalogV1SearchCatalogResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   results = _messages.MessageField('GoogleCloudDatacatalogV1SearchCatalogResult', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
+  totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  unreachable = _messages.StringField(4, repeated=True)
 
 
 class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
@@ -3348,7 +3347,7 @@ class GoogleCloudDatacatalogV1TaxonomyService(_messages.Message):
     NameValueValuesEnum: The Google Cloud service name.
 
   Fields:
-    identity: P4SA Identity of the service.
+    identity: The service agent for the service.
     name: The Google Cloud service name.
   """
 

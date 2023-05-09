@@ -3235,9 +3235,9 @@ class Publishing(_messages.Message):
       from earlier settings with the same version string are discarded.
     methodSettings: A list of API method settings, e.g. the behavior for
       methods that use the long-running operation pattern.
-    newIssueUri: Link to a place that API users can report issues. Example: ht
-      tps://issuetracker.google.com/issues/new?component=190865&template=11611
-      03
+    newIssueUri: Link to a *public* URI where users can report issues.
+      Example: https://issuetracker.google.com/issues/new?component=190865&tem
+      plate=1161103
     organization: For whom the client library is being published.
     protoReferenceDocumentationUri: Optional link to proto reference
       documentation. Example:
@@ -3253,12 +3253,16 @@ class Publishing(_messages.Message):
       ADS: Ads (Advertising) Org.
       PHOTOS: Photos Org.
       STREET_VIEW: Street View Org.
+      SHOPPING: Shopping Org.
+      GEO: Geo Org.
     """
     CLIENT_LIBRARY_ORGANIZATION_UNSPECIFIED = 0
     CLOUD = 1
     ADS = 2
     PHOTOS = 3
     STREET_VIEW = 4
+    SHOPPING = 5
+    GEO = 6
 
   apiShortName = _messages.StringField(1)
   codeownerGithubTeams = _messages.StringField(2, repeated=True)

@@ -411,13 +411,38 @@ def _MapChoice(choices, value):
   return choices.get(value, value)
 
 
-def ParseResourceIntoMessage(ref, method, message, message_resource_map=None,
+def _ListValue(values, plural):
+  if isinstance(values, list):
+    if plural:
+      return values
+    return values[0] if values else None
+  else:
+    return [values] if plural else values
+
+
+def _ParseParents(refs, parent_collection):
+  parents = []
+  names = []
+  for ref in refs:
+    parents.append(
+        ref.Parent(parent_collection=parent_collection))
+    names.append(ref.Name())
+  return parents, names
+
+
+def _GetParam(ref, p, default_relative_name):
+  default_val = ref.RelativeName() if default_relative_name else ref.Name()
+  return getattr(ref, p, default_val)
+
+
+def ParseResourceIntoMessage(refs, method, message, message_resource_map=None,
                              request_id_field=None, use_relative_name=True,
                              is_primary_resource=False):
   """Set fields in message corresponding to a resource.
 
   Args:
-    ref: googlecloudsdk.core.resources.Resource, the resource reference.
+    refs: googlecloudsdk.core.resources.Resource or list, the resource
+      reference.
     method: the API method.
     message: apitools Message object.
     message_resource_map: {str: str}, A mapping of API method parameter name to
@@ -430,6 +455,11 @@ def ParseResourceIntoMessage(ref, method, message, message_resource_map=None,
   message_resource_map = message_resource_map or {}
   message_resource_map = message_resource_map.copy()
 
+  plural = True
+  if not isinstance(refs, list):
+    plural = False
+    refs = [refs]
+
   # This only happens for non-list methods where the API method params don't
   # match the resource parameters (basically only create methods). In this
   # case, we re-parse the resource as its parent collection (to fill in the
@@ -439,19 +469,20 @@ def ParseResourceIntoMessage(ref, method, message, message_resource_map=None,
   if (request_id_field and is_primary_resource and method and
       method.resource_argument_collection.detailed_params
       != method.request_collection.detailed_params):
-    # Sets the name of the resource in the message object body.
-    SetFieldInMessage(message, request_id_field, ref.Name())
-    # Create a reference for the parent resource to put in the API params.
-    ref = ref.Parent(
-        parent_collection=method.request_collection.full_name)
+    refs, names = _ParseParents(refs, method.request_collection.full_name)
+    SetFieldInMessage(message, request_id_field, _ListValue(names, plural))
+    plural = False  # Can only have one parent if using a request_id_field
 
-  ref_name = ref.RelativeName() if use_relative_name else ref.Name()
   params = method.params if method and is_primary_resource else []
   for p in params:
-    value = message_resource_map.pop(p, None) or getattr(ref, p, ref_name)
-    SetFieldInMessage(message, p, value)
+    values = message_resource_map.pop(p, [])
+    if not values:
+      values = [_GetParam(ref, p, use_relative_name) for ref in refs]
+    SetFieldInMessage(message, p, _ListValue(values, plural))
+
   for message_field_name, ref_param in message_resource_map.items():
-    SetFieldInMessage(message, message_field_name, ref_param)
+    SetFieldInMessage(message, message_field_name,
+                      _ListValue(ref_param, plural))
 
 
 def ParseStaticFieldsIntoMessage(message, static_fields=None):

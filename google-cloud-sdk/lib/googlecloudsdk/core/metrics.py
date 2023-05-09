@@ -480,6 +480,8 @@ class _MetricsCollector(object):
       # Don't collect metrics for completions.
       if '_ARGCOMPLETE' in os.environ:
         _MetricsCollector._disabled_cache = True
+      elif not properties.IsDefaultUniverse():
+        _MetricsCollector._disabled_cache = True
       else:
         # Don't collect metrics if the user has opted out.
         disabled = properties.VALUES.core.disable_usage_reporting.GetBool()

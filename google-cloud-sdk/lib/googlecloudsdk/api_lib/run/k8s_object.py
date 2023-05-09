@@ -89,28 +89,21 @@ def MakeMeta(m, *args, **kwargs):
   return Meta(m)(*args, **kwargs)
 
 
-def InitializedInstance(msg_cls, excluded_fields=None):
+def InitializedInstance(msg_cls):
   """Produce an instance of msg_cls, with all sub-messages initialized.
 
   Args:
     msg_cls: A message-class to be instantiated.
-    excluded_fields: [str], List of field names to exclude from instantiation.
   Returns:
     An instance of the given class, with all fields initialized blank objects.
   """
   def Instance(field):
     if field.repeated:
       return []
-    return InitializedInstance(field.message_type, excluded_fields)
+    return InitializedInstance(field.message_type)
 
   def IncludeField(field):
-    if not isinstance(field, messages.MessageField):
-      return False
-
-    if excluded_fields and field.name in excluded_fields:
-      return False
-
-    return True
+    return isinstance(field, messages.MessageField)
 
   args = {
       field.name: Instance(field) for field in msg_cls.all_fields()
@@ -133,8 +126,6 @@ class KubernetesObject(object):
   """
 
   READY_CONDITION = 'Ready'
-  # Message fields to exclude from instantiation of this object.
-  EXCLUDED_FIELDS = []
 
   @classmethod
   def Kind(cls, kind=None):
@@ -198,7 +189,7 @@ class KubernetesObject(object):
     api_version = cls.ApiVersion(getattr(client, '_VERSION'), api_category)
     messages_mod = client.MESSAGES_MODULE
     kind = cls.Kind(kind)
-    ret = InitializedInstance(getattr(messages_mod, kind), cls.EXCLUDED_FIELDS)
+    ret = InitializedInstance(getattr(messages_mod, kind))
     try:
       ret.kind = kind
       ret.apiVersion = api_version

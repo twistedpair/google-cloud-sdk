@@ -292,9 +292,12 @@ class SqladminV1beta4(base_api.BaseApiClient):
     def Insert(self, request, global_params=None):
       r"""Inserts a resource containing information about a database inside a Cloud SQL instance.
 
+      **Note:** You can't modify the default character set and collation.
+
       Args:
         request: (Database) input message
         global_params: (StandardQueryParameters, default: None) global arguments
+
       Returns:
         (Operation) The response message.
       """
@@ -1132,6 +1135,33 @@ class SqladminV1beta4(base_api.BaseApiClient):
         request_field='',
         request_type_name='SqlProjectsInstancesGetDiskShrinkConfigRequest',
         response_type_name='SqlInstancesGetDiskShrinkConfigResponse',
+        supports_download=False,
+    )
+
+    def GetLatestRecoveryTime(self, request, global_params=None):
+      r"""Get Latest Recovery Time for a given instance.
+
+      Args:
+        request: (SqlProjectsInstancesGetLatestRecoveryTimeRequest) input
+          message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (SqlInstancesGetLatestRecoveryTimeResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetLatestRecoveryTime')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    GetLatestRecoveryTime.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='sql.projects.instances.getLatestRecoveryTime',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/getLatestRecoveryTime',
+        request_field='',
+        request_type_name='SqlProjectsInstancesGetLatestRecoveryTimeRequest',
+        response_type_name='SqlInstancesGetLatestRecoveryTimeResponse',
         supports_download=False,
     )
 

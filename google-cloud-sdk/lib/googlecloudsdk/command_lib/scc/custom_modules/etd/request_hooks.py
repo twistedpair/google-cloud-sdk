@@ -230,7 +230,7 @@ def _InvalidResourceName():
   """Returns an error indicating that a module lacks a valid resource name."""
   return InvalidSCCInputError(
       "Custom module must match the full resource name, or `--organization=`,"
-      "`--folder=` or `--project=` must be provided."
+      " `--folder=`, or `--project=` must be provided."
   )
 
 

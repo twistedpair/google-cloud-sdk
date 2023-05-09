@@ -145,6 +145,9 @@ class OptInPrompter(BasePrompter):
 
   def Prompt(self):
     """Asks users to opt-in data usage report."""
+    if not properties.IsDefaultUniverse():
+      return
+
     if not self.record.CacheFileExists():
       with self.record as pr:
         pr.last_prompt_time = 0

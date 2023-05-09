@@ -52,31 +52,47 @@ class JobPrinter(cp.CustomPrinterBase):
         record.spec.template.metadata.annotations.additionalProperties
     }
     return cp.Labeled([
-        ('Image', record.template.UserImage()),
+        ('Image', record.template.image),
         ('Tasks', record.task_count),
         ('Command', ' '.join(record.template.container.command)),
         ('Args', ' '.join(record.template.container.args)),
         ('Binary Authorization', k8s_util.GetBinAuthzPolicy(record)),
         # pylint: disable=g-explicit-bool-comparison
         # Empty breakglass string is valid, space is used to force it showing
-        ('Breakglass Justification',
-         ' ' if breakglass_value == '' else breakglass_value),
+        (
+            'Breakglass Justification',
+            ' ' if breakglass_value == '' else breakglass_value,
+        ),
         ('Memory', limits['memory']),
         ('CPU', limits['cpu']),
-        ('Task Timeout', '{}s'.format(record.template.spec.timeoutSeconds)
-         if record.template.spec.timeoutSeconds else None),
-        ('Max Retries', '{}'.format(record.max_retries)
-         if record.max_retries is not None else None),
-        ('Parallelism',
-         record.parallelism if record.parallelism else 'No limit'),
+        (
+            'Task Timeout',
+            '{}s'.format(record.template.spec.timeoutSeconds)
+            if record.template.spec.timeoutSeconds
+            else None,
+        ),
+        (
+            'Max Retries',
+            '{}'.format(record.max_retries)
+            if record.max_retries is not None
+            else None,
+        ),
+        (
+            'Parallelism',
+            record.parallelism if record.parallelism else 'No limit',
+        ),
         ('Service account', record.template.service_account),
-        ('Env vars',
-         container_util.GetUserEnvironmentVariables(record.template)),
+        (
+            'Env vars',
+            container_util.GetUserEnvironmentVariables(record.template),
+        ),
         ('Secrets', container_util.GetSecrets(record.template)),
         ('VPC connector', k8s_util.GetVpcConnector(job_spec_annotations)),
         ('VPC network', k8s_util.GetVpcNetwork(job_spec_annotations)),
-        ('SQL connections',
-         k8s_util.GetCloudSqlInstances(job_spec_annotations)),
+        (
+            'SQL connections',
+            k8s_util.GetCloudSqlInstances(job_spec_annotations),
+        ),
     ])
 
   @staticmethod
@@ -177,25 +193,37 @@ class ExecutionPrinter(cp.CustomPrinterBase):
     limits = container_util.GetLimits(record.template)
     breakglass_value = k8s_util.GetBinAuthzBreakglass(record)
     return cp.Labeled([
-        ('Image', record.template.UserImage()),
+        ('Image', record.template.image),
         ('Tasks', record.spec.taskCount),
         ('Command', ' '.join(record.template.container.command)),
         ('Args', ' '.join(record.template.container.args)),
         ('Binary Authorization', k8s_util.GetBinAuthzPolicy(record)),
         # pylint: disable=g-explicit-bool-comparison
         # Empty breakglass string is valid, space is used to force it showing
-        ('Breakglass Justification',
-         ' ' if breakglass_value == '' else breakglass_value),
+        (
+            'Breakglass Justification',
+            ' ' if breakglass_value == '' else breakglass_value,
+        ),
         ('Memory', limits['memory']),
         ('CPU', limits['cpu']),
-        ('Task Timeout', '{}s'.format(record.template.spec.timeoutSeconds)
-         if record.template.spec.timeoutSeconds else None),
-        ('Max Retries', '{}'.format(record.template.spec.maxRetries)
-         if record.template.spec.maxRetries is not None else None),
+        (
+            'Task Timeout',
+            '{}s'.format(record.template.spec.timeoutSeconds)
+            if record.template.spec.timeoutSeconds
+            else None,
+        ),
+        (
+            'Max Retries',
+            '{}'.format(record.template.spec.maxRetries)
+            if record.template.spec.maxRetries is not None
+            else None,
+        ),
         ('Parallelism', record.parallelism),
         ('Service account', record.template.service_account),
-        ('Env vars',
-         container_util.GetUserEnvironmentVariables(record.template)),
+        (
+            'Env vars',
+            container_util.GetUserEnvironmentVariables(record.template),
+        ),
         ('Secrets', container_util.GetSecrets(record.template)),
         ('VPC connector', k8s_util.GetVpcConnector(record.annotations)),
         ('VPC network', k8s_util.GetVpcNetwork(record.annotations)),

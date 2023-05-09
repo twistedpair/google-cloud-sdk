@@ -965,7 +965,8 @@ class GcsDestinationConfig(_messages.Message):
   Fields:
     avroFileFormat: AVRO file format configuration.
     fileRotationInterval: The maximum duration for which new events are added
-      before a file is closed and a new file is created.
+      before a file is closed and a new file is created. Values within the
+      range of 15-60 seconds are allowed.
     fileRotationMb: The maximum file size to be saved in the bucket.
     jsonFileFormat: JSON file format configuration.
     path: Path inside the Cloud Storage bucket to write data to.
@@ -1131,7 +1132,7 @@ class ListStreamsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

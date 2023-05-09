@@ -4699,7 +4699,7 @@ class GoogleCloudDialogflowCxV3ExportAgentResponse(_messages.Message):
   Fields:
     agentContent: Uncompressed raw byte content for agent.
     agentUri: The URI to a file containing the exported agent. This field is
-      populated only if `agent_uri` is specified in ExportAgentRequest.
+      populated if `agent_uri` is specified in ExportAgentRequest.
   """
 
   agentContent = _messages.BytesField(1)
@@ -5435,7 +5435,7 @@ class GoogleCloudDialogflowCxV3QueryInput(_messages.Message):
   r"""Represents the query input. It can contain one of: 1. A conversational
   query in the form of text. 2. An intent query that specifies which intent to
   trigger. 3. Natural language speech audio to be processed. 4. An event to be
-  triggered.
+  triggered. 5. DTMF digits to invoke an intent and fill in parameter value.
 
   Fields:
     audio: The natural language speech audio to be processed.
@@ -5981,12 +5981,14 @@ class GoogleCloudDialogflowCxV3TestRunDifference(_messages.Message):
       PAGE: The page.
       PARAMETERS: The parameters.
       UTTERANCE: The message utterance.
+      FLOW: The flow.
     """
     DIFF_TYPE_UNSPECIFIED = 0
     INTENT = 1
     PAGE = 2
     PARAMETERS = 3
     UTTERANCE = 4
+    FLOW = 5
 
   description = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -6882,7 +6884,7 @@ class GoogleCloudDialogflowCxV3beta1ExportAgentResponse(_messages.Message):
   Fields:
     agentContent: Uncompressed raw byte content for agent.
     agentUri: The URI to a file containing the exported agent. This field is
-      populated only if `agent_uri` is specified in ExportAgentRequest.
+      populated if `agent_uri` is specified in ExportAgentRequest.
   """
 
   agentContent = _messages.BytesField(1)
@@ -7618,7 +7620,7 @@ class GoogleCloudDialogflowCxV3beta1QueryInput(_messages.Message):
   r"""Represents the query input. It can contain one of: 1. A conversational
   query in the form of text. 2. An intent query that specifies which intent to
   trigger. 3. Natural language speech audio to be processed. 4. An event to be
-  triggered.
+  triggered. 5. DTMF digits to invoke an intent and fill in parameter value.
 
   Fields:
     audio: The natural language speech audio to be processed.
@@ -8164,12 +8166,14 @@ class GoogleCloudDialogflowCxV3beta1TestRunDifference(_messages.Message):
       PAGE: The page.
       PARAMETERS: The parameters.
       UTTERANCE: The message utterance.
+      FLOW: The flow.
     """
     DIFF_TYPE_UNSPECIFIED = 0
     INTENT = 1
     PAGE = 2
     PARAMETERS = 3
     UTTERANCE = 4
+    FLOW = 5
 
   description = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -11378,6 +11382,8 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
       and Participants.StreamingAnalyzeContent. If `false` and recognition
       doesn't return any result, trigger `NO_SPEECH_RECOGNIZED` event to
       Dialogflow agent.
+    enableAutomaticPunctuation: Enable automatic punctuation option at the
+      speech backend.
     enableWordInfo: If `true`, Dialogflow returns SpeechWordInfo in
       StreamingRecognitionResult with information about the recognized speech
       words, e.g. start and end time offsets. If false or unspecified, Speech
@@ -11503,14 +11509,15 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
 
   audioEncoding = _messages.EnumField('AudioEncodingValueValuesEnum', 1)
   disableNoSpeechRecognizedEvent = _messages.BooleanField(2)
-  enableWordInfo = _messages.BooleanField(3)
-  languageCode = _messages.StringField(4)
-  model = _messages.StringField(5)
-  modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 6)
-  phraseHints = _messages.StringField(7, repeated=True)
-  sampleRateHertz = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  singleUtterance = _messages.BooleanField(9)
-  speechContexts = _messages.MessageField('GoogleCloudDialogflowV2SpeechContext', 10, repeated=True)
+  enableAutomaticPunctuation = _messages.BooleanField(3)
+  enableWordInfo = _messages.BooleanField(4)
+  languageCode = _messages.StringField(5)
+  model = _messages.StringField(6)
+  modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 7)
+  phraseHints = _messages.StringField(8, repeated=True)
+  sampleRateHertz = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  singleUtterance = _messages.BooleanField(10)
+  speechContexts = _messages.MessageField('GoogleCloudDialogflowV2SpeechContext', 11, repeated=True)
 
 
 class GoogleCloudDialogflowV2InputConfig(_messages.Message):
@@ -17147,7 +17154,7 @@ class GoogleCloudLocationListLocationsResponse(_messages.Message):
 
 
 class GoogleCloudLocationLocation(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

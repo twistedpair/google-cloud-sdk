@@ -25,42 +25,41 @@ class Access(_messages.Message):
     methodName: The method that the service account called, e.g.
       "SetIamPolicy".
     principalEmail: Associated email, such as "foo@google.com". The email
-      address of the authenticated user (or service account on behalf of third
-      party principal) making the request. For third party identity callers,
-      the `principal_subject` field is populated instead of this field. For
-      privacy reasons, the principal email address is sometimes redacted. For
-      more information, see [Caller identities in audit
+      address of the authenticated user or a service account acting on behalf
+      of a third party principal making the request. For third party identity
+      callers, the `principal_subject` field is populated instead of this
+      field. For privacy reasons, the principal email address is sometimes
+      redacted. For more information, see [Caller identities in audit
       logs](https://cloud.google.com/logging/docs/audit#user-id).
-    principalSubject: A string representing the principal_subject associated
-      with the identity. As compared to `principal_email`, supports principals
-      that aren't associated with email addresses, such as third party
-      principals. For most identities, the format will be
-      `principal://iam.googleapis.com/{identity pool name}/subjects/{subject}`
-      except for some GKE identities (GKE_WORKLOAD, FREEFORM,
-      GKE_HUB_WORKLOAD) that are still in the legacy format
-      `serviceAccount:{identity pool name}[{subject}]`
-    serviceAccountDelegationInfo: Identity delegation history of an
-      authenticated service account that makes the request. It contains
-      information on the real authorities that try to access GCP resources by
-      delegating on a service account. When multiple authorities are present,
-      they are guaranteed to be sorted based on the original ordering of the
-      identity delegation events.
-    serviceAccountKeyName: The name of the service account key used to create
-      or exchange credentials for authenticating the service account making
-      the request. This is a scheme-less URI full resource name. For example:
-      "//iam.googleapis.com/projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/ke
-      ys/{key}"
+    principalSubject: A string that represents the principal_subject that is
+      associated with the identity. Unlike `principal_email`,
+      `principal_subject` supports principals that aren't associated with
+      email addresses, such as third party principals. For most identities,
+      the format is `principal://iam.googleapis.com/{identity pool
+      name}/subject/{subject}`. Some GKE identities, such as GKE_WORKLOAD,
+      FREEFORM, and GKE_HUB_WORKLOAD, still use the legacy format
+      `serviceAccount:{identity pool name}[{subject}]`.
+    serviceAccountDelegationInfo: The identity delegation history of an
+      authenticated service account that made the request. The
+      `serviceAccountDelegationInfo[]` object contains information about the
+      real authorities that try to access Google Cloud resources by delegating
+      on a service account. When multiple authorities are present, they are
+      guaranteed to be sorted based on the original ordering of the identity
+      delegation events.
+    serviceAccountKeyName: The name of the service account key that was used
+      to create or exchange credentials when authenticating the service
+      account that made the request. This is a scheme-less URI full resource
+      name. For example: "//iam.googleapis.com/projects/{PROJECT_ID}/serviceAc
+      counts/{ACCOUNT}/keys/{key}".
     serviceName: This is the API service that the service account made a call
       to, e.g. "iam.googleapis.com"
-    userAgentFamily: What kind of user agent is associated, for example
-      operating system shells, embedded or stand-alone applications, etc.
-    userName: A string that represents the username of a user, user account,
-      or other entity involved in the access event. What the entity is and
-      what its role in the access event is depends on the finding that this
-      field appears in. The entity is likely not an IAM principal, but could
-      be a user that is logged into an operating system, if the finding is VM-
-      related, or a user that is logged into some type of application that is
-      involved in the access event.
+    userAgentFamily: Type of user agent associated with the finding. For
+      example, an operating system shell or an embedded or standalone
+      application.
+    userName: A string that represents a username. The username provided
+      depends on the type of the finding and is likely not an IAM principal.
+      For example, this can be a system username if the finding is related to
+      a virtual machine, or it can be an application login username.
   """
 
   callerIp = _messages.StringField(1)
@@ -76,20 +75,23 @@ class Access(_messages.Message):
 
 
 class AccessReview(_messages.Message):
-  r"""Conveys information about a Kubernetes access review (e.g. kubectl auth
-  can-i ...) that was involved in a finding.
+  r"""Conveys information about a Kubernetes access review (such as one
+  returned by a [`kubectl auth
+  can-i`](https://kubernetes.io/docs/reference/access-authn-
+  authz/authorization/#checking-api-access) command) that was involved in a
+  finding.
 
   Fields:
-    group: Group is the API Group of the Resource. "*" means all.
-    name: Name is the name of the resource being requested. Empty means all.
+    group: The API group of the resource. "*" means all.
+    name: The name of the resource being requested. Empty means all.
     ns: Namespace of the action being requested. Currently, there is no
       distinction between no namespace and all namespaces. Both are
       represented by "" (empty).
-    resource: Resource is the optional resource type requested. "*" means all.
-    subresource: Subresource is the optional subresource type.
-    verb: Verb is a Kubernetes resource API verb, like: get, list, watch,
-      create, update, delete, proxy. "*" means all.
-    version: Version is the API Version of the Resource. "*" means all.
+    resource: The optional resource type requested. "*" means all.
+    subresource: The optional subresource type.
+    verb: A Kubernetes resource API verb, like get, list, watch, create,
+      update, delete, proxy. "*" means all.
+    version: The API version of the resource. "*" means all.
   """
 
   group = _messages.StringField(1)
@@ -121,8 +123,8 @@ class CloudDlpInspection(_messages.Message):
   Fields:
     fullScan: Whether Cloud DLP scanned the complete resource or a sampled
       subset.
-    infoType: The [type of
-      information](https://cloud.google.com/dlp/docs/infotypes-reference)
+    infoType: The type of information (or
+      *[infoType](https://cloud.google.com/dlp/docs/infotypes-reference)*)
       found, for example, `EMAIL_ADDRESS` or `STREET_ADDRESS`.
     infoTypeCount: The number of times Cloud DLP found this infoType within
       this job and resource.
@@ -141,10 +143,10 @@ class Compliance(_messages.Message):
   unmet recommendations.
 
   Fields:
-    ids: Policies within the standard/benchmark e.g. A.12.4.1
-    standard: Refers to industry wide standards or benchmarks e.g. "cis",
-      "pci", "owasp", etc.
-    version: Version of the standard/benchmark e.g. 1.1
+    ids: Policies within the standard or benchmark, for example, A.12.4.1
+    standard: Industry-wide compliance standards or benchmarks, such as CIS,
+      PCI, and OWASP.
+    version: Version of the standard or benchmark, for example, 1.1
   """
 
   ids = _messages.StringField(1, repeated=True)
@@ -268,7 +270,7 @@ class Contact(_messages.Message):
 
 
 class ContactDetails(_messages.Message):
-  r"""The details pertaining to specific contacts
+  r"""Details about specific contacts
 
   Fields:
     contacts: A list of contacts
@@ -281,13 +283,13 @@ class Container(_messages.Message):
   r"""Container associated with the finding.
 
   Fields:
-    imageId: Optional container image id, when provided by the container
+    imageId: Optional container image ID, if provided by the container
       runtime. Uniquely identifies the container image launched using a
       container image digest.
     labels: Container labels, as provided by the container runtime.
-    name: Container name.
-    uri: Container image URI provided when configuring a pod/container. May
-      identify a container image version using mutable tags.
+    name: Name of the container.
+    uri: Container image URI provided when configuring a pod or container.
+      This string can identify a container image version using mutable tags.
   """
 
   imageId = _messages.StringField(1)
@@ -611,22 +613,28 @@ class Cvssv3(_messages.Message):
 
 class Database(_messages.Message):
   r"""Represents database access information, such as queries. A database may
-  be a sub-resource of an instance (as in the case of CloudSQL instances or
+  be a sub-resource of an instance (as in the case of Cloud SQL instances or
   Cloud Spanner instances), or the database instance itself. Some database
-  resources may not have the full resource name populated because these
-  resource types are not yet supported by Cloud Asset Inventory (e.g. CloudSQL
-  databases). In these cases only the display name will be provided.
+  resources might not have the [full resource
+  name](https://google.aip.dev/122#full-resource-names) populated because
+  these resource types, such as Cloud SQL databases, are not yet supported by
+  Cloud Asset Inventory. In these cases only the display name is provided.
+  Some database resources may not have the [full resource
+  name](https://google.aip.dev/122#full-resource-names) populated because
+  these resource types are not yet supported by Cloud Asset Inventory (e.g.
+  Cloud SQL databases). In these cases only the display name will be provided.
 
   Fields:
-    displayName: The human readable name of the database the user connected
-      to.
-    grantees: The target usernames/roles/groups of a SQL privilege grant (not
-      an IAM policy change).
-    name: The full resource name of the database the user connected to, if it
-      is supported by CAI. (https://google.aip.dev/122#full-resource-names)
-    query: The SQL statement associated with the relevant access.
-    userName: The username used to connect to the DB. This may not necessarily
-      be an IAM principal, and has no required format.
+    displayName: The human-readable name of the database that the user
+      connected to.
+    grantees: The target usernames, roles, or groups of an SQL privilege
+      grant, which is not an IAM policy change.
+    name: The [full resource name](https://google.aip.dev/122#full-resource-
+      names) of the database that the user connected to, if it is supported by
+      Cloud Asset Inventory.
+    query: The SQL statement that is associated with the database access.
+    userName: The username used to connect to the database. The username might
+      not be an IAM principal and does not have a set format.
   """
 
   displayName = _messages.StringField(1)
@@ -686,8 +694,8 @@ class Detection(_messages.Message):
 
 
 class EnvironmentVariable(_messages.Message):
-  r"""EnvironmentVariable is a name-value pair to store environment variables
-  for Process.
+  r"""A name-value pair representing an environment variable used in an
+  operating system process.
 
   Fields:
     name: Environment variable name as a JSON encoded string.
@@ -774,14 +782,16 @@ class EventThreatDetectionSettings(_messages.Message):
 
 
 class ExfilResource(_messages.Message):
-  r"""Resource that has been exfiltrated or exfiltrated_to.
+  r"""Resource where data was exfiltrated from or exfiltrated to.
 
   Fields:
-    components: Subcomponents of the asset that is exfiltrated - these could
-      be URIs used during exfiltration, table names, databases, filenames,
-      etc. For example, multiple tables may be exfiltrated from the same
-      CloudSQL instance, or multiple files from the same Cloud Storage bucket.
-    name: Resource's URI (https://google.aip.dev/122#full-resource-names)
+    components: Subcomponents of the asset that was exfiltrated, like URIs
+      used during exfiltration, table names, databases, and filenames. For
+      example, multiple tables might have been exfiltrated from the same Cloud
+      SQL instance, or multiple files might have been exfiltrated from the
+      same Cloud Storage bucket.
+    name: The resource's [full resource name](https://cloud.google.com/apis/de
+      sign/resource_names#full_resource_name).
   """
 
   components = _messages.StringField(1, repeated=True)
@@ -789,9 +799,10 @@ class ExfilResource(_messages.Message):
 
 
 class Exfiltration(_messages.Message):
-  r"""Exfiltration represents a data exfiltration attempt of one or more
-  sources to one or more targets. Sources represent the source of data that is
-  exfiltrated, and Targets represents the destination the data was copied to.
+  r"""Exfiltration represents a data exfiltration attempt from one or more
+  sources to one or more targets. The `sources` attribute lists the sources of
+  the exfiltrated data. The `targets` attribute lists the destinations the
+  data was copied to.
 
   Fields:
     sources: If there are multiple sources, then the data is considered
@@ -805,13 +816,48 @@ class Exfiltration(_messages.Message):
   targets = _messages.MessageField('ExfilResource', 2, repeated=True)
 
 
+class Expr(_messages.Message):
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
+
+  Fields:
+    description: Optional. Description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
 class File(_messages.Message):
   r"""File information about the related binary/library used by an executable,
   or the script used by a script interpreter
 
   Fields:
-    contents: Prefix of the file contents as a JSON encoded string. (Currently
-      only populated for Malicious Script Executed findings.)
+    contents: Prefix of the file contents as a JSON-encoded string.
     hashedSize: The length in bytes of the file prefix that was hashed. If
       hashed_size == size, any hashes reported represent the entire file.
     partiallyHashed: True when the hash covers only a prefix of the file.
@@ -864,8 +910,8 @@ class Finding(_messages.Message):
       only.
 
   Fields:
-    access: Access details associated to the Finding, such as more information
-      on the caller, which method was accessed, from where, etc.
+    access: Access details associated with the finding, such as more
+      information on the caller, which method was accessed, and from where.
     canonicalName: The canonical name of the finding. It's either "organizatio
       ns/{organization_id}/sources/{source_id}/findings/{finding_id}",
       "folders/{folder_id}/sources/{source_id}/findings/{finding_id}" or
@@ -875,8 +921,10 @@ class Finding(_messages.Message):
     category: The additional taxonomy group within findings from a given
       source. This field is immutable after creation time. Example:
       "XSS_FLASH_INJECTION"
-    cloudDlpDataProfile: Cloud DLP data profile associated with the finding.
-    cloudDlpInspection: Cloud DLP inspection associated with the finding.
+    cloudDlpDataProfile: Cloud DLP data profile that is associated with the
+      finding.
+    cloudDlpInspection: Cloud Data Loss Prevention (Cloud DLP) inspection
+      results that are associated with the finding.
     compliances: Contains compliance information for security standards
       associated to the finding.
     connections: Contains information about the IP connection associated with
@@ -888,12 +936,12 @@ class Finding(_messages.Message):
       contacts#notification-categories { "security": { "contacts": [ {
       "email": "person1@company.com" }, { "email": "person2@company.com" } ] }
       }
-    containers: Containers associated with the finding. containers provides
+    containers: Containers associated with the finding. This field provides
       information for both Kubernetes and non-Kubernetes containers.
     createTime: The time at which the finding was created in Security Command
       Center.
     database: Database associated with the finding.
-    description: Contains more detail about the finding.
+    description: Contains more details about the finding.
     eventTime: The time the finding was first detected. If an existing finding
       is updated, then this is the time the update occurred. For example, if
       the finding represents an open firewall, this property captures the time
@@ -901,7 +949,7 @@ class Finding(_messages.Message):
       determined by the detector. If the finding is later resolved, then this
       time reflects when the finding was resolved. This must not be set to a
       value greater than the current timestamp.
-    exfiltration: Represents exfiltration associated with the Finding.
+    exfiltration: Represents exfiltrations associated with the finding.
     externalSystems: Output only. Third party SIEM/SOAR fields within SCC,
       contains external system information and external system finding fields.
     externalUri: The URI that, if available, points to a web page outside of
@@ -910,13 +958,13 @@ class Finding(_messages.Message):
       formed URL.
     files: File associated with the finding.
     findingClass: The class of the finding.
-    iamBindings: Represents IAM bindings associated with the Finding.
-    indicator: Represents what's commonly known as an Indicator of compromise
-      (IoC) in computer forensics. This is an artifact observed on a network
-      or in an operating system that, with high confidence, indicates a
-      computer intrusion. Reference:
-      https://en.wikipedia.org/wiki/Indicator_of_compromise
-    kernelRootkit: Kernel Rootkit signature.
+    iamBindings: Represents IAM bindings associated with the finding.
+    indicator: Represents what's commonly known as an *indicator of
+      compromise* (IoC) in computer forensics. This is an artifact observed on
+      a network or in an operating system that, with high confidence,
+      indicates a computer intrusion. For more information, see [Indicator of
+      compromise](https://en.wikipedia.org/wiki/Indicator_of_compromise).
+    kernelRootkit: Signature of the kernel rootkit.
     kubernetes: Kubernetes resources associated with the finding.
     mitreAttack: MITRE ATT&CK tactics and techniques related to this finding.
       See: https://attack.mitre.org
@@ -926,17 +974,18 @@ class Finding(_messages.Message):
     mute: Indicates the mute state of a finding (either muted, unmuted or
       undefined). Unlike other attributes of a finding, a finding provider
       shouldn't set the value of mute.
-    muteInitiator: First known as mute_annotation. Records additional
-      information about the mute operation e.g. mute config that muted the
-      finding, user who muted the finding, etc. Unlike other attributes of a
-      finding, a finding provider shouldn't set the value of mute.
+    muteInitiator: Records additional information about the mute operation,
+      for example, the [mute configuration](/security-command-center/docs/how-
+      to-mute-findings) that muted the finding and the user who muted the
+      finding.
     muteUpdateTime: Output only. The most recent time this finding was muted
       or unmuted.
-    name: The relative resource name of this finding. See:
-      https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/{organization_id}/sources/{source_id}/finding
-      s/{finding_id}"
-    nextSteps: Next steps associate to the finding.
+    name: The [relative resource name](https://cloud.google.com/apis/design/re
+      source_names#relative_resource_name) of the finding. Example: "organizat
+      ions/{organization_id}/sources/{source_id}/findings/{finding_id}",
+      "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
+      "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
+    nextSteps: Steps to address the finding.
     parent: The relative resource name of the source the finding belongs to.
       See: https://cloud.google.com/apis/design/resource_names#relative_resour
       ce_name This field is immutable after creation time. For example:
@@ -1016,8 +1065,8 @@ class Finding(_messages.Message):
         by an external actor, exploitable, and results in the direct ability
         to execute arbitrary code, exfiltrate data, and otherwise gain
         additional access and privileges to cloud resources and workloads.
-        Examples include publicly accessible unprotected user data, public SSH
-        access with weak or no passwords, etc. Threat: Indicates a threat that
+        Examples include publicly accessible unprotected user data and public
+        SSH access with weak or no passwords. Threat: Indicates a threat that
         is able to access, modify, or delete data or execute unauthorized code
         within existing resources.
       HIGH: Vulnerability: A high risk vulnerability can be easily discovered
@@ -1269,8 +1318,8 @@ class GoogleCloudSecuritycenterV1Binding(_messages.Message):
   r"""Represents a Kubernetes RoleBinding or ClusterRoleBinding.
 
   Fields:
-    name: Name for binding.
-    ns: Namespace for binding.
+    name: Name for the binding.
+    ns: Namespace for the binding.
     role: The Role or ClusterRole referenced by the binding.
     subjects: Represents one or more subjects that are bound to the role. Not
       always available for PATCH requests.
@@ -1284,6 +1333,119 @@ class GoogleCloudSecuritycenterV1Binding(_messages.Message):
 
 class GoogleCloudSecuritycenterV1BulkMuteFindingsResponse(_messages.Message):
   r"""The response to a BulkMute request. Contains the LRO information."""
+
+
+class GoogleCloudSecuritycenterV1CustomConfig(_messages.Message):
+  r"""Defines the properties in a custom module configuration for Security
+  Health Analytics. Use the custom module configuration to create custom
+  detectors that generate custom findings for resources that you specify.
+
+  Enums:
+    SeverityValueValuesEnum: The severity to assign to findings generated by
+      the module.
+
+  Fields:
+    customOutput: Custom output properties.
+    description: Text that describes the vulnerability or misconfiguration
+      that the custom module detects. This explanation is returned with each
+      finding instance to help investigators understand the detected issue.
+      The text must be enclosed in quotation marks.
+    predicate: The CEL expression to evaluate to produce findings. When the
+      expression evaluates to true against a resource, a finding is generated.
+    recommendation: An explanation of the recommended steps that security
+      teams can take to resolve the detected issue. This explanation is
+      returned with each finding generated by this module in the `nextSteps`
+      property of the finding JSON.
+    resourceSelector: The resource types that the custom module operates on.
+      Each custom module can specify up to 5 resource types.
+    severity: The severity to assign to findings generated by the module.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity to assign to findings generated by the module.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unspecified severity.
+      CRITICAL: Critical severity.
+      HIGH: High severity.
+      MEDIUM: Medium severity.
+      LOW: Low severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
+  customOutput = _messages.MessageField('GoogleCloudSecuritycenterV1CustomOutputSpec', 1)
+  description = _messages.StringField(2)
+  predicate = _messages.MessageField('Expr', 3)
+  recommendation = _messages.StringField(4)
+  resourceSelector = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceSelector', 5)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
+
+
+class GoogleCloudSecuritycenterV1CustomOutputSpec(_messages.Message):
+  r"""A set of optional name-value pairs that define custom source properties
+  to return with each finding that is generated by the custom module. The
+  custom source properties that are defined here are included in the finding
+  JSON under `sourceProperties`.
+
+  Fields:
+    properties: A list of custom output properties to add to the finding.
+  """
+
+  properties = _messages.MessageField('GoogleCloudSecuritycenterV1Property', 1, repeated=True)
+
+
+class GoogleCloudSecuritycenterV1EffectiveSecurityHealthAnalyticsCustomModule(_messages.Message):
+  r"""An EffectiveSecurityHealthAnalyticsCustomModule is the representation of
+  a Security Health Analytics custom module at a specified level of the
+  resource hierarchy: organization, folder, or project. If a custom module is
+  inherited from a parent organization or folder, the value of the
+  `enablementState` property in EffectiveSecurityHealthAnalyticsCustomModule
+  is set to the value that is effective in the parent, instead of `INHERITED`.
+  For example, if the module is enabled in a parent organization or folder,
+  the effective enablement_state for the module in all child folders or
+  projects is also `enabled`. EffectiveSecurityHealthAnalyticsCustomModule is
+  read-only.
+
+  Enums:
+    EnablementStateValueValuesEnum: Output only. The effective state of
+      enablement for the module at the given level of the hierarchy.
+
+  Fields:
+    customConfig: Output only. The user-specified configuration for the
+      module.
+    displayName: Output only. The display name for the custom module. The name
+      must be between 1 and 128 characters, start with a lowercase letter, and
+      contain alphanumeric characters or underscores only.
+    enablementState: Output only. The effective state of enablement for the
+      module at the given level of the hierarchy.
+    name: Output only. The resource name of the custom module. Its format is "
+      organizations/{organization}/securityHealthAnalyticsSettings/effectiveCu
+      stomModules/{customModule}", or "folders/{folder}/securityHealthAnalytic
+      sSettings/effectiveCustomModules/{customModule}", or "projects/{project}
+      /securityHealthAnalyticsSettings/effectiveCustomModules/{customModule}"
+  """
+
+  class EnablementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The effective state of enablement for the module at the
+    given level of the hierarchy.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Unspecified enablement state.
+      ENABLED: The module is enabled at the given level.
+      DISABLED: The module is disabled at the given level.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 1)
+  displayName = _messages.StringField(2)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 3)
+  name = _messages.StringField(4)
 
 
 class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
@@ -1370,6 +1532,20 @@ class GoogleCloudSecuritycenterV1NotificationMessage(_messages.Message):
   resource = _messages.MessageField('GoogleCloudSecuritycenterV1Resource', 3)
 
 
+class GoogleCloudSecuritycenterV1Property(_messages.Message):
+  r"""An individual name-value pair that defines a custom source property.
+
+  Fields:
+    name: Name of the property for the custom output.
+    valueExpression: The CEL expression for the custom output. A resource
+      property can be specified to return the value of the property or a text
+      string enclosed in quotation marks.
+  """
+
+  name = _messages.StringField(1)
+  valueExpression = _messages.MessageField('Expr', 2)
+
+
 class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   r"""Information related to the Google Cloud resource.
 
@@ -1395,6 +1571,16 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   project = _messages.StringField(6)
   projectDisplayName = _messages.StringField(7)
   type = _messages.StringField(8)
+
+
+class GoogleCloudSecuritycenterV1ResourceSelector(_messages.Message):
+  r"""Resource for selecting resource type.
+
+  Fields:
+    resourceTypes: The resource types to run the detector on.
+  """
+
+  resourceTypes = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -1426,6 +1612,65 @@ class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
 
   duration = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule(_messages.Message):
+  r"""Represents an instance of a Security Health Analytics custom module,
+  including its full module name, display name, enablement state, and last
+  updated time. You can create a custom module at the organization, folder, or
+  project level. Custom modules that you create at the organization or folder
+  level are inherited by the child folders and projects.
+
+  Enums:
+    EnablementStateValueValuesEnum: The enablement state of the custom module.
+
+  Fields:
+    ancestorModule: Output only. If empty, indicates that the custom module
+      was created in the organization, folder, or project in which you are
+      viewing the custom module. Otherwise, `ancestor_module` specifies the
+      organization or folder from which the custom module is inherited.
+    customConfig: The user specified custom configuration for the module.
+    displayName: The display name of the Security Health Analytics custom
+      module. This display name becomes the finding category for all findings
+      that are returned by this custom module. The display name must be
+      between 1 and 128 characters, start with a lowercase letter, and contain
+      alphanumeric characters or underscores only.
+    enablementState: The enablement state of the custom module.
+    lastEditor: Output only. The editor that last updated the custom module.
+    name: Immutable. The resource name of the custom module. Its format is "or
+      ganizations/{organization}/securityHealthAnalyticsSettings/customModules
+      /{customModule}", or "folders/{folder}/securityHealthAnalyticsSettings/c
+      ustomModules/{customModule}", or "projects/{project}/securityHealthAnaly
+      ticsSettings/customModules/{customModule}" The id {customModule} is
+      server-generated and is not user settable. It will be a numeric id
+      containing 1-20 digits.
+    updateTime: Output only. The time at which the custom module was last
+      updated.
+  """
+
+  class EnablementStateValueValuesEnum(_messages.Enum):
+    r"""The enablement state of the custom module.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Unspecified enablement state.
+      ENABLED: The module is enabled at the given CRM resource.
+      DISABLED: The module is disabled at the given CRM resource.
+      INHERITED: State is inherited from an ancestor module. The module will
+        either be effectively ENABLED or DISABLED based on its closest non-
+        inherited ancestor module in the CRM hierarchy.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+    INHERITED = 3
+
+  ancestorModule = _messages.StringField(1)
+  customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 2)
+  displayName = _messages.StringField(3)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 4)
+  lastEditor = _messages.StringField(5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse(_messages.Message):
@@ -1766,7 +2011,7 @@ class IamBinding(_messages.Message):
   Fields:
     action: The action that was performed on a Binding.
     member: A single identity requesting access for a Cloud Platform resource,
-      e.g. "foo@google.com".
+      for example, "foo@google.com".
     role: Role that is assigned to "members". For example, "roles/viewer",
       "roles/editor", or "roles/owner".
   """
@@ -1814,26 +2059,26 @@ class KernelRootkit(_messages.Message):
   r"""Kernel mode rootkit signatures.
 
   Fields:
-    name: Rootkit name when available.
-    unexpectedCodeModification: True when unexpected modifications of kernel
+    name: Rootkit name, when available.
+    unexpectedCodeModification: True if unexpected modifications of kernel
       code memory are present.
-    unexpectedFtraceHandler: True when `ftrace` points are present with
+    unexpectedFtraceHandler: True if `ftrace` points are present with
       callbacks pointing to regions that are not in the expected kernel or
       module code range.
-    unexpectedInterruptHandler: True when interrupt handlers that are are not
-      in the expected kernel or module code regions are present.
-    unexpectedKernelCodePages: True when kernel code pages that are not in the
+    unexpectedInterruptHandler: True if interrupt handlers that are are not in
+      the expected kernel or module code regions are present.
+    unexpectedKernelCodePages: True if kernel code pages that are not in the
       expected kernel or module code regions are present.
-    unexpectedKprobeHandler: True when `kprobe` points are present with
+    unexpectedKprobeHandler: True if `kprobe` points are present with
       callbacks pointing to regions that are not in the expected kernel or
       module code range.
-    unexpectedProcessesInRunqueue: True when unexpected processes in the
+    unexpectedProcessesInRunqueue: True if unexpected processes in the
       scheduler run queue are present. Such processes are in the run queue,
       but not in the process task list.
-    unexpectedReadOnlyDataModification: True when unexpected modifications of
+    unexpectedReadOnlyDataModification: True if unexpected modifications of
       kernel read-only data memory are present.
-    unexpectedSystemCallHandler: True when system call handlers that are are
-      not in the expected kernel or module code regions are present.
+    unexpectedSystemCallHandler: True if system call handlers that are are not
+      in the expected kernel or module code regions are present.
   """
 
   name = _messages.StringField(1)
@@ -1851,17 +2096,23 @@ class Kubernetes(_messages.Message):
   r"""Kubernetes-related attributes.
 
   Fields:
-    accessReviews: Provides information on any Kubernetes access reviews (i.e.
-      privilege checks) relevant to the finding.
+    accessReviews: Provides information on any Kubernetes access reviews
+      (privilege checks) relevant to the finding.
     bindings: Provides Kubernetes role binding information for findings that
-      involve RoleBindings or ClusterRoleBindings.
-    nodePools: GKE Node Pools associated with the finding. This field will
-      contain NodePool information for each Node, when it is available.
-    nodes: Provides Kubernetes Node information.
-    pods: Kubernetes Pods associated with the finding. This field will contain
-      Pod records for each container that is owned by a Pod.
+      involve [RoleBindings or
+      ClusterRoleBindings](https://cloud.google.com/kubernetes-
+      engine/docs/how-to/role-based-access-control).
+    nodePools: GKE [node pools](https://cloud.google.com/kubernetes-
+      engine/docs/concepts/node-pools) associated with the finding. This field
+      contains node pool information for each node, when it is available.
+    nodes: Provides Kubernetes [node](https://cloud.google.com/kubernetes-
+      engine/docs/concepts/cluster-architecture#nodes) information.
+    pods: Kubernetes [Pods](https://cloud.google.com/kubernetes-
+      engine/docs/concepts/pod) associated with the finding. This field
+      contains Pod records for each container that is owned by a Pod.
     roles: Provides Kubernetes role information for findings that involve
-      Roles or ClusterRoles.
+      [Roles or ClusterRoles](https://cloud.google.com/kubernetes-
+      engine/docs/how-to/role-based-access-control).
   """
 
   accessReviews = _messages.MessageField('AccessReview', 1, repeated=True)
@@ -1873,12 +2124,15 @@ class Kubernetes(_messages.Message):
 
 
 class Label(_messages.Message):
-  r"""Label represents a generic name=value label. Label has separate name and
-  value fields to support filtering with contains().
+  r"""Represents a generic name-value label. A label has separate name and
+  value fields to support filtering with the `contains()` function. For more
+  information, see [Filtering on array-type
+  fields](https://cloud.google.com/security-command-center/docs/how-to-api-
+  list-findings#array-contains-filtering).
 
   Fields:
-    name: Label name.
-    value: Label value.
+    name: Name of the label.
+    value: Value that corresponds to the label's name.
   """
 
   name = _messages.StringField(1)
@@ -2164,21 +2418,21 @@ class MitreAttack(_messages.Message):
 
 
 class Node(_messages.Message):
-  r"""Kubernetes Nodes associated with the finding.
+  r"""Kubernetes nodes associated with the finding.
 
   Fields:
-    name: Full Resource name of the Compute Engine VM running the cluster
-      node.
+    name: [Full resource name](https://google.aip.dev/122#full-resource-names)
+      of the Compute Engine VM running the cluster node.
   """
 
   name = _messages.StringField(1)
 
 
 class NodePool(_messages.Message):
-  r"""Provides GKE Node Pool information.
+  r"""Provides GKE node pool information.
 
   Fields:
-    name: Kubernetes Node pool name.
+    name: Kubernetes node pool name.
     nodes: Nodes associated with the finding.
   """
 
@@ -2225,7 +2479,7 @@ class OnboardingState(_messages.Message):
 
 
 class Pod(_messages.Message):
-  r"""Kubernetes Pod.
+  r"""A Kubernetes Pod.
 
   Fields:
     containers: Pod containers associated with this finding, if any.
@@ -2251,12 +2505,13 @@ class Process(_messages.Message):
     envVariables: Process environment variables.
     envVariablesTruncated: True if `env_variables` is incomplete.
     libraries: File information for libraries loaded by the process.
-    name: The process name visible in utilities like `top` and `ps`; it can be
-      accessed via `/proc/[pid]/comm` and changed with `prctl(PR_SET_NAME)`.
-    parentPid: The parent process id.
-    pid: The process id.
+    name: The process name, as displayed in utilities like `top` and `ps`.
+      This name can be accessed through `/proc/[pid]/comm` and changed with
+      `prctl(PR_SET_NAME)`.
+    parentPid: The parent process ID.
+    pid: The process ID.
     script: When the process represents the invocation of a script, `binary`
-      provides information about the interpreter while `script` provides
+      provides information about the interpreter, while `script` provides
       information about the script file provided to the interpreter.
   """
 
@@ -3707,25 +3962,25 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Subject(_messages.Message):
-  r"""Represents a Kubernetes Subject.
+  r"""Represents a Kubernetes subject.
 
   Enums:
-    KindValueValuesEnum: Authentication type for subject.
+    KindValueValuesEnum: Authentication type for the subject.
 
   Fields:
-    kind: Authentication type for subject.
-    name: Name for subject.
-    ns: Namespace for subject.
+    kind: Authentication type for the subject.
+    name: Name for the subject.
+    ns: Namespace for the subject.
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    r"""Authentication type for subject.
+    r"""Authentication type for the subject.
 
     Values:
       AUTH_TYPE_UNSPECIFIED: Authentication is not specified.
       USER: User with valid certificate.
       SERVICEACCOUNT: Users managed by Kubernetes API with credentials stored
-        as Secrets.
+        as secrets.
       GROUP: Collection of users.
     """
     AUTH_TYPE_UNSPECIFIED = 0

@@ -70,3 +70,39 @@ def AddNamespaceIdsFlag(parser):
 
         $ {command} --namespaces-ids='customers','orders'
       """)
+
+
+def AddLocationFlag(parser):
+  """Adds flag for location to the given parser."""
+  parser.add_argument(
+      '--location',
+      metavar='LOCATION',
+      required=True,
+      hidden=True,
+      type=str,
+      help="""
+      The location to operate on.
+
+      For example, to operate on location `us-east1`:
+
+        $ {command} --location='us-east1'
+      """,
+  )
+
+
+def AddBackupFlag(parser):
+  """Adds flag for backup to the given parser."""
+  parser.add_argument(
+      '--backup',
+      metavar='BACKUP',
+      required=True,
+      hidden=True,
+      type=str,
+      help="""
+      The backup to operate on.
+
+      For example, to operate on backup `cf9f748a-7980-4703-b1a1-d1ffff591db0`:
+
+        $ {command} --backup='cf9f748a-7980-4703-b1a1-d1ffff591db0'
+      """,
+  )

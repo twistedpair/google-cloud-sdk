@@ -340,10 +340,14 @@ class Templates:
   LAUNCH_FLEX_TEMPLATE_REQUEST = GetMessagesModule().LaunchFlexTemplateRequest
   PARAMETERS_VALUE = CREATE_REQUEST.ParametersValue
   FLEX_TEMPLATE_ENVIRONMENT = GetMessagesModule().FlexTemplateRuntimeEnvironment
-  FLEX_TEMPLATE_USER_LABELS_VALUE = FLEX_TEMPLATE_ENVIRONMENT.AdditionalUserLabelsValue
+  FLEX_TEMPLATE_USER_LABELS_VALUE = (
+      FLEX_TEMPLATE_ENVIRONMENT.AdditionalUserLabelsValue
+  )
   FLEX_TEMPLATE_PARAMETER = GetMessagesModule().LaunchFlexTemplateParameter
   FLEX_TEMPLATE_PARAMETERS_VALUE = FLEX_TEMPLATE_PARAMETER.ParametersValue
-  FLEX_TEMPLATE_TRANSFORM_NAME_MAPPING_VALUE = FLEX_TEMPLATE_PARAMETER.TransformNameMappingsValue
+  FLEX_TEMPLATE_TRANSFORM_NAME_MAPPING_VALUE = (
+      FLEX_TEMPLATE_PARAMETER.TransformNameMappingsValue
+  )
   IP_CONFIGURATION_ENUM_VALUE = GetMessagesModule(
   ).FlexTemplateRuntimeEnvironment.IpConfigurationValueValuesEnum
   FLEXRS_GOAL_ENUM_VALUE = GetMessagesModule(
@@ -844,7 +848,7 @@ class Templates:
         private registry in Cloud Storage.
 
     Returns:
-      Container spec json if print_only is set. A sucess message with template
+      Container spec json if print_only is set. A success message with template
       file GCS path and container spec otherewise.
     """
     template_metadata = None
@@ -858,8 +862,12 @@ class Templates:
           template_args.additional_user_labels,
           Templates.FLEX_TEMPLATE_USER_LABELS_VALUE)
       ip_private = Templates.IP_CONFIGURATION_ENUM_VALUE.WORKER_IP_PRIVATE
-      ip_configuration = ip_private if template_args.disable_public_ips else None
-      enable_streaming_engine = True if template_args.enable_streaming_engine else None
+      ip_configuration = (
+          ip_private if template_args.disable_public_ips else None
+      )
+      enable_streaming_engine = (
+          True if template_args.enable_streaming_engine else None
+      )
       default_environment = Templates.FLEX_TEMPLATE_ENVIRONMENT(
           serviceAccountEmail=template_args.service_account_email,
           maxWorkers=template_args.max_workers,
@@ -962,8 +970,24 @@ class Templates:
 
       messages = cloudbuild_util.GetMessagesModule()
       build_config = submit_util.CreateBuildConfig(
-          image_gcr_path, False, messages, None, 'cloudbuild.yaml', True, False,
-          temp_dir, None, None, gcs_log_dir, None, None, None, None)
+          image_gcr_path,
+          no_cache=False,
+          messages=messages,
+          substitutions=None,
+          arg_config='cloudbuild.yaml',
+          is_specified_source=True,
+          no_source=False,
+          source=temp_dir,
+          gcs_source_staging_dir=None,
+          ignore_file=None,
+          arg_gcs_log_dir=gcs_log_dir,
+          arg_machine_type=None,
+          arg_disk_size=None,
+          arg_worker_pool=None,
+          arg_git_source_dir=None,
+          arg_git_source_revision=None,
+          buildpack=None,
+      )
       log.status.Print('Pushing flex template container image to GCR...')
 
       submit_util.Build(messages, False, build_config)
@@ -990,8 +1014,11 @@ class Templates:
     if template_args.streaming_update:
       streaming_update = template_args.streaming_update
       if transform_mapping_list:
-        transform_mappings = Templates.FLEX_TEMPLATE_TRANSFORM_NAME_MAPPING_VALUE(
-            additionalProperties=transform_mapping_list)
+        transform_mappings = (
+            Templates.FLEX_TEMPLATE_TRANSFORM_NAME_MAPPING_VALUE(
+                additionalProperties=transform_mapping_list
+            )
+        )
 
     user_labels_list = Templates.__ConvertDictArguments(
         template_args.additional_user_labels,

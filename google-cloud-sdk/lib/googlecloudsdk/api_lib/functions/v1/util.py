@@ -62,15 +62,6 @@ _TOPIC_NAME_ERROR = (
     '255 characters long.'
 )
 
-_DEPRECATED_NODEJS_RUNTIMES = (
-    'nodejs6',
-    'nodejs8',
-    'nodejs10',
-)
-_DEPRECATED_GO_RUNTIMES = ('go111',)
-_SUGGESTED_NODEJS_RUNTIME = 'nodejs12'
-_SUGGESTED_GO_RUNTIME = 'go113'
-
 _BUCKET_RESOURCE_URI_RE = re.compile(r'^projects/_/buckets/.{3,222}$')
 
 _API_NAME = 'cloudfunctions'
@@ -244,31 +235,43 @@ def ValidatePubsubTopicNameOrRaise(topic):
   return topic
 
 
-def ValidateRuntime(runtime):
-  """Checks if runtime is deprecated based on runtimes.textproto.
+def ValidateRuntimeOrRaise(client, runtime, region):
+  """Checks if runtime is supported.
+
+  Does not raise if the runtime list cannot be retrieved
 
   Args:
+    client: v2 GCF client that supports ListRuntimes()
     runtime: str, the runtime.
+    region: str, region code.
 
   Returns:
     warning: None|str, the warning if deprecated
   """
-  # TODO(b/178004928): replace hardcoded warnings with ListRuntimes api
-  if runtime in _DEPRECATED_NODEJS_RUNTIMES:
-    return (
-        'The {} runtime is deprecated on Cloud Functions. '
-        'Please migrate to a newer Node.js version '
-        '(--runtime={}). '
-        'See https://cloud.google.com/functions/docs/migrating/'
-        'nodejs-runtimes'.format(runtime, _SUGGESTED_NODEJS_RUNTIME)
+  response = client.ListRuntimes(
+      region,
+      query_filter='name={} AND environment={}'.format(
+          runtime, client.messages.Runtime.EnvironmentValueValuesEnum.GEN_1
+      ),
+  )
+
+  if not response or response.runtimes is None:
+    return None
+
+  if len(response.runtimes) < 1:
+    raise exceptions.FunctionsError(
+        'argument `--runtime`: {} is not a supported runtime. Use `gcloud'
+        ' functions runtimes list` to get a list of available runtimes'.format(
+            runtime
+        )
     )
-  elif runtime in _DEPRECATED_GO_RUNTIMES:
-    return (
-        'The {} runtime is deprecated on Cloud Functions. '
-        'Please migrate to a newer Golang version '
-        '(--runtime={}).'.format(runtime, _SUGGESTED_GO_RUNTIME)
-    )
-  return None
+  runtime_info = response.runtimes[0]
+
+  return (
+      runtime_info.warnings[0]
+      if runtime_info and runtime_info.warnings
+      else None
+  )
 
 
 def ValidateDirectoryExistsOrRaiseFunctionError(directory):

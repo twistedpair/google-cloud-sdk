@@ -2070,6 +2070,10 @@ class SoftwareConfig(_messages.Message):
       the [executor](https://airflow.apache.org/code.html?highlight=executor#e
       xecutors) by which task instances are run on Airflow. If this field is
       unspecified, the `airflowExecutorType` defaults to `celery`.
+    WebServerPluginsModeValueValuesEnum: Optional. Whether or not the web
+      server uses custom plugins. If unspecified, the field defaults to
+      `PLUGINS_ENABLED`. This field is supported for Cloud Composer
+      environments in versions composer-2.5.*-airflow-2.*.*.
 
   Messages:
     AirflowConfigOverridesValue: Optional. Apache Airflow configuration
@@ -2166,9 +2170,10 @@ class SoftwareConfig(_messages.Message):
     schedulerCount: Optional. The number of schedulers for Airflow. This field
       is supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-2.*.*.
-    supportWebServerPlugins: Optional. Whether or not the web server uses
-      custom plugins. This field is supported for Cloud Composer environments
-      in versions composer-2.5.*-airflow-2.*.*.
+    webServerPluginsMode: Optional. Whether or not the web server uses custom
+      plugins. If unspecified, the field defaults to `PLUGINS_ENABLED`. This
+      field is supported for Cloud Composer environments in versions
+      composer-2.5.*-airflow-2.*.*.
   """
 
   class AirflowExecutorTypeValueValuesEnum(_messages.Enum):
@@ -2186,6 +2191,21 @@ class SoftwareConfig(_messages.Message):
     AIRFLOW_EXECUTOR_TYPE_UNSPECIFIED = 0
     CELERY = 1
     KUBERNETES = 2
+
+  class WebServerPluginsModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Whether or not the web server uses custom plugins. If
+    unspecified, the field defaults to `PLUGINS_ENABLED`. This field is
+    supported for Cloud Composer environments in versions
+    composer-2.5.*-airflow-2.*.*.
+
+    Values:
+      WEB_SERVER_PLUGINS_MODE_UNSPECIFIED: Default mode.
+      PLUGINS_DISABLED: Web server plugins are not supported.
+      PLUGINS_ENABLED: Web server plugins are supported.
+    """
+    WEB_SERVER_PLUGINS_MODE_UNSPECIFIED = 0
+    PLUGINS_DISABLED = 1
+    PLUGINS_ENABLED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AirflowConfigOverridesValue(_messages.Message):
@@ -2296,7 +2316,7 @@ class SoftwareConfig(_messages.Message):
   pypiPackages = _messages.MessageField('PypiPackagesValue', 6)
   pythonVersion = _messages.StringField(7)
   schedulerCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  supportWebServerPlugins = _messages.BooleanField(9)
+  webServerPluginsMode = _messages.EnumField('WebServerPluginsModeValueValuesEnum', 9)
 
 
 class SourceCode(_messages.Message):

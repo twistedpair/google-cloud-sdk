@@ -356,12 +356,6 @@ class ImageChange(ConfigChanger):
     self.image = image
 
   def Adjust(self, resource):
-    resource.annotations[container_resource.USER_IMAGE_ANNOTATION] = (
-        self.image)
-    if hasattr(resource.template, 'annotations'):
-      resource.template.annotations[
-          container_resource.USER_IMAGE_ANNOTATION] = (
-              self.image)
     resource.image = self.image
     return resource
 
@@ -968,12 +962,6 @@ class NoTrafficChange(ConfigChanger):
 
   def Adjust(self, resource):
     """Removes LATEST from the services traffic assignments."""
-    if resource.configuration:
-      raise exceptions.UnsupportedOperationError(
-          'This service is using an old version of Cloud Run for Anthos '
-          'that does not support traffic features. Please upgrade to 0.8 '
-          'or later.')
-
     if not resource.generation:
       raise exceptions.ConfigurationError(
           '--no-traffic not supported when creating a new service.')
@@ -1086,6 +1074,7 @@ class ContainerPortChange(ConfigChanger):
         resource.template.container.ports[0]
         if resource.template.container.ports else
         resource.MessagesModule().ContainerPort())
+    old_port = port_msg.containerPort or 8080  # default port
     # Set port to given value or clear field
     if self._port == 'default':
       port_msg.reset('containerPort')
@@ -1105,6 +1094,15 @@ class ContainerPortChange(ConfigChanger):
       resource.template.container.ports = [port_msg]
     else:
       resource.template.container.reset('ports')
+
+    # we also need to reset tcp startup probe port if it exists
+    container = resource.template.container
+    if container.startupProbe and container.startupProbe.tcpSocket:
+      if container.startupProbe.tcpSocket.port == old_port:
+        if port_msg.containerPort:
+          container.startupProbe.tcpSocket.port = port_msg.containerPort
+        else:
+          container.startupProbe.tcpSocket.reset('port')
     return resource
 
 

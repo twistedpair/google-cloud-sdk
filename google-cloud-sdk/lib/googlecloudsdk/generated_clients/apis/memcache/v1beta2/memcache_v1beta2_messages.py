@@ -831,6 +831,9 @@ class Instance(_messages.Message):
     nodeCount: Required. Number of nodes in the Memcached instance.
     parameters: User defined parameters to apply to the memcached process on
       each node.
+    reservedIpRangeId: Optional. Contains the id of allocated IP address
+      ranges associated with the private service access connection for
+      example, "test-default" associated with IP range 10.0.0.0/29.
     state: Output only. The state of this Memcached instance.
     updateAvailable: Output only. Returns true if there is an update waiting
       to be applied
@@ -848,11 +851,14 @@ class Instance(_messages.Message):
     determined by our system based on the latest supported minor version.
 
     Values:
-      MEMCACHE_VERSION_UNSPECIFIED: <no description>
+      MEMCACHE_VERSION_UNSPECIFIED: Memcache version is not specified by
+        customer
       MEMCACHE_1_5: Memcached 1.5 version.
+      MEMCACHE_1_6: Memcached 1.6 version.
     """
     MEMCACHE_VERSION_UNSPECIFIED = 0
     MEMCACHE_1_5 = 1
+    MEMCACHE_1_6 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of this Memcached instance.
@@ -915,10 +921,11 @@ class Instance(_messages.Message):
   nodeConfig = _messages.MessageField('NodeConfig', 13)
   nodeCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
   parameters = _messages.MessageField('MemcacheParameters', 15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  updateAvailable = _messages.BooleanField(17)
-  updateTime = _messages.StringField(18)
-  zones = _messages.StringField(19, repeated=True)
+  reservedIpRangeId = _messages.StringField(16, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  updateAvailable = _messages.BooleanField(18)
+  updateTime = _messages.StringField(19)
+  zones = _messages.StringField(20, repeated=True)
 
 
 class InstanceMessage(_messages.Message):
@@ -992,7 +999,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1500,11 +1507,17 @@ class Node(_messages.Message):
   r"""A Node object.
 
   Enums:
+    MemcacheVersionValueValuesEnum: Output only. Major version of memcached
+      server running on this node, e.g. MEMCACHE_1_5
     StateValueValuesEnum: Output only. Current state of the Memcached node.
 
   Fields:
     host: Output only. Hostname or IP address of the Memcached node used by
       the clients to connect to the Memcached server on this node.
+    memcacheFullVersion: Output only. The full version of memcached server
+      running on this node. e.g. - memcached-1.5.16
+    memcacheVersion: Output only. Major version of memcached server running on
+      this node, e.g. MEMCACHE_1_5
     nodeId: Output only. Identifier of the Memcached node. The node id does
       not include project or location like the Memcached instance name.
     parameters: User defined parameters currently applied to the node.
@@ -1514,6 +1527,20 @@ class Node(_messages.Message):
       to be applied
     zone: Output only. Location (GCP Zone) for the Memcached node.
   """
+
+  class MemcacheVersionValueValuesEnum(_messages.Enum):
+    r"""Output only. Major version of memcached server running on this node,
+    e.g. MEMCACHE_1_5
+
+    Values:
+      MEMCACHE_VERSION_UNSPECIFIED: Memcache version is not specified by
+        customer
+      MEMCACHE_1_5: Memcached 1.5 version.
+      MEMCACHE_1_6: Memcached 1.6 version.
+    """
+    MEMCACHE_VERSION_UNSPECIFIED = 0
+    MEMCACHE_1_5 = 1
+    MEMCACHE_1_6 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the Memcached node.
@@ -1532,12 +1559,14 @@ class Node(_messages.Message):
     UPDATING = 4
 
   host = _messages.StringField(1)
-  nodeId = _messages.StringField(2)
-  parameters = _messages.MessageField('MemcacheParameters', 3)
-  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  updateAvailable = _messages.BooleanField(6)
-  zone = _messages.StringField(7)
+  memcacheFullVersion = _messages.StringField(2)
+  memcacheVersion = _messages.EnumField('MemcacheVersionValueValuesEnum', 3)
+  nodeId = _messages.StringField(4)
+  parameters = _messages.MessageField('MemcacheParameters', 5)
+  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateAvailable = _messages.BooleanField(8)
+  zone = _messages.StringField(9)
 
 
 class NodeConfig(_messages.Message):

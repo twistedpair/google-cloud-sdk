@@ -1504,11 +1504,11 @@ class FhirStore(_messages.Message):
     name: Output only. Resource name of the FHIR store, of the form
       `projects/{project_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`
       .
-    notificationConfig: If non-empty, publish all resource modifications of
-      this FHIR store to this destination. The Pub/Sub message attributes
-      contain a map with a string describing the action that has triggered the
-      notification. For example, "action":"CreateResource". Deprecated. Use
-      `notification_configs` instead.
+    notificationConfig: Deprecated. Use `notification_configs` instead. If
+      non-empty, publish all resource modifications of this FHIR store to this
+      destination. The Pub/Sub message attributes contain a map with a string
+      describing the action that has triggered the notification. For example,
+      "action":"CreateResource".
     streamConfigs: A list of streaming configs that configure the destinations
       of streaming export for every resource mutation in this FHIR store. Each
       store is allowed to have up to 10 streaming configs. After a new config
@@ -2974,6 +2974,69 @@ class HealthcareProjectsLocationsDatasetsCreateRequest(_messages.Message):
   dataset = _messages.MessageField('Dataset', 1)
   datasetId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDataMapperWorkspacesGetIamPolicyRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsDataMapperWorkspacesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDataMapperWorkspacesSetIamPolicyRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsDataMapperWorkspacesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class HealthcareProjectsLocationsDatasetsDataMapperWorkspacesTestIamPermissionsRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDataMapperWorkspacesTestIamPermissi
+  onsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class HealthcareProjectsLocationsDatasetsDataProtectionStoresGetIamPolicyRequest(_messages.Message):
@@ -4557,7 +4620,7 @@ class ListUserDataMappingsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

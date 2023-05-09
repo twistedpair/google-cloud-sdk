@@ -346,7 +346,7 @@ class ListSecretsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1221,8 +1221,9 @@ class Topic(_messages.Message):
   Fields:
     name: Required. The resource name of the Pub/Sub topic that will be
       published to, in the following format: `projects/*/topics/*`. For
-      publication to succeed, the Secret Manager P4SA must have
-      `pubsub.publisher` permissions on the topic.
+      publication to succeed, the Secret Manager service agent must have the
+      `pubsub.topic.publish` permission on the topic. The Pub/Sub Publisher
+      role (`roles/pubsub.publisher`) includes this permission.
   """
 
   name = _messages.StringField(1)

@@ -144,14 +144,14 @@ class Container(_messages.Message):
   r"""A Docker container.
 
   Messages:
-    EnvValue: Environment variables passed to the container.
+    EnvValue: Environment variables passed to the container's entrypoint.
 
   Fields:
     args: Arguments passed to the entrypoint.
     command: If set, overrides the default ENTRYPOINT specified by the image.
-    env: Environment variables passed to the container.
+    env: Environment variables passed to the container's entrypoint.
     image: Docker image defining the container. This image must be accessible
-      by the config's service account.
+      by the service account specified in the workstation configuration.
     runAsUser: If set, overrides the USER specified in the image with the
       given uid.
     workingDir: If set, overrides the default DIR specified by the image.
@@ -159,7 +159,7 @@ class Container(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvValue(_messages.Message):
-    r"""Environment variables passed to the container.
+    r"""Environment variables passed to the container's entrypoint.
 
     Messages:
       AdditionalProperty: An additional property for a EnvValue object.
@@ -194,12 +194,12 @@ class CustomerEncryptionKey(_messages.Message):
   this workstation configuration.
 
   Fields:
-    kmsKey: The name of the Google Cloud KMS encryption key. For example, `pro
-      jects/PROJECT_ID/locations/REGION/keyRings/KEY_RING/cryptoKeys/KEY_NAME`
-      .
-    kmsKeyServiceAccount: The service account to use with the specified KMS
-      key. We recommend that you use a separate service account and follow KMS
-      best practices. For more information, see [Separation of
+    kmsKey: Immutable. The name of the Google Cloud KMS encryption key. For
+      example, `projects/PROJECT_ID/locations/REGION/keyRings/KEY_RING/cryptoK
+      eys/KEY_NAME`.
+    kmsKeyServiceAccount: Immutable. The service account to use with the
+      specified KMS key. We recommend that you use a separate service account
+      and follow KMS best practices. For more information, see [Separation of
       duties](https://cloud.google.com/kms/docs/separation-of-duties) and
       `gcloud kms keys add-iam-policy-binding`
       [`--member`](https://cloud.google.com/sdk/gcloud/reference/kms/keys/add-
@@ -266,12 +266,14 @@ class GceInstance(_messages.Message):
       instance options.
     disablePublicIpAddresses: Whether instances have no public IP address.
     machineType: The name of a Compute Engine machine type.
-    poolSize: Number of instances to pool for faster workstation starup.
-    serviceAccount: Email address of the service account that will be used on
-      VM instances used to support this config. If not set, VMs will run with
-      a Google-managed service account. This service account must have
-      permission to pull the specified container image, otherwise the image
-      must be publicly accessible.
+    poolSize: Number of instances to pool for faster workstation startup.
+    pooledInstances: Output only. Number of instances currently available in
+      the pool for faster workstation startup.
+    serviceAccount: Email address of the service account used on VM instances
+      used to support this configuration. If not set, VMs run with a Google-
+      managed service account. This service account must have permission to
+      pull the specified container image; otherwise, the image must be
+      publicly accessible.
     shieldedInstanceConfig: A set of Compute Engine Shielded instance options.
     tags: Network tags to add to the Compute Engine machines backing the
       Workstations.
@@ -282,9 +284,10 @@ class GceInstance(_messages.Message):
   disablePublicIpAddresses = _messages.BooleanField(3)
   machineType = _messages.StringField(4)
   poolSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  serviceAccount = _messages.StringField(6)
-  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 7)
-  tags = _messages.StringField(8, repeated=True)
+  pooledInstances = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  serviceAccount = _messages.StringField(7)
+  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 8)
+  tags = _messages.StringField(9, repeated=True)
 
 
 class GceRegionalPersistentDisk(_messages.Message):
@@ -367,7 +370,7 @@ class GenerateAccessTokenResponse(_messages.Message):
   Fields:
     accessToken: The generated bearer access token. To use this token, include
       it in an Authorization header of an HTTP request sent to the associated
-      workstation's hostname, for example, `Authorization: Bearer `.
+      workstation's hostname-for example, `Authorization: Bearer `.
     expireTime: Time at which the generated token will expire.
   """
 
@@ -733,6 +736,18 @@ class PrivateClusterConfig(_messages.Message):
   serviceAttachmentUri = _messages.StringField(4)
 
 
+class ReadinessCheck(_messages.Message):
+  r"""A readiness check to be performed on a workstation.
+
+  Fields:
+    path: Path to which the request should be sent.
+    port: Port to which the request should be sent.
+  """
+
+  path = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -818,7 +833,7 @@ class StartWorkstationRequest(_messages.Message):
 
   Fields:
     etag: If set, the request will be rejected if the latest version of the
-      workstation on the server does not have this etag.
+      workstation on the server does not have this ETag.
     validateOnly: If set, validate the request and preview the review, but do
       not actually apply it.
   """
@@ -883,7 +898,7 @@ class StopWorkstationRequest(_messages.Message):
 
   Fields:
     etag: If set, the request will be rejected if the latest version of the
-      workstation on the server does not have this etag.
+      workstation on the server does not have this ETag.
     validateOnly: If set, validate the request and preview the review, but do
       not actually apply it.
   """
@@ -925,6 +940,8 @@ class Workstation(_messages.Message):
 
   Messages:
     AnnotationsValue: Client-specified annotations.
+    EnvValue: Environment variables passed to the workstation container's
+      entrypoint.
     LabelsValue: Client-specified labels that are applied to the resource and
       that are also propagated to the underlying Compute Engine resources.
 
@@ -933,8 +950,10 @@ class Workstation(_messages.Message):
     createTime: Output only. Time when this resource was created.
     deleteTime: Output only. Time when this resource was soft-deleted.
     displayName: Human-readable name for this resource.
+    env: Environment variables passed to the workstation container's
+      entrypoint.
     etag: Checksum computed by the server. May be sent on update and delete
-      requests to ensure that the client has an up-to-date value before
+      requests to make sure that the client has an up-to-date value before
       proceeding.
     host: Output only. Host to which clients can send HTTPS traffic that will
       be received by the workstation. Authorized traffic will be received to
@@ -996,6 +1015,31 @@ class Workstation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvValue(_messages.Message):
+    r"""Environment variables passed to the workstation container's
+    entrypoint.
+
+    Messages:
+      AdditionalProperty: An additional property for a EnvValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type EnvValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Client-specified labels that are applied to the resource and that are
     also propagated to the underlying Compute Engine resources.
@@ -1024,14 +1068,15 @@ class Workstation(_messages.Message):
   createTime = _messages.StringField(2)
   deleteTime = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  host = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  reconciling = _messages.BooleanField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  env = _messages.MessageField('EnvValue', 5)
+  etag = _messages.StringField(6)
+  host = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  reconciling = _messages.BooleanField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class WorkstationCluster(_messages.Message):
@@ -1047,6 +1092,10 @@ class WorkstationCluster(_messages.Message):
     annotations: Client-specified annotations.
     conditions: Output only. Status conditions describing the current resource
       state.
+    controlPlaneIp: Output only. The private IP address of the control plane
+      for this cluster. Workstation VMs need access to this IP address to work
+      with the service, so make sure that your firewall rules allow egress
+      from the workstation VMs to this address.
     createTime: Output only. Time when this resource was created.
     degraded: Output only. Whether this resource is in degraded mode, in which
       case it may require user action to restore full functionality. Details
@@ -1054,7 +1103,7 @@ class WorkstationCluster(_messages.Message):
     deleteTime: Output only. Time when this resource was soft-deleted.
     displayName: Human-readable name for this resource.
     etag: Checksum computed by the server. May be sent on update and delete
-      requests to ensure that the client has an up-to-date value before
+      requests to make sure that the client has an up-to-date value before
       proceeding.
     labels: Client-specified labels that are applied to the resource and that
       are also propagated to the underlying Compute Engine resources.
@@ -1124,19 +1173,20 @@ class WorkstationCluster(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   conditions = _messages.MessageField('Status', 2, repeated=True)
-  createTime = _messages.StringField(3)
-  degraded = _messages.BooleanField(4)
-  deleteTime = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 11)
-  reconciling = _messages.BooleanField(12)
-  subnetwork = _messages.StringField(13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  controlPlaneIp = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  degraded = _messages.BooleanField(5)
+  deleteTime = _messages.StringField(6)
+  displayName = _messages.StringField(7)
+  etag = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 12)
+  reconciling = _messages.BooleanField(13)
+  subnetwork = _messages.StringField(14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class WorkstationConfig(_messages.Message):
@@ -1161,20 +1211,26 @@ class WorkstationConfig(_messages.Message):
       can be found in the `conditions` field.
     deleteTime: Output only. Time when this resource was soft-deleted.
     displayName: Human-readable name for this resource.
-    encryptionKey: Encrypts resources of this workstation configuration using
-      a customer-managed encryption key. If specified, the boot disk of the
-      Compute Engine instance and the persistent disk are encrypted using this
-      encryption key. If this field is not set, the disks are encrypted using
-      a generated key. Customer-managed encryption keys do not protect disk
-      metadata. If the customer-managed encryption key is rotated, when the
-      workstation instance is stopped, the system attempts to recreate the
-      persistent disk with the new version of the key. Be sure to keep older
-      versions of the key until the persistent disk is recreated. Otherwise,
-      data on the persistent disk will be lost. If the encryption key is
-      revoked, the workstation session will automatically be stopped within 7
-      hours.
+    enableAuditAgent: Whether to enable linux auditd logging on the
+      workstation. When enabled, a service account must also be specified that
+      has logging.buckets.write permission on the project. Operating system
+      audit logging is distinct from [Cloud Audit
+      Logs](https://cloud.google.com/workstations/docs/audit-logging).
+    encryptionKey: Immutable. Encrypts resources of this workstation
+      configuration using a customer-managed encryption key. If specified, the
+      boot disk of the Compute Engine instance and the persistent disk are
+      encrypted using this encryption key. If this field is not set, the disks
+      are encrypted using a generated key. Customer-managed encryption keys do
+      not protect disk metadata. If the customer-managed encryption key is
+      rotated, when the workstation instance is stopped, the system attempts
+      to recreate the persistent disk with the new version of the key. Be sure
+      to keep older versions of the key until the persistent disk is
+      recreated. Otherwise, data on the persistent disk will be lost. If the
+      encryption key is revoked, the workstation session will automatically be
+      stopped within 7 hours. Immutable after the workstation configuration is
+      created.
     etag: Checksum computed by the server. May be sent on update and delete
-      requests to ensure that the client has an up-to-date value before
+      requests to make sure that the client has an up-to-date value before
       proceeding.
     host: Runtime host for the workstation.
     idleTimeout: How long to wait before automatically stopping an instance
@@ -1184,6 +1240,9 @@ class WorkstationConfig(_messages.Message):
       are also propagated to the underlying Compute Engine resources.
     name: Full name of this resource.
     persistentDirectories: Directories to persist across workstation sessions.
+    readinessChecks: Readiness checks to perform when starting a workstation
+      using this workstation configuration. Mark a workstation as running only
+      after all specified readiness checks return 200 status codes.
     reconciling: Output only. Indicates whether this resource is currently
       being updated to match its intended state.
     runningTimeout: How long to wait before automatically stopping a
@@ -1252,17 +1311,19 @@ class WorkstationConfig(_messages.Message):
   degraded = _messages.BooleanField(5)
   deleteTime = _messages.StringField(6)
   displayName = _messages.StringField(7)
-  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 8)
-  etag = _messages.StringField(9)
-  host = _messages.MessageField('Host', 10)
-  idleTimeout = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  name = _messages.StringField(13)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 14, repeated=True)
-  reconciling = _messages.BooleanField(15)
-  runningTimeout = _messages.StringField(16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
+  enableAuditAgent = _messages.BooleanField(8)
+  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
+  etag = _messages.StringField(10)
+  host = _messages.MessageField('Host', 11)
+  idleTimeout = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  name = _messages.StringField(14)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 15, repeated=True)
+  readinessChecks = _messages.MessageField('ReadinessCheck', 16, repeated=True)
+  reconciling = _messages.BooleanField(17)
+  runningTimeout = _messages.StringField(18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
 
 
 class WorkstationsProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1337,7 +1398,7 @@ class WorkstationsProjectsLocationsWorkstationClustersDeleteRequest(_messages.Me
 
   Fields:
     etag: If set, the request will be rejected if the latest version of the
-      workstation cluster on the server does not have this etag.
+      workstation cluster on the server does not have this ETag.
     force: If set, any workstation configurations and workstations in the
       workstation cluster are also deleted. Otherwise, the request only works
       if the workstation cluster has no configurations or workstations.
@@ -1410,7 +1471,8 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsCreateRe
       not actually apply it.
     workstationConfig: A WorkstationConfig resource to be passed as the
       request body.
-    workstationConfigId: Required. ID to use for the config.
+    workstationConfigId: Required. ID to use for the workstation
+      configuration.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1424,11 +1486,12 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsDeleteRe
   teRequest object.
 
   Fields:
-    etag: If set, the request will be rejected if the latest version of the
-      config on the server does not have this etag.
-    force: If set, any Workstations in the config will also be deleted.
-      Otherwise, the request will work only if the config has no workstations.
-    name: Required. Name of the config to delete.
+    etag: If set, the request is rejected if the latest version of the
+      workstation configuration on the server does not have this ETag.
+    force: If set, any workstations in the workstation configuration are also
+      deleted. Otherwise, the request works only if the workstation
+      configuration has no workstations.
+    name: Required. Name of the workstation configuration to delete.
     validateOnly: If set, validate the request and preview the review, but do
       not actually apply it.
   """
@@ -1515,11 +1578,12 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsPatchReq
   hRequest object.
 
   Fields:
-    allowMissing: If set, and the config is not found, a new config will be
-      created. In this situation, update_mask is ignored.
+    allowMissing: If set and the workstation configuration is not found, a new
+      workstation configuration will be created. In this situation,
+      update_mask is ignored.
     name: Full name of this resource.
-    updateMask: Required. Mask specifying which fields in the config should be
-      updated.
+    updateMask: Required. Mask specifying which fields in the workstation
+      configuration should be updated.
     validateOnly: If set, validate the request and preview the review, but do
       not actually apply it.
     workstationConfig: A WorkstationConfig resource to be passed as the
@@ -1591,7 +1655,7 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstat
 
   Fields:
     etag: If set, the request will be rejected if the latest version of the
-      workstation on the server does not have this etag.
+      workstation on the server does not have this ETag.
     name: Required. Name of the workstation to delete.
     validateOnly: If set, validate the request and preview the review, but do
       not actually apply it.
@@ -1692,11 +1756,12 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstat
   stationsPatchRequest object.
 
   Fields:
-    allowMissing: If set, and the config is not found, a new config will be
-      created. In this situation, update_mask is ignored.
+    allowMissing: If set and the workstation configuration is not found, a new
+      workstation configuration is created. In this situation, update_mask is
+      ignored.
     name: Full name of this resource.
-    updateMask: Required. Mask specifying which fields in the config should be
-      updated.
+    updateMask: Required. Mask specifying which fields in the workstation
+      configuration should be updated.
     validateOnly: If set, validate the request and preview the review, but do
       not actually apply it.
     workstation: A Workstation resource to be passed as the request body.

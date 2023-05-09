@@ -456,6 +456,33 @@ class ManagedidentitiesV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DisableMigration(self, request, global_params=None):
+      r"""Disable Domain Migration.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsDisableMigrationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DisableMigration')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DisableMigration.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/domains/{domainsId}:disableMigration',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.disableMigration',
+        ordered_params=['domain'],
+        path_params=['domain'],
+        query_params=[],
+        relative_path='v1/{+domain}:disableMigration',
+        request_field='disableMigrationRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsDisableMigrationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def DomainJoinMachine(self, request, global_params=None):
       r"""DomainJoinMachine API joins a Compute Engine VM to the domain.
 
@@ -480,6 +507,33 @@ class ManagedidentitiesV1(base_api.BaseApiClient):
         request_field='domainJoinMachineRequest',
         request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest',
         response_type_name='DomainJoinMachineResponse',
+        supports_download=False,
+    )
+
+    def EnableMigration(self, request, global_params=None):
+      r"""Enable Domain Migration.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsEnableMigrationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('EnableMigration')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableMigration.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/domains/{domainsId}:enableMigration',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.enableMigration',
+        ordered_params=['domain'],
+        path_params=['domain'],
+        query_params=[],
+        relative_path='v1/{+domain}:enableMigration',
+        request_field='enableMigrationRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsEnableMigrationRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

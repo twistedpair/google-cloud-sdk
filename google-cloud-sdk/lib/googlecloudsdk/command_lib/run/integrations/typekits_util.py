@@ -21,23 +21,24 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.command_lib.run import exceptions
+from googlecloudsdk.command_lib.run.integrations.typekits import base
 from googlecloudsdk.command_lib.run.integrations.typekits import cloudsql_typekit
 from googlecloudsdk.command_lib.run.integrations.typekits import domain_routing_typekit
 from googlecloudsdk.command_lib.run.integrations.typekits import firebasehosting_typekit
 from googlecloudsdk.command_lib.run.integrations.typekits import redis_typekit
 
 
-def GetTypeKit(integration_type):
+def GetTypeKit(integration_type: str) -> base.TypeKit:
   """Returns a typekit for the given integration type.
 
   Args:
-    integration_type: str, type of integration.
+    integration_type: type of integration.
 
   Raises:
     ArgumentError: If the integration type is not supported.
 
   Returns:
-    typekit.TypeKit, a typekit instance.
+    A typekit instance.
   """
   if integration_type == 'custom-domains':
     return domain_routing_typekit.DomainRoutingTypeKit(
@@ -55,7 +56,7 @@ def GetTypeKit(integration_type):
       'Integration of type {} is not supported'.format(integration_type))
 
 
-def GetTypeKitByResource(resource):
+def GetTypeKitByResource(resource) -> base.TypeKit:
   """Returns a typekit for the given resource.
 
   Args:
@@ -65,7 +66,7 @@ def GetTypeKitByResource(resource):
     ArgumentError: If the resource's type is not recognized.
 
   Returns:
-    typekit.TypeKit, a typekit instance.
+    A typekit instance.
   """
   type_metadata = types_utils.GetIntegrationFromResource(resource)
   if type_metadata is None:

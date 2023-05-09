@@ -30,7 +30,6 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.run import condition as run_condition
 from googlecloudsdk.api_lib.run import configuration
-from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import domain_mapping
 from googlecloudsdk.api_lib.run import execution
 from googlecloudsdk.api_lib.run import global_methods
@@ -506,13 +505,6 @@ class _SwitchToDigestChange(config_changes_mod.ConfigChanger):
     if not self._base_revision.image_digest:
       return resource
 
-    # Mutates through to metadata: Save the by-tag user intent.
-    resource.annotations[container_resource.USER_IMAGE_ANNOTATION] = (
-        self._base_revision.image
-    )
-    resource.template.annotations[container_resource.USER_IMAGE_ANNOTATION] = (
-        self._base_revision.image
-    )
     resource.template.image = self._base_revision.image_digest
     return resource
 
@@ -1028,13 +1020,6 @@ class ServerlessOperations(object):
           'Service [{}] could not be found.'.format(service_ref.servicesId)
       )
 
-    if serv.configuration:
-      raise serverless_exceptions.UnsupportedOperationError(
-          'This service is using an old version of Cloud Run for Anthos '
-          'that does not support traffic features. Please upgrade to 0.8 '
-          'or later.'
-      )
-
     self._UpdateOrCreateService(service_ref, config_changes, False, serv)
 
     if not asyn:
@@ -1106,7 +1091,7 @@ class ServerlessOperations(object):
       for_replace: bool, If the change is for a replacing the service from a
         YAML specification.
       prefetch: the service, pre-fetched for ReleaseService. `False` indicates
-        the caller did not perform a prefetch; `None` indicates a nonexistant
+        the caller did not perform a prefetch; `None` indicates a nonexistent
         service.
       build_image: The build image reference to the build.
       build_pack: The build pack reference to the build.
@@ -1521,7 +1506,7 @@ class ServerlessOperations(object):
         googlecloudsdk.command_lib.artifacts.docker_util.DockerRepo defining a
         repository to be created.
       prefetch: the job, pre-fetched for DeployJob. `None` indicates a
-        nonexistant job so the job has to be created, else this is for an
+        nonexistent job so the job has to be created, else this is for an
         update.
 
     Returns:
@@ -1923,20 +1908,22 @@ class ServerlessOperations(object):
     build_messages = cloudbuild_util.GetMessagesModule()
     build_config = submit_util.CreateBuildConfig(
         build_image,
-        False,  # no_cache
-        build_messages,
-        None,  # substitutions
-        None,  # arg_config
-        True,  # is_specified_source
-        False,  # no_source
-        build_source,
-        None,  # gcs_source_staging_dir
-        None,  # ignore_file
-        None,  # arg_gcs_log_dir
-        None,  # arg_machine_type
-        None,  # arg_disk_size
-        None,  # arg_worker_pool
-        build_pack,
+        no_cache=False,
+        messages=build_messages,
+        substitutions=None,
+        arg_config=None,
+        is_specified_source=True,
+        no_source=False,
+        source=build_source,
+        gcs_source_staging_dir=None,
+        ignore_file=None,
+        arg_gcs_log_dir=None,
+        arg_machine_type=None,
+        arg_disk_size=None,
+        arg_worker_pool=None,
+        arg_git_source_dir=None,
+        arg_git_source_revision=None,
+        buildpack=build_pack,
         hide_logs=True,
     )
     tracker.CompleteStage(stages.UPLOAD_SOURCE)

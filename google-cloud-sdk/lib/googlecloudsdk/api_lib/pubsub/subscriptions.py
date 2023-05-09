@@ -31,6 +31,7 @@ NEVER_EXPIRATION_PERIOD_VALUE = 'never'
 CLEAR_DEAD_LETTER_VALUE = 'clear'
 CLEAR_RETRY_VALUE = 'clear'
 CLEAR_BIGQUERY_CONFIG_VALUE = 'clear'
+CLEAR_PUSH_NO_WRAPPER_CONFIG_VALUE = 'clear'
 
 
 class NoFieldsSpecifiedError(exceptions.Error):
@@ -364,6 +365,10 @@ class SubscriptionsClient(object):
     if update_setting.value == CLEAR_BIGQUERY_CONFIG_VALUE:
       update_setting.value = None
 
+  def _HandlePushNoWrapperUpdate(self, update_setting):
+    if update_setting.value == CLEAR_PUSH_NO_WRAPPER_CONFIG_VALUE:
+      update_setting.value = None
+
   def Patch(self,
             subscription_ref,
             ack_deadline=None,
@@ -384,7 +389,8 @@ class SubscriptionsClient(object):
             use_topic_schema=None,
             write_metadata=None,
             drop_unknown_fields=None,
-            clear_bigquery_config=False):
+            clear_bigquery_config=False,
+            clear_push_no_wrapper_config=False):
     """Updates a Subscription.
 
     Args:
@@ -421,6 +427,8 @@ class SubscriptionsClient(object):
         the topic schema when writing to BigQuery
       clear_bigquery_config (bool): If set, clear the BigQuery config from the
         subscription
+      clear_push_no_wrapper_config(bool): If set, clear the Push No Wrapper
+        config from the subscription
     Returns:
       Subscription: The updated subscription.
     Raises:
@@ -451,7 +459,11 @@ class SubscriptionsClient(object):
             'bigqueryConfig',
             CLEAR_BIGQUERY_CONFIG_VALUE if clear_bigquery_config else
             self._BigQueryConfig(bigquery_table, use_topic_schema,
-                                 write_metadata, drop_unknown_fields))
+                                 write_metadata, drop_unknown_fields)),
+        _SubscriptionUpdateSetting(
+            'pushConfig.noWrapper',
+            CLEAR_PUSH_NO_WRAPPER_CONFIG_VALUE if clear_push_no_wrapper_config
+            else None),
     ]
     subscription = self.messages.Subscription(
         name=subscription_ref.RelativeName())
@@ -466,6 +478,11 @@ class SubscriptionsClient(object):
           self._HandleRetryPolicyUpdate(update_setting)
         if update_setting.field_name == 'bigqueryConfig':
           self._HandleBigQueryConfigUpdate(update_setting)
+        if update_setting.field_name == 'pushConfig.noWrapper':
+          self._HandlePushNoWrapperUpdate(update_setting)
+          if push_config is None:
+            update_mask.append(update_setting.field_name)
+          continue
         setattr(subscription, update_setting.field_name, update_setting.value)
         update_mask.append(update_setting.field_name)
     if not update_mask:

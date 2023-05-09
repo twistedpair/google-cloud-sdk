@@ -115,8 +115,13 @@ def AddConnectivityGroupFlag(parser, api_type, required=False):
 
 def AddFilterFlag(parser):
   """Adds a --filter flag to the given parser."""
-  help_text = 'Filter the entities based on AIP-160 standard.'
-  parser.add_argument('--filter', help=help_text, hidden=True)
+  help_text = (
+      'Filter the entities based on (AIP-160)[https://google.aip.dev/160]'
+      ' standard. Example: to filter all tables whose name start with'
+      ' "Employee" and are present under schema "Company", use filter as'
+      ' "parent = Company and TABLE=Employee*"'
+  )
+  parser.add_argument('--filter', help=help_text)
 
 
 def AddCommitIdFlag(parser):
@@ -125,7 +130,7 @@ def AddCommitIdFlag(parser):
       'Commit id for the conversion workspace to use for creating the migration'
       ' job. If not specified, the latest commit id will be used by default.'
   )
-  parser.add_argument('--commit-id', help=help_text, hidden=True)
+  parser.add_argument('--commit-id', help=help_text)
 
 
 def AddDumpParallelLevelFlag(parser):

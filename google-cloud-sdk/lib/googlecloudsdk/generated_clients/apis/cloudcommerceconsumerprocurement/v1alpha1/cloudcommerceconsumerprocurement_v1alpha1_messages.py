@@ -181,27 +181,6 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersGetRequest(_messages.
   name = _messages.StringField(1, required=True)
 
 
-class CloudcommerceconsumerprocurementBillingAccountsOrdersListMigratableRequest(_messages.Message):
-  r"""A
-  CloudcommerceconsumerprocurementBillingAccountsOrdersListMigratableRequest
-  object.
-
-  Fields:
-    newParent: Required. The parent the Orders intend on migrating to. This
-      field is of the form `billingAccounts/`. You must have the
-      "consumerprocurement.orders.migrate" permission on new_parent also.
-    pageSize: The maximum number of entries that are requested.
-    pageToken: The token for fetching the next page.
-    parent: Required. The parent resource to query for orders. This field is
-      of the form `billingAccounts/`.
-  """
-
-  newParent = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-
-
 class CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest(_messages.Message):
   r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest
   object.
@@ -228,22 +207,6 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest(_messages
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsOrdersMigrateRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersMigrateRequest
-  object.
-
-  Fields:
-    googleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest: A
-      GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest
-      resource to be passed as the request body.
-    name: Required. Name of the order to migrate. This field is in this form:
-      billingAccounts/{billing-account-id}/orders/{order-id}.
-  """
-
-  googleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class CloudcommerceconsumerprocurementBillingAccountsOrdersModifyRequest(_messages.Message):
@@ -858,6 +821,11 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Consent(_messages.Message):
     StateValueValuesEnum: Output only. State of current consent.
 
   Fields:
+    agreement: Full name of the agreement that was agreed to for this consent,
+      ## in the format of one of: "commerceoffercatalog.googleapis.com/billing
+      Accounts/{billing_account}/offers/{offer_id}/agreements/{agreement_id}".
+      "commerceoffercatalog.googleapis.com/services/{service}/standardOffers/{
+      offer_id}/agreements/{agreement_id}".
     agreementDocument: Full name of the agreement document that was agreed to
       for this consent, ## in the format of one of: commerceoffercatalog.googl
       eapis.com/billingAccounts/{billing_account}/offers/{offer_id}/agreements
@@ -871,7 +839,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Consent(_messages.Message):
     offer: The name of the offer linked to this consent. It is in the format
       of: "commerceoffercatalog.googleapis.com/billingAccounts/{billing_accoun
       t}/offers/{offer_id}". "commerceoffercatalog.googleapis.com/services/{se
-      rvice}/offers/{offer_id}".
+      rvice}/standardOffers/{offer_id}".
     state: Output only. State of current consent.
     updateTime: Output only. The update time of current consent.
   """
@@ -889,13 +857,14 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Consent(_messages.Message):
     ACTIVE = 1
     REVOKED = 2
 
-  agreementDocument = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  financialContract = _messages.StringField(3)
-  name = _messages.StringField(4)
-  offer = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  agreement = _messages.StringField(1)
+  agreementDocument = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  financialContract = _messages.StringField(4)
+  name = _messages.StringField(5)
+  offer = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1CreateAccountMetadata(_messages.Message):
@@ -950,7 +919,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement(_messages.Messag
   associated with the same billing account as the order, for all
   products/services procured in the order. Users can enable/disable
   Entitlements to allow/disallow using the product/service in a project. Next
-  Id: 22
+  Id: 23
 
   Enums:
     StateValueValuesEnum: Output only. The state of the entitlement.
@@ -1448,18 +1417,6 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ListFreeTrialsResponse(_mess
   nextPageToken = _messages.StringField(2)
 
 
-class GoogleCloudCommerceConsumerProcurementV1alpha1ListMigratableOrdersResponse(_messages.Message):
-  r"""Response message for ConsumerProcurementService.ListMigratableOrders.
-
-  Fields:
-    migratableOrders: The list of orders in this response.
-    nextPageToken: The token for fetching the next page.
-  """
-
-  migratableOrders = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Order', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
 class GoogleCloudCommerceConsumerProcurementV1alpha1ListOrderAllocationsResponse(_messages.Message):
   r"""Response message for ConsumerProcurementService.ListOrderAllocations.
 
@@ -1494,25 +1451,6 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ListOrdersResponse(_messages
 
   nextPageToken = _messages.StringField(1)
   orders = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Order', 2, repeated=True)
-
-
-class GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderMetadata(_messages.Message):
-  r"""Message stored in the metadata field of the Operation returned by
-  ConsumerProcurementService.MigrateOrder.
-  """
-
-
-
-class GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest(_messages.Message):
-  r"""Request message for ConsumerProcurementService.MigrateOrder.
-
-  Fields:
-    newParent: Required. Destination billing account where the order will be
-      migrated to. This field is of the form: 'billingAccounts/{billing-
-      account-id}.
-  """
-
-  newParent = _messages.StringField(1)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderMetadata(_messages.Message):
@@ -2135,13 +2073,6 @@ class GoogleCloudCommerceConsumerProcurementV1mainDeleteAccountMetadata(_message
 class GoogleCloudCommerceConsumerProcurementV1mainDeleteOrderAllocationMetadata(_messages.Message):
   r"""Message stored in the metadata field of the Operation returned by
   ConsumerProcurementService.DeleteOrderAllocation.
-  """
-
-
-
-class GoogleCloudCommerceConsumerProcurementV1mainMigrateOrderMetadata(_messages.Message):
-  r"""Message stored in the metadata field of the Operation returned by
-  ConsumerProcurementService.MigrateOrder.
   """
 
 

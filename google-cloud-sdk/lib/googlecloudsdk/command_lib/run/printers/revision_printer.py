@@ -105,11 +105,15 @@ class RevisionPrinter(cp.CustomPrinterBase):
   def TransformSpec(record):
     limits = container_util.GetLimits(record)
     return cp.Labeled([
-        ('Image', record.UserImage()),
+        ('Image', record.image),
         ('Command', ' '.join(record.container.command)),
         ('Args', ' '.join(record.container.args)),
-        ('Port', ' '.join(
-            six.text_type(p.containerPort) for p in record.container.ports)),
+        (
+            'Port',
+            ' '.join(
+                six.text_type(p.containerPort) for p in record.container.ports
+            ),
+        ),
         ('Memory', limits['memory']),
         ('CPU', limits['cpu']),
         ('Service account', record.spec.serviceAccountName),

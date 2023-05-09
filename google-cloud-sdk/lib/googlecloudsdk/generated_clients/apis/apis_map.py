@@ -417,6 +417,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'apphub': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.apphub.v1alpha',
+                    client_classpath='apphub_v1alpha_client.ApphubV1alpha',
+                    base_url='https://apphub.googleapis.com/',
+                    messages_modulepath='apphub_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'artifactregistry': {
         'v1':
             APIDef(

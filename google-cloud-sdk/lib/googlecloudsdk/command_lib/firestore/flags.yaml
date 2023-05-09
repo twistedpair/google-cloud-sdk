@@ -23,6 +23,23 @@ type:
   - arg_value: datastore-mode
     enum_value: DATASTORE_MODE
 
+
+enable_delete_protection:
+  api_field: googleFirestoreAdminV1Database.deleteProtectionState
+  arg_name: delete-protection
+  action: store_true
+  default: false
+  required: false
+  help_text: |
+    If set to true, the firestore database will be updated to have database delete protection
+    enabled. A database with delete protection enabled cannot be deleted. You can disable the
+    delete protection via --no-delete-protection.
+  choices:
+  - arg_value: true
+    enum_value: DELETE_PROTECTION_ENABLED
+  - arg_value: false
+    enum_value: DELETE_PROTECTION_DISABLED
+
 query_scope:
   api_field: googleFirestoreAdminV1Index.queryScope
   arg_name: query-scope

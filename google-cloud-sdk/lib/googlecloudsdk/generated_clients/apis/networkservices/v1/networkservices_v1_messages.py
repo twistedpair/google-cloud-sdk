@@ -1337,20 +1337,20 @@ class GrpcRoute(_messages.Message):
       this route describes traffic. Format: [:] Hostname is the fully
       qualified domain name of a network host. This matches the RFC 1123
       definition of a hostname with 2 notable exceptions: - IPs are not
-      allowed. - A hostname may be prefixed with a wildcard label (*.). The
+      allowed. - A hostname may be prefixed with a wildcard label (`*.`). The
       wildcard label must appear by itself as the first label. Hostname can be
       "precise" which is a domain name without the terminating dot of a
-      network host (e.g. "foo.example.com") or "wildcard", which is a domain
-      name prefixed with a single wildcard label (e.g. *.example.com). Note
+      network host (e.g. `foo.example.com`) or "wildcard", which is a domain
+      name prefixed with a single wildcard label (e.g. `*.example.com`). Note
       that as per RFC1035 and RFC1123, a label must consist of lower case
       alphanumeric characters or '-', and must start and end with an
       alphanumeric character. No other punctuation is allowed. The routes
       associated with a Mesh or Gateway must have unique hostnames. If you
       attempt to attach multiple routes with conflicting hostnames, the
       configuration will be rejected. For example, while it is acceptable for
-      routes for the hostnames "*.foo.bar.com" and "*.bar.com" to be
+      routes for the hostnames `*.foo.bar.com` and `*.bar.com` to be
       associated with the same route, it is not possible to associate two
-      routes both with "*.bar.com" or both with "bar.com". If a port is
+      routes both with `*.bar.com` or both with `bar.com`. If a port is
       specified, then gRPC clients must use the channel URI with the port to
       match this rule (i.e. "xds:///service:123"), otherwise they must supply
       the URI without a port (i.e. "xds:///service").
@@ -1766,21 +1766,21 @@ class HttpRoute(_messages.Message):
       against the HTTP host header to select a HttpRoute to process the
       request. Hostname is the fully qualified domain name of a network host,
       as defined by RFC 1123 with the exception that: - IPs are not allowed. -
-      A hostname may be prefixed with a wildcard label (*.). The wildcard
+      A hostname may be prefixed with a wildcard label (`*.`). The wildcard
       label must appear by itself as the first label. Hostname can be
       "precise" which is a domain name without the terminating dot of a
-      network host (e.g. "foo.example.com") or "wildcard", which is a domain
-      name prefixed with a single wildcard label (e.g. *.example.com). Note
+      network host (e.g. `foo.example.com`) or "wildcard", which is a domain
+      name prefixed with a single wildcard label (e.g. `*.example.com`). Note
       that as per RFC1035 and RFC1123, a label must consist of lower case
       alphanumeric characters or '-', and must start and end with an
       alphanumeric character. No other punctuation is allowed. The routes
       associated with a Mesh or Gateways must have unique hostnames. If you
       attempt to attach multiple routes with conflicting hostnames, the
       configuration will be rejected. For example, while it is acceptable for
-      routes for the hostnames "*.foo.bar.com" and "*.bar.com" to be
+      routes for the hostnames `*.foo.bar.com` and `*.bar.com` to be
       associated with the same Mesh (or Gateways under the same scope), it is
-      not possible to associate two routes both with "*.bar.com" or both with
-      "bar.com".
+      not possible to associate two routes both with `*.bar.com` or both with
+      `bar.com`.
     labels: Optional. Set of label tags associated with the HttpRoute
       resource.
     meshes: Optional. Meshes defines a list of meshes this HttpRoute is
@@ -2391,10 +2391,12 @@ class ListGatewaysResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Locations that could not be reached.
   """
 
   gateways = _messages.MessageField('Gateway', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListGrpcRoutesResponse(_messages.Message):
@@ -2589,7 +2591,7 @@ class ListTlsRoutesResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -2746,7 +2748,7 @@ class Mesh(_messages.Message):
       instructs the SIDECAR proxy to listen on the specified port of localhost
       (127.0.0.1) address. The SIDECAR proxy will expect all traffic to be
       redirected to this port regardless of its actual ip:port destination. If
-      unset, a port '15001' is used as the interception port. This will is
+      unset, a port '15001' is used as the interception port. This is
       applicable only for sidecar proxy deployments.
     labels: Optional. Set of label tags associated with the Mesh resource.
     name: Required. Name of the Mesh resource. It matches pattern
@@ -2796,8 +2798,9 @@ class MulticastConsumerAssociation(_messages.Message):
 
   Fields:
     createTime: Output only. [Output only] Create time stamp
+    domainActivation: Reference to the domain activation in the same zone as
+      the consumer association.
     labels: Labels as key value pairs
-    multicastGroup: Reference to the multicast group
     name: name of resource
     network: Reference to the network
     updateTime: Output only. [Output only] Update time stamp
@@ -2828,8 +2831,8 @@ class MulticastConsumerAssociation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  multicastGroup = _messages.StringField(3)
+  domainActivation = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   network = _messages.StringField(5)
   updateTime = _messages.StringField(6)
@@ -4092,33 +4095,6 @@ class NetworkservicesProjectsLocationsMulticastConsumerAssociationsDeleteRequest
   requestId = _messages.StringField(2)
 
 
-class NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetIamPol
-  icyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetRequest(_messages.Message):
   r"""A
   NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetRequest
@@ -4186,40 +4162,6 @@ class NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest(
   updateMask = _messages.StringField(4)
 
 
-class NetworkservicesProjectsLocationsMulticastConsumerAssociationsSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastConsumerAssociationsSetIamPol
-  icyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastConsumerAssociationsTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastConsumerAssociationsTestIamPe
-  rmissionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest(_messages.Message):
   r"""A
   NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest
@@ -4273,33 +4215,6 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsDeleteRequest(_m
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
-
-
-class NetworkservicesProjectsLocationsMulticastDomainActivationsGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsGetIamPolicy
-  Request object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsMulticastDomainActivationsGetRequest(_messages.Message):
@@ -4365,40 +4280,6 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest(_me
   updateMask = _messages.StringField(4)
 
 
-class NetworkservicesProjectsLocationsMulticastDomainActivationsSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsSetIamPolicy
-  Request object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastDomainActivationsTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsTestIamPermi
-  ssionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class NetworkservicesProjectsLocationsMulticastDomainsCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsMulticastDomainsCreateRequest object.
 
@@ -4448,33 +4329,6 @@ class NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest(_messages.Me
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
-
-
-class NetworkservicesProjectsLocationsMulticastDomainsGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastDomainsGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsMulticastDomainsGetRequest(_messages.Message):
@@ -4537,41 +4391,6 @@ class NetworkservicesProjectsLocationsMulticastDomainsPatchRequest(_messages.Mes
   updateMask = _messages.StringField(4)
 
 
-class NetworkservicesProjectsLocationsMulticastDomainsSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastDomainsSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastDomainsTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsMulticastDomainsTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest
   object.
@@ -4623,34 +4442,6 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsDeleteRequest(_me
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
-
-
-class NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetIamPolicyRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetRequest(_messages.Message):
@@ -4716,41 +4507,6 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest(_mes
   updateMask = _messages.StringField(4)
 
 
-class NetworkservicesProjectsLocationsMulticastGroupDefinitionsSetIamPolicyRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsMulticastGroupDefinitionsSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastGroupDefinitionsTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsTestIamPermis
-  sionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class NetworkservicesProjectsLocationsMulticastGroupsCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsMulticastGroupsCreateRequest object.
 
@@ -4800,33 +4556,6 @@ class NetworkservicesProjectsLocationsMulticastGroupsDeleteRequest(_messages.Mes
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
-
-
-class NetworkservicesProjectsLocationsMulticastGroupsGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastGroupsGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsMulticastGroupsGetRequest(_messages.Message):
@@ -4887,41 +4616,6 @@ class NetworkservicesProjectsLocationsMulticastGroupsPatchRequest(_messages.Mess
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
-
-
-class NetworkservicesProjectsLocationsMulticastGroupsSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMulticastGroupsSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMulticastGroupsTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsMulticastGroupsTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -5965,10 +5659,12 @@ class TcpRouteRouteAction(_messages.Message):
 
   Fields:
     destinations: Optional. The destination services to which traffic should
-      be forwarded. At least one destination service is required.
+      be forwarded. At least one destination service is required. Only one of
+      route destination or original destination can be set.
     originalDestination: Optional. If true, Router will use the destination IP
       and port of the original connection as the destination of the request.
-      Default is false.
+      Default is false. Only one of route destinations or original destination
+      can be set.
   """
 
   destinations = _messages.MessageField('TcpRouteRouteDestination', 1, repeated=True)
@@ -6170,11 +5866,11 @@ class TlsRouteRouteMatch(_messages.Message):
       against. Examples: "http/1.1", "h2". At least one of sni_host and alpn
       is required. Up to 5 alpns across all matches can be set.
     sniHost: Optional. SNI (server name indicator) to match against. SNI will
-      be matched against all wildcard domains, i.e. www.example.com will be
-      first matched against www.example.com, then *.example.com, then *.com.
-      Partial wildcards are not supported, and values like *w.example.com are
-      invalid. At least one of sni_host and alpn is required. Up to 5 sni
-      hosts across all matches can be set.
+      be matched against all wildcard domains, i.e. `www.example.com` will be
+      first matched against `www.example.com`, then `*.example.com`, then
+      `*.com.` Partial wildcards are not supported, and values like
+      *w.example.com are invalid. At least one of sni_host and alpn is
+      required. Up to 5 sni hosts across all matches can be set.
   """
 
   alpn = _messages.StringField(1, repeated=True)

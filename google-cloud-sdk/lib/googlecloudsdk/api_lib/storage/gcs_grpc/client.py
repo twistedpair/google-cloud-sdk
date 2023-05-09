@@ -42,22 +42,31 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
       self._gapic_client = core_apis.GetGapicClientInstance('storage', 'v2')
     return self._gapic_client
 
-  def download_object(self,
-                      cloud_resource,
-                      download_stream,
-                      request_config,
-                      digesters=None,
-                      do_not_decompress=False,
-                      download_strategy=cloud_api.DownloadStrategy.RESUMABLE,
-                      progress_callback=None,
-                      start_byte=0,
-                      end_byte=None):
+  def download_object(
+      self,
+      cloud_resource,
+      download_stream,
+      request_config,
+      digesters=None,
+      do_not_decompress=False,
+      download_strategy=cloud_api.DownloadStrategy.RESUMABLE,
+      progress_callback=None,
+      start_byte=0,
+      end_byte=None,
+  ):
     """See super class."""
     if download_util.return_and_report_if_nothing_to_download(
         cloud_resource, progress_callback
     ):
       return None
 
+    if (
+        request_config.resource_args is not None
+        and request_config.resource_args.decryption_key is not None
+    ):
+      decryption_key = request_config.resource_args.decryption_key
+    else:
+      decryption_key = None
     downloader = download.GrpcDownload(
         gapic_client=self._get_gapic_client(),
         cloud_resource=cloud_resource,
@@ -66,7 +75,8 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
         end_byte=end_byte,
         digesters=digesters,
         progress_callback=progress_callback,
-        download_strategy=download_strategy)
+        download_strategy=download_strategy,
+        decryption_key=decryption_key)
     downloader.run()
     # TODO(b/261180916) Return server encoding.
     return None

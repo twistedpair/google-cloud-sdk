@@ -32,6 +32,7 @@ from googlecloudsdk.command_lib.storage import fast_crc32c_util
 from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage import symlink_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_util
@@ -264,10 +265,14 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
         part_download_task_output.messages, task.Topic.API_DOWNLOAD_RESULT
     )
 
+    preserve_symlinks = symlink_util.get_preserve_symlink_from_user_request(
+        self._user_request_args
+    )
     download_util.finalize_download(
         self._source_resource,
         temporary_file_url.object_name,
         destination_url.object_name,
+        convert_symlinks=preserve_symlinks,
         do_not_decompress_flag=self._do_not_decompress,
         server_encoding=server_encoding,
     )
@@ -282,6 +287,7 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
         self._system_posix_data,
         self._source_resource,
         self._destination_resource,
+        preserve_symlinks=preserve_symlinks,
     )
 
     if self._print_created_message:

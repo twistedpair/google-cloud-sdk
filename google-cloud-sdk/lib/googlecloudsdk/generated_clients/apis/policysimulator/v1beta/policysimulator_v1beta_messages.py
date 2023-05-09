@@ -188,12 +188,12 @@ class GoogleCloudOrgpolicyV2PolicySpec(_messages.Message):
       this resource. This field can be set in policies for either list or
       boolean constraints. If set, `rules` must be empty and
       `inherit_from_parent` must be set to false.
-    rules: Up to 10 policy rules are allowed. In policies for boolean
-      constraints, the following requirements apply: - There must be one and
-      only one policy rule where condition is unset. - Boolean policy rules
-      with conditions must set `enforced` to the opposite of the policy rule
-      without a condition. - During policy evaluation, policy rules with
-      conditions that are true for a target resource take precedence.
+    rules: In policies for boolean constraints, the following requirements
+      apply: - There must be one and only one policy rule where condition is
+      unset. - Boolean policy rules with conditions must set `enforced` to the
+      opposite of the policy rule without a condition. - During policy
+      evaluation, policy rules with conditions that are true for a target
+      resource take precedence.
     updateTime: Output only. The time stamp this was previously updated. This
       represents the last time a call to `CreatePolicy` or `UpdatePolicy` was
       made for that policy.

@@ -246,8 +246,7 @@ class Configuration(_messages.Message):
   Revisions, and optionally how the containers those revisions reference are
   built. Users create new Revisions by updating the Configuration's spec. The
   "latest created" revision's name is available under status, as is the
-  "latest ready" revision's name. See also: https://github.com/knative/specs/b
-  lob/main/specs/serving/overview.md#configuration
+  "latest ready" revision's name.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -319,7 +318,6 @@ class Container(_messages.Message):
     command: Entrypoint array. Not executed within a shell. The docker image's
       ENTRYPOINT is used if this is not provided. Variable references are not
       supported in Cloud Run.
-    dependsOn: Container names which must start before this container.
     env: List of environment variables to set in the container. EnvVar with
       duplicate names are generally allowed; if referencing a secret, the name
       must be unique for the container. For non-secret EnvVar names, the
@@ -327,34 +325,25 @@ class Container(_messages.Message):
     envFrom: Not supported by Cloud Run.
     image: Required. Name of the container image in Dockerhub, Google Artifact
       Registry, or Google Container Registry. If the host is not provided,
-      Dockerhub is assumed. More info:
-      https://kubernetes.io/docs/concepts/containers/images
+      Dockerhub is assumed.
     imagePullPolicy: Image pull policy. One of Always, Never, IfNotPresent.
       Defaults to Always if :latest tag is specified, or IfNotPresent
-      otherwise. More info:
-      https://kubernetes.io/docs/concepts/containers/images#updating-images
+      otherwise.
     livenessProbe: Periodic probe of container liveness. Container will be
-      restarted if the probe fails. More info:
-      https://kubernetes.io/docs/concepts/workloads/pods/pod-
-      lifecycle#container-probes
-    name: Name of the container specified as a DNS_LABEL (RFC 1123). More
-      info: https://kubernetes.io/docs/concepts/overview/working-with-
-      objects/names/#dns-label-names
+      restarted if the probe fails.
+    name: Name of the container specified as a DNS_LABEL (RFC 1123).
     ports: List of ports to expose from the container. Only a single port can
       be specified. The specified ports must be listening on all interfaces
       (0.0.0.0) within the container to be accessible. If omitted, a port
       number will be chosen and passed to the container through the PORT
       environment variable for the container to listen on.
     readinessProbe: Not supported by Cloud Run.
-    resources: Compute Resources required by this container. More info:
-      https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+    resources: Compute Resources required by this container.
     securityContext: Not supported by Cloud Run.
     startupProbe: Startup probe of application within the container. All other
       probes are disabled if a startup probe is provided, until it succeeds.
       Container will not receive traffic if the probe fails. If not provided,
-      a default startup probe with TCP socket action is used. More info:
-      https://kubernetes.io/docs/concepts/workloads/pods/pod-
-      lifecycle#container-probes
+      a default startup probe with TCP socket action is used.
     terminationMessagePath: Path at which the file to which the container's
       termination message will be written is mounted into the container's
       filesystem. Message written is intended to be brief final status, such
@@ -378,22 +367,21 @@ class Container(_messages.Message):
 
   args = _messages.StringField(1, repeated=True)
   command = _messages.StringField(2, repeated=True)
-  dependsOn = _messages.StringField(3, repeated=True)
-  env = _messages.MessageField('EnvVar', 4, repeated=True)
-  envFrom = _messages.MessageField('EnvFromSource', 5, repeated=True)
-  image = _messages.StringField(6)
-  imagePullPolicy = _messages.StringField(7)
-  livenessProbe = _messages.MessageField('Probe', 8)
-  name = _messages.StringField(9)
-  ports = _messages.MessageField('ContainerPort', 10, repeated=True)
-  readinessProbe = _messages.MessageField('Probe', 11)
-  resources = _messages.MessageField('ResourceRequirements', 12)
-  securityContext = _messages.MessageField('SecurityContext', 13)
-  startupProbe = _messages.MessageField('Probe', 14)
-  terminationMessagePath = _messages.StringField(15)
-  terminationMessagePolicy = _messages.StringField(16)
-  volumeMounts = _messages.MessageField('VolumeMount', 17, repeated=True)
-  workingDir = _messages.StringField(18)
+  env = _messages.MessageField('EnvVar', 3, repeated=True)
+  envFrom = _messages.MessageField('EnvFromSource', 4, repeated=True)
+  image = _messages.StringField(5)
+  imagePullPolicy = _messages.StringField(6)
+  livenessProbe = _messages.MessageField('Probe', 7)
+  name = _messages.StringField(8)
+  ports = _messages.MessageField('ContainerPort', 9, repeated=True)
+  readinessProbe = _messages.MessageField('Probe', 10)
+  resources = _messages.MessageField('ResourceRequirements', 11)
+  securityContext = _messages.MessageField('SecurityContext', 12)
+  startupProbe = _messages.MessageField('Probe', 13)
+  terminationMessagePath = _messages.StringField(14)
+  terminationMessagePolicy = _messages.StringField(15)
+  volumeMounts = _messages.MessageField('VolumeMount', 16, repeated=True)
+  workingDir = _messages.StringField(17)
 
 
 class ContainerOverride(_messages.Message):
@@ -602,23 +590,13 @@ class Execution(_messages.Message):
   Fields:
     apiVersion: Optional. APIVersion defines the versioned schema of this
       representation of an object. Servers should convert recognized schemas
-      to the latest internal value, and may reject unrecognized values. More
-      info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#resources
+      to the latest internal value, and may reject unrecognized values.
     kind: Optional. Kind is a string value representing the REST resource this
       object represents. Servers may infer this from the endpoint the client
-      submits requests to. Cannot be updated. In CamelCase. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#types-kinds
-    metadata: Optional. Standard object's metadata. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#metadata
+      submits requests to. Cannot be updated. In CamelCase.
+    metadata: Optional. Standard object's metadata.
     spec: Optional. Specification of the desired behavior of an execution.
-      More info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#spec-and-status
-    status: Output only. Current status of an execution. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#spec-and-status
+    status: Output only. Current status of an execution.
   """
 
   apiVersion = _messages.StringField(1)
@@ -712,8 +690,7 @@ class ExecutionStatus(_messages.Message):
 
 class ExecutionTemplateSpec(_messages.Message):
   r"""ExecutionTemplateSpec describes the metadata and spec an Execution
-  should have when created from a job. Based on:
-  https://github.com/kubernetes/api/blob/e771f807/core/v1/types.go#L3179-L3190
+  should have when created from a job.
 
   Fields:
     metadata: Optional. Optional metadata for this Execution, including labels
@@ -777,9 +754,8 @@ class GRPCAction(_messages.Message):
     port: Port number of the gRPC service. Number must be in the range 1 to
       65535.
     service: Service is the name of the service to place in the gRPC
-      HealthCheckRequest (see
-      https://github.com/grpc/grpc/blob/master/doc/health-checking.md). If
-      this is not specified, the default behavior is defined by gRPC.
+      HealthCheckRequest. If this is not specified, the default behavior is
+      defined by gRPC.
   """
 
   port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -808,10 +784,8 @@ class GoogleCloudRunV1Condition(_messages.Message):
       resource readiness.
     status: Status of the condition, one of True, False, Unknown.
     type: type is used to communicate the status of the reconciliation
-      process. See also:
-      https://github.com/knative/serving/blob/main/docs/spec/errors.md#error-
-      conditions-and-reporting Types common to all resources include: *
-      "Ready" or "Completed": True when the Resource is ready.
+      process. Types common to all resources include: * "Ready" or
+      "Completed": True when the Resource is ready.
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -912,23 +886,13 @@ class Job(_messages.Message):
   Fields:
     apiVersion: Optional. APIVersion defines the versioned schema of this
       representation of an object. Servers should convert recognized schemas
-      to the latest internal value, and may reject unrecognized values. More
-      info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#resources
+      to the latest internal value, and may reject unrecognized values.
     kind: Optional. Kind is a string value representing the REST resource this
       object represents. Servers may infer this from the endpoint the client
-      submits requests to. Cannot be updated. In CamelCase. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#types-kinds
-    metadata: Optional. Standard object's metadata. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#metadata
-    spec: Optional. Specification of the desired behavior of a job. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#spec-and-status
-    status: Output only. Current status of a job. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#spec-and-status
+      submits requests to. Cannot be updated. In CamelCase.
+    metadata: Optional. Standard object's metadata.
+    spec: Optional. Specification of the desired behavior of a job.
+    status: Output only. Current status of a job.
   """
 
   apiVersion = _messages.StringField(1)
@@ -1110,8 +1074,6 @@ class ListMeta(_messages.Message):
       version of this object. It can be used by clients to determine when
       objects have changed. If the message is passed back to the server, it
       must be left unmodified.
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#concurrency-control-and-consistency
     selfLink: URL representing this object.
   """
 
@@ -1203,16 +1165,14 @@ class LocalObjectReference(_messages.Message):
   namespace.
 
   Fields:
-    name: Name of the referent. More info:
-      https://kubernetes.io/docs/concepts/overview/working-with-
-      objects/names/#names
+    name: Name of the referent.
   """
 
   name = _messages.StringField(1)
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1296,15 +1256,9 @@ class Namespace(_messages.Message):
   multiple namespaces is optional.
 
   Fields:
-    metadata: Standard object's metadata. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#metadata
-    spec: Spec defines the behavior of the Namespace. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#spec-and-status
-    status: Status describes the current status of a Namespace. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#spec-and-status
+    metadata: Standard object's metadata.
+    spec: Spec defines the behavior of the Namespace.
+    status: Status describes the current status of a Namespace.
   """
 
   metadata = _messages.MessageField('ObjectMeta', 1)
@@ -1318,8 +1272,7 @@ class NamespaceSpec(_messages.Message):
 
   Fields:
     finalizers: Finalizers is an opaque list of values that must be empty to
-      permanently remove object from storage. More info:
-      https://kubernetes.io/docs/tasks/administer-cluster/namespaces/
+      permanently remove object from storage.
   """
 
   finalizers = _messages.StringField(1, repeated=True)
@@ -1330,8 +1283,7 @@ class NamespaceStatus(_messages.Message):
   current status of a Namespace.
 
   Fields:
-    phase: Phase is the current lifecycle phase of the namespace. More info:
-      https://kubernetes.io/docs/tasks/administer-cluster/namespaces/
+    phase: Phase is the current lifecycle phase of the namespace.
   """
 
   phase = _messages.StringField(1)
@@ -1354,6 +1306,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
+      `run.googleapis.com/container-dependencies`: Revision. *
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
@@ -1361,19 +1314,18 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
-      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/network-
-      interfaces`: Revision, Execution. * `run.googleapis.com/post-key-
-      revocation-action-type`: Revision. * `run.googleapis.com/secrets`:
-      Revision, Execution. * `run.googleapis.com/secure-session-agent`:
-      Revision. * `run.googleapis.com/sessionAffinity`: Revision. *
+      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
+      stage`: Service, Job. * `run.googleapis.com/network-interfaces`:
+      Revision, Execution. * `run.googleapis.com/post-key-revocation-action-
+      type`: Revision. * `run.googleapis.com/secrets`: Revision, Execution. *
+      `run.googleapis.com/secure-session-agent`: Revision. *
+      `run.googleapis.com/sessionAffinity`: Revision. *
       `run.googleapis.com/startup-cpu-boost`: Revision. *
       `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
-      `run.googleapis.com/vpc-access-egress`: Revision, Execution. Execution.
-      More info: https://kubernetes.io/docs/user-guide/annotations
+      `run.googleapis.com/vpc-access-egress`: Revision, Execution.
     LabelsValue: Map of string keys and values that can be used to organize
       and categorize (scope and select) objects. May match selectors of
-      replication controllers and routes. More info:
-      https://kubernetes.io/docs/user-guide/labels
+      replication controllers and routes.
 
   Fields:
     annotations: Unstructured key value map stored with a resource that may be
@@ -1388,6 +1340,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
+      `run.googleapis.com/container-dependencies`: Revision. *
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
@@ -1395,20 +1348,18 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
-      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/network-
-      interfaces`: Revision, Execution. * `run.googleapis.com/post-key-
-      revocation-action-type`: Revision. * `run.googleapis.com/secrets`:
-      Revision, Execution. * `run.googleapis.com/secure-session-agent`:
-      Revision. * `run.googleapis.com/sessionAffinity`: Revision. *
+      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
+      stage`: Service, Job. * `run.googleapis.com/network-interfaces`:
+      Revision, Execution. * `run.googleapis.com/post-key-revocation-action-
+      type`: Revision. * `run.googleapis.com/secrets`: Revision, Execution. *
+      `run.googleapis.com/secure-session-agent`: Revision. *
+      `run.googleapis.com/sessionAffinity`: Revision. *
       `run.googleapis.com/startup-cpu-boost`: Revision. *
       `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
-      `run.googleapis.com/vpc-access-egress`: Revision, Execution. Execution.
-      More info: https://kubernetes.io/docs/user-guide/annotations
+      `run.googleapis.com/vpc-access-egress`: Revision, Execution.
     clusterName: Not supported by Cloud Run
     creationTimestamp: UTC timestamp representing the server time when this
-      object was created. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#metadata
+      object was created.
     deletionGracePeriodSeconds: Not supported by Cloud Run
     deletionTimestamp: The read-only soft deletion timestamp for this
       resource. In Cloud Run, users are not able to set this field. Instead,
@@ -1419,12 +1370,10 @@ class ObjectMeta(_messages.Message):
       generation of the desired state.
     labels: Map of string keys and values that can be used to organize and
       categorize (scope and select) objects. May match selectors of
-      replication controllers and routes. More info:
-      https://kubernetes.io/docs/user-guide/labels
-    name: Required. The name of the resource. In Cloud Run, name is required
-      when creating top-level resources (Service, Job), must be unique within
-      a Cloud Run project/region, and cannot be changed once created. More
-      info: https://kubernetes.io/docs/user-guide/identifiers#names
+      replication controllers and routes.
+    name: Required. The name of the resource. Name is required when creating
+      top-level resources (Service, Job), must be unique within a Cloud Run
+      project/region, and cannot be changed once created.
     namespace: Required. Defines the space within each name must be unique
       within a Cloud Run region. In Cloud Run, it must be project ID or
       number.
@@ -1435,12 +1384,9 @@ class ObjectMeta(_messages.Message):
       change detection, and the watch operation on a resource or set of
       resources. Clients must treat these values as opaque and passed
       unmodified back to the server or omit the value to disable conflict-
-      detection. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#concurrency-control-and-consistency
+      detection.
     selfLink: URL representing this object.
-    uid: Unique, system-generated identifier for this resource. More info:
-      https://kubernetes.io/docs/user-guide/identifiers#uids
+    uid: Unique, system-generated identifier for this resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1456,6 +1402,7 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
     `run.googleapis.com/client-name`: All resources. *
     `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
+    `run.googleapis.com/container-dependencies`: Revision. *
     `run.googleapis.com/cpu-throttling`: Revision. *
     `run.googleapis.com/custom-audiences`: Service. *
     `run.googleapis.com/description`: Service. *
@@ -1463,15 +1410,15 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/encryption-key`: Revision, Execution. *
     `run.googleapis.com/execution-environment`: Revision, Execution. *
     `run.googleapis.com/gc-traffic-tags`: Service. *
-    `run.googleapis.com/ingress`: Service. * `run.googleapis.com/network-
-    interfaces`: Revision, Execution. * `run.googleapis.com/post-key-
-    revocation-action-type`: Revision. * `run.googleapis.com/secrets`:
-    Revision, Execution. * `run.googleapis.com/secure-session-agent`:
-    Revision. * `run.googleapis.com/sessionAffinity`: Revision. *
+    `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
+    stage`: Service, Job. * `run.googleapis.com/network-interfaces`: Revision,
+    Execution. * `run.googleapis.com/post-key-revocation-action-type`:
+    Revision. * `run.googleapis.com/secrets`: Revision, Execution. *
+    `run.googleapis.com/secure-session-agent`: Revision. *
+    `run.googleapis.com/sessionAffinity`: Revision. *
     `run.googleapis.com/startup-cpu-boost`: Revision. *
     `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
-    `run.googleapis.com/vpc-access-egress`: Revision, Execution. Execution.
-    More info: https://kubernetes.io/docs/user-guide/annotations
+    `run.googleapis.com/vpc-access-egress`: Revision, Execution.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1498,8 +1445,7 @@ class ObjectMeta(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""Map of string keys and values that can be used to organize and
     categorize (scope and select) objects. May match selectors of replication
-    controllers and routes. More info: https://kubernetes.io/docs/user-
-    guide/labels
+    controllers and routes.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1668,9 +1614,7 @@ class Probe(_messages.Message):
     initialDelaySeconds: Number of seconds after the container has started
       before the probe is initiated. Defaults to 0 seconds. Minimum value is
       0. Maximum value for liveness probe is 3600. Maximum value for startup
-      probe is 240. More info:
-      https://kubernetes.io/docs/concepts/workloads/pods/pod-
-      lifecycle#container-probes
+      probe is 240.
     periodSeconds: How often (in seconds) to perform the probe. Default to 10
       seconds. Minimum value is 1. Maximum value for liveness probe is 3600.
       Maximum value for startup probe is 240. Must be greater or equal than
@@ -1680,9 +1624,7 @@ class Probe(_messages.Message):
     tcpSocket: TCPSocket specifies an action involving a TCP port.
     timeoutSeconds: Number of seconds after which the probe times out.
       Defaults to 1 second. Minimum value is 1. Maximum value is 3600. Must be
-      smaller than period_seconds. More info:
-      https://kubernetes.io/docs/concepts/workloads/pods/pod-
-      lifecycle#container-probes
+      smaller than period_seconds.
   """
 
   exec_ = _messages.MessageField('ExecAction', 1)
@@ -1733,40 +1675,41 @@ class ResourceRequirements(_messages.Message):
   r"""ResourceRequirements describes the compute resource requirements.
 
   Messages:
-    LimitsValue: Only memory and CPU are supported. Limits describes the
-      maximum amount of compute resources allowed. The values of the map is
-      string form of the 'quantity' k8s type: https://github.com/kubernetes/ku
-      bernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/qu
-      antity.go
-    RequestsValue: Only memory and CPU are supported. Requests describes the
-      minimum amount of compute resources required. If Requests is omitted for
-      a container, it defaults to Limits if that is explicitly specified,
-      otherwise to an implementation-defined value. The values of the map is
-      string form of the 'quantity' k8s type: https://github.com/kubernetes/ku
-      bernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/qu
-      antity.go
+    LimitsValue: Limits describes the maximum amount of compute resources
+      allowed. Only 'cpu' and 'memory' keys are supported. * For supported
+      'cpu' values, go to https://cloud.google.com/run/docs/configuring/cpu. *
+      For supported 'memory' values and syntax, go to
+      https://cloud.google.com/run/docs/configuring/memory-limits
+    RequestsValue: Requests describes the minimum amount of compute resources
+      required. Only `cpu` and `memory` are supported. If Requests is omitted
+      for a container, it defaults to Limits if that is explicitly specified,
+      otherwise to an implementation-defined value. * For supported 'cpu'
+      values, go to https://cloud.google.com/run/docs/configuring/cpu. * For
+      supported 'memory' values and syntax, go to
+      https://cloud.google.com/run/docs/configuring/memory-limits
 
   Fields:
-    limits: Only memory and CPU are supported. Limits describes the maximum
-      amount of compute resources allowed. The values of the map is string
-      form of the 'quantity' k8s type: https://github.com/kubernetes/kubernete
-      s/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/quantity.
-      go
-    requests: Only memory and CPU are supported. Requests describes the
-      minimum amount of compute resources required. If Requests is omitted for
-      a container, it defaults to Limits if that is explicitly specified,
-      otherwise to an implementation-defined value. The values of the map is
-      string form of the 'quantity' k8s type: https://github.com/kubernetes/ku
-      bernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/qu
-      antity.go
+    limits: Limits describes the maximum amount of compute resources allowed.
+      Only 'cpu' and 'memory' keys are supported. * For supported 'cpu'
+      values, go to https://cloud.google.com/run/docs/configuring/cpu. * For
+      supported 'memory' values and syntax, go to
+      https://cloud.google.com/run/docs/configuring/memory-limits
+    requests: Requests describes the minimum amount of compute resources
+      required. Only `cpu` and `memory` are supported. If Requests is omitted
+      for a container, it defaults to Limits if that is explicitly specified,
+      otherwise to an implementation-defined value. * For supported 'cpu'
+      values, go to https://cloud.google.com/run/docs/configuring/cpu. * For
+      supported 'memory' values and syntax, go to
+      https://cloud.google.com/run/docs/configuring/memory-limits
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LimitsValue(_messages.Message):
-    r"""Only memory and CPU are supported. Limits describes the maximum amount
-    of compute resources allowed. The values of the map is string form of the
-    'quantity' k8s type: https://github.com/kubernetes/kubernetes/blob/master/
-    staging/src/k8s.io/apimachinery/pkg/api/resource/quantity.go
+    r"""Limits describes the maximum amount of compute resources allowed. Only
+    'cpu' and 'memory' keys are supported. * For supported 'cpu' values, go to
+    https://cloud.google.com/run/docs/configuring/cpu. * For supported
+    'memory' values and syntax, go to
+    https://cloud.google.com/run/docs/configuring/memory-limits
 
     Messages:
       AdditionalProperty: An additional property for a LimitsValue object.
@@ -1790,13 +1733,13 @@ class ResourceRequirements(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestsValue(_messages.Message):
-    r"""Only memory and CPU are supported. Requests describes the minimum
-    amount of compute resources required. If Requests is omitted for a
+    r"""Requests describes the minimum amount of compute resources required.
+    Only `cpu` and `memory` are supported. If Requests is omitted for a
     container, it defaults to Limits if that is explicitly specified,
-    otherwise to an implementation-defined value. The values of the map is
-    string form of the 'quantity' k8s type: https://github.com/kubernetes/kube
-    rnetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/quanti
-    ty.go
+    otherwise to an implementation-defined value. * For supported 'cpu'
+    values, go to https://cloud.google.com/run/docs/configuring/cpu. * For
+    supported 'memory' values and syntax, go to
+    https://cloud.google.com/run/docs/configuring/memory-limits
 
     Messages:
       AdditionalProperty: An additional property for a RequestsValue object.
@@ -1856,10 +1799,7 @@ class RevisionSpec(_messages.Message):
     containers: Containers holds the single container that defines the unit of
       execution for this Revision. In the context of a Revision, we disallow a
       number of fields on this Container, including: name and lifecycle. In
-      Cloud Run, only a single container may be provided. The runtime contract
-      is documented here:
-      https://github.com/knative/specs/blob/main/specs/serving/runtime-
-      contract.md
+      Cloud Run, only a single container may be provided.
     enableServiceLinks: Not supported by Cloud Run.
     imagePullSecrets: Not supported by Cloud Run.
     serviceAccountName: Email address of the IAM service account associated
@@ -1918,8 +1858,7 @@ class RevisionStatus(_messages.Message):
 
 class RevisionTemplate(_messages.Message):
   r"""RevisionTemplateSpec describes the data a revision should have when
-  created from a template. Based on:
-  https://github.com/kubernetes/api/blob/e771f807/core/v1/types.go#L3179-L3190
+  created from a template.
 
   Fields:
     metadata: Optional metadata for this Revision, including labels and
@@ -1949,10 +1888,9 @@ class Route(_messages.Message):
   specified by referencing the Configuration responsible for creating them; in
   these cases the Route is additionally responsible for monitoring the
   Configuration for "latest ready" revision changes, and smoothly rolling out
-  latest revisions. See also:
-  https://github.com/knative/specs/blob/main/specs/serving/overview.md#route
-  Cloud Run currently supports referencing a single Configuration to
-  automatically deploy the "latest ready" Revision from that Configuration.
+  latest revisions. Cloud Run currently supports referencing a single
+  Configuration to automatically deploy the "latest ready" Revision from that
+  Configuration.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -2156,10 +2094,10 @@ class RunNamespacesDomainmappingsCreateRequest(_messages.Message):
     domainMapping: A DomainMapping resource to be passed as the request body.
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
-    parent: The namespace in which the domain mapping should be created. For
-      Cloud Run (fully managed), replace {namespace} with the project ID or
-      number. It takes the form namespaces/{namespace}. For example:
-      namespaces/PROJECT_ID
+    parent: Required. The namespace in which the domain mapping should be
+      created. For Cloud Run (fully managed), replace {namespace} with the
+      project ID or number. It takes the form namespaces/{namespace}. For
+      example: namespaces/PROJECT_ID
   """
 
   domainMapping = _messages.MessageField('DomainMapping', 1)
@@ -2175,9 +2113,10 @@ class RunNamespacesDomainmappingsDeleteRequest(_messages.Message):
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
-    name: The name of the domain mapping to delete. For Cloud Run (fully
-      managed), replace {namespace} with the project ID or number. It takes
-      the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
+    name: Required. The name of the domain mapping to delete. For Cloud Run
+      (fully managed), replace {namespace} with the project ID or number. It
+      takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/architecture/garbage-collection/ for
@@ -2195,9 +2134,10 @@ class RunNamespacesDomainmappingsGetRequest(_messages.Message):
   r"""A RunNamespacesDomainmappingsGetRequest object.
 
   Fields:
-    name: The name of the domain mapping to retrieve. For Cloud Run (fully
-      managed), replace {namespace} with the project ID or number. It takes
-      the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
+    name: Required. The name of the domain mapping to retrieve. For Cloud Run
+      (fully managed), replace {namespace} with the project ID or number. It
+      takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2215,10 +2155,10 @@ class RunNamespacesDomainmappingsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
-    parent: The namespace from which the domain mappings should be listed. For
-      Cloud Run (fully managed), replace {namespace} with the project ID or
-      number. It takes the form namespaces/{namespace}. For example:
-      namespaces/PROJECT_ID
+    parent: Required. The namespace from which the domain mappings should be
+      listed. For Cloud Run (fully managed), replace {namespace} with the
+      project ID or number. It takes the form namespaces/{namespace}. For
+      example: namespaces/PROJECT_ID
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2260,10 +2200,7 @@ class RunNamespacesExecutionsDeleteRequest(_messages.Message):
       with the project ID or number. It takes the form namespaces/{namespace}.
       For example: namespaces/PROJECT_ID
     propagationPolicy: Optional. Specifies the propagation policy of delete.
-      Cloud Run currently ignores this setting, and deletes in the background.
-      Please see
-      https://kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
+      Cloud Run currently ignores this setting.
   """
 
   apiVersion = _messages.StringField(1)
@@ -2426,9 +2363,7 @@ class RunNamespacesRevisionsDeleteRequest(_messages.Message):
       replace {namespace} with the project ID or number. It takes the form
       namespaces/{namespace}. For example: namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see https://kubernetes.io/docs/concepts/architecture/garbage-collection/
-      for more information.
+      currently ignores this setting, and deletes in the background.
   """
 
   apiVersion = _messages.StringField(1)
@@ -2760,10 +2695,10 @@ class RunProjectsLocationsDomainmappingsCreateRequest(_messages.Message):
     domainMapping: A DomainMapping resource to be passed as the request body.
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
-    parent: The namespace in which the domain mapping should be created. For
-      Cloud Run (fully managed), replace {namespace} with the project ID or
-      number. It takes the form namespaces/{namespace}. For example:
-      namespaces/PROJECT_ID
+    parent: Required. The namespace in which the domain mapping should be
+      created. For Cloud Run (fully managed), replace {namespace} with the
+      project ID or number. It takes the form namespaces/{namespace}. For
+      example: namespaces/PROJECT_ID
   """
 
   domainMapping = _messages.MessageField('DomainMapping', 1)
@@ -2779,9 +2714,10 @@ class RunProjectsLocationsDomainmappingsDeleteRequest(_messages.Message):
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
-    name: The name of the domain mapping to delete. For Cloud Run (fully
-      managed), replace {namespace} with the project ID or number. It takes
-      the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
+    name: Required. The name of the domain mapping to delete. For Cloud Run
+      (fully managed), replace {namespace} with the project ID or number. It
+      takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/architecture/garbage-collection/ for
@@ -2799,9 +2735,10 @@ class RunProjectsLocationsDomainmappingsGetRequest(_messages.Message):
   r"""A RunProjectsLocationsDomainmappingsGetRequest object.
 
   Fields:
-    name: The name of the domain mapping to retrieve. For Cloud Run (fully
-      managed), replace {namespace} with the project ID or number. It takes
-      the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
+    name: Required. The name of the domain mapping to retrieve. For Cloud Run
+      (fully managed), replace {namespace} with the project ID or number. It
+      takes the form namespaces/{namespace}. For example:
+      namespaces/PROJECT_ID
   """
 
   name = _messages.StringField(1, required=True)
@@ -2819,10 +2756,10 @@ class RunProjectsLocationsDomainmappingsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
-    parent: The namespace from which the domain mappings should be listed. For
-      Cloud Run (fully managed), replace {namespace} with the project ID or
-      number. It takes the form namespaces/{namespace}. For example:
-      namespaces/PROJECT_ID
+    parent: Required. The namespace from which the domain mappings should be
+      listed. For Cloud Run (fully managed), replace {namespace} with the
+      project ID or number. It takes the form namespaces/{namespace}. For
+      example: namespaces/PROJECT_ID
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2956,9 +2893,7 @@ class RunProjectsLocationsRevisionsDeleteRequest(_messages.Message):
       replace {namespace} with the project ID or number. It takes the form
       namespaces/{namespace}. For example: namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see https://kubernetes.io/docs/concepts/architecture/garbage-collection/
-      for more information.
+      currently ignores this setting, and deletes in the background.
   """
 
   apiVersion = _messages.StringField(1)
@@ -3285,9 +3220,7 @@ class Secret(_messages.Message):
       base64 encoded string, representing the arbitrary (possibly non-string)
       data value here. Described in
       https://tools.ietf.org/html/rfc4648#section-4
-    metadata: Standard object's metadata. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#metadata
+    metadata: Standard object's metadata.
     stringData: stringData allows specifying non-binary secret data in string
       form. It is provided as a write-only convenience method. All keys and
       values are merged into the data field on write, overwriting any existing
@@ -3471,8 +3404,7 @@ class Service(_messages.Message):
   underlying Routes and Configurations (much as a kubernetes Deployment
   orchestrates ReplicaSets). The Service's controller will track the statuses
   of its owned Configuration and Route, reflecting their statuses and
-  conditions as its own. See also:
-  https://github.com/knative/serving/blob/main/docs/spec/overview.md#service
+  conditions as its own.
 
   Fields:
     apiVersion: The API version for this call. It must be
@@ -3654,16 +3586,12 @@ class Status(_messages.Message):
       is not guaranteed to conform to any schema except that defined by the
       reason type.
     message: A human-readable description of the status of this operation.
-    metadata: Standard list metadata. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#types-kinds
+    metadata: Standard list metadata.
     reason: A machine-readable description of why this operation is in the
       "Failure" status. If this value is empty there is no information
       available. A Reason clarifies an HTTP status code but does not override
       it.
-    status: Status of the operation. One of: "Success" or "Failure". More
-      info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#spec-and-status
+    status: Status of the operation. One of: "Success" or "Failure".
   """
 
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3710,8 +3638,7 @@ class StatusDetails(_messages.Message):
       StatusReason.
     kind: The kind attribute of the resource associated with the status
       StatusReason. On some operations may differ from the requested resource
-      Kind. More info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#types-kinds
+      Kind.
     name: The name attribute of the resource associated with the status
       StatusReason (when there is a single name which can be described).
     retryAfterSeconds: If specified, the time in seconds before the operation
@@ -3719,8 +3646,7 @@ class StatusDetails(_messages.Message):
       alternate action - for those errors this field may indicate how long to
       wait before taking the alternate action.
     uid: UID of the resource. (when there is a single resource which can be
-      described). More info: https://kubernetes.io/docs/user-
-      guide/identifiers#uids
+      described).
   """
 
   causes = _messages.MessageField('StatusCause', 1, repeated=True)
@@ -3750,23 +3676,13 @@ class Task(_messages.Message):
   Fields:
     apiVersion: Optional. APIVersion defines the versioned schema of this
       representation of an object. Servers should convert recognized schemas
-      to the latest internal value, and may reject unrecognized values. More
-      info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#resources
+      to the latest internal value, and may reject unrecognized values.
     kind: Optional. Kind is a string value representing the REST resource this
       object represents. Servers may infer this from the endpoint the client
-      submits requests to. Cannot be updated. In CamelCase. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#types-kinds
-    metadata: Optional. Standard object's metadata. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#metadata
-    spec: Optional. Specification of the desired behavior of a task. More
-      info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#spec-and-status
-    status: Output only. Current status of a task. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#spec-and-status
+      submits requests to. Cannot be updated. In CamelCase.
+    metadata: Optional. Standard object's metadata.
+    spec: Optional. Specification of the desired behavior of a task.
+    status: Output only. Current status of a task.
   """
 
   apiVersion = _messages.StringField(1)
@@ -3810,8 +3726,7 @@ class TaskSpec(_messages.Message):
       associated containers. This applies per attempt of a task, meaning each
       retry can run for the full timeout. Defaults to 600 seconds.
     volumes: Optional. List of volumes that can be mounted by containers
-      belonging to the task. More info:
-      https://kubernetes.io/docs/concepts/storage/volumes
+      belonging to the task.
   """
 
   containers = _messages.MessageField('Container', 1, repeated=True)
@@ -3862,9 +3777,7 @@ class TaskTemplateSpec(_messages.Message):
   a template.
 
   Fields:
-    spec: Optional. Specification of the desired behavior of the task. More
-      info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#spec-and-status
+    spec: Optional. Specification of the desired behavior of the task.
   """
 
   spec = _messages.MessageField('TaskSpec', 1)

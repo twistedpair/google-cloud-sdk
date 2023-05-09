@@ -221,7 +221,7 @@ def AddCloudArmorAdaptiveProtectionAutoDeploy(parser):
       ))
 
 
-def AddAdvancedOptions(parser, required=False):
+def AddAdvancedOptions(parser, required=False, support_user_ip=False):
   """Adds the cloud armor advanced options arguments to the argparse."""
   parser.add_argument(
       '--json-parsing',
@@ -249,6 +249,16 @@ def AddAdvancedOptions(parser, required=False):
       type=lambda x: x.upper(),
       required=required,
       help='The level of detail to display for WAF logging.')
+
+  if support_user_ip:
+    parser.add_argument(
+        '--user-ip-request-headers',
+        type=arg_parsers.ArgList(),
+        metavar='USER_IP_REQUEST_HEADER',
+        help="""\
+        A comma-separated list of request header names to use for resolving the
+        caller's user IP address.
+        """)
 
 
 def AddDdosProtectionConfig(parser, required=False):

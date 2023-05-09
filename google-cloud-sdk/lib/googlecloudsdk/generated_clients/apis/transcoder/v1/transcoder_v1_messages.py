@@ -562,7 +562,7 @@ class H265CodecSettings(_messages.Message):
 
 
 class Image(_messages.Message):
-  r"""Overlaid jpeg image.
+  r"""Overlaid image.
 
   Fields:
     alpha: Target image opacity. Valid values are from `1.0` (solid, default)
@@ -572,8 +572,8 @@ class Image(_messages.Message):
       Valid values: `0.0`\u2013`1.0`. To respect the original image aspect
       ratio, set either `x` or `y` to `0.0`. To use the original image
       resolution, set both `x` and `y` to `0.0`.
-    uri: Required. URI of the JPEG image in Cloud Storage. For example,
-      `gs://bucket/inputs/image.jpeg`. JPEG is the only supported image type.
+    uri: Required. URI of the image in Cloud Storage. For example,
+      `gs://bucket/inputs/image.png`. Only PNG and JPEG images are supported.
   """
 
   alpha = _messages.FloatField(1)
@@ -830,8 +830,7 @@ class Manifest(_messages.Message):
   r"""Manifest configuration.
 
   Enums:
-    TypeValueValuesEnum: Required. Type of the manifest, can be `HLS` or
-      `DASH`.
+    TypeValueValuesEnum: Required. Type of the manifest.
 
   Fields:
     fileName: The name of the generated file. The default is `manifest` with
@@ -840,16 +839,17 @@ class Manifest(_messages.Message):
       appear in this manifest. When `Manifest.type` is `HLS`, a media manifest
       with name `MuxStream.key` and `.m3u8` extension is generated for each
       element of the `Manifest.mux_streams`.
-    type: Required. Type of the manifest, can be `HLS` or `DASH`.
+    type: Required. Type of the manifest.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. Type of the manifest, can be `HLS` or `DASH`.
+    r"""Required. Type of the manifest.
 
     Values:
       MANIFEST_TYPE_UNSPECIFIED: The manifest type is not specified.
-      HLS: Create `HLS` manifest. The corresponding file extension is `.m3u8`.
-      DASH: Create `DASH` manifest. The corresponding file extension is
+      HLS: Create an HLS manifest. The corresponding file extension is
+        `.m3u8`.
+      DASH: Create an MPEG-DASH manifest. The corresponding file extension is
         `.mpd`.
     """
     MANIFEST_TYPE_UNSPECIFIED = 0

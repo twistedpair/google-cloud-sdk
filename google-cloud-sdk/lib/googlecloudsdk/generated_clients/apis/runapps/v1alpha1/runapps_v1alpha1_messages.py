@@ -646,6 +646,28 @@ class FirebaseHostingStatus(_messages.Message):
   hostingConfig = _messages.StringField(2)
 
 
+class FirestoreConfig(_messages.Message):
+  r"""Message for defining firestore configuration.
+
+  Fields:
+    config: Database configuration.
+  """
+
+  config = _messages.MessageField('FirestoreDatabaseConfig', 1)
+
+
+class FirestoreDatabaseConfig(_messages.Message):
+  r"""Message for defining firestore database configuration.
+
+  Fields:
+    location_id: LocationID is the location of the database. Available
+      databases locations are listed at
+      https://cloud.google.com/firestore/docs/locations.
+  """
+
+  location_id = _messages.StringField(1)
+
+
 class HostingSiteConfig(_messages.Message):
   r"""Message for defining the firebase hosting site configuration.
 
@@ -775,7 +797,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1113,10 +1135,11 @@ class ResourceComponentStatus(_messages.Message):
 
 
 class ResourceConfig(_messages.Message):
-  r"""Message for the Resource configuration. Next tag: 9
+  r"""Message for the Resource configuration. Next tag: 10
 
   Fields:
     firebase_hosting: Firebase hosting configuration.
+    firestore: Firestore configuration.
     latestDeployment: Output only. The deployment name for the most recent
       deployment that has been triggered for a given resource. If a resource
       was never deployed then this field will be empty.
@@ -1126,10 +1149,11 @@ class ResourceConfig(_messages.Message):
   """
 
   firebase_hosting = _messages.MessageField('FirebaseHostingConfig', 1)
-  latestDeployment = _messages.StringField(2)
-  redis = _messages.MessageField('RedisConfig', 3)
-  router = _messages.MessageField('RouterConfig', 4)
-  service = _messages.MessageField('CloudRunServiceConfig', 5)
+  firestore = _messages.MessageField('FirestoreConfig', 2)
+  latestDeployment = _messages.StringField(3)
+  redis = _messages.MessageField('RedisConfig', 4)
+  router = _messages.MessageField('RouterConfig', 5)
+  service = _messages.MessageField('CloudRunServiceConfig', 6)
 
 
 class ResourceDeploymentStatus(_messages.Message):
@@ -1768,6 +1792,8 @@ class TypedName(_messages.Message):
   type = _messages.StringField(2)
 
 
+encoding.AddCustomJsonFieldMapping(
+    FirestoreDatabaseConfig, 'location_id', 'location-id')
 encoding.AddCustomJsonFieldMapping(
     HostingSiteConfig, 'site_id', 'site-id')
 encoding.AddCustomJsonFieldMapping(

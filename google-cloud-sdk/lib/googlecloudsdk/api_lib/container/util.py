@@ -194,9 +194,12 @@ def LocationalResourceToZonal(path):
 
 
 def _GetClusterEndpoint(cluster, use_internal_ip, cross_connect_subnetwork,
-                        use_private_fqdn):
+                        use_private_fqdn, use_dns_endpoint):
   """Get the cluster endpoint suitable for writing to kubeconfig."""
-  if use_internal_ip or cross_connect_subnetwork or use_private_fqdn is not None:
+  if use_dns_endpoint:
+    return _GetDNSEndpoint(cluster)
+
+  if use_internal_ip or cross_connect_subnetwork or use_private_fqdn:
     if not cluster.privateClusterConfig:
       raise NonPrivateClusterError(cluster)
     if not cluster.privateClusterConfig.privateEndpoint:
@@ -213,6 +216,19 @@ def _GetClusterEndpoint(cluster, use_internal_ip, cross_connect_subnetwork,
   return cluster.endpoint
 
 
+def _GetDNSEndpoint(cluster):
+  """Extract dns endpoint for the kubeconfig from the ControlPlaneEndpointConfig."""
+  if (
+      not cluster.controlPlaneEndpointsConfig
+      or not cluster.controlPlaneEndpointsConfig.dnsEndpointConfig
+  ):
+    raise MissingDnsEndpointConfigError(cluster)
+  dns_endpoint = cluster.controlPlaneEndpointsConfig.dnsEndpointConfig.endpoint
+  if dns_endpoint is None:
+    raise MissingDNSEndpointError(cluster)
+  return dns_endpoint
+
+
 KUBECONFIG_USAGE_FMT = '''\
 kubeconfig entry generated for {cluster}.'''
 
@@ -223,6 +239,22 @@ class MissingPrivateFqdnError(Error):
   def __init__(self, cluster):
     super(MissingPrivateFqdnError, self).__init__(
         'cluster {0} is missing private fqdn.'.format(cluster.name))
+
+
+class MissingDnsEndpointConfigError(Error):
+  """Error for retrieving DNSEndpoint config of a cluster that has none."""
+
+  def __init__(self, cluster):
+    super(MissingDnsEndpointConfigError, self).__init__(
+        'cluster {0} is missing DNSEndpointConfig.'.format(cluster.name))
+
+
+class MissingDNSEndpointError(Error):
+  """Error for retrieving DNSEndpoint of a cluster that has none."""
+
+  def __init__(self, cluster):
+    super(MissingDNSEndpointError, self).__init__(
+        'cluster {0} is missing DNSEndpoint.'.format(cluster.name))
 
 
 class MissingCrossConnectError(Error):
@@ -297,6 +329,7 @@ class ClusterConfig(object):
     self.ca_data = kwargs.get('ca_data')
     self.client_cert_data = kwargs.get('client_cert_data')
     self.client_key_data = kwargs.get('client_key_data')
+    self.dns_endpoint = kwargs.get('dns_endpoint')
 
   def __str__(self):
     return 'ClusterConfig{project:%s, cluster:%s, zone:%s}' % (
@@ -327,6 +360,10 @@ class ClusterConfig(object):
   def has_ca_cert(self):
     return self.ca_data
 
+  @property
+  def has_dns_endpoint(self):
+    return self.dns_endpoint
+
   @staticmethod
   def UseGCPAuthProvider():
     return not properties.VALUES.container.use_client_certificate.GetBool()
@@ -356,7 +393,9 @@ class ClusterConfig(object):
     if self.has_cert_data:
       user_kwargs['cert_data'] = self.client_cert_data
       user_kwargs['key_data'] = self.client_key_data
-
+    if self.has_dns_endpoint:
+      user_kwargs['dns_endpoint'] = self.dns_endpoint
+      cluster_kwargs['has_dns_endpoint'] = True
     # Use same key for context, cluster, and user
     kubeconfig.contexts[context] = kconfig.Context(context, context, context)
     kubeconfig.users[context] = kconfig.User(context, **user_kwargs)
@@ -376,7 +415,8 @@ class ClusterConfig(object):
               project_id,
               use_internal_ip=False,
               cross_connect_subnetwork=None,
-              use_private_fqdn=None):
+              use_private_fqdn=None,
+              use_dns_endpoint=None):
     """Saves config data for the given cluster.
 
     Persists config file and kubernetes auth file for the given cluster
@@ -390,6 +430,7 @@ class ClusterConfig(object):
       cross_connect_subnetwork: full path of the cross connect subnet whose
       endpoint to persist (optional)
       use_private_fqdn: whether to persist the private fqdn.
+      use_dns_endpoint: whether to generate dns endpoint address.
     Returns:
       ClusterConfig of the persisted data.
     Raises:
@@ -397,13 +438,17 @@ class ClusterConfig(object):
         seconds while cluster is PROVISIONING).
     """
     endpoint = _GetClusterEndpoint(cluster, use_internal_ip,
-                                   cross_connect_subnetwork, use_private_fqdn)
+                                    cross_connect_subnetwork,
+                                    use_private_fqdn,
+                                    use_dns_endpoint)
     kwargs = {
         'cluster_name': cluster.name,
         'zone_id': cluster.zone,
         'project_id': project_id,
         'server': 'https://' + endpoint,
     }
+    if use_dns_endpoint:
+      kwargs['dns_endpoint'] = endpoint
     auth = cluster.masterAuth
     if auth and auth.clusterCaCertificate:
       kwargs['ca_data'] = auth.clusterCaCertificate

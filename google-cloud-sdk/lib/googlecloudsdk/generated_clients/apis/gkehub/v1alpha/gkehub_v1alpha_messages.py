@@ -62,9 +62,10 @@ class ApplianceCluster(_messages.Message):
   Clusters.
 
   Fields:
-    resourceLink: Immutable. Self-link of the GCP resource for the Appliance
-      Cluster. For example: //transferappliance.googleapis.com/projects/my-
-      project/locations/us-west1-a/appliances/my-appliance
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      Appliance Cluster. For example:
+      //transferappliance.googleapis.com/projects/my-project/locations/us-
+      west1-a/appliances/my-appliance
   """
 
   resourceLink = _messages.StringField(1)
@@ -337,6 +338,79 @@ class CloudBuildMembershipSpec(_messages.Message):
 
   securityPolicy = _messages.EnumField('SecurityPolicyValueValuesEnum', 1)
   version = _messages.StringField(2)
+
+
+class ClusterUpgradeFleetSpec(_messages.Message):
+  r"""**ClusterUpgrade**: The configuration for the fleet-level ClusterUpgrade
+  feature.
+
+  Fields:
+    gkeUpgradeOverrides: Allow users to override some properties of each GKE
+      upgrade.
+    postConditions: Required. Post conditions to evaluate to mark an upgrade
+      COMPLETE. Required.
+    upstreamFleets: This fleet consumes upgrades that have COMPLETE status
+      code in the upstream fleets. See UpgradeStatus.Code for code
+      definitions. The fleet name should be either fleet project number or id.
+      This is defined as repeated for future proof reasons. Initial
+      implementation will enforce at most one upstream fleet.
+  """
+
+  gkeUpgradeOverrides = _messages.MessageField('ClusterUpgradeGKEUpgradeOverride', 1, repeated=True)
+  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 2)
+  upstreamFleets = _messages.StringField(3, repeated=True)
+
+
+class ClusterUpgradeFleetState(_messages.Message):
+  r"""**ClusterUpgrade**: The state for the fleet-level ClusterUpgrade
+  feature.
+
+  Messages:
+    IgnoredValue: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format: `projects/{p}/locations/{l}/membership/{m}`.
+
+  Fields:
+    downstreamFleets: This fleets whose upstream_fleets contain the current
+      fleet. The fleet name should be either fleet project number or id.
+    gkeState: Feature state for GKE clusters.
+    ignored: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format: `projects/{p}/locations/{l}/membership/{m}`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IgnoredValue(_messages.Message):
+    r"""A list of memberships ignored by the feature. For example, manually
+    upgraded clusters can be ignored if they are newer than the default
+    versions of its release channel. The membership resource is in the format:
+    `projects/{p}/locations/{l}/membership/{m}`.
+
+    Messages:
+      AdditionalProperty: An additional property for a IgnoredValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type IgnoredValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IgnoredValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ClusterUpgradeIgnoredMembership attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ClusterUpgradeIgnoredMembership', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  downstreamFleets = _messages.StringField(1, repeated=True)
+  gkeState = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureState', 2)
+  ignored = _messages.MessageField('IgnoredValue', 3)
 
 
 class ClusterUpgradeGKEUpgrade(_messages.Message):
@@ -623,6 +697,7 @@ class CommonFeatureSpec(_messages.Message):
     anthosobservability: Anthos Observability spec
     appdevexperience: Appdevexperience specific spec.
     cloudauditlogging: Cloud Audit Logging-specific spec.
+    clusterupgrade: ClusterUpgrade (fleet-based) feature spec.
     fleetobservability: FleetObservability feature spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
@@ -635,13 +710,14 @@ class CommonFeatureSpec(_messages.Message):
   anthosobservability = _messages.MessageField('AnthosObservabilityFeatureSpec', 1)
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 2)
   cloudauditlogging = _messages.MessageField('CloudAuditLoggingFeatureSpec', 3)
-  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 4)
-  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 5)
-  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 6)
-  namespaceactuation = _messages.MessageField('NamespaceActuationFeatureSpec', 7)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 8)
-  workloadcertificate = _messages.MessageField('FeatureSpec', 9)
-  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 10)
+  clusterupgrade = _messages.MessageField('ClusterUpgradeFleetSpec', 4)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 5)
+  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 6)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 7)
+  namespaceactuation = _messages.MessageField('NamespaceActuationFeatureSpec', 8)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 9)
+  workloadcertificate = _messages.MessageField('FeatureSpec', 10)
+  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 11)
 
 
 class CommonFeatureState(_messages.Message):
@@ -649,6 +725,7 @@ class CommonFeatureState(_messages.Message):
 
   Fields:
     appdevexperience: Appdevexperience specific state.
+    clusterupgrade: ClusterUpgrade fleet-level state.
     fleetobservability: FleetObservability feature state.
     helloworld: Hello World-specific state.
     namespaceactuation: Namespace Actuation feature state.
@@ -658,12 +735,13 @@ class CommonFeatureState(_messages.Message):
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
-  fleetobservability = _messages.MessageField('FleetObservabilityFeatureState', 2)
-  helloworld = _messages.MessageField('HelloWorldFeatureState', 3)
-  namespaceactuation = _messages.MessageField('NamespaceActuationFeatureState', 4)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureState', 5)
-  servicemesh = _messages.MessageField('ServiceMeshFeatureState', 6)
-  state = _messages.MessageField('FeatureState', 7)
+  clusterupgrade = _messages.MessageField('ClusterUpgradeFleetState', 2)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureState', 3)
+  helloworld = _messages.MessageField('HelloWorldFeatureState', 4)
+  namespaceactuation = _messages.MessageField('NamespaceActuationFeatureState', 5)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureState', 6)
+  servicemesh = _messages.MessageField('ServiceMeshFeatureState', 7)
+  state = _messages.MessageField('FeatureState', 8)
 
 
 class CommonFleetDefaultMemberConfigSpec(_messages.Message):
@@ -1700,8 +1778,8 @@ class EdgeCluster(_messages.Message):
   r"""EdgeCluster contains information specific to Google Edge Clusters.
 
   Fields:
-    resourceLink: Immutable. Self-link of the GCP resource for the Edge
-      Cluster. For example: //edgecontainer.googleapis.com/projects/my-
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      Edge Cluster. For example: //edgecontainer.googleapis.com/projects/my-
       project/locations/us-west1-a/clusters/my-cluster
   """
 
@@ -1757,7 +1835,7 @@ class Feature(_messages.Message):
   r"""Feature represents the settings and status of any Hub Feature.
 
   Messages:
-    LabelsValue: GCP labels for this Feature.
+    LabelsValue: Labels for this Feature.
     MembershipSpecsValue: Optional. Membership-specific configuration for this
       Feature. If this Feature does not support any per-Membership
       configuration, this field may be unused. The keys indicate which
@@ -1800,7 +1878,7 @@ class Feature(_messages.Message):
     deleteTime: Output only. When the Feature resource was deleted.
     fleetDefaultMemberConfig: Optional. Feature configuration applicable to
       all memberships of the fleet.
-    labels: GCP labels for this Feature.
+    labels: Labels for this Feature.
     membershipSpecs: Optional. Membership-specific configuration for this
       Feature. If this Feature does not support any per-Membership
       configuration, this field may be unused. The keys indicate which
@@ -1847,7 +1925,7 @@ class Feature(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""GCP labels for this Feature.
+    r"""Labels for this Feature.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2139,7 +2217,8 @@ class Fleet(_messages.Message):
       quote, space, and exclamation point. Example: `Production Fleet`
     name: Output only. The full, unique resource name of this fleet in the
       format of `projects/{project}/locations/{location}/fleets/{fleet}`. Each
-      GCP project can have at most one fleet resource, named "default".
+      Google Cloud project can have at most one fleet resource, named
+      "default".
     samenessMode: Optional. The sameness mode this fleet is using.
     state: Output only. State of the namespace resource.
     uid: Output only. Google-generated UUID for this resource. This is unique
@@ -2152,7 +2231,8 @@ class Fleet(_messages.Message):
     r"""Optional. The sameness mode this fleet is using.
 
     Values:
-      SAMENESS_MODE_UNSPECIFIED: <no description>
+      SAMENESS_MODE_UNSPECIFIED: Unknown mode, will default to
+        ALL_CLUSTER_NAMESPACES.
       ALL_CLUSTER_NAMESPACES: All cluster namespaces are considered the same
         (default).
       MAPPED_FLEET_NAMESPACES: Restrict sameness to cluster namespaces that
@@ -2334,8 +2414,8 @@ class GkeCluster(_messages.Message):
   Fields:
     clusterMissing: Output only. If cluster_missing is set then it denotes
       that the GKE cluster no longer exists in the GKE Control Plane.
-    resourceLink: Immutable. Self-link of the GCP resource for the GKE
-      cluster. For example: //container.googleapis.com/projects/my-
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      GKE cluster. For example: //container.googleapis.com/projects/my-
       project/locations/us-west1-a/clusters/my-cluster Zonal clusters are also
       supported.
   """
@@ -2607,7 +2687,8 @@ class GkehubProjectsLocationsFleetsPatchRequest(_messages.Message):
     fleet: A Fleet resource to be passed as the request body.
     name: Output only. The full, unique resource name of this fleet in the
       format of `projects/{project}/locations/{location}/fleets/{fleet}`. Each
-      GCP project can have at most one fleet resource, named "default".
+      Google Cloud project can have at most one fleet resource, named
+      "default".
     updateMask: Required. The fields to be updated;
   """
 
@@ -2892,57 +2973,6 @@ class GkehubProjectsLocationsMembershipsListAdminRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
-class GkehubProjectsLocationsMembershipsListNamespacesRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsMembershipsListNamespacesRequest object.
-
-  Fields:
-    name: Required. The parent (project and location) where the Features will
-      be listed. Specified in the format
-      `projects/*/locations/*/memberships/*`.
-    pageSize: Optional. When requesting a 'page' of resources, `page_size`
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
-    pageToken: Optional. Token returned by previous call to `ListFeatures`
-      which specifies the position in the list from where to continue listing
-      the resources.
-  """
-
-  name = _messages.StringField(1, required=True)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-
-
-class GkehubProjectsLocationsMembershipsListPermittedRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsMembershipsListPermittedRequest object.
-
-  Fields:
-    filter: Optional. Lists Memberships that match the filter expression,
-      following the syntax outlined in https://google.aip.dev/160. Examples: -
-      Name is `bar` in project `foo-proj` and location `global`: name =
-      "projects/foo-proj/locations/global/membership/bar" - Memberships that
-      have a label called `foo`: labels.foo:* - Memberships that have a label
-      called `foo` whose value is `bar`: labels.foo = bar - Memberships in the
-      CREATING state: state = CREATING
-    orderBy: Optional. One or more fields to compare and use to sort the
-      output. See https://google.aip.dev/132#ordering.
-    pageSize: Optional. When requesting a 'page' of resources, `page_size`
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
-    pageToken: Optional. Token returned by previous call to `ListMemberships`
-      which specifies the position in the list from where to continue listing
-      the resources.
-    parent: Required. The parent (project and location) where the Memberships
-      will be listed. Specified in the format `projects/*/locations/*`.
-      `projects/*/locations/-` list memberships in all the regions.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
 class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsListRequest object.
 
@@ -2972,26 +3002,6 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class GkehubProjectsLocationsMembershipsListScopesRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsMembershipsListScopesRequest object.
-
-  Fields:
-    pageSize: Optional. When requesting a 'page' of resources, `page_size`
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
-    pageToken: Optional. Token returned by previous call to `ListScopes` which
-      specifies the position in the list from where to continue listing the
-      resources.
-    parent: Required. The parent (project, location, membership) where the
-      Scope will be listed. Specified in the format
-      `projects/*/locations/*/memberships/*`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class GkehubProjectsLocationsMembershipsPatchRequest(_messages.Message):
@@ -3210,45 +3220,6 @@ class GkehubProjectsLocationsNamespacesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class GkehubProjectsLocationsNamespacesListMembershipsRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsNamespacesListMembershipsRequest object.
-
-  Fields:
-    name: Required. The parent (project and location) where the Memberships
-      will be listed. Specified in the format
-      `projects/*/locations/*/namespaces/`.
-    pageSize: Optional. When requesting a 'page' of resources, `page_size`
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
-    pageToken: Optional. Token returned by previous call to `ListMemberships`
-      which specifies the position in the list from where to continue listing
-      the resources.
-  """
-
-  name = _messages.StringField(1, required=True)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-
-
-class GkehubProjectsLocationsNamespacesListPermittedRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsNamespacesListPermittedRequest object.
-
-  Fields:
-    pageSize: Optional. When requesting a 'page' of resources, `page_size`
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
-    pageToken: Optional. Token returned by previous call to `ListFeatures`
-      which specifies the position in the list from where to continue listing
-      the resources.
-    parent: Required. The parent (project and location) where the Features
-      will be listed. Specified in the format `projects/*/locations/*`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
 class GkehubProjectsLocationsNamespacesListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsNamespacesListRequest object.
 
@@ -3441,6 +3412,32 @@ class GkehubProjectsLocationsScopesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class GkehubProjectsLocationsScopesGetIamPolicyRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class GkehubProjectsLocationsScopesGetRequest(_messages.Message):
   r"""A GkehubProjectsLocationsScopesGetRequest object.
 
@@ -3450,25 +3447,6 @@ class GkehubProjectsLocationsScopesGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class GkehubProjectsLocationsScopesListPermittedRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsScopesListPermittedRequest object.
-
-  Fields:
-    pageSize: Optional. When requesting a 'page' of resources, `page_size`
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
-    pageToken: Optional. Token returned by previous call to `ListScopes` which
-      specifies the position in the list from where to continue listing the
-      resources.
-    parent: Required. The parent (project and location) where the Scope will
-      be listed. Specified in the format `projects/*/locations/*`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class GkehubProjectsLocationsScopesListRequest(_messages.Message):
@@ -3490,6 +3468,168 @@ class GkehubProjectsLocationsScopesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class GkehubProjectsLocationsScopesNamespacesCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesCreateRequest object.
+
+  Fields:
+    namespace: A Namespace resource to be passed as the request body.
+    parent: Required. The parent (project and location) where the Namespace
+      will be created. Specified in the format
+      `projects/*/locations/*/scopes/*`.
+    scopeNamespaceId: Required. Client chosen ID for the Namespace.
+      `namespace_id` must be a valid RFC 1123 compliant DNS label: 1. At most
+      63 characters in length 2. It must consist of lower case alphanumeric
+      characters or `-` 3. It must start and end with an alphanumeric
+      character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+  """
+
+  namespace = _messages.MessageField('Namespace', 1)
+  parent = _messages.StringField(2, required=True)
+  scopeNamespaceId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsScopesNamespacesDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesDeleteRequest object.
+
+  Fields:
+    name: Required. The Namespace resource name in the format
+      `projects/*/locations/*/scopes/*/namespaces/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesNamespacesGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesGetRequest object.
+
+  Fields:
+    name: Required. The Namespace resource name in the format
+      `projects/*/locations/*/scopes/*/namespaces/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesNamespacesListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListFeatures`
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format
+      `projects/*/locations/*/scopes/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsScopesNamespacesPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesPatchRequest object.
+
+  Fields:
+    name: The resource name for the namespace
+      `projects/{project}/locations/{location}/namespaces/{namespace}`
+    namespace: A Namespace resource to be passed as the request body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  namespace = _messages.MessageField('Namespace', 2)
+  updateMask = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsScopesNamespacesResourcequotasCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesResourcequotasCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent (project and location) where the
+      ResourceQuota will be created. Specified in the format
+      `projects/*/locations/*/scopes/*/namespaces/*`.
+    resourceQuota: A ResourceQuota resource to be passed as the request body.
+    resourceQuotaId: Required. Client chosen ID for the ResourceQuota.
+      `resource_quota_id` must be a valid RFC 1123 compliant DNS label: 1. At
+      most 63 characters in length 2. It must consist of lower case
+      alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  resourceQuota = _messages.MessageField('ResourceQuota', 2)
+  resourceQuotaId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsScopesNamespacesResourcequotasDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesResourcequotasDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The ResourceQuota resource name in the format
+      `projects/*/locations/*/scopes/*/namespaces/*/resourcequotas/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesNamespacesResourcequotasGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesResourcequotasGetRequest
+  object.
+
+  Fields:
+    name: Required. The ResourceQuota resource name in the format
+      `projects/*/locations/*/scopes/*/namespaces/*/resourcequotas`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesNamespacesResourcequotasListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesResourcequotasListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListFeatures`
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format
+      `projects/*/locations/*/scopes/*/namespaces/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsScopesNamespacesResourcequotasPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesResourcequotasPatchRequest
+  object.
+
+  Fields:
+    name: The resource name for the resourcequota itself `projects/{project}/l
+      ocations/{location}/scopes/{scope}/namespaces/{namespace}/resourcequotas
+      /{resourcequota}`
+    resourceQuota: A ResourceQuota resource to be passed as the request body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resourceQuota = _messages.MessageField('ResourceQuota', 2)
+  updateMask = _messages.StringField(3)
+
+
 class GkehubProjectsLocationsScopesPatchRequest(_messages.Message):
   r"""A GkehubProjectsLocationsScopesPatchRequest object.
 
@@ -3503,6 +3643,38 @@ class GkehubProjectsLocationsScopesPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   scope = _messages.MessageField('Scope', 2)
   updateMask = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsScopesSetIamPolicyRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class GkehubProjectsLocationsScopesTestIamPermissionsRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -4016,23 +4188,6 @@ class ListMembershipRBACRoleBindingsResponse(_messages.Message):
   rbacrolebindings = _messages.MessageField('RBACRoleBinding', 2, repeated=True)
 
 
-class ListMembershipsForNamespaceResponse(_messages.Message):
-  r"""Response message for the `GkeHub.ListMemberships` method.
-
-  Fields:
-    nextPageToken: A token to request the next page of resources from the
-      `ListMemberships` method. The value of an empty string means that there
-      are no more resources to return.
-    resources: The list of matching Memberships.
-    unreachable: List of locations that could not be reached while fetching
-      this list.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  resources = _messages.MessageField('Membership', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
 class ListMembershipsResponse(_messages.Message):
   r"""Response message for the `GkeHub.ListMemberships` method.
 
@@ -4048,20 +4203,6 @@ class ListMembershipsResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   resources = _messages.MessageField('Membership', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListNamespacesForMembershipResponse(_messages.Message):
-  r"""List of fleet namespaces.
-
-  Fields:
-    namespaces: The list of fleet namespaces
-    nextPageToken: A token to request the next page of resources from the
-      `ListNamespaces` method. The value of an empty string means that there
-      are no more resources to return.
-  """
-
-  namespaces = _messages.MessageField('Namespace', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
 
 
 class ListNamespacesResponse(_messages.Message):
@@ -4138,18 +4279,32 @@ class ListReferencesResponse(_messages.Message):
   references = _messages.MessageField('Reference', 2, repeated=True)
 
 
-class ListScopesForMembershipResponse(_messages.Message):
-  r"""List of paginated scopes for a membership.
+class ListResourceQuotasResponse(_messages.Message):
+  r"""List of fleet namespaces.
 
   Fields:
     nextPageToken: A token to request the next page of resources from the
-      `ListScopes` method. The value of an empty string means that there are
-      no more resources to return.
-    scopes: The list of scopes
+      `ListNamespaces` method. The value of an empty string means that there
+      are no more resources to return.
+    resourceQuotas: The list of fleet namespaces
   """
 
   nextPageToken = _messages.StringField(1)
-  scopes = _messages.MessageField('Scope', 2, repeated=True)
+  resourceQuotas = _messages.MessageField('ResourceQuota', 2, repeated=True)
+
+
+class ListScopeNamespacesResponse(_messages.Message):
+  r"""List of fleet namespaces.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListNamespaces` method. The value of an empty string means that there
+      are no more resources to return.
+    scopeNamespaces: The list of fleet namespaces
+  """
+
+  nextPageToken = _messages.StringField(1)
+  scopeNamespaces = _messages.MessageField('Namespace', 2, repeated=True)
 
 
 class ListScopesResponse(_messages.Message):
@@ -4167,7 +4322,7 @@ class ListScopesResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -4268,7 +4423,7 @@ class Membership(_messages.Message):
       Membership is running on.
 
   Messages:
-    LabelsValue: Optional. GCP labels for this membership.
+    LabelsValue: Optional. Labels for this membership.
 
   Fields:
     authority: Optional. How to identify workloads from this Membership. See
@@ -4287,7 +4442,7 @@ class Membership(_messages.Message):
       the UID of the `kube-system` namespace object.
     infrastructureType: Optional. The infrastructure type this Membership is
       running on.
-    labels: Optional. GCP labels for this membership.
+    labels: Optional. Labels for this membership.
     lastConnectionTime: Output only. For clusters using Connect, the timestamp
       of the most recent connection established with Google Cloud. This time
       is updated every several minutes, not continuously. For clusters that do
@@ -4328,7 +4483,7 @@ class Membership(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. GCP labels for this membership.
+    r"""Optional. Labels for this membership.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -4657,9 +4812,10 @@ class MultiCloudCluster(_messages.Message):
     clusterMissing: Output only. If cluster_missing is set then it denotes
       that API(gkemulticloud.googleapis.com) resource for this GKE Multi-Cloud
       cluster no longer exists.
-    resourceLink: Immutable. Self-link of the GCP resource for the GKE Multi-
-      Cloud cluster. For example: //gkemulticloud.googleapis.com/projects/my-
-      project/locations/us-west1-a/awsClusters/my-cluster
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      GKE Multi-Cloud cluster. For example:
+      //gkemulticloud.googleapis.com/projects/my-project/locations/us-
+      west1-a/awsClusters/my-cluster
       //gkemulticloud.googleapis.com/projects/my-project/locations/us-
       west1-a/azureClusters/my-cluster
       //gkemulticloud.googleapis.com/projects/my-project/locations/us-
@@ -4797,9 +4953,10 @@ class OnPremCluster(_messages.Message):
       that API(gkeonprem.googleapis.com) resource for this GKE On-Prem cluster
       no longer exists.
     clusterType: Immutable. The on prem cluster's type.
-    resourceLink: Immutable. Self-link of the GCP resource for the GKE On-Prem
-      cluster. For example: //gkeonprem.googleapis.com/projects/my-
-      project/locations/us-west1-a/vmwareClusters/my-cluster
+    resourceLink: Immutable. Self-link of the Google Cloud resource for the
+      GKE On-Prem cluster. For example:
+      //gkeonprem.googleapis.com/projects/my-project/locations/us-
+      west1-a/vmwareClusters/my-cluster
       //gkeonprem.googleapis.com/projects/my-project/locations/us-
       west1-a/bareMetalClusters/my-cluster
   """
@@ -5052,18 +5209,16 @@ class PolicyControllerBundleInstallSpec(_messages.Message):
 
   Enums:
     ManagementValueValuesEnum: Management specifies how the bundle will be
-      managed by the controller. TODO (b/271878194): Remove this
+      managed by the controller.
 
   Fields:
     exemptedNamespaces: the set of namespaces to be exempted from the bundle
-      TODO (b/271878194): Decrement this
     management: Management specifies how the bundle will be managed by the
-      controller. TODO (b/271878194): Remove this
+      controller.
   """
 
   class ManagementValueValuesEnum(_messages.Enum):
     r"""Management specifies how the bundle will be managed by the controller.
-    TODO (b/271878194): Remove this
 
     Values:
       MANAGEMENT_UNSPECIFIED: No Management strategy has been specified.
@@ -5088,7 +5243,7 @@ class PolicyControllerHubConfig(_messages.Message):
 
   Messages:
     DeploymentConfigsValue: Map of deployment configs to deployments
-      ("admission", "audit", "mutation").
+      ("admission", "audit", "mutation').
 
   Fields:
     auditIntervalSeconds: Sets the interval for Policy Controller Audit Scans
@@ -5098,7 +5253,7 @@ class PolicyControllerHubConfig(_messages.Message):
       stored in a constraint. If not set, the internal default (currently 20)
       will be used.
     deploymentConfigs: Map of deployment configs to deployments ("admission",
-      "audit", "mutation").
+      "audit", "mutation').
     exemptableNamespaces: The set of namespaces that are excluded from Policy
       Controller checks. Namespaces do not need to currently exist on the
       cluster.
@@ -5115,7 +5270,7 @@ class PolicyControllerHubConfig(_messages.Message):
       that reference to objects other than the object currently being
       evaluated.
     templateLibraryConfig: Configures the library templates to install along
-      with Policy Controller. TODO (b/271878194): Remove this
+      with Policy Controller.
   """
 
   class InstallSpecValueValuesEnum(_messages.Enum):
@@ -5140,7 +5295,7 @@ class PolicyControllerHubConfig(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DeploymentConfigsValue(_messages.Message):
     r"""Map of deployment configs to deployments ("admission", "audit",
-    "mutation").
+    "mutation').
 
     Messages:
       AdditionalProperty: An additional property for a DeploymentConfigsValue
@@ -5202,16 +5357,15 @@ class PolicyControllerMembershipState(_messages.Message):
     ComponentStatesValue: Currently these include (also serving as map keys):
       1. "admission" 2. "audit" 3. "mutation"
     ContentStatesValue: The state of the template library and any bundles
-      included in the chosen version of the manifest TODO (b/271878194):
-      Remove this
+      included in the chosen version of the manifest
 
   Fields:
     componentStates: Currently these include (also serving as map keys): 1.
       "admission" 2. "audit" 3. "mutation"
     contentStates: The state of the template library and any bundles included
-      in the chosen version of the manifest TODO (b/271878194): Remove this
+      in the chosen version of the manifest
     policyContentState: The overall content state observed by the Hub Feature
-      controller. TODO (b/271878194): Decrement this
+      controller.
     state: The overall Policy Controller lifecycle state observed by the Hub
       Feature controller.
   """
@@ -5297,7 +5451,7 @@ class PolicyControllerMembershipState(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ContentStatesValue(_messages.Message):
     r"""The state of the template library and any bundles included in the
-    chosen version of the manifest TODO (b/271878194): Remove this
+    chosen version of the manifest
 
     Messages:
       AdditionalProperty: An additional property for a ContentStatesValue
@@ -5558,18 +5712,18 @@ class PolicyControllerTemplateLibraryConfig(_messages.Message):
 
   Enums:
     InstallationValueValuesEnum: Configures the manner in which the template
-      library is installed on the cluster. TODO (b/271878194): Decrement this
+      library is installed on the cluster.
 
   Fields:
     included: Whether the standard template library should be installed or
-      not. TODO (b/271878194): Remove this
+      not.
     installation: Configures the manner in which the template library is
-      installed on the cluster. TODO (b/271878194): Decrement this
+      installed on the cluster.
   """
 
   class InstallationValueValuesEnum(_messages.Enum):
     r"""Configures the manner in which the template library is installed on
-    the cluster. TODO (b/271878194): Decrement this
+    the cluster.
 
     Values:
       INSTALLATION_UNSPECIFIED: No installation strategy has been specified.
@@ -5822,6 +5976,69 @@ class ResourceOptions(_messages.Message):
   v1beta1Crd = _messages.BooleanField(3)
 
 
+class ResourceQuota(_messages.Message):
+  r"""ResourceQuota is a subresource of Namespace, representing quotas that
+  can be applied to all instances of the Namespace in relevant clusters.
+
+  Fields:
+    createTime: Output only. When the resource was created.
+    deleteTime: Output only. When the resource was deleted.
+    limitsCpu: A string attribute.
+    limitsMemory: A string attribute.
+    name: The resource name for the resourcequota itself `projects/{project}/l
+      ocations/{location}/scopes/{scope}/namespaces/{namespace}/resourcequotas
+      /{resourcequota}`
+    requestsCpu: https://kubernetes.io/docs/concepts/policy/resource-
+      quotas/#compute-resource-quota
+    requestsMemory: A string attribute.
+    state: Output only. State of the resource.
+    uid: Output only. Google-generated UUID for this resource.
+    updateTime: Output only. When the resource was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  limitsCpu = _messages.StringField(3)
+  limitsMemory = _messages.StringField(4)
+  name = _messages.StringField(5)
+  requestsCpu = _messages.StringField(6)
+  requestsMemory = _messages.StringField(7)
+  state = _messages.MessageField('ResourceQuotaLifecycleState', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class ResourceQuotaLifecycleState(_messages.Message):
+  r"""ResourceQuotaLifecycleState represents lifecycle state for
+  ResourceQuota.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the ResourceQuota
+      resource.
+
+  Fields:
+    code: Output only. The current state of the ResourceQuota resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the ResourceQuota resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The resourcequota is being created.
+      READY: The resourcequota active.
+      DELETING: The resourcequota is being deleted.
+      UPDATING: The resourcequota is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
 class Role(_messages.Message):
   r"""Role is the type for Kubernetes roles
 
@@ -5910,6 +6127,7 @@ class Scope(_messages.Message):
   r"""Scope represents a Scope in a Fleet.
 
   Fields:
+    allMemberships: If true, all Memberships in the Fleet bind to this Scope.
     createTime: Output only. When the scope was created.
     deleteTime: Output only. When the scope was deleted.
     name: The resource name for the scope
@@ -5921,20 +6139,21 @@ class Scope(_messages.Message):
     updateTime: Output only. When the scope was last updated.
   """
 
-  createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  state = _messages.MessageField('ScopeLifecycleState', 4)
-  uid = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  allMemberships = _messages.BooleanField(1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  state = _messages.MessageField('ScopeLifecycleState', 5)
+  uid = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class ScopeFeatureSpec(_messages.Message):
   r"""ScopeFeatureSpec contains feature specs for a fleet scope.
 
   Fields:
-    clusterupgrade: A ClusterUpgradeScopeSpec attribute.
-    helloworld: A HelloWorldScopeSpec attribute.
+    clusterupgrade: Spec for the ClusterUpgrade feature at the scope level
+    helloworld: Spec for the HelloWorld feature at the scope level
   """
 
   clusterupgrade = _messages.MessageField('ClusterUpgradeScopeSpec', 1)
@@ -5945,8 +6164,8 @@ class ScopeFeatureState(_messages.Message):
   r"""ScopeFeatureState contains Scope-wide Feature status information.
 
   Fields:
-    clusterupgrade: A ClusterUpgradeScopeState attribute.
-    helloworld: A HelloWorldScopeState attribute.
+    clusterupgrade: State for the ClusterUpgrade feature at the scope level
+    helloworld: State for the HelloWorld feature at the scope level
     state: Output only. The "running state" of the Feature in this Scope.
   """
 

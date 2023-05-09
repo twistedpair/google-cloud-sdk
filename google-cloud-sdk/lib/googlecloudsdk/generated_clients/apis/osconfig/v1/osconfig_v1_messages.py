@@ -2642,7 +2642,7 @@ class PatchInstanceFilterGroupLabel(_messages.Message):
 class PatchJob(_messages.Message):
   r"""A high level representation of a patch job that is either in progress or
   has completed. Instance details are not included in the job. To paginate
-  through instance details, use ListPatchJobInstanceDetails. For more
+  through instance details, use `ListPatchJobInstanceDetails`. For more
   information about patch jobs, see [Creating patch
   jobs](https://cloud.google.com/compute/docs/os-patch-management/create-
   patch-job).

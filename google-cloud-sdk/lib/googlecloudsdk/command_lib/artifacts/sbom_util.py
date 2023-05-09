@@ -22,8 +22,10 @@ import hashlib
 import json
 import re
 
+from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
+from googlecloudsdk.api_lib.cloudkms import base as cloudkms_base
 from googlecloudsdk.api_lib.containeranalysis import filter_util
 from googlecloudsdk.api_lib.containeranalysis import requests
 from googlecloudsdk.api_lib.storage import storage_api
@@ -217,29 +219,67 @@ def ListSbomReferences(args):
   Returns:
     List of SBOM references.
   """
-  project = util.GetProject(args)
+  if args.installed_package and args.resource:
+    raise ar_exceptions.InvalidInputValueError(
+        'Cannot specify both --installed-package and --resource.'
+    )
+
   filters = filter_util.ContainerAnalysisFilter().WithKinds(['SBOM_REFERENCE'])
+
+  project = util.GetProject(args)
+  if args.installed_package:
+    dependency_filters = (
+        filter_util.ContainerAnalysisFilter()
+        .WithKinds(['PACKAGE'])
+        .WithCustomFilter(
+            'noteProjectId="goog-analysis" AND dependencyPackageName="{}"'
+            .format(args.installed_package)
+        )
+    )
+
+    package_occs = list(requests.ListOccurrences(
+        project, dependency_filters.GetFilter(), None
+    ))
+    if not package_occs:
+      return []
+
+    # One image may have multiple package dependencies with the same name but
+    # different versions.
+    # Deduplicate image uris.
+    images = set(_RemovePrefix(o.resourceUri, 'https://') for o in package_occs)
+    # All SBOM occurrence resource uris start with 'https://'.
+    image_urls = ['https://{}'.format(img) for img in images]
+
+    filters.WithResources(image_urls)
 
   if args.resource:
     resource_uri = _RemovePrefix(args.resource, 'https://')
     try:
       # Verify image uri and resolve possible tags.
       artifact = ProcessArtifact(resource_uri)
+      # All SBOM occurrence resource uris start with 'https://'.
       filters.WithResources([
           'https://{}'.format(artifact.resource_uri),
-          artifact.resource_uri,
       ])
     except ar_exceptions.InvalidInputValueError:
       # Not an image uri. Continue to filter it as prefix.
       log.status.Print('Listing SBOM references with the resource prefix.')
+      # All SBOM occurrence resource uris start with 'https://'.
       filters.WithResourcePrefixes([
           'https://{}'.format(resource_uri),
-          resource_uri,
       ])
 
-  occs = requests.ListOccurrencesV1beta1(
-      project, filters.GetFilter(), args.page_size
-  )
+  occs = None
+  if args.installed_package:
+    # Calling ListOccurrencesWithFilters ignoring page_size.
+    occs = requests.ListOccurrencesWithFiltersV1beta1(
+        project, filters.GetChunkifiedFilters()
+    )
+  else:
+    occs = requests.ListOccurrencesV1beta1(
+        project, filters.GetFilter(), args.page_size
+    )
+
   return _VerifyGCSObjects(occs)
 
 
@@ -450,13 +490,74 @@ def _GenerateSbomRefOccurrenceListFilter(artifact, sbom):
   return f.GetFilter()
 
 
-def WriteReferenceOccurrence(artifact, storage, sbom):
+# TODO(b/279744848): use the PAE function of the third_party/dsse.
+def _PAE(payload_type, payload):
+  """Creates DSSEv1 Pre-Authentication encoding for given type and payload.
+
+  Args:
+    payload_type: str, the SBOM reference payload type.
+    payload: bytes, the serialized SBOM reference payload.
+
+  Returns:
+    A bytes of DSSEv1 Pre-Authentication encoding.
+  """
+
+  return b'DSSEv1 %d %b %d %b' % (
+      len(payload_type),
+      payload_type.encode('utf-8'),
+      len(payload),
+      payload,
+  )
+
+
+def _SignSbomRefOccurrencePayload(occ, kms_key_version):
+  """Add signatures in reference occurrence by using the given kms key.
+
+  Args:
+    occ: Occurrence, the SBOM reference occurrence object we want to sign.
+    kms_key_version: str, a kms key used to sign the reference occurrence.
+
+  Returns:
+    An Occurrence object with signatures added.
+  """
+
+  payload_bytes = six.ensure_binary(
+      encoding.MessageToJson(occ.sbomReference.payload)
+  )
+  data = _PAE(occ.sbomReference.payloadType, payload_bytes)
+
+  kms_client = cloudkms_base.GetClientInstance()
+  kms_messages = cloudkms_base.GetMessagesModule()
+  req = kms_messages.CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSignRequest(  # pylint: disable=line-too-long
+      name=kms_key_version,
+      asymmetricSignRequest=kms_messages.AsymmetricSignRequest(data=data),
+  )
+  resp = kms_client.projects_locations_keyRings_cryptoKeys_cryptoKeyVersions.AsymmetricSign(  # pylint: disable=line-too-long
+      req
+  )
+  messages = requests.GetMessagesV1beta1()
+  evelope_signature = messages.EnvelopeSignature(
+      keyid=kms_key_version, sig=resp.signature
+  )
+
+  occ.envelope = messages.Envelope(
+      payload=payload_bytes,
+      payloadType=occ.sbomReference.payloadType,
+      signatures=[evelope_signature],
+  )
+  occ.sbomReference.signatures.append(evelope_signature)
+
+  return occ
+
+
+def WriteReferenceOccurrence(artifact, storage, sbom, kms_key_version):
   """Write the reference occurrence to link the artifact and the SBOM.
 
   Args:
     artifact: Artifact, the artifact metadata SBOM file generated from.
     storage: str, the path that SBOM is stored remotely.
     sbom: SbomFile, metadata of the SBOM file.
+    kms_key_version: str, the kms key to sign the reference occurrence payload.
 
   Returns:
     A str for occurrence ID.
@@ -467,12 +568,15 @@ def WriteReferenceOccurrence(artifact, storage, sbom):
   # Generate the occurrence.
   occ = _GenerateSbomRefOccurrence(artifact, sbom, note, storage)
 
+  if kms_key_version:
+    occ = _SignSbomRefOccurrencePayload(occ, kms_key_version)
+
   # Check existing occurrence for updates.
   f = _GenerateSbomRefOccurrenceListFilter(artifact, sbom)
   log.debug('listing occurrence with filter {0}.'.format(f))
   client = requests.GetClientV1beta1()
   messages = requests.GetMessagesV1beta1()
-  occs = requests.ListOccurrencesV1beta1(artifact.project, f)
+  occs = requests.ListOccurrencesV1beta1(artifact.project, f, None)
   log.debug('list successfully: {}'.format(occs))
   old_occ = None
   for o in occs:
@@ -485,7 +589,7 @@ def WriteReferenceOccurrence(artifact, storage, sbom):
     request = messages.ContaineranalysisProjectsOccurrencesPatchRequest(
         name=old_occ.name,
         occurrence=occ,
-        updateMask='sbom_reference',
+        updateMask='sbom_reference,envelope',
     )
     occ = client.projects_occurrences.Patch(request)
   else:

@@ -1151,6 +1151,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         of incompatible cuda version.
       LOCAL_WORKER_MANAGER_NOT_RUNNING: The local Worker Manager is not
         running.
+      DOCKER_START_RUNTIME_FILE_FORMAT_ERROR: Docker failed to start OCI
+        runtime because of file format error.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -1202,6 +1204,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_CREATE_INVALID_LAYERCHAIN_JSON = 47
     INCOMPATIBLE_CUDA_VERSION = 48
     LOCAL_WORKER_MANAGER_NOT_RUNNING = 49
+    DOCKER_START_RUNTIME_FILE_FORMAT_ERROR = 50
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

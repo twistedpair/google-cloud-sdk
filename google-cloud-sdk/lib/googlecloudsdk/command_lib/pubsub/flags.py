@@ -126,7 +126,9 @@ def AddSeekFlags(parser):
           cloud project.""")
 
 
-def AddPullFlags(parser, add_deprecated=False, add_wait=False):
+def AddPullFlags(
+    parser, add_deprecated=False, add_wait=False, add_return_immediately=False
+):
   """Adds the main set of message pulling flags to a parser."""
   if add_deprecated:
     parser.add_argument(
@@ -139,14 +141,43 @@ def AddPullFlags(parser, add_deprecated=False, add_wait=False):
   parser.add_argument(
       '--auto-ack', action='store_true', default=False,
       help='Automatically ACK every message pulled from this subscription.')
+  if add_wait and add_return_immediately:
+    parser = parser.add_group(mutex=True, help='Pull timeout behavior.')
   if add_wait:
     parser.add_argument(
-        '--wait', action='store_true', default=False,
-        help='Wait (for a bounded amount of time) for new messages from the '
-             'subscription, if there are none.')
+        '--wait',
+        default=True,
+        help=(
+            'Wait (for a bounded amount of time) for new messages from the '
+            'subscription, if there are none.'
+        ),
+        action=actions.DeprecationAction(
+            '--wait',
+            warn=(
+                '`{flag_name}` is deprecated. This flag is non-operational, as'
+                ' the wait behavior is now the default.'
+            ),
+            action='store_true',
+        ),
+    )
+  if add_return_immediately:
+    parser.add_argument(
+        '--return-immediately',
+        action='store_true',
+        default=False,
+        help=(
+            'If this flag is set, the system responds immediately with any'
+            ' messages readily available in memory buffers. If no messages are'
+            ' available in the buffers, returns an empty list of messages as'
+            ' response, even if having messages in the backlog. Do not set this'
+            ' flag as it adversely impacts the performance of pull.'
+        ),
+    )
 
 
-def AddPushConfigFlags(parser, required=False):
+def AddPushConfigFlags(
+    parser, required=False, is_update=False, enable_no_wrapper_support=False
+):
   """Adds flags for push subscriptions to the parser."""
   parser.add_argument(
       '--push-endpoint', required=required,
@@ -165,6 +196,44 @@ def AddPushConfigFlags(parser, required=False):
       help='Audience used in the generated Open ID Connect token for '
       'authenticated push. If not specified, it will be set to the '
       'push-endpoint.')
+  if enable_no_wrapper_support:
+    current_group = parser
+    if is_update:
+      mutual_exclusive_group = current_group.add_mutually_exclusive_group(
+          hidden=True
+      )
+      mutual_exclusive_group.add_argument(
+          '--clear-push-no-wrapper-config',
+          action='store_true',
+          hidden=True,
+          help="""If set, clear the NoWrapper config from the subscription.""",
+      )
+      current_group = mutual_exclusive_group
+    definition_group = current_group.add_group(
+        mutex=False,
+        help='NoWrapper Config Options.',
+        required=False,
+        hidden=True,
+    )
+    definition_group.add_argument(
+        '--push-no-wrapper',
+        help='When set, the payload to the push endpoint is not wrapped.',
+        action='store_true',
+        required=True,
+        hidden=True,
+    )
+    definition_group.add_argument(
+        '--push-no-wrapper-write-metadata',
+        help=(
+            'When true, writes the Pub/Sub message metadata to'
+            ' `x-goog-pubsub-<KEY>:<VAL>` headers of the HTTP request. Writes'
+            ' the Pub/Sub message attributes to `<KEY>:<VAL>` headers of the'
+            ' HTTP request.'
+        ),
+        action='store_true',
+        required=False,
+        hidden=True,
+    )
 
 
 def AddAckDeadlineFlag(parser, required=False):
@@ -270,15 +339,22 @@ def ParseExpirationPeriodWithNeverSentinel(value):
   return util.FormatDuration(arg_parsers.Duration()(value))
 
 
-def AddSubscriptionSettingsFlags(parser, is_update=False):
+def AddSubscriptionSettingsFlags(
+    parser, is_update=False, enable_no_wrapper_support=False
+):
   """Adds the flags for creating or updating a subscription.
 
   Args:
     parser: The argparse parser.
     is_update: Whether or not this is for the update operation (vs. create).
+    enable_no_wrapper_support: whether or not to add no wrapper flag support.
   """
   AddAckDeadlineFlag(parser)
-  AddPushConfigFlags(parser)
+  AddPushConfigFlags(
+      parser,
+      is_update=is_update,
+      enable_no_wrapper_support=enable_no_wrapper_support,
+  )
   AddBigQueryConfigFlags(parser, is_update)
   AddSubscriptionMessageRetentionFlags(parser, is_update)
   if not is_update:

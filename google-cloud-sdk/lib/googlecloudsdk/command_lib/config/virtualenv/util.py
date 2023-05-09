@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import platform
 
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
@@ -29,10 +30,13 @@ import six
 MODULES = [
     'crcmod',
     'grpcio',
-    'cryptography==39.0.1',
     'pyopenssl==23.0.0',
     'google_crc32c',
     'certifi',
+    (
+        'https://github.com/googleapis/enterprise-certificate-proxy/releases/download/v0.2.3/'
+        'cryptography-39.0.1-cp36-abi3-macosx_10_12_{}.whl'
+    ).format('universal2' if platform.processor() == 'arm' else 'x86_64'),
 ]
 
 # Enable file name.

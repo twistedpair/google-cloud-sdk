@@ -1167,6 +1167,8 @@ def _PortValue(value):
 _DEFAULT_PORT_HELP = """Container port to receive requests at. Also sets
 the $PORT environment variable. Must be a number between 1 and 65535, inclusive.
 To unset this field, pass the special value "default".
+If updating an existing service with a TCP startup probe pointing to the
+previous container port, this will also update the probe port.
 """
 
 

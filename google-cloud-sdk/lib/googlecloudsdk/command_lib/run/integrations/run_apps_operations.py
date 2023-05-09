@@ -39,6 +39,7 @@ from googlecloudsdk.command_lib.run.integrations import stages
 from googlecloudsdk.command_lib.run.integrations import typekits_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import progress_tracker
 import six
 
@@ -118,6 +119,29 @@ class RunAppsOperations(object):
   @property
   def messages(self):
     return self._client.MESSAGES_MODULE
+
+  def ApplyYaml(self, tracker, yaml_content):
+    """Applies the application config from yaml file.
+
+    Args:
+      tracker: StagedProgressTracker, to report on the progress.
+      yaml_content: str, content of the yaml file.
+    """
+    app_dict = dict(yaml_content)
+    name = app_dict.pop('name')
+    appconfig = {'config': yaml.dump(yaml_content).encode('utf-8')}
+    match_type_names = []
+
+    for res_type, res_configs in app_dict.items():
+      if res_type == 'name':
+        continue
+      for config in res_configs:
+        res_name = config['name']
+        match_type_names.append({'type': res_type, 'name': res_name})
+
+    self.ApplyAppConfig(
+        tracker, name, appconfig, match_type_names=match_type_names
+    )
 
   def ApplyAppConfig(self,
                      tracker,

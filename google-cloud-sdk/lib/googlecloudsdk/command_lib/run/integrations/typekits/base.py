@@ -28,7 +28,7 @@ from googlecloudsdk.api_lib.run.integrations import types_utils
 class TypeKit(object):
   """An abstract class that represents a typekit."""
 
-  def __init__(self, type_metadata):
+  def __init__(self, type_metadata: types_utils.TypeMetadata):
     self._type_metadata = type_metadata
 
   @property
@@ -60,17 +60,17 @@ class TypeKit(object):
     return []
 
   @abc.abstractmethod
-  def GetDeployMessage(self, create=False):
+  def GetDeployMessage(self, create: bool = False) -> str:
     """Message that is shown to the user upon starting the deployment.
 
     Each TypeKit should override this method to at least tell the user how
     long the deployment is expected to take.
 
     Args:
-      create: bool, denotes if the command was a create deployment.
+      create: denotes if the command was a create deployment.
 
     Returns:
-      str, the message displayed to the user.
+      The message displayed to the user.
     """
 
   @abc.abstractmethod

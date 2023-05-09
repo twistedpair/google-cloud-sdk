@@ -282,6 +282,18 @@ def AddUserEnvVarsFlags(parser):
       value_type=str,
   )
 
+  userenvvars_group.add_argument(
+      '--clear-env-vars',
+      action='store_true',
+      help="""\
+        Clears customer-defined environment variables used in the new workflow
+        revision.
+
+        Example:
+        gcloud workflows deploy ${workflow_name} --clear-env-vars
+      """,
+  )
+
 
 def ParseExecution(args):
   """Get and validate execution from the args."""

@@ -2740,7 +2740,6 @@ def AddConfidentialComputeArgs(parser, support_confidential_compute_type=False):
             'SEV': 'Secure Encrypted Virtualization',
             'SEV_SNP': 'Secure Encrypted Virtualization - Secure Nested Paging '
         },
-        hidden=True,
         help="""\
         The instance boots with Confidential Computing enabled. Confidential
         Computing can be based on Secure Encrypted Virtualization (SEV) or Secure
