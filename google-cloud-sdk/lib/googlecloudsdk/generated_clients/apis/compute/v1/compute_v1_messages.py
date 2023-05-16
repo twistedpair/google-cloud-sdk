@@ -1627,6 +1627,10 @@ class AttachedDisk(_messages.Message):
     ModeValueValuesEnum: The mode in which to attach this disk, either
       READ_WRITE or READ_ONLY. If not specified, the default is to attach the
       disk in READ_WRITE mode.
+    SavedStateValueValuesEnum: For LocalSSD disks on VM Instances in STOPPED
+      or SUSPENDED state, this field is set to PRESERVED if the LocalSSD data
+      has been saved to a persistent location by customer request. (see the
+      discard_local_ssd option on Stop/Suspend). Read-only in the api.
     TypeValueValuesEnum: Specifies the type of the disk, either SCRATCH or
       PERSISTENT. If not specified, the default is PERSISTENT.
 
@@ -1686,6 +1690,10 @@ class AttachedDisk(_messages.Message):
     mode: The mode in which to attach this disk, either READ_WRITE or
       READ_ONLY. If not specified, the default is to attach the disk in
       READ_WRITE mode.
+    savedState: For LocalSSD disks on VM Instances in STOPPED or SUSPENDED
+      state, this field is set to PRESERVED if the LocalSSD data has been
+      saved to a persistent location by customer request. (see the
+      discard_local_ssd option on Stop/Suspend). Read-only in the api.
     shieldedInstanceInitialState: [Output Only] shielded vm initial state
       stored on disk
     source: Specifies a valid partial or full URL to an existing Persistent
@@ -1741,6 +1749,20 @@ class AttachedDisk(_messages.Message):
     READ_ONLY = 0
     READ_WRITE = 1
 
+  class SavedStateValueValuesEnum(_messages.Enum):
+    r"""For LocalSSD disks on VM Instances in STOPPED or SUSPENDED state, this
+    field is set to PRESERVED if the LocalSSD data has been saved to a
+    persistent location by customer request. (see the discard_local_ssd option
+    on Stop/Suspend). Read-only in the api.
+
+    Values:
+      DISK_SAVED_STATE_UNSPECIFIED: *[Default]* Disk state has not been
+        preserved.
+      PRESERVED: Disk state has been preserved.
+    """
+    DISK_SAVED_STATE_UNSPECIFIED = 0
+    PRESERVED = 1
+
   class TypeValueValuesEnum(_messages.Enum):
     r"""Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
     specified, the default is PERSISTENT.
@@ -1766,9 +1788,10 @@ class AttachedDisk(_messages.Message):
   kind = _messages.StringField(12, default='compute#attachedDisk')
   licenses = _messages.StringField(13, repeated=True)
   mode = _messages.EnumField('ModeValueValuesEnum', 14)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 15)
-  source = _messages.StringField(16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  savedState = _messages.EnumField('SavedStateValueValuesEnum', 15)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 16)
+  source = _messages.StringField(17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -36067,6 +36090,13 @@ class HttpRouteRuleMatch(_messages.Message):
       only applies to load balancers that have loadBalancingScheme set to
       INTERNAL_SELF_MANAGED. Not supported when the URL map is bound to a
       target gRPC proxy that has validateForProxyless field set to true.
+    pathTemplateMatch: If specified, the route is a pattern match expression
+      that must match the :path header once the query string is removed. A
+      pattern match allows you to match - The value must be between 1 and 1024
+      characters - The pattern must start with a leading slash ("/") - There
+      may be no more than 5 operators in pattern Precisely one of
+      prefix_match, full_path_match, regex_match or path_template_match must
+      be set.
     prefixMatch: For satisfying the matchRule condition, the request's path
       must begin with the specified prefixMatch. prefixMatch must begin with a
       /. The value must be from 1 to 1024 characters. Only one of prefixMatch,
@@ -36087,9 +36117,10 @@ class HttpRouteRuleMatch(_messages.Message):
   headerMatches = _messages.MessageField('HttpHeaderMatch', 2, repeated=True)
   ignoreCase = _messages.BooleanField(3)
   metadataFilters = _messages.MessageField('MetadataFilter', 4, repeated=True)
-  prefixMatch = _messages.StringField(5)
-  queryParameterMatches = _messages.MessageField('HttpQueryParameterMatch', 6, repeated=True)
-  regexMatch = _messages.StringField(7)
+  pathTemplateMatch = _messages.StringField(5)
+  prefixMatch = _messages.StringField(6)
+  queryParameterMatches = _messages.MessageField('HttpQueryParameterMatch', 7, repeated=True)
+  regexMatch = _messages.StringField(8)
 
 
 class HttpsHealthCheck(_messages.Message):
@@ -38043,13 +38074,14 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
 
   Fields:
     healthCheck: The URL for the health check that signals autohealing.
-    initialDelaySec: The number of seconds that the managed instance group
-      waits before it applies autohealing policies to new instances or
-      recently recreated instances. This initial delay allows instances to
-      initialize and run their startup scripts before the instance group
-      determines that they are UNHEALTHY. This prevents the managed instance
-      group from recreating its instances prematurely. This value must be from
-      range [0, 3600].
+    initialDelaySec: The initial delay is the number of seconds that a new VM
+      takes to initialize and run its startup script. During a VM's initial
+      delay period, the MIG ignores unsuccessful health checks because the VM
+      might be in the startup process. This prevents the MIG from prematurely
+      recreating a VM. If the health check receives a healthy response during
+      the initial delay, it indicates that the startup process is complete and
+      the VM is ready. The value of initial delay must be between 0 and 3600
+      seconds. The default value is 0.
   """
 
   healthCheck = _messages.StringField(1)
@@ -44493,7 +44525,7 @@ class MachineType(_messages.Message):
     Fields:
       guestAcceleratorCount: Number of accelerator cards exposed to the guest.
       guestAcceleratorType: The accelerator type resource name, not a full
-        URL, e.g. 'nvidia-tesla-k80'.
+        URL, e.g. nvidia-tesla-t4.
     """
 
     guestAcceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -58459,8 +58491,7 @@ class RouterNat(_messages.Message):
       LIST_OF_SUBNETWORKS: A list of Subnetworks are allowed to Nat (specified
       in the field subnetwork below) The default is
       SUBNETWORK_IP_RANGE_TO_NAT_OPTION_UNSPECIFIED. Note that if this field
-      contains ALL_SUBNETWORKS_ALL_IP_RANGES or
-      ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any
+      contains ALL_SUBNETWORKS_ALL_IP_RANGES then there should not be any
       other Router.Nat section in any Router for this network in this region.
 
   Fields:
@@ -58511,9 +58542,9 @@ class RouterNat(_messages.Message):
       every Subnetwork are allowed to Nat. - LIST_OF_SUBNETWORKS: A list of
       Subnetworks are allowed to Nat (specified in the field subnetwork below)
       The default is SUBNETWORK_IP_RANGE_TO_NAT_OPTION_UNSPECIFIED. Note that
-      if this field contains ALL_SUBNETWORKS_ALL_IP_RANGES or
-      ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any
-      other Router.Nat section in any Router for this network in this region.
+      if this field contains ALL_SUBNETWORKS_ALL_IP_RANGES then there should
+      not be any other Router.Nat section in any Router for this network in
+      this region.
     subnetworks: A list of Subnetwork resources whose traffic should be
       translated by NAT Gateway. It is used only when LIST_OF_SUBNETWORKS is
       selected for the SubnetworkIpRangeToNatOption above.
@@ -58562,8 +58593,7 @@ class RouterNat(_messages.Message):
     LIST_OF_SUBNETWORKS: A list of Subnetworks are allowed to Nat (specified
     in the field subnetwork below) The default is
     SUBNETWORK_IP_RANGE_TO_NAT_OPTION_UNSPECIFIED. Note that if this field
-    contains ALL_SUBNETWORKS_ALL_IP_RANGES or
-    ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any other
+    contains ALL_SUBNETWORKS_ALL_IP_RANGES then there should not be any other
     Router.Nat section in any Router for this network in this region.
 
     Values:
@@ -60883,7 +60913,6 @@ class SecuritySettings(_messages.Message):
       should authenticate with this service's backends. clientTlsPolicy only
       applies to a global BackendService with the loadBalancingScheme set to
       INTERNAL_SELF_MANAGED. If left blank, communications are not encrypted.
-      Note: This field currently has no impact.
     subjectAltNames: Optional. A list of Subject Alternative Names (SANs) that
       the client verifies during a mutual TLS handshake with an
       server/endpoint for this BackendService. When the server presents its
@@ -60896,7 +60925,7 @@ class SecuritySettings(_messages.Message):
       which provisions server identities. Only applies to a global
       BackendService with loadBalancingScheme set to INTERNAL_SELF_MANAGED.
       Only applies when BackendService has an attached clientTlsPolicy with
-      clientCertificate (mTLS mode). Note: This field currently has no impact.
+      clientCertificate (mTLS mode).
   """
 
   clientTlsPolicy = _messages.StringField(1)
@@ -63920,18 +63949,25 @@ class Subnetwork(_messages.Message):
       This field can be both set at resource creation time and updated using
       patch.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
-      either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork
-      with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
-      subnetwork that is reserved for Internal HTTP(S) Load Balancing. If
-      unspecified, the purpose defaults to PRIVATE_RFC_1918. The
-      enableFlowLogs field isn't supported with the purpose field set to
-      INTERNAL_HTTPS_LOAD_BALANCER.
+      either PRIVATE, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+      INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+      created subnets or subnets that are automatically created in auto mode
+      networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
+      created subnetwork that is reserved for regional Envoy-based load
+      balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used
+      to publish services using Private Service Connect. A subnet with purpose
+      set to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be
+      used only by regional internal HTTP(S) load balancers. Note that
+      REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
+      load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+      The enableFlowLogs field isn't supported if the subnet purpose field is
+      set to REGIONAL_MANAGED_PROXY.
     RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
-      used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set
-      to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
-      used for Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one
-      that is ready to be promoted to ACTIVE or is currently draining. This
-      field can be updated with a patch request.
+      used when purpose = REGIONAL_MANAGED_PROXY. The value can be set to
+      ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
+      used for Envoy-based load balancers in a region. A BACKUP subnetwork is
+      one that is ready to be promoted to ACTIVE or is currently draining.
+      This field can be updated with a patch request.
     StackTypeValueValuesEnum: The stack type for the subnet. If set to
       IPV4_ONLY, new VMs in the subnet are assigned IPv4 addresses only. If
       set to IPV4_IPV6, new VMs in the subnet can be assigned both IPv4 and
@@ -63954,8 +63990,8 @@ class Subnetwork(_messages.Message):
       this field is not explicitly set, it will not appear in get listings. If
       not set the default behavior is determined by the org policy, if there
       is no org policy specified, then it will default to disabled. This field
-      isn't supported with the purpose field set to
-      INTERNAL_HTTPS_LOAD_BALANCER.
+      isn't supported if the subnet purpose field is set to
+      REGIONAL_MANAGED_PROXY.
     externalIpv6Prefix: The external IPv6 address range that is owned by this
       subnetwork.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
@@ -64001,20 +64037,28 @@ class Subnetwork(_messages.Message):
       setPrivateIpGoogleAccess.
     privateIpv6GoogleAccess: This field is for internal use. This field can be
       both set at resource creation time and updated using patch.
-    purpose: The purpose of the resource. This field can be either
-      PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with
-      purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork
-      that is reserved for Internal HTTP(S) Load Balancing. If unspecified,
-      the purpose defaults to PRIVATE_RFC_1918. The enableFlowLogs field isn't
-      supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
+    purpose: The purpose of the resource. This field can be either PRIVATE,
+      REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+      INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+      created subnets or subnets that are automatically created in auto mode
+      networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
+      created subnetwork that is reserved for regional Envoy-based load
+      balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used
+      to publish services using Private Service Connect. A subnet with purpose
+      set to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be
+      used only by regional internal HTTP(S) load balancers. Note that
+      REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
+      load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+      The enableFlowLogs field isn't supported if the subnet purpose field is
+      set to REGIONAL_MANAGED_PROXY.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
     role: The role of subnetwork. Currently, this field is only used when
-      purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE
-      or BACKUP. An ACTIVE subnetwork is one that is currently being used for
-      Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is
-      ready to be promoted to ACTIVE or is currently draining. This field can
-      be updated with a patch request.
+      purpose = REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or
+      BACKUP. An ACTIVE subnetwork is one that is currently being used for
+      Envoy-based load balancers in a region. A BACKUP subnetwork is one that
+      is ready to be promoted to ACTIVE or is currently draining. This field
+      can be updated with a patch request.
     secondaryIpRanges: An array of configurations for secondary IP ranges for
       VM instances contained in this subnetwork. The primary IP of such VM
       must belong to the primary ipCidrRange of the subnetwork. The alias IPs
@@ -64065,12 +64109,20 @@ class Subnetwork(_messages.Message):
     ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE = 2
 
   class PurposeValueValuesEnum(_messages.Enum):
-    r"""The purpose of the resource. This field can be either PRIVATE_RFC_1918
-    or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with purpose set to
-    INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork that is reserved
-    for Internal HTTP(S) Load Balancing. If unspecified, the purpose defaults
-    to PRIVATE_RFC_1918. The enableFlowLogs field isn't supported with the
-    purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
+    r"""The purpose of the resource. This field can be either PRIVATE,
+    REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+    INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+    created subnets or subnets that are automatically created in auto mode
+    networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
+    created subnetwork that is reserved for regional Envoy-based load
+    balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to
+    publish services using Private Service Connect. A subnet with purpose set
+    to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be used
+    only by regional internal HTTP(S) load balancers. Note that
+    REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
+    load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+    The enableFlowLogs field isn't supported if the subnet purpose field is
+    set to REGIONAL_MANAGED_PROXY.
 
     Values:
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
@@ -64090,10 +64142,10 @@ class Subnetwork(_messages.Message):
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when
-    purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE or
+    purpose = REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or
     BACKUP. An ACTIVE subnetwork is one that is currently being used for
-    Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is ready
-    to be promoted to ACTIVE or is currently draining. This field can be
+    Envoy-based load balancers in a region. A BACKUP subnetwork is one that is
+    ready to be promoted to ACTIVE or is currently draining. This field can be
     updated with a patch request.
 
     Values:
@@ -64527,7 +64579,8 @@ class SubnetworkLogConfig(_messages.Message):
     enable: Whether to enable flow logging for this subnetwork. If this field
       is not explicitly set, it will not appear in get listings. If not set
       the default behavior is determined by the org policy, if there is no org
-      policy specified, then it will default to disabled.
+      policy specified, then it will default to disabled. Flow logging isn't
+      supported if the subnet purpose field is set to REGIONAL_MANAGED_PROXY.
     filterExpr: Can only be specified if VPC flow logs for this subnetwork is
       enabled. The filter expression is used to define which VPC flow logs
       should be exported to Cloud Logging.
@@ -69844,10 +69897,25 @@ class UrlRewrite(_messages.Message):
     pathPrefixRewrite: Before forwarding the request to the selected backend
       service, the matching portion of the request's path is replaced by
       pathPrefixRewrite. The value must be from 1 to 1024 characters.
+    pathTemplateRewrite:  If specified, the pattern rewrites the URL path
+      (based on the :path header) using the HTTP template syntax. A
+      corresponding path_template_match must be specified. Any template
+      variables must exist in the path_template_match field. - -At least one
+      variable must be specified in the path_template_match field - You can
+      omit variables from the rewritten URL - The * and ** operators cannot be
+      matched unless they have a corresponding variable name - e.g. {format=*}
+      or {var=**}. For example, a path_template_match of /static/{format=**}
+      could be rewritten as /static/content/{format} to prefix /content to the
+      URL. Variables can also be re-ordered in a rewrite, so that
+      /{country}/{format}/{suffix=**} can be rewritten as
+      /content/{format}/{country}/{suffix}. At least one non-empty
+      routeRules[].matchRules[].path_template_match is required. Only one of
+      path_prefix_rewrite or path_template_rewrite may be specified.
   """
 
   hostRewrite = _messages.StringField(1)
   pathPrefixRewrite = _messages.StringField(2)
+  pathTemplateRewrite = _messages.StringField(3)
 
 
 class UsableSubnetwork(_messages.Message):
@@ -69859,18 +69927,25 @@ class UsableSubnetwork(_messages.Message):
       holds. It's immutable and can only be specified during creation or the
       first time the subnet is updated into IPV4_IPV6 dual stack.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
-      either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork
-      with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
-      subnetwork that is reserved for Internal HTTP(S) Load Balancing. If
-      unspecified, the purpose defaults to PRIVATE_RFC_1918. The
-      enableFlowLogs field isn't supported with the purpose field set to
-      INTERNAL_HTTPS_LOAD_BALANCER.
+      either PRIVATE, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+      INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+      created subnets or subnets that are automatically created in auto mode
+      networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
+      created subnetwork that is reserved for regional Envoy-based load
+      balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used
+      to publish services using Private Service Connect. A subnet with purpose
+      set to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be
+      used only by regional internal HTTP(S) load balancers. Note that
+      REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
+      load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+      The enableFlowLogs field isn't supported if the subnet purpose field is
+      set to REGIONAL_MANAGED_PROXY.
     RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
-      used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set
-      to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
-      used for Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one
-      that is ready to be promoted to ACTIVE or is currently draining. This
-      field can be updated with a patch request.
+      used when purpose = REGIONAL_MANAGED_PROXY. The value can be set to
+      ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
+      used for Envoy-based load balancers in a region. A BACKUP subnetwork is
+      one that is ready to be promoted to ACTIVE or is currently draining.
+      This field can be updated with a patch request.
     StackTypeValueValuesEnum: The stack type for the subnet. If set to
       IPV4_ONLY, new VMs in the subnet are assigned IPv4 addresses only. If
       set to IPV4_IPV6, new VMs in the subnet can be assigned both IPv4 and
@@ -69888,18 +69963,26 @@ class UsableSubnetwork(_messages.Message):
       immutable and can only be specified during creation or the first time
       the subnet is updated into IPV4_IPV6 dual stack.
     network: Network URL.
-    purpose: The purpose of the resource. This field can be either
-      PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with
-      purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork
-      that is reserved for Internal HTTP(S) Load Balancing. If unspecified,
-      the purpose defaults to PRIVATE_RFC_1918. The enableFlowLogs field isn't
-      supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
+    purpose: The purpose of the resource. This field can be either PRIVATE,
+      REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+      INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+      created subnets or subnets that are automatically created in auto mode
+      networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
+      created subnetwork that is reserved for regional Envoy-based load
+      balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used
+      to publish services using Private Service Connect. A subnet with purpose
+      set to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be
+      used only by regional internal HTTP(S) load balancers. Note that
+      REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
+      load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+      The enableFlowLogs field isn't supported if the subnet purpose field is
+      set to REGIONAL_MANAGED_PROXY.
     role: The role of subnetwork. Currently, this field is only used when
-      purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE
-      or BACKUP. An ACTIVE subnetwork is one that is currently being used for
-      Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is
-      ready to be promoted to ACTIVE or is currently draining. This field can
-      be updated with a patch request.
+      purpose = REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or
+      BACKUP. An ACTIVE subnetwork is one that is currently being used for
+      Envoy-based load balancers in a region. A BACKUP subnetwork is one that
+      is ready to be promoted to ACTIVE or is currently draining. This field
+      can be updated with a patch request.
     secondaryIpRanges: Secondary IP ranges.
     stackType: The stack type for the subnet. If set to IPV4_ONLY, new VMs in
       the subnet are assigned IPv4 addresses only. If set to IPV4_IPV6, new
@@ -69924,12 +70007,20 @@ class UsableSubnetwork(_messages.Message):
     INTERNAL = 1
 
   class PurposeValueValuesEnum(_messages.Enum):
-    r"""The purpose of the resource. This field can be either PRIVATE_RFC_1918
-    or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with purpose set to
-    INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork that is reserved
-    for Internal HTTP(S) Load Balancing. If unspecified, the purpose defaults
-    to PRIVATE_RFC_1918. The enableFlowLogs field isn't supported with the
-    purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
+    r"""The purpose of the resource. This field can be either PRIVATE,
+    REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+    INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+    created subnets or subnets that are automatically created in auto mode
+    networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
+    created subnetwork that is reserved for regional Envoy-based load
+    balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to
+    publish services using Private Service Connect. A subnet with purpose set
+    to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be used
+    only by regional internal HTTP(S) load balancers. Note that
+    REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
+    load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+    The enableFlowLogs field isn't supported if the subnet purpose field is
+    set to REGIONAL_MANAGED_PROXY.
 
     Values:
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
@@ -69949,10 +70040,10 @@ class UsableSubnetwork(_messages.Message):
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when
-    purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE or
+    purpose = REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or
     BACKUP. An ACTIVE subnetwork is one that is currently being used for
-    Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is ready
-    to be promoted to ACTIVE or is currently draining. This field can be
+    Envoy-based load balancers in a region. A BACKUP subnetwork is one that is
+    ready to be promoted to ACTIVE or is currently draining. This field can be
     updated with a patch request.
 
     Values:

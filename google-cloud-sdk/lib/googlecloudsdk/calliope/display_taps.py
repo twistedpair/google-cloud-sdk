@@ -76,23 +76,25 @@ class Filterer(peek_iterable.Tap):
     Returns:
       True if resource matches the filter expression.
     """
+    serialized_resource = resource_projector.MakeSerializable(resource)
     self._missing_keys -= set(
-        key for key in self._missing_keys
-        if resource_property.ResourceContainsKey(
-            resource_projector.MakeSerializable(resource), key))
+        key
+        for key in self._missing_keys
+        if resource_property.ResourceContainsKey(serialized_resource, key)
+    )
     if resource_printer_base.IsResourceMarker(resource):
       return True
-    return self._compiled_expression.Evaluate(
-        resource_projector.MakeSerializable(resource))
+    return self._compiled_expression.Evaluate(serialized_resource)
 
   def Done(self):
-
     def WarnMissingKeys(missing_keys):
       missing_keys_str = ', '.join(
-          ['.'.join(map(str, key)) for key in sorted(missing_keys)])
+          ['.'.join(map(str, key)) for key in sorted(missing_keys)]
+      )
       log.warning(
-          'The following filter keys were not present in any resource : ' +
-          missing_keys_str)
+          'The following filter keys were not present in any resource : '
+          + missing_keys_str
+      )
 
     if self._missing_keys:
       WarnMissingKeys(self._missing_keys)

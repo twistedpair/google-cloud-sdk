@@ -24,6 +24,8 @@ OS_CHOICES_IMAGE_IMPORT_GA = [
     'debian-10',
     'debian-11',
     'centos-7',
+    'centos-stream-8',
+    'centos-stream-9',
     'opensuse-15',
     'rhel-6',
     'rhel-6-byol',

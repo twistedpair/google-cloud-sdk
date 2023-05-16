@@ -43,11 +43,6 @@ from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import progress_tracker
 import six
 
-# Max wait time before timing out
-_POLLING_TIMEOUT_MS = 180000
-# Max wait time between poll retries before timing out
-_RETRY_TIMEOUT_MS = 1000
-
 _SERVICE_TYPE = 'service'
 
 _DEFAULT_APP_NAME = 'default'

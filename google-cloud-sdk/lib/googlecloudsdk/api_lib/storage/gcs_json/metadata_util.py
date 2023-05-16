@@ -32,6 +32,7 @@ from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 
 # Similar to CORS above, we need a sentinel value allowing us to specify
 # when a default object ACL should be private (containing no entries).
@@ -541,9 +542,9 @@ def _process_value_or_clear_flag(metadata, key, value):
     setattr(metadata, key, value)
 
 
-def update_object_metadata_from_request_config(object_metadata,
-                                               request_config,
-                                               file_path=None):
+def update_object_metadata_from_request_config(
+    object_metadata, request_config, attributes_resource=None
+):
   """Sets Apitools Object fields based on values in request_config.
 
   User custom metadata takes precedence over preserved POSIX data.
@@ -552,8 +553,10 @@ def update_object_metadata_from_request_config(object_metadata,
   Args:
     object_metadata (storage_v1_messages.Object): Existing object metadata.
     request_config (request_config): May contain data to add to object_metadata.
-    file_path (str|None): If present, used for parsing POSIX data from a file on
-      the system for the --preserve-posix flag.
+    attributes_resource (Resource|None): If present, used for parsing POSIX and
+      symlink data from a resource for the --preserve-posix and/or
+      --preserve_symlink flags. This value is ignored unless it is an instance
+      of FileObjectResource.
   """
   resource_args = request_config.resource_args
 
@@ -565,15 +568,21 @@ def update_object_metadata_from_request_config(object_metadata,
         object_metadata.metadata)
 
   custom_fields_dict = metadata_util.get_updated_custom_fields(
-      existing_metadata, request_config, file_path=file_path)
+      existing_metadata, request_config, attributes_resource=attributes_resource
+  )
   if custom_fields_dict is not None:
     messages = apis.GetMessagesModule('storage', 'v1')
     object_metadata.metadata = encoding_helper.DictToMessage(
         custom_fields_dict, messages.Object.MetadataValue)
 
   # Gzip handling.
-  should_gzip_locally = gzip_util.should_gzip_locally(
-      request_config.gzip_settings, file_path)
+  if isinstance(attributes_resource, resource_reference.FileObjectResource):
+    should_gzip_locally = gzip_util.should_gzip_locally(
+        request_config.gzip_settings,
+        attributes_resource.storage_url.object_name,
+    )
+  else:
+    should_gzip_locally = False
   if should_gzip_locally:
     content_encoding = 'gzip'
   else:

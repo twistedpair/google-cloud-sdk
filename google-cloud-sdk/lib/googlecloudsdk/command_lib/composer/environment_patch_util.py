@@ -155,7 +155,8 @@ def ConstructPatch(is_composer_v1,
                    disable_vpc_connectivity=None,
                    network=None,
                    subnetwork=None,
-                   network_attachment=None):
+                   network_attachment=None,
+                   workload_updated=None):
   """Constructs an environment patch.
 
   Args:
@@ -270,6 +271,7 @@ def ConstructPatch(is_composer_v1,
       Can be specified only in Composer 2.5.
     network_attachment: str or None, the Compute Engine network attachment that
       is used as PSC Network entry point.
+    workload_updated: bool or None, verify if workload config has been updated
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -355,12 +357,7 @@ def ConstructPatch(is_composer_v1,
   if is_composer_v1 and scheduler_count:
     return _ConstructSoftwareConfigurationSchedulerCountPatch(
         scheduler_count=scheduler_count, release_track=release_track)
-  if (scheduler_cpu or worker_cpu or web_server_cpu or scheduler_memory_gb or
-      worker_memory_gb or web_server_memory_gb or scheduler_storage_gb or
-      worker_storage_gb or web_server_storage_gb or min_workers or
-      max_workers or scheduler_count or triggerer_cpu or triggerer_memory_gb or
-      triggerer_count is not None or dag_processor_count or dag_processor_cpu or
-      dag_processor_memory_gb or dag_processor_storage_gb):
+  if workload_updated:
     if is_composer_v1:
       raise command_util.Error(
           'You cannot use Workloads Config flags introduced in Composer 2.X'
@@ -892,57 +889,13 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
       workload_resources['dagProcessor'] = messages.DagProcessorResource(
           cpu=dag_processor_cpu,
           memoryGb=dag_processor_memory_gb,
-          storageGb=dag_processor_memory_gb,
+          storageGb=dag_processor_storage_gb,
           count=dag_processor_count,
       )
 
   config = messages.EnvironmentConfig(
       workloadsConfig=messages.WorkloadsConfig(**workload_resources))
-  if all([
-      scheduler_cpu, worker_cpu, web_server_cpu, scheduler_memory_gb,
-      worker_memory_gb, web_server_memory_gb, scheduler_storage_gb,
-      worker_storage_gb, web_server_storage_gb, worker_min_count,
-      worker_max_count
-  ]) and (release_track == base.ReleaseTrack.GA or
-          all([triggerer_count, triggerer_cpu, triggerer_memory_gb])):
-    return 'config.workloads_config', messages.Environment(config=config)
-  else:
-    mask = []
-    if scheduler_cpu:
-      mask.append('config.workloads_config.scheduler.cpu')
-    if worker_cpu:
-      mask.append('config.workloads_config.worker.cpu')
-    if web_server_cpu:
-      mask.append('config.workloads_config.web_server.cpu')
-    if scheduler_memory_gb:
-      mask.append('config.workloads_config.scheduler.memory_gb')
-    if worker_memory_gb:
-      mask.append('config.workloads_config.worker.memory_gb')
-    if web_server_memory_gb:
-      mask.append('config.workloads_config.web_server.memory_gb')
-    if scheduler_storage_gb:
-      mask.append('config.workloads_config.scheduler.storage_gb')
-    if worker_storage_gb:
-      mask.append('config.workloads_config.worker.storage_gb')
-    if web_server_storage_gb:
-      mask.append('config.workloads_config.web_server.storage_gb')
-    if worker_min_count:
-      mask.append('config.workloads_config.worker.min_count')
-    if worker_max_count:
-      mask.append('config.workloads_config.worker.max_count')
-    if scheduler_count:
-      mask.append('config.workloads_config.scheduler.count')
-    if dag_processor_count:
-      mask.append('config.workloads_config.dag_processor.count')
-    if dag_processor_memory_gb:
-      mask.append('config.workloads_config.dag_processor.memory_gb')
-    if dag_processor_storage_gb:
-      mask.append('config.workloads_config.dag_processor.storage_gb')
-    if dag_processor_cpu:
-      mask.append('config.workloads_config.dag_processor.cpu')
-    if triggerer_cpu or triggerer_memory_gb or triggerer_count is not None:
-      mask.append('config.workloads_config.triggerer')
-    return ','.join(mask), messages.Environment(config=config)
+  return 'config.workloads_config', messages.Environment(config=config)
 
 
 def _ConstructMaintenanceWindowPatch(maintenance_window_start,

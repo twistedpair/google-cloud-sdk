@@ -13,6 +13,104 @@ from apitools.base.py import extra_types
 package = 'networksecurity'
 
 
+class AddAddressGroupItemsRequest(_messages.Message):
+  r"""Request used by the AddAddressGroupItems method.
+
+  Fields:
+    items: Required. List of items to add.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  items = _messages.StringField(1, repeated=True)
+  requestId = _messages.StringField(2)
+
+
+class AddressGroup(_messages.Message):
+  r"""AddressGroup is a resource that specifies how a collection of IP/DNS
+  used in Firewall Policy.
+
+  Enums:
+    TypeValueValuesEnum: Required. The type of the Address Group. Possible
+      values are "IPv4" or "IPV6".
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the AddressGroup
+      resource.
+
+  Fields:
+    capacity: Required. Capacity of the Address Group
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. Free-text description of the resource.
+    items: Optional. List of items.
+    labels: Optional. Set of label tags associated with the AddressGroup
+      resource.
+    name: Required. Name of the AddressGroup resource. It matches pattern
+      `projects/*/locations/{location}/addressGroups/`.
+    selfLink: Output only. Server-defined fully-qualified URL for this
+      resource.
+    type: Required. The type of the Address Group. Possible values are "IPv4"
+      or "IPV6".
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the Address Group. Possible values are "IPv4" or
+    "IPV6".
+
+    Values:
+      TYPE_UNSPECIFIED: Default value.
+      IPV4: IP v4 ranges.
+      IPV6: IP v6 ranges.
+    """
+    TYPE_UNSPECIFIED = 0
+    IPV4 = 1
+    IPV6 = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the AddressGroup resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  capacity = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  items = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  selfLink = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+
+
 class AuthorizationLoggingOptions(_messages.Message):
   r"""Authorization-related information used by Cloud Audit Logging.
 
@@ -62,6 +160,9 @@ class AuthorizationPolicy(_messages.Message):
       values are "ALLOW" or "DENY".
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. Free-text description of the resource.
+    internalCaller: Optional. A flag set to identify internal controllers
+      Setting this will trigger a P4SA check to validate the caller is from an
+      allowlisted service's P4SA even if other optional fields are unset.
     labels: Optional. Set of label tags associated with the
       AuthorizationPolicy resource.
     name: Required. Name of the AuthorizationPolicy resource. It matches
@@ -117,10 +218,11 @@ class AuthorizationPolicy(_messages.Message):
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  rules = _messages.MessageField('Rule', 6, repeated=True)
-  updateTime = _messages.StringField(7)
+  internalCaller = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('Rule', 7, repeated=True)
+  updateTime = _messages.StringField(8)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -159,6 +261,9 @@ class ClientTlsPolicy(_messages.Message):
       presence of this dictates mTLS.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. Free-text description of the resource.
+    internalCaller: Optional. A flag set to identify internal controllers
+      Setting this will trigger a P4SA check to validate the caller is from an
+      allowlisted service's P4SA even if other optional fields are unset.
     labels: Optional. Set of label tags associated with the resource.
     name: Required. Name of the ClientTlsPolicy resource. It matches the
       pattern
@@ -168,6 +273,13 @@ class ClientTlsPolicy(_messages.Message):
       empty, client does not validate the server certificate.
     sni: Optional. Server Name Indication string to present to the server
       during TLS handshake. E.g: "secure.example.com".
+    subjectAltNames: Optional. A list of alternate names to verify the server
+      identity in the certificate. If specified, the client will verify that
+      the server certificate's subject alt name matches one of the specified
+      values. If specified, this list overrides the value of subject_alt_names
+      from the BackendService.securitySettings.subjectAltNames[]. The domain
+      names can be either be exact match (e.g foo) or suffix matches (e.g foo*
+      or foo/*)
     targets: Optional. Define a list of targets this policy should serve. A
       target can only be a BackendService and it should be the fully qualified
       name of the BackendService, e.g.:
@@ -210,13 +322,37 @@ class ClientTlsPolicy(_messages.Message):
   clientCertificate = _messages.MessageField('GoogleCloudNetworksecurityV1CertificateProvider', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  serverValidationCa = _messages.MessageField('ValidationCA', 6, repeated=True)
-  sni = _messages.StringField(7)
-  targets = _messages.StringField(8, repeated=True)
-  updateTime = _messages.StringField(9)
-  workloadContextSelectors = _messages.MessageField('WorkloadContextSelector', 10, repeated=True)
+  internalCaller = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  serverValidationCa = _messages.MessageField('ValidationCA', 7, repeated=True)
+  sni = _messages.StringField(8)
+  subjectAltNames = _messages.StringField(9, repeated=True)
+  targets = _messages.StringField(10, repeated=True)
+  updateTime = _messages.StringField(11)
+  workloadContextSelectors = _messages.MessageField('WorkloadContextSelector', 12, repeated=True)
+
+
+class CloneAddressGroupItemsRequest(_messages.Message):
+  r"""Request used by the CloneAddressGroupItems method.
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    sourceAddressGroup: Required. Source address group to clone items from.
+  """
+
+  requestId = _messages.StringField(1)
+  sourceAddressGroup = _messages.StringField(2)
 
 
 class CreateReferenceRequest(_messages.Message):
@@ -1035,6 +1171,50 @@ class HttpHeaderMatch(_messages.Message):
   regexMatch = _messages.StringField(2)
 
 
+class ListAddressGroupReferencesResponse(_messages.Message):
+  r"""Response of the ListAddressGroupReferences method.
+
+  Fields:
+    addressGroupReferences: A list of references that matches the specified
+      filter in the request.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  addressGroupReferences = _messages.MessageField('ListAddressGroupReferencesResponseAddressGroupReference', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListAddressGroupReferencesResponseAddressGroupReference(_messages.Message):
+  r"""The Reference of AddressGroup.
+
+  Fields:
+    firewallPolicy: FirewallPolicy that is using the Address Group.
+    rulePriority: Rule priority of the FirewallPolicy that is using the
+      Address Group.
+  """
+
+  firewallPolicy = _messages.StringField(1)
+  rulePriority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class ListAddressGroupsResponse(_messages.Message):
+  r"""Response returned by the ListAddressGroups method.
+
+  Fields:
+    addressGroups: List of AddressGroups resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  addressGroups = _messages.MessageField('AddressGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListAuthorizationPoliciesResponse(_messages.Message):
   r"""Response returned by the ListAuthorizationPolicies method.
 
@@ -1208,7 +1388,7 @@ class ListUrlListsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1364,17 +1544,480 @@ class MTLSPolicy(_messages.Message):
   tier = _messages.EnumField('TierValueValuesEnum', 4)
 
 
-class MetadataSelector(_messages.Message):
-  r"""This message type exists as opposed to using a map to support additional
-  fields in the future such as priority.
+class NetworksecurityOrganizationsLocationsAddressGroupsAddItemsRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsAddItemsRequest
+  object.
 
   Fields:
-    key: Required. The metadata field being selected on
-    value: Required. The value for this metadata field to be compared with
+    addAddressGroupItemsRequest: A AddAddressGroupItemsRequest resource to be
+      passed as the request body.
+    addressGroup: Required. A name of the AddressGroup to add items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
   """
 
-  key = _messages.StringField(1)
-  value = _messages.StringField(2)
+  addAddressGroupItemsRequest = _messages.MessageField('AddAddressGroupItemsRequest', 1)
+  addressGroup = _messages.StringField(2, required=True)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsCloneItemsRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsCloneItemsRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to clone items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    cloneAddressGroupItemsRequest: A CloneAddressGroupItemsRequest resource to
+      be passed as the request body.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  cloneAddressGroupItemsRequest = _messages.MessageField('CloneAddressGroupItemsRequest', 2)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsCreateRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsCreateRequest
+  object.
+
+  Fields:
+    addressGroup: A AddressGroup resource to be passed as the request body.
+    addressGroupId: Required. Short name of the AddressGroup resource to be
+      created. This value should be 1-63 characters long, containing only
+      letters, numbers, hyphens, and underscores, and should not start with a
+      number. E.g. "authz_policy".
+    parent: Required. The parent resource of the AddressGroup. Must be in the
+      format `projects/*/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  addressGroup = _messages.MessageField('AddressGroup', 1)
+  addressGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. A name of the AddressGroup to delete. Must be in the
+      format `projects/*/locations/{location}/addressGroups/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsGetRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsGetRequest object.
+
+  Fields:
+    name: Required. A name of the AddressGroup to get. Must be in the format
+      `projects/*/locations/{location}/addressGroups/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsListReferencesRequest(_messages.Message):
+  r"""A
+  NetworksecurityOrganizationsLocationsAddressGroupsListReferencesRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to clone items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    pageSize: The maximum number of references to return. If unspecified,
+      server will pick an appropriate default. Server may return fewer items
+      than requested. A caller should only rely on response's next_page_token
+      to determine if there are more AddressGroupUsers left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsListRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of AddressGroups to return per call.
+    pageToken: The value returned by the last `ListAddressGroupsResponse`
+      Indicates that this is a continuation of a prior `ListAddressGroups`
+      call, and that the system should return the next page of data.
+    parent: Required. The project and location from which the AddressGroups
+      should be listed, specified in the format
+      `projects/*/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsPatchRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsPatchRequest object.
+
+  Fields:
+    addressGroup: A AddressGroup resource to be passed as the request body.
+    name: Required. Name of the AddressGroup resource. It matches pattern
+      `projects/*/locations/{location}/addressGroups/`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the AddressGroup resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  addressGroup = _messages.MessageField('AddressGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsRemoveItemsRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsRemoveItemsRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to remove items from.
+      Must be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    removeAddressGroupItemsRequest: A RemoveAddressGroupItemsRequest resource
+      to be passed as the request body.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  removeAddressGroupItemsRequest = _messages.MessageField('RemoveAddressGroupItemsRequest', 2)
+
+
+class NetworksecurityOrganizationsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class NetworksecurityOrganizationsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityOrganizationsLocationsOperationsGetRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityOrganizationsLocationsOperationsListRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsAddItemsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsAddItemsRequest object.
+
+  Fields:
+    addAddressGroupItemsRequest: A AddAddressGroupItemsRequest resource to be
+      passed as the request body.
+    addressGroup: Required. A name of the AddressGroup to add items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+  """
+
+  addAddressGroupItemsRequest = _messages.MessageField('AddAddressGroupItemsRequest', 1)
+  addressGroup = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsCloneItemsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsCloneItemsRequest object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to clone items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    cloneAddressGroupItemsRequest: A CloneAddressGroupItemsRequest resource to
+      be passed as the request body.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  cloneAddressGroupItemsRequest = _messages.MessageField('CloneAddressGroupItemsRequest', 2)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsCreateRequest object.
+
+  Fields:
+    addressGroup: A AddressGroup resource to be passed as the request body.
+    addressGroupId: Required. Short name of the AddressGroup resource to be
+      created. This value should be 1-63 characters long, containing only
+      letters, numbers, hyphens, and underscores, and should not start with a
+      number. E.g. "authz_policy".
+    parent: Required. The parent resource of the AddressGroup. Must be in the
+      format `projects/*/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  addressGroup = _messages.MessageField('AddressGroup', 1)
+  addressGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the AddressGroup to delete. Must be in the
+      format `projects/*/locations/{location}/addressGroups/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsGetRequest object.
+
+  Fields:
+    name: Required. A name of the AddressGroup to get. Must be in the format
+      `projects/*/locations/{location}/addressGroups/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsListReferencesRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsListReferencesRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to clone items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    pageSize: The maximum number of references to return. If unspecified,
+      server will pick an appropriate default. Server may return fewer items
+      than requested. A caller should only rely on response's next_page_token
+      to determine if there are more AddressGroupUsers left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of AddressGroups to return per call.
+    pageToken: The value returned by the last `ListAddressGroupsResponse`
+      Indicates that this is a continuation of a prior `ListAddressGroups`
+      call, and that the system should return the next page of data.
+    parent: Required. The project and location from which the AddressGroups
+      should be listed, specified in the format
+      `projects/*/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsPatchRequest object.
+
+  Fields:
+    addressGroup: A AddressGroup resource to be passed as the request body.
+    name: Required. Name of the AddressGroup resource. It matches pattern
+      `projects/*/locations/{location}/addressGroups/`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the AddressGroup resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  addressGroup = _messages.MessageField('AddressGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsRemoveItemsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsRemoveItemsRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to remove items from.
+      Must be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    removeAddressGroupItemsRequest: A RemoveAddressGroupItemsRequest resource
+      to be passed as the request body.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  removeAddressGroupItemsRequest = _messages.MessageField('RemoveAddressGroupItemsRequest', 2)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class NetworksecurityProjectsLocationsAuthorizationPoliciesCreateRequest(_messages.Message):
@@ -2448,6 +3091,28 @@ class Reference(_messages.Message):
   type = _messages.StringField(6)
 
 
+class RemoveAddressGroupItemsRequest(_messages.Message):
+  r"""Request used by the RemoveAddressGroupItems method.
+
+  Fields:
+    items: Required. List of items to remove.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  items = _messages.StringField(1, repeated=True)
+  requestId = _messages.StringField(2)
+
+
 class Rule(_messages.Message):
   r"""Specification of rules.
 
@@ -2494,6 +3159,9 @@ class ServerTlsPolicy(_messages.Message):
       reaching port :80.
     createTime: Output only. The timestamp when the resource was created.
     description: Free-text description of the resource.
+    internalCaller: Optional. A flag set to identify internal controllers
+      Setting this will trigger a P4SA check to validate the caller is from an
+      allowlisted service's P4SA even if other optional fields are unset.
     labels: Set of label tags associated with the resource.
     mtlsPolicy: This field is required if the policy is used with external
       HTTPS load balancers. This field can be empty for Traffic Director.
@@ -2540,11 +3208,12 @@ class ServerTlsPolicy(_messages.Message):
   allowOpen = _messages.BooleanField(1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  mtlsPolicy = _messages.MessageField('MTLSPolicy', 5)
-  name = _messages.StringField(6)
-  serverCertificate = _messages.MessageField('GoogleCloudNetworksecurityV1CertificateProvider', 7)
-  updateTime = _messages.StringField(8)
+  internalCaller = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  mtlsPolicy = _messages.MessageField('MTLSPolicy', 6)
+  name = _messages.StringField(7)
+  serverCertificate = _messages.MessageField('GoogleCloudNetworksecurityV1CertificateProvider', 8)
+  updateTime = _messages.StringField(9)
 
 
 class Source(_messages.Message):
@@ -2774,7 +3443,20 @@ class WorkloadContextSelector(_messages.Message):
       fashion.
   """
 
-  metadataSelectors = _messages.MessageField('MetadataSelector', 1, repeated=True)
+  metadataSelectors = _messages.MessageField('WorkloadContextSelectorMetadataSelector', 1, repeated=True)
+
+
+class WorkloadContextSelectorMetadataSelector(_messages.Message):
+  r"""This message type exists as opposed to using a map to support additional
+  fields in the future such as priority.
+
+  Fields:
+    key: Required. The metadata field being selected on
+    value: Required. The value for this metadata field to be compared with
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

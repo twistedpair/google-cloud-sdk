@@ -219,16 +219,28 @@ def AddConfigType(parser):
   upgrade_config = config_type_group.add_group(
       'Upgrade an Anthos on bare metal user cluster use case.'
   )
+  admin_cluster_membership_help_text = """membership of the admin cluster to query versions for create. Membership name is the same as the admin cluster name.
+
+Examples:
+
+  $ {command}
+        --admin-cluster-membership=projects/example-project-12345/locations/us-west1/memberships/example-admin-cluster-name
+
+or
+
+  $ {command}
+        --admin-cluster-membership-project=example-project-12345
+        --admin-cluster-membership-location=us-west1
+        --admin-cluster-membership=example-admin-cluster-name
+
+  """
+
   arg_parser = concept_parsers.ConceptParser(
       [
           presentation_specs.ResourcePresentationSpec(
               '--admin-cluster-membership',
               flags.GetAdminClusterMembershipResourceSpec(),
-              (
-                  'Membership of the admin cluster to query versions for'
-                  ' create. Membership can be the membership ID or the full'
-                  ' resource name.'
-              ),
+              admin_cluster_membership_help_text,
               flag_name_overrides={
                   'project': '--admin-cluster-membership-project',
                   'location': '--admin-cluster-membership-location',
@@ -1224,15 +1236,31 @@ def AddAdminClusterMembershipResourceArg(parser,
     required: bool, whether the argument is required or not.
   """
   name = 'admin_cluster_membership' if positional else '--admin-cluster-membership'
+  admin_cluster_membership_help_text = """membership of the admin cluster. Membership name is the same as the admin cluster name.
+
+Examples:
+
+  $ {command}
+        --admin-cluster-membership=projects/example-project-12345/locations/us-west1/memberships/example-admin-cluster-name
+
+or
+
+  $ {command}
+        --admin-cluster-membership-project=example-project-12345
+        --admin-cluster-membership-location=us-west1
+        --admin-cluster-membership=example-admin-cluster-name
+
+  """
   concept_parsers.ConceptParser.ForResource(
       name,
       GetAdminClusterMembershipResourceSpec(),
-      'membership of the admin cluster. Membership can be the membership ID or the full resource name.',
+      admin_cluster_membership_help_text,
       required=required,
       flag_name_overrides={
           'project': '--admin-cluster-membership-project',
           'location': '--admin-cluster-membership-location',
-      }).AddToParser(parser)
+      },
+  ).AddToParser(parser)
 
 
 def AddAdminLoadBalancerConfig(parser, is_update=False):
@@ -1745,4 +1773,3 @@ def AddUpdateAnnotations(parser):
       type=arg_parsers.ArgDict(),
       help='Replace all the current annotations',
   )
-

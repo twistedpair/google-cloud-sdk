@@ -58,6 +58,7 @@ class SupportedFeatures:
       support_confidential_compute_type,
       support_provisioned_throughput=False,
       support_max_count_per_zone=True,
+      support_performance_monitoring_unit=False,
   ):
     self.support_rsa_encrypted = support_rsa_encrypted
     self.support_secure_tags = support_secure_tags
@@ -85,6 +86,9 @@ class SupportedFeatures:
     self.support_provisioned_throughput = support_provisioned_throughput
     self.support_max_count_per_zone = support_max_count_per_zone
     self.support_local_ssd_recovery_timeout = support_local_ssd_recovery_timeout
+    self.support_performance_monitoring_unit = (
+        support_performance_monitoring_unit
+    )
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -267,7 +271,8 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
                                        project, resource_parser)
 
   shielded_instance_config = create_utils.BuildShieldedInstanceConfigMessage(
-      messages=compute_client.messages, args=args)
+      messages=compute_client.messages, args=args
+  )
 
   confidential_vm = False
   if supported_features.support_confidential_compute:
@@ -331,20 +336,43 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
   # Create an AdvancedMachineFeatures message if any arguments are supplied
   # that require one.
   advanced_machine_features = None
-  if (args.enable_nested_virtualization is not None or
-      args.threads_per_core is not None or
-      (supported_features.support_numa_node_count and
-       args.numa_node_count is not None) or
-      (supported_features.support_visible_core_count and
-       args.visible_core_count is not None) or
-      args.enable_uefi_networking is not None):
-    visible_core_count = args.visible_core_count if supported_features.support_visible_core_count else None
+  if (
+      args.enable_nested_virtualization is not None
+      or args.threads_per_core is not None
+      or (
+          supported_features.support_numa_node_count
+          and args.numa_node_count is not None
+      )
+      or (
+          supported_features.support_visible_core_count
+          and args.visible_core_count is not None
+      )
+      or args.enable_uefi_networking is not None
+      or (
+          supported_features.support_performance_monitoring_unit
+          and args.performance_monitoring_unit
+      )
+  ):
+    visible_core_count = (
+        args.visible_core_count
+        if supported_features.support_visible_core_count
+        else None
+    )
     advanced_machine_features = (
         instance_utils.CreateAdvancedMachineFeaturesMessage(
-            compute_client.messages, args.enable_nested_virtualization,
-            args.threads_per_core, args.numa_node_count
-            if supported_features.support_numa_node_count else None,
-            visible_core_count, args.enable_uefi_networking))
+            compute_client.messages,
+            args.enable_nested_virtualization,
+            args.threads_per_core,
+            args.numa_node_count
+            if supported_features.support_numa_node_count
+            else None,
+            visible_core_count,
+            args.enable_uefi_networking,
+            args.performance_monitoring_unit
+            if supported_features.support_performance_monitoring_unit
+            else None,
+        )
+    )
 
   parsed_resource_policies = []
   resource_policies = getattr(args, 'resource_policies', None)

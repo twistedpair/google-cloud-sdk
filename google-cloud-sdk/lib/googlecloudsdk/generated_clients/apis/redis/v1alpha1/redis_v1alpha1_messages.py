@@ -85,15 +85,17 @@ class Cluster(_messages.Message):
       provided, auth feature is disabled for the cluster.
     createTime: Output only. The timestamp associated with the cluster
       creation request.
-    discoveryEndpoints: Endpoints on each network, for Redis clients to
-      connect to the cluster.
+    discoveryEndpoints: Output only. Endpoints created on each given network,
+      for Redis clients to connect to the cluster. Currently only one endpoint
+      is supported.
     displayName: Optional. An arbitrary and optional user-provided name for
       the cluster.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
-    privateServiceConnect: Optional. Populate to use private service connect
-      network option.
+    pscConfigs: Required. Each PscConfig configures the consumer network where
+      one IP address will be designated to the cluster for client access.
+      Currently, only one PscConfig is supported.
     replicaCount: Optional. The number of replica nodes per shard.
     shardCount: Required. Number of shards for the Redis cluster.
     sizeGb: Output only. Redis memory size in GB for the entire cluster.
@@ -150,19 +152,15 @@ class Cluster(_messages.Message):
 
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
-  discoveryEndpoints = _messages.MessageField(
-      'DiscoveryEndpoint', 3, repeated=True
-  )
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 3, repeated=True)
   displayName = _messages.StringField(4)
   name = _messages.StringField(5)
-  privateServiceConnect = _messages.MessageField('PrivateServiceConnect', 6)
+  pscConfigs = _messages.MessageField('PscConfig', 6, repeated=True)
   replicaCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   shardCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   sizeGb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   state = _messages.EnumField('StateValueValuesEnum', 10)
-  transitEncryptionMode = _messages.EnumField(
-      'TransitEncryptionModeValueValuesEnum', 11
-  )
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 11)
   uid = _messages.StringField(12)
 
 
@@ -173,18 +171,14 @@ class DiscoveryEndpoint(_messages.Message):
     address: Output only. Address of the exposed Redis endpoint used by
       clients to connect to the service. The address could be either IP or
       hostname.
-    network: Required. The consumer network where the IP address resides, in
-      the form of projects/{project_id}/global/networks/{network_id}.
     port: Output only. The port number of the exposed Redis endpoint.
-    projectId: Optional. The project where PSC endpoint will be accessed from.
-      If value not specified in a request, the project in which the cluster is
-      created will be used.
+    pscConfig: Output only. Customer configuration for where the endpoint is
+      created and accessed from.
   """
 
   address = _messages.StringField(1)
-  network = _messages.StringField(2)
-  port = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  projectId = _messages.StringField(4)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pscConfig = _messages.MessageField('PscConfig', 3)
 
 
 class Empty(_messages.Message):
@@ -193,6 +187,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class ExportInstanceRequest(_messages.Message):
@@ -1178,16 +1173,21 @@ class PersistenceConfig(_messages.Message):
   rdbSnapshotStartTime = _messages.StringField(4)
 
 
-class PrivateServiceConnect(_messages.Message):
-  r"""Contains private service connect specific options.
+class PscConfig(_messages.Message):
+  r"""Configuration of the project and the network for resources of a PSC
+  endpoint to be created.
 
   Fields:
-    serviceAttachment: Output only. The address of the Private Service Connect
-      (PSC) service that the customer can use to connect this instance to
-      their local network.
+    network: Required. The consumer network where the IP address will be
+      reserved, in the form of
+      projects/{network_host_project_id}/global/networks/{network_id}.
+    projectId: Output only. The project where a PSC forwarding rule is
+      created, binding to the discovery endpoint's IP address and targeting
+      the PSC service attachment of the cluster.
   """
 
-  serviceAttachment = _messages.StringField(1)
+  network = _messages.StringField(1)
+  projectId = _messages.StringField(2)
 
 
 class ReconciliationOperationMetadata(_messages.Message):
@@ -1895,6 +1895,7 @@ class ZoneMetadata(_messages.Message):
   r"""Defines specific information for a particular zone. Currently empty and
   reserved for future use only.
   """
+
 
 
 encoding.AddCustomJsonFieldMapping(

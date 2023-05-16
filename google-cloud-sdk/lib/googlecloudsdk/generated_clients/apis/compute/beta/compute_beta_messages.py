@@ -640,6 +640,8 @@ class AccessConfig(_messages.Message):
       accessConfig. If this field is unspecified in ipv6AccessConfig, a
       default PTR record will be createc for first IP in associated external
       IPv6 range.
+    securityPolicy: [Output Only] The resource URL for the security policy
+      associated with this access config.
     setPublicPtr: Specifies whether a public DNS 'PTR' record should be
       created to map the external IP address of the instance to a DNS domain
       name. This field is not used in ipv6AccessConfig. A default PTR record
@@ -690,8 +692,9 @@ class AccessConfig(_messages.Message):
   natIP = _messages.StringField(5)
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 6)
   publicPtrDomainName = _messages.StringField(7)
-  setPublicPtr = _messages.BooleanField(8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  securityPolicy = _messages.StringField(8)
+  setPublicPtr = _messages.BooleanField(9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
 
 
 class Address(_messages.Message):
@@ -1678,6 +1681,10 @@ class AttachedDisk(_messages.Message):
     ModeValueValuesEnum: The mode in which to attach this disk, either
       READ_WRITE or READ_ONLY. If not specified, the default is to attach the
       disk in READ_WRITE mode.
+    SavedStateValueValuesEnum: For LocalSSD disks on VM Instances in STOPPED
+      or SUSPENDED state, this field is set to PRESERVED if the LocalSSD data
+      has been saved to a persistent location by customer request. (see the
+      discard_local_ssd option on Stop/Suspend). Read-only in the api.
     TypeValueValuesEnum: Specifies the type of the disk, either SCRATCH or
       PERSISTENT. If not specified, the default is PERSISTENT.
 
@@ -1744,6 +1751,10 @@ class AttachedDisk(_messages.Message):
     mode: The mode in which to attach this disk, either READ_WRITE or
       READ_ONLY. If not specified, the default is to attach the disk in
       READ_WRITE mode.
+    savedState: For LocalSSD disks on VM Instances in STOPPED or SUSPENDED
+      state, this field is set to PRESERVED if the LocalSSD data has been
+      saved to a persistent location by customer request. (see the
+      discard_local_ssd option on Stop/Suspend). Read-only in the api.
     shieldedInstanceInitialState: [Output Only] shielded vm initial state
       stored on disk
     source: Specifies a valid partial or full URL to an existing Persistent
@@ -1803,6 +1814,20 @@ class AttachedDisk(_messages.Message):
     READ_ONLY = 0
     READ_WRITE = 1
 
+  class SavedStateValueValuesEnum(_messages.Enum):
+    r"""For LocalSSD disks on VM Instances in STOPPED or SUSPENDED state, this
+    field is set to PRESERVED if the LocalSSD data has been saved to a
+    persistent location by customer request. (see the discard_local_ssd option
+    on Stop/Suspend). Read-only in the api.
+
+    Values:
+      DISK_SAVED_STATE_UNSPECIFIED: *[Default]* Disk state has not been
+        preserved.
+      PRESERVED: Disk state has been preserved.
+    """
+    DISK_SAVED_STATE_UNSPECIFIED = 0
+    PRESERVED = 1
+
   class TypeValueValuesEnum(_messages.Enum):
     r"""Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
     specified, the default is PERSISTENT.
@@ -1829,10 +1854,11 @@ class AttachedDisk(_messages.Message):
   licenses = _messages.StringField(13, repeated=True)
   locked = _messages.BooleanField(14)
   mode = _messages.EnumField('ModeValueValuesEnum', 15)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 16)
-  source = _messages.StringField(17)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
-  userLicenses = _messages.StringField(19, repeated=True)
+  savedState = _messages.EnumField('SavedStateValueValuesEnum', 16)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 17)
+  source = _messages.StringField(18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  userLicenses = _messages.StringField(20, repeated=True)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -14239,6 +14265,35 @@ class ComputeInstancesSetSchedulingRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesSetSecurityPolicyRequest(_messages.Message):
+  r"""A ComputeInstancesSetSecurityPolicyRequest object.
+
+  Fields:
+    instance: Name of the Instance resource to which the security policy
+      should be set. The name should conform to RFC1035.
+    instancesSetSecurityPolicyRequest: A InstancesSetSecurityPolicyRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: Name of the zone scoping this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesSetSecurityPolicyRequest = _messages.MessageField('InstancesSetSecurityPolicyRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstancesSetServiceAccountRequest(_messages.Message):
   r"""A ComputeInstancesSetServiceAccountRequest object.
 
@@ -14727,6 +14782,319 @@ class ComputeInstancesUpdateShieldedVmConfigRequest(_messages.Message):
   requestId = _messages.StringField(3)
   shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 4)
   zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstantSnapshotsAggregatedListRequest(_messages.Message):
+  r"""A ComputeInstantSnapshotsAggregatedListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeInstantSnapshotsDeleteRequest(_messages.Message):
+  r"""A ComputeInstantSnapshotsDeleteRequest object.
+
+  Fields:
+    instantSnapshot: Name of the InstantSnapshot resource to delete.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instantSnapshot = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstantSnapshotsExportRequest(_messages.Message):
+  r"""A ComputeInstantSnapshotsExportRequest object.
+
+  Fields:
+    instantSnapshot: Name of the instant snapshot to export.
+    instantSnapshotsExportRequest: A InstantSnapshotsExportRequest resource to
+      be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instantSnapshot = _messages.StringField(1, required=True)
+  instantSnapshotsExportRequest = _messages.MessageField('InstantSnapshotsExportRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstantSnapshotsGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeInstantSnapshotsGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstantSnapshotsGetRequest(_messages.Message):
+  r"""A ComputeInstantSnapshotsGetRequest object.
+
+  Fields:
+    instantSnapshot: Name of the InstantSnapshot resource to return.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instantSnapshot = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ComputeInstantSnapshotsInsertRequest(_messages.Message):
+  r"""A ComputeInstantSnapshotsInsertRequest object.
+
+  Fields:
+    instantSnapshot: A InstantSnapshot resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: Name of the zone for this request.
+  """
+
+  instantSnapshot = _messages.MessageField('InstantSnapshot', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstantSnapshotsListRequest(_messages.Message):
+  r"""A ComputeInstantSnapshotsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+    zone: The name of the zone for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
+
+
+class ComputeInstantSnapshotsSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeInstantSnapshotsSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    zone: The name of the zone for this request.
+    zoneSetPolicyRequest: A ZoneSetPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+  zoneSetPolicyRequest = _messages.MessageField('ZoneSetPolicyRequest', 4)
+
+
+class ComputeInstantSnapshotsSetLabelsRequest(_messages.Message):
+  r"""A ComputeInstantSnapshotsSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    resource: Name or id of the resource for this request.
+    zone: The name of the zone for this request.
+    zoneSetLabelsRequest: A ZoneSetLabelsRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  resource = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+  zoneSetLabelsRequest = _messages.MessageField('ZoneSetLabelsRequest', 5)
+
+
+class ComputeInstantSnapshotsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeInstantSnapshotsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
@@ -22532,6 +22900,245 @@ class ComputeRegionInstancesBulkInsertRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeRegionInstantSnapshotsDeleteRequest(_messages.Message):
+  r"""A ComputeRegionInstantSnapshotsDeleteRequest object.
+
+  Fields:
+    instantSnapshot: Name of the InstantSnapshot resource to delete.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instantSnapshot = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionInstantSnapshotsExportRequest(_messages.Message):
+  r"""A ComputeRegionInstantSnapshotsExportRequest object.
+
+  Fields:
+    instantSnapshot: Name of the instant snapshot to export.
+    project: Project ID for this request.
+    region: The name of the zone for this request.
+    regionInstantSnapshotsExportRequest: A RegionInstantSnapshotsExportRequest
+      resource to be passed as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instantSnapshot = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstantSnapshotsExportRequest = _messages.MessageField('RegionInstantSnapshotsExportRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionInstantSnapshotsGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionInstantSnapshotsGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeRegionInstantSnapshotsGetRequest(_messages.Message):
+  r"""A ComputeRegionInstantSnapshotsGetRequest object.
+
+  Fields:
+    instantSnapshot: Name of the InstantSnapshot resource to return.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+  """
+
+  instantSnapshot = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionInstantSnapshotsInsertRequest(_messages.Message):
+  r"""A ComputeRegionInstantSnapshotsInsertRequest object.
+
+  Fields:
+    instantSnapshot: A InstantSnapshot resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instantSnapshot = _messages.MessageField('InstantSnapshot', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionInstantSnapshotsListRequest(_messages.Message):
+  r"""A ComputeRegionInstantSnapshotsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionInstantSnapshotsSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionInstantSnapshotsSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeRegionInstantSnapshotsSetLabelsRequest(_messages.Message):
+  r"""A ComputeRegionInstantSnapshotsSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
+
+
+class ComputeRegionInstantSnapshotsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionInstantSnapshotsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRegionNetworkEndpointGroupsDeleteRequest(_messages.Message):
   r"""A ComputeRegionNetworkEndpointGroupsDeleteRequest object.
 
@@ -28803,6 +29410,35 @@ class ComputeTargetInstancesListRequest(_messages.Message):
   zone = _messages.StringField(7, required=True)
 
 
+class ComputeTargetInstancesSetSecurityPolicyRequest(_messages.Message):
+  r"""A ComputeTargetInstancesSetSecurityPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    securityPolicyReference: A SecurityPolicyReference resource to be passed
+      as the request body.
+    targetInstance: Name of the TargetInstance resource to which the security
+      policy should be set. The name should conform to RFC1035.
+    zone: Name of the zone scoping this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  securityPolicyReference = _messages.MessageField('SecurityPolicyReference', 3)
+  targetInstance = _messages.StringField(4, required=True)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeTargetInstancesTestIamPermissionsRequest(_messages.Message):
   r"""A ComputeTargetInstancesTestIamPermissionsRequest object.
 
@@ -29184,6 +29820,35 @@ class ComputeTargetPoolsSetBackupRequest(_messages.Message):
   requestId = _messages.StringField(4)
   targetPool = _messages.StringField(5, required=True)
   targetReference = _messages.MessageField('TargetReference', 6)
+
+
+class ComputeTargetPoolsSetSecurityPolicyRequest(_messages.Message):
+  r"""A ComputeTargetPoolsSetSecurityPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    securityPolicyReference: A SecurityPolicyReference resource to be passed
+      as the request body.
+    targetPool: Name of the TargetPool resource to which the security policy
+      should be set. The name should conform to RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  securityPolicyReference = _messages.MessageField('SecurityPolicyReference', 4)
+  targetPool = _messages.StringField(5, required=True)
 
 
 class ComputeTargetPoolsTestIamPermissionsRequest(_messages.Message):
@@ -31576,6 +32241,20 @@ class Disk(_messages.Message):
       image that was later deleted and recreated under the same name, the
       source image ID would identify the exact version of the image that was
       used.
+    sourceInstantSnapshot: The source instant snapshot used to create this
+      disk. You can provide this as a partial or full URL to the resource. For
+      example, the following are valid values: -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /instantSnapshots/instantSnapshot -
+      projects/project/zones/zone/instantSnapshots/instantSnapshot -
+      zones/zone/instantSnapshots/instantSnapshot
+    sourceInstantSnapshotId: [Output Only] The unique ID of the instant
+      snapshot used to create this disk. This value identifies the exact
+      instant snapshot that was used to create this persistent disk. For
+      example, if you created the persistent disk from an instant snapshot
+      that was later deleted and recreated under the same name, the source
+      instant snapshot ID would identify the exact version of the instant
+      snapshot that was used.
     sourceSnapshot: The source snapshot used to create this disk. You can
       provide this as a partial or full URL to the resource. For example, the
       following are valid values: -
@@ -31767,16 +32446,18 @@ class Disk(_messages.Message):
   sourceImage = _messages.StringField(38)
   sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 39)
   sourceImageId = _messages.StringField(40)
-  sourceSnapshot = _messages.StringField(41)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 42)
-  sourceSnapshotId = _messages.StringField(43)
-  sourceStorageObject = _messages.StringField(44)
-  status = _messages.EnumField('StatusValueValuesEnum', 45)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 46)
-  type = _messages.StringField(47)
-  userLicenses = _messages.StringField(48, repeated=True)
-  users = _messages.StringField(49, repeated=True)
-  zone = _messages.StringField(50)
+  sourceInstantSnapshot = _messages.StringField(41)
+  sourceInstantSnapshotId = _messages.StringField(42)
+  sourceSnapshot = _messages.StringField(43)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 44)
+  sourceSnapshotId = _messages.StringField(45)
+  sourceStorageObject = _messages.StringField(46)
+  status = _messages.EnumField('StatusValueValuesEnum', 47)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 48)
+  type = _messages.StringField(49)
+  userLicenses = _messages.StringField(50, repeated=True)
+  users = _messages.StringField(51, repeated=True)
+  zone = _messages.StringField(52)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -40375,13 +41056,14 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
 
   Fields:
     healthCheck: The URL for the health check that signals autohealing.
-    initialDelaySec: The number of seconds that the managed instance group
-      waits before it applies autohealing policies to new instances or
-      recently recreated instances. This initial delay allows instances to
-      initialize and run their startup scripts before the instance group
-      determines that they are UNHEALTHY. This prevents the managed instance
-      group from recreating its instances prematurely. This value must be from
-      range [0, 3600].
+    initialDelaySec: The initial delay is the number of seconds that a new VM
+      takes to initialize and run its startup script. During a VM's initial
+      delay period, the MIG ignores unsuccessful health checks because the VM
+      might be in the startup process. This prevents the MIG from prematurely
+      recreating a VM. If the health check receives a healthy response during
+      the initial delay, it indicates that the startup process is complete and
+      the VM is ready. The value of initial delay must be between 0 and 3600
+      seconds. The default value is 0.
   """
 
   healthCheck = _messages.StringField(1)
@@ -43585,6 +44267,22 @@ class InstancesSetNameRequest(_messages.Message):
   name = _messages.StringField(2)
 
 
+class InstancesSetSecurityPolicyRequest(_messages.Message):
+  r"""A InstancesSetSecurityPolicyRequest object.
+
+  Fields:
+    networkInterfaces: The network interfaces that the security policy will be
+      applied to. Network interfaces use the nicN naming format. You can only
+      set a security policy for network interfaces with an access config.
+    securityPolicy: A full or partial URL to a security policy to add to this
+      instance. If this field is set to an empty string it will remove the
+      associated security policy.
+  """
+
+  networkInterfaces = _messages.StringField(1, repeated=True)
+  securityPolicy = _messages.StringField(2)
+
+
 class InstancesSetServiceAccountRequest(_messages.Message):
   r"""A InstancesSetServiceAccountRequest object.
 
@@ -43609,6 +44307,709 @@ class InstancesStartWithEncryptionKeyRequest(_messages.Message):
   """
 
   disks = _messages.MessageField('CustomerEncryptionKeyProtectedDisk', 1, repeated=True)
+
+
+class InstantSnapshot(_messages.Message):
+  r"""Represents a InstantSnapshot resource. You can use instant snapshots to
+  create disk rollback points quickly..
+
+  Enums:
+    ArchitectureValueValuesEnum: [Output Only] The architecture of the instant
+      snapshot. Valid values are ARM64 or X86_64.
+    StatusValueValuesEnum: [Output Only] The status of the instantSnapshot.
+      This can be CREATING, DELETING, FAILED, or READY.
+
+  Messages:
+    LabelsValue: Labels to apply to this InstantSnapshot. These can be later
+      modified by the setLabels method. Label values may be empty.
+
+  Fields:
+    architecture: [Output Only] The architecture of the instant snapshot.
+      Valid values are ARM64 or X86_64.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    diskSizeGb: [Output Only] Size of the source disk, specified in GB.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always compute#instantSnapshot
+      for InstantSnapshot resources.
+    labelFingerprint: A fingerprint for the labels being applied to this
+      InstantSnapshot, which is essentially a hash of the labels set used for
+      optimistic locking. The fingerprint is initially generated by Compute
+      Engine and changes after every request to modify or update labels. You
+      must always provide an up-to-date fingerprint hash in order to update or
+      change labels, otherwise the request will fail with error 412
+      conditionNotMet. To see the latest fingerprint, make a get() request to
+      retrieve a InstantSnapshot.
+    labels: Labels to apply to this InstantSnapshot. These can be later
+      modified by the setLabels method. Label values may be empty.
+    name: Name of the resource; provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    region: [Output Only] URL of the region where the instant snapshot
+      resides. You must specify this field as part of the HTTP request URL. It
+      is not settable as a field in the request body.
+    resourceStatus: [Output Only] Status information for the instant snapshot
+      resource.
+    satisfiesPzs: [Output Only] Reserved for future use.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLinkWithId: [Output Only] Server-defined URL for this resource's
+      resource id.
+    sourceDisk: URL of the source disk used to create this instant snapshot.
+      Note that the source disk must be in the same zone/region as the instant
+      snapshot to be created. This can be a full or valid partial URL. For
+      example, the following are valid values: -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /disks/disk -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region
+      /disks/disk - projects/project/zones/zone/disks/disk -
+      projects/project/regions/region/disks/disk - zones/zone/disks/disk -
+      regions/region/disks/disk
+    sourceDiskId: [Output Only] The ID value of the disk used to create this
+      InstantSnapshot. This value may be used to determine whether the
+      InstantSnapshot was taken from the current or a previous instance of a
+      given disk name.
+    status: [Output Only] The status of the instantSnapshot. This can be
+      CREATING, DELETING, FAILED, or READY.
+    zone: [Output Only] URL of the zone where the instant snapshot resides.
+      You must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
+  """
+
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The architecture of the instant snapshot. Valid values
+    are ARM64 or X86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The status of the instantSnapshot. This can be CREATING,
+    DELETING, FAILED, or READY.
+
+    Values:
+      CREATING: InstantSnapshot creation is in progress.
+      DELETING: InstantSnapshot is currently being deleted.
+      FAILED: InstantSnapshot creation failed.
+      READY: InstantSnapshot has been created successfully.
+    """
+    CREATING = 0
+    DELETING = 1
+    FAILED = 2
+    READY = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels to apply to this InstantSnapshot. These can be later modified
+    by the setLabels method. Label values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  diskSizeGb = _messages.IntegerField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default='compute#instantSnapshot')
+  labelFingerprint = _messages.BytesField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  region = _messages.StringField(10)
+  resourceStatus = _messages.MessageField('InstantSnapshotResourceStatus', 11)
+  satisfiesPzs = _messages.BooleanField(12)
+  selfLink = _messages.StringField(13)
+  selfLinkWithId = _messages.StringField(14)
+  sourceDisk = _messages.StringField(15)
+  sourceDiskId = _messages.StringField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  zone = _messages.StringField(18)
+
+
+class InstantSnapshotAggregatedList(_messages.Message):
+  r"""A InstantSnapshotAggregatedList object.
+
+  Messages:
+    ItemsValue: A list of InstantSnapshotsScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InstantSnapshotsScopedList resources.
+    kind: [Output Only] Type of resource. Always
+      compute#instantSnapshotAggregatedList for aggregated lists of
+      instantSnapshots.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
+    warning: [Output Only] Informational warning message.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""A list of InstantSnapshotsScopedList resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: [Output Only] Name of the scope containing this
+        set of instantSnapshots.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A InstantSnapshotsScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('InstantSnapshotsScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default='compute#instantSnapshotAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
+
+
+class InstantSnapshotExportParams(_messages.Message):
+  r"""A InstantSnapshotExportParams object.
+
+  Enums:
+    OutputTypeValueValuesEnum: The format of the output file.
+
+  Fields:
+    baseInstantSnapshot: An optional base instant snapshot that this resource
+      is compared against. If not specified, all blocks of this resource are
+      exported. The base instant snapshot and this resource must be created
+      from the same disk. The base instant snapshot must be created earlier in
+      time than this resource.
+    bucketName: The name of an existing bucket in Cloud Storage where the
+      changed blocks will be stored. The Google Service Account must have read
+      and write access to this bucket. The bucket has to be in the same region
+      as this resource.
+    encryptionKey: Encryption key used to encrypt the instant snapshot.
+    objectName: Name of the output Bigstore object storing the changed blocks.
+      Object name must be less than 1024 bytes in length.
+    outputType: The format of the output file.
+  """
+
+  class OutputTypeValueValuesEnum(_messages.Enum):
+    r"""The format of the output file.
+
+    Values:
+      INVALID: <no description>
+      METADATA_AND_DATA: <no description>
+      METADATA_ONLY: <no description>
+    """
+    INVALID = 0
+    METADATA_AND_DATA = 1
+    METADATA_ONLY = 2
+
+  baseInstantSnapshot = _messages.StringField(1)
+  bucketName = _messages.StringField(2)
+  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 3)
+  objectName = _messages.StringField(4)
+  outputType = _messages.EnumField('OutputTypeValueValuesEnum', 5)
+
+
+class InstantSnapshotList(_messages.Message):
+  r"""Contains a list of InstantSnapshot resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InstantSnapshot resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('InstantSnapshot', 2, repeated=True)
+  kind = _messages.StringField(3, default='compute#instantSnapshotList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class InstantSnapshotResourceStatus(_messages.Message):
+  r"""A InstantSnapshotResourceStatus object.
+
+  Fields:
+    storageSizeBytes: [Output Only] The storage size of this instant snapshot.
+  """
+
+  storageSizeBytes = _messages.IntegerField(1)
+
+
+class InstantSnapshotsExportRequest(_messages.Message):
+  r"""A InstantSnapshotsExportRequest object.
+
+  Fields:
+    exportParams: Parameters to export the changed blocks.
+  """
+
+  exportParams = _messages.MessageField('InstantSnapshotExportParams', 1)
+
+
+class InstantSnapshotsScopedList(_messages.Message):
+  r"""A InstantSnapshotsScopedList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning which replaces the list
+      of instantSnapshots when the list is empty.
+
+  Fields:
+    instantSnapshots: [Output Only] A list of instantSnapshots contained in
+      this scope.
+    warning: [Output Only] Informational warning which replaces the list of
+      instantSnapshots when the list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning which replaces the list of
+    instantSnapshots when the list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  instantSnapshots = _messages.MessageField('InstantSnapshot', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
 
 
 class Int64RangeMatch(_messages.Message):
@@ -47055,7 +48456,7 @@ class MachineType(_messages.Message):
     Fields:
       guestAcceleratorCount: Number of accelerator cards exposed to the guest.
       guestAcceleratorType: The accelerator type resource name, not a full
-        URL, e.g. 'nvidia-tesla-k80'.
+        URL, e.g. nvidia-tesla-t4.
     """
 
     guestAcceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -58174,6 +59575,16 @@ class RegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
   namedPorts = _messages.MessageField('NamedPort', 2, repeated=True)
 
 
+class RegionInstantSnapshotsExportRequest(_messages.Message):
+  r"""A RegionInstantSnapshotsExportRequest object.
+
+  Fields:
+    exportParams: Parameters to export the changed blocks.
+  """
+
+  exportParams = _messages.MessageField('InstantSnapshotExportParams', 1)
+
+
 class RegionList(_messages.Message):
   r"""Contains a list of region resources.
 
@@ -61471,8 +62882,7 @@ class RouterNat(_messages.Message):
       LIST_OF_SUBNETWORKS: A list of Subnetworks are allowed to Nat (specified
       in the field subnetwork below) The default is
       SUBNETWORK_IP_RANGE_TO_NAT_OPTION_UNSPECIFIED. Note that if this field
-      contains ALL_SUBNETWORKS_ALL_IP_RANGES or
-      ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any
+      contains ALL_SUBNETWORKS_ALL_IP_RANGES then there should not be any
       other Router.Nat section in any Router for this network in this region.
 
   Fields:
@@ -61526,9 +62936,9 @@ class RouterNat(_messages.Message):
       every Subnetwork are allowed to Nat. - LIST_OF_SUBNETWORKS: A list of
       Subnetworks are allowed to Nat (specified in the field subnetwork below)
       The default is SUBNETWORK_IP_RANGE_TO_NAT_OPTION_UNSPECIFIED. Note that
-      if this field contains ALL_SUBNETWORKS_ALL_IP_RANGES or
-      ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any
-      other Router.Nat section in any Router for this network in this region.
+      if this field contains ALL_SUBNETWORKS_ALL_IP_RANGES then there should
+      not be any other Router.Nat section in any Router for this network in
+      this region.
     subnetworks: A list of Subnetwork resources whose traffic should be
       translated by NAT Gateway. It is used only when LIST_OF_SUBNETWORKS is
       selected for the SubnetworkIpRangeToNatOption above.
@@ -61596,8 +63006,7 @@ class RouterNat(_messages.Message):
     LIST_OF_SUBNETWORKS: A list of Subnetworks are allowed to Nat (specified
     in the field subnetwork below) The default is
     SUBNETWORK_IP_RANGE_TO_NAT_OPTION_UNSPECIFIED. Note that if this field
-    contains ALL_SUBNETWORKS_ALL_IP_RANGES or
-    ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any other
+    contains ALL_SUBNETWORKS_ALL_IP_RANGES then there should not be any other
     Router.Nat section in any Router for this network in this region.
 
     Values:
@@ -63100,6 +64509,13 @@ class SecurityPolicy(_messages.Message):
       with external IPs. They filter requests before the request is served
       from the application. This field can be set only at resource creation
       time.
+    userDefinedFields: Definitions of user-defined fields for
+      CLOUD_ARMOR_NETWORK policies. A user-defined field consists of up to 4
+      bytes extracted from a fixed offset in the packet, relative to the IPv4,
+      IPv6, TCP, or UDP header, with an optional mask to select certain bits.
+      Rules may then specify matching values for these fields. Example:
+      userDefinedFields: - name: "ipv4_fragment_offset" base: IPV4 offset: 6
+      size: 2 mask: "0x1fff"
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -63178,6 +64594,7 @@ class SecurityPolicy(_messages.Message):
   selfLink = _messages.StringField(19)
   selfLinkWithId = _messages.StringField(20)
   type = _messages.EnumField('TypeValueValuesEnum', 21)
+  userDefinedFields = _messages.MessageField('SecurityPolicyUserDefinedField', 22, repeated=True)
 
 
 class SecurityPolicyAdaptiveProtectionConfig(_messages.Message):
@@ -63564,6 +64981,28 @@ class SecurityPolicyRule(_messages.Message):
       compute#securityPolicyRule for security policy rules
     match: A match condition that incoming traffic is evaluated against. If it
       evaluates to true, the corresponding 'action' is enforced.
+    networkMatch: A match condition that incoming packets are evaluated
+      against for CLOUD_ARMOR_NETWORK security policies. If it matches, the
+      corresponding 'action' is enforced. The match criteria for a rule
+      consists of built-in match fields (like 'srcIpRanges') and potentially
+      multiple user-defined match fields ('userDefinedFields'). Field values
+      may be extracted directly from the packet or derived from it (e.g.
+      'srcRegionCodes'). Some fields may not be present in every packet (e.g.
+      'srcPorts'). A user-defined field is only present if the base header is
+      found in the packet and the entire field is in bounds. Each match field
+      may specify which values can match it, listing one or more ranges,
+      prefixes, or exact values that are considered a match for the field. A
+      field value must be present in order to match a specified match field.
+      If no match values are specified for a match field, then any field value
+      is considered to match it, and it's not required to be present. For
+      strings specifying '*' is also equivalent to match all. For a packet to
+      match a rule, all specified match fields must match the corresponding
+      field values derived from the packet. Example: networkMatch:
+      srcIpRanges: - "192.0.2.0/24" - "198.51.100.0/24" userDefinedFields: -
+      name: "ipv4_fragment_offset" values: - "1-0x1fff" The above match
+      condition matches packets with a source IP in 192.0.2.0/24 or
+      198.51.100.0/24 and a user-defined field named "ipv4_fragment_offset"
+      with a value between 1 and 0x1fff inclusive.
     preconfiguredWafConfig: Preconfigured WAF configuration to be applied for
       the rule. If the rule does not evaluate preconfigured WAF rules, i.e.,
       if evaluatePreconfiguredWaf() is not used, this field will have no
@@ -63610,15 +65049,16 @@ class SecurityPolicyRule(_messages.Message):
   headerAction = _messages.MessageField('SecurityPolicyRuleHttpHeaderAction', 5)
   kind = _messages.StringField(6, default='compute#securityPolicyRule')
   match = _messages.MessageField('SecurityPolicyRuleMatcher', 7)
-  preconfiguredWafConfig = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfig', 8)
-  preview = _messages.BooleanField(9)
-  priority = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 11)
-  redirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 12)
-  ruleNumber = _messages.IntegerField(13)
-  ruleTupleCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  targetResources = _messages.StringField(15, repeated=True)
-  targetServiceAccounts = _messages.StringField(16, repeated=True)
+  networkMatch = _messages.MessageField('SecurityPolicyRuleNetworkMatcher', 8)
+  preconfiguredWafConfig = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfig', 9)
+  preview = _messages.BooleanField(10)
+  priority = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 12)
+  redirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 13)
+  ruleNumber = _messages.IntegerField(14)
+  ruleTupleCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  targetResources = _messages.StringField(16, repeated=True)
+  targetServiceAccounts = _messages.StringField(17, repeated=True)
 
 
 class SecurityPolicyRuleHttpHeaderAction(_messages.Message):
@@ -63666,6 +65106,8 @@ class SecurityPolicyRuleMatcher(_messages.Message):
       `evaluatePreconfiguredExpr('sourceiplist-*')` require Cloud Armor
       Managed Protection Plus tier and are only supported in Global Security
       Policies.
+    exprOptions: The configuration options available when specifying a user
+      defined CEVAL expression (i.e., 'expr').
     versionedExpr: Preconfigured versioned expression. If this field is
       specified, config must also be specified. Available preconfigured
       expressions along with their requirements are: SRC_IPS_V1 - must specify
@@ -63688,7 +65130,8 @@ class SecurityPolicyRuleMatcher(_messages.Message):
 
   config = _messages.MessageField('SecurityPolicyRuleMatcherConfig', 1)
   expr = _messages.MessageField('Expr', 2)
-  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 3)
+  exprOptions = _messages.MessageField('SecurityPolicyRuleMatcherExprOptions', 3)
+  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 4)
 
 
 class SecurityPolicyRuleMatcherConfig(_messages.Message):
@@ -63726,6 +65169,85 @@ class SecurityPolicyRuleMatcherConfigLayer4Config(_messages.Message):
 
   ipProtocol = _messages.StringField(1)
   ports = _messages.StringField(2, repeated=True)
+
+
+class SecurityPolicyRuleMatcherExprOptions(_messages.Message):
+  r"""A SecurityPolicyRuleMatcherExprOptions object.
+
+  Fields:
+    recaptchaOptions: reCAPTCHA configuration options to be applied for the
+      rule. If the rule does not evaluate reCAPTCHA tokens, this field will
+      have no effect.
+  """
+
+  recaptchaOptions = _messages.MessageField('SecurityPolicyRuleMatcherExprOptionsRecaptchaOptions', 1)
+
+
+class SecurityPolicyRuleMatcherExprOptionsRecaptchaOptions(_messages.Message):
+  r"""A SecurityPolicyRuleMatcherExprOptionsRecaptchaOptions object.
+
+  Fields:
+    actionTokenSiteKeys: A list of site keys to be used during the validation
+      of reCAPTCHA action-tokens. The provided site keys need to be created
+      from reCAPTCHA API under the same project where the security policy is
+      created.
+    sessionTokenSiteKeys: A list of site keys to be used during the validation
+      of reCAPTCHA session-tokens. The provided site keys need to be created
+      from reCAPTCHA API under the same project where the security policy is
+      created.
+  """
+
+  actionTokenSiteKeys = _messages.StringField(1, repeated=True)
+  sessionTokenSiteKeys = _messages.StringField(2, repeated=True)
+
+
+class SecurityPolicyRuleNetworkMatcher(_messages.Message):
+  r"""Represents a match condition that incoming network traffic is evaluated
+  against.
+
+  Fields:
+    destIpRanges: Destination IPv4/IPv6 addresses or CIDR prefixes, in
+      standard text format.
+    destPorts: Destination port numbers for TCP/UDP/SCTP. Each element can be
+      a 16-bit unsigned decimal number (e.g. "80") or range (e.g. "0-1023").
+    ipProtocols: IPv4 protocol / IPv6 next header (after extension headers).
+      Each element can be an 8-bit unsigned decimal number (e.g. "6"), range
+      (e.g. "253-254"), or one of the following protocol names: "tcp", "udp",
+      "icmp", "esp", "ah", "ipip", or "sctp".
+    srcAsns: BGP Autonomous System Number associated with the source IP
+      address.
+    srcIpRanges: Source IPv4/IPv6 addresses or CIDR prefixes, in standard text
+      format.
+    srcPorts: Source port numbers for TCP/UDP/SCTP. Each element can be a
+      16-bit unsigned decimal number (e.g. "80") or range (e.g. "0-1023").
+    srcRegionCodes: Two-letter ISO 3166-1 alpha-2 country code associated with
+      the source IP address.
+    userDefinedFields: User-defined fields. Each element names a defined field
+      and lists the matching values for that field.
+  """
+
+  destIpRanges = _messages.StringField(1, repeated=True)
+  destPorts = _messages.StringField(2, repeated=True)
+  ipProtocols = _messages.StringField(3, repeated=True)
+  srcAsns = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.UINT32)
+  srcIpRanges = _messages.StringField(5, repeated=True)
+  srcPorts = _messages.StringField(6, repeated=True)
+  srcRegionCodes = _messages.StringField(7, repeated=True)
+  userDefinedFields = _messages.MessageField('SecurityPolicyRuleNetworkMatcherUserDefinedFieldMatch', 8, repeated=True)
+
+
+class SecurityPolicyRuleNetworkMatcherUserDefinedFieldMatch(_messages.Message):
+  r"""A SecurityPolicyRuleNetworkMatcherUserDefinedFieldMatch object.
+
+  Fields:
+    name: Name of the user-defined field, as given in the definition.
+    values: Matching values of the field. Each element can be a 32-bit
+      unsigned decimal or hexadecimal (starting with "0x") number (e.g. "64")
+      or range (e.g. "0x400-0x7ff").
+  """
+
+  name = _messages.StringField(1)
+  values = _messages.StringField(2, repeated=True)
 
 
 class SecurityPolicyRulePreconfiguredWafConfig(_messages.Message):
@@ -64079,6 +65601,63 @@ class SecurityPolicyRuleRedirectOptions(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
+class SecurityPolicyUserDefinedField(_messages.Message):
+  r"""A SecurityPolicyUserDefinedField object.
+
+  Enums:
+    BaseValueValuesEnum: The base relative to which 'offset' is measured.
+      Possible values are: - IPV4: Points to the beginning of the IPv4 header.
+      - IPV6: Points to the beginning of the IPv6 header. - TCP: Points to the
+      beginning of the TCP header, skipping over any IPv4 options or IPv6
+      extension headers. Not present for non-first fragments. - UDP: Points to
+      the beginning of the UDP header, skipping over any IPv4 options or IPv6
+      extension headers. Not present for non-first fragments. required
+
+  Fields:
+    base: The base relative to which 'offset' is measured. Possible values
+      are: - IPV4: Points to the beginning of the IPv4 header. - IPV6: Points
+      to the beginning of the IPv6 header. - TCP: Points to the beginning of
+      the TCP header, skipping over any IPv4 options or IPv6 extension
+      headers. Not present for non-first fragments. - UDP: Points to the
+      beginning of the UDP header, skipping over any IPv4 options or IPv6
+      extension headers. Not present for non-first fragments. required
+    mask: If specified, apply this mask (bitwise AND) to the field to ignore
+      bits before matching. Encoded as a hexadecimal number (starting with
+      "0x"). The last byte of the field (in network byte order) corresponds to
+      the least significant byte of the mask.
+    name: The name of this field. Must be unique within the policy.
+    offset: Offset of the first byte of the field (in network byte order)
+      relative to 'base'.
+    size: Size of the field in bytes. Valid values: 1-4.
+  """
+
+  class BaseValueValuesEnum(_messages.Enum):
+    r"""The base relative to which 'offset' is measured. Possible values are:
+    - IPV4: Points to the beginning of the IPv4 header. - IPV6: Points to the
+    beginning of the IPv6 header. - TCP: Points to the beginning of the TCP
+    header, skipping over any IPv4 options or IPv6 extension headers. Not
+    present for non-first fragments. - UDP: Points to the beginning of the UDP
+    header, skipping over any IPv4 options or IPv6 extension headers. Not
+    present for non-first fragments. required
+
+    Values:
+      IPV4: <no description>
+      IPV6: <no description>
+      TCP: <no description>
+      UDP: <no description>
+    """
+    IPV4 = 0
+    IPV6 = 1
+    TCP = 2
+    UDP = 3
+
+  base = _messages.EnumField('BaseValueValuesEnum', 1)
+  mask = _messages.StringField(2)
+  name = _messages.StringField(3)
+  offset = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  size = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
 class SecuritySettings(_messages.Message):
   r"""The authentication and authorization settings for a BackendService.
 
@@ -64093,7 +65672,6 @@ class SecuritySettings(_messages.Message):
       should authenticate with this service's backends. clientTlsPolicy only
       applies to a global BackendService with the loadBalancingScheme set to
       INTERNAL_SELF_MANAGED. If left blank, communications are not encrypted.
-      Note: This field currently has no impact.
     subjectAltNames: Optional. A list of Subject Alternative Names (SANs) that
       the client verifies during a mutual TLS handshake with an
       server/endpoint for this BackendService. When the server presents its
@@ -64106,7 +65684,7 @@ class SecuritySettings(_messages.Message):
       which provisions server identities. Only applies to a global
       BackendService with loadBalancingScheme set to INTERNAL_SELF_MANAGED.
       Only applies when BackendService has an attached clientTlsPolicy with
-      clientCertificate (mTLS mode). Note: This field currently has no impact.
+      clientCertificate (mTLS mode).
   """
 
   authentication = _messages.StringField(1)
@@ -65136,6 +66714,20 @@ class Snapshot(_messages.Message):
     sourceDiskId: [Output Only] The ID value of the disk used to create this
       snapshot. This value may be used to determine whether the snapshot was
       taken from the current or a previous instance of a given disk name.
+    sourceInstantSnapshot: The source instant snapshot used to create this
+      snapshot. You can provide this as a partial or full URL to the resource.
+      For example, the following are valid values: -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /instantSnapshots/instantSnapshot -
+      projects/project/zones/zone/instantSnapshots/instantSnapshot -
+      zones/zone/instantSnapshots/instantSnapshot
+    sourceInstantSnapshotId: [Output Only] The unique ID of the instant
+      snapshot used to create this snapshot. This value identifies the exact
+      instant snapshot that was used to create this persistent disk. For
+      example, if you created the persistent disk from an instant snapshot
+      that was later deleted and recreated under the same name, the source
+      instant snapshot ID would identify the exact instant snapshot that was
+      used.
     sourceSnapshotSchedulePolicy: [Output Only] URL of the resource policy
       which created this scheduled snapshot.
     sourceSnapshotSchedulePolicyId: [Output Only] ID of the resource policy
@@ -65259,13 +66851,15 @@ class Snapshot(_messages.Message):
   sourceDisk = _messages.StringField(22)
   sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
   sourceDiskId = _messages.StringField(24)
-  sourceSnapshotSchedulePolicy = _messages.StringField(25)
-  sourceSnapshotSchedulePolicyId = _messages.StringField(26)
-  status = _messages.EnumField('StatusValueValuesEnum', 27)
-  storageBytes = _messages.IntegerField(28)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 29)
-  storageLocations = _messages.StringField(30, repeated=True)
-  userLicenses = _messages.StringField(31, repeated=True)
+  sourceInstantSnapshot = _messages.StringField(25)
+  sourceInstantSnapshotId = _messages.StringField(26)
+  sourceSnapshotSchedulePolicy = _messages.StringField(27)
+  sourceSnapshotSchedulePolicyId = _messages.StringField(28)
+  status = _messages.EnumField('StatusValueValuesEnum', 29)
+  storageBytes = _messages.IntegerField(30)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 31)
+  storageLocations = _messages.StringField(32, repeated=True)
+  userLicenses = _messages.StringField(33, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -67315,18 +68909,25 @@ class Subnetwork(_messages.Message):
       This field can be both set at resource creation time and updated using
       patch.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
-      either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork
-      with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
-      subnetwork that is reserved for Internal HTTP(S) Load Balancing. If
-      unspecified, the purpose defaults to PRIVATE_RFC_1918. The
-      enableFlowLogs field isn't supported with the purpose field set to
-      INTERNAL_HTTPS_LOAD_BALANCER.
+      either PRIVATE, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+      INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+      created subnets or subnets that are automatically created in auto mode
+      networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
+      created subnetwork that is reserved for regional Envoy-based load
+      balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used
+      to publish services using Private Service Connect. A subnet with purpose
+      set to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be
+      used only by regional internal HTTP(S) load balancers. Note that
+      REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
+      load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+      The enableFlowLogs field isn't supported if the subnet purpose field is
+      set to REGIONAL_MANAGED_PROXY.
     RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
-      used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set
-      to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
-      used for Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one
-      that is ready to be promoted to ACTIVE or is currently draining. This
-      field can be updated with a patch request.
+      used when purpose = REGIONAL_MANAGED_PROXY. The value can be set to
+      ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
+      used for Envoy-based load balancers in a region. A BACKUP subnetwork is
+      one that is ready to be promoted to ACTIVE or is currently draining.
+      This field can be updated with a patch request.
     StackTypeValueValuesEnum: The stack type for the subnet. If set to
       IPV4_ONLY, new VMs in the subnet are assigned IPv4 addresses only. If
       set to IPV4_IPV6, new VMs in the subnet can be assigned both IPv4 and
@@ -67364,8 +68965,8 @@ class Subnetwork(_messages.Message):
       this field is not explicitly set, it will not appear in get listings. If
       not set the default behavior is determined by the org policy, if there
       is no org policy specified, then it will default to disabled. This field
-      isn't supported with the purpose field set to
-      INTERNAL_HTTPS_LOAD_BALANCER.
+      isn't supported if the subnet purpose field is set to
+      REGIONAL_MANAGED_PROXY.
     externalIpv6Prefix: The external IPv6 address range that is owned by this
       subnetwork.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
@@ -67411,21 +69012,29 @@ class Subnetwork(_messages.Message):
       setPrivateIpGoogleAccess.
     privateIpv6GoogleAccess: This field is for internal use. This field can be
       both set at resource creation time and updated using patch.
-    purpose: The purpose of the resource. This field can be either
-      PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with
-      purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork
-      that is reserved for Internal HTTP(S) Load Balancing. If unspecified,
-      the purpose defaults to PRIVATE_RFC_1918. The enableFlowLogs field isn't
-      supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
+    purpose: The purpose of the resource. This field can be either PRIVATE,
+      REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+      INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+      created subnets or subnets that are automatically created in auto mode
+      networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
+      created subnetwork that is reserved for regional Envoy-based load
+      balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used
+      to publish services using Private Service Connect. A subnet with purpose
+      set to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be
+      used only by regional internal HTTP(S) load balancers. Note that
+      REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
+      load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+      The enableFlowLogs field isn't supported if the subnet purpose field is
+      set to REGIONAL_MANAGED_PROXY.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
     reservedInternalRange: The URL of the reserved internal range.
     role: The role of subnetwork. Currently, this field is only used when
-      purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE
-      or BACKUP. An ACTIVE subnetwork is one that is currently being used for
-      Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is
-      ready to be promoted to ACTIVE or is currently draining. This field can
-      be updated with a patch request.
+      purpose = REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or
+      BACKUP. An ACTIVE subnetwork is one that is currently being used for
+      Envoy-based load balancers in a region. A BACKUP subnetwork is one that
+      is ready to be promoted to ACTIVE or is currently draining. This field
+      can be updated with a patch request.
     secondaryIpRanges: An array of configurations for secondary IP ranges for
       VM instances contained in this subnetwork. The primary IP of such VM
       must belong to the primary ipCidrRange of the subnetwork. The alias IPs
@@ -67476,12 +69085,20 @@ class Subnetwork(_messages.Message):
     ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE = 2
 
   class PurposeValueValuesEnum(_messages.Enum):
-    r"""The purpose of the resource. This field can be either PRIVATE_RFC_1918
-    or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with purpose set to
-    INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork that is reserved
-    for Internal HTTP(S) Load Balancing. If unspecified, the purpose defaults
-    to PRIVATE_RFC_1918. The enableFlowLogs field isn't supported with the
-    purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
+    r"""The purpose of the resource. This field can be either PRIVATE,
+    REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+    INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+    created subnets or subnets that are automatically created in auto mode
+    networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
+    created subnetwork that is reserved for regional Envoy-based load
+    balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to
+    publish services using Private Service Connect. A subnet with purpose set
+    to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be used
+    only by regional internal HTTP(S) load balancers. Note that
+    REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
+    load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+    The enableFlowLogs field isn't supported if the subnet purpose field is
+    set to REGIONAL_MANAGED_PROXY.
 
     Values:
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
@@ -67501,10 +69118,10 @@ class Subnetwork(_messages.Message):
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when
-    purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE or
+    purpose = REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or
     BACKUP. An ACTIVE subnetwork is one that is currently being used for
-    Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is ready
-    to be promoted to ACTIVE or is currently draining. This field can be
+    Envoy-based load balancers in a region. A BACKUP subnetwork is one that is
+    ready to be promoted to ACTIVE or is currently draining. This field can be
     updated with a patch request.
 
     Values:
@@ -67940,7 +69557,8 @@ class SubnetworkLogConfig(_messages.Message):
     enable: Whether to enable flow logging for this subnetwork. If this field
       is not explicitly set, it will not appear in get listings. If not set
       the default behavior is determined by the org policy, if there is no org
-      policy specified, then it will default to disabled.
+      policy specified, then it will default to disabled. Flow logging isn't
+      supported if the subnet purpose field is set to REGIONAL_MANAGED_PROXY.
     filterExpr: Can only be specified if VPC flow logs for this subnetwork is
       enabled. The filter expression is used to define which VPC flow logs
       should be exported to Cloud Logging.
@@ -69915,6 +71533,8 @@ class TargetInstance(_messages.Message):
     network: The URL of the network this target instance uses to forward
       traffic. If not specified, the traffic will be forwarded to the network
       that the default network interface belongs to.
+    securityPolicy: [Output Only] The resource URL for the security policy
+      associated with this target instance.
     selfLink: [Output Only] Server-defined URL for the resource.
     zone: [Output Only] URL of the zone where the target instance resides. You
       must specify this field as part of the HTTP request URL. It is not
@@ -69939,8 +71559,9 @@ class TargetInstance(_messages.Message):
   name = _messages.StringField(6)
   natPolicy = _messages.EnumField('NatPolicyValueValuesEnum', 7)
   network = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  zone = _messages.StringField(10)
+  securityPolicy = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  zone = _messages.StringField(11)
 
 
 class TargetInstanceAggregatedList(_messages.Message):
@@ -70498,6 +72119,8 @@ class TargetPool(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     region: [Output Only] URL of the region where the target pool resides.
+    securityPolicy: [Output Only] The resource URL for the security policy
+      associated with this target pool.
     selfLink: [Output Only] Server-defined URL for the resource.
     sessionAffinity: Session affinity option, must be one of the following
       values: NONE: Connections from the same client IP may go to any instance
@@ -70562,8 +72185,9 @@ class TargetPool(_messages.Message):
   kind = _messages.StringField(8, default='compute#targetPool')
   name = _messages.StringField(9)
   region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 12)
+  securityPolicy = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 13)
 
 
 class TargetPoolAggregatedList(_messages.Message):
@@ -73491,18 +75115,25 @@ class UsableSubnetwork(_messages.Message):
       holds. It's immutable and can only be specified during creation or the
       first time the subnet is updated into IPV4_IPV6 dual stack.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
-      either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork
-      with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
-      subnetwork that is reserved for Internal HTTP(S) Load Balancing. If
-      unspecified, the purpose defaults to PRIVATE_RFC_1918. The
-      enableFlowLogs field isn't supported with the purpose field set to
-      INTERNAL_HTTPS_LOAD_BALANCER.
+      either PRIVATE, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+      INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+      created subnets or subnets that are automatically created in auto mode
+      networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
+      created subnetwork that is reserved for regional Envoy-based load
+      balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used
+      to publish services using Private Service Connect. A subnet with purpose
+      set to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be
+      used only by regional internal HTTP(S) load balancers. Note that
+      REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
+      load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+      The enableFlowLogs field isn't supported if the subnet purpose field is
+      set to REGIONAL_MANAGED_PROXY.
     RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
-      used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set
-      to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
-      used for Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one
-      that is ready to be promoted to ACTIVE or is currently draining. This
-      field can be updated with a patch request.
+      used when purpose = REGIONAL_MANAGED_PROXY. The value can be set to
+      ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
+      used for Envoy-based load balancers in a region. A BACKUP subnetwork is
+      one that is ready to be promoted to ACTIVE or is currently draining.
+      This field can be updated with a patch request.
     StackTypeValueValuesEnum: The stack type for the subnet. If set to
       IPV4_ONLY, new VMs in the subnet are assigned IPv4 addresses only. If
       set to IPV4_IPV6, new VMs in the subnet can be assigned both IPv4 and
@@ -73520,18 +75151,26 @@ class UsableSubnetwork(_messages.Message):
       immutable and can only be specified during creation or the first time
       the subnet is updated into IPV4_IPV6 dual stack.
     network: Network URL.
-    purpose: The purpose of the resource. This field can be either
-      PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with
-      purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork
-      that is reserved for Internal HTTP(S) Load Balancing. If unspecified,
-      the purpose defaults to PRIVATE_RFC_1918. The enableFlowLogs field isn't
-      supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
+    purpose: The purpose of the resource. This field can be either PRIVATE,
+      REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+      INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+      created subnets or subnets that are automatically created in auto mode
+      networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
+      created subnetwork that is reserved for regional Envoy-based load
+      balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used
+      to publish services using Private Service Connect. A subnet with purpose
+      set to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be
+      used only by regional internal HTTP(S) load balancers. Note that
+      REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
+      load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+      The enableFlowLogs field isn't supported if the subnet purpose field is
+      set to REGIONAL_MANAGED_PROXY.
     role: The role of subnetwork. Currently, this field is only used when
-      purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE
-      or BACKUP. An ACTIVE subnetwork is one that is currently being used for
-      Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is
-      ready to be promoted to ACTIVE or is currently draining. This field can
-      be updated with a patch request.
+      purpose = REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or
+      BACKUP. An ACTIVE subnetwork is one that is currently being used for
+      Envoy-based load balancers in a region. A BACKUP subnetwork is one that
+      is ready to be promoted to ACTIVE or is currently draining. This field
+      can be updated with a patch request.
     secondaryIpRanges: Secondary IP ranges.
     stackType: The stack type for the subnet. If set to IPV4_ONLY, new VMs in
       the subnet are assigned IPv4 addresses only. If set to IPV4_IPV6, new
@@ -73556,12 +75195,20 @@ class UsableSubnetwork(_messages.Message):
     INTERNAL = 1
 
   class PurposeValueValuesEnum(_messages.Enum):
-    r"""The purpose of the resource. This field can be either PRIVATE_RFC_1918
-    or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with purpose set to
-    INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork that is reserved
-    for Internal HTTP(S) Load Balancing. If unspecified, the purpose defaults
-    to PRIVATE_RFC_1918. The enableFlowLogs field isn't supported with the
-    purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
+    r"""The purpose of the resource. This field can be either PRIVATE,
+    REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+    INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+    created subnets or subnets that are automatically created in auto mode
+    networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
+    created subnetwork that is reserved for regional Envoy-based load
+    balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to
+    publish services using Private Service Connect. A subnet with purpose set
+    to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be used
+    only by regional internal HTTP(S) load balancers. Note that
+    REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
+    load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+    The enableFlowLogs field isn't supported if the subnet purpose field is
+    set to REGIONAL_MANAGED_PROXY.
 
     Values:
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
@@ -73581,10 +75228,10 @@ class UsableSubnetwork(_messages.Message):
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when
-    purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE or
+    purpose = REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or
     BACKUP. An ACTIVE subnetwork is one that is currently being used for
-    Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is ready
-    to be promoted to ACTIVE or is currently draining. This field can be
+    Envoy-based load balancers in a region. A BACKUP subnetwork is one that is
+    ready to be promoted to ACTIVE or is currently draining. This field can be
     updated with a patch request.
 
     Values:

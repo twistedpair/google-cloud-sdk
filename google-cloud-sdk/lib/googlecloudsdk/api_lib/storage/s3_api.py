@@ -681,10 +681,6 @@ class S3Api(cloud_api.CloudApi):
     # All fields common to both put_object and upload_fileobj are added
     # to the extra_args dict.
     extra_args = {}
-    if isinstance(source_resource, resource_reference.FileObjectResource):
-      file_path = source_resource.storage_url.object_name
-    else:
-      file_path = None
 
     if isinstance(source_resource, resource_reference.ObjectResource):
       if source_resource.custom_fields:
@@ -693,7 +689,7 @@ class S3Api(cloud_api.CloudApi):
     s3_metadata_util.update_object_metadata_dict_from_request_config(
         extra_args,
         request_config,
-        file_path=file_path,
+        attributes_resource=source_resource,
     )
 
     md5_hash = getattr(request_config.resource_args, 'md5_hash', None)

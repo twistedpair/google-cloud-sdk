@@ -50,6 +50,16 @@ properties:
     type: array
     items:
       type: string
+  httpKeepAliveTimeoutSec:
+    description: |-
+      Specifies how long to keep a connection open, after completing a
+      response, while there is no matching traffic (in seconds). If an HTTP
+      keep-alive is not specified, a default value (610 seconds) will be
+      used. For Global external HTTP(S) load balancer, the minimum allowed
+      value is 5 seconds and the maximum allowed value is 1200 seconds. For
+      Global external HTTP(S) load balancer (classic), this option is not
+      available publicly.
+    type: integer
   kind:
     description: |-
       [Output Only] Type of resource. Always compute#targetHttpProxy for target

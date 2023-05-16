@@ -2758,6 +2758,16 @@ MAP = {
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
+        'v3beta':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.policytroubleshooter.v3beta',
+                    client_classpath='policytroubleshooter_v3beta_client.PolicytroubleshooterV3beta',
+                    base_url='https://policytroubleshooter.googleapis.com/',
+                    messages_modulepath='policytroubleshooter_v3beta_messages'),
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
     },
     'privateca': {
         'v1':

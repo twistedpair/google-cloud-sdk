@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import json
 import re
 
 from apitools.base.py import encoding
@@ -164,13 +165,28 @@ def GetSourceParentFromResourceName(resource_name):
           list_source_components[2] + "/" + list_source_components[3])
 
 
+def ProcessCustomEtdConfigFile(file_contents):
+  """Processes the configuration file for the ETD custom module."""
+  messages = sc_client.GetMessages()
+  try:
+    config = json.loads(file_contents)
+    return encoding.DictToMessage(
+        config, messages.EventThreatDetectionCustomModule.ConfigValue
+    )
+  except json.JSONDecodeError as e:
+    raise InvalidCustomConfigFileError(
+        "Error parsing custom config file [{}]".format(e)
+    )
+
+
 def ProcessCustomConfigFile(file_contents):
   """Process the custom configuration file for the custom module."""
   messages = sc_client.GetMessages()
   try:
-    custom_config_dict = yaml.load(file_contents)
+    config_dict = yaml.load(file_contents)
     return encoding.DictToMessage(
-        custom_config_dict, messages.GoogleCloudSecuritycenterV1CustomConfig)
+        config_dict, messages.GoogleCloudSecuritycenterV1CustomConfig
+    )
   except yaml.YAMLParseError as ype:
     raise InvalidCustomConfigFileError(
         "Error parsing custom config file [{}]".format(ype))

@@ -78,7 +78,9 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
         download_strategy=download_strategy,
         decryption_key=decryption_key)
     downloader.run()
-    # TODO(b/261180916) Return server encoding.
+    # Unlike JSON, the response message for gRPC does not hold any
+    # content-encoding information. Hence, we do not have to return the
+    # server encoding here.
     return None
 
   def upload_object(self,

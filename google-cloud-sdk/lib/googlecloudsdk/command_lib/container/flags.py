@@ -4211,7 +4211,14 @@ Examples:
       default={},
       help=help_text,
       metavar='KEY=VALUE',
-      action=arg_parsers.StoreOnceAction)
+      action=actions.DeprecationAction(
+          '--linux-sysctls',
+          warn=(
+              'The `--linux-sysctls` flag is deprecated. Please use '
+              '`--system-config-from-file` instead. '
+          ),
+      ),
+  )
 
 
 def AddDisableDefaultSnatFlag(parser, for_cluster_create=False):
@@ -5271,3 +5278,15 @@ def AddAdditionalPodNetworkFlag(parser, hidden=False):
       *max-pods-per-node*::: (Optional) Maximum amount of pods per node that can utilize this ipv4-range.
       Defaults to NodePool (if specified) or Cluster value.
       """)
+
+
+def AddEnableDNSEndpoint(parser):
+  """Adds the --enable-dns-endpoint flag to parser."""
+  help_text = ' '
+  parser.add_argument(
+      '--enable-dns-endpoint',
+      default=None,
+      hidden=True,
+      action='store_true',
+      help=help_text
+  )

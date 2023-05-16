@@ -379,7 +379,8 @@ def CreateAdvancedMachineFeaturesMessage(messages,
                                          threads_per_core=None,
                                          numa_node_count=None,
                                          visible_core_count=None,
-                                         enable_uefi_networking=None):
+                                         enable_uefi_networking=None,
+                                         performance_monitoring_unit=None):
   """Create AdvancedMachineFeatures message for an Instance."""
   # Start with an empty AdvancedMachineFeatures and optionally add on
   # the features we have like CreateSchedulingMessage does. This lets us
@@ -400,6 +401,11 @@ def CreateAdvancedMachineFeaturesMessage(messages,
 
   if enable_uefi_networking is not None:
     features.enableUefiNetworking = enable_uefi_networking
+
+  if performance_monitoring_unit is not None:
+    features.performanceMonitoringUnit = messages.AdvancedMachineFeatures.PerformanceMonitoringUnitValueValuesEnum(
+        performance_monitoring_unit.upper()
+    )
 
   return features
 

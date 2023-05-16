@@ -26,6 +26,7 @@ import threading
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import regex_util
 from googlecloudsdk.command_lib.storage import rsync_command_util
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.tasks import task
@@ -41,6 +42,7 @@ class GetSortedContainerContentsTask(task.Task):
       self,
       container,
       output_path,
+      exclude_pattern_strings=None,
       recurse=False,
   ):
     """Initializes task.
@@ -48,13 +50,25 @@ class GetSortedContainerContentsTask(task.Task):
     Args:
       container (Resource): Contains path of files to fetch.
       output_path (str): Where to write final sorted file list.
+      exclude_pattern_strings (List[str]|None): Ignore resources whose paths
+        matched these regex patterns.
       recurse (bool): Gather nested items in container.
     """
     super(GetSortedContainerContentsTask, self).__init__()
-    self._container_path = container.storage_url.join(
+    self._container_query_path = container.storage_url.join(
         '**' if recurse else '*'
-    ).versionless_url_string
+    ).url_string
     self._output_path = output_path
+
+    if exclude_pattern_strings:
+      container_prefix_length = len(container.storage_url.join('').url_string)
+      self._exclude_patterns = regex_util.Patterns(
+          exclude_pattern_strings,
+          # Confirm container URL ends in a delimiter.
+          ignore_prefix_length=container_prefix_length,
+      )
+    else:
+      self._exclude_patterns = None
 
     self._worker_id = 'process {} thread {}'.format(
         os.getpid(), threading.get_ident()
@@ -64,15 +78,15 @@ class GetSortedContainerContentsTask(task.Task):
     del task_status_queue  # Unused.
     file_iterator = iter(
         wildcard_iterator.get_wildcard_iterator(
-            self._container_path,
+            self._container_query_path,
             fields_scope=cloud_api.FieldsScope.RSYNC,
             files_only=True,
+            exclude_patterns=self._exclude_patterns,
         )
     )
     chunk_count = file_count = 0
     chunk_file_paths = []
     chunk_file_readers = []
-    # TODO(b/267511582): Test perf of different default chunk sizes.
     chunk_size = properties.VALUES.storage.rsync_list_chunk_size.GetInt()
     try:
       while True:
@@ -83,13 +97,13 @@ class GetSortedContainerContentsTask(task.Task):
         file_count += len(resources_chunk)
         log.status.Print(
             'At {}, worker {} listed {}...'.format(
-                self._container_path, self._worker_id, file_count
+                self._container_query_path, self._worker_id, file_count
             )
         )
 
         chunk_file_paths.append(
             rsync_command_util.get_hashed_list_file_path(
-                self._container_path, chunk_count
+                self._container_query_path, chunk_count
             )
         )
         sorted_encoded_chunk = sorted(
@@ -130,6 +144,7 @@ class GetSortedContainerContentsTask(task.Task):
     if not isinstance(other, type(self)):
       return NotImplemented
     return (
-        self._container_path == other._container_path
+        self._container_query_path == other._container_query_path
+        and self._exclude_patterns == other._exclude_patterns
         and self._output_path == other._output_path
     )

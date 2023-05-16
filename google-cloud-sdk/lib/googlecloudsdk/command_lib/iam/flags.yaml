@@ -453,6 +453,25 @@ workforce_pool_provider:
     help_text: |-
       The OIDC client ID. This must match the audience claim of the JWT issued by the identity
       provider.
+  oidc_client_secret_value: &oidc_client_secret_value
+    api_field: workforcePoolProvider.oidc.clientSecret.value.plainText
+    arg_name: client-secret-value
+    hidden: true
+    help_text: |-
+      The OIDC client secret. Required to enable Authorization Code flow for web sign-in.
+  oidc_clearable_client_secret:
+    group:
+      mutex: true
+      hidden: true
+      params:
+      - arg_name: clear-client-secret
+        api_field: workforcePoolProvider.oidc.clientSecret
+        action: store_true
+        processor: googlecloudsdk.command_lib.iam.hooks:ClearFlag
+        hidden: true
+        help_text: |-
+          Clear the OIDC client secret.
+      - *oidc_client_secret_value
   oidc_web_sso_response_type:
     api_field: workforcePoolProvider.oidc.webSsoConfig.responseType
     arg_name: web-sso-response-type

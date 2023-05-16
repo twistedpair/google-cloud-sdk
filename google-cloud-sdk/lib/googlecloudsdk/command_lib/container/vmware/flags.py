@@ -281,13 +281,25 @@ def AddAdminClusterMembershipResourceArg(
   name = (
       'admin_cluster_membership' if positional else '--admin-cluster-membership'
   )
+  admin_cluster_membership_help_text = """membership of the admin cluster. Membership name is the same as the admin cluster name.
+
+Examples:
+
+  $ {command}
+        --admin-cluster-membership=projects/example-project-12345/locations/us-west1/memberships/example-admin-cluster-name
+
+or
+
+  $ {command}
+        --admin-cluster-membership-project=example-project-12345
+        --admin-cluster-membership-location=us-west1
+        --admin-cluster-membership=example-admin-cluster-name
+
+  """
   concept_parsers.ConceptParser.ForResource(
       name,
       GetAdminClusterMembershipResourceSpec(),
-      (
-          'membership of the admin cluster. Membership can be the membership ID'
-          ' or the full resource name.'
-      ),
+      admin_cluster_membership_help_text,
       required=required,
       flag_name_overrides={
           'project': '--admin-cluster-membership-project',

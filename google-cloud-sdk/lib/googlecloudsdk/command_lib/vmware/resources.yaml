@@ -17,7 +17,7 @@ location:
   - &location
     parameter_name: locationsId
     attribute_name: location
-    help: Zone of the private cloud or cluster.
+    help: Location of the private cloud or cluster.
     property: compute/zone
   disable_auto_completers: false
 

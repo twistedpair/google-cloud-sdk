@@ -42,18 +42,21 @@ def CreateAssuredParent(organization_id, location):
   return 'organizations/{}/locations/{}'.format(organization_id, location)
 
 
-def CreateAssuredWorkload(display_name=None,
-                          compliance_regime=None,
-                          partner=None,
-                          billing_account=None,
-                          next_rotation_time=None,
-                          rotation_period=None,
-                          labels=None,
-                          etag=None,
-                          provisioned_resources_parent=None,
-                          resource_settings=None,
-                          enable_sovereign_controls=None,
-                          release_track=ReleaseTrack.GA):
+def CreateAssuredWorkload(
+    display_name=None,
+    compliance_regime=None,
+    partner=None,
+    billing_account=None,
+    next_rotation_time=None,
+    rotation_period=None,
+    labels=None,
+    etag=None,
+    provisioned_resources_parent=None,
+    resource_settings=None,
+    enable_sovereign_controls=None,
+    violation_notifications_enabled=None,
+    release_track=ReleaseTrack.GA,
+):
   """Construct an Assured Workload message for Assured Workloads Beta API requests.
 
   Args:
@@ -78,6 +81,8 @@ def CreateAssuredWorkload(display_name=None,
         consumer-project-id={ID1},encryption-keys-project-id={ID2}
     enable_sovereign_controls: bool, whether to enable sovereign controls for
       the Assured Workloads environment.
+    violation_notifications_enabled: bool, whether email notifications are
+      enabled or disabled
     release_track: ReleaseTrack, gcloud release track being used
 
   Returns:
@@ -92,6 +97,10 @@ def CreateAssuredWorkload(display_name=None,
     workload.billingAccount = billing_account
   if display_name:
     workload.displayName = display_name
+  if violation_notifications_enabled:
+    workload.violationNotificationsEnabled = (
+        GetViolationNotificationsEnabled(violation_notifications_enabled)
+    )
   if labels:
     workload.labels = CreateLabels(labels, workload_message)
   if compliance_regime:
@@ -115,6 +124,15 @@ def CreateAssuredWorkload(display_name=None,
 def CreateAssuredWorkloadsParent(organization_id, location, workload_id):
   return 'organizations/{}/locations/{}/workloads/{}'.format(
       organization_id, location, workload_id)
+
+
+def GetViolationNotificationsEnabled(violation_notifications_enabled):
+  if violation_notifications_enabled.lower() == 'true':
+    return True
+  if violation_notifications_enabled.lower() == 'false':
+    return False
+  else:
+    return violation_notifications_enabled
 
 
 def CreateLabels(labels, workload_message):
@@ -174,12 +192,14 @@ def CreateResourceSettings(resource_type, release_track):
   return resource_settings_message(resourceType=resource_type)
 
 
-def CreateUpdateMask(display_name, labels):
+def CreateUpdateMask(display_name, labels, violation_notifications_enabled):
   update_mask = []
   if display_name:
     update_mask.append('workload.display_name')
   if labels:
     update_mask.append('workload.labels')
+  if violation_notifications_enabled:
+    update_mask.append('workload.violation_notifications_enabled')
   return ','.join(update_mask)
 
 

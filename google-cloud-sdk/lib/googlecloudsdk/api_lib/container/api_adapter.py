@@ -680,6 +680,7 @@ class CreateClusterOptions(object):
       security_posture=None,
       workload_vulnerability_scanning=None,
       enable_runtime_vulnerability_insight=None,
+      enable_dns_endpoint=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -874,6 +875,7 @@ class CreateClusterOptions(object):
     self.enable_runtime_vulnerability_insight = (
         enable_runtime_vulnerability_insight
     )
+    self.enable_dns_endpoint = enable_dns_endpoint
 
 
 class UpdateClusterOptions(object):
@@ -3434,7 +3436,7 @@ class APIAdapter(object):
     Args:
       disable_ingress: whether to disable the GCLB ingress controller.
       disable_hpa: whether to disable the horizontal pod autoscaling controller.
-      disable_dashboard: whether to disable the Kuberntes Dashboard.
+      disable_dashboard: whether to disable the Kubernetes Dashboard.
       disable_network_policy: whether to disable NetworkPolicy enforcement.
       enable_node_local_dns: whether to enable NodeLocalDNS cache.
       enable_gcepd_csi_driver: whether to enable GcePersistentDiskCsiDriver.
@@ -4902,6 +4904,18 @@ class V1Beta1Adapter(V1Adapter):
     if options.ipv6_access_type is not None:
       cluster.ipAllocationPolicy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
           self.messages).GetEnumForChoice(options.ipv6_access_type)
+
+    if options.enable_dns_endpoint is not None:
+      if cluster.controlPlaneEndpointsConfig is None:
+        cluster.controlPlaneEndpointsConfig = (
+            self.messages.ControlPlaneEndpointsConfig()
+        )
+      dns_endpoint_config = self.messages.DNSEndpointConfig(
+          enabled=options.enable_dns_endpoint)
+      cluster.controlPlaneEndpointsConfig.dnsEndpointConfig = (
+          dns_endpoint_config
+      )
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -5432,6 +5446,17 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.ipAllocationPolicy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
           self.messages).GetEnumForChoice(options.ipv6_access_type)
     cluster.master = _GetMasterForClusterCreate(options, self.messages)
+
+    if options.enable_dns_endpoint is not None:
+      if cluster.controlPlaneEndpointsConfig is None:
+        cluster.controlPlaneEndpointsConfig = (
+            self.messages.ControlPlaneEndpointsConfig()
+        )
+      dns_endpoint_config = self.messages.DNSEndpointConfig(
+          enabled=options.enable_dns_endpoint)
+      cluster.controlPlaneEndpointsConfig.dnsEndpointConfig = (
+          dns_endpoint_config
+      )
 
     cluster.kubernetesObjectsExportConfig = _GetKubernetesObjectsExportConfigForClusterCreate(
         options, self.messages)

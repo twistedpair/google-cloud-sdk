@@ -42,5 +42,9 @@ class InvalidUrlError(Error):
   """Error raised when the url string is not in the expected format."""
 
 
+class SystemPermissionError(Error):
+  """Error raised when encountering a systems-permissions-related issue."""
+
+
 class ValueCannotBeDeterminedError(Error):
   """Error raised when attempting to access unknown information."""

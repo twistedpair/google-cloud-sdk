@@ -167,7 +167,12 @@ class MigrationJobsClient(object):
     )
 
   def _GetMigrationJob(
-      self, source_ref, destination_ref, conversion_workspace_ref, args
+      self,
+      source_ref,
+      destination_ref,
+      conversion_workspace_ref,
+      cmek_key_ref,
+      args,
   ):
     """Returns a migration job."""
     migration_job_type = self.messages.MigrationJob
@@ -198,6 +203,8 @@ class MigrationJobsClient(object):
       migration_job_obj.conversionWorkspace = self._GetConversionWorkspaceInfo(
           conversion_workspace_ref, args
       )
+    if cmek_key_ref is not None:
+      migration_job_obj.cmekKeyName = cmek_key_ref.RelativeName()
 
     if args.IsKnownAndSpecified('filter'):
       args.filter, server_filter = filter_rewrite.Rewriter().Rewrite(
@@ -283,6 +290,7 @@ class MigrationJobsClient(object):
       source_ref,
       destination_ref,
       conversion_workspace_ref=None,
+      cmek_key_ref=None,
       args=None,
   ):
     """Creates a migration job.
@@ -297,6 +305,8 @@ class MigrationJobsClient(object):
         datamigration.projects.locations.connectionProfiles resource.
       conversion_workspace_ref: a Resource reference to a
         datamigration.projects.locations.conversionWorkspaces resource.
+      cmek_key_ref: a Resource reference to a
+        cloudkms.projects.locations.keyRings.cryptoKeys resource.
       args: argparse.Namespace, The arguments that this command was invoked
         with.
 
@@ -307,7 +317,11 @@ class MigrationJobsClient(object):
     self._ValidateConversionWorkspaceArgs(conversion_workspace_ref, args)
 
     migration_job = self._GetMigrationJob(
-        source_ref, destination_ref, conversion_workspace_ref, args
+        source_ref,
+        destination_ref,
+        conversion_workspace_ref,
+        cmek_key_ref,
+        args,
     )
 
     request_id = api_util.GenerateRequestId()

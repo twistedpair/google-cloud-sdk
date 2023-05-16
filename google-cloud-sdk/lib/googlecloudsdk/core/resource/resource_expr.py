@@ -470,6 +470,13 @@ class _ExprOperator(_Expr):
     key : Property decorator for the resource object key.
   """
 
+  _TIME_TYPES = (
+      times.datetime.date,
+      times.datetime.time,
+      times.datetime.timedelta,
+      times.datetime.tzinfo,
+  )
+
   def __init__(self, backend, key, operand, transform):
     super(_ExprOperator, self).__init__(backend)
     self._key = key
@@ -570,17 +577,26 @@ class _ExprOperator(_Expr):
           except (TypeError, ValueError):
             pass
 
+        if not value and isinstance(operand.string_value, self._TIME_TYPES):
+          continue
+
         try:
           if self.Apply(value, operand.string_value):
             return True
         except (AttributeError, ValueError):
           pass
         except TypeError:
-          if (value is not None and
-              not isinstance(value, (six.string_types, dict, list)) and
-              self.Apply(_Stringize(value), operand.string_value)):
+          if (
+              value is not None
+              and not isinstance(value, (six.string_types, dict, list))
+              and self.Apply(_Stringize(value), operand.string_value)
+          ):
             return True
-          if six.PY3 and value is None and self.Apply('', operand.string_value):
+          if (
+              six.PY3
+              and value is None
+              and self.Apply('', operand.string_value)
+          ):
             return True
 
     return False

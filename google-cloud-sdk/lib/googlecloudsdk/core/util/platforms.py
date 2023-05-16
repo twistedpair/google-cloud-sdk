@@ -477,6 +477,9 @@ class PythonVersion(object):
   # See class docstring for descriptions of what these mean
   MIN_REQUIRED_PY3_VERSION = (3, 4)
   MIN_SUPPORTED_PY3_VERSION = (3, 5)
+  MIN_SUNSET_PY3_VERSION = (3, 5)
+  MAX_SUNSET_PY3_VERSION = (3, 7)
+  UPCOMING_PY3_MIN_SUPPORTED_VERSION = (3, 8)
   ENV_VAR_MESSAGE = """\
 
 If you have a compatible Python interpreter installed, you can use it by setting
@@ -496,6 +499,11 @@ the CLOUDSDK_PYTHON environment variable to point to it.
     return 'Please use Python version {0}.{1} and up.'.format(
         PythonVersion.MIN_SUPPORTED_PY3_VERSION[0],
         PythonVersion.MIN_SUPPORTED_PY3_VERSION[1])
+
+  def UpcomingSupportedVersionMessage(self):
+    return 'Please use Python version {0}.{1} and up.'.format(
+        PythonVersion.UPCOMING_PY3_MIN_SUPPORTED_VERSION[0],
+        PythonVersion.UPCOMING_PY3_MIN_SUPPORTED_VERSION[1])
 
   def IsCompatible(self, raise_exception=False):
     """Ensure that the Python version we are using is compatible.
@@ -554,13 +562,31 @@ the CLOUDSDK_PYTHON environment variable to point to it.
       sys.stderr.write(PythonVersion.ENV_VAR_MESSAGE)
       return False
 
+    # Warn if python version is being deprecated soon.
+    if (
+        self.version[0] == 3
+        and self.version[1] >= PythonVersion.MIN_SUNSET_PY3_VERSION[1]
+        and self.version[1] <= PythonVersion.MAX_SUNSET_PY3_VERSION[1]
+    ):
+      sys.stderr.write(
+          """\
+WARNING:  Python 3.{0}-3.{1} will be deprecated on August 8th, 2023. {2}
+{3}""".format(
+              PythonVersion.MIN_SUNSET_PY3_VERSION[1],
+              PythonVersion.MAX_SUNSET_PY3_VERSION[1],
+              self.UpcomingSupportedVersionMessage(),
+              PythonVersion.ENV_VAR_MESSAGE,
+          )
+      )
+
     # Warn that 3.4 might not work. XXX this logic needs some work
-    if (self.version >= self.MIN_REQUIRED_PY3_VERSION and
-        self.version < self.MIN_SUPPORTED_PY3_VERSION):
+    if (
+        self.version >= self.MIN_REQUIRED_PY3_VERSION
+        and self.version < self.MIN_SUPPORTED_PY3_VERSION
+    ):
       sys.stderr.write("""\
 WARNING:  Python 3.4.x is no longer officially supported by the Google Cloud SDK
 and may not function correctly. {0}
-{1}""".format(self.SupportedVersionMessage(),
-              PythonVersion.ENV_VAR_MESSAGE))
+{1}""".format(self.SupportedVersionMessage(), PythonVersion.ENV_VAR_MESSAGE))
 
     return True

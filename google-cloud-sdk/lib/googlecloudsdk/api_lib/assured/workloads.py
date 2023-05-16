@@ -129,7 +129,7 @@ class WorkloadsClient(object):
         in the form:
         organizations/{ORG_ID}/locations/{LOCATION}/workloads/{WORKLOAD_ID}.
       update_mask: str, list of the fields to be updated, for example,
-        workload.display_name,workload.labels
+        workload.display_name,workload.labels,workload.violation_notifications_enabled
 
     Returns:
       Updated Assured Workloads environment resource.

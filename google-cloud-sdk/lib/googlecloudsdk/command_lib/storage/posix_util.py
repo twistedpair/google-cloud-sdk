@@ -55,6 +55,8 @@ MODE_METADATA_KEY = 'goog-reserved-posix-mode'
 MTIME_METADATA_KEY = 'goog-reserved-file-mtime'
 UID_METADATA_KEY = 'goog-reserved-posix-uid'
 
+_SECONDS_PER_DAY = 86400
+
 
 def convert_base_ten_to_base_eight_str(base_ten_int):
   """Takes base ten integer, converts to octal, and removes extra chars."""
@@ -194,7 +196,7 @@ def raise_if_invalid_file_permissions(
       could mess with these safety checks.
 
   Raises:
-    PermissionError: Has explanatory message about permissions issue.
+    SystemPermissionError: Has explanatory message about issue.
   """
   _, _, uid, gid, mode = (
       known_posix or get_posix_attributes_from_cloud_resource(resource)
@@ -220,13 +222,17 @@ def raise_if_invalid_file_permissions(
     try:
       pwd.getpwuid(uid)
     except KeyError:
-      error = PermissionError(_MISSING_UID_FORMAT.format(url_string, uid))
+      error = errors.SystemPermissionError(
+          _MISSING_UID_FORMAT.format(url_string, uid)
+      )
       _raise_error_and_maybe_delete_file(error, delete_path)
   if gid is not None:
     try:
       grp.getgrgid(gid)
     except (KeyError, OverflowError):
-      error = PermissionError(_MISSING_GID_FORMAT.format(url_string, gid))
+      error = errors.SystemPermissionError(
+          _MISSING_GID_FORMAT.format(url_string, gid)
+      )
       _raise_error_and_maybe_delete_file(error, delete_path)
 
   if mode is None:
@@ -240,7 +246,7 @@ def raise_if_invalid_file_permissions(
     # Owner permissions take priority over group and "other".
     if mode_to_set.base_ten_int & stat.S_IRUSR:
       return
-    error = PermissionError(
+    error = errors.SystemPermissionError(
         _INSUFFICIENT_USER_READ_ACCESS_FORMAT.format(
             url_string, uid_to_set, mode_to_set.base_eight_str
         )
@@ -253,7 +259,7 @@ def raise_if_invalid_file_permissions(
     if mode_to_set.base_ten_int & stat.S_IRGRP:
       return
 
-    error = PermissionError(
+    error = errors.SystemPermissionError(
         _INSUFFICIENT_GROUP_READ_ACCESS_FORMAT.format(
             url_string,
             '[user primary group]' if gid is None else gid,
@@ -265,7 +271,7 @@ def raise_if_invalid_file_permissions(
   if mode_to_set.base_ten_int & stat.S_IROTH:
     # User is not owner and not in relevant group. User is "other".
     return
-  error = PermissionError(
+  error = errors.SystemPermissionError(
       _INSUFFICIENT_OTHER_READ_ACCESS_FORMAT.format(
           url_string, uid_to_set, mode_to_set.base_eight_str
       )
@@ -326,8 +332,8 @@ def set_posix_attributes_on_file_if_valid(
       followed.
 
   Raises:
-    PermissionError: Custom metadata asked for file ownership change that user
-      did not have permission to perform. Other permission errors from calling
+    SystemPermissionError: Custom metadata asked for file ownership change that
+      user did not have permission to perform. Other permission errors from
       OS functions are possible. Also see `raise_if_invalid_file_permissions`.
   """
   destination_path = destination_resource.storage_url.object_name
@@ -388,7 +394,7 @@ def set_posix_attributes_on_file_if_valid(
       os.remove(destination_path)
       # Custom may equal existing if user is uploading and downloading on the
       # same machine and account.
-      raise PermissionError(
+      raise errors.SystemPermissionError(
           'Root permissions required to set UID {}.'.format(uid)
       )
 
@@ -436,10 +442,15 @@ def _extract_time_from_custom_metadata(resource, key):
         )
     )
     return None
-  if timestamp > datetime.datetime.now(datetime.timezone.utc).timestamp():
+  if (
+      timestamp
+      > datetime.datetime.now(datetime.timezone.utc).timestamp()
+      + _SECONDS_PER_DAY
+  ):
     log.warning(
-        'Found future time value in {} metadata {}: {}'.format(
-            resource.storage_url.url_string, key, resource.custom_fields[key]
+        'Found {} value in {} metadata that is more than one day in the'
+        ' future from the system time: {}'.format(
+            key, resource.storage_url.url_string, resource.custom_fields[key]
         )
     )
     return None

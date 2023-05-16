@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import textwrap
+
 from googlecloudsdk.calliope import arg_parsers
 
 
@@ -104,5 +106,79 @@ def AddBackupFlag(parser):
       For example, to operate on backup `cf9f748a-7980-4703-b1a1-d1ffff591db0`:
 
         $ {command} --backup='cf9f748a-7980-4703-b1a1-d1ffff591db0'
+      """,
+  )
+
+
+def AddRequiredDatabaseIdFlag(parser):
+  """Adds flag for database id to the given parser."""
+  parser.add_argument(
+      '--database',
+      metavar='DATABASE',
+      required=True,
+      hidden=True,
+      type=str,
+      help="""
+      The database to operate on.
+
+      For example, to operate on database `foo`:
+
+        $ {command} --database='foo'
+      """)
+
+
+def AddBackupScheduleFlag(parser):
+  """Adds flag for backup schedule id to the given parser."""
+  parser.add_argument(
+      '--backup-schedule',
+      metavar='BACKUP_SCHEDULE',
+      required=True,
+      hidden=True,
+      type=str,
+      help="""
+      The backup schedule to operate on.
+
+      For example, to operate on backup schedule `091a49a0-223f-4c98-8c69-a284abbdb26b`:
+
+        $ {command} --backup-schedule='091a49a0-223f-4c98-8c69-a284abbdb26b'
+      """)
+
+
+def AddRetentionFlag(parser, required=False):
+  """Adds flag for retention to the given parser."""
+  parser.add_argument(
+      '--retention',
+      metavar='RETENTION',
+      hidden=True,
+      required=required,
+      type=arg_parsers.Duration(),
+      help=textwrap.dedent("""\
+          The rention of the backup. At what relative time in the future,
+          compared to the creation time of the backup should the backup be
+          deleted, i.e. keep backups for 7 days.
+
+          For example, to set retention as 7 days.
+
+          $ {command} --retention=7d
+          """),
+  )
+
+
+def AddRecurrenceFlag(parser):
+  """Adds flag for recurrence to the given parser."""
+  parser.add_argument(
+      '--recurrence',
+      metavar='RECURRENCE',
+      hidden=True,
+      required=True,
+      type=str,
+      help="""
+      The recurrence of the backup. recurrence represents how frequent the backups will be taken.
+
+      The available values are: `daily` and `weekly`.
+
+      For example, to set retention as 7 days.
+
+        $ {command} --recurrence=daily
       """,
   )

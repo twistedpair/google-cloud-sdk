@@ -3302,6 +3302,22 @@ def AddEnableUefiNetworkingArgs(parser):
       """)
 
 
+def AddPerformanceMonitoringUnitArgs(parser):
+  parser.add_argument(
+      '--performance-monitoring-unit',
+      choices={
+          'architectural': 'Enable architecturally defined non-LLC events.',
+          'standard': 'Enable most documented core/L2 events.',
+          'enhanced': 'Enable most documented core/L2 and LLC events.',
+      },
+      type=str,
+      help=(
+          'The set of performance measurement counters to enable for the'
+          ' instance.'
+      ),
+  )
+
+
 def AddNumaNodeCountArgs(parser):
   parser.add_argument(
       '--numa-node-count',

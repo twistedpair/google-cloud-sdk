@@ -1666,6 +1666,92 @@ class DeployJobRunMetadata(_messages.Message):
   cloudRun = _messages.MessageField('CloudRunMetadata', 1)
 
 
+class DeployParameterMapping(_messages.Message):
+  r"""A deploy parameter's key - value - targets mapping.
+
+  Fields:
+    key: Key of this deploy parameter.
+    targets: Target IDs of the targets this deploy parameter applies to.
+    value: Value of this deploy parameter.
+  """
+
+  key = _messages.StringField(1)
+  targets = _messages.StringField(2, repeated=True)
+  value = _messages.StringField(3)
+
+
+class DeployParameters(_messages.Message):
+  r"""DeployParameters contains deploy parameters information.
+
+  Messages:
+    MatchTargetLabelsValue: Optional. Deploy parameters are applied to targets
+      with match labels. If unspecified, deploy parameters are applied to all
+      targets (including child targets of a multi-target).
+    ValuesValue: Required. Values are deploy parameters in key-value pairs.
+
+  Fields:
+    matchTargetLabels: Optional. Deploy parameters are applied to targets with
+      match labels. If unspecified, deploy parameters are applied to all
+      targets (including child targets of a multi-target).
+    values: Required. Values are deploy parameters in key-value pairs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MatchTargetLabelsValue(_messages.Message):
+    r"""Optional. Deploy parameters are applied to targets with match labels.
+    If unspecified, deploy parameters are applied to all targets (including
+    child targets of a multi-target).
+
+    Messages:
+      AdditionalProperty: An additional property for a MatchTargetLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MatchTargetLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MatchTargetLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ValuesValue(_messages.Message):
+    r"""Required. Values are deploy parameters in key-value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a ValuesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ValuesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ValuesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  matchTargetLabels = _messages.MessageField('MatchTargetLabelsValue', 1)
+  values = _messages.MessageField('ValuesValue', 2)
+
+
 class DeployPolicy(_messages.Message):
   r"""A `DeployPolicy` resource in the Google Cloud Deploy API. A
   `DeployPolicy` inhibits manual or automation driven actions within a
@@ -2790,6 +2876,8 @@ class Release(_messages.Message):
       used by the user, and not by Google Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
+    DeployParametersValue: Optional. The deploy parameters to use for all
+      targets in this release.
     LabelsValue: Labels are attributes that can be set and used by both the
       user and by Google Cloud Deploy. Labels must meet the following
       constraints: * Keys and values can contain only lowercase letters,
@@ -2814,6 +2902,11 @@ class Release(_messages.Message):
     createTime: Output only. Time at which the `Release` was created.
     deliveryPipelineSnapshot: Output only. Snapshot of the parent pipeline
       taken at release creation time.
+    deployParameters: Optional. The deploy parameters to use for all targets
+      in this release.
+    deployParametersMapping: Output only. The output only table for this
+      release's deploy parameters. It is the mapping of deploy parameter's key
+      - value - applied targets.
     description: Description of the `Release`. Max length is 255 characters.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
@@ -2881,6 +2974,33 @@ class Release(_messages.Message):
 
     class AdditionalProperty(_messages.Message):
       r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DeployParametersValue(_messages.Message):
+    r"""Optional. The deploy parameters to use for all targets in this
+    release.
+
+    Messages:
+      AdditionalProperty: An additional property for a DeployParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        DeployParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DeployParametersValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2981,20 +3101,22 @@ class Release(_messages.Message):
   condition = _messages.MessageField('ReleaseCondition', 4)
   createTime = _messages.StringField(5)
   deliveryPipelineSnapshot = _messages.MessageField('DeliveryPipeline', 6)
-  description = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  renderEndTime = _messages.StringField(11)
-  renderStartTime = _messages.StringField(12)
-  renderState = _messages.EnumField('RenderStateValueValuesEnum', 13)
-  skaffoldConfigPath = _messages.StringField(14)
-  skaffoldConfigUri = _messages.StringField(15)
-  skaffoldVersion = _messages.StringField(16)
-  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 17)
-  targetRenders = _messages.MessageField('TargetRendersValue', 18)
-  targetSnapshots = _messages.MessageField('Target', 19, repeated=True)
-  uid = _messages.StringField(20)
+  deployParameters = _messages.MessageField('DeployParametersValue', 7)
+  deployParametersMapping = _messages.MessageField('DeployParameterMapping', 8, repeated=True)
+  description = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  renderEndTime = _messages.StringField(13)
+  renderStartTime = _messages.StringField(14)
+  renderState = _messages.EnumField('RenderStateValueValuesEnum', 15)
+  skaffoldConfigPath = _messages.StringField(16)
+  skaffoldConfigUri = _messages.StringField(17)
+  skaffoldVersion = _messages.StringField(18)
+  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 19)
+  targetRenders = _messages.MessageField('TargetRendersValue', 20)
+  targetSnapshots = _messages.MessageField('Target', 21, repeated=True)
+  uid = _messages.StringField(22)
 
 
 class ReleaseCondition(_messages.Message):
@@ -3567,6 +3689,8 @@ class Stage(_messages.Message):
   r"""Stage specifies a location to which to deploy.
 
   Fields:
+    deployParameters: Optional. The deploy parameters to use for the target in
+      this stage.
     profiles: Skaffold profiles to use when rendering the manifest for this
       stage's `Target`.
     strategy: Optional. The strategy to use for a `Rollout` to this stage.
@@ -3578,9 +3702,10 @@ class Stage(_messages.Message):
       `DeliveryPipeline` that contains this `Stage`.
   """
 
-  profiles = _messages.StringField(1, repeated=True)
-  strategy = _messages.MessageField('Strategy', 2)
-  targetId = _messages.StringField(3)
+  deployParameters = _messages.MessageField('DeployParameters', 1, repeated=True)
+  profiles = _messages.StringField(2, repeated=True)
+  strategy = _messages.MessageField('Strategy', 3)
+  targetId = _messages.StringField(4)
 
 
 class Standard(_messages.Message):
@@ -3730,6 +3855,8 @@ class Target(_messages.Message):
       set and used by the user, and not by Google Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
+    DeployParametersValue: Optional. The deploy parameters to use for this
+      target.
     LabelsValue: Optional. Labels are attributes that can be set and used by
       both the user and by Google Cloud Deploy. Labels must meet the following
       constraints: * Keys and values can contain only lowercase letters,
@@ -3746,6 +3873,7 @@ class Target(_messages.Message):
       and size limitations.
     anthosCluster: Information specifying an Anthos Cluster.
     createTime: Output only. Time at which the `Target` was created.
+    deployParameters: Optional. The deploy parameters to use for this target.
     description: Optional. Description of the `Target`. Max length is 255
       characters.
     etag: Optional. This checksum is computed by the server based on the value
@@ -3807,6 +3935,32 @@ class Target(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class DeployParametersValue(_messages.Message):
+    r"""Optional. The deploy parameters to use for this target.
+
+    Messages:
+      AdditionalProperty: An additional property for a DeployParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        DeployParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DeployParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Labels are attributes that can be set and used by both the
     user and by Google Cloud Deploy. Labels must meet the following
@@ -3840,18 +3994,19 @@ class Target(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   anthosCluster = _messages.MessageField('AnthosCluster', 2)
   createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  executionConfigs = _messages.MessageField('ExecutionConfig', 6, repeated=True)
-  gke = _messages.MessageField('GkeCluster', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  multiTarget = _messages.MessageField('MultiTarget', 9)
-  name = _messages.StringField(10)
-  requireApproval = _messages.BooleanField(11)
-  run = _messages.MessageField('CloudRunLocation', 12)
-  targetId = _messages.StringField(13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  deployParameters = _messages.MessageField('DeployParametersValue', 4)
+  description = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  executionConfigs = _messages.MessageField('ExecutionConfig', 7, repeated=True)
+  gke = _messages.MessageField('GkeCluster', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  multiTarget = _messages.MessageField('MultiTarget', 10)
+  name = _messages.StringField(11)
+  requireApproval = _messages.BooleanField(12)
+  run = _messages.MessageField('CloudRunLocation', 13)
+  targetId = _messages.StringField(14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class TargetArtifact(_messages.Message):

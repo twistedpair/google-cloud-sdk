@@ -82,15 +82,23 @@ def NetworkFirewallPolicyAssociationArgument(required=False,
       regional_collection='compute.regionNetworkFirewallPolicies')
 
 
-def AddArgsCreateAssociation(parser):
+def AddArgsCreateAssociation(parser, support_priority=False):
   """Adds the arguments of association creation."""
-  parser.add_argument(
-      '--name', help=('Name of the association.'))
+  parser.add_argument('--name', help='Name of the association.')
 
   parser.add_argument(
       '--network',
       required=True,
-      help=('Name of the network with which the association is created.'))
+      help='Name of the network with which the association is created.',
+  )
+
+  if support_priority:
+    parser.add_argument(
+        '--priority',
+        required=False,
+        hidden=True,
+        help='Priority of the association.',
+    )
 
   parser.add_argument(
       '--replace-association-on-target',

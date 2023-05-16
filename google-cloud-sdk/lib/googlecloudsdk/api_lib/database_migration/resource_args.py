@@ -50,6 +50,23 @@ def ConversionWorkspaceAttributeConfig(name='conversion_workspace'):
   )
 
 
+def CmekKeyAttributeConfig(name='cmek-key'):
+  # For anchor attribute, help text is generated automatically.
+  return concepts.ResourceParameterAttributeConfig(name=name)
+
+
+def CmekKeyringAttributeConfig(name='cmek-keyring'):
+  return concepts.ResourceParameterAttributeConfig(
+      name=name, help_text='The CMEK keyring id of the {resource}.'
+  )
+
+
+def CmekProjectAttributeConfig(name='cmek-project'):
+  return concepts.ResourceParameterAttributeConfig(
+      name=name, help_text='The Cloud project id for the {resource}.'
+  )
+
+
 def RegionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='region', help_text='The Cloud region for the {resource}.')
@@ -113,6 +130,19 @@ def GetConversionWorkspaceResourceSpec(resource_name='conversion_workspace'):
       locationsId=RegionAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
+
+
+def GetCmekKeyResourceSpec(resource_name='cmek-key'):
+  return concepts.ResourceSpec(
+      'cloudkms.projects.locations.keyRings.cryptoKeys',
+      resource_name=resource_name,
+      api_version='v1',
+      cryptoKeysId=CmekKeyAttributeConfig(),
+      keyRingsId=CmekKeyringAttributeConfig(),
+      locationsId=RegionAttributeConfig(),
+      projectsId=CmekProjectAttributeConfig(),
+      disable_auto_completers=False,
+  )
 
 
 def AddConnectionProfileResourceArg(parser, verb, positional=True):
@@ -357,6 +387,15 @@ def AddHeterogeneousMigrationJobResourceArgs(parser, verb, required=False):
           'Name of the conversion workspaces to be used for the migration job',
           flag_name_overrides={'region': ''},
       ),
+      presentation_specs.ResourcePresentationSpec(
+          '--cmek-key',
+          GetCmekKeyResourceSpec(),
+          (
+              'Name of the CMEK (customer-managed encryption key) used for'
+              ' the migration job'
+          ),
+          flag_name_overrides={'region': ''},
+      ),
   ]
   concept_parsers.ConceptParser(
       resource_specs,
@@ -364,6 +403,7 @@ def AddHeterogeneousMigrationJobResourceArgs(parser, verb, required=False):
           '--source.region': ['--region'],
           '--destination.region': ['--region'],
           '--conversion-workspace.region': ['--region'],
+          '--cmek-key.region': ['--region'],
       },
   ).AddToParser(parser)
 

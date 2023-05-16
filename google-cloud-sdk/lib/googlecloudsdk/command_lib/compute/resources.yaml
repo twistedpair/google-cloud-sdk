@@ -172,6 +172,16 @@ snapshot:
     attribute_name: snapshot_name
     help: The name of the Google Compute Engine snapshot.
 
+storage_pool:
+  name: storage pool
+  collection: compute.storagePools
+  attributes:
+  - *project
+  - *zone
+  - parameter_name: storagePool
+    attribute_name: storage_pool
+    help: The name of the Google Compute Engine storage pool.
+
 machine_image:
   name: machine image
   collection: compute.machineImages

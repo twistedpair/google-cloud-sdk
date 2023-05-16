@@ -5,6 +5,107 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 431.0.0 (2023-05-16)
+
+### Breaking Changes
+
+*   **(Anthos On-Prem)** Modified `--version` flag to be required in `gcloud container vmware clusters create`.
+*   **(Compute Engine)** Added `centos-stream-8` and `centos-stream-9` options to `--os` flag for:
+  * `gcloud compute images import` in GA,
+  * `gcloud compute instances import` in GA
+  * `gcloud compute machine-images import` in GA
+
+
+### Google Cloud CLI
+
+* Fixed error when filtering was applied to date or time type keys and their values were None. Now, the resources will be excluded as when values were empty.
+* Added warning message to indicate support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
+### Anthos On-Prem
+
+* Modified `gcloud container bare-metal clusters list` to return clusters in all locations of the specified project if `--location` is not specified and configuration `container_bare_metal/location` is not set.
+
+### Artifact Registry
+
+* Changed IAM policy translation logic in `gcloud beta artifacts docker upgrade print-iam-policy`.
+
+### Batch
+
+* Promoted Batch submit job optional job_id feature to beta and GA.
+
+### Cloud Build
+
+* Added `--repository` flag to `gcloud builds triggers create manual`, `gcloud builds triggers create webhook` and `gcloud builds triggers create pubsub` which supports creating manual, webhook or Pub/Sub trigger with 2nd-gen repository resource.
+
+### Cloud Dataproc
+
+*   Added `--staging-bucket` flag to `gcloud dataproc batches submit ...` commands in GA. This sets staging bucket when creating batches.
+*   Added `--staging-bucket` flag to `gcloud dataproc session create ...` commands in Preview. This sets staging bucket when creating sessions.
+
+### Cloud Firestore
+
+* Promoted `firestore locations list` to GA.
+
+### Cloud Run
+
+* Promoted `gcloud run jobs deploy` to GA, which allows creating
+or updating a Cloud Run job from a container image or source to build.
+
+### Cloud Storage
+
+* Added a `preserve_symlinks` option to `gcloud storage` `cp` and `mv` commands;
+ when present, this option will cause file and directory symlinks to be
+ represented by placeholder files in the cloud, and reconstructed as symlinks
+ when downloaded.
+
+### Compute Engine
+
+* Promoted `gcloud compute addresses move` to GA.
+
+### Compute Firewall Rules
+
+* Added `--bind-tags-to-instances` flag to
+  `gcloud compute firewall-rules migrate` to bind secure tags to VM instances.
+
+### Database Migration
+
+* Updated `gcloud database-migration migration-jobs create` to support customer-managed encryption key(CMEK).
+
+### Dataproc Metastore
+
+* Promoted `gcloud metastore services alter-metadata-resource-location` to GA.
+* Promoted `gcloud metastore services alter-table-properties` to GA.
+* Promoted `gcloud metastore services move-table-to-database` to GA.
+* Promoted `gcloud metastore services query-metadata` to GA.
+
+### Events
+
+* Removed `gcloud beta events` surface and all commands within. Please use
+  `gcloud eventarc` instead.
+
+### Kubernetes Engine
+
+* Deprecated `--linux-sysctls` flag since `--system-config-from-file` is now used
+to config nodes.
+
+### Notebooks
+
+* Added `--data-disk-type`, `--data-disk-size`,  `--no-remove-data-disk` to
+`gcloud notebooks instances create` to configure data disk.
+
+### Recaptcha
+
+* Added `--private-key-file`, `--team-id`, `--key-id` to
+`recaptcha keys create` for iOS keys. Providing these
+fields allows reCAPTCHA Enterprise to provide more accurate risk scores.
+* Added `--private-key-file`, `--team-id`, `--key-id` to
+`recaptcha keys update` for iOS keys. Providing these
+fields allows reCAPTCHA Enterprise to provide more accurate risk scores.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 430.0.0 (2023-05-09)
 
 ### Breaking Changes

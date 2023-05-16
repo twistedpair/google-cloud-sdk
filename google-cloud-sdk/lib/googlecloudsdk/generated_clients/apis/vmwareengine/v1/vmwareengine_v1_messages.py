@@ -1084,6 +1084,8 @@ class ManagementCluster(_messages.Message):
       the `NodeType`).
     nodeTypeId: Optional. Deprecated: The canonical identifier of node types
       (`NodeType`) in this cluster. For example: standard-72.
+    stretchedClusterConfig: Optional. Configuration of a stretched cluster.
+      Required for STRETCHED private clouds.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1117,6 +1119,7 @@ class ManagementCluster(_messages.Message):
   nodeCustomCoreCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   nodeTypeConfigs = _messages.MessageField('NodeTypeConfigsValue', 4)
   nodeTypeId = _messages.StringField(5)
+  stretchedClusterConfig = _messages.MessageField('StretchedClusterConfig', 6)
 
 
 class ManagementDnsZoneBinding(_messages.Message):
@@ -1967,9 +1970,12 @@ class PrivateCloud(_messages.Message):
         only 1 node and has limited life span. Will be deleted after defined
         period of time, can be converted into standard private cloud by
         expanding it up to 3 or more nodes.
+      STRETCHED: Stretched private cloud is a regional resource with
+        redundancy, with a minimum of 6 nodes, nodes count has to be even.
     """
     STANDARD = 0
     TIME_LIMITED = 1
+    STRETCHED = 2
 
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
@@ -2332,6 +2338,26 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StretchedClusterConfig(_messages.Message):
+  r"""Configuration of a stretched cluster.
+
+  Fields:
+    preferredLocation: Required. Zone that will remain operational when
+      connection between the two zones is lost. Specify the resource name of a
+      zone that belongs to the region of the private cloud. For example:
+      `projects/{project}/locations/europe-west3-a` where `{project}` can
+      either be a project number or a project ID.
+    secondaryLocation: Required. Additional zone for a higher level of
+      availability and load balancing. Specify the resource name of a zone
+      that belongs to the region of the private cloud. For example:
+      `projects/{project}/locations/europe-west3-b` where `{project}` can
+      either be a project number or a project ID.
+  """
+
+  preferredLocation = _messages.StringField(1)
+  secondaryLocation = _messages.StringField(2)
 
 
 class Subnet(_messages.Message):

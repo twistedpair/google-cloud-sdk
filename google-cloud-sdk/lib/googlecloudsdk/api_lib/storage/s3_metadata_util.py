@@ -352,16 +352,18 @@ def _process_value_or_clear_flag(metadata, key, value):
     metadata[key] = value
 
 
-def update_object_metadata_dict_from_request_config(object_metadata,
-                                                    request_config,
-                                                    file_path=None):
+def update_object_metadata_dict_from_request_config(
+    object_metadata, request_config, attributes_resource=None
+):
   """Returns S3 object metadata dict fields based on RequestConfig.
 
   Args:
     object_metadata (dict): Existing object metadata.
     request_config (request_config): May contain data to add to object_metadata.
-    file_path (str|None): If present, used for parsing POSIX data from a file on
-      the system for the --preserve-posix flag.
+    attributes_resource (Resource|None): If present, used for parsing POSIX and
+      symlink data from a resource for the --preserve-posix and/or
+      --preserve_symlink flags. This value is ignored unless it is an instance
+      of FileObjectResource.
 
   Returns:
     dict: Metadata for API request.
@@ -375,7 +377,8 @@ def update_object_metadata_dict_from_request_config(object_metadata,
   existing_metadata = object_metadata.get('Metadata', {})
 
   custom_fields_dict = metadata_util.get_updated_custom_fields(
-      existing_metadata, request_config, file_path=file_path)
+      existing_metadata, request_config, attributes_resource=attributes_resource
+  )
   if custom_fields_dict is not None:
     object_metadata['Metadata'] = custom_fields_dict
 

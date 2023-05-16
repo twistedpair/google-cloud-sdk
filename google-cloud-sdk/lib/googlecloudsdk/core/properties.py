@@ -1349,7 +1349,7 @@ class _SectionApiEndpointOverrides(_Section):
     if api:
       for api_version in api:
         api_def = api.get(api_version)
-        if api_def.default_version:
+        if api_def.default_version and api_def.apitools:
           return api_def.apitools.base_url
 
 

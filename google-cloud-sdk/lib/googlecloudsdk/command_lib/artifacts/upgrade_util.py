@@ -33,54 +33,20 @@ _DOMAIN_TO_BUCKET_PREFIX = frozendict.frozendict({
     "eu.gcr.io": "eu.",
 })
 
-
-# Set of GCS permissions for GCR that are relevant to AR.
-_PERMISSIONS = (
-    "storage.buckets.get",
-    "storage.objects.get",
-    "storage.objects.list",
-    "storage.objects.create",
-    "storage.objects.delete",
-    "storage.buckets.create",
-)
-
-_ADMIN = "roles/artifactregistry.admin"
 _REPO_ADMIN = "roles/artifactregistry.repoAdmin"
 _WRITER = "roles/artifactregistry.writer"
 _READER = "roles/artifactregistry.reader"
 
-# In order of most to least privilege, so we can exit early if we match any.
-_AR_ROLES = (_ADMIN, _REPO_ADMIN, _WRITER, _READER)
+# In order of most to least privilege, so we can grant the most privileged role.
+_AR_ROLES = (_REPO_ADMIN, _WRITER, _READER)
 
-# Maps an AR role to the equivalent set of GCR permissions.
-_ROLE_TO_PERMISSIONS = frozendict.frozendict({
-    _READER: (
-        "storage.objects.get",
-        "storage.objects.list",
-    ),
-    _WRITER: (
-        "storage.buckets.get",
-        "storage.objects.get",
-        "storage.objects.list",
-        "storage.objects.create",
-    ),
-    _REPO_ADMIN: (
-        "storage.buckets.get",
-        "storage.objects.get",
-        "storage.objects.list",
-        "storage.objects.create",
-        "storage.objects.delete",
-    ),
-    _ADMIN: (
-        "storage.buckets.get",
-        "storage.objects.get",
-        "storage.objects.list",
-        "storage.objects.create",
-        "storage.objects.delete",
-        "storage.buckets.create",
-    ),
+# Maps a GCS permission for GCR to an equivalent AR role.
+_PERMISSION_TO_ROLE = frozendict.frozendict({
+    "storage.objects.get": _READER,
+    "storage.objects.list": _READER,
+    "storage.objects.create": _WRITER,
+    "storage.objects.delete": _REPO_ADMIN,
 })
-
 
 _ANALYSIS_NOT_FULLY_EXPLORED = (
     "Too many IAM policies. Analysis cannot be fully completed."
@@ -116,7 +82,9 @@ def iam_policy(domain, project, parent):
     Exception: A problem was encountered while generating the policy.
   """
   bucket = bucket_resource_name(domain, project)
-  analysis = analyze_iam_policy(_PERMISSIONS, bucket, parent)
+  analysis = analyze_iam_policy(
+      tuple(_PERMISSION_TO_ROLE), bucket, parent
+  )
 
   # If we see any false fullyExplored, that indicates that AnalyzeIamPolicy is
   # returning incomplete information, so the generated policy might be wrong,
@@ -126,7 +94,7 @@ def iam_policy(domain, project, parent):
     error_msg = "\n".join(errors)
     raise ar_exceptions.ArtifactRegistryError(error_msg)
 
-  member_to_perms = collections.defaultdict(set)
+  perm_to_members = collections.defaultdict(set)
   for result in analysis.mainAnalysis.analysisResults:
     if not result.fullyExplored:
       raise ar_exceptions.ArtifactRegistryError(_ANALYSIS_NOT_FULLY_EXPLORED)
@@ -137,39 +105,39 @@ def iam_policy(domain, project, parent):
           "Conditional IAM binding is not supported."
       )
 
-    # Aggregate the GCR permissions for each IAM principal.
-    perms = set()
-    for acl in result.accessControlLists:
-      for access in acl.accesses:
-        perms.add(access.permission)
-
+    members = set()
     for member in result.iamBinding.members:
       if is_convenience(member):
         # convenience values are GCR legacy. They are not needed in AR.
         continue
-      member_to_perms[member] = member_to_perms[member].union(perms)
+      members.add(member)
 
-  # Map permissions of each principal to the least privilege equivalent for AR.
-  role_to_members = collections.defaultdict(list)
-  for member, granted_perms in member_to_perms.items():
-    for role in _AR_ROLES:
-      equivlant_perms = _ROLE_TO_PERMISSIONS[role]
-      if granted_perms.issuperset(equivlant_perms):
-        role_to_members[role].append(member)
-        break
+    for acl in result.accessControlLists:
+      for access in acl.accesses:
+        perm = access.permission
+        perm_to_members[perm].update(members)
+
+  role_to_members = collections.defaultdict(set)
+  for perm, members in perm_to_members.items():
+    role = _PERMISSION_TO_ROLE[perm]
+    role_to_members[role].update(members)
 
   # Convert the map to an iam.Policy object so that gcloud can format it nicely.
   messages = artifacts.GetMessages()
   bindings = list()
 
+  # Grant the most privileged role to a member.
+  upgraded_members = set()
   for role in _AR_ROLES:
-    members = role_to_members.get(role)
+    members = role_to_members[role]
+    members.difference_update(upgraded_members)
     if not members:
       continue
+    upgraded_members.update(members)
     bindings.append(
         messages.Binding(
             role=role,
-            members=members,
+            members=tuple(members),
         )
     )
 

@@ -87,6 +87,17 @@ def CreateInstance(args, client, messages):
               arg_utils.EnumNameToChoice(args.boot_disk_type))
     return type_enum
 
+  def GetDataDisk():
+    type_enum = None
+    if args.IsSpecified('data_disk_type'):
+      instance_message = messages.Instance
+      type_enum = arg_utils.ChoiceEnumMapper(
+          arg_name='data-disk-type',
+          message_enum=instance_message.DataDiskTypeValueValuesEnum,
+          include_filter=lambda x: 'UNSPECIFIED' not in x,
+      ).GetEnumForChoice(arg_utils.EnumNameToChoice(args.data_disk_type))
+    return type_enum
+
   def GetDiskEncryption():
     type_enum = None
     if args.IsSpecified('disk_encryption'):
@@ -197,7 +208,6 @@ def CreateInstance(args, client, messages):
   instance = messages.Instance(
       name=args.instance,
       postStartupScript=args.post_startup_script,
-      bootDiskSizeGb=args.boot_disk_size,
       customGpuDriverPath=args.custom_gpu_driver_path,
       instanceOwners=GetInstanceOwnersFromArgs(),
       kmsKey=GetKmsRelativeName(),
@@ -210,6 +220,10 @@ def CreateInstance(args, client, messages):
       vmImage=CreateVmImageFromArgs(),
       acceleratorConfig=CreateAcceleratorConfigMessage(),
       bootDiskType=GetBootDisk(),
+      bootDiskSizeGb=args.boot_disk_size,
+      dataDiskType=GetDataDisk(),
+      dataDiskSizeGb=args.data_disk_size,
+      noRemoveDataDisk=args.no_remove_data_disk,
       containerImage=CreateContainerImageFromArgs(),
       diskEncryption=GetDiskEncryption(),
       labels=GetLabelsFromArgs(),

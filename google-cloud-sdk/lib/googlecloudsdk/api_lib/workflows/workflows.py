@@ -110,11 +110,12 @@ class WorkflowsClient(object):
     )
     return self._service.Patch(patch_req)
 
-  def BuildWorkflowFromArgs(self, args, release_track):
+  def BuildWorkflowFromArgs(self, args, old_workflow, release_track):
     """Creates a workflow from command-line arguments.
 
     Args:
       args: The arguments of the gcloud command.
+      old_workflow: The workflow from previous revision.
       release_track: The gcloud release track used in the command.
 
     Returns:
@@ -146,13 +147,36 @@ class WorkflowsClient(object):
               )
           )
         env_vars = labels_util.ParseCreateArgs(
-            args, self.messages.Workflow.UserEnvVarsValue, 'env_vars_file'
+            args, self.messages.Workflow.UserEnvVarsValue, 'env_vars_file',
         )
+      # clear_env_vars clears all previously set env vars.
       if args.IsSpecified('clear_env_vars'):
-        workflow.userEnvVars = None
-        updated_fields.append('userEnvVars')
+        env_vars = flags.CLEAR_ENVIRONMENT
+      # SetUserEnvVars acts as a no-op when it takes env_vars=None.
       flags.SetUserEnvVars(env_vars, workflow, updated_fields)
 
+      env_vars = None
+      if args.IsSpecified('update_env_vars'):
+        env_vars = {
+            p.key: p.value
+            for p in old_workflow.userEnvVars.additionalProperties
+        }
+        env_vars.update(args.update_env_vars)
+      # remove_env_vars removes user selected env vars from previous revision.
+      if args.IsSpecified('remove_env_vars'):
+        env_vars = {
+            p.key: p.value
+            for p in old_workflow.userEnvVars.additionalProperties
+        }
+        for v in args.remove_env_vars:
+          if v in env_vars:
+            del env_vars[v]
+          else:
+            raise arg_parsers.argparse.ArgumentError(
+                argument=None,
+                message='key {k} is not found.'.format(k=v),
+            )
+      flags.UpdateUserEnvVars(env_vars, workflow, updated_fields)
       if args.IsSpecified('call_log_level'):
         call_log_level_enum = self.messages.Workflow.CallLogLevelValueValuesEnum
         workflow.callLogLevel = arg_utils.ChoiceToEnum(

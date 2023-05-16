@@ -1802,6 +1802,7 @@ class RevisionSpec(_messages.Message):
       Cloud Run, only a single container may be provided.
     enableServiceLinks: Not supported by Cloud Run.
     imagePullSecrets: Not supported by Cloud Run.
+    runtimeClassName: Runtime. Leave unset for default.
     serviceAccountName: Email address of the IAM service account associated
       with the revision of the service. The service account represents the
       identity of the running revision, and determines what permissions the
@@ -1817,9 +1818,10 @@ class RevisionSpec(_messages.Message):
   containers = _messages.MessageField('Container', 2, repeated=True)
   enableServiceLinks = _messages.BooleanField(3)
   imagePullSecrets = _messages.MessageField('LocalObjectReference', 4, repeated=True)
-  serviceAccountName = _messages.StringField(5)
-  timeoutSeconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  volumes = _messages.MessageField('Volume', 7, repeated=True)
+  runtimeClassName = _messages.StringField(5)
+  serviceAccountName = _messages.StringField(6)
+  timeoutSeconds = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  volumes = _messages.MessageField('Volume', 8, repeated=True)
 
 
 class RevisionStatus(_messages.Message):

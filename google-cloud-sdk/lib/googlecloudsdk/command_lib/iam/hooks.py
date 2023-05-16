@@ -173,3 +173,10 @@ def GeneratePublicKeyDataFromFile(path):
         'public_key_file',
         '{}. Please double check your input and try again.'.format(e))
   return public_key_data.encode('utf-8')
+
+
+def ClearFlag(args):
+  """Clear the value for a flag."""
+  del args
+  return None
+

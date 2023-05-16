@@ -55,9 +55,13 @@ def AddAutohealingArgs(autohealing_params_group):
       '--initial-delay',
       type=_InitialDelayValidator,
       help="""\
-      Specifies the length of time during which the instance is known to be
-      initializing and should not be autohealed even if unhealthy.
-      This value cannot be greater than 1 hour.
+      Specifies the number of seconds that a new VM takes to initialize and run
+      its startup script. During a VM's initial delay period, the MIG ignores
+      unsuccessful health checks because the VM might be in the startup process.
+      This prevents the MIG from prematurely recreating a VM. If the health
+      check receives a healthy response during the initial delay, it indicates
+      that the startup process is complete and the VM is ready. The value of
+      initial delay must be between 0 and 3600 seconds. The default value is 0.
       See $ gcloud topic datetimes for information on duration formats.
       """)
   health_check_group = autohealing_params_group.add_mutually_exclusive_group()

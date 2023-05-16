@@ -1045,11 +1045,19 @@ class ClustersClient(_BareMetalClusterClient):
     super(ClustersClient, self).__init__(**kwargs)
     self._service = self._client.projects_locations_bareMetalClusters
 
-  def List(self, location_ref, limit=None, page_size=None):
+  def List(self, args):
     """Lists Clusters in the GKE On-Prem Bare Metal API."""
+    # If location is not specified, and container_bare_metal/location is not set
+    # list clusters of all locations within a project.
+    if (
+        'location' not in args.GetSpecifiedArgsDict()
+        and not properties.VALUES.container_bare_metal.location.Get()
+    ):
+      args.location = '-'
+
     list_req = (
         self._messages.GkeonpremProjectsLocationsBareMetalClustersListRequest(
-            parent=location_ref.RelativeName()
+            parent=self._location_name(args)
         )
     )
 
@@ -1057,8 +1065,8 @@ class ClustersClient(_BareMetalClusterClient):
         self._service,
         list_req,
         field='bareMetalClusters',
-        batch_size=page_size,
-        limit=limit,
+        batch_size=getattr(args, 'page_size', 100),
+        limit=getattr(args, 'limit', None),
         batch_size_attribute='pageSize',
     )
 

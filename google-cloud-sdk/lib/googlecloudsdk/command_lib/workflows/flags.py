@@ -40,6 +40,7 @@ _KEY_NAME_ERROR = (
     'from the valid character set for a KMS key.'
 )
 USER_ENV_VARS_LIMIT = 20
+CLEAR_ENVIRONMENT = object()
 
 
 def LocationAttributeConfig():
@@ -294,6 +295,36 @@ def AddUserEnvVarsFlags(parser):
       """,
   )
 
+  userenvvars_group.add_argument(
+      '--remove-env-vars',
+      metavar='KEY',
+      action=arg_parsers.UpdateAction,
+      type=arg_parsers.ArgList(element_type=str),
+      help="""\
+        Removes customer-defined environment variables used in the new workflow
+        revision.
+        It takes a list of environment variables keys to be removed.
+
+        Example:
+        gcloud workflows deploy ${workflow_name} --remove-env-vars foo,hey...
+      """,
+  )
+
+  userenvvars_group.add_argument(
+      '--update-env-vars',
+      type=arg_parsers.ArgDict(key_type=str, value_type=str),
+      action=arg_parsers.UpdateAction,
+      metavar='KEY=VALUE',
+      help="""\
+        Updates existing or adds new customer-defined environment variables used
+        in the new workflow revision.
+
+        This flag takes a comma-separated list of key value pairs.
+        Example:
+        gcloud workflows deploy ${workflow_name} --update-env-vars foo=bar,hey=hi
+      """,
+  )
+
 
 def ParseExecution(args):
   """Get and validate execution from the args."""
@@ -393,9 +424,36 @@ def SetUserEnvVars(env_vars, workflow, updated_fields):
     updated_fields: A list to which the userEnvVars field will be added if
       needed.
   """
-  if env_vars is not None:
-    workflow.userEnvVars = env_vars
-    updated_fields.append('userEnvVars')
+  if env_vars is None:
+    return
+  workflow.userEnvVars = None if env_vars is CLEAR_ENVIRONMENT else env_vars
+  updated_fields.append('userEnvVars')
+
+
+def UpdateUserEnvVars(env_vars, workflow, updated_fields):
+  """Updates user-defined environment variables.
+
+  Also updates updated_fields accordingly.
+
+  Args:
+    env_vars: Parsed environment variables to be set on the workflow.
+    workflow: The workflow in which to set the User Envrionment Variables.
+    updated_fields: A list to which the userEnvVars field will be added if
+      needed.
+  """
+  if env_vars is None:
+    return
+  env_vars_cls = apis.GetClientInstance(
+      'workflows',
+      'v1',
+  ).MESSAGES_MODULE.Workflow.UserEnvVarsValue
+  workflow.userEnvVars = env_vars_cls(
+      additionalProperties=[
+          env_vars_cls.AdditionalProperty(key=key, value=value)
+          for key, value in sorted(env_vars.items())
+      ]
+  )
+  updated_fields.append('userEnvVars')
 
 
 def SetKmsKey(args, workflow, updated_fields):

@@ -192,10 +192,6 @@ def _SetBuildSteps(
       raise c_exceptions.InvalidArgumentException(
           '--pack', 'Image value must not be empty.'
       )
-    if buildpack[0].get('builder') is None:
-      builder = _DEFAULT_BUILDPACK_BUILDER
-    else:
-      builder = buildpack[0].get('builder')
     if buildpack[0].get('image') is None:
       raise c_exceptions.InvalidArgumentException(
           '--pack', 'Image value must not be empty.'
@@ -208,31 +204,51 @@ def _SetBuildSteps(
           '--pack', 'Image value must be in the *gcr.io* or *pkg.dev* namespace'
       )
     env = buildpack[0].get('env')
+    builder = buildpack[0].get('builder')
+    steps = []
     pack_args = [
         'build',
         image,
         '--network',
         'cloudbuild',
-        '--builder',
-        builder,
     ]
     if env is not None:
       pack_args.append('--env')
       pack_args.append(env)
+    if builder is not None:
+      pack_args.append('--builder')
+      pack_args.append(builder)
+    else:
+      # Use `pack config default-builder` to allow overriding the builder in a
+      # project.toml file.
+      steps = [
+          messages.BuildStep(
+              name='gcr.io/k8s-skaffold/pack',
+              entrypoint='pack',
+              args=[
+                  'config',
+                  'default-builder',
+                  _DEFAULT_BUILDPACK_BUILDER,
+              ],
+          ),
+      ]
+
+    steps.append(
+        messages.BuildStep(
+            name='gcr.io/k8s-skaffold/pack',
+            entrypoint='pack',
+            args=pack_args,
+        )
+    )
     build_config = messages.Build(
         images=[image],
-        steps=[
-            messages.BuildStep(
-                name='gcr.io/k8s-skaffold/pack',
-                entrypoint='pack',
-                args=pack_args,
-            ),
-        ],
+        steps=steps,
         timeout=timeout_str,
         substitutions=cloudbuild_util.EncodeSubstitutions(
             substitutions, messages
         ),
     )
+
   else:
     if no_cache:
       raise c_exceptions.ConflictingArgumentsException('--config', '--no-cache')

@@ -1040,6 +1040,12 @@ apis:
         iam:
           path: iam
       discovery_doc: policytroubleshooter_v3alpha.json
+    v3beta:
+      enable_mtls: false
+      resources:
+        iam:
+          path: iam
+      discovery_doc: policytroubleshooter_v3beta.json
   policyanalyzer:
     v1:
       discovery_doc: policyanalyzer_v1.json
@@ -1471,6 +1477,17 @@ apis:
     v1alpha:
       discovery_doc: messagestreams_v1alpha.json
       default: true
+      resources:
+        projects.serviceAccounts:
+          path: projects/{projectsId}/serviceAccounts/{serviceAccountsId}
+        projects.regions:
+          path: projects/{projectsId}/regions/{regionsId}
+        projects.regions.networkAttachments:
+          path: projects/{projectsId}/regions/{regionsId}/networkAttachments/{networkAttachmentsId}
+        projects.locations.services:
+          path: projects/{projectsId}/locations/{locationsId}/services/{servicesId}
+        projects.locations.functions:
+          path: projects/{projectsId}/locations/{locationsId}/functions/{functionsId}
   apphub:
     v1alpha:
       discovery_doc: apphub_v1alpha.json

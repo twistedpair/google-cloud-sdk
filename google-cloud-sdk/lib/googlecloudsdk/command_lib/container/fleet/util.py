@@ -287,7 +287,10 @@ def LocationFromGKEArgs(args):
     if location_re:
       location = location_re.group(1)
     else:
-      raise exceptions.Error('Error processing location in `gke-cluster` flag')
+      raise exceptions.Error(
+          'Unable to parse location from `gke-cluster` parameter. Expecting'
+          ' `$CLUSTER_LOCATION/$CLUSTER_NAME` e.g. `us-central1/my-cluster`'
+      )
   elif args.gke_uri:
     # e.g. .../projects/123/locations/us-central1-a/clusters/my-cluster
     location_re = re.search(
@@ -296,5 +299,8 @@ def LocationFromGKEArgs(args):
     if location_re:
       location = location_re.group(2)
     else:
-      raise exceptions.Error('Error processing location in `gke-uri` flag')
+      raise exceptions.Error(
+          'Unable to parse location from `gke-uri` parameter. Expecting a '
+          'string like projects/123/locations/us-central1-a/clusters/my-cluster'
+      )
   return location

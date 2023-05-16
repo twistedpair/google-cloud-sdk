@@ -29,15 +29,33 @@ class ExternalAddressesClient(util.VmwareClientBase):
     super(ExternalAddressesClient, self).__init__()
     self.service = self.client.projects_locations_privateClouds_externalAddresses
 
-  def Create(self, resource, internal_ip):
-    external_address = self.messages.ExternalAddress(internalIp=internal_ip)
-
+  def Create(self, resource, internal_ip, description=None):
+    external_address = self.messages.ExternalAddress(
+        internalIp=internal_ip, description=description
+    )
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsExternalAddressesCreateRequest(
         externalAddress=external_address,
         externalAddressId=resource.Name(),
         parent=resource.Parent().RelativeName())
 
     return self.service.Create(request)
+
+  def Update(self, resource, internal_ip=None, description=None):
+    external_address = self.Get(resource)
+    update_mask = []
+    if description is not None:
+      external_address.description = description
+      update_mask.append('description')
+    if internal_ip is not None:
+      external_address.internalIp = internal_ip
+      update_mask.append('internal_ip')
+
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsExternalAddressesPatchRequest(
+        externalAddress=external_address,
+        name=resource.RelativeName(),
+        updateMask=','.join(update_mask),
+    )
+    return self.service.Patch(request)
 
   def Delete(self, resource):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsExternalAddressesDeleteRequest(

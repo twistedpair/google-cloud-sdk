@@ -15,6 +15,83 @@ from apitools.base.py import extra_types
 package = 'metastore'
 
 
+class AlterMetadataResourceLocationRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.AlterMetadataResourceLocation.
+
+  Fields:
+    locationUri: Required. The new location URI for the metadata resource.
+    resourceName: Required. The relative metadata resource name in the
+      following format.databases/{database_id} or
+      databases/{database_id}/tables/{table_id} or
+      databases/{database_id}/tables/{table_id}/partitions/{partition_id}
+  """
+
+  locationUri = _messages.StringField(1)
+  resourceName = _messages.StringField(2)
+
+
+class AlterMetadataResourceLocationResponse(_messages.Message):
+  r"""Response message for DataprocMetastore.AlterMetadataResourceLocation."""
+
+
+class AlterTablePropertiesRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.AlterTableProperties.
+
+  Messages:
+    PropertiesValue: A map that describes the desired values to mutate. If
+      update_mask is empty, the properties will not update. Otherwise, the
+      properties only alters the value whose associated paths exist in the
+      update mask
+
+  Fields:
+    properties: A map that describes the desired values to mutate. If
+      update_mask is empty, the properties will not update. Otherwise, the
+      properties only alters the value whose associated paths exist in the
+      update mask
+    tableName: Required. The name of the table containing the properties
+      you're altering in the following
+      format.databases/{database_id}/tables/{table_id}
+    updateMask: A field mask that specifies the metadata table properties that
+      are overwritten by the update. Fields specified in the update_mask are
+      relative to the resource (not to the full request). A field is
+      overwritten if it is in the mask.For example, given the target
+      properties: properties { a: 1 b: 2 } And an update properties:
+      properties { a: 2 b: 3 c: 4 } then if the field mask is:paths:
+      "properties.b", "properties.c"then the result will be: properties { a: 1
+      b: 3 c: 4 }
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""A map that describes the desired values to mutate. If update_mask is
+    empty, the properties will not update. Otherwise, the properties only
+    alters the value whose associated paths exist in the update mask
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  properties = _messages.MessageField('PropertiesValue', 1)
+  tableName = _messages.StringField(2)
+  updateMask = _messages.StringField(3)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -359,6 +436,47 @@ class EncryptionConfig(_messages.Message):
   """
 
   kmsKey = _messages.StringField(1)
+
+
+class ErrorDetails(_messages.Message):
+  r"""Error details in public error message for
+  DataprocMetastore.QueryMetadata.
+
+  Messages:
+    DetailsValue: Additional structured details about this error.Keys define
+      the failure items. Value describes the exception or details of the item.
+
+  Fields:
+    details: Additional structured details about this error.Keys define the
+      failure items. Value describes the exception or details of the item.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValue(_messages.Message):
+    r"""Additional structured details about this error.Keys define the failure
+    items. Value describes the exception or details of the item.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  details = _messages.MessageField('DetailsValue', 1)
 
 
 class ExportMetadataRequest(_messages.Message):
@@ -1296,6 +1414,38 @@ class MetastoreProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class MetastoreProjectsLocationsServicesAlterLocationRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesAlterLocationRequest object.
+
+  Fields:
+    alterMetadataResourceLocationRequest: A
+      AlterMetadataResourceLocationRequest resource to be passed as the
+      request body.
+    service: Required. The relative resource name of the metastore service to
+      mutate metadata, in the following format:projects/{project_id}/locations
+      /{location_id}/services/{service_id}.
+  """
+
+  alterMetadataResourceLocationRequest = _messages.MessageField('AlterMetadataResourceLocationRequest', 1)
+  service = _messages.StringField(2, required=True)
+
+
+class MetastoreProjectsLocationsServicesAlterTablePropertiesRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesAlterTablePropertiesRequest object.
+
+  Fields:
+    alterTablePropertiesRequest: A AlterTablePropertiesRequest resource to be
+      passed as the request body.
+    service: Required. The relative resource name of the Dataproc Metastore
+      service that's being used to mutate metadata table properties, in the
+      following format:projects/{project_id}/locations/{location_id}/services/
+      {service_id}.
+  """
+
+  alterTablePropertiesRequest = _messages.MessageField('AlterTablePropertiesRequest', 1)
+  service = _messages.StringField(2, required=True)
+
+
 class MetastoreProjectsLocationsServicesBackupsCreateRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesBackupsCreateRequest object.
 
@@ -1666,6 +1816,21 @@ class MetastoreProjectsLocationsServicesMetadataImportsPatchRequest(_messages.Me
   updateMask = _messages.StringField(4)
 
 
+class MetastoreProjectsLocationsServicesMoveTableToDatabaseRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesMoveTableToDatabaseRequest object.
+
+  Fields:
+    moveTableToDatabaseRequest: A MoveTableToDatabaseRequest resource to be
+      passed as the request body.
+    service: Required. The relative resource name of the metastore service to
+      mutate metadata, in the following format:projects/{project_id}/locations
+      /{location_id}/services/{service_id}.
+  """
+
+  moveTableToDatabaseRequest = _messages.MessageField('MoveTableToDatabaseRequest', 1)
+  service = _messages.StringField(2, required=True)
+
+
 class MetastoreProjectsLocationsServicesPatchRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesPatchRequest object.
 
@@ -1693,6 +1858,21 @@ class MetastoreProjectsLocationsServicesPatchRequest(_messages.Message):
   requestId = _messages.StringField(2)
   service = _messages.MessageField('Service', 3)
   updateMask = _messages.StringField(4)
+
+
+class MetastoreProjectsLocationsServicesQueryMetadataRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesQueryMetadataRequest object.
+
+  Fields:
+    queryMetadataRequest: A QueryMetadataRequest resource to be passed as the
+      request body.
+    service: Required. The relative resource name of the metastore service to
+      query metadata, in the following format:projects/{project_id}/locations/
+      {location_id}/services/{service_id}.
+  """
+
+  queryMetadataRequest = _messages.MessageField('QueryMetadataRequest', 1)
+  service = _messages.StringField(2, required=True)
 
 
 class MetastoreProjectsLocationsServicesRestoreRequest(_messages.Message):
@@ -1739,6 +1919,25 @@ class MetastoreProjectsLocationsServicesTestIamPermissionsRequest(_messages.Mess
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class MoveTableToDatabaseRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.MoveTableToDatabase.
+
+  Fields:
+    dbName: Required. The name of the database where the table resides.
+    destinationDbName: Required. The name of the database where the table
+      should be moved.
+    tableName: Required. The name of the table to be moved.
+  """
+
+  dbName = _messages.StringField(1)
+  destinationDbName = _messages.StringField(2)
+  tableName = _messages.StringField(3)
+
+
+class MoveTableToDatabaseResponse(_messages.Message):
+  r"""Response message for DataprocMetastore.MoveTableToDatabase."""
 
 
 class NetworkConfig(_messages.Message):
@@ -1960,6 +2159,30 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class QueryMetadataRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.QueryMetadata.
+
+  Fields:
+    query: Required. A read-only SQL query to execute against the metadata
+      database. The query cannot change or mutate the data.
+  """
+
+  query = _messages.StringField(1)
+
+
+class QueryMetadataResponse(_messages.Message):
+  r"""Response message for DataprocMetastore.QueryMetadata.
+
+  Fields:
+    resultManifestUri: The manifest URI is link to a JSON instance in Cloud
+      Storage. This instance manifests immediately along with
+      QueryMetadataResponse. The content of the URI is not retriable until the
+      long-running operation query against the metadata finishes.
+  """
+
+  resultManifestUri = _messages.StringField(1)
 
 
 class Restore(_messages.Message):

@@ -353,7 +353,7 @@ class GoogleCloudAssuredworkloadsV1beta1RestrictAllowedResourcesResponse(_messag
 
 
 class GoogleCloudAssuredworkloadsV1beta1Violation(_messages.Message):
-  r"""Workload monitoring Violation. Next Id: 22
+  r"""Workload monitoring Violation. Next Id: 27
 
   Enums:
     StateValueValuesEnum: Output only. State of the violation
@@ -361,8 +361,9 @@ class GoogleCloudAssuredworkloadsV1beta1Violation(_messages.Message):
   Fields:
     acknowledged: A boolean that indicates if the violation is acknowledged
     acknowledgementTime: Optional. Timestamp when this violation was
-      acknowledged last. This will be absent when acknowledged field is marked
-      as false.
+      acknowledged first. Check exception_contexts to find the last time the
+      violation was acknowledged when there are more than one violations. This
+      field will be absent when acknowledged field is marked as false.
     auditLogLink: Output only. Immutable. Audit Log Link for violated resource
       Format: https://console.cloud.google.com/logs/query;query={logName}{prot
       oPayload.resourceName}{timeRange}{folder}
@@ -541,6 +542,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       by the ResourceUsageRestriction org policy. Invoke
       RestrictAllowedResources endpoint to allow your project developers to
       use these services in their environment."
+    controls: Output only. Controls associated with the customer workload
     createTime: Output only. Immutable. The Workload creation timestamp.
     displayName: Required. The user-assigned display name of the Workload.
       When present it must be between 4 to 30 characters. Allowed characters
@@ -587,6 +589,12 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       of the given workload. SAA enrollment response is queried during
       GetWorkload call. In failure cases, user friendly error message is shown
       in SAA details page.
+    violationNotificationsEnabled: Optional. Indicates whether the e-mail
+      notification for a violation is enabled for a workload. This value will
+      be by default True, and if not present will be considered as true. This
+      should only be updated via updateWorkload call. Any Changes to this
+      field during the createWorkload call will not be honored. This will
+      always be true while creating the workload.
   """
 
   class ComplianceRegimeValueValuesEnum(_messages.Enum):
@@ -650,12 +658,18 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
 
     Values:
       PARTNER_UNSPECIFIED: <no description>
-      LOCAL_CONTROLS_BY_S3NS: Enum representing S3NS partner.
-      SOVEREIGN_CONTROLS_BY_T_SYSTEMS: Enum representing T_SYSTEM partner.
+      LOCAL_CONTROLS_BY_S3NS: Enum representing S3NS (Thales) partner.
+      SOVEREIGN_CONTROLS_BY_T_SYSTEMS: Enum representing T_SYSTEM (TSI)
+        partner.
+      SOVEREIGN_CONTROLS_BY_SIA_MINSAIT: Enum representing SIA_MINSAIT (Indra)
+        partner.
+      SOVEREIGN_CONTROLS_BY_PSN: Enum representing PSN (TIM) partner.
     """
     PARTNER_UNSPECIFIED = 0
     LOCAL_CONTROLS_BY_S3NS = 1
     SOVEREIGN_CONTROLS_BY_T_SYSTEMS = 2
+    SOVEREIGN_CONTROLS_BY_SIA_MINSAIT = 3
+    SOVEREIGN_CONTROLS_BY_PSN = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -686,23 +700,25 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 3)
   complianceStatus = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceStatus', 4)
   compliantButDisallowedServices = _messages.StringField(5, repeated=True)
-  createTime = _messages.StringField(6)
-  displayName = _messages.StringField(7)
-  ekmProvisioningResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse', 8)
-  enableSovereignControls = _messages.BooleanField(9)
-  etag = _messages.StringField(10)
-  fedrampHighSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings', 11)
-  fedrampModerateSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings', 12)
-  il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings', 13)
-  kajEnrollmentState = _messages.EnumField('KajEnrollmentStateValueValuesEnum', 14)
-  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  name = _messages.StringField(17)
-  partner = _messages.EnumField('PartnerValueValuesEnum', 18)
-  provisionedResourcesParent = _messages.StringField(19)
-  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 20, repeated=True)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 21, repeated=True)
-  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse', 22)
+  controls = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceControls', 6)
+  createTime = _messages.StringField(7)
+  displayName = _messages.StringField(8)
+  ekmProvisioningResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse', 9)
+  enableSovereignControls = _messages.BooleanField(10)
+  etag = _messages.StringField(11)
+  fedrampHighSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings', 12)
+  fedrampModerateSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings', 13)
+  il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings', 14)
+  kajEnrollmentState = _messages.EnumField('KajEnrollmentStateValueValuesEnum', 15)
+  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  name = _messages.StringField(18)
+  partner = _messages.EnumField('PartnerValueValuesEnum', 19)
+  provisionedResourcesParent = _messages.StringField(20)
+  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 21, repeated=True)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 22, repeated=True)
+  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse', 23)
+  violationNotificationsEnabled = _messages.BooleanField(24)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(_messages.Message):
@@ -714,6 +730,30 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(_messages.Message):
   """
 
   kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 1)
+
+
+class GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceControls(_messages.Message):
+  r"""Controls enabled to the user associated with this workload
+
+  Fields:
+    appliedOrgPolicies: Output only. Org policies currently applied by this
+      Assured Workload
+  """
+
+  appliedOrgPolicies = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceControlsOrgPolicyControl', 1, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceControlsOrgPolicyControl(_messages.Message):
+  r"""An org policy control applied by Assured Workloads
+
+  Fields:
+    constraint: Output only. Constraint name of the org policy control
+      Example: constraints/gcp.resourcelocations
+    version: Output only. Org policy version
+  """
+
+  constraint = _messages.StringField(1)
+  version = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceStatus(_messages.Message):
@@ -736,12 +776,14 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse(_message
   Enums:
     EkmProvisioningErrorDomainValueValuesEnum: Indicates Ekm provisioning
       error if any.
+    EkmProvisioningErrorMappingValueValuesEnum: Detailed error message if Ekm
+      provisioning fails
     EkmProvisioningStateValueValuesEnum: Indicates Ekm enrollment Provisioning
       of a given workload.
 
   Fields:
     ekmProvisioningErrorDomain: Indicates Ekm provisioning error if any.
-    ekmProvisioningErrorMessage: Detailed error message if Ekm provisioning
+    ekmProvisioningErrorMapping: Detailed error message if Ekm provisioning
       fails
     ekmProvisioningState: Indicates Ekm enrollment Provisioning of a given
       workload.
@@ -768,6 +810,22 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse(_message
     EXTERNAL_PARTNER_ERROR = 4
     TIMEOUT_ERROR = 5
 
+  class EkmProvisioningErrorMappingValueValuesEnum(_messages.Enum):
+    r"""Detailed error message if Ekm provisioning fails
+
+    Values:
+      EKM_PROVISIONING_ERROR_MAPPING_UNSPECIFIED: Error is unspecified.
+      INVALID_SERVICE_ACCOUNT: Service account is used is invalid.
+      MISSING_METRICS_SCOPE_ADMIN_PERMISSION: Iam permission
+        monitoring.MetricsScopeAdmin wasn't applied.
+      MISSING_EKM_CONNECTION_ADMIN_PERMISSION: Iam permission
+        cloudkms.ekmConnectionsAdmin wasn't applied.
+    """
+    EKM_PROVISIONING_ERROR_MAPPING_UNSPECIFIED = 0
+    INVALID_SERVICE_ACCOUNT = 1
+    MISSING_METRICS_SCOPE_ADMIN_PERMISSION = 2
+    MISSING_EKM_CONNECTION_ADMIN_PERMISSION = 3
+
   class EkmProvisioningStateValueValuesEnum(_messages.Enum):
     r"""Indicates Ekm enrollment Provisioning of a given workload.
 
@@ -783,7 +841,7 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse(_message
     EKM_PROVISIONING_STATE_COMPLETED = 3
 
   ekmProvisioningErrorDomain = _messages.EnumField('EkmProvisioningErrorDomainValueValuesEnum', 1)
-  ekmProvisioningErrorMessage = _messages.StringField(2)
+  ekmProvisioningErrorMapping = _messages.EnumField('EkmProvisioningErrorMappingValueValuesEnum', 2)
   ekmProvisioningState = _messages.EnumField('EkmProvisioningStateValueValuesEnum', 3)
 
 

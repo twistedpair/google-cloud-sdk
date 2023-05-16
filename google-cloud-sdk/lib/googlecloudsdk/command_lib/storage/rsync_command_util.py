@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import copy
 import enum
 import os
 
@@ -50,7 +51,7 @@ _CSV_COLUMNS_COUNT = 9
 _NO_MATCHES_MESSAGE = 'Did not find existing container at: {}'
 
 
-def get_container_or_container_create_location_resource(path):
+def get_existing_or_placeholder_destination_resource(path):
   """Returns container or UnknownResource if found nothing. Errors otherwise."""
   path_with_wildcard_trailing_delimiter = (
       storage_url.storage_url_from_string(path).join('').versionless_url_string
@@ -91,7 +92,7 @@ def get_container_or_container_create_location_resource(path):
 
 def get_existing_container_resource(path):
   """Gets existing container resource at path and errors otherwise."""
-  resource = get_container_or_container_create_location_resource(path)
+  resource = get_existing_or_placeholder_destination_resource(path)
   if isinstance(resource, resource_reference.UnknownResource):
     raise errors.InvalidUrlError(_NO_MATCHES_MESSAGE.format(path))
   return resource
@@ -168,12 +169,21 @@ def get_csv_line_from_resource(resource):
   else:
     size = resource.size
     storage_class = resource.storage_class
-    atime, mtime, uid, gid, mode = (
+    atime, custom_metadata_mtime, uid, gid, mode = (
         posix_util.get_posix_attributes_from_cloud_resource(resource)
     )
+    if custom_metadata_mtime:
+      mtime = custom_metadata_mtime
+    else:
+      # Use cloud object creation time as modification time. Since cloud objects
+      # are immutable, creation is the only time of "modification." Populating
+      # mtime allows checks to see if we can skip tasks.
+      mtime = resource_util.get_unix_timestamp_in_utc(resource.creation_time)
+
     mode_base_eight = mode.base_eight_str if mode else None
     crc32c = resource.crc32c_hash
     md5 = resource.md5_hash
+
   line_values = [
       url,
       size,
@@ -386,6 +396,7 @@ def _get_copy_task(
     source_container=None,
     destination_object=None,
     destination_container=None,
+    dry_run=False,
     skip_unsupported=False,
 ):
   """Generates copy tasks with generic settings and logic."""
@@ -398,6 +409,29 @@ def _get_copy_task(
           )
       )
       return
+
+  if destination_object:
+    copy_destination = destination_object
+  else:
+    # Must have destination_container if not destination_object.
+    copy_destination = _get_copy_destination_resource(
+        source_object, source_container, destination_container
+    )
+
+  if dry_run:
+    if isinstance(source_object, resource_reference.FileObjectResource):
+      try:
+        with files.BinaryFileReader(source_object.storage_url.object_name):
+          pass
+      except:  # pylint: disable=broad-except
+        log.error(
+            'Could not open {}'.format(source_object.storage_url.object_name)
+        )
+        raise
+    log.status.Print(
+        'Would copy {} to {}'.format(source_object, copy_destination)
+    )
+    return
 
   if isinstance(source_object, resource_reference.CloudResource) and (
       isinstance(destination_container, resource_reference.CloudResource)
@@ -420,13 +454,6 @@ def _get_copy_task(
   else:
     copy_source = source_object
 
-  if destination_object:
-    copy_destination = destination_object
-  else:
-    # Must have destination_container if not destination_object.
-    copy_destination = _get_copy_destination_resource(
-        source_object, source_container, destination_container
-    )
   return copy_task_factory.get_copy_task(
       copy_source,
       copy_destination,
@@ -441,6 +468,7 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
     source_object,
     destination_object,
     compare_only_hashes=False,
+    dry_run=False,
     skip_if_destination_has_later_modification_time=False,
     skip_unsupported=False,
 ):
@@ -476,6 +504,7 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
             user_request_args,
             source_object,
             destination_object=destination_object,
+            dry_run=dry_run,
             skip_unsupported=skip_unsupported,
         ),
         _IterateResource.BOTH,
@@ -488,36 +517,55 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
       source_posix.mtime is not None
       and source_posix.mtime != destination_posix.mtime
   )
-  if need_full_posix_update or need_mtime_update:
-    if need_full_posix_update:
-      new_posix = source_posix
-    else:
-      new_posix = posix_util.PosixAttributes(
-          None, source_posix.mtime, None, None, None
-      )
-    if isinstance(destination_object, resource_reference.ObjectResource):
-      posix_util.update_custom_metadata_dict_with_posix_attributes(
-          destination_object.custom_fields, new_posix
-      )
-      return (
-          patch_object_task.PatchObjectTask(
-              destination_object, user_request_args=user_request_args
-          ),
-          _IterateResource.BOTH,
-      )
-    else:
-      return (
-          patch_file_posix_task.PatchFilePosixTask(
-              posix_util.get_system_posix_data(),
-              source_object,
-              destination_object,
-              source_posix,
-              destination_posix,
-          ),
-          _IterateResource.BOTH,
-      )
+  if not (need_full_posix_update or need_mtime_update):
+    return (None, _IterateResource.BOTH)
 
-  return (None, _IterateResource.BOTH)
+  if dry_run:
+    if need_full_posix_update:
+      log.status.Print(
+          'Would set POSIX attributes for {}'.format(destination_object)
+      )
+    else:
+      log.status.Print('Would set mtime for {}'.format(destination_object))
+    return (None, _IterateResource.BOTH)
+
+  if need_full_posix_update:
+    new_posix = source_posix
+  else:
+    new_posix = posix_util.PosixAttributes(
+        None, source_posix.mtime, None, None, None
+    )
+  if isinstance(destination_object, resource_reference.ObjectResource):
+    posix_dict = {}
+    posix_util.update_custom_metadata_dict_with_posix_attributes(
+        posix_dict, new_posix
+    )
+    user_request_args_with_posix = copy.deepcopy(user_request_args)
+    if user_request_args_with_posix.resource_args:
+      existing_custom_fields = (
+          user_request_args_with_posix.resource_args.custom_fields_to_set or {}
+      )
+    else:
+      existing_custom_fields = {}
+    # Overwrite POSIX data with user's custom fields.
+    posix_dict.update(existing_custom_fields)
+    user_request_args_with_posix.resource_args.custom_fields_to_set = posix_dict
+    return (
+        patch_object_task.PatchObjectTask(
+            destination_object, user_request_args=user_request_args_with_posix
+        ),
+        _IterateResource.BOTH,
+    )
+  return (
+      patch_file_posix_task.PatchFilePosixTask(
+          posix_util.get_system_posix_data(),
+          source_object,
+          destination_object,
+          source_posix,
+          destination_posix,
+      ),
+      _IterateResource.BOTH,
+  )
 
 
 def _get_url_string_minus_base_container(object_resource, container_resource):
@@ -572,6 +620,10 @@ def _log_skipping_symlink(resource):
   log.warning('Skipping symlink {}'.format(resource))
 
 
+def _print_would_remove(resource):
+  log.status.Print('Would remove {}'.format(resource))
+
+
 def _get_task_and_iteration_instruction(
     user_request_args,
     source_object,
@@ -580,6 +632,7 @@ def _get_task_and_iteration_instruction(
     destination_container,
     compare_only_hashes=False,
     delete_unmatched_destination_objects=False,
+    dry_run=False,
     ignore_symlinks=False,
     skip_if_destination_has_later_modification_time=False,
     skip_unsupported=False,
@@ -602,6 +655,8 @@ def _get_task_and_iteration_instruction(
     compare_only_hashes (bool): Skip modification time comparison.
     delete_unmatched_destination_objects (bool): Clear objects at the
       destination that are not present at the source.
+    dry_run (bool): Print what operations rsync would perform without actually
+      executing them.
     ignore_symlinks (bool): Skip operations involving symlinks.
     skip_if_destination_has_later_modification_time (bool): Don't act if mtime
       metadata indicates we'd be overwriting with an older version of an object.
@@ -633,13 +688,16 @@ def _get_task_and_iteration_instruction(
 
   if not source_object:
     if delete_unmatched_destination_objects:
-      return (
-          delete_object_task.DeleteObjectTask(
-              destination_object.storage_url,
-              user_request_args=user_request_args,
-          ),
-          _IterateResource.DESTINATION,
-      )
+      if dry_run:
+        _print_would_remove(destination_object)
+      else:
+        return (
+            delete_object_task.DeleteObjectTask(
+                destination_object.storage_url,
+                user_request_args=user_request_args,
+            ),
+            _IterateResource.DESTINATION,
+        )
     return (None, _IterateResource.DESTINATION)
 
   if ignore_symlinks and source_object.is_symlink:
@@ -653,6 +711,7 @@ def _get_task_and_iteration_instruction(
             source_object,
             source_container=source_container,
             destination_container=destination_container,
+            dry_run=dry_run,
             skip_unsupported=skip_unsupported,
         ),
         _IterateResource.SOURCE,
@@ -673,6 +732,7 @@ def _get_task_and_iteration_instruction(
             source_object,
             source_container=source_container,
             destination_container=destination_container,
+            dry_run=dry_run,
             skip_unsupported=skip_unsupported,
         ),
         _IterateResource.SOURCE,
@@ -680,13 +740,16 @@ def _get_task_and_iteration_instruction(
 
   if source_url > destination_url:
     if delete_unmatched_destination_objects:
-      return (
-          delete_object_task.DeleteObjectTask(
-              destination_object.storage_url,
-              user_request_args=user_request_args,
-          ),
-          _IterateResource.DESTINATION,
-      )
+      if dry_run:
+        _print_would_remove(destination_object)
+      else:
+        return (
+            delete_object_task.DeleteObjectTask(
+                destination_object.storage_url,
+                user_request_args=user_request_args,
+            ),
+            _IterateResource.DESTINATION,
+        )
     return (None, _IterateResource.DESTINATION)
 
   return _compare_equal_urls_to_get_task_and_iteration_instruction(
@@ -694,6 +757,7 @@ def _get_task_and_iteration_instruction(
       source_object,
       destination_object,
       compare_only_hashes=compare_only_hashes,
+      dry_run=dry_run,
       skip_if_destination_has_later_modification_time=(
           skip_if_destination_has_later_modification_time
       ),
@@ -709,6 +773,7 @@ def get_operation_iterator(
     destination_container,
     compare_only_hashes=False,
     delete_unmatched_destination_objects=False,
+    dry_run=False,
     ignore_symlinks=False,
     skip_if_destination_has_later_modification_time=False,
     skip_unsupported=False,
@@ -735,6 +800,7 @@ def get_operation_iterator(
           delete_unmatched_destination_objects=(
               delete_unmatched_destination_objects
           ),
+          dry_run=dry_run,
           ignore_symlinks=ignore_symlinks,
           skip_if_destination_has_later_modification_time=(
               skip_if_destination_has_later_modification_time

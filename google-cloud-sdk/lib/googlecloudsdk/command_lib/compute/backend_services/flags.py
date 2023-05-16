@@ -225,11 +225,14 @@ def AddLoadBalancingScheme(parser):
       type=lambda x: x.replace('-', '_').upper(),
       default='EXTERNAL',
       help="""\
-      Specifies the load balancer type. Choose EXTERNAL for load balancers
-      that receive traffic from external clients. Choose EXTERNAL_MANAGED for
-      Envoy-based External HTTP(S) Load Balancing. Choose INTERNAL for
-      Internal TCP/UDP Load Balancing. Choose INTERNAL_MANAGED for
-      Internal HTTP(S) Load Balancing. Choose INTERNAL_SELF_MANAGED for
+      Specifies the load balancer type. Choose EXTERNAL for the classic HTTP(S)
+      load balancers, the external TCP/UDP network load balancers, and the
+      external TCP/SSL proxy load balancers.
+      Choose EXTERNAL_MANAGED for the Envoy-based global and regional external
+      HTTP(S) load balancers. Choose INTERNAL for
+      internal TCP/UDP load balancers. Choose INTERNAL_MANAGED for Envoy-based
+      internal load balancers such as the internal HTTP(S) load balancers and
+      the internal TCP proxy load balancers. Choose INTERNAL_SELF_MANAGED for
       Traffic Director. For more information, refer to this guide:
       https://cloud.google.com/load-balancing/docs/choosing-load-balancer
       """)

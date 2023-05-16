@@ -479,7 +479,7 @@ class FileSymlinkPlaceholderResource(FileObjectResource):
   @property
   def size(self):
     """Returns the length of the symlink target to be used as a placeholder."""
-    return len(os.readlink(self.storage_url.object_name))
+    return len(os.readlink(self.storage_url.object_name.encode('utf-8')))
 
   @property
   def is_symlink(self):

@@ -27,11 +27,14 @@ def AddProxyHeaderRelatedCreateArgs(parser, default='NONE'):
       '--proxy-header',
       choices={
           'NONE': 'No proxy header is added.',
-          'PROXY_V1': ('Enables PROXY protocol (version 1) for passing client '
-                       'connection information.'),
+          'PROXY_V1': (
+              'Enables PROXY protocol (version 1) for passing client '
+              'connection information.'
+          ),
       },
       default=default,
-      help='The type of proxy protocol header to be sent to the backend.')
+      help='The type of proxy protocol header to be sent to the backend.',
+  )
 
 
 def AddProxyHeaderRelatedUpdateArgs(parser):
@@ -51,9 +54,12 @@ def AddQuicOverrideCreateArgs(parser, default='NONE'):
           'DISABLE': 'Disallows load balancer to negotiate QUIC with clients.',
       },
       default=default,
-      help='Controls whether load balancer may negotiate QUIC with clients. '
-      'QUIC is a new transport which reduces latency compared to that of TCP. '
-      'See https://www.chromium.org/quic for more details.')
+      help=(
+          'Controls whether load balancer may negotiate QUIC with clients. QUIC'
+          ' is a new transport which reduces latency compared to that of TCP.'
+          ' See https://www.chromium.org/quic for more details.'
+      ),
+  )
 
 
 def AddQuicOverrideUpdateArgs(parser):

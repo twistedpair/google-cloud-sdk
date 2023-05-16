@@ -41,6 +41,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_FUNCTIONS = (
+      'projects.locations.functions',
+      'projects/{projectsId}/locations/{locationsId}/functions/{functionsId}',
+      {},
+      ['projectsId', 'locationsId', 'functionsId'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -52,6 +59,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SERVICES = (
+      'projects.locations.services',
+      'projects/{projectsId}/locations/{locationsId}/services/{servicesId}',
+      {},
+      ['projectsId', 'locationsId', 'servicesId'],
+      True
+  )
   PROJECTS_LOCATIONS_STREAMS = (
       'projects.locations.streams',
       '{+name}',
@@ -61,6 +75,28 @@ class Collections(enum.Enum):
               '{streamsId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_REGIONS = (
+      'projects.regions',
+      'projects/{projectsId}/regions/{regionsId}',
+      {},
+      ['projectsId', 'regionsId'],
+      True
+  )
+  PROJECTS_REGIONS_NETWORKATTACHMENTS = (
+      'projects.regions.networkAttachments',
+      'projects/{projectsId}/regions/{regionsId}/networkAttachments/'
+      '{networkAttachmentsId}',
+      {},
+      ['projectsId', 'regionsId', 'networkAttachmentsId'],
+      True
+  )
+  PROJECTS_SERVICEACCOUNTS = (
+      'projects.serviceAccounts',
+      'projects/{projectsId}/serviceAccounts/{serviceAccountsId}',
+      {},
+      ['projectsId', 'serviceAccountsId'],
       True
   )
 

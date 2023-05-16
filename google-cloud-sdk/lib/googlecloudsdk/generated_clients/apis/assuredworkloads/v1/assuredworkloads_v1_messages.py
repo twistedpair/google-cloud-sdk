@@ -384,7 +384,7 @@ class GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesResponse(_messages.Me
 
 
 class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
-  r"""Workload monitoring Violation. Next Id: 22
+  r"""Workload monitoring Violation. Next Id: 27
 
   Enums:
     StateValueValuesEnum: Output only. State of the violation
@@ -392,8 +392,9 @@ class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
   Fields:
     acknowledged: A boolean that indicates if the violation is acknowledged
     acknowledgementTime: Optional. Timestamp when this violation was
-      acknowledged last. This will be absent when acknowledged field is marked
-      as false.
+      acknowledged first. Check exception_contexts to find the last time the
+      violation was acknowledged when there are more than one violations. This
+      field will be absent when acknowledged field is marked as false.
     auditLogLink: Output only. Immutable. Audit Log Link for violated resource
       Format: https://console.cloud.google.com/logs/query;query={logName}{prot
       oPayload.resourceName}{timeRange}{folder}
@@ -610,6 +611,11 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       of the given workload. SAA enrollment response is queried during
       GetWorkload call. In failure cases, user friendly error message is shown
       in SAA details page.
+    violationNotificationsEnabled: Optional. Indicates whether the e-mail
+      notification for a violation is enabled for a workload. This value will
+      be by default True, and if not present will be considered as true. This
+      should only be updated via updateWorkload call. Any Changes to this
+      field during the createWorkload call will not be honored.
   """
 
   class ComplianceRegimeValueValuesEnum(_messages.Enum):
@@ -673,12 +679,18 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
 
     Values:
       PARTNER_UNSPECIFIED: <no description>
-      LOCAL_CONTROLS_BY_S3NS: Enum representing S3NS partner.
-      SOVEREIGN_CONTROLS_BY_T_SYSTEMS: Enum representing T_SYSTEM partner.
+      LOCAL_CONTROLS_BY_S3NS: Enum representing S3NS (Thales) partner.
+      SOVEREIGN_CONTROLS_BY_T_SYSTEMS: Enum representing T_SYSTEM (TSI)
+        partner.
+      SOVEREIGN_CONTROLS_BY_SIA_MINSAIT: Enum representing SIA_MINSAIT (Indra)
+        partner.
+      SOVEREIGN_CONTROLS_BY_PSN: Enum representing PSN (TIM) partner.
     """
     PARTNER_UNSPECIFIED = 0
     LOCAL_CONTROLS_BY_S3NS = 1
     SOVEREIGN_CONTROLS_BY_T_SYSTEMS = 2
+    SOVEREIGN_CONTROLS_BY_SIA_MINSAIT = 3
+    SOVEREIGN_CONTROLS_BY_PSN = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -722,6 +734,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
   resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceSettings', 16, repeated=True)
   resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceInfo', 17, repeated=True)
   saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadSaaEnrollmentResponse', 18)
+  violationNotificationsEnabled = _messages.BooleanField(19)
 
 
 class GoogleCloudAssuredworkloadsV1WorkloadComplianceStatus(_messages.Message):
@@ -744,12 +757,14 @@ class GoogleCloudAssuredworkloadsV1WorkloadEkmProvisioningResponse(_messages.Mes
   Enums:
     EkmProvisioningErrorDomainValueValuesEnum: Indicates Ekm provisioning
       error if any.
+    EkmProvisioningErrorMappingValueValuesEnum: Detailed error message if Ekm
+      provisioning fails
     EkmProvisioningStateValueValuesEnum: Indicates Ekm enrollment Provisioning
       of a given workload.
 
   Fields:
     ekmProvisioningErrorDomain: Indicates Ekm provisioning error if any.
-    ekmProvisioningErrorMessage: Detailed error message if Ekm provisioning
+    ekmProvisioningErrorMapping: Detailed error message if Ekm provisioning
       fails
     ekmProvisioningState: Indicates Ekm enrollment Provisioning of a given
       workload.
@@ -776,6 +791,22 @@ class GoogleCloudAssuredworkloadsV1WorkloadEkmProvisioningResponse(_messages.Mes
     EXTERNAL_PARTNER_ERROR = 4
     TIMEOUT_ERROR = 5
 
+  class EkmProvisioningErrorMappingValueValuesEnum(_messages.Enum):
+    r"""Detailed error message if Ekm provisioning fails
+
+    Values:
+      EKM_PROVISIONING_ERROR_MAPPING_UNSPECIFIED: Error is unspecified.
+      INVALID_SERVICE_ACCOUNT: Service account is used is invalid.
+      MISSING_METRICS_SCOPE_ADMIN_PERMISSION: Iam permission
+        monitoring.MetricsScopeAdmin wasn't applied.
+      MISSING_EKM_CONNECTION_ADMIN_PERMISSION: Iam permission
+        cloudkms.ekmConnectionsAdmin wasn't applied.
+    """
+    EKM_PROVISIONING_ERROR_MAPPING_UNSPECIFIED = 0
+    INVALID_SERVICE_ACCOUNT = 1
+    MISSING_METRICS_SCOPE_ADMIN_PERMISSION = 2
+    MISSING_EKM_CONNECTION_ADMIN_PERMISSION = 3
+
   class EkmProvisioningStateValueValuesEnum(_messages.Enum):
     r"""Indicates Ekm enrollment Provisioning of a given workload.
 
@@ -791,7 +822,7 @@ class GoogleCloudAssuredworkloadsV1WorkloadEkmProvisioningResponse(_messages.Mes
     EKM_PROVISIONING_STATE_COMPLETED = 3
 
   ekmProvisioningErrorDomain = _messages.EnumField('EkmProvisioningErrorDomainValueValuesEnum', 1)
-  ekmProvisioningErrorMessage = _messages.StringField(2)
+  ekmProvisioningErrorMapping = _messages.EnumField('EkmProvisioningErrorMappingValueValuesEnum', 2)
   ekmProvisioningState = _messages.EnumField('EkmProvisioningStateValueValuesEnum', 3)
 
 

@@ -127,7 +127,7 @@ class YAMLArgument(six.with_metaclass(abc.ABCMeta, object)):
     pass
 
   @abc.abstractmethod
-  def Parse(self, method, message, namespace):
+  def Parse(self, method, message, namespace, group_required):
     """Parses namespace for argument's value and appends value to req message."""
     pass
 
@@ -195,16 +195,17 @@ class ArgumentGroup(YAMLArgument):
       group.AddArgument(arg.Generate(method, message, shared_resource_flags))
     return group
 
-  def Parse(self, method, message, namespace):
+  def Parse(self, method, message, namespace, group_required=True):
     """Sets argument group message values, if any, from the parsed args.
 
     Args:
       method: registry.APIMethod, used to parse sub arguments.
       message: The API message, None for non-resource args.
       namespace: The parsed command line argument namespace.
+      group_required: bool, if true, then parent argument group is required
     """
     for arg in self.arguments:
-      arg.Parse(method, message, namespace)
+      arg.Parse(method, message, namespace, group_required and self.required)
 
 
 class Argument(YAMLArgument):
@@ -347,13 +348,15 @@ class Argument(YAMLArgument):
       field = None
     return arg_utils.GenerateFlag(field, self)
 
-  def Parse(self, method, message, namespace):
+  def Parse(self, method, message, namespace, group_required=True):
     """Sets the argument message value, if any, from the parsed args.
 
     Args:
       method: registry.APIMethod, used to parse other arguments.
       message: The API message, None for non-resource args.
       namespace: The parsed command line argument namespace.
+      group_required: bool, whether parent argument group is required.
+        Unused here.
     """
     if self.api_field is None:
       return
@@ -457,19 +460,32 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
     """Parses the resource ref from namespace."""
     pass
 
-  def _ParseResourceArg(self, method, namespace):
+  def _ParseResourceArg(self, method, namespace, group_required=True):
     """Gets the resource ref for the resource specified as the positional arg.
 
     Args:
       method: registry.APIMethod, method we are parsing the resource for.
       namespace: The argparse namespace.
+      group_required: bool, whether parent argument group is required
 
     Returns:
       The parsed resource ref or None if no resource arg was generated for this
       method.
     """
-    result = arg_utils.GetFromNamespace(
-        namespace.CONCEPTS, self._GetAnchorArgName(method))
+    anchor = self._GetAnchorArgName(method)
+
+    # If surrounding argument group is not required, only parse argument
+    # if the anchor is specified. Otherwise, user will receive some unncessary
+    # errors for missing attribute flags.
+    # TODO(b/280668052): This a temporary solution. Whether or not a resource
+    # argument should be parsed as required should be fixed in the
+    # resource argument and take into account the other arguments specified
+    # in the group.
+    if (not arg_utils.GetFromNamespace(namespace, anchor)
+        and not group_required):
+      return None
+
+    result = arg_utils.GetFromNamespace(namespace.CONCEPTS, anchor)
 
     if result:
       result = result.Parse()
@@ -682,8 +698,8 @@ class YAMLResourceArgument(YAMLConceptArgument):
         method, resource_spec, self.attribute_names,
         self.repeated, shared_resource_flags)
 
-  def Parse(self, method, message, namespace):
-    ref = self.ParseResourceArg(method, namespace)
+  def Parse(self, method, message, namespace, group_required=True):
+    ref = self.ParseResourceArg(method, namespace, group_required)
     if not self.parse_resource_into_request or not ref:
       return message
 
@@ -696,8 +712,8 @@ class YAMLResourceArgument(YAMLConceptArgument):
         is_primary_resource=self.IsPrimaryResource(
             method and method.resource_argument_collection))
 
-  def ParseResourceArg(self, method, namespace):
-    return self._ParseResourceArg(method, namespace)
+  def ParseResourceArg(self, method, namespace, group_required=True):
+    return self._ParseResourceArg(method, namespace, group_required)
 
   def _GetParentResource(self, resource_collection):
     parent_collection, _, _ = resource_collection.full_name.rpartition('.')
@@ -790,8 +806,8 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
         method, resource_spec, self.attribute_names,
         self.repeated, shared_resource_flags)
 
-  def Parse(self, method, message, namespace):
-    ref = self.ParseResourceArg(method, namespace)
+  def Parse(self, method, message, namespace, group_required=True):
+    ref = self.ParseResourceArg(method, namespace, group_required)
     if not self.parse_resource_into_request or not ref:
       return message
 
@@ -804,8 +820,8 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
         is_primary_resource=self.IsPrimaryResource(
             method and method.resource_argument_collection))
 
-  def ParseResourceArg(self, method, namespace):
-    return self._ParseResourceArg(method, namespace)
+  def ParseResourceArg(self, method, namespace, group_required=True):
+    return self._ParseResourceArg(method, namespace, group_required)
 
   def _GenerateResourceSpec(self, resource_collection=None):
     """Validates if the resource matches what the method specifies.

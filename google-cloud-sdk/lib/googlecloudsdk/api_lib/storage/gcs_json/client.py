@@ -568,14 +568,11 @@ class JsonClient(cloud_api.CloudApi):
           request_config)
     else:
       final_destination_metadata = base_destination_metadata
-    if original_source_resource and isinstance(
-        original_source_resource, resource_reference.FileObjectResource):
-      original_source_file_path = (
-          original_source_resource.storage_url.object_name)
-    else:
-      original_source_file_path = None
     metadata_util.update_object_metadata_from_request_config(
-        final_destination_metadata, request_config, original_source_file_path)
+        final_destination_metadata,
+        request_config,
+        attributes_resource=original_source_resource,
+    )
 
     compose_request_payload = self.messages.ComposeRequest(
         sourceObjects=source_messages, destination=final_destination_metadata)
@@ -863,7 +860,7 @@ class JsonClient(cloud_api.CloudApi):
               'prefixes,items/name,items/size,items/generation,'
               'items/storageClass,items/timeCreated,items/metadata/{},'
               'items/metadata/{},items/metadata/{},items/metadata/{},'
-              'items/metadata/{},nextPageToken'
+              'items/metadata/{},items/crc32c,items/md5Hash,nextPageToken'
           ).format(
               posix_util.ATIME_METADATA_KEY,
               posix_util.GID_METADATA_KEY,

@@ -330,6 +330,7 @@ def AddCommonBulkInsertArgs(
     support_no_address_in_networking=False,
     support_max_count_per_zone=False,
     support_network_queue_count=False,
+    support_performance_monitoring_unit=False,
 ):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
@@ -434,6 +435,9 @@ def AddCommonBulkInsertArgs(
                                              support_confidential_compute_type)
   instances_flags.AddPostKeyRevocationActionTypeArgs(parser)
   AddBulkCreateArgs(parser, add_zone_region_flags, support_max_count_per_zone)
+
+  if support_performance_monitoring_unit:
+    instances_flags.AddPerformanceMonitoringUnitArgs(parser)
 
 
 def ValidateBulkCreateArgs(args):

@@ -63,6 +63,8 @@ def ListIndexes(project, database):
   messages = api_utils.GetMessages()
   return _GetIndexService().List(
       messages.FirestoreProjectsDatabasesCollectionGroupsIndexesListRequest(
-          parent='projects/{}/databases/{}'.format(project, database),
+          parent='projects/{}/databases/{}/collectionGroups/-'.format(
+              project, database
+          ),
       )
   )

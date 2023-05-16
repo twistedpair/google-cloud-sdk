@@ -96,11 +96,6 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
         name=self._destination_resource.storage_url.object_name,
         bucket=self._destination_resource.storage_url.bucket_name)
 
-    if isinstance(self._source_resource, resource_reference.FileObjectResource):
-      source_file_path = self._source_resource.storage_url.object_name
-    else:
-      source_file_path = None
-
     if (isinstance(self._source_resource, resource_reference.ObjectResource) and
         self._source_resource.custom_fields):
       object_metadata.metadata = (
@@ -115,7 +110,10 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     )
 
     metadata_util.update_object_metadata_from_request_config(
-        object_metadata, self._request_config, source_file_path)
+        object_metadata,
+        self._request_config,
+        attributes_resource=self._source_resource,
+    )
 
     return self._messages.StorageObjectsInsertRequest(
         bucket=object_metadata.bucket,

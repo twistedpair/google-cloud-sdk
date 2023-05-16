@@ -22,7 +22,9 @@ import os
 
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import posix_util
+from googlecloudsdk.command_lib.storage import symlink_util
 from googlecloudsdk.command_lib.storage import user_request_args_factory
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.cache import function_result_cache
 from googlecloudsdk.core.util import files
@@ -62,9 +64,9 @@ def cached_read_yaml_json_file(file_path):
   )
 
 
-def get_updated_custom_fields(existing_custom_fields,
-                              request_config,
-                              file_path=None):
+def get_updated_custom_fields(
+    existing_custom_fields, request_config, attributes_resource=None
+):
   """Returns a dictionary containing new custom metadata for an object.
 
   Assumes that the custom metadata setter, clear flag, and a group containing
@@ -76,29 +78,59 @@ def get_updated_custom_fields(existing_custom_fields,
     existing_custom_fields (dict): Existing custom metadata provided by an API.
     request_config (request_config): May contain custom metadata fields that
       should be modified.
-    file_path (str|None): If present, used for parsing POSIX data from a file on
-      the system for the --preserve-posix flag.
+    attributes_resource (Resource|None): If present, used for parsing POSIX and
+      symlink data from a resource for the --preserve-posix and/or
+      --preserve_symlink flags. This value is ignored unless it is an instance
+      of FileObjectResource.
 
   Returns:
     Optional[dict] that should be the value of the storage provider's custom
     metadata field. `None` means that existing metadata should remain unchanged.
     Empty dictionary means it should be cleared.
+
+  Raises:
+    errors.Error: If incompatible existing_custom_fields were encountered.
   """
   resource_args = request_config.resource_args
   if not resource_args:
     return
+  if isinstance(attributes_resource, resource_reference.FileObjectResource):
+    file_resource = attributes_resource
+  else:
+    file_resource = None
 
-  should_parse_file_posix = request_config.preserve_posix and file_path
-  if (not should_parse_file_posix and not resource_args.custom_fields_to_set and
-      not resource_args.custom_fields_to_remove and
-      not resource_args.custom_fields_to_update):
+  if existing_custom_fields and file_resource:
+    # existing_custom_fields is typically metadata from cloud objects, so it's
+    # not expected to be present for a local file system object.
+    raise errors.Error(
+        'Existing custom fields should not exist when updating custom fields'
+        ' using local source.'
+    )
+
+  should_parse_file_posix = request_config.preserve_posix and file_resource
+  should_parse_symlinks = request_config.preserve_symlinks and file_resource
+
+  if (
+      not should_parse_file_posix
+      and not should_parse_symlinks
+      and not resource_args.custom_fields_to_set
+      and not resource_args.custom_fields_to_remove
+      and not resource_args.custom_fields_to_update
+  ):
     return
 
   posix_metadata = {}
   if should_parse_file_posix:
-    posix_attributes = posix_util.get_posix_attributes_from_file(file_path)
+    posix_attributes = posix_util.get_posix_attributes_from_resource(
+        file_resource, preserve_symlinks=request_config.preserve_symlinks
+    )
     posix_util.update_custom_metadata_dict_with_posix_attributes(
         posix_metadata, posix_attributes)
+
+  if should_parse_symlinks:
+    symlink_util.update_custom_metadata_dict_with_symlink_attributes(
+        posix_metadata, file_resource.is_symlink
+    )
 
   if resource_args.custom_fields_to_set == user_request_args_factory.CLEAR:
     # Providing preserve POSIX and clear flags means that an object's metadata

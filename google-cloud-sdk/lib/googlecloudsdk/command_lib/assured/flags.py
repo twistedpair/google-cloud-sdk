@@ -207,6 +207,8 @@ def AddDescribeViolationFlags(parser):
 
 
 def AddUpdateWorkloadFlags(parser):
+  """Method to add update workload flags.
+  """
   AddWorkloadResourceArgToParser(parser, verb='update')
   parser.add_argument(
       '--etag',
@@ -218,6 +220,10 @@ def AddUpdateWorkloadFlags(parser):
   updatable_fields.add_argument(
       '--display-name',
       help='The new display name of the Assured Workloads environment.')
+  updatable_fields.add_argument(
+      '--violation-notifications-enabled',
+      help='The notification setting of the Assured Workloads environment.',
+  )
   updatable_fields.add_argument(
       '--labels',
       metavar='KEY=VALUE',

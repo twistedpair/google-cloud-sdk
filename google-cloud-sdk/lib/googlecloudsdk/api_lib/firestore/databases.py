@@ -92,3 +92,26 @@ def ListDatabases(project):
           parent='projects/{}'.format(project)
       )
   )
+
+
+def RestoreDatabase(project, source_backup, destination_database):
+  """Restores a Firestore database from a backup.
+
+  Args:
+    project: the project ID to list databases, a string.
+    source_backup: the backup to restore from, a string.
+    destination_database: the database to restore to, a string.
+
+  Returns:
+    an Operation.
+  """
+  messages = api_utils.GetMessages()
+  return _GetDatabaseService().Restore(
+      messages.FirestoreProjectsDatabasesRestoreRequest(
+          parent='projects/{}'.format(project),
+          googleFirestoreAdminV1RestoreDatabaseRequest=messages.GoogleFirestoreAdminV1RestoreDatabaseRequest(
+              backup=source_backup,
+              databaseId=destination_database,
+          )
+      )
+  )

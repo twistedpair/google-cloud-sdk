@@ -851,3 +851,64 @@ def AddDriverPoolId(parser):
             """),
       required=False,
       default=None)
+
+
+def InstanceConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='instance',
+      help_text='The instance name.',
+  )
+
+
+def _GetInstanceResourceSpec(api_version):
+  return concepts.ResourceSpec(
+      'dataproc.projects.regions.clusters',
+      api_version=api_version,
+      resource_name='instance',
+      disable_auto_completers=True,
+      projectId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      region=_RegionAttributeConfig(),
+      clusterName=InstanceConfig(),
+  )
+
+
+def AddInstanceResourceArg(parser, verb, api_version):
+  concept_parsers.ConceptParser.ForResource(
+      'instance',
+      _GetInstanceResourceSpec(api_version),
+      'The name of the instance to {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def GdceClusterConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='gdce-cluster',
+      help_text='The GDCE Cluster path.',
+  )
+
+
+def _GdceLocationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='gdce-cluster-location',
+      help_text='GDCE region for the {resource}.',
+      fallthroughs=_DataprocRegionFallthrough(),
+  )
+
+
+def AddGdceClusterResourceArg(parser):
+  concept_parsers.ConceptParser.ForResource(
+      '--gdce-cluster',
+      _GetGdceClusterResourceSpec(),
+      'The GDCE cluster to install the Dataproc instance on.',
+      required=True,
+  ).AddToParser(parser)
+
+
+def _GetGdceClusterResourceSpec():
+  return concepts.ResourceSpec(
+      'edgecontainer.projects.locations.clusters',
+      resource_name='gdce-cluster',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=_GdceLocationAttributeConfig(),
+      clustersId=GdceClusterConfig()
+  )

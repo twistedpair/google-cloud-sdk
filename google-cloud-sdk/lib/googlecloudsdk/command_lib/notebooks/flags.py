@@ -359,7 +359,7 @@ def AddCreateInstanceFlags(parser):
       'NVIDIA_TESLA_T4_VWS', 'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS',
       'TPU_V2', 'TPU_V3'
   ]
-  boot_disk_choices = ['PD_STANDARD', 'PD_SSD', 'PD_BALANCED']
+  disk_choices = ['PD_STANDARD', 'PD_SSD', 'PD_BALANCED', 'PD_EXTREME']
   encryption_choices = ['GMEK', 'CMEK']
   reservation_choices = [
       'TYPE_UNSPECIFIED',
@@ -463,16 +463,50 @@ def AddCreateInstanceFlags(parser):
   boot_group = parser.add_group(help='Boot disk configurations.')
   boot_group.add_argument(
       '--boot-disk-type',
-      choices=boot_disk_choices,
+      choices=disk_choices,
       default=None,
-      help=('The type of disk attached to this instance, defaults to standard '
-            'persistent disk (`PD_STANDARD`).'))
+      help=(
+          'Type of boot disk attached to this instance, defaults to '
+          'standard persistent disk (`PD_STANDARD`).'
+      ),
+  )
   boot_group.add_argument(
       '--boot-disk-size',
       type=int,
-      help=('The size of the disk in GB attached to this instance, up to a '
-            'maximum of 64000 GB (64 TB). The minimum recommended value '
-            'is 100 GB. If not specified, this defaults to 100.'))
+      help=(
+          'Size of boot disk in GB attached to this instance, up to '
+          'a maximum of 64000 GB (64 TB). The minimum recommended value '
+          'is 100 GB. If not specified, this defaults to 100.'
+      ),
+  )
+  data_group = parser.add_group(help='Data disk configurations.')
+  data_group.add_argument(
+      '--data-disk-type',
+      choices=disk_choices,
+      default=None,
+      help=(
+          'Type of data disk attached to this instance, defaults to '
+          'standard persistent disk (`PD_STANDARD`).'
+      ),
+  )
+  data_group.add_argument(
+      '--data-disk-size',
+      type=int,
+      help=(
+          'Size of data disk in GB attached to this instance, up to '
+          'a maximum of 64000 GB (64 TB). The minimum recommended value '
+          'is 100 GB. If not specified, this defaults to 100.'
+      ),
+  )
+  data_group.add_argument(
+      '--no-remove-data-disk',
+      action='store_true',
+      dest='no_remove_data_disk',
+      help=(
+          'If true, the data disk will not be auto deleted when deleting '
+          'the instance.'
+      ),
+  )
   encryption_group = parser.add_group(help='Disk encryption configurations.')
   encryption_group.add_argument(
       '--disk-encryption',
@@ -724,4 +758,3 @@ def AddDiagnoseRuntimeFlags(parser):
   """Construct groups and arguments specific to the runtime diagnosing."""
   AddRuntimeResource(parser)
   AddDiagnosticConfigFlags(parser, 'runtime')
-

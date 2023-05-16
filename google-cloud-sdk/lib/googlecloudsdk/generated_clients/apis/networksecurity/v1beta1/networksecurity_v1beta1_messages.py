@@ -160,6 +160,9 @@ class AuthorizationPolicy(_messages.Message):
       values are "ALLOW" or "DENY".
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. Free-text description of the resource.
+    internalCaller: Optional. A flag set to identify internal controllers
+      Setting this will trigger a P4SA check to validate the caller is from an
+      allowlisted service's P4SA even if other optional fields are unset.
     labels: Optional. Set of label tags associated with the
       AuthorizationPolicy resource.
     name: Required. Name of the AuthorizationPolicy resource. It matches
@@ -215,10 +218,11 @@ class AuthorizationPolicy(_messages.Message):
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  rules = _messages.MessageField('Rule', 6, repeated=True)
-  updateTime = _messages.StringField(7)
+  internalCaller = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('Rule', 7, repeated=True)
+  updateTime = _messages.StringField(8)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -257,6 +261,9 @@ class ClientTlsPolicy(_messages.Message):
       presence of this dictates mTLS.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. Free-text description of the resource.
+    internalCaller: Optional. A flag set to identify internal controllers
+      Setting this will trigger a P4SA check to validate the caller is from an
+      allowlisted service's P4SA even if other optional fields are unset.
     labels: Optional. Set of label tags associated with the resource.
     name: Required. Name of the ClientTlsPolicy resource. It matches the
       pattern
@@ -266,6 +273,13 @@ class ClientTlsPolicy(_messages.Message):
       empty, client does not validate the server certificate.
     sni: Optional. Server Name Indication string to present to the server
       during TLS handshake. E.g: "secure.example.com".
+    subjectAltNames: Optional. A list of alternate names to verify the server
+      identity in the certificate. If specified, the client will verify that
+      the server certificate's subject alt name matches one of the specified
+      values. If specified, this list overrides the value of subject_alt_names
+      from the BackendService.securitySettings.subjectAltNames[]. The domain
+      names can be either be exact match (e.g foo) or suffix matches (e.g foo*
+      or foo/*)
     targets: Optional. Define a list of targets this policy should serve. A
       target can only be a BackendService and it should be the fully qualified
       name of the BackendService, e.g.:
@@ -308,13 +322,15 @@ class ClientTlsPolicy(_messages.Message):
   clientCertificate = _messages.MessageField('GoogleCloudNetworksecurityV1beta1CertificateProvider', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  serverValidationCa = _messages.MessageField('ValidationCA', 6, repeated=True)
-  sni = _messages.StringField(7)
-  targets = _messages.StringField(8, repeated=True)
-  updateTime = _messages.StringField(9)
-  workloadContextSelectors = _messages.MessageField('WorkloadContextSelector', 10, repeated=True)
+  internalCaller = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  serverValidationCa = _messages.MessageField('ValidationCA', 7, repeated=True)
+  sni = _messages.StringField(8)
+  subjectAltNames = _messages.StringField(9, repeated=True)
+  targets = _messages.StringField(10, repeated=True)
+  updateTime = _messages.StringField(11)
+  workloadContextSelectors = _messages.MessageField('WorkloadContextSelector', 12, repeated=True)
 
 
 class CloneAddressGroupItemsRequest(_messages.Message):
@@ -1406,10 +1422,12 @@ class ListGatewaySecurityPoliciesResponse(_messages.Message):
       response, then 'next_page_token' is included. To get the next set of
       results, call this method again using the value of 'next_page_token' as
       'page_token'.
+    unreachable: Locations that could not be reached.
   """
 
   gatewaySecurityPolicies = _messages.MessageField('GatewaySecurityPolicy', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListGatewaySecurityPolicyRulesResponse(_messages.Message):
@@ -1421,10 +1439,12 @@ class ListGatewaySecurityPolicyRulesResponse(_messages.Message):
       response, then 'next_page_token' is included. To get the next set of
       results, call this method again using the value of 'next_page_token' as
       'page_token'.
+    unreachable: Locations that could not be reached.
   """
 
   gatewaySecurityPolicyRules = _messages.MessageField('GatewaySecurityPolicyRule', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1540,10 +1560,12 @@ class ListTlsInspectionPoliciesResponse(_messages.Message):
       results, call this method again using the value of 'next_page_token' as
       'page_token'.
     tlsInspectionPolicies: List of TlsInspectionPolicies resources.
+    unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
   tlsInspectionPolicies = _messages.MessageField('TlsInspectionPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListUrlListsResponse(_messages.Message):
@@ -1564,7 +1586,7 @@ class ListUrlListsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1647,33 +1669,38 @@ class MTLSPolicy(_messages.Message):
   r"""Specification of the MTLSPolicy.
 
   Enums:
-    ClientValidationModeValueValuesEnum: Specifies whether client connections
-      proceed when a client presents an invalid certificate or no certificate.
-      Required if the policy is to be used with the External HTTPS LB. For
-      Traffic Director it must be empty.
+    ClientValidationModeValueValuesEnum: When the client presents an invalid
+      certificate or no certificate to the load balancer, the
+      `client_validation_mode` specifies how the client connection is handled.
+      Required if the policy is to be used with the external HTTPS load
+      balancing. For Traffic Director it must be empty.
     TierValueValuesEnum: Mutual TLS tier. Allowed only if the policy is to be
-      used with External HTTPS LB.
+      used with external HTTPS load balancers.
 
   Fields:
-    clientValidationCa:  Defines the mechanism to obtain the Certificate
-      Authority certificate to validate the client certificate.
-    clientValidationMode: Specifies whether client connections proceed when a
-      client presents an invalid certificate or no certificate. Required if
-      the policy is to be used with the External HTTPS LB. For Traffic
+    clientValidationCa: Required if the policy is to be used with Traffic
+      Director. For external HTTPS load balancers it must be empty. Defines
+      the mechanism to obtain the Certificate Authority certificate to
+      validate the client certificate.
+    clientValidationMode: When the client presents an invalid certificate or
+      no certificate to the load balancer, the `client_validation_mode`
+      specifies how the client connection is handled. Required if the policy
+      is to be used with the external HTTPS load balancing. For Traffic
       Director it must be empty.
     clientValidationTrustConfig: Reference to the TrustConfig from
       certificatemanager.googleapis.com namespace. If specified, the chain
       validation will be performed against certificates configured in the
       given TrustConfig. Allowed only if the policy is to be used with
-      External HTTPS LB.
+      external HTTPS load balancers.
     tier: Mutual TLS tier. Allowed only if the policy is to be used with
-      External HTTPS LB.
+      external HTTPS load balancers.
   """
 
   class ClientValidationModeValueValuesEnum(_messages.Enum):
-    r"""Specifies whether client connections proceed when a client presents an
-    invalid certificate or no certificate. Required if the policy is to be
-    used with the External HTTPS LB. For Traffic Director it must be empty.
+    r"""When the client presents an invalid certificate or no certificate to
+    the load balancer, the `client_validation_mode` specifies how the client
+    connection is handled. Required if the policy is to be used with the
+    external HTTPS load balancing. For Traffic Director it must be empty.
 
     Values:
       CLIENT_VALIDATION_MODE_UNSPECIFIED: Not allowed.
@@ -1695,7 +1722,7 @@ class MTLSPolicy(_messages.Message):
 
   class TierValueValuesEnum(_messages.Enum):
     r"""Mutual TLS tier. Allowed only if the policy is to be used with
-    External HTTPS LB.
+    external HTTPS load balancers.
 
     Values:
       TIER_UNSPECIFIED: If tier is unspecified in the request, the system will
@@ -3875,7 +3902,8 @@ class SecurityProfile(_messages.Message):
 
   Fields:
     createTime: Output only. Resource creation timestamp.
-    description: Optional. An optional description of the profile.
+    description: Optional. An optional description of the profile. Max length
+      512 characters.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and may be sent on update and delete requests to
       ensure the client has an up-to-date value before proceeding.
@@ -3944,7 +3972,8 @@ class SecurityProfileGroup(_messages.Message):
 
   Fields:
     createTime: Output only. Resource creation timestamp.
-    description: Optional. An optional description of the profile group.
+    description: Optional. An optional description of the profile group. Max
+      length 2048 characters.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and may be sent on update and delete requests to
       ensure the client has an up-to-date value before proceeding.
@@ -3994,34 +4023,48 @@ class ServerTlsPolicy(_messages.Message):
   r"""ServerTlsPolicy is a resource that specifies how a server should
   authenticate incoming requests. This resource itself does not affect
   configuration unless it is attached to a target HTTPS proxy or endpoint
-  config selector resource.
+  config selector resource. ServerTlsPolicy in the form accepted by external
+  HTTPS load balancers can be attached only to TargetHttpsProxy with an
+  `EXTERNAL` or `EXTERNAL_MANAGED` load balancing scheme. Traffic Director
+  compatible ServerTlsPolicies can be attached to EndpointPolicy and
+  TargetHttpsProxy with Traffic Director `INTERNAL_SELF_MANAGED` load
+  balancing scheme.
 
   Messages:
     LabelsValue: Set of label tags associated with the resource.
 
   Fields:
-    allowOpen:  Determines if server allows plaintext connections. If set to
-      true, server allows plain text connections. By default, it is set to
-      false. This setting is not exclusive of other encryption modes. For
-      example, if `allow_open` and `mtls_policy` are set, server allows both
-      plain text and mTLS connections. See documentation of other encryption
-      modes to confirm compatibility. Consider using it if you wish to upgrade
-      in place your deployment to TLS while having mixed TLS and non-TLS
-      traffic reaching port :80.
+    allowOpen: This field applies only for Traffic Director policies. It is
+      must be set to false for external HTTPS load balancer policies.
+      Determines if server allows plaintext connections. If set to true,
+      server allows plain text connections. By default, it is set to false.
+      This setting is not exclusive of other encryption modes. For example, if
+      `allow_open` and `mtls_policy` are set, server allows both plain text
+      and mTLS connections. See documentation of other encryption modes to
+      confirm compatibility. Consider using it if you wish to upgrade in place
+      your deployment to TLS while having mixed TLS and non-TLS traffic
+      reaching port :80.
     createTime: Output only. The timestamp when the resource was created.
     description: Free-text description of the resource.
+    internalCaller: Optional. A flag set to identify internal controllers
+      Setting this will trigger a P4SA check to validate the caller is from an
+      allowlisted service's P4SA even if other optional fields are unset.
     labels: Set of label tags associated with the resource.
-    mtlsPolicy:  Defines a mechanism to provision peer validation certificates
-      for peer to peer authentication (Mutual TLS - mTLS). If not specified,
-      client certificate will not be requested. The connection is treated as
-      TLS and not mTLS. If `allow_open` and `mtls_policy` are set, server
-      allows both plain text and mTLS connections.
+    mtlsPolicy: This field is required if the policy is used with external
+      HTTPS load balancers. This field can be empty for Traffic Director.
+      Defines a mechanism to provision peer validation certificates for peer
+      to peer authentication (Mutual TLS - mTLS). If not specified, client
+      certificate will not be requested. The connection is treated as TLS and
+      not mTLS. If `allow_open` and `mtls_policy` are set, server allows both
+      plain text and mTLS connections.
     name: Required. Name of the ServerTlsPolicy resource. It matches the
       pattern
       `projects/*/locations/{location}/serverTlsPolicies/{server_tls_policy}`
-    serverCertificate:  Defines a mechanism to provision server identity
-      (public and private keys). Cannot be combined with `allow_open` as a
-      permissive mode that allows both plain text and TLS is not supported.
+    serverCertificate: Optional if policy is to be used with Traffic Director.
+      For external HTTPS load balancer must be empty. Defines a mechanism to
+      provision server identity (public and private keys). Cannot be combined
+      with `allow_open` as a permissive mode that allows both plain text and
+      TLS is not supported.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -4052,27 +4095,28 @@ class ServerTlsPolicy(_messages.Message):
   allowOpen = _messages.BooleanField(1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  mtlsPolicy = _messages.MessageField('MTLSPolicy', 5)
-  name = _messages.StringField(6)
-  serverCertificate = _messages.MessageField('GoogleCloudNetworksecurityV1beta1CertificateProvider', 7)
-  updateTime = _messages.StringField(8)
+  internalCaller = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  mtlsPolicy = _messages.MessageField('MTLSPolicy', 6)
+  name = _messages.StringField(7)
+  serverCertificate = _messages.MessageField('GoogleCloudNetworksecurityV1beta1CertificateProvider', 8)
+  updateTime = _messages.StringField(9)
 
 
 class SeverityOverride(_messages.Message):
   r"""Defines what action to take for a specific severity match.
 
   Enums:
-    ActionValueValuesEnum: Threat action override.
-    SeverityValueValuesEnum: Severity level to match.
+    ActionValueValuesEnum: Required. Threat action override.
+    SeverityValueValuesEnum: Required. Severity level to match.
 
   Fields:
-    action: Threat action override.
-    severity: Severity level to match.
+    action: Required. Threat action override.
+    severity: Required. Severity level to match.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    r"""Threat action override.
+    r"""Required. Threat action override.
 
     Values:
       THREAT_ACTION_UNSPECIFIED: Threat action not specified.
@@ -4091,7 +4135,7 @@ class SeverityOverride(_messages.Message):
     DENY = 4
 
   class SeverityValueValuesEnum(_messages.Enum):
-    r"""Severity level to match.
+    r"""Required. Severity level to match.
 
     Values:
       SEVERITY_UNSPECIFIED: Severity level not specified.
@@ -4267,19 +4311,20 @@ class ThreatOverride(_messages.Message):
   r"""Defines what action to take for a specific threat_id match.
 
   Enums:
-    ActionValueValuesEnum: Threat action override. For some threat types, only
-      a subset of actions applies.
+    ActionValueValuesEnum: Required. Threat action override. For some threat
+      types, only a subset of actions applies.
+    TypeValueValuesEnum: Output only. Type of the threat (read only).
 
   Fields:
-    action: Threat action override. For some threat types, only a subset of
-      actions applies.
-    threatId: Vendor-specific ID of a threat to override.
+    action: Required. Threat action override. For some threat types, only a
+      subset of actions applies.
+    threatId: Required. Vendor-specific ID of a threat to override.
     type: Output only. Type of the threat (read only).
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    r"""Threat action override. For some threat types, only a subset of
-    actions applies.
+    r"""Required. Threat action override. For some threat types, only a subset
+    of actions applies.
 
     Values:
       THREAT_ACTION_UNSPECIFIED: Threat action not specified.
@@ -4297,9 +4342,33 @@ class ThreatOverride(_messages.Message):
     ALERT = 3
     DENY = 4
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of the threat (read only).
+
+    Values:
+      THREAT_TYPE_UNSPECIFIED: Type of threat not specified.
+      UNKNOWN: Type of threat is not derivable from threat ID. An override
+        will be created for all types. Firewall will ignore overridden
+        signature ID's that don't exist in the specific type.
+      VULNERABILITY: Threats related to system flaws that an attacker might
+        otherwise attempt to exploit.
+      ANTIVIRUS: Threats related to viruses and malware found in executables
+        and file types.
+      SPYWARE: Threats related to command-and-control (C2) activity, where
+        spyware on an infected client is collecting data without the user's
+        consent and/or communicating with a remote attacker.
+      DNS: Threats related to DNS.
+    """
+    THREAT_TYPE_UNSPECIFIED = 0
+    UNKNOWN = 1
+    VULNERABILITY = 2
+    ANTIVIRUS = 3
+    SPYWARE = 4
+    DNS = 5
+
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   threatId = _messages.StringField(2)
-  type = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class ThreatPreventionProfile(_messages.Message):

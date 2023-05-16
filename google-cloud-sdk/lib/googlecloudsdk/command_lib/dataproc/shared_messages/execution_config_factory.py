@@ -83,6 +83,9 @@ class ExecutionConfigFactory(object):
       # ExecutionConfig message expects duration in seconds
       kwargs['ttl'] = six.text_type(args.ttl) + 's'
 
+    if args.staging_bucket:
+      kwargs['stagingBucket'] = args.staging_bucket
+
     if not kwargs:
       return None
 
@@ -123,6 +126,15 @@ def AddArguments(parser):
       help='Network tags for traffic control.')
 
   parser.add_argument('--kms-key', help='Cloud KMS key to use for encryption.')
+
+  parser.add_argument(
+      '--staging-bucket',
+      help="""\
+      The Cloud Storage bucket to use to store job dependencies, config files,
+      and job driver console output. If not specified, the default [staging bucket]
+      (https://cloud.google.com/dataproc-serverless/docs/concepts/buckets) is used.
+      """,
+  )
 
   parser.add_argument(
       '--ttl',

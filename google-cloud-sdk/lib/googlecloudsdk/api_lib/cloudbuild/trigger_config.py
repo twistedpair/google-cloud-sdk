@@ -422,7 +422,9 @@ Use a build configuration (cloudbuild.yaml) file for building multiple images in
 
 
 def AddBuildConfigArgsForUpdate(flag_config,
-                                has_build_config=False):
+                                has_build_config=False,
+                                has_file_source=False,
+                                require_docker_image=False):
   """Adds additional argparse flags to a group for build configuration options for update command.
 
   Args:
@@ -430,6 +432,9 @@ def AddBuildConfigArgsForUpdate(flag_config,
       group to cover common build configuration settings.
     has_build_config: Whether it is possible for the trigger to have
       filename.
+    has_file_source: Whether it is possible for the trigger to have
+      git_file_source.
+    require_docker_image: If true, dockerfile image must be provided.
 
   Returns:
     build_config: A build config.
@@ -460,9 +465,112 @@ def AddBuildConfigArgsForUpdate(flag_config,
       Local path to a YAML or JSON file containing a build configuration.
     """)
 
-  AddBuildDockerArgs(build_config, require_docker_image=True, update=True)
+  if has_file_source:
+    AddGitFileSourceArgs(build_config)
+
+  AddBuildDockerArgs(
+      build_config, require_docker_image=require_docker_image, update=True)
 
   return build_config
+
+
+def AddRepoSourceForUpdate(flag_config):
+  """Adds additional argparse flags to a group for git repo source options for update commands.
+
+  Args:
+    flag_config: Argparse argument group. Git repo source flags will be added to
+      this group.
+  """
+  source_to_build = flag_config.add_mutually_exclusive_group()
+  source_to_build.add_argument(
+      '--source-to-build-repository',
+      hidden=True,
+      help="""\
+Repository resource (2nd gen) to use, in the format "projects/*/locations/*/connections/*/repositories/*".
+""")
+  v1_gen_source = source_to_build.add_argument_group()
+  v1_gen_source.add_argument(
+      '--source-to-build-github-enterprise-config',
+      help="""\
+The resource name of the GitHub Enterprise config that should be applied to
+this source (1st gen).
+Format: projects/{project}/locations/{location}/githubEnterpriseConfigs/{id}
+or projects/{project}/githubEnterpriseConfigs/{id}
+""")
+  v1_gen_repo_info = v1_gen_source.add_argument_group()
+  v1_gen_repo_info.add_argument(
+      '--source-to-build-repo-type',
+      required=True,
+      help="""\
+Type of the repository (1st gen). Currently only GitHub and Cloud Source
+Repository types are supported.
+""")
+  v1_gen_repo_info.add_argument(
+      '--source-to-build-uri',
+      required=True,
+      help="""\
+The URI of the repository that should be applied to this source (1st gen).
+""")
+
+  ref_config = flag_config.add_mutually_exclusive_group()
+  ref_config.add_argument('--source-to-build-branch', help='Branch to build.')
+  ref_config.add_argument('--source-to-build-tag', help='Tag to build.')
+
+
+def AddGitFileSourceArgs(argument_group):
+  """Adds additional argparse flags to a group for git file source options.
+
+  Args:
+    argument_group: Argparse argument group to which git file source flag will
+      be added.
+  """
+
+  git_file_source = argument_group.add_argument_group(
+      help='Build file source flags')
+  repo_source = git_file_source.add_mutually_exclusive_group()
+  repo_source.add_argument(
+      '--git-file-source-repository',
+      hidden=True,
+      help="""\
+Repository resource (2nd gen) to use, in the format "projects/*/locations/*/connections/*/repositories/*".
+""")
+  v1_gen_source = repo_source.add_argument_group()
+  v1_gen_source.add_argument(
+      '--git-file-source-path',
+      metavar='PATH',
+      help="""\
+The file in the repository to clone when trigger is invoked.
+""")
+  v1_gen_repo_info = v1_gen_source.add_argument_group()
+  v1_gen_repo_info.add_argument(
+      '--git-file-source-uri',
+      required=True,
+      metavar='URL',
+      help="""\
+The URI of the repository to clone when trigger is invoked.
+""")
+  v1_gen_repo_info.add_argument(
+      '--git-file-source-repo-type',
+      required=True,
+      help="""\
+The type of the repository to clone when trigger is invoked.
+""")
+  v1_gen_source.add_argument(
+      '--git-file-source-github-enterprise-config',
+      help="""\
+The resource name of the GitHub Enterprise config that should be applied to this source.
+""")
+  ref_config = git_file_source.add_mutually_exclusive_group()
+  ref_config.add_argument(
+      '--git-file-source-branch',
+      help="""\
+The branch of the repository to clone when trigger is invoked.
+""")
+  ref_config.add_argument(
+      '--git-file-source-tag',
+      help="""\
+The tag of the repository to clone when trigger is invoked.
+""")
 
 
 def ParseRepoEventArgs(trigger, args):
@@ -533,7 +641,11 @@ def ParseBuildConfigArgsForUpdate(trigger,
                                   old_trigger,
                                   args,
                                   messages,
-                                  has_build_config=False):
+                                  update_mask,
+                                  default_image,
+                                  has_build_config=False,
+                                  has_repo_source=False,
+                                  has_file_source=False):
   """Parses build-config flags for update command.
 
   Args:
@@ -541,8 +653,14 @@ def ParseBuildConfigArgsForUpdate(trigger,
     old_trigger: The existing trigger to be updated.
     args: An argparse arguments object.
     messages: A Cloud Build messages module.
+    update_mask: The fields to be updated.
+    default_image: The default docker image to use.
     has_build_config: Whether it is possible for the trigger to have
       filename.
+    has_repo_source: Whether it is possible for the trigger to have
+      source_to_build.
+    has_file_source: Whether it is possible for the trigger to have
+      git_file_source.
   """
   if has_build_config:
     trigger.filename = args.build_config
@@ -560,12 +678,13 @@ def ParseBuildConfigArgsForUpdate(trigger,
     else:
       dockerfile_dir = '/'
 
+    dockerfile_image = args.dockerfile_image or default_image
     trigger.build = messages.Build(steps=[
         messages.BuildStep(
             name='gcr.io/cloud-builders/docker',
             dir=dockerfile_dir,
             args=[
-                'build', '-t', args.dockerfile_image, '-f', args.dockerfile, '.'
+                'build', '-t', dockerfile_image, '-f', args.dockerfile, '.'
             ],
         )
     ])
@@ -587,6 +706,114 @@ def ParseBuildConfigArgsForUpdate(trigger,
     trigger.substitutions = cloudbuild_util.RemoveTriggerSubstitutions(
         old_trigger.substitutions, args.remove_substitutions, messages
     )
+
+  if has_repo_source and (
+      args.source_to_build_uri
+      or args.source_to_build_branch
+      or args.source_to_build_tag
+      or args.source_to_build_repo_type
+      or args.source_to_build_github_enterprise_config
+      or args.source_to_build_repository
+  ):
+    ParseGitRepoSourceForUpdate(trigger, args, messages, update_mask)
+
+  if has_file_source and (
+      args.git_file_source_uri or args.git_file_source_path or
+      args.git_file_source_repo_type or
+      args.git_file_source_branch or args.git_file_source_tag or
+      args.git_file_source_github_enterprise_config or
+      args.git_file_source_repository):
+    ParseGitFileSource(trigger, args, messages, update_mask)
+
+
+def ParseGitRepoSourceForUpdate(trigger, args, messages, update_mask):
+  """Parses git repo source flags for update command.
+
+  Args:
+    trigger: The trigger to populate.
+    args: An argparse arguments object.
+    messages: A Cloud Build messages module.
+    update_mask: The fields to be updated.
+  """
+
+  trigger.sourceToBuild = messages.GitRepoSource()
+  reporef = None
+  if args.source_to_build_branch:
+    reporef = 'refs/heads/' + args.source_to_build_branch
+  elif args.source_to_build_tag:
+    reporef = 'refs/tags/' + args.source_to_build_tag
+  if reporef:
+    trigger.sourceToBuild.ref = reporef
+
+  if args.source_to_build_repository:
+    trigger.sourceToBuild.repository = args.source_to_build_repository
+    # Clear the 1st-gen repo info when updating 2nd-gen repo resource.
+    update_mask.append('source_to_build.uri')
+    update_mask.append('source_to_build.repo_type')
+    update_mask.append('source_to_build.github_enterprise_config')
+  elif (
+      args.source_to_build_uri
+      or args.source_to_build_github_enterprise_config
+      or args.source_to_build_repo_type
+  ):
+    trigger.sourceToBuild.uri = args.source_to_build_uri
+    trigger.sourceToBuild.githubEnterpriseConfig = (
+        args.source_to_build_github_enterprise_config
+    )
+    if args.source_to_build_repo_type:
+      trigger.sourceToBuild.repoType = (
+          messages.GitRepoSource.RepoTypeValueValuesEnum(
+              args.source_to_build_repo_type
+          )
+      )
+    # Clear the 2nd-gen repo info when updating 1st-gen repo resource.
+    update_mask.append('source_to_build.repository')
+
+
+def ParseGitFileSource(trigger, args, messages, update_mask):
+  """Parses git repo source flags.
+
+  Args:
+    trigger: The trigger to populate.
+    args: An argparse arguments object.
+    messages: A Cloud Build messages module.
+    update_mask: The fields to be updated.
+  """
+
+  trigger.gitFileSource = messages.GitFileSource()
+  revision = None
+  if args.git_file_source_branch:
+    revision = 'refs/heads/' + args.git_file_source_branch
+  elif args.git_file_source_tag:
+    revision = 'refs/tags/' + args.git_file_source_tag
+  trigger.gitFileSource.revision = revision
+
+  if args.git_file_source_repository:
+    trigger.gitFileSource.repository = args.git_file_source_repository
+    # Clear the 1st-gen repo info when updating 2nd-gen repo resource.
+    update_mask.append('git_file_source.uri')
+    update_mask.append('git_file_source.repo_type')
+    update_mask.append('git_file_source.github_enterprise_config')
+    update_mask.append('git_file_source.path')
+  elif (
+      args.git_file_source_github_enterprise_config
+      or args.git_file_source_uri
+      or args.git_file_source_path
+      or args.git_file_source_repo_type
+  ):
+    trigger.gitFileSource.path = args.git_file_source_path
+    trigger.gitFileSource.uri = args.git_file_source_uri
+    trigger.gitFileSource.githubEnterpriseConfig = (
+        args.git_file_source_github_enterprise_config
+    )
+    if args.git_file_source_repo_type:
+      trigger.gitFileSource.repoType = (
+          messages.GitFileSource.RepoTypeValueValuesEnum(
+              args.git_file_source_repo_type
+          )
+      )
+    # Clear the 2nd-gen repo info when updating 1st-gen repo resource.
+    update_mask.append('git_file_source.repository')
 
 
 def AddBranchPattern(parser):
@@ -635,7 +862,6 @@ def AddGitRepoSource(flag_config):
       help='Flags for repository information')
   gen_config.add_argument(
       '--repository',
-      hidden=True,
       help="""\
 Repository resource (2nd gen) to use, in the format "projects/*/locations/*/connections/*/repositories/*".
 """)

@@ -1128,6 +1128,20 @@ class GoModule(_messages.Message):
   version = _messages.StringField(4)
 
 
+class GoogetArtifact(_messages.Message):
+  r"""A detailed representation of a GooGet artifact.
+
+  Fields:
+    architecture: Output only. Operating system architecture of the artifact.
+    name: Output only. The Artifact Registry resource name of the artifact.
+    packageName: Output only. The GooGet package name of the artifact.
+  """
+
+  architecture = _messages.StringField(1)
+  name = _messages.StringField(2)
+  packageName = _messages.StringField(3)
+
+
 class GoogleDevtoolsArtifactregistryV1File(_messages.Message):
   r"""Files store content that is potentially associated with Packages or
   Versions.
@@ -1428,6 +1442,18 @@ class ImportAptArtifactsResponse(_messages.Message):
   errors = _messages.MessageField('ImportAptArtifactsErrorInfo', 2, repeated=True)
 
 
+class ImportGoogetArtifactsErrorInfo(_messages.Message):
+  r"""Error information explaining why a package was not imported.
+
+  Fields:
+    error: The detailed error status.
+    gcsSource: Google Cloud Storage location requested.
+  """
+
+  error = _messages.MessageField('Status', 1)
+  gcsSource = _messages.MessageField('ImportGoogetArtifactsGcsSource', 2)
+
+
 class ImportGoogetArtifactsGcsSource(_messages.Message):
   r"""Google Cloud Storage location where the artifacts currently reside.
 
@@ -1441,6 +1467,10 @@ class ImportGoogetArtifactsGcsSource(_messages.Message):
   useWildcards = _messages.BooleanField(2)
 
 
+class ImportGoogetArtifactsMetadata(_messages.Message):
+  r"""The operation metadata for importing artifacts."""
+
+
 class ImportGoogetArtifactsRequest(_messages.Message):
   r"""The request to import new googet artifacts.
 
@@ -1449,6 +1479,18 @@ class ImportGoogetArtifactsRequest(_messages.Message):
   """
 
   gcsSource = _messages.MessageField('ImportGoogetArtifactsGcsSource', 1)
+
+
+class ImportGoogetArtifactsResponse(_messages.Message):
+  r"""The response message from importing artifacts.
+
+  Fields:
+    errors: Detailed error info for packages that were not imported.
+    googetArtifacts: The GooGet artifacts updated.
+  """
+
+  errors = _messages.MessageField('ImportGoogetArtifactsErrorInfo', 1, repeated=True)
+  googetArtifacts = _messages.MessageField('GoogetArtifact', 2, repeated=True)
 
 
 class ImportYumArtifactsErrorInfo(_messages.Message):
@@ -1503,7 +1545,7 @@ class ImportYumArtifactsResponse(_messages.Message):
 
 
 class KfpArtifact(_messages.Message):
-  r"""A detailed representation of a GooGet artifact.
+  r"""A detailed representation of a KFP artifact.
 
   Fields:
     name: Output only. Resource name of the KFP artifact. Since users don't
@@ -1650,7 +1692,7 @@ class ListVersionsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -2222,6 +2264,8 @@ class Repository(_messages.Message):
       indicate when certain package versions can be automatically deleted. Map
       keys are policy IDs supplied by users during policy creation. They must
       unique within a repository and be under 128 characters in length.
+    cleanupPolicyDryRun: If true, the cleanup pipeline is prevented from
+      deleting versions in this repository.
     createTime: Output only. The time when the repository was created.
     description: The user-provided description of the repository.
     dockerConfig: Docker repository config contains repository level
@@ -2351,20 +2395,21 @@ class Repository(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   cleanupPolicies = _messages.MessageField('CleanupPoliciesValue', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  dockerConfig = _messages.MessageField('DockerRepositoryConfig', 4)
-  format = _messages.EnumField('FormatValueValuesEnum', 5)
-  kmsKeyName = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  mavenConfig = _messages.MessageField('MavenRepositoryConfig', 8)
-  mode = _messages.EnumField('ModeValueValuesEnum', 9)
-  name = _messages.StringField(10)
-  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 11)
-  satisfiesPzs = _messages.BooleanField(12)
-  sizeBytes = _messages.IntegerField(13)
-  updateTime = _messages.StringField(14)
-  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 15)
+  cleanupPolicyDryRun = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  dockerConfig = _messages.MessageField('DockerRepositoryConfig', 5)
+  format = _messages.EnumField('FormatValueValuesEnum', 6)
+  kmsKeyName = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  mavenConfig = _messages.MessageField('MavenRepositoryConfig', 9)
+  mode = _messages.EnumField('ModeValueValuesEnum', 10)
+  name = _messages.StringField(11)
+  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 12)
+  satisfiesPzs = _messages.BooleanField(13)
+  sizeBytes = _messages.IntegerField(14)
+  updateTime = _messages.StringField(15)
+  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 16)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2644,8 +2689,23 @@ class UploadGoogetArtifactMediaResponse(_messages.Message):
   operation = _messages.MessageField('Operation', 1)
 
 
+class UploadGoogetArtifactMetadata(_messages.Message):
+  r"""The operation metadata for uploading artifacts."""
+
+
 class UploadGoogetArtifactRequest(_messages.Message):
   r"""The request to upload an artifact."""
+
+
+class UploadGoogetArtifactResponse(_messages.Message):
+  r"""The response of the completed artifact upload operation. This response
+  is contained in the Operation and available to users.
+
+  Fields:
+    googetArtifacts: The Apt artifacts updated.
+  """
+
+  googetArtifacts = _messages.MessageField('GoogetArtifact', 1, repeated=True)
 
 
 class UploadKfpArtifactMediaResponse(_messages.Message):

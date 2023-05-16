@@ -18,8 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import datetime
+
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
 
@@ -53,9 +56,11 @@ class Client:
   def __init__(self, release_track):
     self._client = GetClientInstance(release_track)
     self._sp_client = self._client.organizations_locations_securityProfiles
+    self._operations_client = self._client.organizations_locations_operations
     self._locations_client = self._client.organizations_locations
     self.messages = GetMessagesModule(release_track)
     self._resource_parser = resources.Registry()
+    self.api_version = API_VERSION_FOR_TRACK.get(release_track)
     self._resource_parser.RegisterApiByName(
         API_NAME, API_VERSION_FOR_TRACK.get(release_track)
     )
@@ -94,6 +99,52 @@ class Client:
         }
       else:
         return response.etag, profile
+
+  def GetOperationsRef(self, operation):
+    """Operations to Resource used for `waiter.WaitFor`."""
+    return self._resource_parser.ParseRelativeName(
+        operation.name,
+        'networksecurity.organizations.locations.operations',
+        False,
+        self.api_version,
+    )
+
+  def WaitForOperation(
+      self,
+      operation_ref,
+      message,
+      has_result=False,
+      max_wait=datetime.timedelta(seconds=600),
+  ):
+    """Waits for an operation to complete.
+
+    Polls the Network Security Operation service until the operation completes,
+    fails, or max_wait_seconds elapses.
+
+    Args:
+      operation_ref: A Resource created by GetOperationRef describing the
+        Operation.
+      message: The message to display to the user while they wait.
+      has_result: If True, the function will return the target of the operation
+        when it completes. If False, nothing will be returned.
+      max_wait: The time to wait for the operation to succeed before timing out.
+
+    Returns:
+      if has_result = True, a Security Profile entity.
+      Otherwise, None.
+    """
+    if has_result:
+      poller = waiter.CloudOperationPoller(
+          self._sp_client, self._operations_client
+      )
+    else:
+      poller = waiter.CloudOperationPollerNoResources(self._operations_client)
+
+    response = waiter.WaitFor(
+        poller, operation_ref, message, max_wait_ms=max_wait.seconds * 1000
+    )
+
+    return response
 
   def CheckOverridesExist(
       self,

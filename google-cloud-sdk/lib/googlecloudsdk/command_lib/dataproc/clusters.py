@@ -1371,11 +1371,13 @@ def CreateCluster(dataproc,
               cluster.config.gkeClusterConfig.namespacedGkeDeploymentTarget
               .targetGkeCluster))
     elif cluster.virtualClusterConfig is not None:
-      log.CreatedResource(
-          cluster_ref,
-          details='Virtual Cluster created on GKE cluster: {0}'.format(
-              cluster.virtualClusterConfig.kubernetesClusterConfig
-              .gkeClusterConfig.gkeClusterTarget))
+      if (cluster.virtualClusterConfig.
+          kubernetesClusterConfig.gkeClusterConfig is not None):
+        log.CreatedResource(
+            cluster_ref,
+            details='Virtual Cluster created on GKE cluster: {0}'.format(
+                cluster.virtualClusterConfig.kubernetesClusterConfig
+                .gkeClusterConfig.gkeClusterTarget))
     else:
       zone_uri = cluster.config.gceClusterConfig.zoneUri
       zone_short_name = zone_uri.split('/')[-1]

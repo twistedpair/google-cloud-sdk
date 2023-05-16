@@ -40,6 +40,7 @@ from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_iterator
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import platforms
 
 _ALL_VERSIONS_HELP_TEXT = """\
 Copy all source versions from a source bucket or folder. If not set, only the
@@ -127,6 +128,20 @@ attributes on files after they are downloaded.
 On Windows, this flag will only set and restore access time and modification
 time because Windows doesn't have a notion of POSIX UID, GID, and mode.
 """
+_PRESERVE_SYMLINKS_HELP_TEST = """\
+Preserve symlinks instead of copying what they point to. With this feature
+enabled, uploaded symlinks will be represented as placeholders in the cloud
+whose content consists of the linked path. Inversely, such placeholders will be
+converted to symlinks when downloaded while this feature is enabled, as
+described at https://cloud.google.com/storage-transfer/docs/metadata-preservation#posix_to.
+
+CAUTION: No validation is applied to the symlink target paths. Once downloaded,
+preserved symlinks will point to whatever path was specified by the placeholder,
+regardless of the location or permissions of the path, or whether it actually
+exists.
+
+This feature is not supported on Windows.
+"""
 
 
 def add_gzip_in_flight_flags(parser):
@@ -146,9 +161,9 @@ def add_gzip_in_flight_flags(parser):
   )
 
 
-def add_ignore_symlinks_flag(parser, default=False):
+def add_ignore_symlinks_flag(parser_or_group, default=False):
   """Adds flag for skipping copying symlinks."""
-  parser.add_argument(
+  parser_or_group.add_argument(
       '--ignore-symlinks',
       action='store_true',
       default=default,
@@ -159,10 +174,52 @@ def add_ignore_symlinks_flag(parser, default=False):
   )
 
 
+def add_preserve_symlinks_flag(parser_or_group, default=False):
+  """Adds flag for preserving symlinks."""
+  parser_or_group.add_argument(
+      '--preserve-symlinks',
+      action='store_true',
+      default=default,
+      help=_PRESERVE_SYMLINKS_HELP_TEST,
+  )
+
+
+def add_cp_mv_rsync_flags(parser):
+  """Adds flags shared by cp, mv, and rsync."""
+  flags.add_additional_headers_flag(parser)
+  flags.add_continue_on_error_flag(parser)
+  flags.add_object_metadata_flags(parser)
+  flags.add_precondition_flags(parser)
+  parser.add_argument(
+      '-n',
+      '--no-clobber',
+      action='store_true',
+      help=(
+          'Do not overwrite existing files or objects at the destination.'
+          ' Skipped items will be printed. This option may perform an'
+          ' additional GET request for cloud objects before attempting an'
+          ' upload.'
+      ),
+  )
+  parser.add_argument(
+      '-P',
+      '--preserve-posix',
+      action='store_true',
+      help=_PRESERVE_POSIX_HELP_TEXT,
+  )
+  parser.add_argument(
+      '-U',
+      '--skip-unsupported',
+      action='store_true',
+      help='Skip objects with unsupported object types.',
+  )
+
+
 def add_cp_and_mv_flags(parser):
   """Adds flags to cp, mv, or other cp-based commands."""
   parser.add_argument('source', nargs='*', help='The source path(s) to copy.')
   parser.add_argument('destination', help='The destination path.')
+  add_cp_mv_rsync_flags(parser)
   parser.add_argument(
       '-A', '--all-versions', action='store_true', help=_ALL_VERSIONS_HELP_TEXT)
   parser.add_argument(
@@ -182,24 +239,16 @@ def add_cp_and_mv_flags(parser):
       ' to change a composite object into a non-composite object.'
       ' Note: Daisy chain mode is automatically used when copying between'
       ' providers.')
-  add_ignore_symlinks_flag(parser)
-  parser.add_argument('-L', '--manifest-path', help=_MANIFEST_HELP_TEXT)
-  parser.add_argument(
-      '-n',
-      '--no-clobber',
-      action='store_true',
+  symlinks_group = parser.add_group(
+      mutex=True,
       help=(
-          'Do not overwrite existing files or objects at the destination.'
-          ' Skipped items will be printed. This option may perform an'
-          ' additional GET request for cloud objects before attempting an'
-          ' upload.'
+          'Flags to influence behavior when handling symlinks. Only one value'
+          ' may be set.'
       ),
   )
-  parser.add_argument(
-      '-P',
-      '--preserve-posix',
-      action='store_true',
-      help=_PRESERVE_POSIX_HELP_TEXT)
+  add_ignore_symlinks_flag(symlinks_group)
+  add_preserve_symlinks_flag(symlinks_group)
+  parser.add_argument('-L', '--manifest-path', help=_MANIFEST_HELP_TEXT)
   parser.add_argument(
       '-v',
       '--print-created-message',
@@ -214,11 +263,6 @@ def add_cp_and_mv_flags(parser):
       ' "storage cp -I gs://bucket/destination"\n'
       ' Note: To copy the contents of one file directly from stdin, use "-"'
       ' as the source argument without the "-I" flag.')
-  parser.add_argument(
-      '-U',
-      '--skip-unsupported',
-      action='store_true',
-      help='Skip objects with unsupported object types.')
   parser.add_argument(
       '-s',
       '--storage-class',
@@ -244,9 +288,6 @@ def add_cp_and_mv_flags(parser):
   flags.add_predefined_acl_flag(acl_flags_group)
   flags.add_preserve_acl_flag(acl_flags_group)
 
-  flags.add_continue_on_error_flag(parser)
-  flags.add_precondition_flags(parser)
-  flags.add_object_metadata_flags(parser)
   flags.add_encryption_flags(parser)
 
 
@@ -275,6 +316,11 @@ def _validate_args(args, raw_destination_url):
   if args.no_clobber and args.if_generation_match:
     raise ValueError(
         'Cannot specify both generation precondition and no-clobber.')
+
+  if args.preserve_symlinks and platforms.OperatingSystem.IsWindows():
+    raise ValueError(
+        'Symlink preservation is not supported for Windows.'
+    )
 
   if (isinstance(raw_destination_url, storage_url.FileUrl) and
       args.storage_class):
@@ -376,8 +422,11 @@ def run_cp(args, delete_source=False):
       all_versions=args.all_versions,
       fields_scope=fields_scope,
       ignore_symlinks=args.ignore_symlinks,
+      preserve_symlinks=args.preserve_symlinks,
       recursion_requested=name_expansion.RecursionSetting.YES
-      if args.recursive else name_expansion.RecursionSetting.NO_WITH_WARNING)
+      if args.recursive
+      else name_expansion.RecursionSetting.NO_WITH_WARNING,
+  )
 
   if raw_destination_url.is_stdio:
     task_status_queue = None

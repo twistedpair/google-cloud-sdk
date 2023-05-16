@@ -50,3 +50,11 @@ properties:
     description: |-
       Whether to enable UEFI networking during instance creation.
     type: boolean
+  performanceMonitoringUnit:
+    description: |-
+      The set of performance measurement counters to enable for the instance.
+    type: string
+    enum:
+    - ARCHITECTURAL
+    - STANDARD
+    - ENHANCED
