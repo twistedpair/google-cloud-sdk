@@ -169,18 +169,6 @@ class AttestationOccurrence(_messages.Message):
   signatures = _messages.MessageField('Signature', 3, repeated=True)
 
 
-class Binary(_messages.Message):
-  r"""A Binary object.
-
-  Fields:
-    name: A string attribute.
-    version: A string attribute.
-  """
-
-  name = _messages.StringField(1)
-  version = _messages.StringField(2)
-
-
 class BuildOccurrence(_messages.Message):
   r"""Details of a build occurrence.
 
@@ -1349,6 +1337,7 @@ class Occurrence(_messages.Message):
     resourceUri: Required. Immutable. A URI that represents the resource for
       which the occurrence applies. For example,
       `https://gcr.io/project/image@sha256:123abc` for a Docker image.
+    sbomReference: Describes a specific SBOM reference occurrences.
     updateTime: Output only. The time this occurrence was last updated.
     upgrade: Describes an available package upgrade on the linked resource.
     vulnerability: Describes a security vulnerability.
@@ -1374,6 +1363,7 @@ class Occurrence(_messages.Message):
       COMPLIANCE: This represents a Compliance Note
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
+      SBOM_REFERENCE: This represents an SBOM Reference.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -1387,6 +1377,7 @@ class Occurrence(_messages.Message):
     COMPLIANCE = 9
     DSSE_ATTESTATION = 10
     VULNERABILITY_ASSESSMENT = 11
+    SBOM_REFERENCE = 12
 
   attestation = _messages.MessageField('AttestationOccurrence', 1)
   build = _messages.MessageField('BuildOccurrence', 2)
@@ -1403,9 +1394,10 @@ class Occurrence(_messages.Message):
   package = _messages.MessageField('PackageOccurrence', 13)
   remediation = _messages.StringField(14)
   resourceUri = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
-  upgrade = _messages.MessageField('UpgradeOccurrence', 17)
-  vulnerability = _messages.MessageField('VulnerabilityOccurrence', 18)
+  sbomReference = _messages.MessageField('SBOMReferenceOccurrence', 16)
+  updateTime = _messages.StringField(17)
+  upgrade = _messages.MessageField('UpgradeOccurrence', 18)
+  vulnerability = _messages.MessageField('VulnerabilityOccurrence', 19)
 
 
 class OndemandscanningProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1617,7 +1609,7 @@ class PackageData(_messages.Message):
 
   Fields:
     architecture: The architecture of the package.
-    binary: The binary package. This is significant when the source is
+    binaryVersion: The binary package. This is significant when the source is
       different than the binary itself. Historically if they've differed,
       we've stored the name of the source and its version in the
       package/version fields, but we should also store the binary package
@@ -1642,6 +1634,11 @@ class PackageData(_messages.Message):
     packageType: The type of package: os, maven, go, etc.
     patchedCve: CVEs that this package is no longer vulnerable to go/drydock-
       dd-custom-binary-scanning
+    sourceVersion: The source package. Similar to the above, this is
+      significant when the source is different than the binary itself. Since
+      the top-level package/version fields are based on an if/else, we need a
+      separate field for both binary and source if we want to know
+      definitively where the data is coming from.
     unused: A string attribute.
     version: The version of the package being analysed
   """
@@ -1667,7 +1664,7 @@ class PackageData(_messages.Message):
     NPM = 6
 
   architecture = _messages.StringField(1)
-  binary = _messages.MessageField('Binary', 2)
+  binaryVersion = _messages.MessageField('PackageVersion', 2)
   cpeUri = _messages.StringField(3)
   dependencyChain = _messages.MessageField('LanguagePackageDependency', 4, repeated=True)
   fileLocation = _messages.MessageField('FileLocation', 5, repeated=True)
@@ -1678,8 +1675,9 @@ class PackageData(_messages.Message):
   package = _messages.StringField(10)
   packageType = _messages.EnumField('PackageTypeValueValuesEnum', 11)
   patchedCve = _messages.StringField(12, repeated=True)
-  unused = _messages.StringField(13)
-  version = _messages.StringField(14)
+  sourceVersion = _messages.MessageField('PackageVersion', 13)
+  unused = _messages.StringField(14)
+  version = _messages.StringField(15)
 
 
 class PackageIssue(_messages.Message):
@@ -1792,6 +1790,18 @@ class PackageOccurrence(_messages.Message):
   name = _messages.StringField(5)
   packageType = _messages.StringField(6)
   version = _messages.MessageField('Version', 7)
+
+
+class PackageVersion(_messages.Message):
+  r"""A PackageVersion object.
+
+  Fields:
+    name: A string attribute.
+    version: A string attribute.
+  """
+
+  name = _messages.StringField(1)
+  version = _messages.StringField(2)
 
 
 class ProjectRepoId(_messages.Message):
@@ -1961,6 +1971,88 @@ class RepoId(_messages.Message):
 
   projectRepoId = _messages.MessageField('ProjectRepoId', 1)
   uid = _messages.StringField(2)
+
+
+class SBOMReferenceOccurrence(_messages.Message):
+  r"""The occurrence representing an SBOM reference as applied to a specific
+  resource. The occurrence follows the DSSE specification. See
+  https://github.com/secure-systems-lab/dsse/blob/master/envelope.md for more
+  details.
+
+  Fields:
+    payload: The actual payload that contains the SBOM reference data.
+    payloadType: The kind of payload that SbomReferenceIntotoPayload takes.
+      Since it's in the intoto format, this value is expected to be
+      'application/vnd.in-toto+json'.
+    signatures: The signatures over the payload.
+  """
+
+  payload = _messages.MessageField('SbomReferenceIntotoPayload', 1)
+  payloadType = _messages.StringField(2)
+  signatures = _messages.MessageField('EnvelopeSignature', 3, repeated=True)
+
+
+class SbomReferenceIntotoPayload(_messages.Message):
+  r"""The actual payload that contains the SBOM Reference data. The payload
+  follows the intoto statement specification. See https://github.com/in-
+  toto/attestation/blob/main/spec/v1.0/statement.md for more details.
+
+  Fields:
+    _type: Identifier for the schema of the Statement.
+    predicate: Additional parameters of the Predicate. Includes the actual
+      data about the SBOM.
+    predicateType: URI identifying the type of the Predicate.
+    subject: Set of software artifacts that the attestation applies to. Each
+      element represents a single software artifact.
+  """
+
+  _type = _messages.StringField(1)
+  predicate = _messages.MessageField('SbomReferenceIntotoPredicate', 2)
+  predicateType = _messages.StringField(3)
+  subject = _messages.MessageField('Subject', 4, repeated=True)
+
+
+class SbomReferenceIntotoPredicate(_messages.Message):
+  r"""A predicate which describes the SBOM being referenced.
+
+  Messages:
+    DigestValue: A map of algorithm to digest of the contents of the SBOM.
+
+  Fields:
+    digest: A map of algorithm to digest of the contents of the SBOM.
+    location: The location of the SBOM.
+    mimeType: The mime type of the SBOM.
+    referrerId: The person or system referring this predicate to the consumer.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""A map of algorithm to digest of the contents of the SBOM.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  location = _messages.StringField(2)
+  mimeType = _messages.StringField(3)
+  referrerId = _messages.StringField(4)
 
 
 class Signature(_messages.Message):

@@ -128,6 +128,10 @@ class BatchRecognizeMetadata(_messages.Message):
 class BatchRecognizeRequest(_messages.Message):
   r"""Request message for the BatchRecognize method.
 
+  Enums:
+    ProcessingStrategyValueValuesEnum: Processing strategy to use for this
+      request.
+
   Fields:
     config: Features and audio metadata to use for the Automatic Speech
       Recognition. This field in combination with the config_mask field can be
@@ -143,16 +147,31 @@ class BatchRecognizeRequest(_messages.Message):
       recognizer for this recognition request.
     files: Audio files with file metadata for ASR. The maximum number of files
       allowed to be specified is 5.
+    processingStrategy: Processing strategy to use for this request.
     recognitionOutputConfig: Configuration options for where to output the
       transcripts of each file.
     recognizer: Required. Resource name of the recognizer to be used for ASR.
   """
 
+  class ProcessingStrategyValueValuesEnum(_messages.Enum):
+    r"""Processing strategy to use for this request.
+
+    Values:
+      PROCESSING_STRATEGY_UNSPECIFIED: Default value for the processing
+        strategy. The request is processed as soon as its received.
+      DYNAMIC_BATCHING: If selected, processes the request during lower
+        utilization periods for a price discount. The request is fulfilled
+        within 24 hours.
+    """
+    PROCESSING_STRATEGY_UNSPECIFIED = 0
+    DYNAMIC_BATCHING = 1
+
   config = _messages.MessageField('RecognitionConfig', 1)
   configMask = _messages.StringField(2)
   files = _messages.MessageField('BatchRecognizeFileMetadata', 3, repeated=True)
-  recognitionOutputConfig = _messages.MessageField('RecognitionOutputConfig', 4)
-  recognizer = _messages.StringField(5)
+  processingStrategy = _messages.EnumField('ProcessingStrategyValueValuesEnum', 4)
+  recognitionOutputConfig = _messages.MessageField('RecognitionOutputConfig', 5)
+  recognizer = _messages.StringField(6)
 
 
 class BatchRecognizeResponse(_messages.Message):
@@ -1329,35 +1348,22 @@ class Recognizer(_messages.Message):
       ey}/cryptoKeyVersions/{crypto_key_version}`.
     languageCodes: Required. The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
-      Supported languages for each model are listed at:
-      https://cloud.google.com/speech-to-text/docs/languages If additional
-      languages are provided, recognition result will contain recognition in
-      the most likely language detected. The recognition result will include
-      the language tag of the language detected in the audio. When you create
-      or update a Recognizer, these values are stored in normalized BCP-47
-      form. For example, "en-us" is stored as "en-US".
+      Supported languages for each model are listed in the [Table of Supported
+      Models](https://cloud.google.com/speech-to-text/v2/docs/speech-to-text-
+      supported-languages). If additional languages are provided, recognition
+      result will contain recognition in the most likely language detected.
+      The recognition result will include the language tag of the language
+      detected in the audio. When you create or update a Recognizer, these
+      values are stored in normalized BCP-47 form. For example, "en-us" is
+      stored as "en-US".
     model: Required. Which model to use for recognition requests. Select the
-      model best suited to your domain to get best results. Supported models:
-      - `latest_long` Best for long form content like media or conversation. -
-      `latest_short` Best for short form content like commands or single shot
-      directed speech. When using this model, the service will stop
-      transcribing audio after the first utterance is detected and completed.
-      When using this model, SEPARATE_RECOGNITION_PER_CHANNEL is not
-      supported; multi-channel audio is accepted, but only the first channel
-      will be processed and transcribed. - `telephony` Best for audio that
-      originated from a phone call (typically recorded at an 8khz sampling
-      rate). - `medical_conversation` For conversations between a medical
-      provider-for example, a doctor or nurse-and a patient. Use this model
-      when both a provider and a patient are speaking. Words uttered by each
-      speaker are automatically detected and labeled in the returned
-      transcript. For supported features please see [medical models
-      documentation](https://cloud.google.com/speech-to-text/docs/medical-
-      models). - `medical_dictation` For dictated notes spoken by a single
-      medical provider-for example, a doctor dictating notes about a patient's
-      blood test results. For supported features please see [medical models
-      documentation](https://cloud.google.com/speech-to-text/docs/medical-
-      models). - `usm` The next generation of Speech-to-Text models from
-      Google.
+      model best suited to your domain to get best results. Guidance for
+      choosing which model to use can be found in the [Transcription Models
+      Documentation](https://cloud.google.com/speech-to-
+      text/v2/docs/transcription-model) and the models supported in each
+      region can be found in the [Table Of Supported
+      Models](https://cloud.google.com/speech-to-text/v2/docs/speech-to-text-
+      supported-languages).
     name: Output only. The resource name of the Recognizer. Format:
       `projects/{project}/locations/{location}/recognizers/{recognizer}`.
     reconciling: Output only. Whether or not this Recognizer is in the process
@@ -1547,10 +1553,10 @@ class SpeechProjectsLocationsCustomClassesListRequest(_messages.Message):
 
   Fields:
     pageSize: Number of results per requests. A valid page_size ranges from 0
-      to 20 inclusive. If the page_size is zero or unspecified, a page size of
-      5 will be chosen. If the page size exceeds 20, it will be coerced down
-      to 20. Note that a call might return fewer results than the requested
-      page size.
+      to 100 inclusive. If the page_size is zero or unspecified, a page size
+      of 5 will be chosen. If the page size exceeds 100, it will be coerced
+      down to 100. Note that a call might return fewer results than the
+      requested page size.
     pageToken: A page token, received from a previous ListCustomClasses call.
       Provide this to retrieve the subsequent page. When paginating, all other
       parameters provided to ListCustomClasses must match the call that
@@ -1699,9 +1705,9 @@ class SpeechProjectsLocationsPhraseSetsListRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of PhraseSets to return. The service may
-      return fewer than this value. If unspecified, at most 20 PhraseSets will
-      be returned. The maximum value is 20; values above 20 will be coerced to
-      20.
+      return fewer than this value. If unspecified, at most 5 PhraseSets will
+      be returned. The maximum value is 100; values above 100 will be coerced
+      to 100.
     pageToken: A page token, received from a previous ListPhraseSets call.
       Provide this to retrieve the subsequent page. When paginating, all other
       parameters provided to ListPhraseSets must match the call that provided
@@ -1796,9 +1802,9 @@ class SpeechProjectsLocationsRecognizersListRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of Recognizers to return. The service may
-      return fewer than this value. If unspecified, at most 20 Recognizers
-      will be returned. The maximum value is 20; values above 20 will be
-      coerced to 20.
+      return fewer than this value. If unspecified, at most 5 Recognizers will
+      be returned. The maximum value is 100; values above 100 will be coerced
+      to 100.
     pageToken: A page token, received from a previous ListRecognizers call.
       Provide this to retrieve the subsequent page. When paginating, all other
       parameters provided to ListRecognizers must match the call that provided

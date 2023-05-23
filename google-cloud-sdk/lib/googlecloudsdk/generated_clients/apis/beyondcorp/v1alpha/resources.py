@@ -24,18 +24,51 @@ DOCS_URL = 'https://cloud.google.com/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  ORGANIZATIONS = (
-      'organizations',
-      'organizations/{organizationsId}',
-      {},
-      ['organizationsId'],
-      True
-  )
   ORGANIZATIONS_LOCATIONS = (
       'organizations.locations',
       'organizations/{organizationsId}/locations/{locationsId}',
       {},
       ['organizationsId', 'locationsId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_GLOBAL = (
+      'organizations.locations.global',
+      'organizations/{organizationsId}',
+      {},
+      ['organizationsId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_GLOBAL_PARTNERTENANTS = (
+      'organizations.locations.global.partnerTenants',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/global/'
+              'partnerTenants/{partnerTenantsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_GLOBAL_TENANTS = (
+      'organizations.locations.global.tenants',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/global/tenants/'
+              '{tenantsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_GLOBAL_TENANTS_PROXYCONFIGS = (
+      'organizations.locations.global.tenants.proxyConfigs',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/global/tenants/'
+              '{tenantsId}/proxyConfigs/{proxyConfigsId}',
+      },
+      ['name'],
       True
   )
   ORGANIZATIONS_LOCATIONS_INSIGHTS = (

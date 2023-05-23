@@ -431,6 +431,7 @@ class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
       source_resource,
       destination_resource,
       delete_source=False,
+      posix_to_set=None,
       print_created_message=False,
       print_source_version=False,
       user_request_args=None,
@@ -446,6 +447,8 @@ class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
         this location will be overwritten. Directories will not be accepted.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
+      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
+        metadata on target.
       print_created_message (bool): Print a message containing the versioned URL
         of the copy result.
       print_source_version (bool): Print source object version in status message
@@ -456,6 +459,7 @@ class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
     super(DaisyChainCopyTask, self).__init__(
         source_resource,
         destination_resource,
+        posix_to_set=posix_to_set,
         print_source_version=print_source_version,
         user_request_args=user_request_args,
         verbose=verbose,
@@ -581,8 +585,10 @@ class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
           buffer_controller.readable_stream,
           self._destination_resource,
           request_config,
+          posix_to_set=self._posix_to_set,
           source_resource=self._source_resource,
-          upload_strategy=upload_strategy)
+          upload_strategy=upload_strategy,
+      )
     except _AbruptShutdownError:
       # Not raising daisy_chain_stream.exception_raised here because we want
       # to wait for the download thread to finish.

@@ -193,7 +193,7 @@ class S3ErrorPayload(api_exceptions.FormattableErrorPayload):
       self.message = self._MakeGenericMessage()
 
 
-class S3ApiError(CloudApiError, api_exceptions.HttpException):
+class XmlApiError(CloudApiError, api_exceptions.HttpException):
   """Translates a botocore ClientError and allows formatting.
 
   Attributes:
@@ -205,7 +205,7 @@ class S3ApiError(CloudApiError, api_exceptions.HttpException):
   # TODO(b/170215786): Set error_format=None when S3 api tests no longer expect
   # the botocore error format.
   def __init__(self, error, error_format='{botocore_error_string}'):
-    super(S3ApiError, self).__init__(
+    super(XmlApiError, self).__init__(
         error, error_format=error_format, payload_class=S3ErrorPayload)
 
 

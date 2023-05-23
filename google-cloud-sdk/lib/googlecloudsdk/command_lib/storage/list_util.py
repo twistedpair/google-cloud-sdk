@@ -167,6 +167,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
       all_versions=False,
       buckets_flag=False,
       display_detail=DisplayDetail.SHORT,
+      exclude_patterns=None,
       fetch_encrypted_object_hashes=False,
       include_etag=False,
       readable_sizes=False,
@@ -184,6 +185,8 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
       buckets_flag (bool): If given a bucket URL, only return matching buckets
         ignoring normal recursion rules.
       display_detail (DisplayDetail): Determines level of metadata printed.
+      exclude_patterns (Patterns|None): Don't return resources whose URLs or
+        local file paths matched these regex patterns.
       fetch_encrypted_object_hashes (bool): Fall back to GET requests for
         encrypted objects in order to fetch their hash values.
       include_etag (bool): Print etag string of resource, depending on other
@@ -202,6 +205,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
     self._all_versions = all_versions
     self._buckets_flag = buckets_flag
     self._display_detail = display_detail
+    self._exclude_patterns = exclude_patterns
     self._fetch_encrypted_object_hashes = fetch_encrypted_object_hashes
     self._include_etag = include_etag
     self._readable_sizes = readable_sizes
@@ -236,6 +240,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
         new_cloud_url,
         all_versions=self._all_versions,
         error_on_missing_key=False,
+        exclude_patterns=self._exclude_patterns,
         fetch_encrypted_object_hashes=self._fetch_encrypted_object_hashes,
         fields_scope=fields_scope,
     )
@@ -348,12 +353,16 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
 
     return total_bytes
 
-  def _list_url(self, raw_cloud_url):
-    """Recursively create wildcard iterators to print all relevant items."""
-    only_display_buckets = raw_cloud_url.is_provider() or (
+  def _should_only_display_buckets(self, raw_cloud_url):
+    # Ls received a provider URL ("gs://") -> List all buckets.
+    # Received buckets flag and bucket URL -> List matching buckets, ignoring
+    #   recursion.
+    return raw_cloud_url.is_provider() or (
         self._buckets_flag and raw_cloud_url.is_bucket()
     )
 
+  def _list_url(self, raw_cloud_url):
+    """Recursively create wildcard iterators to print all relevant items."""
     fields_scope = _translate_display_detail_to_fields_scope(
         self._display_detail, is_bucket_listing=raw_cloud_url.is_provider()
     )
@@ -362,6 +371,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
             raw_cloud_url,
             all_versions=self._all_versions,
             error_on_missing_key=False,
+            exclude_patterns=self._exclude_patterns,
             fetch_encrypted_object_hashes=self._fetch_encrypted_object_hashes,
             fields_scope=fields_scope,
             get_bucket_metadata=self._buckets_flag,
@@ -370,10 +380,9 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
 
     if resources.is_empty():
       raise errors.InvalidUrlError('One or more URLs matched no objects.')
+
+    only_display_buckets = self._should_only_display_buckets(raw_cloud_url)
     if only_display_buckets:
-      # Received a provider URL ("gs://") -> List all buckets.
-      # Received buckets flag and bucket URL -> List matching buckets, ignoring
-      #   recursion.
       resources_wrappers = self._recursion_helper(resources, recursion_level=0)
     elif self._recursion_flag and '**' not in raw_cloud_url.url_string:
       # "**" overrides recursive flag.

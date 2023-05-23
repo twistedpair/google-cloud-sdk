@@ -3363,6 +3363,11 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
       can be altered by a detection rule if the finding meets the criteria
       specified by the rule. Defaults to `VERY_LIKELY` if not specified.
     regex: Regular expression based CustomInfoType.
+    sensitivityScore: Sensitivity for this CustomInfoType. If this
+      CustomInfoType extends an existing InfoType, the sensitivity here will
+      take precedent over that of the original InfoType. If unset for a
+      CustomInfoType, it will default to HIGH. This only applies to data
+      profiling.
     storedType: Load an existing `StoredInfoType` resource for use in
       `InspectDataSource`. Not currently supported in `InspectContent`.
     surrogateType: Message for detecting output from deidentification
@@ -3409,8 +3414,9 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
   infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 4)
   likelihood = _messages.EnumField('LikelihoodValueValuesEnum', 5)
   regex = _messages.MessageField('GooglePrivacyDlpV2Regex', 6)
-  storedType = _messages.MessageField('GooglePrivacyDlpV2StoredType', 7)
-  surrogateType = _messages.MessageField('GooglePrivacyDlpV2SurrogateType', 8)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 7)
+  storedType = _messages.MessageField('GooglePrivacyDlpV2StoredType', 8)
+  surrogateType = _messages.MessageField('GooglePrivacyDlpV2SurrogateType', 9)
 
 
 class GooglePrivacyDlpV2DataProfileAction(_messages.Message):
@@ -3816,10 +3822,10 @@ class GooglePrivacyDlpV2DeidentifyContentResponse(_messages.Message):
 
 
 class GooglePrivacyDlpV2DeidentifyDataSourceDetails(_messages.Message):
-  r"""The results of a Deidentify action from an Inspect job.
+  r"""The results of a Deidentify action from an inspect job.
 
   Fields:
-    deidentifyStats: Stats about de-identification.
+    deidentifyStats: Stats about the de-identification operation.
     requestedOptions: De-identification config used for the request.
   """
 
@@ -4770,11 +4776,14 @@ class GooglePrivacyDlpV2InfoType(_messages.Message):
       https://cloud.google.com/dlp/docs/infotypes-reference when specifying a
       built-in type. When sending Cloud DLP results to Data Catalog, infoType
       names should conform to the pattern `[A-Za-z0-9$_-]{1,64}`.
+    sensitivityScore: Optional custom sensitivity for this InfoType. This only
+      applies to data profiling.
     version: Optional version name for this InfoType.
   """
 
   name = _messages.StringField(1)
-  version = _messages.StringField(2)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 2)
+  version = _messages.StringField(3)
 
 
 class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
@@ -6540,13 +6549,13 @@ class GooglePrivacyDlpV2RequestedDeidentifyOptions(_messages.Message):
 
   Fields:
     snapshotDeidentifyTemplate: Snapshot of the state of the
-      DeidentifyTemplate from the Deidentify action at the time this job was
+      `DeidentifyTemplate` from the Deidentify action at the time this job was
       run.
-    snapshotImageRedactTemplate: Snapshot of the state of the image redact
-      DeidentifyTemplate from the Deidentify action at the time this job was
-      run.
+    snapshotImageRedactTemplate: Snapshot of the state of the image
+      transformation `DeidentifyTemplate` from the `Deidentify` action at the
+      time this job was run.
     snapshotStructuredDeidentifyTemplate: Snapshot of the state of the
-      structured DeidentifyTemplate from the Deidentify action at the time
+      structured `DeidentifyTemplate` from the `Deidentify` action at the time
       this job was run.
   """
 
@@ -6661,28 +6670,31 @@ class GooglePrivacyDlpV2SelectedInfoTypes(_messages.Message):
 
 
 class GooglePrivacyDlpV2SensitivityScore(_messages.Message):
-  r"""Score is a summary of all elements in the data profile. A higher number
-  means more sensitive.
+  r"""Score is calculated from of all elements in the data profile. A higher
+  level means the data is more sensitive.
 
   Enums:
-    ScoreValueValuesEnum: The score applied to the resource.
+    ScoreValueValuesEnum: The sensitivity score applied to the resource.
 
   Fields:
-    score: The score applied to the resource.
+    score: The sensitivity score applied to the resource.
   """
 
   class ScoreValueValuesEnum(_messages.Enum):
-    r"""The score applied to the resource.
+    r"""The sensitivity score applied to the resource.
 
     Values:
       SENSITIVITY_SCORE_UNSPECIFIED: Unused.
-      SENSITIVITY_LOW: No sensitive information detected. Limited access.
-      SENSITIVITY_MODERATE: Medium risk - PII, potentially sensitive data, or
-        fields with free-text data that are at higher risk of having
-        intermittent sensitive data. Consider limiting access.
-      SENSITIVITY_HIGH: High risk \u2013 SPII may be present. Exfiltration of
-        data may lead to user data loss. Re-identification of users may be
-        possible. Consider limiting usage and or removing SPII.
+      SENSITIVITY_LOW: No sensitive information detected. The resource isn't
+        publicly accessible.
+      SENSITIVITY_MODERATE: Medium risk. Contains personally identifiable
+        information (PII), potentially sensitive data, or fields with free-
+        text data that are at a higher risk of having intermittent sensitive
+        data. Consider limiting access.
+      SENSITIVITY_HIGH: High risk. Sensitive personally identifiable
+        information (SPII) can be present. Exfiltration of data can lead to
+        user data loss. Re-identification of users might be possible. Consider
+        limiting usage and or removing SPII.
     """
     SENSITIVITY_SCORE_UNSPECIFIED = 0
     SENSITIVITY_LOW = 1
@@ -6939,7 +6951,8 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
     datasetLocation: The BigQuery location where the dataset's data is stored.
       See https://cloud.google.com/bigquery/docs/locations for supported
       locations.
-    datasetProjectId: The GCP project ID that owns the BigQuery dataset.
+    datasetProjectId: The Google Cloud project ID that owns the BigQuery
+      dataset.
     encryptionStatus: How the table is encrypted.
     expirationTime: Optional. The time when this table expires.
     failedColumnCount: The number of columns skipped in the table because of

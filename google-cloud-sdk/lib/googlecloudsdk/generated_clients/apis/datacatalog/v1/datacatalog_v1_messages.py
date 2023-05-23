@@ -92,6 +92,13 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
       _name). Full names are case-sensitive. For example: * `//bigquery.google
       apis.com/projects/{PROJECT_ID}/datasets/{DATASET_ID}/tables/{TABLE_ID}`
       * `//pubsub.googleapis.com/projects/{PROJECT_ID}/topics/{TOPIC_ID}`
+    location: Location where the lookup should be performed. Required to
+      lookup entry that is not a part of `DPMS` or `DATAPLEX`
+      `integrated_system` using its `fully_qualified_name`. Ignored in other
+      cases.
+    project: Project where the lookup should be performed. Required to lookup
+      entry that is not a part of `DPMS` or `DATAPLEX` `integrated_system`
+      using its `fully_qualified_name`. Ignored in other cases.
     sqlResource: The SQL name of the entry. SQL names are case-sensitive.
       Examples: * `pubsub.topic.{PROJECT_ID}.{TOPIC_ID}` *
       `pubsub.topic.{PROJECT_ID}.`\``{TOPIC.ID.SEPARATED.WITH.DOTS}`\` *
@@ -104,7 +111,9 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
 
   fullyQualifiedName = _messages.StringField(1)
   linkedResource = _messages.StringField(2)
-  sqlResource = _messages.StringField(3)
+  location = _messages.StringField(3)
+  project = _messages.StringField(4)
+  sqlResource = _messages.StringField(5)
 
 
 class DatacatalogProjectsLocationsEntryGroupsCreateRequest(_messages.Message):

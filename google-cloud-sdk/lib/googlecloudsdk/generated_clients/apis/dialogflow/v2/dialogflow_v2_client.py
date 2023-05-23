@@ -94,8 +94,10 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_locations_knowledgeBases_documents = self.ProjectsLocationsKnowledgeBasesDocumentsService(self)
     self.projects_locations_knowledgeBases = self.ProjectsLocationsKnowledgeBasesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_suggestions = self.ProjectsLocationsSuggestionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_operations = self.ProjectsOperationsService(self)
+    self.projects_suggestions = self.ProjectsSuggestionsService(self)
     self.projects = self.ProjectsService(self)
 
   class ProjectsAgentEntityTypesEntitiesService(base_api.BaseApiService):
@@ -6939,6 +6941,43 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsSuggestionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_suggestions resource."""
+
+    _NAME = 'projects_locations_suggestions'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsSuggestionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GenerateStatelessSummary(self, request, global_params=None):
+      r"""Generates and returns a summary for a conversation that does not have a resource created for it.
+
+      Args:
+        request: (DialogflowProjectsLocationsSuggestionsGenerateStatelessSummaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2GenerateStatelessSummaryResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateStatelessSummary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateStatelessSummary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/suggestions:generateStatelessSummary',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.suggestions.generateStatelessSummary',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/suggestions:generateStatelessSummary',
+        request_field='googleCloudDialogflowV2GenerateStatelessSummaryRequest',
+        request_type_name='DialogflowProjectsLocationsSuggestionsGenerateStatelessSummaryRequest',
+        response_type_name='GoogleCloudDialogflowV2GenerateStatelessSummaryResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
@@ -7172,6 +7211,43 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='DialogflowProjectsOperationsListRequest',
         response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsSuggestionsService(base_api.BaseApiService):
+    """Service class for the projects_suggestions resource."""
+
+    _NAME = 'projects_suggestions'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsSuggestionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GenerateStatelessSummary(self, request, global_params=None):
+      r"""Generates and returns a summary for a conversation that does not have a resource created for it.
+
+      Args:
+        request: (DialogflowProjectsSuggestionsGenerateStatelessSummaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2GenerateStatelessSummaryResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateStatelessSummary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateStatelessSummary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/suggestions:generateStatelessSummary',
+        http_method='POST',
+        method_id='dialogflow.projects.suggestions.generateStatelessSummary',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/suggestions:generateStatelessSummary',
+        request_field='googleCloudDialogflowV2GenerateStatelessSummaryRequest',
+        request_type_name='DialogflowProjectsSuggestionsGenerateStatelessSummaryRequest',
+        response_type_name='GoogleCloudDialogflowV2GenerateStatelessSummaryResponse',
         supports_download=False,
     )
 

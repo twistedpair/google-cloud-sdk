@@ -151,27 +151,27 @@ class CancelOperationRequest(_messages.Message):
 
 
 class CustomDomain(_messages.Message):
-  r"""Custom Domain
+  r"""Custom domain information.
 
   Enums:
-    StateValueValuesEnum: domain state
+    StateValueValuesEnum: Domain state.
 
   Fields:
-    domain: domain name
-    state: domain state
+    domain: Domain name.
+    state: Domain state.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""domain state
+    r"""Domain state.
 
     Values:
-      CUSTOM_DOMAIN_STATE_UNSPECIFIED: Unspecified state
-      UNVERIFIED: DNS record is not created
-      VERIFIED: DNS record is created
-      MODIFYING: Calling SLM to update
-      AVAILABLE: ManagedCertificate is ready
-      UNAVAILABLE: ManagedCertificate is not ready
-      UNKNOWN: Status is not known
+      CUSTOM_DOMAIN_STATE_UNSPECIFIED: Unspecified state.
+      UNVERIFIED: DNS record is not created.
+      VERIFIED: DNS record is created.
+      MODIFYING: Calling SLM to update.
+      AVAILABLE: ManagedCertificate is ready.
+      UNAVAILABLE: ManagedCertificate is not ready.
+      UNKNOWN: Status is not known.
     """
     CUSTOM_DOMAIN_STATE_UNSPECIFIED = 0
     UNVERIFIED = 1
@@ -215,8 +215,8 @@ class DenyMaintenancePeriod(_messages.Message):
   r"""Specifies the maintenance denial period.
 
   Fields:
-    endDate: Required. End date of the deny maintenance period
-    startDate: Required. Start date of the deny maintenance period
+    endDate: Required. End date of the deny maintenance period.
+    startDate: Required. Start date of the deny maintenance period.
     time: Required. Time in UTC when the period starts and ends.
   """
 
@@ -235,32 +235,28 @@ class Empty(_messages.Message):
 
 
 class EncryptionConfig(_messages.Message):
-  r"""Configuration for Encryption - e.g. CMEK Currently we only allow the key
-  name to be modified here, but in the future we may add some additional
-  tuning parameters that are currently hard-coded. Other fields are *output*
-  fields reflecting the current status of the instance w.r.t. CMEK encryption
-  and should not be set by the user.
+  r"""Encryption configuration (i.e. CMEK).
 
   Enums:
-    KmsKeyStateValueValuesEnum: Output only. Current status of this instance
-      w.r.t. CMEK
+    KmsKeyStateValueValuesEnum: Output only. Status of the CMEK key.
 
   Fields:
-    kmsKeyName: Name of the CMEK key in KMS (input parameter)
-    kmsKeyNameVersion: Output only. Full name+version of the CMEK key
-      currently in use to encrypt Looker data Empty if CMEK is not configured
-      in this instance
-    kmsKeyState: Output only. Current status of this instance w.r.t. CMEK
+    kmsKeyName: Name of the CMEK key in KMS (input parameter).
+    kmsKeyNameVersion: Output only. Full name and version of the CMEK key
+      currently in use to encrypt Looker data. Format: `projects/{project}/loc
+      ations/{location}/keyRings/{ring}/cryptoKeys/{key}/cryptoKeyVersions/{ve
+      rsion}`. Empty if CMEK is not configured in this instance.
+    kmsKeyState: Output only. Status of the CMEK key.
   """
 
   class KmsKeyStateValueValuesEnum(_messages.Enum):
-    r"""Output only. Current status of this instance w.r.t. CMEK
+    r"""Output only. Status of the CMEK key.
 
     Values:
-      KMS_KEY_STATE_UNSPECIFIED: CMEK status not specified
-      VALID: CMEK key is currently valid
+      KMS_KEY_STATE_UNSPECIFIED: CMEK status not specified.
+      VALID: CMEK key is currently valid.
       REVOKED: CMEK key is currently revoked (instance should in restricted
-        mode)
+        mode).
     """
     KMS_KEY_STATE_UNSPECIFIED = 0
     VALID = 1
@@ -272,7 +268,7 @@ class EncryptionConfig(_messages.Message):
 
 
 class ExportEncryptionConfig(_messages.Message):
-  r"""Configuration for Encryption - e.g. CMEK
+  r"""Configuration for Encryption - e.g. CMEK.
 
   Fields:
     kmsKeyName: Required. Name of the CMEK key in KMS.
@@ -282,7 +278,7 @@ class ExportEncryptionConfig(_messages.Message):
 
 
 class ExportInstanceRequest(_messages.Message):
-  r"""Requestion options for exporting data of an Instance.
+  r"""Request options for exporting data of an Instance.
 
   Fields:
     encryptionConfig: Required. Encryption configuration (CMEK). For CMEK
@@ -388,40 +384,40 @@ class Instance(_messages.Message):
     StateValueValuesEnum: Output only. The state of the instance.
 
   Fields:
-    adminSettings: Looker Instance Admin settings.
+    adminSettings: Looker instance admin settings.
     consumerNetwork: Network name in the consumer project. Format:
-      projects/{project}/global/networks/{network} Note that the consumer
+      `projects/{project}/global/networks/{network}`. Note that the consumer
       network may be in a different GCP project than the consumer project that
       is hosting the Looker Instance.
     createTime: Output only. The time when the Looker instance provisioning
       was first requested.
-    customDomain: Custom Domain Information
+    customDomain: Custom domain information.
     denyMaintenancePeriod: Maintenance denial period for this instance.
     egressPublicIp: Output only. Public Egress IP (IPv4).
-    encryptionConfig: Encryption configuration (CMEK) -- if enabled
+    encryptionConfig: Encryption configuration (CMEK). Only set if CMEK has
+      been enabled on the instance.
     ingressPrivateIp: Output only. Private Ingress IP (IPv4).
     ingressPublicIp: Output only. Public Ingress IP (IPv4).
-    lastDenyMaintenancePeriod: Last maintenance denial period for this
-      instance. Used to determine the next eligible deny_maintenance_period
-      even if the customer removes deny_maintenance_period.
+    lastDenyMaintenancePeriod: Output only. Last computed maintenance denial
+      period for this instance.
     lookerUri: Output only. Looker instance URI which can be used to access
       the Looker Instance UI.
     lookerVersion: Output only. The Looker version that the instance is using.
-    maintenanceSchedule: Maintenance schedule for this instance
+    maintenanceSchedule: Maintenance schedule for this instance.
     maintenanceWindow: Maintenance window for this instance.
     name: Output only. Format:
-      projects/{project}/locations/{location}/instances/{instance}
-    oauthConfig: Looker Instance OAuth login settings.
+      `projects/{project}/locations/{location}/instances/{instance}`.
+    oauthConfig: Looker instance OAuth login settings.
     platformEdition: Platform edition.
     privateIpEnabled: Whether private IP is enabled on the Looker instance.
     publicIpEnabled: Whether public IP is enabled on the Looker instance.
-    reservedRange: Name of a reserved IP address range within the consumer
-      network, to be used for private servicie access connection. User may or
-      may not specify this in a request.
+    reservedRange: Name of a reserved IP address range within the
+      Instance.consumer_network, to be used for private services access
+      connection. May or may not be specified in a create request.
     state: Output only. The state of the instance.
     updateTime: Output only. The time when the Looker instance was last
       updated.
-    userMetadata: User metadata
+    userMetadata: User metadata.
   """
 
   class PlatformEditionValueValuesEnum(_messages.Enum):
@@ -430,10 +426,10 @@ class Instance(_messages.Message):
     Values:
       PLATFORM_EDITION_UNSPECIFIED: Platform edition is unspecified.
       LOOKER_CORE_TRIAL: Trial.
-      LOOKER_CORE_STANDARD: PAYG Standard
-      LOOKER_CORE_STANDARD_ANNUAL: Subscription Standard
-      LOOKER_CORE_ENTERPRISE_ANNUAL: Subscription Enterprise
-      LOOKER_CORE_EMBED_ANNUAL: Subscription Embed
+      LOOKER_CORE_STANDARD: Standard.
+      LOOKER_CORE_STANDARD_ANNUAL: Subscription Standard.
+      LOOKER_CORE_ENTERPRISE_ANNUAL: Subscription Enterprise.
+      LOOKER_CORE_EMBED_ANNUAL: Subscription Embed.
     """
     PLATFORM_EDITION_UNSPECIFIED = 0
     LOOKER_CORE_TRIAL = 1
@@ -496,9 +492,10 @@ class ListInstancesResponse(_messages.Message):
 
   Fields:
     instances: The list of instances matching the request filters, up to the
-      requested `page_size`.
+      requested ListInstancesRequest.pageSize.
     nextPageToken: If provided, a page token that can look up the next
-      `page_size` results. If empty, the results list is exhausted.
+      ListInstancesRequest.pageSize results. If empty, the results list is
+      exhausted.
     unreachable: Locations that could not be reached.
   """
 
@@ -690,7 +687,7 @@ class LookerProjectsLocationsInstancesCreateRequest(_messages.Message):
     instanceId: Required. The unique instance identifier. Must contain only
       lowercase letters, numbers, or hyphens, with the first character a
       letter and the last a letter or a number. 63 characters maximum.
-    parent: Required. Format: projects/{project}/locations/{location}
+    parent: Required. Format: `projects/{project}/locations/{location}`.
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -702,9 +699,9 @@ class LookerProjectsLocationsInstancesDeleteRequest(_messages.Message):
   r"""A LookerProjectsLocationsInstancesDeleteRequest object.
 
   Fields:
-    force: Whether to force cascading delete
-    name: Required. Format: projects/{project}/locations/{location}/locations/
-      {location}/instances/{instance}
+    force: Whether to force cascading delete.
+    name: Required. Format:
+      `projects/{project}/locations/{location}/instances/{instance}`.
   """
 
   force = _messages.BooleanField(1)
@@ -718,7 +715,7 @@ class LookerProjectsLocationsInstancesExportRequest(_messages.Message):
     exportInstanceRequest: A ExportInstanceRequest resource to be passed as
       the request body.
     name: Required. Format:
-      projects/{project}/locations/{location}/instances/{instance}
+      `projects/{project}/locations/{location}/instances/{instance}`.
   """
 
   exportInstanceRequest = _messages.MessageField('ExportInstanceRequest', 1)
@@ -756,7 +753,7 @@ class LookerProjectsLocationsInstancesGetRequest(_messages.Message):
 
   Fields:
     name: Required. Format:
-      projects/{project}/locations/{location}/instances/{instance}
+      `projects/{project}/locations/{location}/instances/{instance}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -769,7 +766,7 @@ class LookerProjectsLocationsInstancesImportRequest(_messages.Message):
     importInstanceRequest: A ImportInstanceRequest resource to be passed as
       the request body.
     name: Required. Format:
-      projects/{project}/locations/{location}/instances/{instance}
+      `projects/{project}/locations/{location}/instances/{instance}`.
   """
 
   importInstanceRequest = _messages.MessageField('ImportInstanceRequest', 1)
@@ -781,9 +778,9 @@ class LookerProjectsLocationsInstancesListRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of instances to return. If unspecified at
-      most X will be returned. The maximum value is Y.
-    pageToken: A page token received from a previous ListInstances request.
-    parent: Required. Format: projects/{project}/locations/{location}
+      most 256 will be returned. The maximum possible value is 2048.
+    pageToken: A page token received from a previous ListInstancesRequest.
+    parent: Required. Format: `projects/{project}/locations/{location}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -797,11 +794,11 @@ class LookerProjectsLocationsInstancesPatchRequest(_messages.Message):
   Fields:
     instance: A Instance resource to be passed as the request body.
     name: Output only. Format:
-      projects/{project}/locations/{location}/instances/{instance}
-    updateMask: Required. Field mask is used to specify the fields to be
+      `projects/{project}/locations/{location}/instances/{instance}`.
+    updateMask: Required. Field mask used to specify the fields to be
       overwritten in the Instance resource by the update. The fields specified
-      in the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask.
+      in the mask are relative to the resource, not the full request. A field
+      will be overwritten if it is in the mask.
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -814,7 +811,7 @@ class LookerProjectsLocationsInstancesRestartRequest(_messages.Message):
 
   Fields:
     name: Required. Format:
-      projects/{project}/locations/{location}/instances/{instance}
+      `projects/{project}/locations/{location}/instances/{instance}`.
     restartInstanceRequest: A RestartInstanceRequest resource to be passed as
       the request body.
   """
@@ -925,8 +922,7 @@ class LookerProjectsLocationsOperationsListRequest(_messages.Message):
 
 
 class MaintenanceSchedule(_messages.Message):
-  r"""Maintenance schedule which is exposed to customer and potentially end
-  user, indicating published upcoming future maintenance schedule
+  r"""Published upcoming future maintenance schedule.
 
   Fields:
     endTime: The scheduled end time for the maintenance.
@@ -977,12 +973,12 @@ class MaintenanceWindow(_messages.Message):
 
 
 class OAuthConfig(_messages.Message):
-  r"""Looker Instance OAuth login settings.
+  r"""Looker instance OAuth login settings.
 
   Fields:
-    clientId: Input only. client_id from an external OAuth application. This
+    clientId: Input only. Client ID from an external OAuth application. This
       is an input-only field, and thus will not be set in any responses.
-    clientSecret: Input only. client_secret from an external OAuth
+    clientSecret: Input only. Client secret from an external OAuth
       application. This is an input-only field, and thus will not be set in
       any responses.
   """

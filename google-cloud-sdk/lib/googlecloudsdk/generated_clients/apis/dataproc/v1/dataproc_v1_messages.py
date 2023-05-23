@@ -2915,6 +2915,71 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class FlinkJob(_messages.Message):
+  r"""A Dataproc job for running Apache Flink (https://flink.apache.org/)
+  applications on YARN.
+
+  Messages:
+    PropertiesValue: Optional. A mapping of property names to values, used to
+      configure Flink. Properties that conflict with values set by the
+      Dataproc API may beoverwritten. Can include properties set
+      in/etc/flink/conf/flink-defaults.conf and classes in user code.
+
+  Fields:
+    args: Optional. The arguments to pass to the driver. Do not include
+      arguments, such as --conf, that can be set as job properties, since a
+      collision may occur that causes an incorrect job submission.
+    jarFileUris: Optional. HCFS URIs of jar files to add to the CLASSPATHs of
+      the Flink driver and tasks.
+    loggingConfig: Optional. The runtime log config for job execution.
+    mainClass: The name of the driver's main class. The jar file that contains
+      the class must be in the default CLASSPATH or specified in
+      jar_file_uris.
+    mainJarFileUri: The HCFS URI of the jar file that contains the main class.
+    properties: Optional. A mapping of property names to values, used to
+      configure Flink. Properties that conflict with values set by the
+      Dataproc API may beoverwritten. Can include properties set
+      in/etc/flink/conf/flink-defaults.conf and classes in user code.
+    savepointUri: Optional. HCFS URI of the savepoint which contains the last
+      saved progress for this job
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""Optional. A mapping of property names to values, used to configure
+    Flink. Properties that conflict with values set by the Dataproc API may
+    beoverwritten. Can include properties set in/etc/flink/conf/flink-
+    defaults.conf and classes in user code.
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  args = _messages.StringField(1, repeated=True)
+  jarFileUris = _messages.StringField(2, repeated=True)
+  loggingConfig = _messages.MessageField('LoggingConfig', 3)
+  mainClass = _messages.StringField(4)
+  mainJarFileUri = _messages.StringField(5)
+  properties = _messages.MessageField('PropertiesValue', 6)
+  savepointUri = _messages.StringField(7)
+
+
 class GceClusterConfig(_messages.Message):
   r"""Common config settings for resources of Compute Engine cluster
   instances, applicable to all instances in the cluster.
@@ -3063,6 +3128,7 @@ class GdceClusterConfig(_messages.Message):
   r"""The target GDCE cluster config.
 
   Fields:
+    defaultServiceAccount: Optional. The default service account.
     gdcEdgeIdentityProvider: Optional. The name of the identity provider
       associated with the GDCE cluster.
     gdcEdgeMembershipTarget: Optional. A target GDCE cluster to deploy to. It
@@ -3072,9 +3138,10 @@ class GdceClusterConfig(_messages.Message):
       associated with the fleet.
   """
 
-  gdcEdgeIdentityProvider = _messages.StringField(1)
-  gdcEdgeMembershipTarget = _messages.StringField(2)
-  gdcEdgeWorkloadIdentityPool = _messages.StringField(3)
+  defaultServiceAccount = _messages.StringField(1)
+  gdcEdgeIdentityProvider = _messages.StringField(2)
+  gdcEdgeMembershipTarget = _messages.StringField(3)
+  gdcEdgeWorkloadIdentityPool = _messages.StringField(4)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -3153,9 +3220,8 @@ class GkeNodeConfig(_messages.Message):
     bootDiskKmsKey: Optional. The Customer Managed Encryption Key (CMEK)
       (https://cloud.google.com/kubernetes-engine/docs/how-to/using-cmek) used
       to encrypt the boot disk attached to each node in the node pool. Specify
-      the key using the following format:
-      projects/KEY_PROJECT_ID/locations/LOCATION
-      /keyRings/RING_NAME/cryptoKeys/KEY_NAME.
+      the key using the following format: projects/{project}/locations/{locati
+      on}/keyRings/{key_ring}/cryptoKeys/{crypto_key}
     ephemeralStorageConfig: Optional. Parameters for the ephemeral storage
       filesystem. If unspecified, ephemeral storage is backed by the boot
       disk.
@@ -3826,6 +3892,7 @@ class Job(_messages.Message):
       the stdout of the job's driver program.
     driverRunner: Optional. Configurations for the driver runner
     driverSchedulingConfig: Optional. Driver scheduling configuration.
+    flinkJob: Optional. Job is a Flink job.
     hadoopJob: Optional. Job is a Hadoop job.
     hiveJob: Optional. Job is a Hive job.
     jobUuid: Output only. A UUID that uniquely identifies a job within the
@@ -3841,6 +3908,7 @@ class Job(_messages.Message):
     placement: Required. Job information, including how, when, and where to
       run the job.
     prestoJob: Optional. Job is a Presto job.
+    pyflinkJob: Optional. Job is a PyFlink job.
     pysparkJob: Optional. Job is a PySpark job.
     reference: Optional. The fully qualified reference to the job, which can
       be used to obtain the equivalent REST path of the job resource. If this
@@ -3894,23 +3962,25 @@ class Job(_messages.Message):
   driverOutputResourceUri = _messages.StringField(3)
   driverRunner = _messages.MessageField('DriverRunner', 4)
   driverSchedulingConfig = _messages.MessageField('DriverSchedulingConfig', 5)
-  hadoopJob = _messages.MessageField('HadoopJob', 6)
-  hiveJob = _messages.MessageField('HiveJob', 7)
-  jobUuid = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  pigJob = _messages.MessageField('PigJob', 10)
-  placement = _messages.MessageField('JobPlacement', 11)
-  prestoJob = _messages.MessageField('PrestoJob', 12)
-  pysparkJob = _messages.MessageField('PySparkJob', 13)
-  reference = _messages.MessageField('JobReference', 14)
-  scheduling = _messages.MessageField('JobScheduling', 15)
-  sparkJob = _messages.MessageField('SparkJob', 16)
-  sparkRJob = _messages.MessageField('SparkRJob', 17)
-  sparkSqlJob = _messages.MessageField('SparkSqlJob', 18)
-  status = _messages.MessageField('JobStatus', 19)
-  statusHistory = _messages.MessageField('JobStatus', 20, repeated=True)
-  trinoJob = _messages.MessageField('TrinoJob', 21)
-  yarnApplications = _messages.MessageField('YarnApplication', 22, repeated=True)
+  flinkJob = _messages.MessageField('FlinkJob', 6)
+  hadoopJob = _messages.MessageField('HadoopJob', 7)
+  hiveJob = _messages.MessageField('HiveJob', 8)
+  jobUuid = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  pigJob = _messages.MessageField('PigJob', 11)
+  placement = _messages.MessageField('JobPlacement', 12)
+  prestoJob = _messages.MessageField('PrestoJob', 13)
+  pyflinkJob = _messages.MessageField('PyFlinkJob', 14)
+  pysparkJob = _messages.MessageField('PySparkJob', 15)
+  reference = _messages.MessageField('JobReference', 16)
+  scheduling = _messages.MessageField('JobScheduling', 17)
+  sparkJob = _messages.MessageField('SparkJob', 18)
+  sparkRJob = _messages.MessageField('SparkRJob', 19)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 20)
+  status = _messages.MessageField('JobStatus', 21)
+  statusHistory = _messages.MessageField('JobStatus', 22, repeated=True)
+  trinoJob = _messages.MessageField('TrinoJob', 23)
+  yarnApplications = _messages.MessageField('YarnApplication', 24, repeated=True)
 
 
 class JobMetadata(_messages.Message):
@@ -4364,7 +4434,7 @@ class ListBatchesResponse(_messages.Message):
   r"""A list of batch workloads.
 
   Fields:
-    batches: The batches from the specified collection.
+    batches: Output only. The batches from the specified collection.
     nextPageToken: A token, which can be sent as page_token to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
   """
@@ -5384,6 +5454,81 @@ class PublicKeys(_messages.Message):
   """
 
   keys = _messages.MessageField('Key', 1, repeated=True)
+
+
+class PyFlinkJob(_messages.Message):
+  r"""A Dataproc job for running Apache PyFlink (https://flink.apache.org/)
+  applications on YARN.
+
+  Messages:
+    PropertiesValue: Optional. A mapping of property names to values, used to
+      configure PyFlink. Properties that conflict with values set by the
+      Dataproc API may be overwritten. Can include properties set in
+      /etc/flink/conf/flink-defaults.conf and classes in user code.
+
+  Fields:
+    archiveUris: Optional. HCFS URIs of archives to be extracted into the
+      working directory of each executor. Supported file types: .jar, .tar,
+      .tar.gz, .tgz, and .zip.
+    args: Optional. The arguments to pass to the driver. Do not include
+      arguments, such as --conf, that can be set as job properties, since a
+      collision may occur that causes an incorrect job submission.
+    jarFileUris: Optional. HCFS URIs of jar files to add to the CLASSPATHs of
+      the Python driver and tasks.
+    loggingConfig: Optional. The runtime log config for job execution.
+    mainPythonFileUri: Optional. The HCFS URI of the main Python file to use
+      as the driver. Must be a .py file.
+    properties: Optional. A mapping of property names to values, used to
+      configure PyFlink. Properties that conflict with values set by the
+      Dataproc API may be overwritten. Can include properties set in
+      /etc/flink/conf/flink-defaults.conf and classes in user code.
+    pythonFileUris: Optional. HCFS file URIs of Python files to pass to the
+      PyFlink framework. Supported file types: .py, .egg, and .zip.
+    pythonModule: Optional. The Python module that contains the PyFlink
+      application entry point. This option must be used with python_file_uris
+    pythonRequirements: Optional. The requirements.txt file which defines the
+      third party dependencies of the PyFlink application
+    savepointUri: Optional. HCFS URI of the savepoint which contains the last
+      saved progress for this job.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""Optional. A mapping of property names to values, used to configure
+    PyFlink. Properties that conflict with values set by the Dataproc API may
+    be overwritten. Can include properties set in /etc/flink/conf/flink-
+    defaults.conf and classes in user code.
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  archiveUris = _messages.StringField(1, repeated=True)
+  args = _messages.StringField(2, repeated=True)
+  jarFileUris = _messages.StringField(3, repeated=True)
+  loggingConfig = _messages.MessageField('LoggingConfig', 4)
+  mainPythonFileUri = _messages.StringField(5)
+  properties = _messages.MessageField('PropertiesValue', 6)
+  pythonFileUris = _messages.StringField(7, repeated=True)
+  pythonModule = _messages.StringField(8)
+  pythonRequirements = _messages.StringField(9)
+  savepointUri = _messages.StringField(10)
 
 
 class PySparkBatch(_messages.Message):

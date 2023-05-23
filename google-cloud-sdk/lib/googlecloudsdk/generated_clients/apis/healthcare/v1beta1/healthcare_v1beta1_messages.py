@@ -108,8 +108,8 @@ class AnalyzeEntitiesResponse(_messages.Message):
     entities: The union of all the candidate entities that the entity_mentions
       in this response could link to. These are UMLS concepts or normalized
       mention content.
-    entityMentions: entity_mentions contains all the annotated medical
-      entities that were mentioned in the provided document.
+    entityMentions: The `entity_mentions` field contains all the annotated
+      medical entities that were mentioned in the provided document.
     relationships: relationships contains all the binary relationships that
       were identified between entity mentions within the provided document.
   """
@@ -1851,7 +1851,7 @@ class ExportMessagesRequest(_messages.Message):
       the `start_time` defined below. Only messages whose `send_time` lies in
       the range `start_time` (inclusive) to `end_time` (exclusive) are
       exported.
-    gcsDestination: Exports to a Cloud Storage destination.
+    gcsDestination: Export to a Cloud Storage destination.
     startTime: The start of the range in `send_time` (MSH.7, https://www.hl7.o
       rg/documentcenter/public_temp_2E58C1F9-1C23-BA17-
       0C6126475344DA9D/wg/conf/HL7MSH.htm) to process. If not specified, the
@@ -2053,7 +2053,7 @@ class FhirNotificationConfig(_messages.Message):
       "payloadType" label from a Pub/Sub message to determine whether it needs
       to fetch the full resource as a separate operation.
     sendPreviousResourceOnDelete: Whether to send full FHIR resource to this
-      pubsub topic for deleting FHIR resource. Note that setting this to true
+      Pub/Sub topic for deleting FHIR resource. Note that setting this to true
       does not guarantee that all previous resources will be sent in the
       format of full FHIR resource. When a resource change is too large or
       during heavy traffic, only the resource name will be sent. Clients
@@ -7450,11 +7450,14 @@ class SchemaConfig(_messages.Message):
         this limitation, the server will not generate schemas for fields of
         type `Resource`, which can hold any resource type. The affected fields
         are `Parameters.parameter.resource`, `Bundle.entry.resource`, and
-        `Bundle.entry.response.outcome`.
+        `Bundle.entry.response.outcome`. Analytics schema does not gracefully
+        handle extensions with one or more occurrences, anaytics schema also
+        does not handle contained resource.
       ANALYTICS_V2: Analytics V2, similar to schema defined by the FHIR
         community, with added support for extensions with one or more
         occurrences and contained resources in stringified JSON. Analytics V2
-        uses more space in the destination table than Analytics V1.
+        uses more space in the destination table than Analytics V1. It is
+        generally recommended to use Analytics V2 over Analytics.
     """
     SCHEMA_TYPE_UNSPECIFIED = 0
     LOSSLESS = 1

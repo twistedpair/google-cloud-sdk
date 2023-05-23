@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import hashlib
 import json
+import random
 import re
 
 from apitools.base.py import encoding
@@ -53,10 +54,17 @@ _SBOM_REFERENCE_PREDICATE_TYPE = (
 )
 _SBOM_REFERENCE_SPDX_MIME_TYPE = 'application/spdx+json'
 _SBOM_REFERENCE_DEFAULT_MIME_TYPE = 'application/json'
-_SBOM_REFERENCE_CYCLONEDX_MIME_TYPE = 'application/cyclonedx+json'
+_SBOM_REFERENCE_CYCLONEDX_MIME_TYPE = 'application/vnd.cyclonedx+json'
 _SBOM_REFERENCE_REFERRERID = (
     'https://containeranalysis.googleapis.com/ArtifactAnalysis@v0.1'
 )
+
+_SBOM_REFERENCE_SPDX_EXTENSION = 'spdx.json'
+_SBOM_REFERENCE_DEFAULT_EXTENSION = 'json'
+_SBOM_REFERENCE_CYCLONEDX_EXTENSION = 'bom.json'
+
+_BUCKET_NAME_CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789'
+_BUCKET_SUFFIX_LENGTH = 5
 
 
 def _ParseSpdx(data):
@@ -210,6 +218,12 @@ def _RemovePrefix(value, prefix):
   return value
 
 
+def _EnsurePrefix(value, prefix):
+  if not value.startswith(prefix):
+    value = prefix + value
+  return value
+
+
 def ListSbomReferences(args):
   """Lists SBOM references in a given project.
 
@@ -219,58 +233,76 @@ def ListSbomReferences(args):
   Returns:
     List of SBOM references.
   """
-  if args.installed_package and args.resource:
+  resource = args.resource
+  prefix = args.resource_prefix
+  dependency = args.dependency
+
+  if (resource and (prefix or dependency)) or (prefix and dependency):
     raise ar_exceptions.InvalidInputValueError(
-        'Cannot specify both --installed-package and --resource.'
+        'Cannot specify more than one of the flags --dependency,'
+        ' --resource and --resource-prefix.'
     )
 
   filters = filter_util.ContainerAnalysisFilter().WithKinds(['SBOM_REFERENCE'])
-
   project = util.GetProject(args)
-  if args.installed_package:
+
+  if dependency:
     dependency_filters = (
         filter_util.ContainerAnalysisFilter()
         .WithKinds(['PACKAGE'])
         .WithCustomFilter(
             'noteProjectId="goog-analysis" AND dependencyPackageName="{}"'
-            .format(args.installed_package)
+            .format(dependency)
         )
     )
 
-    package_occs = list(requests.ListOccurrences(
-        project, dependency_filters.GetFilter(), None
-    ))
+    package_occs = list(
+        requests.ListOccurrences(project, dependency_filters.GetFilter(), None)
+    )
     if not package_occs:
       return []
 
-    # One image may have multiple package dependencies with the same name but
-    # different versions.
-    # Deduplicate image uris.
-    images = set(_RemovePrefix(o.resourceUri, 'https://') for o in package_occs)
-    # All SBOM occurrence resource uris start with 'https://'.
-    image_urls = ['https://{}'.format(img) for img in images]
+    # Deduplicate image uris, since one image may have multiple package
+    # dependencies with the same name but different versions.
+    # All AA generated SBOM occurrence resource uris start with 'https://'.
+    images = set(_EnsurePrefix(o.resourceUri, 'https://') for o in package_occs)
+    filters.WithResources(images)
 
-    filters.WithResources(image_urls)
-
-  if args.resource:
-    resource_uri = _RemovePrefix(args.resource, 'https://')
+  if resource:
+    resource_uri = _RemovePrefix(resource, 'https://')
+    # We want to match the input if the user stores it as uri.
+    resource_uris = [
+        'https://{}'.format(resource_uri),
+        resource_uri,
+    ]
     try:
       # Verify image uri and resolve possible tags.
       artifact = ProcessArtifact(resource_uri)
-      # All SBOM occurrence resource uris start with 'https://'.
-      filters.WithResources([
-          'https://{}'.format(artifact.resource_uri),
-      ])
+      if resource_uri != artifact.resource_uri:
+        # Match the resolved uri if it's different.
+        resource_uris = resource_uris + [
+            'https://{}'.format(artifact.resource_uri),
+            artifact.resource_uri,
+        ]
+
     except ar_exceptions.InvalidInputValueError:
-      # Not an image uri. Continue to filter it as prefix.
-      log.status.Print('Listing SBOM references with the resource prefix.')
-      # All SBOM occurrence resource uris start with 'https://'.
-      filters.WithResourcePrefixes([
-          'https://{}'.format(resource_uri),
-      ])
+      # Failed to process the artifact. Use the uri directly
+      log.status.Print(
+          'Failed to resolve the artifact. Filter on the URI directly.'
+      )
+      pass
+
+    filters.WithResources(resource_uris)
+
+  if prefix:
+    path_prefix = _RemovePrefix(prefix, 'https://')
+    filters.WithResourcePrefixes([
+        'https://{}'.format(path_prefix),
+        path_prefix,
+    ])
 
   occs = None
-  if args.installed_package:
+  if dependency:
     # Calling ListOccurrencesWithFilters ignoring page_size.
     occs = requests.ListOccurrencesWithFiltersV1beta1(
         project, filters.GetChunkifiedFilters()
@@ -325,46 +357,126 @@ def _DefaultGCSBucketName(project_num, location):
   return 'artifactanalysis-{0}-{1}'.format(location, project_num)
 
 
-def _GetSbomGCSPath(bucket_name, resource_uri, sbom):
+def _GetSbomGCSPath(storage_path, resource_uri, sbom):
   uri_encoded = urllib.parse.urlencode({'uri': resource_uri})[4:]
+  version = sbom.version.replace('.', '-')
   return (
-      'gs://{bucket}/{uri_encoded}/sbom/user-{format}-{version}.json'
+      'gs://{storage_path}/{uri_encoded}/sbom/user-{format}-{version}.{ext}'
   ).format(
       **{
-          'bucket': bucket_name,
+          'storage_path': storage_path.replace('gs://', '').rstrip('/'),
           'uri_encoded': uri_encoded,
           'format': sbom.sbom_format,
-          'version': sbom.version,
+          'version': version,
+          'ext': sbom.GetExtension(),
       }
   )
 
 
-def UploadSbomToGCS(source, artifact, sbom):
+def _FindAvailableGCSBucket(default_bucket, project_id, location):
+  """Find an appropriate default bucket to store the SBOM file.
+
+  Find a bucket with the same prefix same as the default bucket in the project.
+  If no bucket could be found, will start to create a new bucket by
+  concatenating the default bucket name and a random suffix.
+
+  Args:
+    default_bucket: str, targeting default bucket name for the resource.
+    project_id: str, project we will use to store the SBOM.
+    location: str, location we will use to store the SBOM.
+
+  Returns:
+    bucket_name: str, name of the prepared bucket.
+  """
+  gcs_client = storage_api.StorageClient()
+  buckets = gcs_client.ListBuckets(project=project_id)
+  for bucket in buckets:
+    log.debug('Verifying bucket {}'.format(bucket.name))
+    if not bucket.name.startswith(default_bucket):
+      continue
+    if bucket.locationType.lower() == 'dual-region':
+      log.debug('Skipping dual region bucket {}'.format(bucket.name))
+      continue
+    if bucket.location.lower() != location.lower():
+      log.debug(
+          'The bucket {0} has location {1} is not matching {2}.'.format(
+              bucket.name, bucket.location.lower(), location.lower()
+          )
+      )
+      continue
+    return bucket.name
+  # Failed to find a existing bucket to use.
+  # Create a new backup bucket with a random suffix.
+  bucket_name = default_bucket + '-'
+  for _ in range(_BUCKET_SUFFIX_LENGTH):
+    bucket_name = bucket_name + random.choice(_BUCKET_NAME_CHARS)
+  gcs_client.CreateBucketIfNotExists(
+      bucket=bucket_name,
+      project=project_id,
+      location=location,
+      check_ownership=True,
+  )
+
+  return bucket_name
+
+
+def UploadSbomToGCS(source, artifact, sbom, gcs_path=None):
   """Upload an SBOM file onto the GCS bucket in the given project and location.
 
   Args:
     source: str, the SBOM file location.
     artifact: Artifact, the artifact metadata SBOM file generated from.
     sbom: SbomFile, metadata of the SBOM file.
+    gcs_path: str, the GCS location for the SBOm file. If not provided, will use
+      the default bucket path of the artifact.
 
   Returns:
-    An SbomFile object with metadata of the given sbom.
+    dest: str, the GCS storage path the file is copied to.
   """
   gcs_client = storage_api.StorageClient()
-  project_num = project_util.GetProjectNumber(artifact.project)
-  bucket_name = _DefaultGCSBucketName(project_num, artifact.location)
-  dest = _GetSbomGCSPath(bucket_name, artifact.resource_uri, sbom)
-  target_ref = storage_util.ObjectReference.FromUrl(dest)
 
-  # TODO(b/274906359): Should have logic to avoid adversarial bucket ownership.
-  try:
-    gcs_client.CopyFileToGCS(source, target_ref)
-  except storage_api.BucketNotFoundError:
-    # Create the default bucket, and copy file again.
-    gcs_client.CreateBucketIfNotExists(
-        bucket=bucket_name, project=artifact.project, location=artifact.location
-    )
-    gcs_client.CopyFileToGCS(source, target_ref)
+  if gcs_path:
+    dest = _GetSbomGCSPath(gcs_path, artifact.resource_uri, sbom)
+  else:
+    project_num = project_util.GetProjectNumber(artifact.project)
+    bucket_project = artifact.project
+    # Make sure we use eu in all bucket queries to match the naming of GCS.
+    bucket_location = artifact.location
+    if bucket_location == 'europe':
+      bucket_location = 'eu'
+    default_bucket = _DefaultGCSBucketName(project_num, bucket_location)
+
+    bucket_name = default_bucket
+    use_backup_bucket = False
+    try:
+      # Make sure the bucket exists, and it's in the right project.
+      gcs_client.CreateBucketIfNotExists(
+          bucket=bucket_name,
+          project=bucket_project,
+          location=bucket_location,
+          check_ownership=True,
+      )
+    except storage_api.BucketInWrongProjectError:
+      # User is given permission to get and use the bucket, but the bucket is
+      # not in the correct project. Will fallback to find a backup bucket.
+      log.debug('The default bucket is in a wrong project.')
+      use_backup_bucket = True
+    except apitools_exceptions.HttpForbiddenError:
+      # Either user is not having the permission to get the bucket, or the
+      # bucket is created by other users in a different project. We will try to
+      # see if we can find a backup bucket to use.
+      log.debug('The default bucket cannot be accessed.')
+      use_backup_bucket = True
+    if use_backup_bucket:
+      bucket_name = _FindAvailableGCSBucket(
+          default_bucket, bucket_project, bucket_location
+      )
+
+    log.debug('Using bucket: {}'.format(bucket_name))
+    dest = _GetSbomGCSPath(bucket_name, artifact.resource_uri, sbom)
+
+  target_ref = storage_util.ObjectReference.FromUrl(dest)
+  gcs_client.CopyFileToGCS(source, target_ref)
 
   return dest
 
@@ -486,7 +598,9 @@ def _GenerateSbomRefOccurrenceListFilter(artifact, sbom):
   f.WithResources(['https://' + artifact.resource_uri])
   f.WithKinds(['SBOM_REFERENCE'])
   note_id = _GetReferenceNoteID(sbom.sbom_format, sbom.version)
-  f.WithCustomFilter('noteId="{0}"'.format(note_id))
+  f.WithCustomFilter(
+      'noteId="{0}" AND noteProjectId="{1}"'.format(note_id, artifact.project)
+  )
   return f.GetFilter()
 
 
@@ -644,6 +758,13 @@ class SbomFile(object):
     if self._sbom_format == _SBOM_FORMAT_CYCLONEDX:
       return _SBOM_REFERENCE_CYCLONEDX_MIME_TYPE
     return _SBOM_REFERENCE_DEFAULT_MIME_TYPE
+
+  def GetExtension(self):
+    if self._sbom_format == _SBOM_FORMAT_SPDX:
+      return _SBOM_REFERENCE_SPDX_EXTENSION
+    if self._sbom_format == _SBOM_FORMAT_CYCLONEDX:
+      return _SBOM_REFERENCE_CYCLONEDX_EXTENSION
+    return _SBOM_REFERENCE_DEFAULT_EXTENSION
 
   @property
   def digests(self):

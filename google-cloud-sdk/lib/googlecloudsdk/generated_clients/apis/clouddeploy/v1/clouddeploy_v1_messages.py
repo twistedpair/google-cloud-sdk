@@ -41,6 +41,25 @@ class AdvanceChildRolloutJobRun(_messages.Message):
   rolloutPhaseId = _messages.StringField(2)
 
 
+class AdvanceRolloutOperation(_messages.Message):
+  r"""Contains the information of an automated advance-rollout operation.
+
+  Fields:
+    destinationPhase: Output only. The phase to which the rollout will be
+      advanced to.
+    initialPhase: Output only. The phase of a deployment that initiated the
+      operation.
+    rollout: Output only. The name of the rollout that initiates the
+      `AutomationRun`.
+    wait: Output only. How long the operation will be paused.
+  """
+
+  destinationPhase = _messages.StringField(1)
+  initialPhase = _messages.StringField(2)
+  rollout = _messages.StringField(3)
+  wait = _messages.StringField(4)
+
+
 class AdvanceRolloutRequest(_messages.Message):
   r"""The request object used by `AdvanceRollout`.
 
@@ -56,6 +75,50 @@ class AdvanceRolloutRequest(_messages.Message):
 
 class AdvanceRolloutResponse(_messages.Message):
   r"""The response object from `AdvanceRollout`."""
+
+
+class AdvanceRolloutRule(_messages.Message):
+  r"""The `AdvanceRollout` automation rule will automatically advance a
+  successful Rollout to the next phase.
+
+  Enums:
+    WaitPolicyValueValuesEnum: Optional. WaitForDeployPolicy delays a rollout
+      advancement when a deploy policy violation is encountered.
+
+  Fields:
+    condition: Output only. Information around the state of the Automation
+      rule.
+    id: Required. ID of the rule. This id must be unique in the `Automation`
+      resource to which this rule belongs. The format is a-z{0,62}.
+    phases: Optional. Proceeds only after phase name matched any one in the
+      list. This value must consist of lower-case letters, numbers, and
+      hyphens, start with a letter and end with a letter or a number, and have
+      a max length of 63 characters. In other words, it must match the
+      following regex: `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
+    wait: Optional. How long to wait after a rollout is finished.
+    waitPolicy: Optional. WaitForDeployPolicy delays a rollout advancement
+      when a deploy policy violation is encountered.
+  """
+
+  class WaitPolicyValueValuesEnum(_messages.Enum):
+    r"""Optional. WaitForDeployPolicy delays a rollout advancement when a
+    deploy policy violation is encountered.
+
+    Values:
+      WAIT_FOR_DEPLOY_POLICY_UNSPECIFIED: No WaitForDeployPolicy is specified.
+      NEVER: Never waits on DeployPolicy, terminates `AutomationRun` if
+        DeployPolicy check failed.
+      LATEST: When policy passes, execute the latest `AutomationRun` only.
+    """
+    WAIT_FOR_DEPLOY_POLICY_UNSPECIFIED = 0
+    NEVER = 1
+    LATEST = 2
+
+  condition = _messages.MessageField('AutomationRuleCondition', 1)
+  id = _messages.StringField(2)
+  phases = _messages.StringField(3, repeated=True)
+  wait = _messages.StringField(4)
+  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 5)
 
 
 class AnthosCluster(_messages.Message):
@@ -148,6 +211,275 @@ class AuditLogConfig(_messages.Message):
 
   exemptedMembers = _messages.StringField(1, repeated=True)
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class Automation(_messages.Message):
+  r"""An `Automation` resource in the Google Cloud Deploy API. An `Automation`
+  enables the automation of manually driven actions for a Delivery Pipeline,
+  which includes Release promotion amongst Targets, Rollout repair and Rollout
+  deployment strategy advancement. The intention of Automation is to reduce
+  manual intervention in the continuous delivery process.
+
+  Messages:
+    AnnotationsValue: Optional. User annotations. These attributes can only be
+      set and used by the user, and not by Google Cloud Deploy. Annotations
+      must meet the following constraints: * Annotations are key/value pairs.
+      * Valid annotation keys have two segments: an optional prefix and name,
+      separated by a slash (/). * The name segment is required and must be 63
+      characters or less, beginning and ending with an alphanumeric character
+      ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
+      alphanumerics between. * The prefix is optional. If specified, the
+      prefix must be a DNS subdomain: a series of DNS labels separated by
+      dots(.), not longer than 253 characters in total, followed by a slash
+      (/). See https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/annotations/#syntax-and-character-set for more details.
+    LabelsValue: Optional. Labels are attributes that can be set and used by
+      both the user and by Google Cloud Deploy. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. Both keys and values are
+      additionally constrained to be <= 63 characters.
+
+  Fields:
+    annotations: Optional. User annotations. These attributes can only be set
+      and used by the user, and not by Google Cloud Deploy. Annotations must
+      meet the following constraints: * Annotations are key/value pairs. *
+      Valid annotation keys have two segments: an optional prefix and name,
+      separated by a slash (/). * The name segment is required and must be 63
+      characters or less, beginning and ending with an alphanumeric character
+      ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
+      alphanumerics between. * The prefix is optional. If specified, the
+      prefix must be a DNS subdomain: a series of DNS labels separated by
+      dots(.), not longer than 253 characters in total, followed by a slash
+      (/). See https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/annotations/#syntax-and-character-set for more details.
+    createTime: Output only. Time at which the automation was created.
+    description: Optional. Description of the `Automation`. Max length is 255
+      characters.
+    etag: Optional. The weak etag of the `Automation` resource. This checksum
+      is computed by the server based on the value of other fields, and may be
+      sent on update and delete requests to ensure the client has an up-to-
+      date value before proceeding.
+    labels: Optional. Labels are attributes that can be set and used by both
+      the user and by Google Cloud Deploy. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. Both keys and values are
+      additionally constrained to be <= 63 characters.
+    name: Output only. Name of the `Automation`. Format is projects/{project}/
+      locations/{location}/deliveryPipelines/{delivery_pipeline}/automations/{
+      automation}.
+    rules: Required. List of Automation rules associated with the Automation
+      resource. Must have at least one rule and limited to 250 rules per
+      Delivery Pipeline. Note: the order of the rules here is not the same as
+      the order of execution.
+    selector: Required. Selected resources to which the automation will be
+      applied.
+    serviceAccount: Required. Email address of the user-managed IAM service
+      account that creates Cloud Deploy release and rollout resources.
+    suspended: Optional. When Suspended, automation is deactivated from
+      execution.
+    uid: Output only. Unique identifier of the `Automation`.
+    updateTime: Output only. Time at which the automation was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User annotations. These attributes can only be set and used
+    by the user, and not by Google Cloud Deploy. Annotations must meet the
+    following constraints: * Annotations are key/value pairs. * Valid
+    annotation keys have two segments: an optional prefix and name, separated
+    by a slash (/). * The name segment is required and must be 63 characters
+    or less, beginning and ending with an alphanumeric character ([a-z0-9A-Z])
+    with dashes (-), underscores (_), dots (.), and alphanumerics between. *
+    The prefix is optional. If specified, the prefix must be a DNS subdomain:
+    a series of DNS labels separated by dots(.), not longer than 253
+    characters in total, followed by a slash (/). See
+    https://kubernetes.io/docs/concepts/overview/working-with-
+    objects/annotations/#syntax-and-character-set for more details.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels are attributes that can be set and used by both the
+    user and by Google Cloud Deploy. Labels must meet the following
+    constraints: * Keys and values can contain only lowercase letters, numeric
+    characters, underscores, and dashes. * All characters must use UTF-8
+    encoding, and international characters are allowed. * Keys must start with
+    a lowercase letter or international character. * Each resource is limited
+    to a maximum of 64 labels. Both keys and values are additionally
+    constrained to be <= 63 characters.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('AutomationRule', 7, repeated=True)
+  selector = _messages.MessageField('AutomationResourceSelector', 8)
+  serviceAccount = _messages.StringField(9)
+  suspended = _messages.BooleanField(10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+
+
+class AutomationResourceSelector(_messages.Message):
+  r"""AutomationResourceSelector contains the information to select the
+  resources to which an Automation is going to be applied.
+
+  Fields:
+    targets: Contains attributes about a target.
+  """
+
+  targets = _messages.MessageField('TargetAttribute', 1, repeated=True)
+
+
+class AutomationRule(_messages.Message):
+  r"""`AutomationRule` defines the automation activities.
+
+  Fields:
+    advanceRolloutRule: Optional. The `AdvanceRolloutRule` will automatically
+      advance a successful Rollout.
+    promoteReleaseRule: Optional. `PromoteReleaseRule` will automatically
+      promote a release from the current target to a specified target.
+  """
+
+  advanceRolloutRule = _messages.MessageField('AdvanceRolloutRule', 1)
+  promoteReleaseRule = _messages.MessageField('PromoteReleaseRule', 2)
+
+
+class AutomationRuleCondition(_messages.Message):
+  r"""`AutomationRuleCondition` contains conditions relevant to an
+  `Automation` rule.
+
+  Fields:
+    targetsPresentCondition: Optional. Details around targets enumerated in
+      the rule.
+  """
+
+  targetsPresentCondition = _messages.MessageField('TargetsPresentCondition', 1)
+
+
+class AutomationRun(_messages.Message):
+  r"""An `AutomationRun` resource in the Google Cloud Deploy API. An
+  `AutomationResource` represents an automation execution instance of an
+  automation rule.
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the `AutomationRun`.
+
+  Fields:
+    advanceRolloutOperation: Output only. Advances a rollout to the next
+      phase.
+    automationId: Output only. The ID of the automation that initiated the
+      operation.
+    automationSnapshot: Output only. Snapshot of the Automation taken at
+      AutomationRun creation time.
+    createTime: Output only. Time at which the `AutomationRun` was created.
+    etag: Output only. The weak etag of the `AutomationRun` resource. This
+      checksum is computed by the server based on the value of other fields,
+      and may be sent on update and delete requests to ensure the client has
+      an up-to-date value before proceeding.
+    expireTime: Output only. Time the `AutomationRun` will expire. An
+      `AutomationRun` will expire after 14 days from its creation date.
+    name: Output only. Name of the `AutomationRun`. Format is projects/{projec
+      t}/locations/{location}/deliveryPipelines/{delivery_pipeline}/automation
+      Runs/{automation_run}.
+    policyViolation: Output only. Contains information about what policies
+      prevented the `AutomationRun` to proceed.
+    promoteReleaseOperation: Output only. Promotes a release to a specified
+      target.
+    ruleId: Output only. The ID of the automation rule that initiated the
+      operation.
+    serviceAccount: Output only. Email address of the user-managed IAM service
+      account that performs the operations against cloud deploy resources.
+    state: Output only. Current state of the `AutomationRun`.
+    stateDescription: Output only. Explains the current state of the
+      `AutomationRun`. Present only an explanation is needed.
+    targetId: Output only. The ID of the target that represents the promotion
+      stage that initiates the `AutomationRun`. The value of this field is the
+      last segment of a target name.
+    updateTime: Output only. Time at which the automationRun was updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the `AutomationRun`.
+
+    Values:
+      STATE_UNSPECIFIED: The `AutomationRun` has an unspecified state.
+      SUCCEEDED: The `AutomationRun` has succeeded.
+      CANCELLED: The `AutomationRun` was cancelled.
+      FAILED: The `AutomationRun` has failed.
+      IN_PROGRESS: The `AutomationRun` is in progress.
+      PENDING: The `AutomationRun` is pending.
+    """
+    STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    CANCELLED = 2
+    FAILED = 3
+    IN_PROGRESS = 4
+    PENDING = 5
+
+  advanceRolloutOperation = _messages.MessageField('AdvanceRolloutOperation', 1)
+  automationId = _messages.StringField(2)
+  automationSnapshot = _messages.MessageField('Automation', 3)
+  createTime = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  expireTime = _messages.StringField(6)
+  name = _messages.StringField(7)
+  policyViolation = _messages.MessageField('PolicyViolation', 8)
+  promoteReleaseOperation = _messages.MessageField('PromoteReleaseOperation', 9)
+  ruleId = _messages.StringField(10)
+  serviceAccount = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  stateDescription = _messages.StringField(13)
+  targetId = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class Binding(_messages.Message):
@@ -250,11 +582,32 @@ class CanaryDeployment(_messages.Message):
     percentages: Required. The percentage based deployments that will occur as
       a part of a `Rollout`. List is expected in ascending order and each
       integer n is 0 <= n < 100.
+    postdeploy: Optional. Configuration for the postdeploy job of the last
+      phase. If this is not configured, postdeploy job will not be present.
+    predeploy: Optional. Configuration for the predeploy job of the first
+      phase. If this is not configured, predeploy job will not be present.
     verify: Whether to run verify tests after each percentage deployment.
   """
 
   percentages = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
-  verify = _messages.BooleanField(2)
+  postdeploy = _messages.MessageField('Postdeploy', 2)
+  predeploy = _messages.MessageField('Predeploy', 3)
+  verify = _messages.BooleanField(4)
+
+
+class CancelAutomationRunRequest(_messages.Message):
+  r"""The request object used by `CancelAutomationRun`.
+
+  Fields:
+    overrideDeployPolicy: Deploy policies to override. Format is
+      projects/{project}/ locations/{location}/deployPolicies/{deploy_policy}.
+  """
+
+  overrideDeployPolicy = _messages.StringField(1, repeated=True)
+
+
+class CancelAutomationRunResponse(_messages.Message):
+  r"""The response object from `CancelAutomationRun`."""
 
 
 class CancelOperationRequest(_messages.Message):
@@ -341,6 +694,210 @@ class CloudRunRenderMetadata(_messages.Message):
   """
 
   service = _messages.StringField(1)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesAutomationRunsCancelRequest(_messages.Message):
+  r"""A
+  ClouddeployProjectsLocationsDeliveryPipelinesAutomationRunsCancelRequest
+  object.
+
+  Fields:
+    cancelAutomationRunRequest: A CancelAutomationRunRequest resource to be
+      passed as the request body.
+    name: Required. Name of the `AutomationRun`. Format is projects/{project}/
+      locations/{location}/deliveryPipelines/{delivery_pipeline}/automationRun
+      s/{automation_run}.
+  """
+
+  cancelAutomationRunRequest = _messages.MessageField('CancelAutomationRunRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesAutomationRunsGetRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeliveryPipelinesAutomationRunsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the `AutomationRun`. Format must be projects/{proj
+      ect}/locations/{location}/deliveryPipelines/{delivery_pipeline}/automati
+      onRuns/{automation_run}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesAutomationRunsListRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeliveryPipelinesAutomationRunsListRequest
+  object.
+
+  Fields:
+    filter: Filter automationRuns to be returned. All fields can be used in
+      the filter.
+    orderBy: Field to sort by.
+    pageSize: The maximum number of automationRuns to return. The service may
+      return fewer than this value. If unspecified, at most 50 automationRuns
+      will be returned. The maximum value is 1000; values above 1000 will be
+      set to 1000.
+    pageToken: A page token, received from a previous `ListAutomationRuns`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other provided parameters match the call that provided the page token.
+    parent: Required. The parent, which owns this collection of
+      automationRuns. Format must be projects/{project}/locations/{location}/d
+      eliveryPipelines/{delivery_pipeline}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsCreateRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeliveryPipelinesAutomationsCreateRequest
+  object.
+
+  Fields:
+    automation: A Automation resource to be passed as the request body.
+    automationId: Required. ID of the `Automation`.
+    parent: Required. The parent collection in which the `Automation` should
+      be created. Format should be projects/{project_id}/locations/{location_n
+      ame}/deliveryPipelines/{pipeline_name}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
+  """
+
+  automation = _messages.MessageField('Automation', 1)
+  automationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsDeleteRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeliveryPipelinesAutomationsDeleteRequest
+  object.
+
+  Fields:
+    allowMissing: Optional. If set to true, then deleting an already deleted
+      or non-existing `Automation` will succeed.
+    etag: Optional. The weak etag of the request. This checksum is computed by
+      the server based on the value of other fields, and may be sent on update
+      and delete requests to ensure the client has an up-to-date value before
+      proceeding.
+    name: Required. The name of the `Automation` to delete. Format should be p
+      rojects/{project_id}/locations/{location_name}/deliveryPipelines/{pipeli
+      ne_name}/automations/{automation_name}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validate the request and verify whether
+      the resource exists, but do not actually post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsGetRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeliveryPipelinesAutomationsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the `Automation`. Format must be projects/{project
+      _id}/locations/{location_name}/deliveryPipelines/{pipeline_name}/automat
+      ions/{automation_name}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsListRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeliveryPipelinesAutomationsListRequest
+  object.
+
+  Fields:
+    filter: Filter automations to be returned. All fields can be used in the
+      filter.
+    orderBy: Field to sort by.
+    pageSize: The maximum number of automations to return. The service may
+      return fewer than this value. If unspecified, at most 50 automations
+      will be returned. The maximum value is 1000; values above 1000 will be
+      set to 1000.
+    pageToken: A page token, received from a previous `ListAutomations` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      provided parameters match the call that provided the page token.
+    parent: Required. The parent, which owns this collection of automations.
+      Format must be projects/{project_id}/locations/{location_name}/deliveryP
+      ipelines/{pipeline_name}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsPatchRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeliveryPipelinesAutomationsPatchRequest
+  object.
+
+  Fields:
+    allowMissing: Optional. If set to true, updating a `Automation` that does
+      not exist will result in the creation of a new `Automation`.
+    automation: A Automation resource to be passed as the request body.
+    name: Output only. Name of the `Automation`. Format is projects/{project}/
+      locations/{location}/deliveryPipelines/{delivery_pipeline}/automations/{
+      automation}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `Automation` resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  automation = _messages.MessageField('Automation', 2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesCreateRequest(_messages.Message):
@@ -1563,12 +2120,16 @@ class DeliveryPipelineNotificationEvent(_messages.Message):
       TYPE_UNSPECIFIED: Type is unspecified.
       TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
         sent.
+      TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
+      TYPE_PROCESS_ABORTED: A process aborted.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
     TYPE_UNSPECIFIED = 0
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
-    TYPE_RENDER_STATUES_CHANGE = 2
+    TYPE_RESOURCE_STATE_CHANGE = 2
+    TYPE_PROCESS_ABORTED = 3
+    TYPE_RENDER_STATUES_CHANGE = 4
 
   deliveryPipeline = _messages.StringField(1)
   message = _messages.StringField(2)
@@ -1590,13 +2151,7 @@ class DeployArtifact(_messages.Message):
 
 
 class DeployJob(_messages.Message):
-  r"""A deploy Job.
-
-  Fields:
-    artifact: Output only. The artifact of the latest deploy JobRun.
-  """
-
-  artifact = _messages.MessageField('DeployArtifact', 1)
+  r"""A deploy Job."""
 
 
 class DeployJobRun(_messages.Message):
@@ -1918,12 +2473,18 @@ class DeploymentJobs(_messages.Message):
   Fields:
     deployJob: Output only. The deploy Job. This is the deploy job in the
       phase.
+    postdeployJob: Output only. The postdeploy Job. This is the postdeploy job
+      in the phase. This is the last job of the phase.
+    predeployJob: Output only. The predeploy Job. This is the predeploy job in
+      the phase. This is the first job of the phase.
     verifyJob: Output only. The verify Job. Runs after a deploy if the deploy
       succeeds.
   """
 
   deployJob = _messages.MessageField('Job', 1)
-  verifyJob = _messages.MessageField('Job', 2)
+  postdeployJob = _messages.MessageField('Job', 2)
+  predeployJob = _messages.MessageField('Job', 3)
+  verifyJob = _messages.MessageField('Job', 4)
 
 
 class Empty(_messages.Message):
@@ -1971,11 +2532,15 @@ class ExecutionConfig(_messages.Message):
       RENDER: Use for rendering.
       DEPLOY: Use for deploying and deployment hooks.
       VERIFY: Use for deployment verification.
+      PREDEPLOY: Use for predeploy job execution.
+      POSTDEPLOY: Use for postdeploy job execution.
     """
     EXECUTION_ENVIRONMENT_USAGE_UNSPECIFIED = 0
     RENDER = 1
     DEPLOY = 2
     VERIFY = 3
+    PREDEPLOY = 4
+    POSTDEPLOY = 5
 
   artifactStorage = _messages.StringField(1)
   defaultPool = _messages.MessageField('DefaultPool', 2)
@@ -2088,6 +2653,8 @@ class Job(_messages.Message):
     id: Output only. The ID of the Job.
     jobRun: Output only. The name of the `JobRun` responsible for the most
       recent invocation of this Job.
+    postdeployJob: Output only. A postdeploy Job.
+    predeployJob: Output only. A predeploy Job.
     skipMessage: Output only. Additional information on why the Job was
       skipped, if available.
     state: Output only. The current state of the Job.
@@ -2124,9 +2691,11 @@ class Job(_messages.Message):
   deployJob = _messages.MessageField('DeployJob', 3)
   id = _messages.StringField(4)
   jobRun = _messages.StringField(5)
-  skipMessage = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  verifyJob = _messages.MessageField('VerifyJob', 8)
+  postdeployJob = _messages.MessageField('PostdeployJob', 6)
+  predeployJob = _messages.MessageField('PredeployJob', 7)
+  skipMessage = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  verifyJob = _messages.MessageField('VerifyJob', 10)
 
 
 class JobRun(_messages.Message):
@@ -2153,6 +2722,10 @@ class JobRun(_messages.Message):
       deliveryPipelines/{deliveryPipeline}/releases/{releases}/rollouts/
       {rollouts}/jobRuns/{uuid}.
     phaseId: Output only. ID of the `Rollout` phase this `JobRun` belongs in.
+    postdeployJobRun: Output only. Information specific to a postdeploy
+      `JobRun`.
+    predeployJobRun: Output only. Information specific to a predeploy
+      `JobRun`.
     startTime: Output only. Time at which the `JobRun` was started.
     state: Output only. The current state of the `JobRun`.
     uid: Output only. Unique identifier of the `JobRun`.
@@ -2186,10 +2759,12 @@ class JobRun(_messages.Message):
   jobId = _messages.StringField(7)
   name = _messages.StringField(8)
   phaseId = _messages.StringField(9)
-  startTime = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  uid = _messages.StringField(12)
-  verifyJobRun = _messages.MessageField('VerifyJobRun', 13)
+  postdeployJobRun = _messages.MessageField('PostdeployJobRun', 10)
+  predeployJobRun = _messages.MessageField('PredeployJobRun', 11)
+  startTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  verifyJobRun = _messages.MessageField('VerifyJobRun', 15)
 
 
 class JobRunNotificationEvent(_messages.Message):
@@ -2218,12 +2793,16 @@ class JobRunNotificationEvent(_messages.Message):
       TYPE_UNSPECIFIED: Type is unspecified.
       TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
         sent.
+      TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
+      TYPE_PROCESS_ABORTED: A process aborted.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
     TYPE_UNSPECIFIED = 0
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
-    TYPE_RENDER_STATUES_CHANGE = 2
+    TYPE_RESOURCE_STATE_CHANGE = 2
+    TYPE_PROCESS_ABORTED = 3
+    TYPE_RENDER_STATUES_CHANGE = 4
 
   jobRun = _messages.StringField(1)
   message = _messages.StringField(2)
@@ -2244,6 +2823,36 @@ class KubernetesConfig(_messages.Message):
 
   gatewayServiceMesh = _messages.MessageField('GatewayServiceMesh', 1)
   serviceNetworking = _messages.MessageField('ServiceNetworking', 2)
+
+
+class ListAutomationRunsResponse(_messages.Message):
+  r"""The response object from `ListAutomationRuns`.
+
+  Fields:
+    automationRuns: The `AutomationRuns` objects.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached.
+  """
+
+  automationRuns = _messages.MessageField('AutomationRun', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListAutomationsResponse(_messages.Message):
+  r"""The response object from `ListAutomations`.
+
+  Fields:
+    automations: The `Automations` objects.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached.
+  """
+
+  automations = _messages.MessageField('Automation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListDeliveryPipelinesResponse(_messages.Message):
@@ -2645,14 +3254,17 @@ class PhaseArtifact(_messages.Message):
   r"""Contains the paths to the artifacts, relative to the URI, for a phase.
 
   Fields:
+    jobManifestsPath: Output only. File path of the directory of rendered job
+      manifests relative to the URI. This is only set if it is applicable.
     manifestPath: Output only. File path of the rendered manifest relative to
       the URI.
     skaffoldConfigPath: Output only. File path of the resolved Skaffold
       configuration relative to the URI.
   """
 
-  manifestPath = _messages.StringField(1)
-  skaffoldConfigPath = _messages.StringField(2)
+  jobManifestsPath = _messages.StringField(1)
+  manifestPath = _messages.StringField(2)
+  skaffoldConfigPath = _messages.StringField(3)
 
 
 class PhaseConfig(_messages.Message):
@@ -2666,6 +3278,12 @@ class PhaseConfig(_messages.Message):
       letter and end with a letter or a number, and have a max length of 63
       characters. In other words, it must match the following regex:
       `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
+    postdeploy: Optional. Configuration for the postdeploy job of this phase.
+      If this is not configured, postdeploy job will not be present for this
+      phase.
+    predeploy: Optional. Configuration for the predeploy job of this phase. If
+      this is not configured, predeploy job will not be present for this
+      phase.
     profiles: Skaffold profiles to use when rendering the manifest for this
       phase. These are in addition to the profiles list specified in the
       `DeliveryPipeline` stage.
@@ -2674,8 +3292,10 @@ class PhaseConfig(_messages.Message):
 
   percentage = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   phaseId = _messages.StringField(2)
-  profiles = _messages.StringField(3, repeated=True)
-  verify = _messages.BooleanField(4)
+  postdeploy = _messages.MessageField('Postdeploy', 3)
+  predeploy = _messages.MessageField('Predeploy', 4)
+  profiles = _messages.StringField(5, repeated=True)
+  verify = _messages.BooleanField(6)
 
 
 class PipelineCondition(_messages.Message):
@@ -2799,6 +3419,173 @@ class PolicyRule(_messages.Message):
   restrictRollouts = _messages.MessageField('RestrictRollout', 1)
 
 
+class PolicyViolation(_messages.Message):
+  r"""Returned from an action if one or more policies were violated, and
+  therefore the action was prevented. Contains information about what policies
+  were violated and why.
+
+  Fields:
+    policyViolationDetails: Policy violation details.
+  """
+
+  policyViolationDetails = _messages.MessageField('PolicyViolationDetails', 1, repeated=True)
+
+
+class PolicyViolationDetails(_messages.Message):
+  r"""Policy violation details.
+
+  Fields:
+    failureMessage: User readable message about why it failed.
+    policy: Name of the policy that was violated. Policy resource will be in
+      the format of projects/{project}/locations/{location}/policies/{policy}.
+    ruleId: Name of the rule that triggered the policy violation.
+    ruleType: Rule type (e.g. rollout restrictions, release requirements) that
+      failed.
+  """
+
+  failureMessage = _messages.StringField(1)
+  policy = _messages.StringField(2)
+  ruleId = _messages.StringField(3)
+  ruleType = _messages.StringField(4)
+
+
+class Postdeploy(_messages.Message):
+  r"""Postdeploy contains the postdeploy job configuration information.
+
+  Fields:
+    actions: Optional. A sequence of skaffold custom actions to invoke during
+      execution of the postdeploy job.
+  """
+
+  actions = _messages.StringField(1, repeated=True)
+
+
+class PostdeployJob(_messages.Message):
+  r"""A postdeploy Job.
+
+  Fields:
+    actions: Output only. The custom actions that the postdeploy Job executes.
+  """
+
+  actions = _messages.StringField(1, repeated=True)
+
+
+class PostdeployJobRun(_messages.Message):
+  r"""PostdeployJobRun contains information specific to a postdeploy `JobRun`.
+
+  Enums:
+    FailureCauseValueValuesEnum: Output only. The reason the postdeploy
+      failed. This will always be unspecified while the postdeploy is in
+      progress or if it succeeded.
+
+  Fields:
+    build: Output only. The resource name of the Cloud Build `Build` object
+      that is used to execute the custom actions associated with the
+      postdeploy Job. Format is
+      projects/{project}/locations/{location}/builds/{build}.
+    failureCause: Output only. The reason the postdeploy failed. This will
+      always be unspecified while the postdeploy is in progress or if it
+      succeeded.
+    failureMessage: Output only. Additional information about the postdeploy
+      failure, if available.
+  """
+
+  class FailureCauseValueValuesEnum(_messages.Enum):
+    r"""Output only. The reason the postdeploy failed. This will always be
+    unspecified while the postdeploy is in progress or if it succeeded.
+
+    Values:
+      FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
+      CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
+        is not enabled or because Google Cloud Deploy has insufficient
+        permissions. See [required permission](/deploy/docs/cloud-deploy-
+        service-account#required_permissions).
+      EXECUTION_FAILED: The postdeploy operation did not complete
+        successfully; check Cloud Build logs.
+      DEADLINE_EXCEEDED: The postdeploy build did not complete within the
+        alloted time.
+      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Google Cloud
+        Deploy's request. See failure_message for additional details.
+    """
+    FAILURE_CAUSE_UNSPECIFIED = 0
+    CLOUD_BUILD_UNAVAILABLE = 1
+    EXECUTION_FAILED = 2
+    DEADLINE_EXCEEDED = 3
+    CLOUD_BUILD_REQUEST_FAILED = 4
+
+  build = _messages.StringField(1)
+  failureCause = _messages.EnumField('FailureCauseValueValuesEnum', 2)
+  failureMessage = _messages.StringField(3)
+
+
+class Predeploy(_messages.Message):
+  r"""Predeploy contains the predeploy job configuration information.
+
+  Fields:
+    actions: Optional. A sequence of skaffold custom actions to invoke during
+      execution of the predeploy job.
+  """
+
+  actions = _messages.StringField(1, repeated=True)
+
+
+class PredeployJob(_messages.Message):
+  r"""A predeploy Job.
+
+  Fields:
+    actions: Output only. The custom actions that the predeploy Job executes.
+  """
+
+  actions = _messages.StringField(1, repeated=True)
+
+
+class PredeployJobRun(_messages.Message):
+  r"""PredeployJobRun contains information specific to a predeploy `JobRun`.
+
+  Enums:
+    FailureCauseValueValuesEnum: Output only. The reason the predeploy failed.
+      This will always be unspecified while the predeploy is in progress or if
+      it succeeded.
+
+  Fields:
+    build: Output only. The resource name of the Cloud Build `Build` object
+      that is used to execute the custom actions associated with the predeploy
+      Job. Format is projects/{project}/locations/{location}/builds/{build}.
+    failureCause: Output only. The reason the predeploy failed. This will
+      always be unspecified while the predeploy is in progress or if it
+      succeeded.
+    failureMessage: Output only. Additional information about the predeploy
+      failure, if available.
+  """
+
+  class FailureCauseValueValuesEnum(_messages.Enum):
+    r"""Output only. The reason the predeploy failed. This will always be
+    unspecified while the predeploy is in progress or if it succeeded.
+
+    Values:
+      FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
+      CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
+        is not enabled or because Google Cloud Deploy has insufficient
+        permissions. See [required permission](/deploy/docs/cloud-deploy-
+        service-account#required_permissions).
+      EXECUTION_FAILED: The predeploy operation did not complete successfully;
+        check Cloud Build logs.
+      DEADLINE_EXCEEDED: The predeploy build did not complete within the
+        alloted time.
+      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Google Cloud
+        Deploy's request. See failure_message for additional details.
+    """
+    FAILURE_CAUSE_UNSPECIFIED = 0
+    CLOUD_BUILD_UNAVAILABLE = 1
+    EXECUTION_FAILED = 2
+    DEADLINE_EXCEEDED = 3
+    CLOUD_BUILD_REQUEST_FAILED = 4
+
+  build = _messages.StringField(1)
+  failureCause = _messages.EnumField('FailureCauseValueValuesEnum', 2)
+  failureMessage = _messages.StringField(3)
+
+
 class PrivatePool(_messages.Message):
   r"""Execution using a private Cloud Build pool.
 
@@ -2818,6 +3605,76 @@ class PrivatePool(_messages.Message):
   artifactStorage = _messages.StringField(1)
   serviceAccount = _messages.StringField(2)
   workerPool = _messages.StringField(3)
+
+
+class PromoteReleaseOperation(_messages.Message):
+  r"""Contains the information of an automated promote-release operation.
+
+  Fields:
+    phase: Output only. The starting phase of the rollout created by this
+      operation.
+    rollout: Output only. The name of the rollout that initiates the
+      `AutomationRun`.
+    targetId: Output only. The ID of the target that represents the promotion
+      stage to which the release will be promoted. The value of this field is
+      the last segment of a target name.
+    wait: Output only. How long the operation will be paused.
+  """
+
+  phase = _messages.StringField(1)
+  rollout = _messages.StringField(2)
+  targetId = _messages.StringField(3)
+  wait = _messages.StringField(4)
+
+
+class PromoteReleaseRule(_messages.Message):
+  r"""`PromoteRelease` rule will automatically promote a release from the
+  current target to a specified target.
+
+  Enums:
+    WaitPolicyValueValuesEnum: Optional. WaitForDeployPolicy delays a release
+      promotion when a deploy policy violation is encountered.
+
+  Fields:
+    condition: Output only. Information around the state of the Automation
+      rule.
+    id: Required. ID of the rule. This id must be unique in the `Automation`
+      resource to which this rule belongs. The format is a-z{0,62}.
+    phase: Optional. The starting phase of the rollout created by this
+      operation. Default to the first phase.
+    targetId: Optional. The ID of the stage in the pipeline to which this
+      `Release` is deploying. If unspecified, default it to the next stage in
+      the promotion flow. The value of this field could be one of the
+      following: * The last segment of a target name. It only needs the ID to
+      determine if the target is one of the stages in the promotion sequence
+      defined in the pipeline. * "@next", the next target in the promotion
+      sequence.
+    wait: Optional. How long the release need to be paused until being
+      promoted to the next target.
+    waitPolicy: Optional. WaitForDeployPolicy delays a release promotion when
+      a deploy policy violation is encountered.
+  """
+
+  class WaitPolicyValueValuesEnum(_messages.Enum):
+    r"""Optional. WaitForDeployPolicy delays a release promotion when a deploy
+    policy violation is encountered.
+
+    Values:
+      WAIT_FOR_DEPLOY_POLICY_UNSPECIFIED: No WaitForDeployPolicy is specified.
+      NEVER: Never waits on DeployPolicy, terminates `AutomationRun` if
+        DeployPolicy check failed.
+      LATEST: When policy passes, execute the latest `AutomationRun` only.
+    """
+    WAIT_FOR_DEPLOY_POLICY_UNSPECIFIED = 0
+    NEVER = 1
+    LATEST = 2
+
+  condition = _messages.MessageField('AutomationRuleCondition', 1)
+  id = _messages.StringField(2)
+  phase = _messages.StringField(3)
+  targetId = _messages.StringField(4)
+  wait = _messages.StringField(5)
+  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 6)
 
 
 class Range(_messages.Message):
@@ -3154,12 +4011,16 @@ class ReleaseNotificationEvent(_messages.Message):
       TYPE_UNSPECIFIED: Type is unspecified.
       TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
         sent.
+      TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
+      TYPE_PROCESS_ABORTED: A process aborted.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
     TYPE_UNSPECIFIED = 0
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
-    TYPE_RENDER_STATUES_CHANGE = 2
+    TYPE_RESOURCE_STATE_CHANGE = 2
+    TYPE_PROCESS_ABORTED = 3
+    TYPE_RENDER_STATUES_CHANGE = 4
 
   message = _messages.StringField(1)
   release = _messages.StringField(2)
@@ -3555,12 +4416,16 @@ class RolloutNotificationEvent(_messages.Message):
       TYPE_UNSPECIFIED: Type is unspecified.
       TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
         sent.
+      TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
+      TYPE_PROCESS_ABORTED: A process aborted.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
     TYPE_UNSPECIFIED = 0
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
-    TYPE_RENDER_STATUES_CHANGE = 2
+    TYPE_RESOURCE_STATE_CHANGE = 2
+    TYPE_PROCESS_ABORTED = 3
+    TYPE_RENDER_STATUES_CHANGE = 4
 
   message = _messages.StringField(1)
   pipelineUid = _messages.StringField(2)
@@ -3712,10 +4577,16 @@ class Standard(_messages.Message):
   r"""Standard represents the standard deployment strategy.
 
   Fields:
+    postdeploy: Optional. Configuration for the postdeploy job. If this is not
+      configured, postdeploy job will not be present.
+    predeploy: Optional. Configuration for the predeploy job. If this is not
+      configured, predeploy job will not be present.
     verify: Whether to verify a deployment.
   """
 
-  verify = _messages.BooleanField(1)
+  postdeploy = _messages.MessageField('Postdeploy', 1)
+  predeploy = _messages.MessageField('Predeploy', 2)
+  verify = _messages.BooleanField(3)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -4127,12 +4998,16 @@ class TargetNotificationEvent(_messages.Message):
       TYPE_UNSPECIFIED: Type is unspecified.
       TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
         sent.
+      TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
+      TYPE_PROCESS_ABORTED: A process aborted.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
     TYPE_UNSPECIFIED = 0
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
-    TYPE_RENDER_STATUES_CHANGE = 2
+    TYPE_RESOURCE_STATE_CHANGE = 2
+    TYPE_PROCESS_ABORTED = 3
+    TYPE_RENDER_STATUES_CHANGE = 4
 
   message = _messages.StringField(1)
   target = _messages.StringField(2)
@@ -4176,11 +5051,20 @@ class TargetRender(_messages.Message):
         check Cloud Build logs.
       CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Google Cloud
         Deploy's request. See failure_message for additional details.
+      VERIFICATION_CONFIG_NOT_FOUND: The render operation did not complete
+        successfully because the verification stanza required for verify was
+        not found on the skaffold configuration.
+      CUSTOM_ACTION_NOT_FOUND: The render operation did not complete
+        successfully because the custom action required for predeploy or
+        postdeploy was not found in the skaffold configuration. See
+        failure_message for additional details.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
     EXECUTION_FAILED = 2
     CLOUD_BUILD_REQUEST_FAILED = 3
+    VERIFICATION_CONFIG_NOT_FOUND = 4
+    CUSTOM_ACTION_NOT_FOUND = 5
 
   class RenderingStateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the render operation for this Target.

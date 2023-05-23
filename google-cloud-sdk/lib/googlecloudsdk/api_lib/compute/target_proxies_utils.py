@@ -14,10 +14,11 @@
 # limitations under the License.
 """Code that's shared between multiple target-*-proxies subcommands."""
 
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
+from googlecloudsdk.calliope import arg_parsers
 
 
 def AddProxyHeaderRelatedCreateArgs(parser, default='NONE'):
@@ -66,3 +67,29 @@ def AddQuicOverrideUpdateArgs(parser):
   """Adds parser arguments for update related to QuicOverride."""
 
   AddQuicOverrideCreateArgs(parser, default=None)
+
+
+def AddHttpKeepAliveTimeoutSec(parser):
+  """Adds the http keep alive timeout sec argument."""
+  parser.add_argument(
+      '--http-keep-alive-timeout-sec',
+      type=arg_parsers.BoundedInt(5, 1200),
+      help="""\
+      Specifies how long to keep a connection open, after completing a response, while
+      there is no matching traffic (in seconds). If an HTTP keep-alive is not specified,
+      a default value (610 seconds) will be used. For Global external HTTP(S) load balancer,
+      the minimum allowed value is 5 seconds and the maximum allowed value is 1200 seconds.
+      """,
+  )
+
+
+def AddClearHttpKeepAliveTimeoutSec(parser):
+  """Adds the http keep alive timeout sec argument."""
+  parser.add_argument(
+      '--clear-http-keep-alive-timeout-sec',
+      action='store_true',
+      default=False,
+      help="""\
+      Clears previously configured http keep alive timeout sec
+      """,
+  )

@@ -52,6 +52,30 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DELIVERYPIPELINES_AUTOMATIONRUNS = (
+      'projects.locations.deliveryPipelines.automationRuns',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'deliveryPipelines/{deliveryPipelinesId}/automationRuns/'
+              '{automationRunsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DELIVERYPIPELINES_AUTOMATIONS = (
+      'projects.locations.deliveryPipelines.automations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'deliveryPipelines/{deliveryPipelinesId}/automations/'
+              '{automationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_DELIVERYPIPELINES_RELEASES = (
       'projects.locations.deliveryPipelines.releases',
       '{+name}',

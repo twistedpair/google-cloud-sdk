@@ -67,14 +67,26 @@ class IndexEndpointsClient(object):
     """Create a new v1 index endpoint."""
     labels = labels_util.ParseCreateArgs(
         args, self.messages.GoogleCloudAiplatformV1IndexEndpoint.LabelsValue)
-    req = self.messages.AiplatformProjectsLocationsIndexEndpointsCreateRequest(
-        parent=location_ref.RelativeName(),
-        googleCloudAiplatformV1IndexEndpoint=self.messages
-        .GoogleCloudAiplatformV1IndexEndpoint(
-            displayName=args.display_name,
-            description=args.description,
-            network=args.network,
-            labels=labels))
+    if args.public_endpoint_enabled:
+      req = self.messages.AiplatformProjectsLocationsIndexEndpointsCreateRequest(
+          parent=location_ref.RelativeName(),
+          googleCloudAiplatformV1IndexEndpoint=self.messages.GoogleCloudAiplatformV1IndexEndpoint(
+              displayName=args.display_name,
+              description=args.description,
+              publicEndpointEnabled=args.public_endpoint_enabled,
+              labels=labels,
+          ),
+      )
+    else:
+      req = self.messages.AiplatformProjectsLocationsIndexEndpointsCreateRequest(
+          parent=location_ref.RelativeName(),
+          googleCloudAiplatformV1IndexEndpoint=self.messages.GoogleCloudAiplatformV1IndexEndpoint(
+              displayName=args.display_name,
+              description=args.description,
+              network=args.network,
+              labels=labels,
+          ),
+      )
     return self._service.Create(req)
 
   def PatchBeta(self, index_endpoint_ref, args):

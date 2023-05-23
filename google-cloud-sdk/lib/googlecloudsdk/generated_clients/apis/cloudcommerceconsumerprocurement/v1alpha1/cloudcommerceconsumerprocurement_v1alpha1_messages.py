@@ -189,13 +189,15 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest(_messages
     filter: Filter that you can use to limit the list request. A query string
       that can match a selected set of attributes with string values. For
       example, `display_name=abc`. Supported query attributes are *
-      `display_name` If the query contains special characters other than
-      letters, underscore, or digits, the phrase must be quoted with double
-      quotes. For example, `display_name="foo:bar"`, where the display name
-      needs to be quoted because it contains special character colon. Queries
-      can be combined with `OR`, and `NOT` to form more complex queries. You
-      can also group them to force a desired evaluation order. For example,
-      `display_name=abc OR display_name=def`.
+      `display_name` Service queries have the format: `services:"services/%s"`
+      where %s is the OnePlatformServiceId. If the query contains special
+      characters other than letters, underscore, or digits, the phrase must be
+      quoted with double quotes. For example, `display_name="foo:bar"`, where
+      the display name needs to be quoted because it contains special
+      character colon. Queries can be combined with `OR`, and `NOT` to form
+      more complex queries. You can also group them to force a desired
+      evaluation order. E.g. `services:"services/pumpkin" OR
+      services:"services/pumpkindb"`.
     pageSize: The maximum number of entries requested. The default page size
       is 25 and the maximum page size is 200.
     pageToken: The token for fetching the next page.
@@ -475,16 +477,28 @@ class CloudcommerceconsumerprocurementProjectsEntitlementsListRequest(_messages.
 
   Fields:
     filter: Filter that can be used to limit the list request. A query string
-      that can match a selected set of attributes with string values. For
-      example `product_external_name=abc`. Supported query attributes are *
-      `product_external_name` * `provider` If the query contains special
-      characters other than letters, underscore, or digits, the phrase must be
-      quoted with double quotes. For example,
-      `product_external_name="foo:bar"`, where the product external name needs
-      to be quoted because it contains special character colon. Queries can be
-      combined with `OR`, and `NOT` to form more complex queries. You can also
-      group them to force a desired evaluation order. For example,
-      `product_external_name=abc OR product_external_name=def`.
+      that can match a selected set of attributes with string values.
+      Supported query attributes are * `services.service_name` * `offer` *
+      `pending_change.new_offer` * `change_history.offer` *
+      `product_external_name` * `provider` Service queries have the format:
+      `services.service_name:"services/%s"` where %s is the
+      OnePlatformServiceId and all values are surrounded with quote literals.
+      Offer has the format: "billingAccounts/{billing-account-
+      id}/offers/{offer-id}" for private offers or
+      "services/{service}/standardOffers/{offer-id}" for standard offers.
+      Related offer filters are formatted where %s is the above fully
+      qualified Offer and all values are surrounded with quote literals. Ex.
+      `offer="%s"` `pending_change.new_offer="%s"` `change_history.offer:"%s"`
+      Product and provider queries have the format:
+      `product_external_name="pumpkin-saas"` `provider="pumpkindb"` If the
+      query contains special characters other than letters, underscore, or
+      digits, the phrase must be quoted with double quotes. For example,
+      `services.service_name:"services/%s"`, where the service query needs to
+      be quoted because it contains special character forward slash. Queries
+      can be combined with `OR`, and `NOT` to form more complex queries. You
+      can also group them to force a desired evaluation order. E.g.
+      `services.service_name:"services/pumpkin" OR
+      services.service_name:"services/pumpkindb"`.
     pageSize: The maximum number of entries requested. The default page size
       is 25 and the maximum page size is 200.
     pageToken: The token for fetching the next page.
@@ -678,7 +692,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1AddOnDetails(_messages.Messa
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1AuditLog(_messages.Message):
-  r"""Consumer Procurement Order Audit Log
+  r"""Consumer Procurement Order Audit Log To be deprecated
 
   Fields:
     auditLogRecords: List of audit log records for an offer
@@ -714,10 +728,12 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1AuditLogRecord(_messages.Mes
       ACTION_TYPE_UNSPECIFIED: Default value, do not use.
       ORDER_PLACED: The action of accepting an offer.
       ORDER_CANCELLED: Order Cancelation action.
+      ORDER_MODIFIED: The action of modifying an order.
     """
     ACTION_TYPE_UNSPECIFIED = 0
     ORDER_PLACED = 1
     ORDER_CANCELLED = 2
+    ORDER_MODIFIED = 3
 
   actionTime = _messages.StringField(1)
   actionType = _messages.EnumField('ActionTypeValueValuesEnum', 2)

@@ -391,11 +391,9 @@ def GetDigestFromName(image_name):
     InvalidImageNameError: If no digest can be resolved.
   """
   tag_or_digest = GetDockerImageFromTagOrDigest(image_name)
-  # If we got a digest, then just return it.
-  if isinstance(tag_or_digest, docker_name.Digest):
-    return tag_or_digest
 
   # If we got a tag, resolve it to a digest.
+  # If it was a digest - we check if resource exists and reconstruct it.
   def ResolveV2Tag(tag):
     with v2_image.FromRegistry(
         basic_creds=CredentialProvider(), name=tag,
@@ -430,13 +428,16 @@ def GetDigestFromName(image_name):
       ResolveV2Tag(tag_or_digest))
   if not sha256:
     raise InvalidImageNameError(
-        '[{0}] is not a valid name. Expected tag in the form "base:tag" or '
-        '"tag" or digest in the form "sha256:<digest>"'.format(image_name))
+        '[{0}] is not found or is not a valid name. Expected tag in the form '
+        '"base:tag" or "tag" or digest in the form "sha256:<digest>"'.
+        format(image_name))
 
   # Even though we were able to get the digest from the tag, we should warn
-  # users against using tags.
-  log.warning('Successfully resolved tag to sha256, but it is recommended to '
-              'use sha256 directly.')
+  # users against using tags. If they didn't.
+  if not isinstance(tag_or_digest, docker_name.Digest):
+    log.warning('Successfully resolved tag to sha256, but it is recommended to '
+                'use sha256 directly.')
+
   return docker_name.Digest('{registry}/{repository}@{sha256}'.format(
       registry=tag_or_digest.registry,
       repository=tag_or_digest.repository,

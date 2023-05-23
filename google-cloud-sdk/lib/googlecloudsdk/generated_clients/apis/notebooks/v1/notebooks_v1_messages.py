@@ -2831,7 +2831,7 @@ class RuntimeAcceleratorConfig(_messages.Message):
       NVIDIA_TESLA_V100: Accelerator type is Nvidia Tesla V100.
       NVIDIA_TESLA_P4: Accelerator type is Nvidia Tesla P4.
       NVIDIA_TESLA_T4: Accelerator type is Nvidia Tesla T4.
-      NVIDIA_TESLA_A100: Accelerator type is Nvidia Tesla A100.
+      NVIDIA_TESLA_A100: Accelerator type is Nvidia Tesla A100 - 40GB.
       TPU_V2: (Coming soon) Accelerator type is TPU V2.
       TPU_V3: (Coming soon) Accelerator type is TPU V3.
       NVIDIA_TESLA_T4_VWS: Accelerator type is NVIDIA Tesla T4 Virtual

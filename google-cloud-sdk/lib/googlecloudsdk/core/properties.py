@@ -1131,6 +1131,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.apigateway = self._Add('apigateway', command='gcloud api-gateway')
     self.apigee = self._Add('apigee', command='gcloud apigee')
     self.appengine = self._Add('appengine', command='gcloud app')
+    self.apphub = self._Add('apphub', command='gcloud apphub')
     self.artifactregistry = self._Add(
         'artifactregistry', command='gcloud artifacts')
     self.assuredworkloads = self._Add(
@@ -3312,6 +3313,31 @@ class _SectionStorage(_Section):
         'exponential_sleep_multiplier',
         default=2,
         help_text='Used in exponential backoff for retrying operations.')
+
+    self.gs_xml_endpoint_url = self._Add(
+        'gs_xml_endpoint_url',
+        default='https://storage.googleapis.com',
+        hidden=True,
+        help_text='The endpoint used to Google Cloud Storage when HMAC '
+        'authentication through Boto3.')
+
+    self.gs_xml_access_key_id = self._Add(
+        'gs_xml_access_key_id',
+        default=None,
+        hidden=True,
+        help_text='Legacy Cloud Storage HMAC credential access key ID.'
+        'WARNING: This in conjunction with storage/gs_xml_secret_access_key '
+        'forces gcloud storage to use the XML API to call Cloud Storage, '
+        'which means not all commands will work as expected.')
+
+    self.gs_xml_secret_access_key = self._Add(
+        'gs_xml_secret_access_key',
+        default=None,
+        hidden=True,
+        help_text='Legacy Cloud Storage HMAC credential secret access key.'
+        'WARNING: This in conjunction with storage/gs_xml_access_key_id '
+        'forces gcloud storage to use the XML API to call Cloud Storage, '
+        'which means not all commands will work as expected.')
 
     self.json_api_version = self._Add(
         'json_api_version',

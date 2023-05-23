@@ -46,6 +46,7 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
       final_destination_resource,
       delete_source=False,
       do_not_decompress=False,
+      posix_to_set=None,
       print_created_message=False,
       system_posix_data=None,
       user_request_args=None,
@@ -64,6 +65,8 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
         object afterwards.
       do_not_decompress (bool): Prevents automatically decompressing downloaded
         gzips.
+      posix_to_set (PosixAttributes|None): Set as local POSIX attributes on
+        target.
       print_created_message (bool): Print a message containing the versioned URL
         of the copy result.
       system_posix_data (SystemPosixData): System-wide POSIX info.
@@ -72,7 +75,9 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
     super(FinalizeSlicedDownloadTask, self).__init__(
         source_resource,
         final_destination_resource,
-        user_request_args=user_request_args)
+        posix_to_set=posix_to_set,
+        user_request_args=user_request_args,
+    )
     self._temporary_destination_resource = temporary_destination_resource
     self._final_destination_resource = final_destination_resource
     self._delete_source = delete_source
@@ -140,12 +145,14 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
     tracker_file_util.delete_download_tracker_files(
         self._temporary_destination_resource.storage_url)
 
-    posix_util.run_if_preserving_posix(
+    posix_util.run_if_setting_posix(
+        self._posix_to_set,
         self._user_request_args,
         posix_util.set_posix_attributes_on_file_if_valid,
         self._system_posix_data,
         self._source_resource,
         self._final_destination_resource,
+        known_source_posix=self._posix_to_set,
         preserve_symlinks=preserve_symlinks,
     )
 

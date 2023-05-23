@@ -14,6 +14,38 @@ from apitools.base.py import extra_types
 package = 'logging'
 
 
+class AggregateValueThreshold(_messages.Message):
+  r"""A threshold condition that compares an aggregation to a threshold.
+
+  Fields:
+    aggregateColumn: Required. The column to provide aggregation on for
+      comparison.
+    aggregation: Required. The aggregation config that will be applied to the
+      provided column.
+  """
+
+  aggregateColumn = _messages.StringField(1)
+  aggregation = _messages.MessageField('QueryStepAggregation', 2)
+
+
+class AlertingQueryStep(_messages.Message):
+  r"""A query step defined as a set of alerting configuration options. This
+  may not be used as the first step in a query.
+
+  Fields:
+    booleanCondition: A test representing the boolean value of a column.
+    partitionColumns: Optional. The list of columns to GROUP BY in the
+      generated SQL.
+    stringCondition: A test representing a comparison against a string.
+    thresholdCondition: A test representing a comparison against a threshold.
+  """
+
+  booleanCondition = _messages.MessageField('BooleanTest', 1)
+  partitionColumns = _messages.StringField(2, repeated=True)
+  stringCondition = _messages.MessageField('StringTest', 3)
+  thresholdCondition = _messages.MessageField('ThresholdTest', 4)
+
+
 class BigQueryDataset(_messages.Message):
   r"""Describes a BigQuery dataset that was created by a link.
 
@@ -52,6 +84,22 @@ class BigQueryOptions(_messages.Message):
   usesTimestampColumnPartitioning = _messages.BooleanField(2)
 
 
+class BooleanTest(_messages.Message):
+  r"""A test that reads a boolean column as the result.
+
+  Fields:
+    booleanColumn: Required. The column that contains a boolean that we want
+      to use as our result.
+    trigger: Optional. The number/percent of rows that must match in order for
+      the result set (partition set) to be considered in violation. If
+      unspecified, then the result set (partition set) will be in violation if
+      a single row matches.
+  """
+
+  booleanColumn = _messages.StringField(1)
+  trigger = _messages.MessageField('Trigger', 2)
+
+
 class Breakdown(_messages.Message):
   r"""Columns within the output of the previous step to use to break down the
   measures. We will generate one output measure for each value in the cross
@@ -76,9 +124,9 @@ class Breakdown(_messages.Message):
       sort_aggregation is "average" and sort_order is DESCENDING, those three
       will be chosen as the ones where the average of all the points in the
       breakdown set is the greatest.
-    sortAggregation: The aggregation to apply to the measure values when
-      choosing which breakdowns to generate. If sort_order is SORT_ORDER_NONE,
-      this is not used.
+    sortAggregation: Optional. The aggregation to apply to the measure values
+      when choosing which breakdowns to generate. If sort_order is
+      SORT_ORDER_NONE, this is not used.
     sortOrder: Optional. The sort order. If limit is not zero, this may not be
       set to SORT_ORDER_NONE.
   """
@@ -100,7 +148,7 @@ class Breakdown(_messages.Message):
 
   column = _messages.StringField(1)
   limit = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  sortAggregation = _messages.MessageField('ChartingAggregation', 3)
+  sortAggregation = _messages.MessageField('QueryStepAggregation', 3)
   sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 4)
 
 
@@ -175,28 +223,6 @@ class BucketOptions(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
-
-
-class ChartingAggregation(_messages.Message):
-  r"""An identifier for an aggregation. Aggregations are used for cases where
-  we need to collapse a set of values into a single value, such as multiple
-  points in a measure into a single bin.
-
-  Fields:
-    parameters: Parameters to be applied to the aggregation. Aggregations that
-      support or require parameters are listed above.
-    type: Required. The type of aggregation to apply. Legal values for this
-      string are: "percentile" - Generates an APPROX_QUANTILES. Requires one
-      integer or double parameter. Applies only to numeric values. "average" -
-      Generates AVG(). Applies only to numeric values. "count" - Generates
-      COUNT(). "count-distinct" - Generates COUNT(DISTINCT). "count-distinct-
-      approx" - Generates APPROX_COUNT_DISTINCT(). "max" - Generates MAX().
-      Applies only to numeric values. "min" - Generates MIN(). Applies only to
-      numeric values. "sum" - Generates SUM(). Applies only to numeric values.
-  """
-
-  parameters = _messages.MessageField('Parameter', 1, repeated=True)
-  type = _messages.StringField(2)
 
 
 class ChartingQueryStep(_messages.Message):
@@ -528,7 +554,7 @@ class HttpRequest(_messages.Message):
       "websocket"
     referer: The referer URL of the request, as defined in HTTP/1.1 Header
       Field Definitions
-      (http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
+      (https://datatracker.ietf.org/doc/html/rfc2616#section-14.36).
     remoteIp: The IP address (IPv4 or IPv6) of the client that issued the HTTP
       request. This field can include port information. Examples:
       "192.168.1.1", "10.0.0.1:80", "FE80::0202:B3FF:FE1E:8329".
@@ -5974,7 +6000,7 @@ class Measure(_messages.Message):
       distinct-approx").
   """
 
-  aggregation = _messages.MessageField('ChartingAggregation', 1)
+  aggregation = _messages.MessageField('QueryStepAggregation', 1)
   column = _messages.StringField(2)
 
 
@@ -6911,6 +6937,8 @@ class QueryStep(_messages.Message):
   schema).
 
   Fields:
+    alertingQueryStep: A query step that builds an alerting query from
+      configuration data.
     chartingQueryStep: A query step that builds a charting query from
       configuration data.
     handleQueryStep: A query step that refers to a step within a previously-
@@ -6918,9 +6946,33 @@ class QueryStep(_messages.Message):
     sqlQueryStep: A query step containing a SQL query.
   """
 
-  chartingQueryStep = _messages.MessageField('ChartingQueryStep', 1)
-  handleQueryStep = _messages.MessageField('HandleQueryStep', 2)
-  sqlQueryStep = _messages.MessageField('SqlQueryStep', 3)
+  alertingQueryStep = _messages.MessageField('AlertingQueryStep', 1)
+  chartingQueryStep = _messages.MessageField('ChartingQueryStep', 2)
+  handleQueryStep = _messages.MessageField('HandleQueryStep', 3)
+  sqlQueryStep = _messages.MessageField('SqlQueryStep', 4)
+
+
+class QueryStepAggregation(_messages.Message):
+  r"""An identifier for an aggregation. Aggregations are used for cases where
+  we need to collapse a set of values into a single value, such as multiple
+  points in a measure into a single bin.
+
+  Fields:
+    parameters: Parameters to be applied to the aggregation. Aggregations that
+      support or require parameters are listed above.
+    type: Required. The type of aggregation to apply. Legal values for this
+      string are: "percentile" - Generates an APPROX_QUANTILES. Requires one
+      integer or double parameter. Applies only to numeric values. Supports
+      precision of up to 3 decimal places. "average" - Generates AVG().
+      Applies only to numeric values. "count" - Generates COUNT(). "count-
+      distinct" - Generates COUNT(DISTINCT). "count-distinct-approx" -
+      Generates APPROX_COUNT_DISTINCT(). "max" - Generates MAX(). Applies only
+      to numeric values. "min" - Generates MIN(). Applies only to numeric
+      values. "sum" - Generates SUM(). Applies only to numeric values.
+  """
+
+  parameters = _messages.MessageField('Parameter', 1, repeated=True)
+  type = _messages.StringField(2)
 
 
 class ReadQueryResultsRequest(_messages.Message):
@@ -7128,6 +7180,20 @@ class RequestLog(_messages.Message):
   userAgent = _messages.StringField(32)
   versionId = _messages.StringField(33)
   wasLoadingRequest = _messages.BooleanField(34)
+
+
+class RowCountThreshold(_messages.Message):
+  r"""A threshold condition that compares the row count to a threshold. Ex.
+  COUNT(*) > 10
+
+  Fields:
+    trigger: Optional. The number/percent of rows that must exceed the
+      threshold in order for this result set (partition set) to be considered
+      in violation. If unspecified, then the result set (partition set) will
+      be in violation when a single row violates the threshold.
+  """
+
+  trigger = _messages.MessageField('Trigger', 1)
 
 
 class Settings(_messages.Message):
@@ -7360,6 +7426,55 @@ class StringArrayValue(_messages.Message):
   values = _messages.StringField(1, repeated=True)
 
 
+class StringTest(_messages.Message):
+  r"""A test that compares a string column against a string to match.
+
+  Enums:
+    ComparisonValueValuesEnum: Required. The comparison operator to use.
+
+  Fields:
+    column: Required. The column that contains the strings we want to search
+      on.
+    comparison: Required. The comparison operator to use.
+    pattern: Required. The string or regular expression which is compared to
+      the value in the column.
+    trigger: Optional. The number/percent of rows that must match in order for
+      the result set (partition set) to be considered in violation. If
+      unspecified, then the result set (partition set) will be in violation if
+      a single row matches.
+  """
+
+  class ComparisonValueValuesEnum(_messages.Enum):
+    r"""Required. The comparison operator to use.
+
+    Values:
+      STRING_COMPARISON_TYPE_UNSPECIFIED: No string comparison specified,
+        should never happen.
+      STRING_COMPARISON_MATCH: String column must equal the pattern.
+      STRING_COMPARISON_NOT_MATCH: String column must not equal the pattern.
+      STRING_COMPARISON_CONTAINS: String contains contains the pattern as a
+        substring.
+      STRING_COMPARISON_NOT_CONTAINS: String column does not contain the
+        pattern as a substring.
+      STRING_COMPARISON_REGEX_MATCH: Regular expression pattern found in
+        string column.
+      STRING_COMPARISON_REGEX_NOT_MATCH: Regular expression pattern not found
+        in string column.
+    """
+    STRING_COMPARISON_TYPE_UNSPECIFIED = 0
+    STRING_COMPARISON_MATCH = 1
+    STRING_COMPARISON_NOT_MATCH = 2
+    STRING_COMPARISON_CONTAINS = 3
+    STRING_COMPARISON_NOT_CONTAINS = 4
+    STRING_COMPARISON_REGEX_MATCH = 5
+    STRING_COMPARISON_REGEX_NOT_MATCH = 6
+
+  column = _messages.StringField(1)
+  comparison = _messages.EnumField('ComparisonValueValuesEnum', 2)
+  pattern = _messages.StringField(3)
+  trigger = _messages.MessageField('Trigger', 4)
+
+
 class SuppressionInfo(_messages.Message):
   r"""Information about entries that were omitted from the session.
 
@@ -7477,6 +7592,73 @@ class TailLogEntriesResponse(_messages.Message):
   suppressionInfo = _messages.MessageField('SuppressionInfo', 2, repeated=True)
 
 
+class ThresholdTest(_messages.Message):
+  r"""A test that compares some LHS against a threshold.
+
+  Enums:
+    ComparisonValueValuesEnum: Required. The comparison to be applied in the
+      __alert_result condition.
+
+  Fields:
+    aggregateValueThreshold: A value threshold comparison that includes an
+      aggregation of the value column.
+    comparison: Required. The comparison to be applied in the __alert_result
+      condition.
+    rowCountThreshold: A threshold based on the number of rows present.
+    threshold: Required. The threshold that will be used as the RHS of a
+      comparison.
+    valueThreshold: A value threshold comparison.
+  """
+
+  class ComparisonValueValuesEnum(_messages.Enum):
+    r"""Required. The comparison to be applied in the __alert_result
+    condition.
+
+    Values:
+      COMPARISON_TYPE_UNSPECIFIED: No comparison relationship is specified.
+      COMPARISON_GT: True if the aggregate / value_column is greater than the
+        threshold.
+      COMPARISON_GE: True if the aggregate / value_column is greater than or
+        equal to the threshold.
+      COMPARISON_LT: True if the aggregate / value_column is less than the
+        threshold.
+      COMPARISON_LE: True if the aggregate / value_column is less than or
+        equal to the threshold.
+      COMPARISON_EQ: True if the aggregate / value_column is equal to the
+        threshold.
+      COMPARISON_NE: True if the aggregate / value_column is not equal to the
+        threshold.
+    """
+    COMPARISON_TYPE_UNSPECIFIED = 0
+    COMPARISON_GT = 1
+    COMPARISON_GE = 2
+    COMPARISON_LT = 3
+    COMPARISON_LE = 4
+    COMPARISON_EQ = 5
+    COMPARISON_NE = 6
+
+  aggregateValueThreshold = _messages.MessageField('AggregateValueThreshold', 1)
+  comparison = _messages.EnumField('ComparisonValueValuesEnum', 2)
+  rowCountThreshold = _messages.MessageField('RowCountThreshold', 3)
+  threshold = _messages.FloatField(4)
+  valueThreshold = _messages.MessageField('ValueThreshold', 5)
+
+
+class Trigger(_messages.Message):
+  r"""A restriction on the alert test to require a certain count or percent of
+  rows to be present.
+
+  Fields:
+    count: Optional. The absolute number of time series that must fail the
+      predicate for the test to be triggered.
+    percent: Optional. The percentage of time series that must fail the
+      predicate for the test to be triggered.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  percent = _messages.FloatField(2)
+
+
 class UndeleteBucketRequest(_messages.Message):
   r"""The parameters to UndeleteBucket."""
 
@@ -7518,6 +7700,21 @@ class ValidateQueryResponse(_messages.Message):
   """
 
   validateResult = _messages.MessageField('QueryResults', 1)
+
+
+class ValueThreshold(_messages.Message):
+  r"""A threshold condition that compares a value to a threshold.
+
+  Fields:
+    trigger: Optional. The number/percent of rows that must exceed the
+      threshold in order for this result set (partition set) to be considered
+      in violation. If unspecified, then the result set (partition set) will
+      be in violation when a single row violates the threshold.
+    valueColumn: Required. The column to compare the threshold against.
+  """
+
+  trigger = _messages.MessageField('Trigger', 1)
+  valueColumn = _messages.StringField(2)
 
 
 class WriteLogEntriesRequest(_messages.Message):

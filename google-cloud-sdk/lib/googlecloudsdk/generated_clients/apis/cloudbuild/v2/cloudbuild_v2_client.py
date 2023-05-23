@@ -195,6 +195,33 @@ class CloudbuildV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FetchGitRefs(self, request, global_params=None):
+      r"""Fetch the list of branches or tags for a given repository.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsRepositoriesFetchGitRefsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchGitRefsResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchGitRefs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchGitRefs.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories/{repositoriesId}:fetchGitRefs',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.connections.repositories.fetchGitRefs',
+        ordered_params=['repository'],
+        path_params=['repository'],
+        query_params=['refType'],
+        relative_path='v2/{+repository}:fetchGitRefs',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsConnectionsRepositoriesFetchGitRefsRequest',
+        response_type_name='FetchGitRefsResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single repository.
 

@@ -224,20 +224,21 @@ class AutopilotCompatibilityIssue(_messages.Message):
   compatibility issue with Autopilot mode.
 
   Enums:
-    TypeValueValuesEnum: The type of this issue.
+    IncompatibilityTypeValueValuesEnum: The incompatibility type of this
+      issue.
 
   Fields:
+    constraintType: The constraint type of the issue.
     description: The description of the issue.
     documentationUrl: A URL to a public documnetation, which addresses
       resolving this issue.
-    issueId: A string to uniquely identify of the issue.
+    incompatibilityType: The incompatibility type of this issue.
     lastObservation: The last time when this issue was observed.
     subjects: The name of the resources which are subject to this issue.
-    type: The type of this issue.
   """
 
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of this issue.
+  class IncompatibilityTypeValueValuesEnum(_messages.Enum):
+    r"""The incompatibility type of this issue.
 
     Values:
       UNSPECIFIED: Default value, should not be used.
@@ -254,12 +255,12 @@ class AutopilotCompatibilityIssue(_messages.Message):
     ADDITIONAL_CONFIG_REQUIRED = 2
     PASSED_WITH_OPTIONAL_CONFIG = 3
 
-  description = _messages.StringField(1)
-  documentationUrl = _messages.StringField(2)
-  issueId = _messages.StringField(3)
-  lastObservation = _messages.StringField(4)
-  subjects = _messages.StringField(5, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  constraintType = _messages.StringField(1)
+  description = _messages.StringField(2)
+  documentationUrl = _messages.StringField(3)
+  incompatibilityType = _messages.EnumField('IncompatibilityTypeValueValuesEnum', 4)
+  lastObservation = _messages.StringField(5)
+  subjects = _messages.StringField(6, repeated=True)
 
 
 class AutoprovisioningNodePoolDefaults(_messages.Message):
@@ -1257,6 +1258,8 @@ class ConcurrentOpsConfig(_messages.Message):
       CreateNodePool cases. Some fields may still use legacy ops.
     enableConcurrentDeleteNodePool: Enables concurrent ops for supported
       DeleteNodePool cases. Some fields may still use legacy ops.
+    enableConcurrentResizeNodePool: Enables concurrent ops for ResizeNodePool
+      operations.
     enableConcurrentRollbackNodePool: Enables concurrent ops for supported
       RollbackNodePool cases. Some fields may still use legacy ops.
     enableConcurrentUpdateNodePoolVersion: Enables concurrent ops for
@@ -1266,8 +1269,9 @@ class ConcurrentOpsConfig(_messages.Message):
 
   enableConcurrentCreateNodePool = _messages.BooleanField(1)
   enableConcurrentDeleteNodePool = _messages.BooleanField(2)
-  enableConcurrentRollbackNodePool = _messages.BooleanField(3)
-  enableConcurrentUpdateNodePoolVersion = _messages.BooleanField(4)
+  enableConcurrentResizeNodePool = _messages.BooleanField(3)
+  enableConcurrentRollbackNodePool = _messages.BooleanField(4)
+  enableConcurrentUpdateNodePoolVersion = _messages.BooleanField(5)
 
 
 class ConfidentialNodes(_messages.Message):

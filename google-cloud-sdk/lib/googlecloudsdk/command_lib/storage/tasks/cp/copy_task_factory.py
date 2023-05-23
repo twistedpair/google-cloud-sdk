@@ -35,6 +35,7 @@ def get_copy_task(
     delete_source=False,
     do_not_decompress=False,
     force_daisy_chain=False,
+    posix_to_set=None,
     print_created_message=False,
     print_source_version=False,
     shared_stream=None,
@@ -53,6 +54,8 @@ def get_copy_task(
       gzips.
     force_daisy_chain (bool): If True, yields daisy chain copy tasks in place of
       intra-cloud copy tasks.
+    posix_to_set (PosixAttributes|None): Triggers setting POSIX on result of
+      copy and avoids re-parsing POSIX info.
     print_created_message (bool): Print the versioned URL of each successfully
       copied object.
     print_source_version (bool): Print source object version in status message
@@ -98,10 +101,11 @@ def get_copy_task(
         destination_resource,
         delete_source=delete_source,
         do_not_decompress=do_not_decompress,
+        posix_to_set=posix_to_set,
         print_created_message=print_created_message,
         print_source_version=print_source_version,
-        system_posix_data=posix_util.run_if_preserving_posix(
-            user_request_args, posix_util.get_system_posix_data
+        system_posix_data=posix_util.run_if_setting_posix(
+            posix_to_set, user_request_args, posix_util.get_system_posix_data
         ),
         user_request_args=user_request_args,
         verbose=verbose,
@@ -113,6 +117,7 @@ def get_copy_task(
       return streaming_upload_task.StreamingUploadTask(
           source_resource,
           destination_resource,
+          posix_to_set=posix_to_set,
           print_created_message=print_created_message,
           print_source_version=print_source_version,
           user_request_args=user_request_args,
@@ -127,6 +132,7 @@ def get_copy_task(
           destination_resource,
           delete_source=delete_source,
           is_composite_upload_eligible=is_composite_upload_eligible,
+          posix_to_set=posix_to_set,
           print_created_message=print_created_message,
           print_source_version=print_source_version,
           user_request_args=user_request_args,
@@ -146,6 +152,7 @@ def get_copy_task(
           source_resource,
           destination_resource,
           delete_source=delete_source,
+          posix_to_set=posix_to_set,
           print_created_message=print_created_message,
           print_source_version=print_source_version,
           user_request_args=user_request_args,
@@ -155,6 +162,7 @@ def get_copy_task(
         source_resource,
         destination_resource,
         delete_source=delete_source,
+        posix_to_set=posix_to_set,
         print_created_message=print_created_message,
         print_source_version=print_source_version,
         user_request_args=user_request_args,

@@ -63,20 +63,17 @@ def AddVolumeNetworkArg(parser, required=True):
 
   network_arg_spec = {
       'name': str,
-      'reserved-ip-range': str,
+      'psa-range': str,
   }
 
   network_help = """\
         Network configuration for a Cloud NetApp Files Volume. Specifying
-        `reserved-ip-range` is optional.
+        `psa-range` is optional.
         *name*::: The name of the Google Compute Engine
         [VPC network](/compute/docs/networks-and-firewalls#networks) to which
-        the instance is connected.
-        *reserved-ip-range*::: The `reserved-ip-range` can have
-        an allocated IP address range
-        (https://cloud.google.com/compute/docs/ip-addresses/reserve-static-internal-ip-address). When the name of an
-        allocated IP address range is specified, it must be one of the ranges
-        associated with the private service access connection. The range you specify can't
+        the volume is connected.
+        *psa-range*::: The `psa-range` is the name of the allocated range of the
+        Private Service Access connection. The range you specify can't
         overlap with either existing subnets or assigned IP address ranges for
         other Cloud NetApp Files Volumes in the selected VPC network.
   """

@@ -22,6 +22,7 @@ from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
+from googlecloudsdk.api_lib.container.vmware.version_util import Version
 from googlecloudsdk.command_lib.container.vmware import flags
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
@@ -217,10 +218,26 @@ class ClustersClient(client.ClientBase):
         'vmTrackingEnabled': self._vm_tracking_enabled(args),
         'autoRepairConfig': self._vmware_auto_repair_config(args),
         'authorization': self._authorization(args),
-        'enableControlPlaneV2': flags.Get(args, 'enable_control_plane_v2'),
+        'enableControlPlaneV2': self._enable_control_plane_v2(args),
     }
     if any(kwargs.values()):
       return self._messages.VmwareCluster(**kwargs)
+    return None
+
+  def _enable_control_plane_v2(self, args):
+    """While creating a 1.15+ user cluster, default enable_control_plane_v2 to True if not set."""
+    if 'enable_control_plane_v2' in args.GetSpecifiedArgsDict():
+      return True
+
+    if 'disable_control_plane_v2' in args.GetSpecifiedArgsDict():
+      return False
+
+    default_enable_control_plane_v2 = '1.15.0-gke.0'
+    if args.command_path[-1] == 'create' and Version(
+        args.version
+    ).feature_available(default_enable_control_plane_v2):
+      return True
+
     return None
 
   def _vm_tracking_enabled(self, args):

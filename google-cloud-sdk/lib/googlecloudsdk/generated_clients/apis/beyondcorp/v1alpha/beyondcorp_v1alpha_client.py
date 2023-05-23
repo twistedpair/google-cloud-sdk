@@ -39,6 +39,10 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.organizations_locations_global_partnerTenants = self.OrganizationsLocationsGlobalPartnerTenantsService(self)
+    self.organizations_locations_global_tenants_proxyConfigs = self.OrganizationsLocationsGlobalTenantsProxyConfigsService(self)
+    self.organizations_locations_global_tenants = self.OrganizationsLocationsGlobalTenantsService(self)
+    self.organizations_locations_global = self.OrganizationsLocationsGlobalService(self)
     self.organizations_locations_insights = self.OrganizationsLocationsInsightsService(self)
     self.organizations_locations_subscriptions = self.OrganizationsLocationsSubscriptionsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
@@ -56,6 +60,208 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class OrganizationsLocationsGlobalPartnerTenantsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_global_partnerTenants resource."""
+
+    _NAME = 'organizations_locations_global_partnerTenants'
+
+    def __init__(self, client):
+      super(BeyondcorpV1alpha.OrganizationsLocationsGlobalPartnerTenantsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new BeyondCorp Enterprise partnerTenant in a given organization and can only be called by onboarded BeyondCorp Enterprise partner.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants',
+        http_method='POST',
+        method_id='beyondcorp.organizations.locations.global.partnerTenants.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+parent}/partnerTenants',
+        request_field='googleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant',
+        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single PartnerTenant.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}',
+        http_method='GET',
+        method_id='beyondcorp.organizations.locations.global.partnerTenants.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetRequest',
+        response_type_name='GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsGlobalTenantsProxyConfigsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_global_tenants_proxyConfigs resource."""
+
+    _NAME = 'organizations_locations_global_tenants_proxyConfigs'
+
+    def __init__(self, client):
+      super(BeyondcorpV1alpha.OrganizationsLocationsGlobalTenantsProxyConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new BeyondCorp Enterprise ProxyConfiguration in a given organization and PartnerTenant. Can only be called by on onboarded Beyondcorp Enterprise partner.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/global/tenants/{tenantsId}/proxyConfigs',
+        http_method='POST',
+        method_id='beyondcorp.organizations.locations.global.tenants.proxyConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+parent}/proxyConfigs',
+        request_field='googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig',
+        request_type_name='BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single ProxyConfig.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/global/tenants/{tenantsId}/proxyConfigs/{proxyConfigsId}',
+        http_method='GET',
+        method_id='beyondcorp.organizations.locations.global.tenants.proxyConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsGetRequest',
+        response_type_name='GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsGlobalTenantsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_global_tenants resource."""
+
+    _NAME = 'organizations_locations_global_tenants'
+
+    def __init__(self, client):
+      super(BeyondcorpV1alpha.OrganizationsLocationsGlobalTenantsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new BeyondCorp Enterprise tenant in a given organization and can only be called by onboarded BeyondCorp Enterprise partner.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsGlobalTenantsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/global/tenants',
+        http_method='POST',
+        method_id='beyondcorp.organizations.locations.global.tenants.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+parent}/tenants',
+        request_field='googleCloudBeyondcorpPartnerservicesV1alphaTenant',
+        request_type_name='BeyondcorpOrganizationsLocationsGlobalTenantsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Tenant.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsGlobalTenantsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpPartnerservicesV1alphaTenant) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/global/tenants/{tenantsId}',
+        http_method='GET',
+        method_id='beyondcorp.organizations.locations.global.tenants.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpOrganizationsLocationsGlobalTenantsGetRequest',
+        response_type_name='GoogleCloudBeyondcorpPartnerservicesV1alphaTenant',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsGlobalService(base_api.BaseApiService):
+    """Service class for the organizations_locations_global resource."""
+
+    _NAME = 'organizations_locations_global'
+
+    def __init__(self, client):
+      super(BeyondcorpV1alpha.OrganizationsLocationsGlobalService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class OrganizationsLocationsInsightsService(base_api.BaseApiService):
     """Service class for the organizations_locations_insights resource."""

@@ -162,7 +162,7 @@ class AlloydbProjectsLocationsClustersCreateRequest(_messages.Message):
   Fields:
     cluster: A Cluster resource to be passed as the request body.
     clusterId: Required. ID of the requesting object.
-    parent: Required. The name of the parent resource. For the required
+    parent: Required. The location of the new cluster. For the required
       format, see the comment on the Cluster.name field.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -193,8 +193,8 @@ class AlloydbProjectsLocationsClustersCreatesecondaryRequest(_messages.Message):
   Fields:
     cluster: A Cluster resource to be passed as the request body.
     clusterId: Required. ID of the requesting object (the secondary cluster).
-    parent: Required. The name of the parent resource (the primary cluster).
-      For the required format, see the comment on the Cluster.name field.
+    parent: Required. The location of the new cluster. For the required
+      format, see the comment on the Cluster.name field.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1123,6 +1123,19 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class ClientConnectionConfig(_messages.Message):
+  r"""Client connection configuration
+
+  Fields:
+    requireConnectors: Optional. Configuration to enforce connectors only (ex:
+      AuthProxy) connections to the database.
+    sslConfig: Optional. SSL config option for this instance.
+  """
+
+  requireConnectors = _messages.BooleanField(1)
+  sslConfig = _messages.MessageField('SslConfig', 2)
+
+
 class CloudControl2SharedOperationsReconciliationOperationMetadata(_messages.Message):
   r"""Operation metadata returned by the CLH during resource state
   reconciliation.
@@ -1239,8 +1252,7 @@ class Cluster(_messages.Message):
       maintenance.
     secondaryConfig: Cross Region replication config specific to SECONDARY
       cluster.
-    sslConfig: Deprecated. SSL configuration for this AlloyDB Cluster. This
-      field was never populated or used.
+    sslConfig: SSL configuration for this AlloyDB cluster.
     state: Output only. The current serving state of the cluster.
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
@@ -1582,6 +1594,7 @@ class GenerateClientCertificateRequest(_messages.Message):
       hint is left unspecified or is not honored, then the endpoint will pick
       an appropriate default duration.
     pemCsr: Optional. A pem-encoded X.509 certificate signing request (CSR).
+    publicKey: Optional. The public key from the client.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1597,21 +1610,24 @@ class GenerateClientCertificateRequest(_messages.Message):
 
   certDuration = _messages.StringField(1)
   pemCsr = _messages.StringField(2)
-  requestId = _messages.StringField(3)
+  publicKey = _messages.StringField(3)
+  requestId = _messages.StringField(4)
 
 
 class GenerateClientCertificateResponse(_messages.Message):
   r"""Message returned by a GenerateClientCertificate operation.
 
   Fields:
+    caCert: Optional. The pem-encoded cluster ca X.509 certificate.
     pemCertificate: Output only. The pem-encoded, signed X.509 certificate.
     pemCertificateChain: Output only. The pem-encoded chain that may be used
       to verify the X.509 certificate. Expected to be in issuer-to-root order
       according to RFC 5246.
   """
 
-  pemCertificate = _messages.StringField(1)
-  pemCertificateChain = _messages.StringField(2, repeated=True)
+  caCert = _messages.StringField(1)
+  pemCertificate = _messages.StringField(2)
+  pemCertificateChain = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):
@@ -1808,6 +1824,8 @@ class Instance(_messages.Message):
       always UNSPECIFIED. Instances in the read pools are evenly distributed
       across available zones within the region (i.e. read pools with more than
       one node will have a node in at least two zones).
+    clientConnectionConfig: Optional. Client connection specific
+      configurations
     createTime: Output only. Create time stamp
     databaseFlags: Database flags. Set at instance level. * They are copied
       from primary instance on read instance creation. * Read instances can
@@ -2019,26 +2037,27 @@ class Instance(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 2)
-  createTime = _messages.StringField(3)
-  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 4)
-  deleteTime = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  gceZone = _messages.StringField(8)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 9)
-  ipAddress = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  machineConfig = _messages.MessageField('MachineConfig', 12)
-  name = _messages.StringField(13)
-  nodes = _messages.MessageField('Node', 14, repeated=True)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 15)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 16)
-  reconciling = _messages.BooleanField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  uid = _messages.StringField(19)
-  updatePolicy = _messages.MessageField('UpdatePolicy', 20)
-  updateTime = _messages.StringField(21)
-  writableNode = _messages.MessageField('Node', 22)
+  clientConnectionConfig = _messages.MessageField('ClientConnectionConfig', 3)
+  createTime = _messages.StringField(4)
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 5)
+  deleteTime = _messages.StringField(6)
+  displayName = _messages.StringField(7)
+  etag = _messages.StringField(8)
+  gceZone = _messages.StringField(9)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
+  ipAddress = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  machineConfig = _messages.MessageField('MachineConfig', 13)
+  name = _messages.StringField(14)
+  nodes = _messages.MessageField('Node', 15, repeated=True)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 16)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 17)
+  reconciling = _messages.BooleanField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  uid = _messages.StringField(20)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 21)
+  updateTime = _messages.StringField(22)
+  writableNode = _messages.MessageField('Node', 23)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -2513,7 +2532,7 @@ class SecondaryConfig(_messages.Message):
 
 
 class SslConfig(_messages.Message):
-  r"""SSL configuration for an AlloyDB Instance.
+  r"""SSL configuration.
 
   Enums:
     CaSourceValueValuesEnum: Optional. Certificate Authority (CA) source. Only

@@ -13,6 +13,127 @@ from apitools.base.py import extra_types
 package = 'policytroubleshooter'
 
 
+class GoogleApiExprEnumValue(_messages.Message):
+  r"""An enum value.
+
+  Fields:
+    type: The fully qualified name of the enum type.
+    value: The value of the enum.
+  """
+
+  type = _messages.StringField(1)
+  value = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleApiExprListValue(_messages.Message):
+  r"""A list. Wrapped in a message so 'not set' and empty can be
+  differentiated, which is required for use in a 'oneof'.
+
+  Fields:
+    values: The ordered values in the list.
+  """
+
+  values = _messages.MessageField('GoogleApiExprValue', 1, repeated=True)
+
+
+class GoogleApiExprMapValue(_messages.Message):
+  r"""A map. Wrapped in a message so 'not set' and empty can be
+  differentiated, which is required for use in a 'oneof'.
+
+  Fields:
+    entries: The set of map entries. CEL has fewer restrictions on keys, so a
+      protobuf map representation cannot be used.
+  """
+
+  entries = _messages.MessageField('GoogleApiExprMapValueEntry', 1, repeated=True)
+
+
+class GoogleApiExprMapValueEntry(_messages.Message):
+  r"""A GoogleApiExprMapValueEntry object.
+
+  Fields:
+    key: The key. Must be unique with in the map. Currently only boolean, int,
+      uint, and string values can be keys.
+    value: The value.
+  """
+
+  key = _messages.MessageField('GoogleApiExprValue', 1)
+  value = _messages.MessageField('GoogleApiExprValue', 2)
+
+
+class GoogleApiExprValue(_messages.Message):
+  r"""Represents a CEL value. This is similar to `google.protobuf.Value`, but
+  can represent CEL's full range of values.
+
+  Enums:
+    NullValueValueValuesEnum: Null value.
+
+  Messages:
+    ObjectValueValue: The proto message backing an object value.
+
+  Fields:
+    boolValue: Boolean value.
+    bytesValue: Byte string value.
+    doubleValue: Floating point value.
+    enumValue: An enum value.
+    int64Value: Signed integer value.
+    listValue: List value.
+    mapValue: Map value.
+    nullValue: Null value.
+    objectValue: The proto message backing an object value.
+    stringValue: UTF-8 string value.
+    typeValue: Type value.
+    uint64Value: Unsigned integer value.
+  """
+
+  class NullValueValueValuesEnum(_messages.Enum):
+    r"""Null value.
+
+    Values:
+      NULL_VALUE: Null value.
+    """
+    NULL_VALUE = 0
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ObjectValueValue(_messages.Message):
+    r"""The proto message backing an object value.
+
+    Messages:
+      AdditionalProperty: An additional property for a ObjectValueValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ObjectValueValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  boolValue = _messages.BooleanField(1)
+  bytesValue = _messages.BytesField(2)
+  doubleValue = _messages.FloatField(3)
+  enumValue = _messages.MessageField('GoogleApiExprEnumValue', 4)
+  int64Value = _messages.IntegerField(5)
+  listValue = _messages.MessageField('GoogleApiExprListValue', 6)
+  mapValue = _messages.MessageField('GoogleApiExprMapValue', 7)
+  nullValue = _messages.EnumField('NullValueValueValuesEnum', 8)
+  objectValue = _messages.MessageField('ObjectValueValue', 9)
+  stringValue = _messages.StringField(10)
+  typeValue = _messages.StringField(11)
+  uint64Value = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
+
+
 class GoogleCloudAuditAuthorizationLoggingOptions(_messages.Message):
   r"""Authorization-related information used by Cloud Audit Logging.
 
@@ -448,7 +569,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaConditionContextEffectiveTag(_mes
     tagKey: The name of the TagKey, in the format `tagKeys/{id}`, such as
       `tagKeys/123`.
     tagKeyParentName: The parent name of the tag key. Must be in the format
-      `organizations/{organization_id}`.
+      `organizations/{organization_id}` or `projects/{project_number}`
     tagValue: Resource name for TagValue in the format `tagValues/456`.
   """
 
@@ -1304,6 +1425,687 @@ class GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyResponse(_me
   overallAccessState = _messages.EnumField('OverallAccessStateValueValuesEnum', 4)
 
 
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaAccessPolicyExplanation(_messages.Message):
+  r"""Explanation of an access policy NextTAG: 5
+
+  Fields:
+    accessLevelDetailedExplanations: Detailed explanations of access levels
+      from the Access Level Troubleshooter Frontend Service
+    accessPolicy: The full resource name of an access policy Format:
+      `accessPolicies/{access_policy}`
+    servicePerimeterExplanations: The explanations for the service perimeters
+      in order
+    servicePerimeters: The service perimeter definitions
+  """
+
+  accessLevelDetailedExplanations = _messages.MessageField('IdentityCaaIntelFrontendAccessLevelExplanation', 1, repeated=True)
+  accessPolicy = _messages.StringField(2)
+  servicePerimeterExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaServicePerimeterExplanation', 3, repeated=True)
+  servicePerimeters = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 4, repeated=True)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaEgressPoliciesExplanation(_messages.Message):
+  r"""Explanation of egress policies NextTAG: 5
+
+  Enums:
+    EgressPolicyEvalStatesValueListEntryValuesEnum:
+
+  Fields:
+    egressPolicyEvalStates: Details about the evaluation state of the egress
+      policy
+    egressPolicyExplanations: Explanations of egress policies
+    sourceResource: The source resource to egress from
+    targetResource: The target resource to egress to
+  """
+
+  class EgressPolicyEvalStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""EgressPolicyEvalStatesValueListEntryValuesEnum enum type.
+
+    Values:
+      EGRESS_POLICY_EVAL_STATE_UNSPECIFIED: Not used
+      EGRESS_POLICY_EVAL_STATE_IN_SAME_SERVICE_PERIMETER: The resources are in
+        the same regular service perimeter
+      EGRESS_POLICY_EVAL_STATE_GRANTED_OVER_BRIDGE: The resources are in the
+        same bridge service perimeter
+      EGRESS_POLICY_EVAL_STATE_GRANTED_BY_POLICY: The request is granted by
+        the egress policy
+      EGRESS_POLICY_EVAL_STATE_DENIED_BY_POLICY: The request is denied by the
+        egress policy
+      EGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE: The egress policy is applicable
+        for the request
+    """
+    EGRESS_POLICY_EVAL_STATE_UNSPECIFIED = 0
+    EGRESS_POLICY_EVAL_STATE_IN_SAME_SERVICE_PERIMETER = 1
+    EGRESS_POLICY_EVAL_STATE_GRANTED_OVER_BRIDGE = 2
+    EGRESS_POLICY_EVAL_STATE_GRANTED_BY_POLICY = 3
+    EGRESS_POLICY_EVAL_STATE_DENIED_BY_POLICY = 4
+    EGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE = 5
+
+  egressPolicyEvalStates = _messages.EnumField('EgressPolicyEvalStatesValueListEntryValuesEnum', 1, repeated=True)
+  egressPolicyExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaEgressPolicyExplanation', 2, repeated=True)
+  sourceResource = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResource', 3)
+  targetResource = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResource', 4)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaEgressPolicyExplanation(_messages.Message):
+  r"""Explanation of an egress policy NextTAG: 7
+
+  Enums:
+    ApiOperationEvalStatesValueListEntryValuesEnum:
+    EgressPolicyEvalStateValueValuesEnum: The overall evaluation state of the
+      egress policy
+    ExternalResourceEvalStatesValueListEntryValuesEnum:
+    IdentityEvalStatesValueListEntryValuesEnum:
+    IdentityTypeEvalStateValueValuesEnum: Details of the evaluation state of
+      the identity type
+    ResourceEvalStatesValueListEntryValuesEnum:
+
+  Fields:
+    apiOperationEvalStates: Details of the evaluation states of api operations
+    egressPolicyEvalState: The overall evaluation state of the egress policy
+    externalResourceEvalStates: Details of the evaluation states of external
+      resources
+    identityEvalStates: Details of the evaluation states of identities
+    identityTypeEvalState: Details of the evaluation state of the identity
+      type
+    resourceEvalStates: Details of the evaluation states of resources
+  """
+
+  class ApiOperationEvalStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""ApiOperationEvalStatesValueListEntryValuesEnum enum type.
+
+    Values:
+      API_OPERATION_EVAL_STATE_UNSPECIFIED: Not used
+      API_OPERATION_EVAL_STATE_MATCH: The request matches the api operation
+      API_OPERATION_EVAL_STATE_NOT_MATCH: The request doesn't match the api
+        operation
+    """
+    API_OPERATION_EVAL_STATE_UNSPECIFIED = 0
+    API_OPERATION_EVAL_STATE_MATCH = 1
+    API_OPERATION_EVAL_STATE_NOT_MATCH = 2
+
+  class EgressPolicyEvalStateValueValuesEnum(_messages.Enum):
+    r"""The overall evaluation state of the egress policy
+
+    Values:
+      EGRESS_POLICY_EVAL_STATE_UNSPECIFIED: Not used
+      EGRESS_POLICY_EVAL_STATE_IN_SAME_SERVICE_PERIMETER: The resources are in
+        the same regular service perimeter
+      EGRESS_POLICY_EVAL_STATE_GRANTED_OVER_BRIDGE: The resources are in the
+        same bridge service perimeter
+      EGRESS_POLICY_EVAL_STATE_GRANTED_BY_POLICY: The request is granted by
+        the egress policy
+      EGRESS_POLICY_EVAL_STATE_DENIED_BY_POLICY: The request is denied by the
+        egress policy
+      EGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE: The egress policy is applicable
+        for the request
+    """
+    EGRESS_POLICY_EVAL_STATE_UNSPECIFIED = 0
+    EGRESS_POLICY_EVAL_STATE_IN_SAME_SERVICE_PERIMETER = 1
+    EGRESS_POLICY_EVAL_STATE_GRANTED_OVER_BRIDGE = 2
+    EGRESS_POLICY_EVAL_STATE_GRANTED_BY_POLICY = 3
+    EGRESS_POLICY_EVAL_STATE_DENIED_BY_POLICY = 4
+    EGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE = 5
+
+  class ExternalResourceEvalStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""ExternalResourceEvalStatesValueListEntryValuesEnum enum type.
+
+    Values:
+      RESOURCE_EVAL_STATE_UNSPECIFIED: Not used
+      RESOURCE_EVAL_STATE_MATCH: The request matches the resource
+      RESOURCE_EVAL_STATE_NOT_MATCH: The request doesn't match the resource
+    """
+    RESOURCE_EVAL_STATE_UNSPECIFIED = 0
+    RESOURCE_EVAL_STATE_MATCH = 1
+    RESOURCE_EVAL_STATE_NOT_MATCH = 2
+
+  class IdentityEvalStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""IdentityEvalStatesValueListEntryValuesEnum enum type.
+
+    Values:
+      IDENTITY_EVAL_STATE_UNSPECIFIED: Not used
+      IDENTITY_EVAL_STATE_MATCH: The request matches the identity
+      IDENTITY_EVAL_STATE_NOT_MATCH: The request doesn't match the identity
+      IDENTITY_EVAL_STATE_NOT_SUPPORTED: The identity is not supported
+      IDENTITY_EVAL_STATE_INFO_DENIED: The sender of the request is not
+        allowed to verify the identity.
+    """
+    IDENTITY_EVAL_STATE_UNSPECIFIED = 0
+    IDENTITY_EVAL_STATE_MATCH = 1
+    IDENTITY_EVAL_STATE_NOT_MATCH = 2
+    IDENTITY_EVAL_STATE_NOT_SUPPORTED = 3
+    IDENTITY_EVAL_STATE_INFO_DENIED = 4
+
+  class IdentityTypeEvalStateValueValuesEnum(_messages.Enum):
+    r"""Details of the evaluation state of the identity type
+
+    Values:
+      IDENTITY_TYPE_EVAL_STATE_UNSPECIFIED: Not used
+      IDENTITY_TYPE_EVAL_STATE_GRANTED: The request type matches the identity
+      IDENTITY_TYPE_EVAL_STATE_NOT_GRANTED: The request type doesn't match the
+        identity
+      IDENTITY_TYPE_EVAL_STATE_NOT_SUPPORTED: The identity type is not
+        supported
+    """
+    IDENTITY_TYPE_EVAL_STATE_UNSPECIFIED = 0
+    IDENTITY_TYPE_EVAL_STATE_GRANTED = 1
+    IDENTITY_TYPE_EVAL_STATE_NOT_GRANTED = 2
+    IDENTITY_TYPE_EVAL_STATE_NOT_SUPPORTED = 3
+
+  class ResourceEvalStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""ResourceEvalStatesValueListEntryValuesEnum enum type.
+
+    Values:
+      RESOURCE_EVAL_STATE_UNSPECIFIED: Not used
+      RESOURCE_EVAL_STATE_MATCH: The request matches the resource
+      RESOURCE_EVAL_STATE_NOT_MATCH: The request doesn't match the resource
+    """
+    RESOURCE_EVAL_STATE_UNSPECIFIED = 0
+    RESOURCE_EVAL_STATE_MATCH = 1
+    RESOURCE_EVAL_STATE_NOT_MATCH = 2
+
+  apiOperationEvalStates = _messages.EnumField('ApiOperationEvalStatesValueListEntryValuesEnum', 1, repeated=True)
+  egressPolicyEvalState = _messages.EnumField('EgressPolicyEvalStateValueValuesEnum', 2)
+  externalResourceEvalStates = _messages.EnumField('ExternalResourceEvalStatesValueListEntryValuesEnum', 3, repeated=True)
+  identityEvalStates = _messages.EnumField('IdentityEvalStatesValueListEntryValuesEnum', 4, repeated=True)
+  identityTypeEvalState = _messages.EnumField('IdentityTypeEvalStateValueValuesEnum', 5)
+  resourceEvalStates = _messages.EnumField('ResourceEvalStatesValueListEntryValuesEnum', 6, repeated=True)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPoliciesExplanation(_messages.Message):
+  r"""Explanation of ingress policies NextTAG: 5
+
+  Enums:
+    IngressPolicyEvalStatesValueListEntryValuesEnum:
+    TopLevelAccessLevelsEvalStateValueValuesEnum: The overall evaluation state
+      of the top level access levels
+
+  Fields:
+    ingressPolicyEvalStates: Details about the evaluation state of the ingress
+      policy
+    ingressPolicyExplanations: Explanations of ingress policies
+    targetyResource: The target resource to ingress to
+    topLevelAccessLevelsEvalState: The overall evaluation state of the top
+      level access levels
+  """
+
+  class IngressPolicyEvalStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""IngressPolicyEvalStatesValueListEntryValuesEnum enum type.
+
+    Values:
+      INGRESS_POLICY_EVAL_STATE_UNSPECIFIED: Not used
+      INGRESS_POLICY_EVAL_STATE_IN_SAME_SERVICE_PERIMETER: The resources are
+        in the same regular service perimeter
+      INGRESS_POLICY_EVAL_STATE_GRANTED_OVER_BRIDGE: The resources are in the
+        same bridge service perimeter
+      INGRESS_POLICY_EVAL_STATE_GRANTED_BY_POLICY: The request is granted by
+        the ingress policy
+      INGRESS_POLICY_EVAL_STATE_DENIED_BY_POLICY: The request is denied by the
+        ingress policy
+      INGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE: The ingress policy is
+        applicable for the request
+    """
+    INGRESS_POLICY_EVAL_STATE_UNSPECIFIED = 0
+    INGRESS_POLICY_EVAL_STATE_IN_SAME_SERVICE_PERIMETER = 1
+    INGRESS_POLICY_EVAL_STATE_GRANTED_OVER_BRIDGE = 2
+    INGRESS_POLICY_EVAL_STATE_GRANTED_BY_POLICY = 3
+    INGRESS_POLICY_EVAL_STATE_DENIED_BY_POLICY = 4
+    INGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE = 5
+
+  class TopLevelAccessLevelsEvalStateValueValuesEnum(_messages.Enum):
+    r"""The overall evaluation state of the top level access levels
+
+    Values:
+      TOP_LEVEL_ACCESS_LEVELS_EVAL_STATE_UNSPECIFIED: Not used
+      NOT_APPLICABLE: The overall evaluation state of the top level access
+        levels is not applicable
+      GRANTED: The overall evaluation state of the top level access levels is
+        granted
+      DENIED: The overall evaluation state of the top level access levels is
+        denied
+    """
+    TOP_LEVEL_ACCESS_LEVELS_EVAL_STATE_UNSPECIFIED = 0
+    NOT_APPLICABLE = 1
+    GRANTED = 2
+    DENIED = 3
+
+  ingressPolicyEvalStates = _messages.EnumField('IngressPolicyEvalStatesValueListEntryValuesEnum', 1, repeated=True)
+  ingressPolicyExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPolicyExplanation', 2, repeated=True)
+  targetyResource = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResource', 3)
+  topLevelAccessLevelsEvalState = _messages.EnumField('TopLevelAccessLevelsEvalStateValueValuesEnum', 4)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPolicyExplanation(_messages.Message):
+  r"""Explanation of an ingress policy NextTAG: 7
+
+  Enums:
+    ApiOperationEvalStatesValueListEntryValuesEnum:
+    IdentityEvalStatesValueListEntryValuesEnum:
+    IdentityTypeEvalStateValueValuesEnum: Details of the evaluation state of
+      the identity type
+    IngressPolicyEvalStateValueValuesEnum: The overall evaluation state of the
+      ingress policy
+    IngressSourceEvalStatesValueListEntryValuesEnum:
+    ResourceEvalStatesValueListEntryValuesEnum:
+
+  Fields:
+    apiOperationEvalStates: Details of the evaluation states of api operations
+    identityEvalStates: Details of the evaluation states of identities
+    identityTypeEvalState: Details of the evaluation state of the identity
+      type
+    ingressPolicyEvalState: The overall evaluation state of the ingress policy
+    ingressSourceEvalStates: Details of the evaluation states of ingress
+      sources
+    resourceEvalStates: Details of the evaluation states of resources
+  """
+
+  class ApiOperationEvalStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""ApiOperationEvalStatesValueListEntryValuesEnum enum type.
+
+    Values:
+      API_OPERATION_EVAL_STATE_UNSPECIFIED: Not used
+      API_OPERATION_EVAL_STATE_MATCH: The request matches the api operation
+      API_OPERATION_EVAL_STATE_NOT_MATCH: The request doesn't match the api
+        operation
+    """
+    API_OPERATION_EVAL_STATE_UNSPECIFIED = 0
+    API_OPERATION_EVAL_STATE_MATCH = 1
+    API_OPERATION_EVAL_STATE_NOT_MATCH = 2
+
+  class IdentityEvalStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""IdentityEvalStatesValueListEntryValuesEnum enum type.
+
+    Values:
+      IDENTITY_EVAL_STATE_UNSPECIFIED: Not used
+      IDENTITY_EVAL_STATE_MATCH: The request matches the identity
+      IDENTITY_EVAL_STATE_NOT_MATCH: The request doesn't match the identity
+      IDENTITY_EVAL_STATE_NOT_SUPPORTED: The identity is not supported
+      IDENTITY_EVAL_STATE_INFO_DENIED: The sender of the request is not
+        allowed to verify the identity.
+    """
+    IDENTITY_EVAL_STATE_UNSPECIFIED = 0
+    IDENTITY_EVAL_STATE_MATCH = 1
+    IDENTITY_EVAL_STATE_NOT_MATCH = 2
+    IDENTITY_EVAL_STATE_NOT_SUPPORTED = 3
+    IDENTITY_EVAL_STATE_INFO_DENIED = 4
+
+  class IdentityTypeEvalStateValueValuesEnum(_messages.Enum):
+    r"""Details of the evaluation state of the identity type
+
+    Values:
+      IDENTITY_TYPE_EVAL_STATE_UNSPECIFIED: Not used
+      IDENTITY_TYPE_EVAL_STATE_GRANTED: The request type matches the identity
+      IDENTITY_TYPE_EVAL_STATE_NOT_GRANTED: The request type doesn't match the
+        identity
+      IDENTITY_TYPE_EVAL_STATE_NOT_SUPPORTED: The identity type is not
+        supported
+    """
+    IDENTITY_TYPE_EVAL_STATE_UNSPECIFIED = 0
+    IDENTITY_TYPE_EVAL_STATE_GRANTED = 1
+    IDENTITY_TYPE_EVAL_STATE_NOT_GRANTED = 2
+    IDENTITY_TYPE_EVAL_STATE_NOT_SUPPORTED = 3
+
+  class IngressPolicyEvalStateValueValuesEnum(_messages.Enum):
+    r"""The overall evaluation state of the ingress policy
+
+    Values:
+      INGRESS_POLICY_EVAL_STATE_UNSPECIFIED: Not used
+      INGRESS_POLICY_EVAL_STATE_IN_SAME_SERVICE_PERIMETER: The resources are
+        in the same regular service perimeter
+      INGRESS_POLICY_EVAL_STATE_GRANTED_OVER_BRIDGE: The resources are in the
+        same bridge service perimeter
+      INGRESS_POLICY_EVAL_STATE_GRANTED_BY_POLICY: The request is granted by
+        the ingress policy
+      INGRESS_POLICY_EVAL_STATE_DENIED_BY_POLICY: The request is denied by the
+        ingress policy
+      INGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE: The ingress policy is
+        applicable for the request
+    """
+    INGRESS_POLICY_EVAL_STATE_UNSPECIFIED = 0
+    INGRESS_POLICY_EVAL_STATE_IN_SAME_SERVICE_PERIMETER = 1
+    INGRESS_POLICY_EVAL_STATE_GRANTED_OVER_BRIDGE = 2
+    INGRESS_POLICY_EVAL_STATE_GRANTED_BY_POLICY = 3
+    INGRESS_POLICY_EVAL_STATE_DENIED_BY_POLICY = 4
+    INGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE = 5
+
+  class IngressSourceEvalStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""IngressSourceEvalStatesValueListEntryValuesEnum enum type.
+
+    Values:
+      INGRESS_SOURCE_EVAL_STATE_UNSPECIFIED: Not used
+      INGRESS_SOURCE_EVAL_STATE_MATCH: The request matches the ingress source
+      INGRESS_SOURCE_EVAL_STATE_NOT_MATCH: The request doesn't match the
+        ingress source
+    """
+    INGRESS_SOURCE_EVAL_STATE_UNSPECIFIED = 0
+    INGRESS_SOURCE_EVAL_STATE_MATCH = 1
+    INGRESS_SOURCE_EVAL_STATE_NOT_MATCH = 2
+
+  class ResourceEvalStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""ResourceEvalStatesValueListEntryValuesEnum enum type.
+
+    Values:
+      RESOURCE_EVAL_STATE_UNSPECIFIED: Not used
+      RESOURCE_EVAL_STATE_MATCH: The request matches the resource
+      RESOURCE_EVAL_STATE_NOT_MATCH: The request doesn't match the resource
+    """
+    RESOURCE_EVAL_STATE_UNSPECIFIED = 0
+    RESOURCE_EVAL_STATE_MATCH = 1
+    RESOURCE_EVAL_STATE_NOT_MATCH = 2
+
+  apiOperationEvalStates = _messages.EnumField('ApiOperationEvalStatesValueListEntryValuesEnum', 1, repeated=True)
+  identityEvalStates = _messages.EnumField('IdentityEvalStatesValueListEntryValuesEnum', 2, repeated=True)
+  identityTypeEvalState = _messages.EnumField('IdentityTypeEvalStateValueValuesEnum', 3)
+  ingressPolicyEvalState = _messages.EnumField('IngressPolicyEvalStateValueValuesEnum', 4)
+  ingressSourceEvalStates = _messages.EnumField('IngressSourceEvalStatesValueListEntryValuesEnum', 5, repeated=True)
+  resourceEvalStates = _messages.EnumField('ResourceEvalStatesValueListEntryValuesEnum', 6, repeated=True)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource(_messages.Message):
+  r"""The details of a resolved resource NextTAG: 7
+
+  Enums:
+    ResolvedStateValueValuesEnum: The resolved resource's state
+
+  Fields:
+    bridgeServicePerimeters: Full resource names of the bridge service
+      perimeters that restrict the resource Format:
+      `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`
+    dryrunBridgeServicePerimeters: Full resource names of the dryrun bridge
+      service perimeters that restrict the resource Format:
+      `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`
+    dryrunRegularServicePerimeters: Full resource name of the dry run regular
+      service perimeters that restricts the resource Format:
+      `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`
+    regularServicePerimeters: Full resource name of the regular service
+      perimeters that restricts the resource Format:
+      `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`
+    resolvedState: The resolved resource's state
+    resource: Details of the resource
+  """
+
+  class ResolvedStateValueValuesEnum(_messages.Enum):
+    r"""The resolved resource's state
+
+    Values:
+      RESOLVED_STATE_UNSPECIFIED: Not used
+      INFO_DENIED: The caller doesn't have permission to resolve this resource
+      COMPLETED: The resource has been fully resolved
+      NOT_APPLICABLE: The resource cannot be restricted by service perimeters
+    """
+    RESOLVED_STATE_UNSPECIFIED = 0
+    INFO_DENIED = 1
+    COMPLETED = 2
+    NOT_APPLICABLE = 3
+
+  bridgeServicePerimeters = _messages.StringField(1, repeated=True)
+  dryrunBridgeServicePerimeters = _messages.StringField(2, repeated=True)
+  dryrunRegularServicePerimeters = _messages.StringField(3, repeated=True)
+  regularServicePerimeters = _messages.StringField(4, repeated=True)
+  resolvedState = _messages.EnumField('ResolvedStateValueValuesEnum', 5)
+  resource = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResource', 6)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResource(_messages.Message):
+  r"""Resource checked by service perimeter check NextTAG: 3
+
+  Fields:
+    name: The name of the resource
+    permissions: The iam permission names
+  """
+
+  name = _messages.StringField(1)
+  permissions = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaServicePerimeterConfigExplanation(_messages.Message):
+  r"""Explanation of service perimeter config NextTAG: 10
+
+  Enums:
+    AccessLevelsEvalStatesValueListEntryValuesEnum:
+    EvalStateValueValuesEnum: Details about the evaluation state of a service
+      perimeter config
+    OverallEgressPoliciesEvalStateValueValuesEnum: Overall evaluation state of
+      the egress policies
+    OverallIngressPoliciesEvalStateValueValuesEnum: Overall evaluation state
+      of the ingress policies
+    RestrictedServicesEvalStateValueValuesEnum: Eval state of the restricted
+      services
+
+  Fields:
+    accessLevelsEvalStates: Details about the evaluation state of access
+      levels
+    egressPoliciesExplanations: Explanation of egress policies
+    evalState: Details about the evaluation state of a service perimeter
+      config
+    ingressPoliciesExplanations: Explanation of ingress policies
+    overallEgressPoliciesEvalState: Overall evaluation state of the egress
+      policies
+    overallIngressPoliciesEvalState: Overall evaluation state of the ingress
+      policies
+    restrictedResources: Resources that are restricted by this service
+      perimeter config
+    restrictedServicesEvalState: Eval state of the restricted services
+    vpcAccessibleServicesExplanation: Explanation of the vpc accessible
+      service policy
+  """
+
+  class AccessLevelsEvalStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""AccessLevelsEvalStatesValueListEntryValuesEnum enum type.
+
+    Values:
+      ACCESS_LEVEL_EVAL_STATE_UNSPECIFIED: Not used
+      ACCESS_LEVEL_EVAL_STATE_SATISFIED: The access level is satisfied
+      ACCESS_LEVEL_EVAL_STATE_UNSATISFIED: The access level is unsatisfied
+      ACCESS_LEVEL_EVAL_STATE_ERROR: The access level is not satisfied nor
+        unsatisfied
+      ACCESS_LEVEL_EVAL_STATE_NOT_EXIST: The access level does not exist
+    """
+    ACCESS_LEVEL_EVAL_STATE_UNSPECIFIED = 0
+    ACCESS_LEVEL_EVAL_STATE_SATISFIED = 1
+    ACCESS_LEVEL_EVAL_STATE_UNSATISFIED = 2
+    ACCESS_LEVEL_EVAL_STATE_ERROR = 3
+    ACCESS_LEVEL_EVAL_STATE_NOT_EXIST = 4
+
+  class EvalStateValueValuesEnum(_messages.Enum):
+    r"""Details about the evaluation state of a service perimeter config
+
+    Values:
+      EVAL_STATE_UNSPECIFIED: Not used
+      NOT_APPLICABLE: The evaluation state of a service perimeter config is
+        not applicable
+      GRANTED: The service perimeter config grants the request
+      DENIED: The service perimeter config denies the request
+    """
+    EVAL_STATE_UNSPECIFIED = 0
+    NOT_APPLICABLE = 1
+    GRANTED = 2
+    DENIED = 3
+
+  class OverallEgressPoliciesEvalStateValueValuesEnum(_messages.Enum):
+    r"""Overall evaluation state of the egress policies
+
+    Values:
+      OVERALL_EGRESS_POLICIES_EVAL_STATE_UNSPECIFIED: Not used
+      OVERALL_EGRESS_POLICIES_EVAL_STATE_GRANTED: The request is granted by
+        the egress policies
+      OVERALL_EGRESS_POLICIES_EVAL_STATE_DENIED: The request is denied by the
+        egress policies
+      OVERALL_EGRESS_POLICIES_EVAL_STATE_NOT_APPLICABLE: The egress policies
+        are applicable for the request
+      OVERALL_EGRESS_POLICIES_EVAL_STATE_SKIPPED: The request skips the egress
+        policies check
+    """
+    OVERALL_EGRESS_POLICIES_EVAL_STATE_UNSPECIFIED = 0
+    OVERALL_EGRESS_POLICIES_EVAL_STATE_GRANTED = 1
+    OVERALL_EGRESS_POLICIES_EVAL_STATE_DENIED = 2
+    OVERALL_EGRESS_POLICIES_EVAL_STATE_NOT_APPLICABLE = 3
+    OVERALL_EGRESS_POLICIES_EVAL_STATE_SKIPPED = 4
+
+  class OverallIngressPoliciesEvalStateValueValuesEnum(_messages.Enum):
+    r"""Overall evaluation state of the ingress policies
+
+    Values:
+      OVERALL_INGRESS_POLICIES_EVAL_STATE_UNSPECIFIED: Not used
+      OVERALL_INGRESS_POLICIES_EVAL_STATE_GRANTED: The request is granted by
+        the ingress policies
+      OVERALL_INGRESS_POLICIES_EVAL_STATE_DENIED: The request is denied by the
+        ingress policies
+      OVERALL_INGRESS_POLICIES_EVAL_STATE_NOT_APPLICABLE: The ingress policies
+        are applicable for the request
+      OVERALL_INGRESS_POLICIES_EVAL_STATE_SKIPPED: The request skips the
+        ingress policies check
+    """
+    OVERALL_INGRESS_POLICIES_EVAL_STATE_UNSPECIFIED = 0
+    OVERALL_INGRESS_POLICIES_EVAL_STATE_GRANTED = 1
+    OVERALL_INGRESS_POLICIES_EVAL_STATE_DENIED = 2
+    OVERALL_INGRESS_POLICIES_EVAL_STATE_NOT_APPLICABLE = 3
+    OVERALL_INGRESS_POLICIES_EVAL_STATE_SKIPPED = 4
+
+  class RestrictedServicesEvalStateValueValuesEnum(_messages.Enum):
+    r"""Eval state of the restricted services
+
+    Values:
+      RESTRICTED_SERVICES_EVAL_STATE_UNSPECIFIED: Not used
+      IS_RESTRICTED: The request service is restricted
+      IS_NOT_RESTRICTED: The request service is not restricted
+    """
+    RESTRICTED_SERVICES_EVAL_STATE_UNSPECIFIED = 0
+    IS_RESTRICTED = 1
+    IS_NOT_RESTRICTED = 2
+
+  accessLevelsEvalStates = _messages.EnumField('AccessLevelsEvalStatesValueListEntryValuesEnum', 1, repeated=True)
+  egressPoliciesExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaEgressPoliciesExplanation', 2, repeated=True)
+  evalState = _messages.EnumField('EvalStateValueValuesEnum', 3)
+  ingressPoliciesExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPoliciesExplanation', 4, repeated=True)
+  overallEgressPoliciesEvalState = _messages.EnumField('OverallEgressPoliciesEvalStateValueValuesEnum', 5)
+  overallIngressPoliciesEvalState = _messages.EnumField('OverallIngressPoliciesEvalStateValueValuesEnum', 6)
+  restrictedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResource', 7, repeated=True)
+  restrictedServicesEvalState = _messages.EnumField('RestrictedServicesEvalStateValueValuesEnum', 8)
+  vpcAccessibleServicesExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaVpcAccessibleServicesExplanation', 9)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaServicePerimeterExplanation(_messages.Message):
+  r"""Explanation of a service perimeter NextTAG: 4
+
+  Fields:
+    dryrunServicePerimeterConfigExplanation: Explanation of a dryrun service
+      perimeter config
+    name: The full name of the service perimeter
+    servicePerimeterConfigExplanation: Explanation of a service perimeter
+      config
+  """
+
+  dryrunServicePerimeterConfigExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaServicePerimeterConfigExplanation', 1)
+  name = _messages.StringField(2)
+  servicePerimeterConfigExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaServicePerimeterConfigExplanation', 3)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServicePerimeterRequest(_messages.Message):
+  r"""Request to troubleshoot service perimeters
+
+  Fields:
+    troubleshootingToken: The troubleshooting token can be generated when
+      customers get access denied by the service perimeter
+  """
+
+  troubleshootingToken = _messages.StringField(1)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServicePerimeterResponse(_messages.Message):
+  r"""Response to troubleshoot service perimeters NextTAG: 9
+
+  Enums:
+    AccessStateValueValuesEnum: The access state of the active service
+      perimeters.
+    DryrunAccessStateValueValuesEnum: The access state of the dry run service
+      perimeters
+
+  Fields:
+    accessPolicyExplanations: Explanation of access policies
+    accessState: The access state of the active service perimeters.
+    callerIp: The ip address from the caller
+    dryrunAccessState: The access state of the dry run service perimeters
+    operation: Fully qualified name of the operation.
+    principal: The principal email address of the caller
+    resolvedResources: Details about the resolved resources.
+    service: The service name as specified in its service configuration. For
+      example, `"pubsub.googleapis.com"`. See
+      [google.api.Service](https://cloud.google.com/service-
+      management/reference/rpc/google.api#google.api.Service) for the
+      definition of a service name.
+  """
+
+  class AccessStateValueValuesEnum(_messages.Enum):
+    r"""The access state of the active service perimeters.
+
+    Values:
+      ACCESS_STATE_UNSPECIFIED: Not used
+      NOT_APPLICABLE: The request is not restricted by any service perimeters
+      GRANTED: The request is granted by service perimeters
+      DENIED: The request is denied by service perimeters
+    """
+    ACCESS_STATE_UNSPECIFIED = 0
+    NOT_APPLICABLE = 1
+    GRANTED = 2
+    DENIED = 3
+
+  class DryrunAccessStateValueValuesEnum(_messages.Enum):
+    r"""The access state of the dry run service perimeters
+
+    Values:
+      ACCESS_STATE_UNSPECIFIED: Not used
+      NOT_APPLICABLE: The request is not restricted by any service perimeters
+      GRANTED: The request is granted by service perimeters
+      DENIED: The request is denied by service perimeters
+    """
+    ACCESS_STATE_UNSPECIFIED = 0
+    NOT_APPLICABLE = 1
+    GRANTED = 2
+    DENIED = 3
+
+  accessPolicyExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaAccessPolicyExplanation', 1, repeated=True)
+  accessState = _messages.EnumField('AccessStateValueValuesEnum', 2)
+  callerIp = _messages.StringField(3)
+  dryrunAccessState = _messages.EnumField('DryrunAccessStateValueValuesEnum', 4)
+  operation = _messages.StringField(5)
+  principal = _messages.StringField(6)
+  resolvedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource', 7, repeated=True)
+  service = _messages.StringField(8)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaVpcAccessibleServicesExplanation(_messages.Message):
+  r"""Explanation of the vpc accessible service policy NextTAG: 2
+
+  Enums:
+    EvalStateValueValuesEnum: Details about the evaluation state of the vpc
+      accessible service policy
+
+  Fields:
+    evalState: Details about the evaluation state of the vpc accessible
+      service policy
+  """
+
+  class EvalStateValueValuesEnum(_messages.Enum):
+    r"""Details about the evaluation state of the vpc accessible service
+    policy
+
+    Values:
+      EVAL_STATE_UNSPECIFIED: Not used
+      NOT_APPLICABLE: Vpc accessible service evaluation is not applicable
+      GRANTED: Vpc accessible service policy grants the request
+      DENIED: Vpc accessible service policy denies the request
+      INTERNAL: It is an internal traffic
+    """
+    EVAL_STATE_UNSPECIFIED = 0
+    NOT_APPLICABLE = 1
+    GRANTED = 2
+    DENIED = 3
+    INTERNAL = 4
+
+  evalState = _messages.EnumField('EvalStateValueValuesEnum', 1)
+
+
 class GoogleIamV1AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -2010,6 +2812,396 @@ class GoogleIamV2PolicyRule(_messages.Message):
   description = _messages.StringField(3)
 
 
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
+  r"""`ServicePerimeter` describes a set of Google Cloud resources which can
+  freely import and export data amongst themselves, but not export outside of
+  the `ServicePerimeter`. If a request with a source within this
+  `ServicePerimeter` has a target outside of the `ServicePerimeter`, the
+  request will be blocked. Otherwise the request is allowed. There are two
+  types of Service Perimeter - Regular and Bridge. Regular Service Perimeters
+  cannot overlap, a single Google Cloud project or VPC network can only belong
+  to a single regular Service Perimeter. Service Perimeter Bridges can contain
+  only Google Cloud projects as members, a single Google Cloud project may
+  belong to multiple Service Perimeter Bridges.
+
+  Enums:
+    PerimeterTypeValueValuesEnum: Perimeter type indicator. A single project
+      or VPC network is allowed to be a member of single regular perimeter,
+      but multiple service perimeter bridges. A project cannot be a included
+      in a perimeter bridge without being included in regular perimeter. For
+      perimeter bridges, the restricted service list as well as access level
+      lists must be empty.
+
+  Fields:
+    description: Description of the `ServicePerimeter` and its use. Does not
+      affect behavior.
+    name: Resource name for the `ServicePerimeter`. Format:
+      `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.
+      The `service_perimeter` component must begin with a letter, followed by
+      alphanumeric characters or `_`. After you create a `ServicePerimeter`,
+      you cannot change its `name`.
+    perimeterType: Perimeter type indicator. A single project or VPC network
+      is allowed to be a member of single regular perimeter, but multiple
+      service perimeter bridges. A project cannot be a included in a perimeter
+      bridge without being included in regular perimeter. For perimeter
+      bridges, the restricted service list as well as access level lists must
+      be empty.
+    spec: Proposed (or dry run) ServicePerimeter configuration. This
+      configuration allows to specify and test ServicePerimeter configuration
+      without enforcing actual access restrictions. Only allowed to be set
+      when the "use_explicit_dry_run_spec" flag is set.
+    status: Current ServicePerimeter configuration. Specifies sets of
+      resources, restricted services and access levels that determine
+      perimeter content and boundaries.
+    title: Human readable title. Must be unique within the Policy.
+    useExplicitDryRunSpec: Use explicit dry run spec flag. Ordinarily, a dry-
+      run spec implicitly exists for all Service Perimeters, and that spec is
+      identical to the status for those Service Perimeters. When this flag is
+      set, it inhibits the generation of the implicit spec, thereby allowing
+      the user to explicitly provide a configuration ("spec") to use in a dry-
+      run version of the Service Perimeter. This allows the user to test
+      changes to the enforced config ("status") without actually enforcing
+      them. This testing is done through analyzing the differences between
+      currently enforced and suggested restrictions. use_explicit_dry_run_spec
+      must bet set to True if any of the fields in the spec are set to non-
+      default values.
+    weakenedForTesting: Indicates this Perimeter is intentionally weakened for
+      Google internal testing. This will cause the Perimeter to accept non-
+      prod P4 accounts as if they were prod accounts.
+  """
+
+  class PerimeterTypeValueValuesEnum(_messages.Enum):
+    r"""Perimeter type indicator. A single project or VPC network is allowed
+    to be a member of single regular perimeter, but multiple service perimeter
+    bridges. A project cannot be a included in a perimeter bridge without
+    being included in regular perimeter. For perimeter bridges, the restricted
+    service list as well as access level lists must be empty.
+
+    Values:
+      PERIMETER_TYPE_REGULAR: Regular Perimeter. When no value is specified,
+        the perimeter uses this type.
+      PERIMETER_TYPE_BRIDGE: Perimeter Bridge.
+    """
+    PERIMETER_TYPE_REGULAR = 0
+    PERIMETER_TYPE_BRIDGE = 1
+
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 3)
+  spec = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 4)
+  status = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 5)
+  title = _messages.StringField(6)
+  useExplicitDryRunSpec = _messages.BooleanField(7)
+  weakenedForTesting = _messages.BooleanField(8)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig(_messages.Message):
+  r"""`ServicePerimeterConfig` specifies a set of Google Cloud resources that
+  describe specific Service Perimeter configuration.
+
+  Fields:
+    accessLevels: A list of `AccessLevel` resource names that allow resources
+      within the `ServicePerimeter` to be accessed from the internet.
+      `AccessLevels` listed must be in the same policy as this
+      `ServicePerimeter`. Referencing a nonexistent `AccessLevel` is a syntax
+      error. If no `AccessLevel` names are listed, resources within the
+      perimeter can only be accessed via Google Cloud calls with request
+      origins within the perimeter. Example:
+      `"accessPolicies/MY_POLICY/accessLevels/MY_LEVEL"`. For Service
+      Perimeter Bridge, must be empty.
+    egressPolicies: List of EgressPolicies to apply to the perimeter. A
+      perimeter may have multiple EgressPolicies, each of which is evaluated
+      separately. Access is granted if any EgressPolicy grants it. Must be
+      empty for a perimeter bridge.
+    ingressPolicies: List of IngressPolicies to apply to the perimeter. A
+      perimeter may have multiple IngressPolicies, each of which is evaluated
+      separately. Access is granted if any Ingress Policy grants it. Must be
+      empty for a perimeter bridge.
+    resources: A list of Google Cloud resources that are inside of the service
+      perimeter. Currently only projects and VPCs are allowed. Project format:
+      `projects/{project_number}` VPC network format:
+      `//compute.googleapis.com/projects/{PROJECT_ID}/global/networks/{NAME}`.
+    restrictedServices: Google Cloud services that are subject to the Service
+      Perimeter restrictions. For example, if `storage.googleapis.com` is
+      specified, access to the storage buckets inside the perimeter must meet
+      the perimeter's access restrictions.
+    vpcAccessibleServices: Configuration for APIs allowed within Perimeter.
+  """
+
+  accessLevels = _messages.StringField(1, repeated=True)
+  egressPolicies = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressPolicy', 2, repeated=True)
+  ingressPolicies = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressPolicy', 3, repeated=True)
+  resources = _messages.StringField(4, repeated=True)
+  restrictedServices = _messages.StringField(5, repeated=True)
+  vpcAccessibleServices = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigVpcAccessibleServices', 6)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigApiOperation(_messages.Message):
+  r"""Identification for an API Operation.
+
+  Fields:
+    methodSelectors: API methods or permissions to allow. Method or permission
+      must belong to the service specified by `service_name` field. A single
+      MethodSelector entry with `*` specified for the `method` field will
+      allow all methods AND permissions for the service specified in
+      `service_name`.
+    serviceName: The name of the API whose methods or permissions the
+      IngressPolicy or EgressPolicy want to allow. A single ApiOperation with
+      `service_name` field set to `*` will allow all methods AND permissions
+      for all services.
+  """
+
+  methodSelectors = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigMethodSelector', 1, repeated=True)
+  serviceName = _messages.StringField(2)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressFrom(_messages.Message):
+  r"""Defines the conditions under which an EgressPolicy matches a request.
+  Conditions based on information about the source of the request. Note that
+  if the destination of the request is also protected by a ServicePerimeter,
+  then that ServicePerimeter must have an IngressPolicy which allows access in
+  order for this request to succeed.
+
+  Enums:
+    IdentityTypeValueValuesEnum: Specifies the type of identities that are
+      allowed access to outside the perimeter. If left unspecified, then
+      members of `identities` field will be allowed access.
+
+  Fields:
+    identities: A list of identities that are allowed access through this
+      [EgressPolicy]. Should be in the format of email address. The email
+      address should represent individual user or service account only.
+    identityType: Specifies the type of identities that are allowed access to
+      outside the perimeter. If left unspecified, then members of `identities`
+      field will be allowed access.
+  """
+
+  class IdentityTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies the type of identities that are allowed access to outside
+    the perimeter. If left unspecified, then members of `identities` field
+    will be allowed access.
+
+    Values:
+      IDENTITY_TYPE_UNSPECIFIED: No blanket identity group specified.
+      ANY_IDENTITY: Authorize access from all identities outside the
+        perimeter.
+      ANY_USER_ACCOUNT: Authorize access from all human users outside the
+        perimeter.
+      ANY_SERVICE_ACCOUNT: Authorize access from all service accounts outside
+        the perimeter.
+    """
+    IDENTITY_TYPE_UNSPECIFIED = 0
+    ANY_IDENTITY = 1
+    ANY_USER_ACCOUNT = 2
+    ANY_SERVICE_ACCOUNT = 3
+
+  identities = _messages.StringField(1, repeated=True)
+  identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 2)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressPolicy(_messages.Message):
+  r"""Policy for egress from perimeter. EgressPolicies match requests based on
+  `egress_from` and `egress_to` stanzas. For an EgressPolicy to match, both
+  `egress_from` and `egress_to` stanzas must be matched. If an EgressPolicy
+  matches a request, the request is allowed to span the ServicePerimeter
+  boundary. For example, an EgressPolicy can be used to allow VMs on networks
+  within the ServicePerimeter to access a defined set of projects outside the
+  perimeter in certain contexts (e.g. to read data from a Cloud Storage bucket
+  or query against a BigQuery dataset). EgressPolicies are concerned with the
+  *resources* that a request relates as well as the API services and API
+  actions being used. They do not related to the direction of data movement.
+  More detailed documentation for this concept can be found in the
+  descriptions of EgressFrom and EgressTo.
+
+  Fields:
+    egressFrom: Defines conditions on the source of a request causing this
+      EgressPolicy to apply.
+    egressTo: Defines the conditions on the ApiOperation and destination
+      resources that cause this EgressPolicy to apply.
+  """
+
+  egressFrom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressFrom', 1)
+  egressTo = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressTo', 2)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressTo(_messages.Message):
+  r"""Defines the conditions under which an EgressPolicy matches a request.
+  Conditions are based on information about the ApiOperation intended to be
+  performed on the `resources` specified. Note that if the destination of the
+  request is also protected by a ServicePerimeter, then that ServicePerimeter
+  must have an IngressPolicy which allows access in order for this request to
+  succeed. The request must match `operations` AND `resources` fields in order
+  to be allowed egress out of the perimeter.
+
+  Fields:
+    externalResources: A list of external resources that are allowed to be
+      accessed. Only AWS and Azure resources are supported. For Amazon S3, the
+      supported format is s3://BUCKET_NAME. For Azure Storage, the supported
+      format is azure://myaccount.blob.core.windows.net/CONTAINER_NAME. A
+      request matches if it contains an external resource in this list
+      (Example: s3://bucket/path). Currently '*' is not allowed.
+    operations: A list of ApiOperations allowed to be performed by the sources
+      specified in the corresponding EgressFrom. A request matches if it uses
+      an operation/service in this list.
+    resources: A list of resources, currently only projects in the form
+      `projects/`, that are allowed to be accessed by sources defined in the
+      corresponding EgressFrom. A request matches if it contains a resource in
+      this list. If `*` is specified for `resources`, then this EgressTo rule
+      will authorize access to all resources outside the perimeter.
+  """
+
+  externalResources = _messages.StringField(1, repeated=True)
+  operations = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigApiOperation', 2, repeated=True)
+  resources = _messages.StringField(3, repeated=True)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressFrom(_messages.Message):
+  r"""Defines the conditions under which an IngressPolicy matches a request.
+  Conditions are based on information about the source of the request. The
+  request must satisfy what is defined in `sources` AND identity related
+  fields in order to match.
+
+  Enums:
+    IdentityTypeValueValuesEnum: Specifies the type of identities that are
+      allowed access from outside the perimeter. If left unspecified, then
+      members of `identities` field will be allowed access.
+
+  Fields:
+    identities: A list of identities that are allowed access through this
+      ingress policy. Should be in the format of email address. The email
+      address should represent individual user or service account only.
+    identityType: Specifies the type of identities that are allowed access
+      from outside the perimeter. If left unspecified, then members of
+      `identities` field will be allowed access.
+    sources: Sources that this IngressPolicy authorizes access from.
+  """
+
+  class IdentityTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies the type of identities that are allowed access from outside
+    the perimeter. If left unspecified, then members of `identities` field
+    will be allowed access.
+
+    Values:
+      IDENTITY_TYPE_UNSPECIFIED: No blanket identity group specified.
+      ANY_IDENTITY: Authorize access from all identities outside the
+        perimeter.
+      ANY_USER_ACCOUNT: Authorize access from all human users outside the
+        perimeter.
+      ANY_SERVICE_ACCOUNT: Authorize access from all service accounts outside
+        the perimeter.
+    """
+    IDENTITY_TYPE_UNSPECIFIED = 0
+    ANY_IDENTITY = 1
+    ANY_USER_ACCOUNT = 2
+    ANY_SERVICE_ACCOUNT = 3
+
+  identities = _messages.StringField(1, repeated=True)
+  identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 2)
+  sources = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressSource', 3, repeated=True)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressPolicy(_messages.Message):
+  r"""Policy for ingress into ServicePerimeter. IngressPolicies match requests
+  based on `ingress_from` and `ingress_to` stanzas. For an ingress policy to
+  match, both the `ingress_from` and `ingress_to` stanzas must be matched. If
+  an IngressPolicy matches a request, the request is allowed through the
+  perimeter boundary from outside the perimeter. For example, access from the
+  internet can be allowed either based on an AccessLevel or, for traffic
+  hosted on Google Cloud, the project of the source network. For access from
+  private networks, using the project of the hosting network is required.
+  Individual ingress policies can be limited by restricting which services
+  and/or actions they match using the `ingress_to` field.
+
+  Fields:
+    ingressFrom: Defines the conditions on the source of a request causing
+      this IngressPolicy to apply.
+    ingressTo: Defines the conditions on the ApiOperation and request
+      destination that cause this IngressPolicy to apply.
+  """
+
+  ingressFrom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressFrom', 1)
+  ingressTo = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressTo', 2)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressSource(_messages.Message):
+  r"""The source that IngressPolicy authorizes access from.
+
+  Fields:
+    accessLevel: An AccessLevel resource name that allow resources within the
+      ServicePerimeters to be accessed from the internet. AccessLevels listed
+      must be in the same policy as this ServicePerimeter. Referencing a
+      nonexistent AccessLevel will cause an error. If no AccessLevel names are
+      listed, resources within the perimeter can only be accessed via Google
+      Cloud calls with request origins within the perimeter. Example:
+      `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
+      specified for `access_level`, then all IngressSources will be allowed.
+    resource: A Google Cloud resource that is allowed to ingress the
+      perimeter. Requests from these resources will be allowed to access
+      perimeter data. Currently only projects and VPCs are allowed. Project
+      format: `projects/{project_number}` VPC network format:
+      `//compute.googleapis.com/projects/{PROJECT_ID}/global/networks/{NAME}`.
+      The project may be in any Google Cloud organization, not just the
+      organization that the perimeter is defined in. `*` is not allowed, the
+      case of allowing all Google Cloud resources only is not supported.
+  """
+
+  accessLevel = _messages.StringField(1)
+  resource = _messages.StringField(2)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressTo(_messages.Message):
+  r"""Defines the conditions under which an IngressPolicy matches a request.
+  Conditions are based on information about the ApiOperation intended to be
+  performed on the target resource of the request. The request must satisfy
+  what is defined in `operations` AND `resources` in order to match.
+
+  Fields:
+    operations: A list of ApiOperations allowed to be performed by the sources
+      specified in corresponding IngressFrom in this ServicePerimeter.
+    resources: A list of resources, currently only projects in the form
+      `projects/`, protected by this ServicePerimeter that are allowed to be
+      accessed by sources defined in the corresponding IngressFrom. If a
+      single `*` is specified, then access to all resources inside the
+      perimeter are allowed.
+  """
+
+  operations = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigApiOperation', 1, repeated=True)
+  resources = _messages.StringField(2, repeated=True)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigMethodSelector(_messages.Message):
+  r"""An allowed method or permission of a service specified in ApiOperation.
+
+  Fields:
+    method: Value for `method` should be a valid method name for the
+      corresponding `service_name` in ApiOperation. If `*` used as value for
+      `method`, then ALL methods and permissions are allowed.
+    permission: Value for `permission` should be a valid Cloud IAM permission
+      for the corresponding `service_name` in ApiOperation.
+  """
+
+  method = _messages.StringField(1)
+  permission = _messages.StringField(2)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigVpcAccessibleServices(_messages.Message):
+  r"""Specifies how APIs are allowed to communicate within the Service
+  Perimeter.
+
+  Fields:
+    allowedServices: The list of APIs usable within the Service Perimeter.
+      Must be empty unless 'enable_restriction' is True. You can specify a
+      list of individual services, as well as include the 'RESTRICTED-
+      SERVICES' value, which automatically includes all of the services
+      protected by the perimeter.
+    enableRestriction: Whether to restrict API calls within the Service
+      Perimeter to the list of APIs specified in 'allowed_services'.
+  """
+
+  allowedServices = _messages.StringField(1, repeated=True)
+  enableRestriction = _messages.BooleanField(2)
+
+
 class GoogleRpcStatus(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -2095,6 +3287,428 @@ class GoogleTypeExpr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class IdentityCaaIntelFrontendAccessLevelExplanation(_messages.Message):
+  r"""Explanation of access level, including the original access level defined
+  by customers, evaluation results and metadata NextTAG: 12
+
+  Enums:
+    AccessLevelStateValueValuesEnum: Evaluation state of an access level
+
+  Messages:
+    NodeMapValue: Map between node.id and cel node Node id: Expr.id
+      (google/api/expr/syntax.proto)
+    NodeNegTroubleshootingMetadataMapValue: Map between node.id and
+      troubleshooting metadata of this node when the state of this access
+      level is expected to be not_granted
+    NodePosTroubleshootingMetadataMapValue: Map between node.id and
+      troubleshooting metadata of this node when the state of this access
+      level is expected to be granted
+
+  Fields:
+    accessLevelState: Evaluation state of an access level
+    basicLevelExplanation: A IdentityCaaIntelFrontendBasicLevelExplanation
+      attribute.
+    customLevelExplanation: A IdentityCaaIntelFrontendCustomLevelExplanation
+      attribute.
+    name: Resource name for the Access Level. Format:
+      `accessPolicies/{policy_id}/accessLevels/{short_name}`
+    nodeMap: Map between node.id and cel node Node id: Expr.id
+      (google/api/expr/syntax.proto)
+    nodeNegTroubleshootingMetadataMap: Map between node.id and troubleshooting
+      metadata of this node when the state of this access level is expected to
+      be not_granted
+    nodePosTroubleshootingMetadataMap: Map between node.id and troubleshooting
+      metadata of this node when the state of this access level is expected to
+      be granted
+    title: Access Level's title
+  """
+
+  class AccessLevelStateValueValuesEnum(_messages.Enum):
+    r"""Evaluation state of an access level
+
+    Values:
+      ACCESS_LEVEL_STATE_UNSPECIFIED: Reserved
+      ACCESS_LEVEL_STATE_GRANTED: The access level state is granted
+      ACCESS_LEVEL_STATE_NOT_GRANTED: The access level state is not granted
+      ACCESS_LEVEL_STATE_ERROR: Encounter error when evaluating this access
+        level. Note that such error is on the critical path that blocks the
+        evaluation; e.g. False || -> ACCESS_LEVEL_STATE_NOT_GRANTED True && ->
+        ACCESS_LEVEL_STATE_ERROR
+      ACCESS_LEVEL_NOT_EXIST: The access level doesn't exist
+    """
+    ACCESS_LEVEL_STATE_UNSPECIFIED = 0
+    ACCESS_LEVEL_STATE_GRANTED = 1
+    ACCESS_LEVEL_STATE_NOT_GRANTED = 2
+    ACCESS_LEVEL_STATE_ERROR = 3
+    ACCESS_LEVEL_NOT_EXIST = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NodeMapValue(_messages.Message):
+    r"""Map between node.id and cel node Node id: Expr.id
+    (google/api/expr/syntax.proto)
+
+    Messages:
+      AdditionalProperty: An additional property for a NodeMapValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type NodeMapValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NodeMapValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A IdentityCaaIntelFrontendCelNode attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('IdentityCaaIntelFrontendCelNode', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NodeNegTroubleshootingMetadataMapValue(_messages.Message):
+    r"""Map between node.id and troubleshooting metadata of this node when the
+    state of this access level is expected to be not_granted
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        NodeNegTroubleshootingMetadataMapValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        NodeNegTroubleshootingMetadataMapValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NodeNegTroubleshootingMetadataMapValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A IdentityCaaIntelFrontendTroubleshootingMetadata attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('IdentityCaaIntelFrontendTroubleshootingMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NodePosTroubleshootingMetadataMapValue(_messages.Message):
+    r"""Map between node.id and troubleshooting metadata of this node when the
+    state of this access level is expected to be granted
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        NodePosTroubleshootingMetadataMapValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        NodePosTroubleshootingMetadataMapValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NodePosTroubleshootingMetadataMapValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A IdentityCaaIntelFrontendTroubleshootingMetadata attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('IdentityCaaIntelFrontendTroubleshootingMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  accessLevelState = _messages.EnumField('AccessLevelStateValueValuesEnum', 1)
+  basicLevelExplanation = _messages.MessageField('IdentityCaaIntelFrontendBasicLevelExplanation', 2)
+  customLevelExplanation = _messages.MessageField('IdentityCaaIntelFrontendCustomLevelExplanation', 3)
+  name = _messages.StringField(4)
+  nodeMap = _messages.MessageField('NodeMapValue', 5)
+  nodeNegTroubleshootingMetadataMap = _messages.MessageField('NodeNegTroubleshootingMetadataMapValue', 6)
+  nodePosTroubleshootingMetadataMap = _messages.MessageField('NodePosTroubleshootingMetadataMapValue', 7)
+  title = _messages.StringField(8)
+
+
+class IdentityCaaIntelFrontendBasicLevelExplanation(_messages.Message):
+  r"""The Explanation of a Basic Level, which contains the explanation in
+  Struct NextTAG: 2
+
+  Messages:
+    ExplanationValue: A ExplanationValue object.
+
+  Fields:
+    explanation: A ExplanationValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExplanationValue(_messages.Message):
+    r"""A ExplanationValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExplanationValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExplanationValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  explanation = _messages.MessageField('ExplanationValue', 1)
+
+
+class IdentityCaaIntelFrontendCelNode(_messages.Message):
+  r"""Cel node, including evaluation results and metadata NextTAG: 7
+
+  Fields:
+    endPosition: Optional, it exists if it is CustomLevel Access Level. End
+      position of an expression in the original condition, by character, end
+      included
+    nodeValues: Repeated as one node id may correspond to multiple evaluation
+      values. e.g.in comprehension expr, [1,2,3].all(x, x > 0), call_expr
+      "_>_" has 3 values corresponding to the evaluation of list values
+      individually sequentially
+    startPosition: Optional, it exists if it is CustomLevel Access Level.
+      Start position of an expression in the original condition, by character
+  """
+
+  endPosition = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  nodeValues = _messages.MessageField('IdentityCaaIntelFrontendNodeValue', 2, repeated=True)
+  startPosition = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class IdentityCaaIntelFrontendCustomLevelExplanation(_messages.Message):
+  r"""The Explanation of a Custom Level, which contains the original cel
+  expression and the custom level explanation tree NextTAG: 3
+
+  Fields:
+    explanation: Custom Level Explanation Tree
+    expression: The raw cel expression from customers
+  """
+
+  explanation = _messages.MessageField('IdentityCaaIntelFrontendCustomLevelNode', 1)
+  expression = _messages.StringField(2)
+
+
+class IdentityCaaIntelFrontendCustomLevelNode(_messages.Message):
+  r"""Custom Level Node Tree for the Logical Expression Tree NextTAG: 4
+
+  Enums:
+    NodeTypeValueValuesEnum: Node type, indicate if it's an expression or
+      AND/OR/NOT Logical Operator Node
+
+  Fields:
+    nodeId: Node id, used to map to its NodeValue and Troubleshooting metadata
+    nodeType: Node type, indicate if it's an expression or AND/OR/NOT Logical
+      Operator Node
+    nodes: Child nodes
+  """
+
+  class NodeTypeValueValuesEnum(_messages.Enum):
+    r"""Node type, indicate if it's an expression or AND/OR/NOT Logical
+    Operator Node
+
+    Values:
+      CUSTOM_LEVEL_NODE_UNSPECIFIED: Reserved
+      CUSTOM_LEVEL_NODE_EXPRESSION: Custom level Expression node
+      CUSTOM_LEVEL_NODE_AND: Custom level AND node
+      CUSTOM_LEVEL_NODE_OR: Custom level OR node
+      CUSTOM_LEVEL_NODE_NOT: Custom level NOT node
+    """
+    CUSTOM_LEVEL_NODE_UNSPECIFIED = 0
+    CUSTOM_LEVEL_NODE_EXPRESSION = 1
+    CUSTOM_LEVEL_NODE_AND = 2
+    CUSTOM_LEVEL_NODE_OR = 3
+    CUSTOM_LEVEL_NODE_NOT = 4
+
+  nodeId = _messages.IntegerField(1)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 2)
+  nodes = _messages.MessageField('IdentityCaaIntelFrontendCustomLevelNode', 3, repeated=True)
+
+
+class IdentityCaaIntelFrontendNodeValue(_messages.Message):
+  r"""Evaluation result of a cel AST node NextTAG: 7
+
+  Enums:
+    CriticalNodeErrorsValueListEntryValuesEnum:
+    NodeStateValueValuesEnum: Evaluation state of this node
+    NonCriticalNodeErrorsValueListEntryValuesEnum:
+
+  Fields:
+    criticalNodeErrors: The errors included depend on the context. It is
+      applicable when node_state is NODE_STATE_ERROR
+    nodeState: Evaluation state of this node
+    nonCriticalNodeErrors: The errors included depend on the context. Note:
+      ACCESS_LEVEL_STATE_GRANTED/ACCESS_LEVEL_STATE_NOT_GRANTED access levels
+      may have non_critical_node_errors errors underneath that don't block the
+      evaluation.
+    value: Evaluation result of this node, It is applicable when node_state is
+      NODE_STATE_NORMAL.
+  """
+
+  class CriticalNodeErrorsValueListEntryValuesEnum(_messages.Enum):
+    r"""CriticalNodeErrorsValueListEntryValuesEnum enum type.
+
+    Values:
+      NODE_ERROR_UNSPECIFIED: Reserved
+      NODE_ERROR_INTERNAL_ERROR: Internal error If there is no matching error
+        below, use it by default
+      NODE_ERROR_DEVICE_NOT_FOUND: Device not found
+      NODE_ERROR_DEVICE_STALE: Device is out of sync
+      NODE_ERROR_DEVICE_CROSS_ORG: It is a cross-org device
+      NODE_ERROR_DEVICE_INFO_NOT_AUTHORIZED: Caller doesn't have permission to
+        device info
+      NODE_ERROR_INVALID_SOURCE_IP: Source ip is not valid, from inIpRange
+        function
+      NODE_ERROR_INVALID_IP_SUBNETS: Ip subnets are not valid, from inIpRange
+        function
+      NODE_ERROR_INVALID_DEVICE_VERSION: Device min verion is not valid, from
+        versionAtLeast function
+      NODE_ERROR_NO_MATCHING_OVERLOADED_FUNC: Expr error from a supported
+        function type with invalid parameters e.g. 1 == true
+      NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED: Caller doesn't have
+        permission to auth session info
+      NODE_ERROR_NO_BCE_LICENSE: User is not assigned a BCE license.
+    """
+    NODE_ERROR_UNSPECIFIED = 0
+    NODE_ERROR_INTERNAL_ERROR = 1
+    NODE_ERROR_DEVICE_NOT_FOUND = 2
+    NODE_ERROR_DEVICE_STALE = 3
+    NODE_ERROR_DEVICE_CROSS_ORG = 4
+    NODE_ERROR_DEVICE_INFO_NOT_AUTHORIZED = 5
+    NODE_ERROR_INVALID_SOURCE_IP = 6
+    NODE_ERROR_INVALID_IP_SUBNETS = 7
+    NODE_ERROR_INVALID_DEVICE_VERSION = 8
+    NODE_ERROR_NO_MATCHING_OVERLOADED_FUNC = 9
+    NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED = 10
+    NODE_ERROR_NO_BCE_LICENSE = 11
+
+  class NodeStateValueValuesEnum(_messages.Enum):
+    r"""Evaluation state of this node
+
+    Values:
+      NODE_STATE_UNSPECIFIED: Reserved
+      NODE_STATE_NORMAL: The node state is normal, which means the evaluation
+        of this node succeeds However, it doesn't mean the evaluated result is
+        a boolean value.
+      NODE_STATE_ERROR: Encounter error when evaluating the result of this
+        node. Only return error if it is in the critical path of evaluation.
+        For example, `( || true) && ` -> ``, ` || true` -> `true` `.foo` -> ``
+        `foo()` -> `` ` + 1` -> ``
+    """
+    NODE_STATE_UNSPECIFIED = 0
+    NODE_STATE_NORMAL = 1
+    NODE_STATE_ERROR = 2
+
+  class NonCriticalNodeErrorsValueListEntryValuesEnum(_messages.Enum):
+    r"""NonCriticalNodeErrorsValueListEntryValuesEnum enum type.
+
+    Values:
+      NODE_ERROR_UNSPECIFIED: Reserved
+      NODE_ERROR_INTERNAL_ERROR: Internal error If there is no matching error
+        below, use it by default
+      NODE_ERROR_DEVICE_NOT_FOUND: Device not found
+      NODE_ERROR_DEVICE_STALE: Device is out of sync
+      NODE_ERROR_DEVICE_CROSS_ORG: It is a cross-org device
+      NODE_ERROR_DEVICE_INFO_NOT_AUTHORIZED: Caller doesn't have permission to
+        device info
+      NODE_ERROR_INVALID_SOURCE_IP: Source ip is not valid, from inIpRange
+        function
+      NODE_ERROR_INVALID_IP_SUBNETS: Ip subnets are not valid, from inIpRange
+        function
+      NODE_ERROR_INVALID_DEVICE_VERSION: Device min verion is not valid, from
+        versionAtLeast function
+      NODE_ERROR_NO_MATCHING_OVERLOADED_FUNC: Expr error from a supported
+        function type with invalid parameters e.g. 1 == true
+      NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED: Caller doesn't have
+        permission to auth session info
+      NODE_ERROR_NO_BCE_LICENSE: User is not assigned a BCE license.
+    """
+    NODE_ERROR_UNSPECIFIED = 0
+    NODE_ERROR_INTERNAL_ERROR = 1
+    NODE_ERROR_DEVICE_NOT_FOUND = 2
+    NODE_ERROR_DEVICE_STALE = 3
+    NODE_ERROR_DEVICE_CROSS_ORG = 4
+    NODE_ERROR_DEVICE_INFO_NOT_AUTHORIZED = 5
+    NODE_ERROR_INVALID_SOURCE_IP = 6
+    NODE_ERROR_INVALID_IP_SUBNETS = 7
+    NODE_ERROR_INVALID_DEVICE_VERSION = 8
+    NODE_ERROR_NO_MATCHING_OVERLOADED_FUNC = 9
+    NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED = 10
+    NODE_ERROR_NO_BCE_LICENSE = 11
+
+  criticalNodeErrors = _messages.EnumField('CriticalNodeErrorsValueListEntryValuesEnum', 1, repeated=True)
+  nodeState = _messages.EnumField('NodeStateValueValuesEnum', 2)
+  nonCriticalNodeErrors = _messages.EnumField('NonCriticalNodeErrorsValueListEntryValuesEnum', 3, repeated=True)
+  value = _messages.MessageField('GoogleApiExprValue', 4)
+
+
+class IdentityCaaIntelFrontendTroubleshootingMetadata(_messages.Message):
+  r"""NextTAG: 3
+
+  Enums:
+    CriticalLevelValueValuesEnum: If it is a critical failed node that blocks
+      the expected state of this access level. It is valid only for boolean
+      expression nodes and when the node's expected value doesn't equal to
+      actual value
+    LogicalNodeExpectedValueValueValuesEnum: If it is a logical node, it will
+      be TRUE or FALSE.
+
+  Fields:
+    criticalLevel: If it is a critical failed node that blocks the expected
+      state of this access level. It is valid only for boolean expression
+      nodes and when the node's expected value doesn't equal to actual value
+    logicalNodeExpectedValue: If it is a logical node, it will be TRUE or
+      FALSE.
+  """
+
+  class CriticalLevelValueValuesEnum(_messages.Enum):
+    r"""If it is a critical failed node that blocks the expected state of this
+    access level. It is valid only for boolean expression nodes and when the
+    node's expected value doesn't equal to actual value
+
+    Values:
+      CRITICAL_LEVEL_UNSPECIFIED: reserved
+      CRITICAL_LEVEL_LOW: The node is not on the critical path to the expected
+        state of this access level.
+      CRITICAL_LEVEL_HIGH: The node is on the critical path to the expected
+        state of this access level.
+    """
+    CRITICAL_LEVEL_UNSPECIFIED = 0
+    CRITICAL_LEVEL_LOW = 1
+    CRITICAL_LEVEL_HIGH = 2
+
+  class LogicalNodeExpectedValueValueValuesEnum(_messages.Enum):
+    r"""If it is a logical node, it will be TRUE or FALSE.
+
+    Values:
+      LOGICAL_NODE_EXPECTED_VALUE_UNSPECIFIED: Reserved
+      LOGICAL_NODE_EXPECTED_VALUE_TRUE: True
+      LOGICAL_NODE_EXPECTED_VALUE_FALSE: False
+    """
+    LOGICAL_NODE_EXPECTED_VALUE_UNSPECIFIED = 0
+    LOGICAL_NODE_EXPECTED_VALUE_TRUE = 1
+    LOGICAL_NODE_EXPECTED_VALUE_FALSE = 2
+
+  criticalLevel = _messages.EnumField('CriticalLevelValueValuesEnum', 1)
+  logicalNodeExpectedValue = _messages.EnumField('LogicalNodeExpectedValueValueValuesEnum', 2)
 
 
 class StandardQueryParameters(_messages.Message):

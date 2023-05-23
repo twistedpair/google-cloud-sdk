@@ -457,9 +457,9 @@ class Workflow(_messages.Message):
     revisionId: Output only. The revision of the workflow. A new revision of a
       workflow is created as a result of updating the following properties of
       a workflow: - Service account - Workflow code to be executed The format
-      is "000001-a4d", where the first 6 characters define the zero-padded
-      revision ordinal number. They are followed by a hyphen and 3 hexadecimal
-      random characters.
+      is "000001-a4d", where the first six characters define the zero-padded
+      revision ordinal number. They are followed by a hyphen and three
+      hexadecimal random characters.
     serviceAccount: The service account associated with the latest workflow
       version. This service account represents the identity of the workflow
       and determines what permissions the workflow has. Format:
@@ -687,11 +687,11 @@ class WorkflowsProjectsLocationsWorkflowsGetRequest(_messages.Message):
     name: Required. Name of the workflow for which information should be
       retrieved. Format:
       projects/{project}/locations/{location}/workflows/{workflow}
-    revisionId: Optional. Optional. The revision of the workflow to retrieve.
-      If the revision_id is empty, the latest revision is retrieved. The
-      format is "000001-a4d", where the first 6 characters define the zero-
-      padded decimal revision number. They are followed by a hyphen and 3
-      hexadecimal characters. (go/wf_adr_clh_1)
+    revisionId: Optional. The revision of the workflow to retrieve. If the
+      revision_id is empty, the latest revision is retrieved. The format is
+      "000001-a4d", where the first six characters define the zero-padded
+      decimal revision number. They are followed by a hyphen and three
+      hexadecimal characters.
   """
 
   name = _messages.StringField(1, required=True)

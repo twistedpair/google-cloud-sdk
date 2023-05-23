@@ -181,6 +181,125 @@ class ApplicationEndpoint(_messages.Message):
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsCreateRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsCreateRequest
+  object.
+
+  Fields:
+    googleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant: A
+      GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant resource to be
+      passed as the request body.
+    parent: Required. The resource name of the PartnerTenant using the form:
+      `organizations/{organization_id}/locations/global`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  googleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant', 1)
+  parent = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the PartnerTenant using the form: `or
+      ganizations/{organization_id}/locations/global/partnerTenants/{partner_t
+      enant_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalTenantsCreateRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalTenantsCreateRequest object.
+
+  Fields:
+    googleCloudBeyondcorpPartnerservicesV1alphaTenant: A
+      GoogleCloudBeyondcorpPartnerservicesV1alphaTenant resource to be passed
+      as the request body.
+    parent: Required. The resource name of the Tenant using the form:
+      `organizations/{organization_id}/locations/global`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  googleCloudBeyondcorpPartnerservicesV1alphaTenant = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaTenant', 1)
+  parent = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class BeyondcorpOrganizationsLocationsGlobalTenantsGetRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalTenantsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the Tenant using the form:
+      `organizations/{organization_id}/locations/global/tenants/{tenant_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsCreateRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsCreateRequest
+  object.
+
+  Fields:
+    googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig: A
+      GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig resource to be
+      passed as the request body.
+    parent: Required. The resource name of the ProxyConfig using the form:
+      `organizations/{organization_id}/locations/global/tenants/{tenant_id}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig', 1)
+  parent = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsGetRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the Tenant using the form: `organizat
+      ions/{organization_id}/locations/global/tenants/{tenant_id}/proxyConfigs
+      /{proxy_config_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest
   object.
@@ -3534,6 +3653,188 @@ class GoogleCloudBeyondcorpAppgatewaysV1AppGatewayOperationMetadata(_messages.Me
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaEncryptionInfo(_messages.Message):
+  r"""Message contains the JWT encryption information for the proxy server.
+
+  Fields:
+    encryptionSaEmail: Optional. Service Account for encryption key.
+    jwk: Optional. JWK in string.
+  """
+
+  encryptionSaEmail = _messages.StringField(1)
+  jwk = _messages.StringField(2)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerMetadata(_messages.Message):
+  r"""Metadata associated with PartnerTenant and is provided by the Partner.
+
+  Fields:
+    partnerTenantId: Optional. UUID used by the Partner to refer to the
+      PartnerTenant in their internal systems.
+  """
+
+  partnerTenantId = _messages.StringField(1)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerServiceOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the caller has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant(_messages.Message):
+  r"""Information about a BeyoncCorp Enterprise PartnerTenant.
+
+  Fields:
+    createTime: Output only. Timestamp when the resource was created.
+    displayName: Optional. An arbitrary caller-provided name for the
+      PartnerTenant. Cannot exceed 64 characters.
+    googleGroupEmail: Optional. Google group email to which the PartnerTenant
+      is enabled.
+    googleGroupId: Optional. Google group ID to which the PartnerTenant is
+      enabled.
+    name: Output only. Unique resource name of the PartnerTenant. The name is
+      ignored when creating PartnerTenant.
+    partnerMetadata: Optional. Metadata provided by the Partner associated
+      with PartnerTenant.
+    updateTime: Output only. Timestamp when the resource was last modified.
+  """
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  googleGroupEmail = _messages.StringField(3)
+  googleGroupId = _messages.StringField(4)
+  name = _messages.StringField(5)
+  partnerMetadata = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerMetadata', 6)
+  updateTime = _messages.StringField(7)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig(_messages.Message):
+  r"""Proxy Configuration of a Tenant.
+
+  Fields:
+    createTime: Output only. Timestamp when the resource was created.
+    displayName: Optional. An arbitrary caller-provided name for the
+      ProxyConfig. Cannot exceed 64 characters.
+    encryptionInfo: Optional. Information to encrypt JWT for the proxy server.
+    name: Output only. ProxyConfig resource name.
+    proxyUri: Required. The URI of the proxy server.
+    routingInfo: Required. Routing info to direct traffic to the proxy server.
+    transportInfo: Required. Transport layer information to verify for the
+      proxy server.
+    updateTime: Output only. Timestamp when the resource was last modified.
+  """
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  encryptionInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaEncryptionInfo', 3)
+  name = _messages.StringField(4)
+  proxyUri = _messages.StringField(5)
+  routingInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo', 6)
+  transportInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaTransportInfo', 7)
+  updateTime = _messages.StringField(8)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo(_messages.Message):
+  r"""Message contains the routing information to direct traffic to the proxy
+  server.
+
+  Fields:
+    pacUri: Required. Proxy Auto-Configuration (PAC) URI.
+  """
+
+  pacUri = _messages.StringField(1)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaTenant(_messages.Message):
+  r"""Information about a BeyoncCorp Enterprise Tenant.
+
+  Fields:
+    createTime: Output only. Timestamp when the resource was created.
+    displayName: Optional. An arbitrary caller-provided name for the Tenant.
+      Cannot exceed 64 characters.
+    googleGroupEmail: Optional. Google group email to which the Tenant is
+      enabled.
+    googleGroupId: Optional. Google group ID to which the Tenant is enabled.
+    name: Output only. Unique resource name of the Tenant. The name is ignored
+      when creating Tenant.
+    partnerMetadata: Optional. Metadata provided by the Partner associated
+      with Tenant.
+    updateTime: Output only. Timestamp when the resource was last modified.
+  """
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  googleGroupEmail = _messages.StringField(3)
+  googleGroupId = _messages.StringField(4)
+  name = _messages.StringField(5)
+  partnerMetadata = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerMetadata', 6)
+  updateTime = _messages.StringField(7)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaTransportInfo(_messages.Message):
+  r"""Message contains the transport layer information to verify the proxy
+  server.
+
+  Fields:
+    serverCaCertPem: Required. PEM encoded CA certificate associated with the
+      proxy server certificate.
+    sslDecryptCaCertPem: Optional. PEM encoded CA certificate associated with
+      the certificate used by proxy server for SSL decryption.
+  """
+
+  serverCaCertPem = _messages.StringField(1)
+  sslDecryptCaCertPem = _messages.StringField(2)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1mainPartnerServiceOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the caller has
       requested cancellation of the operation. Operations that have
       successfully been cancelled have Operation.error value with a
       google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.

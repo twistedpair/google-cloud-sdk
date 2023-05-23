@@ -421,6 +421,35 @@ class CloudbuildProjectsLocationsConnectionsRepositoriesDeleteRequest(_messages.
   validateOnly = _messages.BooleanField(3)
 
 
+class CloudbuildProjectsLocationsConnectionsRepositoriesFetchGitRefsRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsRepositoriesFetchGitRefsRequest
+  object.
+
+  Enums:
+    RefTypeValueValuesEnum: Type of refs to fetch
+
+  Fields:
+    refType: Type of refs to fetch
+    repository: Required. The resource name of the repository in the format
+      `projects/*/locations/*/connections/*/repositories/*`.
+  """
+
+  class RefTypeValueValuesEnum(_messages.Enum):
+    r"""Type of refs to fetch
+
+    Values:
+      REF_TYPE_UNSPECIFIED: No type specified.
+      TAG: To fetch tags.
+      BRANCH: To fetch branches.
+    """
+    REF_TYPE_UNSPECIFIED = 0
+    TAG = 1
+    BRANCH = 2
+
+  refType = _messages.EnumField('RefTypeValueValuesEnum', 1)
+  repository = _messages.StringField(2, required=True)
+
+
 class CloudbuildProjectsLocationsConnectionsRepositoriesGetRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsConnectionsRepositoriesGetRequest object.
 
@@ -1153,6 +1182,16 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class FetchGitRefsResponse(_messages.Message):
+  r"""Response for fetching git refs
+
+  Fields:
+    refNames: Name of the refs fetched.
+  """
+
+  refNames = _messages.StringField(1, repeated=True)
 
 
 class FetchLinkableRepositoriesResponse(_messages.Message):

@@ -2034,6 +2034,20 @@ def GetJobConfigurationChanges(args):
   return changes
 
 
+def GetRunJobConfigurationOverrides(args):
+  """Returns a list of overrides to the job config."""
+  overrides = []
+  if FlagIsExplicitlySet(args, 'update_env_vars'):
+    overrides.append(
+        config_changes.EnvVarLiteralChanges(
+            updates=_StripKeys(getattr(args, 'update_env_vars', None) or {}),
+            removes=[],
+            clear_others=False,
+        )
+    )
+  return overrides
+
+
 def ValidateResource(resource_ref):
   """Validate resource name."""
   # Valid resource names comprise only alphanumeric characters and dashes. Must
@@ -2990,9 +3004,9 @@ def AddExecuteNowFlag(parser):
   parser.add_argument(
       '--execute-now',
       action='store_true',
-      help='Execute the job immediately after the creation or update ' +
-      ' completes. gcloud exits once the job has started unless the ' +
-      '`--wait` flag is set.'
+      help='Execute the job immediately after the creation or update '
+      + ' completes. gcloud exits once the job has started unless the '
+      + '`--wait` flag is set.',
   )
 
 

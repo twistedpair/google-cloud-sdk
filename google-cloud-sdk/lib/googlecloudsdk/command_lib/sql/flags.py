@@ -923,9 +923,11 @@ def AddEdition(parser, is_alpha=False):
       '--edition',
       required=False,
       choices={
-          'standard': 'Standard option for smaller instances.',
           'enterprise': (
-              'Enterprise option recommended for cpu-intensive workloads. '
+              'Enterprise is the standard option for smaller instances.'
+          ),
+          'enterprise-plus': (
+              'Enterprise plus option recommended for cpu-intensive workloads. '
               'Offers access to premium features and capabilities.'
           ),
       },

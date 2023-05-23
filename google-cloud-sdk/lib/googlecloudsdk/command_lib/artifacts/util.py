@@ -32,7 +32,6 @@ from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.util import common_args
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.artifacts import repository_util
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
@@ -203,7 +202,6 @@ def AppendRepoDataToRequest(repo_ref, repo_args, request):
   request.repository.name = repo_ref.RelativeName()
   request.repositoryId = repo_ref.repositoriesId
   request.repository.format = repo_format
-  repository_util.RetainFormatConfig(messages, request.repository)
   return request
 
 

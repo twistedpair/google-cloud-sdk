@@ -485,7 +485,6 @@ def AddSecurityProfileGroup(parser):
       '--security-profile-group',
       metavar='SECURITY_PROFILE_GROUP',
       required=False,
-      hidden=True,
       help=(
           'An org-based security profile group to be used with apply_security_profile_group action.'
           'Allowed formats are:'

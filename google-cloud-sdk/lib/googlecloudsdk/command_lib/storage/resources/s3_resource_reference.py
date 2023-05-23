@@ -70,7 +70,7 @@ def _get_json_dump(resource):
 
 def _get_error_or_exists_string(value):
   """Returns error if value is error or existence string."""
-  if isinstance(value, errors.S3ApiError):
+  if isinstance(value, errors.XmlApiError):
     return value
   else:
     return resource_util.get_exists_string(value)
@@ -79,7 +79,7 @@ def _get_error_or_exists_string(value):
 # TODO(b/246556206): Delete.
 def _get_error_string_or_value(value):
   """Returns the error string if value is error or the value itself."""
-  if isinstance(value, errors.S3ApiError):
+  if isinstance(value, errors.XmlApiError):
     return str(value)
   if isinstance(value, dict) and 'ResponseMetadata' in value:
     value.pop('ResponseMetadata')
@@ -92,7 +92,7 @@ class S3BucketResource(resource_reference.BucketResource):
   def get_displayable_bucket_data(self):
     # Handle versioning.
     versioning = self.metadata.get('Versioning', {})
-    if isinstance(versioning, errors.S3ApiError):
+    if isinstance(versioning, errors.XmlApiError):
       versioning_enabled = str(versioning)
     else:
       versioning_status = versioning.get('Status')
@@ -105,7 +105,7 @@ class S3BucketResource(resource_reference.BucketResource):
 
     # Handle requester pays.
     payer = self.metadata.get('Payer')
-    if isinstance(payer, errors.S3ApiError):
+    if isinstance(payer, errors.XmlApiError):
       requester_pays = str(payer)
     elif payer == 'Requester':
       requester_pays = True

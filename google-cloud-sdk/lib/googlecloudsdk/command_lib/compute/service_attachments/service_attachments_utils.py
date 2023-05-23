@@ -33,19 +33,6 @@ def GetConnectionPreference(args, messages):
 
 def GetConsumerAcceptList(args, messages):
   """Get consumer accept list of the service attachment."""
-  if args.consumer_accept_list is None:
-    return None
-  consumer_accept_list = []
-  for project_limit in args.consumer_accept_list:
-    for project_id, conn_limit in sorted(six.iteritems(project_limit)):
-      consumer_accept_list.append(
-          messages.ServiceAttachmentConsumerProjectLimit(
-              projectIdOrNum=project_id, connectionLimit=int(conn_limit)))
-  return consumer_accept_list
-
-
-def GetConsumerAcceptListAlpha(args, messages):
-  """Get consumer accept list of the service attachment."""
   consumer_accept_list = []
   for project_limit in args.consumer_accept_list:
     for project_id_or_network_url, conn_limit in sorted(

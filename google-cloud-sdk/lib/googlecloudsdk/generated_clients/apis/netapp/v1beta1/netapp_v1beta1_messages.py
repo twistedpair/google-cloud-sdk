@@ -1321,6 +1321,8 @@ class Replication(_messages.Message):
   Fields:
     createTime: Output only. Replication create time.
     description: A description about this replication relationship.
+    destinationVolume: Output only. Full name of destination volume resource.
+      Example : "projects/{project}/locations/{location}/volumes/{volume_id}"
     destinationVolumeParameters: Required. Input only. Destination volume
       parameters
     healthy: Output only. Condition of the relationship. Can be one of the
@@ -1337,6 +1339,8 @@ class Replication(_messages.Message):
     replicationVolume: Output only. The other volume resource full path it is
       paired with for replication
     role: Output only. Indicates whether this points to source or destination.
+    sourceVolume: Output only. Full name of source volume resource. Example :
+      "projects/{project}/locations/{location}/volumes/{volume_id}"
     state: Output only. State of the replication.
     stateDetails: Output only. State details of the replication.
     transferStats: Output only. Replication transfer statistics.
@@ -1392,16 +1396,20 @@ class Replication(_messages.Message):
       STATE_UNSPECIFIED: Unspecified replication State
       CREATING: Replication is creating.
       READY: Replication is ready.
+      UPDATING: Replication is updating.
       STOPPED: Replication is stopped.
       DELETING: Replication is deleting.
       ERROR: Replication is in error state.
+      INITIALIZING: Replication is being initialized.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     READY = 2
-    STOPPED = 3
-    DELETING = 4
-    ERROR = 5
+    UPDATING = 3
+    STOPPED = 4
+    DELETING = 5
+    ERROR = 6
+    INITIALIZING = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1429,18 +1437,20 @@ class Replication(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  destinationVolumeParameters = _messages.MessageField('DestinationVolumeParameters', 3)
-  healthy = _messages.BooleanField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  mirrorState = _messages.EnumField('MirrorStateValueValuesEnum', 6)
-  name = _messages.StringField(7)
-  replicationSchedule = _messages.EnumField('ReplicationScheduleValueValuesEnum', 8)
-  replicationVolume = _messages.StringField(9)
-  role = _messages.EnumField('RoleValueValuesEnum', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  stateDetails = _messages.StringField(12)
-  transferStats = _messages.MessageField('TransferStats', 13)
-  transferring = _messages.BooleanField(14)
+  destinationVolume = _messages.StringField(3)
+  destinationVolumeParameters = _messages.MessageField('DestinationVolumeParameters', 4)
+  healthy = _messages.BooleanField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  mirrorState = _messages.EnumField('MirrorStateValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  replicationSchedule = _messages.EnumField('ReplicationScheduleValueValuesEnum', 9)
+  replicationVolume = _messages.StringField(10)
+  role = _messages.EnumField('RoleValueValuesEnum', 11)
+  sourceVolume = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  stateDetails = _messages.StringField(14)
+  transferStats = _messages.MessageField('TransferStats', 15)
+  transferring = _messages.BooleanField(16)
 
 
 class RestoreParameters(_messages.Message):
@@ -1902,7 +1912,7 @@ class TransferStats(_messages.Message):
     lastTransferError: A message describing the cause of the last transfer
       failure.
     totalTransferDuration: Total time taken during transfer.
-    transferPercent: Transfer progress percentage.
+    transferBytes: bytes trasferred so far in current transfer.
     updateTime: Time when progress was updated last.
   """
 
@@ -1912,7 +1922,7 @@ class TransferStats(_messages.Message):
   lastTransferEndTime = _messages.StringField(4)
   lastTransferError = _messages.StringField(5)
   totalTransferDuration = _messages.StringField(6)
-  transferPercent = _messages.FloatField(7)
+  transferBytes = _messages.IntegerField(7)
   updateTime = _messages.StringField(8)
 
 

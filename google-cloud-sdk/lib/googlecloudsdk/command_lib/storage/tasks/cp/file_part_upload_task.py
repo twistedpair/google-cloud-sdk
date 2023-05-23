@@ -55,15 +55,18 @@ UploadedComponent = collections.namedtuple(
 class FilePartUploadTask(file_part_task.FilePartTask):
   """Uploads a range of bytes from a file."""
 
-  def __init__(self,
-               source_resource,
-               destination_resource,
-               source_path,
-               offset,
-               length,
-               component_number=None,
-               total_components=None,
-               user_request_args=None):
+  def __init__(
+      self,
+      source_resource,
+      destination_resource,
+      source_path,
+      offset,
+      length,
+      component_number=None,
+      posix_to_set=None,
+      total_components=None,
+      user_request_args=None,
+  ):
     """Initializes task.
 
     Args:
@@ -79,6 +82,9 @@ class FilePartUploadTask(file_part_task.FilePartTask):
       length (int): The number of bytes in the upload range.
       component_number (int|None): If a multipart operation, indicates the
         component number.
+      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
+        metadata on target. If provided and preserving POSIX, skip re-parsing
+        from file system.
       total_components (int|None): If a multipart operation, indicates the total
         number of components.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
@@ -87,9 +93,12 @@ class FilePartUploadTask(file_part_task.FilePartTask):
           self).__init__(source_resource, destination_resource, offset, length,
                          component_number, total_components)
     self._source_path = source_path
+
+    self._posix_to_set = posix_to_set
+    self._user_request_args = user_request_args
+
     self._transformed_source_resource = resource_reference.FileObjectResource(
         storage_url.storage_url_from_string(self._source_path))
-    self._user_request_args = user_request_args
 
   def _get_output(self, destination_resource):
     messages = []
@@ -225,10 +234,12 @@ class FilePartUploadTask(file_part_task.FilePartTask):
             source_stream,
             self._destination_resource,
             request_config,
-            source_resource=source_resource_for_metadata,
+            posix_to_set=self._posix_to_set,
             serialization_data=serialization_data,
+            source_resource=source_resource_for_metadata,
             tracker_callback=tracker_callback,
-            upload_strategy=upload_strategy)
+            upload_strategy=upload_strategy,
+        )
 
         def _handle_resumable_upload_error(exc_type, exc_value, exc_traceback,
                                            state):
@@ -290,8 +301,10 @@ class FilePartUploadTask(file_part_task.FilePartTask):
             source_stream,
             self._destination_resource,
             request_config,
+            posix_to_set=self._posix_to_set,
             source_resource=source_resource_for_metadata,
-            upload_strategy=upload_strategy)
+            upload_strategy=upload_strategy,
+        )
 
       upload_util.validate_uploaded_object(digesters, destination_resource,
                                            task_status_queue)

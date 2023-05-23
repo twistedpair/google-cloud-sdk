@@ -341,7 +341,7 @@ class LinterRenderer(text_renderer.TextRenderer):
 
     # check that name section is not too long
     check_name = self._check_name('NAME', 'LENGTH')
-    self.command_name = section_parts[0].strip()
+    self.command_name = ' '.join(section_parts[0].strip().split())
     self.command_name_length = len(self.command_name)
     if len(self.name_section.split()) > self._NAME_WORD_LIMIT:
       self._add_failure(

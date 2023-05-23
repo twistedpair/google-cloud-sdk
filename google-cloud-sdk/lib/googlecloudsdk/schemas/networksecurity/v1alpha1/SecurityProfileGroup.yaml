@@ -26,7 +26,8 @@ properties:
     items:
       type: string
   description:
-    description: An optional description of the profile group.
+    description: |-
+      An optional description of the profile group. Max length 2048 characters.
     type: string
   labels:
     description: Labels as key value pairs.

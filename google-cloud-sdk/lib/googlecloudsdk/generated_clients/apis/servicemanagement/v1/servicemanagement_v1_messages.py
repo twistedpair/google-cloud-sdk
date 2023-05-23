@@ -1085,6 +1085,9 @@ class DocumentationRule(_messages.Message):
       method, a 'service' definition, or a field). Defaults to leading &
       trailing comments taken from the proto source definition of the proto
       element.
+    disableReplacementWords: String of comma or space separated case-sensitive
+      words for which method/field name replacement will be disabled by
+      go/api-docgen.
     selector: The selector is a comma-separated list of patterns for any
       element such as a method, a field, an enum value. Each pattern is a
       qualified name of the element which may end in "*", indicating a
@@ -1096,7 +1099,8 @@ class DocumentationRule(_messages.Message):
 
   deprecationDescription = _messages.StringField(1)
   description = _messages.StringField(2)
-  selector = _messages.StringField(3)
+  disableReplacementWords = _messages.StringField(3)
+  selector = _messages.StringField(4)
 
 
 class DotnetSettings(_messages.Message):
@@ -3255,6 +3259,7 @@ class Publishing(_messages.Message):
       STREET_VIEW: Street View Org.
       SHOPPING: Shopping Org.
       GEO: Geo Org.
+      GENERATIVE_AI: Generative AI - https://developers.generativeai.google
     """
     CLIENT_LIBRARY_ORGANIZATION_UNSPECIFIED = 0
     CLOUD = 1
@@ -3263,6 +3268,7 @@ class Publishing(_messages.Message):
     STREET_VIEW = 4
     SHOPPING = 5
     GEO = 6
+    GENERATIVE_AI = 7
 
   apiShortName = _messages.StringField(1)
   codeownerGithubTeams = _messages.StringField(2, repeated=True)

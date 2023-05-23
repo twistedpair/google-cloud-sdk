@@ -1061,6 +1061,37 @@ class GoogleCloudDocumentaiUiv1beta3RevisionRef(_messages.Message):
   revisionId = _messages.StringField(3)
 
 
+class GoogleCloudDocumentaiUiv1beta3SampleDocumentsMetadata(_messages.Message):
+  r"""Metadata of the sample documents operation.
+
+  Fields:
+    commonMetadata: The basic metadata of the long running operation.
+  """
+
+  commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
+
+
+class GoogleCloudDocumentaiUiv1beta3SampleDocumentsResponse(_messages.Message):
+  r"""Response of the sample documents operation.
+
+  Fields:
+    selectedDocuments: The result of the sampling process.
+  """
+
+  selectedDocuments = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3SampleDocumentsResponseSelectedDocument', 1, repeated=True)
+
+
+class GoogleCloudDocumentaiUiv1beta3SampleDocumentsResponseSelectedDocument(_messages.Message):
+  r"""A GoogleCloudDocumentaiUiv1beta3SampleDocumentsResponseSelectedDocument
+  object.
+
+  Fields:
+    documentId: An internal identifier for document.
+  """
+
+  documentId = _messages.StringField(1)
+
+
 class GoogleCloudDocumentaiUiv1beta3SetDefaultProcessorVersionMetadata(_messages.Message):
   r"""The long-running operation metadata for the SetDefaultProcessorVersion
   method.

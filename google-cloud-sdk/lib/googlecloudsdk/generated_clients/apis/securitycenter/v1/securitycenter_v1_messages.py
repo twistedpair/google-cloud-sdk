@@ -366,12 +366,31 @@ class CloudDlpDataProfile(_messages.Message):
   r"""The [data profile](https://cloud.google.com/dlp/docs/data-profiles)
   associated with the finding.
 
+  Enums:
+    ParentTypeValueValuesEnum: The resource hierarchy level at which the data
+      profile was generated.
+
   Fields:
     dataProfile: Name of the data profile, for example,
       `projects/123/locations/europe/tableProfiles/8383929`.
+    parentType: The resource hierarchy level at which the data profile was
+      generated.
   """
 
+  class ParentTypeValueValuesEnum(_messages.Enum):
+    r"""The resource hierarchy level at which the data profile was generated.
+
+    Values:
+      PARENT_TYPE_UNSPECIFIED: Unspecified parent type.
+      ORGANIZATION: Organization-level configurations.
+      PROJECT: Project-level configurations.
+    """
+    PARENT_TYPE_UNSPECIFIED = 0
+    ORGANIZATION = 1
+    PROJECT = 2
+
   dataProfile = _messages.StringField(1)
+  parentType = _messages.EnumField('ParentTypeValueValuesEnum', 2)
 
 
 class CloudDlpInspection(_messages.Message):
@@ -3844,9 +3863,9 @@ class SecuritycenterFoldersBigQueryExportsCreateRequest(_messages.Message):
 
   Fields:
     bigQueryExportId: Required. Unique identifier provided by the client
-      within the parent scope. It must consist of lower case letters, numbers,
-      and hyphen, with the first character a letter, the last a letter or a
-      number, and a 63 character maximum.
+      within the parent scope. It must consist of only lowercase letters,
+      numbers, and hyphens, must start with a letter, must end with either a
+      letter or a number, and must be 63 characters or less.
     googleCloudSecuritycenterV1BigQueryExport: A
       GoogleCloudSecuritycenterV1BigQueryExport resource to be passed as the
       request body.
@@ -4140,9 +4159,9 @@ class SecuritycenterFoldersMuteConfigsCreateRequest(_messages.Message):
       GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
       request body.
     muteConfigId: Required. Unique identifier provided by the client within
-      the parent scope. It must consist of lower case letters, numbers, and
-      hyphen, with the first character a letter, the last a letter or a
-      number, and a 63 character maximum.
+      the parent scope. It must consist of only lowercase letters, numbers,
+      and hyphens, must start with a letter, must end with either a letter or
+      a number, and must be 63 characters or less.
     parent: Required. Resource name of the new mute configs's parent. Its
       format is "organizations/[organization_id]", "folders/[folder_id]", or
       "projects/[project_id]".
@@ -4870,9 +4889,9 @@ class SecuritycenterOrganizationsBigQueryExportsCreateRequest(_messages.Message)
 
   Fields:
     bigQueryExportId: Required. Unique identifier provided by the client
-      within the parent scope. It must consist of lower case letters, numbers,
-      and hyphen, with the first character a letter, the last a letter or a
-      number, and a 63 character maximum.
+      within the parent scope. It must consist of only lowercase letters,
+      numbers, and hyphens, must start with a letter, must end with either a
+      letter or a number, and must be 63 characters or less.
     googleCloudSecuritycenterV1BigQueryExport: A
       GoogleCloudSecuritycenterV1BigQueryExport resource to be passed as the
       request body.
@@ -5171,9 +5190,9 @@ class SecuritycenterOrganizationsMuteConfigsCreateRequest(_messages.Message):
       GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
       request body.
     muteConfigId: Required. Unique identifier provided by the client within
-      the parent scope. It must consist of lower case letters, numbers, and
-      hyphen, with the first character a letter, the last a letter or a
-      number, and a 63 character maximum.
+      the parent scope. It must consist of only lowercase letters, numbers,
+      and hyphens, must start with a letter, must end with either a letter or
+      a number, and must be 63 characters or less.
     parent: Required. Resource name of the new mute configs's parent. Its
       format is "organizations/[organization_id]", "folders/[folder_id]", or
       "projects/[project_id]".
@@ -6055,9 +6074,9 @@ class SecuritycenterProjectsBigQueryExportsCreateRequest(_messages.Message):
 
   Fields:
     bigQueryExportId: Required. Unique identifier provided by the client
-      within the parent scope. It must consist of lower case letters, numbers,
-      and hyphen, with the first character a letter, the last a letter or a
-      number, and a 63 character maximum.
+      within the parent scope. It must consist of only lowercase letters,
+      numbers, and hyphens, must start with a letter, must end with either a
+      letter or a number, and must be 63 characters or less.
     googleCloudSecuritycenterV1BigQueryExport: A
       GoogleCloudSecuritycenterV1BigQueryExport resource to be passed as the
       request body.
@@ -6350,9 +6369,9 @@ class SecuritycenterProjectsMuteConfigsCreateRequest(_messages.Message):
       GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
       request body.
     muteConfigId: Required. Unique identifier provided by the client within
-      the parent scope. It must consist of lower case letters, numbers, and
-      hyphen, with the first character a letter, the last a letter or a
-      number, and a 63 character maximum.
+      the parent scope. It must consist of only lowercase letters, numbers,
+      and hyphens, must start with a letter, must end with either a letter or
+      a number, and must be 63 characters or less.
     parent: Required. Resource name of the new mute configs's parent. Its
       format is "organizations/[organization_id]", "folders/[folder_id]", or
       "projects/[project_id]".

@@ -410,16 +410,14 @@ class ComposerV1beta1(base_api.BaseApiClient):
       r"""Stops Airflow CLI command execution.
 
       Args:
-        request:
-          (ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest) input
-          message
+        request: (ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (StopAirflowCommandResponse) The response message.
       """
       config = self.GetMethodConfig('StopAirflowCommand')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     StopAirflowCommand.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:stopAirflowCommand',

@@ -339,55 +339,45 @@ class InitialConfig(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""All state for a SecureSourceManager instance.
+  r"""A resource that represents a Secure Source Manager instance.
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the instance.
-    StateNoteValueValuesEnum: Output only. state_note is an optional field
-      providing information about the current instance state.
+    StateNoteValueValuesEnum: Output only. An optional field providing
+      information about the current instance state.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
     createTime: Output only. Create timestamp.
-    hostConfig: Output only. A list of hostnames for this Instance.
-    kmsKey: Immutable. kms_key_name is the customer-specified CMEK key
-      (optional). It must exist in the same region as the instance. User must
-      have granted the following permissions on this key (typically via role
-      roles/cloudkms.cryptoKeyEncrypterDecrypter) to the Secure Source Manager
-      service account: - permissions/cloudkms.cryptoKeyVersions.useToDecrypt -
-      permissions/cloudkms.cryptoKeyVersions.useToEncrypt Format:
-      projects/*/locations/*/keyRings/*/cryptoKeys/*
-    kmsKeyVersion: Output only. kms_key_version is an output field indicating
-      the version of the key resolved when the instance was created.
+    hostConfig: Output only. A list of hostnames for this instance.
+    kmsKey: Optional. Immutable. Customer-managed encryption key name, in the
+      format projects/*/locations/*/keyRings/*/cryptoKeys/*.
+    kmsKeyVersion: Output only. Version of the CMEK key
     labels: Optional. Labels as key value pairs.
     name: Optional. A unique identifier for an instance. The name should be of
       the format: `projects/{project_number}/locations/{location_id}/instances
       /{instance_id}` `project_number`: Maps to a unique int64 id assigned to
-      each project. We use project_number instead of project_id as per the
-      external API recommendation. `location_id`: Refers to the region where
-      the instance will be deployed. Since SecureSourceManager is a regional
-      service, it must be one of the valid GCP regions. `instance_id`: User
-      provided name for the instance, must be unique for a project_number and
-      location_id combination.
+      each project. `location_id`: Refers to the region where the instance
+      will be deployed. Since Secure Source Manager is a regional service, it
+      must be one of the valid GCP regions. `instance_id`: User provided name
+      for the instance, must be unique for a project_number and location_id
+      combination.
     state: Output only. Current state of the instance.
-    stateNote: Output only. state_note is an optional field providing
-      information about the current instance state.
+    stateNote: Output only. An optional field providing information about the
+      current instance state.
     updateTime: Output only. Update timestamp.
   """
 
   class StateNoteValueValuesEnum(_messages.Enum):
-    r"""Output only. state_note is an optional field providing information
-    about the current instance state.
+    r"""Output only. An optional field providing information about the current
+    instance state.
 
     Values:
       STATE_NOTE_UNSPECIFIED: STATE_NOTE_UNSPECIFIED as the first value of
         State.
-      PAUSED_CMEK_UNAVAILABLE: PAUSED_CMEK_UNAVAILABLE indicates that CMEK
-        access is unavailable so we no longer have access to the instance.
-        This might be due to user revokeing our access or user deleting the
-        KMS key.
+      PAUSED_CMEK_UNAVAILABLE: CMEK access is unavailable.
     """
     STATE_NOTE_UNSPECIFIED = 0
     PAUSED_CMEK_UNAVAILABLE = 1
@@ -456,8 +446,7 @@ class IssueRedirectTicketInternalRequest(_messages.Message):
 
 
 class IssueRedirectTicketInternalResponse(_messages.Message):
-  r"""IssueRedirectTicketInternalResponse is the response for issuing a
-  redirect ticket. For internal use only.
+  r"""A IssueRedirectTicketInternalResponse object.
 
   Fields:
     ticketId: ID of the created redirect ticket.
@@ -467,10 +456,10 @@ class IssueRedirectTicketInternalResponse(_messages.Message):
 
 
 class ListInstancesResponse(_messages.Message):
-  r"""ListInstancesResponse is the response for listing Instances.
+  r"""A ListInstancesResponse object.
 
   Fields:
-    instances: The list of Instance.
+    instances: The list of instances.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -508,12 +497,12 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListRepositoriesResponse(_messages.Message):
-  r"""ListRepositoriesResponse is the response for listing Repositories.
+  r"""A ListRepositoriesResponse object.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
       return.
-    repositories: The list of Repositories.
+    repositories: The list of repositories.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -814,7 +803,7 @@ class Policy(_messages.Message):
 
 
 class Repository(_messages.Message):
-  r"""Metadata of a Secure Source Manager Repository.
+  r"""Metadata of a Secure Source Manager repository.
 
   Fields:
     createTime: Output only. Create timestamp.
@@ -1082,8 +1071,8 @@ class SecuresourcemanagerProjectsLocationsRepositoriesCreateRepositoryInternalRe
   alRequest object.
 
   Fields:
-    parent: Required. The project in which to create the repo. Values are of
-      the form `projects/{project_number}/locations/{location_id}`
+    parent: Required. The project in which to create the repository. Values
+      are of the form `projects/{project_number}/locations/{location_id}`
     repository: A Repository resource to be passed as the request body.
     repositoryId: Required. The ID to use for the repository, which will
       become the final component of the repository's resource name. This value
@@ -1099,8 +1088,8 @@ class SecuresourcemanagerProjectsLocationsRepositoriesCreateRequest(_messages.Me
   r"""A SecuresourcemanagerProjectsLocationsRepositoriesCreateRequest object.
 
   Fields:
-    parent: Required. The project in which to create the repo. Values are of
-      the form `projects/{project_number}/locations/{location_id}`
+    parent: Required. The project in which to create the repository. Values
+      are of the form `projects/{project_number}/locations/{location_id}`
     repository: A Repository resource to be passed as the request body.
     repositoryId: Required. The ID to use for the repository, which will
       become the final component of the repository's resource name. This value
@@ -1180,7 +1169,7 @@ class SecuresourcemanagerProjectsLocationsRepositoriesListRequest(_messages.Mess
   r"""A SecuresourcemanagerProjectsLocationsRepositoriesListRequest object.
 
   Fields:
-    filter: Filter for filtering results.
+    filter: Filter results.
     pageSize: Requested page size. Server may return fewer items than
       requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.

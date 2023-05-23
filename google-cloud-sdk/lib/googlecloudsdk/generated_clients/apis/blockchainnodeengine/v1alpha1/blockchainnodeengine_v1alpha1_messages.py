@@ -26,10 +26,11 @@ class BlockchainNode(_messages.Message):
 
   Fields:
     blockchainType: Immutable. The blockchain type of the node.
-    connectionInfo: A ConnectionInformation attribute.
+    connectionInfo: Output only. The connection information used to interact
+      with a Blockchain Node.
     createTime: Output only. The timestamp at which the Blockchain Node was
       first created.
-    ethereumDetails: A EthereumDetails attribute.
+    ethereumDetails: Ethereum-specific Blockchain Node details.
     labels: User-provided key-value pairs.
     name: Output only. The fully qualified name of the blockchain node. e.g.
       projects/my-project/locations/us-central1/blockchainNodes/my-node.
@@ -42,8 +43,9 @@ class BlockchainNode(_messages.Message):
     r"""Immutable. The blockchain type of the node.
 
     Values:
-      BLOCKCHAIN_TYPE_UNSPECIFIED: <no description>
-      ETHEREUM: <no description>
+      BLOCKCHAIN_TYPE_UNSPECIFIED: Blockchain type has not been specified, but
+        should be.
+      ETHEREUM: The blockchain type is Ethereum.
     """
     BLOCKCHAIN_TYPE_UNSPECIFIED = 0
     ETHEREUM = 1
@@ -97,7 +99,7 @@ class BlockchainNode(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   blockchainType = _messages.EnumField('BlockchainTypeValueValuesEnum', 1)
-  connectionInfo = _messages.MessageField('ConnectionInformation', 2)
+  connectionInfo = _messages.MessageField('ConnectionInfo', 2)
   createTime = _messages.StringField(3)
   ethereumDetails = _messages.MessageField('EthereumDetails', 4)
   labels = _messages.MessageField('LabelsValue', 5)
@@ -307,18 +309,19 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class ConnectionInformation(_messages.Message):
+class ConnectionInfo(_messages.Message):
   r"""The connection information through which to interact with a Blockchain
   Node.
 
   Fields:
     endpointInfo: Output only. The endpoint information through which to
       interact with a Blockchain Node.
-    ipInfo: A IpInformation attribute.
+    ipInfo: Output only. The public IP information used to interact with a
+      Blockchain Node.
   """
 
   endpointInfo = _messages.MessageField('EndpointInfo', 1)
-  ipInfo = _messages.MessageField('IpInformation', 2)
+  ipInfo = _messages.MessageField('IpInfo', 2)
 
 
 class EndpointInfo(_messages.Message):
@@ -348,8 +351,10 @@ class EthereumDetails(_messages.Message):
 
   Fields:
     additionalEndpoints: Output only. Ethereum specific endpoint information.
-    apiEnableAdmin: Immutable. Enables access to the admin HTTP endpoints
-    apiEnableDebug: Immutable. Enables access to the debug HTTP endpoints
+    apiEnableAdmin: Immutable. Enables JSON-RPC access to functions in the
+      admin namespace. Defaults to false.
+    apiEnableDebug: Immutable. Enables JSON-RPC access to functions in the
+      debug namespace. Defaults to false.
     consensusClient: Immutable. The consensus client
     executionClient: Immutable. The execution client
     gethDetails: Details for the Geth execution client.
@@ -361,7 +366,8 @@ class EthereumDetails(_messages.Message):
     r"""Immutable. The consensus client
 
     Values:
-      CONSENSUS_CLIENT_UNSPECIFIED: <no description>
+      CONSENSUS_CLIENT_UNSPECIFIED: Consensus client has not been specified,
+        but should be.
       LIGHTHOUSE: Consensus client implementation written in Rust, maintained
         by Sigma Prime. https://lighthouse.sigmaprime.io/
       ERIGON_EMBEDDED_CONSENSUS_LAYER: Erigon's native Embedded Consensus
@@ -375,7 +381,8 @@ class EthereumDetails(_messages.Message):
     r"""Immutable. The execution client
 
     Values:
-      EXECUTION_CLIENT_UNSPECIFIED: <no description>
+      EXECUTION_CLIENT_UNSPECIFIED: Execution client has not been specified,
+        but should be.
       GETH: Official Go implementation of the Ethereum protocol.
         https://geth.ethereum.org/
       ERIGON: An implementation of Ethereum (execution client), on the
@@ -390,7 +397,7 @@ class EthereumDetails(_messages.Message):
     r"""Immutable. The Ethereum environment being accessed.
 
     Values:
-      NETWORK_UNSPECIFIED: <no description>
+      NETWORK_UNSPECIFIED: The network has not been specified, but should be.
       MAINNET: The ethereum Mainnet.
       TESTNET_GOERLI_PRATER: Ethereum Testnet based on Goerli protocol.
       TESTNET_SEPOLIA: Ethereum Testnet based on Sepolia/Bepolia protocol.
@@ -404,7 +411,7 @@ class EthereumDetails(_messages.Message):
     r"""Immutable. The type of Ethereum node.
 
     Values:
-      NODE_TYPE_UNSPECIFIED: <no description>
+      NODE_TYPE_UNSPECIFIED: Node type has not been specified, but should be.
       LIGHT: An Ethereum node that only downloads Ethereum block headers.
       FULL: Keeps a complete copy of the blockchain data, and contributes to
         the network by receiving, validating and forwarding transactions. This
@@ -489,7 +496,7 @@ class GoogleProtobufEmpty(_messages.Message):
 
 
 
-class IpInformation(_messages.Message):
+class IpInfo(_messages.Message):
   r"""The public IP information through which to interact with a Blockchain
   Node.
 

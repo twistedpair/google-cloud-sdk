@@ -1401,7 +1401,7 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/regions/{regionsId}/clusters/nodeGroups/{nodeGroupsId}',
+        flat_path='v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/nodeGroups/{nodeGroupsId}',
         http_method='DELETE',
         method_id='dataproc.projects.regions.clusters.nodeGroups.delete',
         ordered_params=['name'],

@@ -105,6 +105,16 @@ class AwsS3Data(_messages.Message):
     bucketName: Required. S3 Bucket name (see [Creating a
       bucket](https://docs.aws.amazon.com/AmazonS3/latest/dev/create-bucket-
       get-location-example.html)).
+    credentialsSecret: Optional. The Resource name of a secret in Secret
+      Manager. The Azure SAS token must be stored in Secret Manager in JSON
+      format: { "sas_token" : "SAS_TOKEN" } GoogleServiceAccount must be
+      granted `roles/secretmanager.secretAccessor` for the resource. See
+      [Configure access to a source: Microsoft Azure Blob Storage]
+      (https://cloud.google.com/storage-transfer/docs/source-microsoft-
+      azure#secret_manager) for more information. If `credentials_secret` is
+      specified, do not specify azure_credentials. This feature is in
+      [preview](https://cloud.google.com/terms/service-terms#1). Format:
+      `projects/{project_number}/secrets/{secret_name}`
     path: Root path to transfer objects. Must be an empty string or full path
       name that ends with a '/'. This field is treated as an object prefix. As
       such, it should generally not begin with a '/'.
@@ -119,8 +129,9 @@ class AwsS3Data(_messages.Message):
 
   awsAccessKey = _messages.MessageField('AwsAccessKey', 1)
   bucketName = _messages.StringField(2)
-  path = _messages.StringField(3)
-  roleArn = _messages.StringField(4)
+  credentialsSecret = _messages.StringField(3)
+  path = _messages.StringField(4)
+  roleArn = _messages.StringField(5)
 
 
 class AzureBlobStorageData(_messages.Message):
@@ -141,6 +152,16 @@ class AzureBlobStorageData(_messages.Message):
       retention#user-credentials).
     container: Required. The container to transfer from the Azure Storage
       account.
+    credentialsSecret: Optional. The Resource name of a secret in Secret
+      Manager. The Azure SAS token must be stored in Secret Manager in JSON
+      format: { "sas_token" : "SAS_TOKEN" } GoogleServiceAccount must be
+      granted `roles/secretmanager.secretAccessor` for the resource. See
+      [Configure access to a source: Microsoft Azure Blob Storage]
+      (https://cloud.google.com/storage-transfer/docs/source-microsoft-
+      azure#secret_manager) for more information. If `credentials_secret` is
+      specified, do not specify azure_credentials. This feature is in
+      [preview](https://cloud.google.com/terms/service-terms#1). Format:
+      `projects/{project_number}/secrets/{secret_name}`
     path: Root path to transfer objects. Must be an empty string or full path
       name that ends with a '/'. This field is treated as an object prefix. As
       such, it should generally not begin with a '/'.
@@ -149,8 +170,9 @@ class AzureBlobStorageData(_messages.Message):
 
   azureCredentials = _messages.MessageField('AzureCredentials', 1)
   container = _messages.StringField(2)
-  path = _messages.StringField(3)
-  storageAccount = _messages.StringField(4)
+  credentialsSecret = _messages.StringField(3)
+  path = _messages.StringField(4)
+  storageAccount = _messages.StringField(5)
 
 
 class AzureCredentials(_messages.Message):
@@ -1878,7 +1900,11 @@ class TransferSpec(_messages.Message):
     azureBlobStorageDataSource: An Azure Blob Storage data source.
     gcsDataSink: A Cloud Storage data sink.
     gcsDataSource: A Cloud Storage data source.
-    gcsIntermediateDataLocation: Cloud Storage intermediate data location.
+    gcsIntermediateDataLocation: For transfers between file systems, specifies
+      a Cloud Storage bucket to be used as an intermediate location through
+      which to transfer data. See [Transfer data between file
+      systems](https://cloud.google.com/storage-transfer/docs/file-to-file)
+      for more information.
     httpDataSource: An HTTP URL data source.
     objectConditions: Only objects that satisfy these object conditions are
       included in the set of data source and data sink objects. Object

@@ -44,6 +44,7 @@ class CopyTask(task.Task):
       self,
       source_resource,
       destination_resource,
+      posix_to_set=None,
       print_source_version=False,
       user_request_args=None,
       verbose=False,
@@ -54,6 +55,8 @@ class CopyTask(task.Task):
       source_resource (resource_reference.Resource): Source resource to copy.
       destination_resource (resource_reference.Resource): Target resource to
         copy to.
+      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
+        metadata on target.
       print_source_version (bool): Print source object version in status message
         enabled by the `verbose` kwarg.
       user_request_args (UserRequestArgs|None): Various user-set values
@@ -63,6 +66,7 @@ class CopyTask(task.Task):
     super(CopyTask, self).__init__()
     self._source_resource = source_resource
     self._destination_resource = destination_resource
+    self._posix_to_set = posix_to_set
     self._print_source_version = print_source_version
     self._user_request_args = user_request_args
     self._verbose = verbose

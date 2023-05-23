@@ -22,6 +22,7 @@ import json
 from apitools.base.py import encoding as apitools_encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import times
@@ -104,7 +105,13 @@ def SetDeleteCleanupPolicyUpdateMask(unused_ref, unused_args, request):
   return request
 
 
-def RepositoryToCleanupPoliciesResponse(response, unused_args):
+def RepositoryToCleanupPoliciesResponse(response, args):
+  """Formats Cleanup Policies output and displays Dry Run status."""
+  if hasattr(args, 'dry_run') and args.dry_run is not None:
+    if response.cleanupPolicyDryRun:
+      log.status.Print('Dry run is enabled.')
+    else:
+      log.status.Print('Dry run is disabled.')
   if not response.cleanupPolicies:
     return []
   policies = apitools_encoding.MessageToDict(response.cleanupPolicies)
@@ -119,8 +126,6 @@ def RepositoryToCleanupPoliciesResponse(response, unused_args):
 def SetOverwriteMask(unused_ref, args, request):
   if args.overwrite:
     request.updateMask = None
-  else:
-    request.updateMask = 'cleanup_policies'
   return request
 
 

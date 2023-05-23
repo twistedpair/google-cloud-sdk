@@ -4,6 +4,92 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
+## 432.0.0 (2023-05-23)
+
+### AI
+
+* Added `--public-endpoint-enabled` flag to `gcloud ai index-endpoints create` to support public endpoint.
+* Modified `--network` flag of `gcloud ai index-endpoints create` to be optional.
+
+### Anthos On-Prem
+
+* Added `--disable-control-plane-v2` flag to `gcloud container vmware clusters create` to explicitly disable the use of control plane v2 feature.
+* `--enable-control-plane-v2` in `gcloud container vmware clusters create` is by default set for version 1.15+.
+* Added `--ignore-errors` flag to `gcloud container bare-metal admin-clusters unenroll`. If set, the unenrollment of a bare metal admin cluster resource will succeed even if errors occur during unenrollment.
+
+### Artifact Registry
+
+* Changed IAM policy analysis scope to the root of project in `gcloud beta artifacts docker upgrade print-iam-policy`.
+
+### BigQuery
+
+* Fixed bug to ensure show works with encrypted S3 managed tables.
+ * Fixed bug to ensure spark properties can be updated to empty values.
+ * Fixed `RANGE<TIMESTAMP>` to correctly display `UNBOUNDED` boundaries.
+ * Fixed bug in the `bq info` command that caused it to always fail.
+ * Fixed bug where a line of logging was always printed.
+ * Added connections to `get-iam-policy` and `set-iam-policy`.
+
+### Cloud Build
+
+* Modified (`--repo`, `--repo-type`) and `--repository` to be optional in `gcloud builds triggers create manual`, `gcloud builds triggers create webhook` and `gcloud builds triggers create pubsub`.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.24.
+
+### Compute Engine
+
+* Added `--http-keep-alive-timeout-sec` flag to `gcloud compute alpha/beta target-http-proxies/target-https-proxies create/update` to configure http keep alive timeout sec field in target httpx proxy.
+* Added `--server-tls-policy` and `--clear-server-tls-policy` flags to
+  `gcloud compute target-https-proxies create/update` to attach/detach a
+  server TLS policy to the target https proxy.
+* Release pathTemplateMatch and pathTemplateRewrite fields in urlMaps to v1 API.
+* Updated `--consumer-accept-list` and `--consumer-reject-list` of `gcloud compute service-attachments create` and `gcloud compute service-attachments update` to support networks.
+* Promoted `--provisioned-throughput` flag of `gcloud compute disks create` and `gcloud compute disks update` to GA.
+* Promoted `--create-disk=provisioned-throughput` for `gcloud compute instances create` and `gcloud compute instance-templates create` to GA.
+* Promoted `gcloud compute interconnects remote-locations <describe|list>` to beta and GA.
+* Promoted `--remote-location` flag of `gcloud compute interconnects create` to beta and GA.
+* Promoted `--subnet-length` flag of `gcloud compute interconnects attachments <dedicated|provider> create` to beta and GA.
+
+### Container Registry
+
+* Changed "gloud container images describe" to check existence of the digest.
+
+### Database Migration
+
+* Updated `gcloud database-migration connection-profiles create alloydb` to support customer-managed encryption key(CMEK).
+* Updated `gcloud database-migration connection-profiles create cloudsql` to support customer-managed encryption key(CMEK).
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.31 to v1.0.0-beta.33. See <https://github.com/GoogleContainerTools/kpt/releases/tag/v1.0.0-beta.33> and previous release notes for more details.
+
+### Kubernetes Engine
+
+* Promoted fields `gpu-driver-version` within `--accelerator` flag to enable
+ GPU driver auto installation.
+* Updated default kubectl from 1.24.13 to 1.25.9.
+* Additional kubectl versions:
+  * kubectl.1.21 (1.21.14)
+  * kubectl.1.22 (1.22.17)
+  * kubectl.1.23 (1.23.17)
+  * kubectl.1.24 (1.24.13)
+  * kubectl.1.25 (1.25.9)
+  * kubectl.1.26 (1.26.4)
+  * kubectl.1.27 (1.27.1)
+
+### Network Security
+
+* Promoted `gcloud network-security security-profile-groups` to beta.
+* Added `network-security firewall-endpoints` commands to manage Cloud Firewall Plus endpoints, and promoted them to beta.
+* Promoted `gcloud network-security security-profiles threat-prevention` to beta.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
 
 ## 431.0.0 (2023-05-16)
 

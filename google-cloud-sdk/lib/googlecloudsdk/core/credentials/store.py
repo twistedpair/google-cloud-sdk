@@ -33,6 +33,7 @@ import dateutil
 from google.auth import exceptions as google_auth_exceptions
 from google.auth import external_account as google_auth_external_account
 from google.auth import external_account_authorized_user as google_auth_external_account_authorized_user
+from google.auth import jwt
 import google.auth.compute_engine as google_auth_gce
 from googlecloudsdk.api_lib.auth import util as auth_util
 from googlecloudsdk.core import config
@@ -855,6 +856,46 @@ def HandleGoogleAuthCredentialsRefreshError(for_adc=False):
     raise creds_exceptions.TokenRefreshError(six.text_type(e), for_adc=for_adc)
 
 
+def _ShouldRefreshGoogleAuthIdToken(credentials):
+  """Determine if ID token refresh is needed.
+
+  (1) we don't refresh ID token for non-default universe domain.
+  (2) for service account with self signed jwt feature enabled, we only refresh
+  ID token if it's about to expire
+
+  Args:
+    credentials: google.auth.credentials.Credentials, A google-auth credentials
+      to refresh.
+
+  Returns:
+    bool, Whether ID token refresh is needed.
+  """
+  # We don't refresh ID token for non-default universe domain.
+  if not properties.IsDefaultUniverse():
+    return False
+
+  if hasattr(credentials, '_id_token') and c_creds.UseSelfSignedJwt(
+      credentials
+  ):
+    # When the cached access token is about to expire, gcloud refreshes both
+    # access and ID token. For self signed jwt, this becomes a problem since
+    # we don't cache the access token (we generate a new one each time).
+    # Therefore for this case we check the ID token expiry to decide if we
+    # really need to refresh it.
+    try:
+      payload = jwt.decode(credentials._id_token, verify=False)  # pylint: disable=protected-access
+    except google_auth_exceptions.GoogleAuthError:
+      # If the ID token is malformed, we should refresh it for a new one.
+      return True
+
+    expiry = datetime.datetime.fromtimestamp(
+        payload['exp'], tz=datetime.timezone.utc
+    )
+    if not _TokenExpiresWithinWindow(_CREDENTIALS_EXPIRY_WINDOW, expiry):
+      return False
+  return True
+
+
 def _RefreshGoogleAuth(credentials,
                        is_impersonated_credential=False,
                        include_email=False,
@@ -899,13 +940,11 @@ def _RefreshGoogleAuth(credentials,
     # place to create creds so we just need to enable it there once.
     c_creds.EnableSelfSignedJwtIfApplicable(credentials)
 
-    credentials.refresh(request_client)
-
-    # Only refresh ID token for the default universe domain.
-    # Note that for user account credentials, when we refresh access token in
-    # the line above, the same request refreshes ID token too, so we don't need
-    # to refresh it again.
-    if properties.IsDefaultUniverse():
+    if _ShouldRefreshGoogleAuthIdToken(credentials):
+      # Note that for user account credentials, when we refresh access token in
+      # the line above, the same request refreshes ID token too, so we don't
+      # need to refresh it again. Thus we set `refresh_user_account_credentials`
+      # to False when calling `_RefreshGoogleAuthIdToken` below.
       _RefreshGoogleAuthIdToken(
           credentials,
           is_impersonated_credential=is_impersonated_credential,
@@ -914,6 +953,11 @@ def _RefreshGoogleAuth(credentials,
           gce_include_license=gce_include_license,
           refresh_user_account_credentials=False,
       )
+
+    # credentials.refresh automatically writes tokens into token cache. We need
+    # to call the refresh method to refresh access token AFTER we refresh the ID
+    # token, so both tokens can be written into the token cache.
+    credentials.refresh(request_client)
 
 
 def _RefreshGoogleAuthIdToken(

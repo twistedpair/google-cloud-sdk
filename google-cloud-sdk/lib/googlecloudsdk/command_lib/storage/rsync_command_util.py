@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import copy
 import enum
 import os
 
@@ -393,6 +392,7 @@ class _IterateResource(enum.Enum):
 def _get_copy_task(
     user_request_args,
     source_object,
+    posix_to_set,
     source_container=None,
     destination_object=None,
     destination_container=None,
@@ -458,6 +458,7 @@ def _get_copy_task(
       copy_source,
       copy_destination,
       do_not_decompress=True,
+      posix_to_set=posix_to_set,
       user_request_args=user_request_args,
       verbose=True,
   )
@@ -467,6 +468,7 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
     user_request_args,
     source_object,
     destination_object,
+    posix_to_set,
     compare_only_hashes=False,
     dry_run=False,
     skip_if_destination_has_later_modification_time=False,
@@ -476,15 +478,15 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
   if user_request_args.no_clobber:
     return (None, _IterateResource.SOURCE)
 
-  source_posix = posix_util.get_posix_attributes_from_resource(source_object)
   destination_posix = posix_util.get_posix_attributes_from_resource(
       destination_object
   )
+
   if (
       skip_if_destination_has_later_modification_time
-      and source_posix.mtime is not None
+      and posix_to_set.mtime is not None
       and destination_posix.mtime is not None
-      and source_posix.mtime < destination_posix.mtime
+      and posix_to_set.mtime < destination_posix.mtime
   ):
     # This is technically a metadata comparison, but it would complicate
     # `_compare_metadata_and_return_copy_needed`.
@@ -493,7 +495,7 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
   if _compare_metadata_and_return_copy_needed(
       source_object,
       destination_object,
-      source_posix.mtime,
+      posix_to_set.mtime,
       destination_posix.mtime,
       compare_only_hashes,
   ):
@@ -503,6 +505,8 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
         _get_copy_task(
             user_request_args,
             source_object,
+            posix_to_set,
+            destination_posix,
             destination_object=destination_object,
             dry_run=dry_run,
             skip_unsupported=skip_unsupported,
@@ -511,11 +515,11 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
     )
 
   need_full_posix_update = (
-      user_request_args.preserve_posix and source_posix != destination_posix
+      user_request_args.preserve_posix and posix_to_set != destination_posix
   )
   need_mtime_update = (
-      source_posix.mtime is not None
-      and source_posix.mtime != destination_posix.mtime
+      posix_to_set.mtime is not None
+      and posix_to_set.mtime != destination_posix.mtime
   )
   if not (need_full_posix_update or need_mtime_update):
     return (None, _IterateResource.BOTH)
@@ -529,30 +533,12 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
       log.status.Print('Would set mtime for {}'.format(destination_object))
     return (None, _IterateResource.BOTH)
 
-  if need_full_posix_update:
-    new_posix = source_posix
-  else:
-    new_posix = posix_util.PosixAttributes(
-        None, source_posix.mtime, None, None, None
-    )
   if isinstance(destination_object, resource_reference.ObjectResource):
-    posix_dict = {}
-    posix_util.update_custom_metadata_dict_with_posix_attributes(
-        posix_dict, new_posix
-    )
-    user_request_args_with_posix = copy.deepcopy(user_request_args)
-    if user_request_args_with_posix.resource_args:
-      existing_custom_fields = (
-          user_request_args_with_posix.resource_args.custom_fields_to_set or {}
-      )
-    else:
-      existing_custom_fields = {}
-    # Overwrite POSIX data with user's custom fields.
-    posix_dict.update(existing_custom_fields)
-    user_request_args_with_posix.resource_args.custom_fields_to_set = posix_dict
     return (
         patch_object_task.PatchObjectTask(
-            destination_object, user_request_args=user_request_args_with_posix
+            destination_object,
+            posix_to_set=posix_to_set,
+            user_request_args=user_request_args,
         ),
         _IterateResource.BOTH,
     )
@@ -561,7 +547,7 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
           posix_util.get_system_posix_data(),
           source_object,
           destination_object,
-          source_posix,
+          posix_to_set,
           destination_posix,
       ),
       _IterateResource.BOTH,
@@ -704,11 +690,20 @@ def _get_task_and_iteration_instruction(
     _log_skipping_symlink(source_object)
     return (None, _IterateResource.SOURCE)
 
+  source_posix = posix_util.get_posix_attributes_from_resource(source_object)
+  if user_request_args.preserve_posix:
+    posix_to_set = source_posix
+  else:
+    posix_to_set = posix_util.PosixAttributes(
+        None, source_posix.mtime, None, None, None
+    )
+
   if not destination_object:
     return (
         _get_copy_task(
             user_request_args,
             source_object,
+            posix_to_set,
             source_container=source_container,
             destination_container=destination_container,
             dry_run=dry_run,
@@ -730,6 +725,7 @@ def _get_task_and_iteration_instruction(
         _get_copy_task(
             user_request_args,
             source_object,
+            posix_to_set,
             source_container=source_container,
             destination_container=destination_container,
             dry_run=dry_run,
@@ -756,6 +752,7 @@ def _get_task_and_iteration_instruction(
       user_request_args,
       source_object,
       destination_object,
+      posix_to_set,
       compare_only_hashes=compare_only_hashes,
       dry_run=dry_run,
       skip_if_destination_has_later_modification_time=(

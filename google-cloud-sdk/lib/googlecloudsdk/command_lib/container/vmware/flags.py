@@ -1614,12 +1614,21 @@ def AddAuthorization(parser):
           ' admin cluster'
       )
   )
+
+  flag_help_text = """\
+Users that will be granted the cluster-admin role on the cluster, providing full access to the cluster.
+
+To add multiple users, specify one in each flag. When updating, the update command overwrites the whole grant list. Specify all existing and new users that you want to be cluster administrators.
+
+Examples:
+
+  $ {command}
+      --admin-users alice@example.com
+      --admin-users bob@example.com
+"""
   authorization_group.add_argument(
       '--admin-users',
-      help=(
-          'Users that will be granted the cluster-admin role on the cluster,'
-          ' providing full access to the cluster.'
-      ),
+      help=flag_help_text,
       action='append',
   )
 
@@ -1743,9 +1752,17 @@ def AddEnableControlPlaneV2(parser):
   Args:
     parser: The argparse parser to add the flag to.
   """
-  parser.add_argument(
+  control_plane_v2_mutex_group = parser.add_group(
+      mutex=True,
+  )
+  control_plane_v2_mutex_group.add_argument(
       '--enable-control-plane-v2',
       help='If set, enable control plane v2.',
+      action='store_true',
+  )
+  control_plane_v2_mutex_group.add_argument(
+      '--disable-control-plane-v2',
+      help='If set, disable control plane v2.',
       action='store_true',
   )
 
@@ -1784,4 +1801,28 @@ It is not modifiable outside / beyond the  enrollment operation.
   parser.add_argument(
       '--local-name',
       help=local_name_help_text,
+  )
+
+
+def AddNodePoolUpgradePolicy(parser):
+  """Upgrade policy of the node pool."""
+  help_text = """Upgrade policy of the node pool.
+
+Examples:
+
+  $ {command}
+      --upgrade-policy independent=True
+
+If independent is set to True, upgrade or downgrade the node pool independently from the control plane.
+"""
+  parser.add_argument(
+      '--upgrade-policy',
+      type=arg_parsers.ArgDict(
+          spec={
+              'independent': arg_parsers.ArgBoolean(),
+          }
+      ),
+      help=help_text,
+      metavar='independent=BOOL',
+      hidden=True,
   )

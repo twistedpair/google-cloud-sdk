@@ -863,6 +863,31 @@ class GenerateUploadUrlResponse(_messages.Message):
   uploadUrl = _messages.StringField(2)
 
 
+class GoogleCloudFunctionsV2LocationMetadata(_messages.Message):
+  r"""Extra GCF specific location information.
+
+  Enums:
+    EnvironmentsValueListEntryValuesEnum:
+
+  Fields:
+    environments: The Cloud Function environments this location supports.
+  """
+
+  class EnvironmentsValueListEntryValuesEnum(_messages.Enum):
+    r"""EnvironmentsValueListEntryValuesEnum enum type.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Unspecified
+      GEN_1: Gen 1
+      GEN_2: Gen 2
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    GEN_1 = 1
+    GEN_2 = 2
+
+  environments = _messages.EnumField('EnvironmentsValueListEntryValuesEnum', 1, repeated=True)
+
+
 class GoogleCloudFunctionsV2OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -1012,6 +1037,31 @@ class GoogleCloudFunctionsV2StateMessage(_messages.Message):
   type = _messages.StringField(3)
 
 
+class GoogleCloudFunctionsV2alphaLocationMetadata(_messages.Message):
+  r"""Extra GCF specific location information.
+
+  Enums:
+    EnvironmentsValueListEntryValuesEnum:
+
+  Fields:
+    environments: The Cloud Function environments this location supports.
+  """
+
+  class EnvironmentsValueListEntryValuesEnum(_messages.Enum):
+    r"""EnvironmentsValueListEntryValuesEnum enum type.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Unspecified
+      GEN_1: Gen 1
+      GEN_2: Gen 2
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    GEN_1 = 1
+    GEN_2 = 2
+
+  environments = _messages.EnumField('EnvironmentsValueListEntryValuesEnum', 1, repeated=True)
+
+
 class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -1159,6 +1209,31 @@ class GoogleCloudFunctionsV2alphaStateMessage(_messages.Message):
   message = _messages.StringField(1)
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)
   type = _messages.StringField(3)
+
+
+class GoogleCloudFunctionsV2betaLocationMetadata(_messages.Message):
+  r"""Extra GCF specific location information.
+
+  Enums:
+    EnvironmentsValueListEntryValuesEnum:
+
+  Fields:
+    environments: The Cloud Function environments this location supports.
+  """
+
+  class EnvironmentsValueListEntryValuesEnum(_messages.Enum):
+    r"""EnvironmentsValueListEntryValuesEnum enum type.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Unspecified
+      GEN_1: Gen 1
+      GEN_2: Gen 2
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    GEN_1 = 1
+    GEN_2 = 2
+
+  environments = _messages.EnumField('EnvironmentsValueListEntryValuesEnum', 1, repeated=True)
 
 
 class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):

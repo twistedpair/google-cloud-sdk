@@ -10,6 +10,20 @@ project:
     help: The Google Cloud Platform project name.
     property: core/project
 
+# This is a workaround necessary to make declarative implementations work with aggregatedList
+# methods in certain conditions. Specifically, when a new resource's visibility is only on
+# alpha level, we cannot refer to the "regular" project definition above, because
+# `cloudresourcemanager` does not define an alpha version.
+compute_project:
+  name: compute_project
+  collection: compute.projects
+  attributes:
+  - &compute_project
+    parameter_name: project
+    attribute_name: project
+    help: The Google Cloud Platform project name.
+    property: core/project
+
 region:
   name: region
   collection: compute.regions
@@ -176,7 +190,7 @@ storage_pool:
   name: storage pool
   collection: compute.storagePools
   attributes:
-  - *project
+  - *compute_project
   - *zone
   - parameter_name: storagePool
     attribute_name: storage_pool

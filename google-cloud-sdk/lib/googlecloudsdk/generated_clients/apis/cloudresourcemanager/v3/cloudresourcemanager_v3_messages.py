@@ -1198,7 +1198,7 @@ class EffectiveTag(_messages.Message):
     tagKey: The name of the TagKey, in the format `tagKeys/{id}`, such as
       `tagKeys/123`.
     tagKeyParentName: The parent name of the tag key. Must be in the format
-      `organizations/{organization_id}`.
+      `organizations/{organization_id}` or `projects/{project_number}`
     tagValue: Resource name for TagValue in the format `tagValues/456`.
   """
 
@@ -2304,14 +2304,14 @@ class TagKey(_messages.Message):
     Values:
       PURPOSE_UNSPECIFIED: Unspecified purpose.
       GCE_FIREWALL: Purpose for Compute Engine firewalls. A corresponding
-        purpose_data should be set for the network the tag is intended for.
-        The key should be 'network' and the value should be in either of these
-        two formats: -https://www.googleapis.com/compute/{compute_version}/pro
-        jects/{project_id}/global/networks/{network_id}
-        -{project_id}/{network_name} Examples:
-        -https://www.googleapis.com/compute/staging_v1/projects/fail-closed-
-        load-testing/global/networks/6992953698831725600 -fail-closed-load-
-        testing/load-testing-network
+        `purpose_data` should be set for the network the tag is intended for.
+        The key should be `network` and the value should be in ## either of
+        these two formats: `https://www.googleapis.com/compute/{compute_versio
+        n}/projects/{project_id}/global/networks/{network_id}` -
+        `{project_id}/{network_name}` ## Examples:
+        `https://www.googleapis.com/compute/staging_v1/projects/fail-closed-
+        load-testing/global/networks/6992953698831725600` - `fail-closed-load-
+        testing/load-testing-network`
     """
     PURPOSE_UNSPECIFIED = 0
     GCE_FIREWALL = 1

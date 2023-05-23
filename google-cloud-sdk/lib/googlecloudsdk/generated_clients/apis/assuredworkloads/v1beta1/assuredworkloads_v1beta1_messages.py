@@ -285,6 +285,74 @@ class GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse(_messages.Me
   blockers = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_messages.Message):
+  r"""Operation metadata to give request details of CreateWorkload.
+
+  Enums:
+    ComplianceRegimeValueValuesEnum: Optional. Compliance controls that should
+      be applied to the resources managed by the workload.
+
+  Fields:
+    complianceRegime: Optional. Compliance controls that should be applied to
+      the resources managed by the workload.
+    createTime: Optional. Time when the operation was created.
+    displayName: Optional. The display name of the workload.
+    parent: Optional. The parent of the workload.
+    resourceSettings: Optional. Resource properties in the input that are used
+      for creating/customizing workload resources.
+  """
+
+  class ComplianceRegimeValueValuesEnum(_messages.Enum):
+    r"""Optional. Compliance controls that should be applied to the resources
+    managed by the workload.
+
+    Values:
+      COMPLIANCE_REGIME_UNSPECIFIED: Unknown compliance regime.
+      IL4: Information protection as per DoD IL4 requirements.
+      CJIS: Criminal Justice Information Services (CJIS) Security policies.
+      FEDRAMP_HIGH: FedRAMP High data protection controls
+      FEDRAMP_MODERATE: FedRAMP Moderate data protection controls
+      US_REGIONAL_ACCESS: Assured Workloads For US Regions data protection
+        controls
+      HIPAA: Health Insurance Portability and Accountability Act controls
+      HITRUST: Health Information Trust Alliance controls
+      EU_REGIONS_AND_SUPPORT: Assured Workloads For EU Regions and Support
+        controls
+      CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
+        controls
+      ITAR: International Traffic in Arms Regulations
+      AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
+        Support controls Available for public preview consumption. Don't
+        create production workloads.
+      ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners;
+      ISR_REGIONS: Assured Workloads for Israel
+      ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
+      CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
+    """
+    COMPLIANCE_REGIME_UNSPECIFIED = 0
+    IL4 = 1
+    CJIS = 2
+    FEDRAMP_HIGH = 3
+    FEDRAMP_MODERATE = 4
+    US_REGIONAL_ACCESS = 5
+    HIPAA = 6
+    HITRUST = 7
+    EU_REGIONS_AND_SUPPORT = 8
+    CA_REGIONS_AND_SUPPORT = 9
+    ITAR = 10
+    AU_REGIONS_AND_US_SUPPORT = 11
+    ASSURED_WORKLOADS_FOR_PARTNERS = 12
+    ISR_REGIONS = 13
+    ISR_REGIONS_AND_SUPPORT = 14
+    CA_PROTECTED_B = 15
+
+  complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 5, repeated=True)
+
+
 class GoogleCloudAssuredworkloadsV1beta1ListViolationsResponse(_messages.Message):
   r"""Response of ListViolations endpoint.
 
@@ -572,6 +640,8 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       organizations/{organization}/locations/{location}/workloads/{workload}
       Read-only.
     partner: Optional. Partner regime associated with this workload.
+    partnerPermissions: Optional. Permissions granted to the AW Partner SA
+      account for the customer workload
     provisionedResourcesParent: Input only. The parent resource for the
       resources managed by this Assured Workload. May be either empty or a
       folder resource which is a child of the Workload parent. If not
@@ -714,11 +784,12 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 17)
   name = _messages.StringField(18)
   partner = _messages.EnumField('PartnerValueValuesEnum', 19)
-  provisionedResourcesParent = _messages.StringField(20)
-  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 21, repeated=True)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 22, repeated=True)
-  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse', 23)
-  violationNotificationsEnabled = _messages.BooleanField(24)
+  partnerPermissions = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadPartnerPermissions', 20)
+  provisionedResourcesParent = _messages.StringField(21)
+  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 22, repeated=True)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 23, repeated=True)
+  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse', 24)
+  violationNotificationsEnabled = _messages.BooleanField(25)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(_messages.Message):
@@ -892,6 +963,21 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings(_messages.Message):
 
   nextRotationTime = _messages.StringField(1)
   rotationPeriod = _messages.StringField(2)
+
+
+class GoogleCloudAssuredworkloadsV1beta1WorkloadPartnerPermissions(_messages.Message):
+  r"""Permissions granted to the AW Partner SA account for the customer
+  workload
+
+  Fields:
+    dataLogsViewer: Allow the partner to view inspectability logs and
+      monitoring violations.
+    remediateFolderViolations: Allow partner to monitor folder and remediate
+      violations
+  """
+
+  dataLogsViewer = _messages.BooleanField(1)
+  remediateFolderViolations = _messages.BooleanField(2)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo(_messages.Message):

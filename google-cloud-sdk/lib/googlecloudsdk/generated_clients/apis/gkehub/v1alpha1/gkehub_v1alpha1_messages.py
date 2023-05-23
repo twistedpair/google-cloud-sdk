@@ -1663,6 +1663,9 @@ class FleetDefaultMemberConfig(_messages.Message):
       intent here, controllers are able to distinguish between new Memberships
       and old ones which were previously overridden. Keys are of the following
       structure: `projects/{p}/locations/{l}/memberships/{m}`
+    retroactiveApply: If true, then changes to the default membership spec are
+      applied to all existing Memberships in addition to any future
+      Memberships.
     serviceMesh: Spec for ServiceMesh.
     setTime: Timestamp for when the default member configuration was first
       set. This timestamp is used in situations where a Fleet has existing
@@ -1704,8 +1707,9 @@ class FleetDefaultMemberConfig(_messages.Message):
 
   identityService = _messages.MessageField('MemberConfig', 1)
   optedOutMembers = _messages.MessageField('OptedOutMembersValue', 2)
-  serviceMesh = _messages.MessageField('ServiceMeshMembershipSpec', 3)
-  setTime = _messages.StringField(4)
+  retroactiveApply = _messages.BooleanField(3)
+  serviceMesh = _messages.MessageField('ServiceMeshMembershipSpec', 4)
+  setTime = _messages.StringField(5)
 
 
 class FleetObservabilityFeatureSpec(_messages.Message):

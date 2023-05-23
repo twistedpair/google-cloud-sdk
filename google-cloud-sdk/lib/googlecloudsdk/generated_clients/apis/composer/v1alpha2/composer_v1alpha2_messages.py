@@ -631,6 +631,20 @@ class ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest(_messages.Message
   saveSnapshotRequest = _messages.MessageField('SaveSnapshotRequest', 2)
 
 
+class ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest object.
+
+  Fields:
+    environment: The resource name of the environment in the form: "projects/{
+      projectId}/locations/{locationId}/environments/{environmentId}".
+    stopAirflowCommandRequest: A StopAirflowCommandRequest resource to be
+      passed as the request body.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  stopAirflowCommandRequest = _messages.MessageField('StopAirflowCommandRequest', 2)
+
+
 class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
   r"""A ComposerProjectsLocationsImageVersionsListRequest object.
 
@@ -1062,7 +1076,7 @@ class EnvironmentConfig(_messages.Message):
       versions composer-2.*.*-airflow-*.*.* and newer.
     ResilienceModeValueValuesEnum: Optional. Resilience mode of the Cloud
       Composer Environment. This field is supported for Cloud Composer
-      environments in versions composer-2.0.32-airflow-*.*.* and newer.
+      environments in versions composer-2.1.15-airflow-*.*.* and newer.
 
   Fields:
     airflowByoidUri: Output only. The 'bring your own identity' variant of the
@@ -1115,7 +1129,7 @@ class EnvironmentConfig(_messages.Message):
       versions composer-2.*.*-airflow-*.*.* and newer.
     resilienceMode: Optional. Resilience mode of the Cloud Composer
       Environment. This field is supported for Cloud Composer environments in
-      versions composer-2.0.32-airflow-*.*.* and newer.
+      versions composer-2.1.15-airflow-*.*.* and newer.
     softwareConfig: The configuration settings for software inside the
       environment.
     webServerConfig: Optional. The configuration settings for the Airflow web
@@ -1151,7 +1165,7 @@ class EnvironmentConfig(_messages.Message):
   class ResilienceModeValueValuesEnum(_messages.Enum):
     r"""Optional. Resilience mode of the Cloud Composer Environment. This
     field is supported for Cloud Composer environments in versions
-    composer-2.0.32-airflow-*.*.* and newer.
+    composer-2.1.15-airflow-*.*.* and newer.
 
     Values:
       RESILIENCE_MODE_UNSPECIFIED: Default mode doesn't change environment
@@ -1949,6 +1963,14 @@ class PrivateEnvironmentConfig(_messages.Message):
     cloudSqlIpv4CidrBlock: Optional. The CIDR block from which IP range in
       tenant project will be reserved for Cloud SQL. Needs to be disjoint from
       `web_server_ipv4_cidr_block`.
+    enablePrivateBuildsOnly: Optional. If `true`, builds performed during
+      operations that install Python packages have only private connectivity
+      to Google services (including Artifact Registry) and VPC network (if
+      either `NodeConfig.network` and `NodeConfig.subnetwork` fields or
+      `NodeConfig.composer_network_attachment` field are specified). If
+      `false`, the builds also have access to the internet. This field is
+      supported for Cloud Composer environments in versions
+      composer-2.5.*-airflow-*.*.* and newer.
     enablePrivateEnvironment: Optional. If `true`, a Private IP Cloud Composer
       environment is created. If this field is set to true,
       `IPAllocationPolicy.use_ip_aliases` must be set to true for Cloud
@@ -1975,12 +1997,13 @@ class PrivateEnvironmentConfig(_messages.Message):
   cloudComposerNetworkIpv4CidrBlock = _messages.StringField(2)
   cloudComposerNetworkIpv4ReservedRange = _messages.StringField(3)
   cloudSqlIpv4CidrBlock = _messages.StringField(4)
-  enablePrivateEnvironment = _messages.BooleanField(5)
-  enablePrivatelyUsedPublicIps = _messages.BooleanField(6)
-  networkingConfig = _messages.MessageField('NetworkingConfig', 7)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 8)
-  webServerIpv4CidrBlock = _messages.StringField(9)
-  webServerIpv4ReservedRange = _messages.StringField(10)
+  enablePrivateBuildsOnly = _messages.BooleanField(5)
+  enablePrivateEnvironment = _messages.BooleanField(6)
+  enablePrivatelyUsedPublicIps = _messages.BooleanField(7)
+  networkingConfig = _messages.MessageField('NetworkingConfig', 8)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 9)
+  webServerIpv4CidrBlock = _messages.StringField(10)
+  webServerIpv4ReservedRange = _messages.StringField(11)
 
 
 class RecoveryConfig(_messages.Message):
@@ -2441,6 +2464,35 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StopAirflowCommandRequest(_messages.Message):
+  r"""Stop Airflow Command request.
+
+  Fields:
+    executionId: The unique ID of the command execution.
+    force: If true, the execution is terminated forcefully (SIGKILL). If
+      false, the execution is stopped gracefully, giving it time for cleanup.
+    pod: The name of the pod where the command is executed.
+    podNamespace: The namespace of the pod where the command is executed.
+  """
+
+  executionId = _messages.StringField(1)
+  force = _messages.BooleanField(2)
+  pod = _messages.StringField(3)
+  podNamespace = _messages.StringField(4)
+
+
+class StopAirflowCommandResponse(_messages.Message):
+  r"""Response to StopAirflowCommandRequest.
+
+  Fields:
+    isDone: Whether the execution is still running.
+    output: Output message from stopping execution request.
+  """
+
+  isDone = _messages.BooleanField(1)
+  output = _messages.StringField(2, repeated=True)
 
 
 class Task(_messages.Message):

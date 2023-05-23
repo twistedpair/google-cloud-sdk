@@ -75,7 +75,7 @@ class Execution(_messages.Message):
     state: Output only. Current state of the execution.
     stateError: Output only. Error regarding the state of the Execution
       resource. For example, this field will have error details if the
-      Execution data is unavailable due to revoked KMS key permissions.
+      execution data is unavailable due to revoked KMS key permissions.
     status: Output only. Status tracks the current steps and progress data of
       this execution.
     workflowRevisionId: Output only. Revision of the workflow this execution

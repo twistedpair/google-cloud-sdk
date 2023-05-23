@@ -88,16 +88,23 @@ class ReplicationsClient(object):
     )
     return self.WaitForOperation(operation_ref)
 
-  def ParseReplicationConfig(self,
-                             name=None,
-                             description=None,
-                             labels=None):
+  def ParseReplicationConfig(
+      self,
+      name=None,
+      description=None,
+      labels=None,
+      replication_schedule=None,
+      destination_volume_parameters=None,
+  ):
     """Parse the command line arguments for Create Replication into a config.
 
     Args:
       name: the name of the Replication.
       description: the description of the Replication.
       labels: the parsed labels value.
+      replication_schedule: the schedule for Replication.
+      destination_volume_parameters: the input parameters used for creating
+        destination volume.
 
     Returns:
       the configuration that will be used as the request body for creating a
@@ -107,6 +114,10 @@ class ReplicationsClient(object):
     replication.name = name
     replication.description = description
     replication.labels = labels
+    replication.replicationSchedule = replication_schedule
+    self._adapter.ParseDestinationVolumeParameters(
+        replication, destination_volume_parameters
+    )
     return replication
 
   def ListReplications(self, volume_ref, limit=None):
@@ -167,20 +178,23 @@ class ReplicationsClient(object):
     return self.client.projects_locations_volumes_replications.Get(request)
 
   def ParseUpdatedReplicationConfig(
-      self, replication_config, description=None, labels=None
+      self, replication_config, description=None, labels=None,
+      replication_schedule=None
   ):
     """Parse updates into a replication config.
 
     Args:
       replication_config: The replication config to update.
-      description: str, a new description, if any.
+      description: The new description, if any.
       labels: LabelsValue message, the new labels value, if any.
+      replication_schedule: The new schedule for Replication, if any.
 
     Returns:
       The replication message.
     """
     return self._adapter.ParseUpdatedReplicationConfig(
-        replication_config, description=description, labels=labels
+        replication_config, description=description, labels=labels,
+        replication_schedule=replication_schedule
     )
 
   def UpdateReplication(
@@ -277,6 +291,35 @@ class BetaReplicationsAdapter(object):
     self.client = GetClientInstance(release_track=self.release_track)
     self.messages = GetMessagesModule(release_track=self.release_track)
 
+  def ParseDestinationVolumeParameters(
+      self, replication, destination_volume_parameters
+  ):
+    """Parses Destination Volume Parameters for Replication into a config.
+
+    Args:
+      replication: The Cloud Netapp Volumes Replication object.
+      destination_volume_parameters: The Destination Volume Parameters message
+        object.
+
+    Returns:
+      Replication message populated with Destination Volume Parameters values.
+    """
+    if not destination_volume_parameters:
+      return
+    parameters = self.messages.DestinationVolumeParameters()
+    for key, val in destination_volume_parameters.items():
+      if key == 'storage_pool':
+        parameters.storagePool = val
+      elif key == 'volume_id':
+        parameters.volumeId = val
+      elif key == 'share_name':
+        parameters.shareName = val
+      elif key == 'description':
+        parameters.description = val
+      else:
+        log.warning('The attribute {} is not recognized.'.format(key))
+    replication.destinationVolumeParameters = parameters
+
   def UpdateReplication(self, replication_ref, replication_config, update_mask):
     """Send a Patch request for the Cloud NetApp Volume Replication."""
     update_request = (
@@ -292,17 +335,19 @@ class BetaReplicationsAdapter(object):
     return update_op
 
   def ParseUpdatedReplicationConfig(
-      self, replication_config, description=None, labels=None
+      self, replication_config, description=None, labels=None,
+      replication_schedule=None
   ):
     """Parse update information into an updated Replication message."""
     if description is not None:
       replication_config.description = description
     if labels is not None:
       replication_config.labels = labels
+    if replication_schedule is not None:
+      replication_config.replicationSchedule = replication_schedule
     return replication_config
 
-  def ResumeReplication(self,
-                        replication_ref):
+  def ResumeReplication(self, replication_ref):
     """Send a resume request for the Cloud NetApp Volume Replication."""
     resume_request = (
         self.messages.NetappProjectsLocationsVolumesReplicationsResumeRequest(

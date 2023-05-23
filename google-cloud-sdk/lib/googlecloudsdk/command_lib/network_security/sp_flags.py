@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.network_security.security_profiles.threat_prevention import sp_api
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -35,7 +36,7 @@ def AddSeverityorThreatIDArg(parser, required=True):
       type=arg_parsers.ArgList(),
       metavar="SEVERITY_LEVEL",
       help=(
-          "List of comma seperated severities where each value in the list"
+          "List of comma-separated severities where each value in the list"
           " indicates the severity of the threat."
       ),
   )
@@ -44,7 +45,7 @@ def AddSeverityorThreatIDArg(parser, required=True):
       type=arg_parsers.ArgList(),
       metavar="THREAT-ID",
       help=(
-          "List of comma seperated threat identifiers where each identifier in"
+          "List of comma-separated threat identifiers where each identifier in"
           " the list is a vendor-specified Signature ID representing a threat"
           " type. "
       ),
@@ -77,7 +78,7 @@ def AddEnablePacketCaptureArg(parser, required=False):
   )
 
 
-def AddSecurityProfileResource(parser):
+def AddSecurityProfileResource(parser, release_track):
   """Adds Security Profile Threat Prevention type."""
   name = "security_profile"
   resource_spec = concepts.ResourceSpec(
@@ -85,7 +86,7 @@ def AddSecurityProfileResource(parser):
           "networksecurity.organizations.locations.securityProfiles"
       ),
       resource_name="security_profile",
-      api_version="v1alpha1",
+      api_version=sp_api.GetApiVersion(release_track),
       organizationsId=concepts.ResourceParameterAttributeConfig(
           "organization",
           "Organization ID to which the changes should apply.",

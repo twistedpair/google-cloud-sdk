@@ -28,16 +28,21 @@ from googlecloudsdk.core import log
 class PatchObjectTask(task.Task):
   """Updates a cloud storage object's metadata."""
 
-  def __init__(self, object_resource, user_request_args=None):
+  def __init__(
+      self, object_resource, posix_to_set=None, user_request_args=None
+  ):
     """Initializes task.
 
     Args:
       object_resource (resource_reference.ObjectResource): The object to update.
+      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
+        metadata on target.
       user_request_args (UserRequestArgs|None): Describes metadata updates to
         perform.
     """
     super(PatchObjectTask, self).__init__()
     self._object_resource = object_resource
+    self._posix_to_set = posix_to_set
     self._user_request_args = user_request_args
 
   def execute(self, task_status_queue=None):
@@ -51,7 +56,9 @@ class PatchObjectTask(task.Task):
         self._object_resource.storage_url.bucket_name,
         self._object_resource.storage_url.object_name,
         self._object_resource,
-        request_config=request_config)
+        request_config=request_config,
+        posix_to_set=self._posix_to_set,
+    )
 
     if task_status_queue:
       progress_callbacks.increment_count_callback(task_status_queue)
@@ -59,5 +66,8 @@ class PatchObjectTask(task.Task):
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (self._object_resource == other._object_resource and
-            self._user_request_args == other._user_request_args)
+    return (
+        self._object_resource == other._object_resource
+        and self._posix_to_set == other._posix_to_set
+        and self._user_request_args == other._user_request_args
+    )

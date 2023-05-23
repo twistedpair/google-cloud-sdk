@@ -66,8 +66,8 @@ class AnalyzeEntitiesResponse(_messages.Message):
     entities: The union of all the candidate entities that the entity_mentions
       in this response could link to. These are UMLS concepts or normalized
       mention content.
-    entityMentions: entity_mentions contains all the annotated medical
-      entities that were mentioned in the provided document.
+    entityMentions: The `entity_mentions` field contains all the annotated
+      medical entities that were mentioned in the provided document.
     fhirBundle: The FHIR bundle ([`R4`](https://www.hl7.org/fhir/R4)) that
       includes all the entities, the entity mentions, and the relationships in
       JSON format.
@@ -5161,11 +5161,14 @@ class SchemaConfig(_messages.Message):
         this limitation, the server will not generate schemas for fields of
         type `Resource`, which can hold any resource type. The affected fields
         are `Parameters.parameter.resource`, `Bundle.entry.resource`, and
-        `Bundle.entry.response.outcome`.
+        `Bundle.entry.response.outcome`. Analytics schema does not gracefully
+        handle extensions with one or more occurrences, anaytics schema also
+        does not handle contained resource.
       ANALYTICS_V2: Analytics V2, similar to schema defined by the FHIR
         community, with added support for extensions with one or more
         occurrences and contained resources in stringified JSON. Analytics V2
-        uses more space in the destination table than Analytics V1.
+        uses more space in the destination table than Analytics V1. It is
+        generally recommended to use Analytics V2 over Analytics.
     """
     SCHEMA_TYPE_UNSPECIFIED = 0
     LOSSLESS = 1

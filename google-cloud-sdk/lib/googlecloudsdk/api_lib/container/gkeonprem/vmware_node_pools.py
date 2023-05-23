@@ -32,12 +32,15 @@ class NodePoolsClient(client.ClientBase):
 
   def __init__(self, **kwargs):
     super(NodePoolsClient, self).__init__(**kwargs)
-    self._service = self._client.projects_locations_vmwareClusters_vmwareNodePools
+    self._service = (
+        self._client.projects_locations_vmwareClusters_vmwareNodePools
+    )
 
   def List(self, args):
     """Lists Node Pools in the Anthos clusters on VMware API."""
     list_req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsListRequest(
-        parent=self._user_cluster_name(args))
+        parent=self._user_cluster_name(args)
+    )
     return list_pager.YieldFromList(
         self._service,
         list_req,
@@ -57,7 +60,8 @@ class NodePoolsClient(client.ClientBase):
         'ignoreErrors': flags.Get(args, 'ignore_errors'),
     }
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsDeleteRequest(
-        **kwargs)
+        **kwargs
+    )
     return self._service.Delete(req)
 
   def Create(self, args):
@@ -70,26 +74,24 @@ class NodePoolsClient(client.ClientBase):
         'vmwareNodePoolId': self._node_pool_id(args),
     }
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsCreateRequest(
-        **kwargs)
+        **kwargs
+    )
     return self._service.Create(req)
 
   def Update(self, args):
     """Updates a gkeonprem node pool API resource."""
     kwargs = {
-        'allowMissing':
-            flags.Get(args, 'allow_missing'),
-        'name':
-            self._node_pool_name(args),
-        'updateMask':
-            update_mask.get_update_mask(
-                args, update_mask.VMWARE_NODE_POOL_ARGS_TO_UPDATE_MASKS),
-        'validateOnly':
-            flags.Get(args, 'validate_only'),
-        'vmwareNodePool':
-            self._vmware_node_pool(args),
+        'allowMissing': flags.Get(args, 'allow_missing'),
+        'name': self._node_pool_name(args),
+        'updateMask': update_mask.get_update_mask(
+            args, update_mask.VMWARE_NODE_POOL_ARGS_TO_UPDATE_MASKS
+        ),
+        'validateOnly': flags.Get(args, 'validate_only'),
+        'vmwareNodePool': self._vmware_node_pool(args),
     }
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsPatchRequest(
-        **kwargs)
+        **kwargs
+    )
     return self._service.Patch(req)
 
   def Enroll(self, args):
@@ -127,6 +129,7 @@ class NodePoolsClient(client.ClientBase):
         'config': self._vmware_node_config(args),
         'onPremVersion': flags.Get(args, 'version'),
         'nodePoolAutoscaling': self._vmware_node_pool_autoscaling_config(args),
+        'upgradePolicy': self._vmware_node_pool_upgrade_policy(args),
     }
     return self._messages.VmwareNodePool(**kwargs)
 
@@ -163,32 +166,39 @@ class NodePoolsClient(client.ClientBase):
 
     input_node_taint = '='.join(node_taint)
     valid_node_taint_effects = ', '.join(
-        six.text_type(key) for key in sorted(taint_effect_mapping.keys()))
+        six.text_type(key) for key in sorted(taint_effect_mapping.keys())
+    )
 
     if len(node_taint) != 2:
       raise arg_parsers.ArgumentTypeError(
           'Node taint [{}] not in correct format, expect KEY=VALUE:EFFECT.'
-          .format(input_node_taint))
+          .format(input_node_taint)
+      )
     taint_key = node_taint[0]
 
     effect_delimiter_count = node_taint[1].count(':')
     if effect_delimiter_count > 1:
       raise arg_parsers.ArgumentTypeError(
           'Node taint [{}] not in correct format, expect KEY=VALUE:EFFECT.'
-          .format(input_node_taint))
+          .format(input_node_taint)
+      )
 
     if effect_delimiter_count == 0:
       taint_value = node_taint[1]
       raise arg_parsers.ArgumentTypeError(
           'Taint effect unspecified: [{}], expect one of [{}].'.format(
-              input_node_taint, valid_node_taint_effects))
+              input_node_taint, valid_node_taint_effects
+          )
+      )
 
     if effect_delimiter_count == 1:
       taint_value, taint_effect = node_taint[1].split(':', 1)
       if taint_effect not in taint_effect_mapping:
         raise arg_parsers.ArgumentTypeError(
             'Invalid taint effect in [{}] , expect one of [{}]'.format(
-                input_node_taint, valid_node_taint_effects))
+                input_node_taint, valid_node_taint_effects
+            )
+        )
 
       taint_effect = taint_effect_mapping[taint_effect]
 
@@ -213,10 +223,13 @@ class NodePoolsClient(client.ClientBase):
     for key, value in node_labels.items():
       additional_property_messages.append(
           self._messages.VmwareNodeConfig.LabelsValue.AdditionalProperty(
-              key=key, value=value))
+              key=key, value=value
+          )
+      )
 
     labels_value_message = self._messages.VmwareNodeConfig.LabelsValue(
-        additionalProperties=additional_property_messages)
+        additionalProperties=additional_property_messages
+    )
 
     return labels_value_message
 
@@ -257,8 +270,24 @@ class NodePoolsClient(client.ClientBase):
     for key, value in annotations.items():
       additional_property_messages.append(
           self._messages.VmwareNodePool.AnnotationsValue.AdditionalProperty(
-              key=key, value=value))
+              key=key, value=value
+          )
+      )
 
     annotation_value_message = self._messages.VmwareNodePool.AnnotationsValue(
-        additionalProperties=additional_property_messages)
+        additionalProperties=additional_property_messages
+    )
     return annotation_value_message
+
+  def _vmware_node_pool_upgrade_policy(self, args):
+    """Constructs proto message VmwareNodePoolUpgradePolicy."""
+    if 'upgrade_policy' not in args.GetSpecifiedArgsDict():
+      return None
+
+    upgrade_policy = flags.Get(args, 'upgrade_policy')
+    kwargs = {
+        'independent': upgrade_policy.get('independent'),
+    }
+    if self.IsSet(kwargs):
+      return self._messages.VmwareNodePoolUpgradePolicy(**kwargs)
+    return None

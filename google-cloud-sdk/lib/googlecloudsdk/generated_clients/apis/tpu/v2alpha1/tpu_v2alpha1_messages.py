@@ -687,6 +687,8 @@ class Node(_messages.Message):
     labels: Resource labels to represent user-provided metadata.
     metadata: Custom metadata to apply to the TPU Node. Can set startup-script
       and shutdown-script
+    multisliceNode: Output only. Whether the Node belongs to a Multislice
+      group.
     name: Output only. Immutable. The name of the TPU.
     networkConfig: Network configurations for the TPU node.
     networkEndpoints: Output only. The network endpoints where TPU workers can
@@ -838,17 +840,18 @@ class Node(_messages.Message):
   id = _messages.IntegerField(10)
   labels = _messages.MessageField('LabelsValue', 11)
   metadata = _messages.MessageField('MetadataValue', 12)
-  name = _messages.StringField(13)
-  networkConfig = _messages.MessageField('NetworkConfig', 14)
-  networkEndpoints = _messages.MessageField('NetworkEndpoint', 15, repeated=True)
-  queuedResource = _messages.StringField(16)
-  runtimeVersion = _messages.StringField(17)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 18)
-  serviceAccount = _messages.MessageField('ServiceAccount', 19)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  symptoms = _messages.MessageField('Symptom', 22, repeated=True)
-  tags = _messages.StringField(23, repeated=True)
+  multisliceNode = _messages.BooleanField(13)
+  name = _messages.StringField(14)
+  networkConfig = _messages.MessageField('NetworkConfig', 15)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 16, repeated=True)
+  queuedResource = _messages.StringField(17)
+  runtimeVersion = _messages.StringField(18)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 19)
+  serviceAccount = _messages.MessageField('ServiceAccount', 20)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  symptoms = _messages.MessageField('Symptom', 23, repeated=True)
+  tags = _messages.StringField(24, repeated=True)
 
 
 class NodeSpec(_messages.Message):

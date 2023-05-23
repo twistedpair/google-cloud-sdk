@@ -46,6 +46,7 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
       source_resource,
       destination_resource,
       delete_source=False,
+      posix_to_set=None,
       print_created_message=False,
       print_source_version=False,
       user_request_args=None,
@@ -61,6 +62,8 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
         this location will be overwritten.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
+      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
+        metadata on target.
       print_created_message (bool): Print a message containing the versioned URL
         of the copy result.
       print_source_version (bool): Print source object version in status message
@@ -71,6 +74,7 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
     super(IntraCloudCopyTask, self).__init__(
         source_resource,
         destination_resource,
+        posix_to_set=posix_to_set,
         print_source_version=print_source_version,
         user_request_args=user_request_args,
         verbose=verbose,
@@ -125,7 +129,9 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
         self._source_resource,
         self._destination_resource,
         request_config,
-        progress_callback=progress_callback)
+        posix_to_set=self._posix_to_set,
+        progress_callback=progress_callback,
+    )
 
     if self._print_created_message:
       log.status.Print('Created: {}'.format(result_resource.storage_url))
@@ -150,6 +156,7 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
         self._source_resource == other._source_resource
         and self._destination_resource == other._destination_resource
         and self._delete_source == other._delete_source
+        and self._posix_to_set == other._posix_to_set
         and self._print_created_message == other._print_created_message
         and self._print_source_version == other._print_source_version
         and self._user_request_args == other._user_request_args

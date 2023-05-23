@@ -535,11 +535,14 @@ class JsonClient(cloud_api.CloudApi):
         self.client.projects_hmacKeys.Update(request))
 
   @error_util.catch_http_error_raise_gcs_api_error()
-  def compose_objects(self,
-                      source_resources,
-                      destination_resource,
-                      request_config,
-                      original_source_resource=None):
+  def compose_objects(
+      self,
+      source_resources,
+      destination_resource,
+      request_config,
+      original_source_resource=None,
+      posix_to_set=None,
+  ):
     """See CloudApi class for function doc strings."""
 
     if not source_resources:
@@ -572,6 +575,7 @@ class JsonClient(cloud_api.CloudApi):
         final_destination_metadata,
         request_config,
         attributes_resource=original_source_resource,
+        posix_to_set=posix_to_set,
     )
 
     compose_request_payload = self.messages.ComposeRequest(
@@ -604,12 +608,15 @@ class JsonClient(cloud_api.CloudApi):
           self.client.objects.Compose(compose_request))
 
   @error_util.catch_http_error_raise_gcs_api_error()
-  def copy_object(self,
-                  source_resource,
-                  destination_resource,
-                  request_config,
-                  should_deep_copy_metadata=False,
-                  progress_callback=None):
+  def copy_object(
+      self,
+      source_resource,
+      destination_resource,
+      request_config,
+      posix_to_set=None,
+      progress_callback=None,
+      should_deep_copy_metadata=False,
+  ):
     """See super class."""
     destination_metadata = getattr(destination_resource, 'metadata', None)
     if not destination_metadata:
@@ -622,7 +629,8 @@ class JsonClient(cloud_api.CloudApi):
           request_config,
           should_deep_copy=should_deep_copy_metadata)
     metadata_util.update_object_metadata_from_request_config(
-        destination_metadata, request_config)
+        destination_metadata, request_config, posix_to_set=posix_to_set
+    )
 
     if request_config.predefined_acl_string:
       predefined_acl = getattr(
@@ -908,13 +916,16 @@ class JsonClient(cloud_api.CloudApi):
         break
 
   @error_util.catch_http_error_raise_gcs_api_error()
-  def patch_object_metadata(self,
-                            bucket_name,
-                            object_name,
-                            object_resource,
-                            request_config,
-                            fields_scope=cloud_api.FieldsScope.NO_ACL,
-                            generation=None):
+  def patch_object_metadata(
+      self,
+      bucket_name,
+      object_name,
+      object_resource,
+      request_config,
+      fields_scope=cloud_api.FieldsScope.NO_ACL,
+      generation=None,
+      posix_to_set=None,
+  ):
     """See super class."""
     # S3 requires a string, but GCS uses an int for generation.
     if generation:
@@ -934,7 +945,8 @@ class JsonClient(cloud_api.CloudApi):
             object_resource.storage_url))
 
     metadata_util.update_object_metadata_from_request_config(
-        object_metadata, request_config)
+        object_metadata, request_config, posix_to_set=posix_to_set
+    )
 
     request = self.messages.StorageObjectsPatchRequest(
         bucket=bucket_name,
@@ -966,14 +978,17 @@ class JsonClient(cloud_api.CloudApi):
             policy=policy))
 
   @error_util.catch_http_error_raise_gcs_api_error()
-  def upload_object(self,
-                    source_stream,
-                    destination_resource,
-                    request_config,
-                    source_resource=None,
-                    serialization_data=None,
-                    tracker_callback=None,
-                    upload_strategy=cloud_api.UploadStrategy.SIMPLE):
+  def upload_object(
+      self,
+      source_stream,
+      destination_resource,
+      request_config,
+      posix_to_set=None,
+      source_resource=None,
+      serialization_data=None,
+      tracker_callback=None,
+      upload_strategy=cloud_api.UploadStrategy.SIMPLE,
+  ):
     """See CloudApi class for function doc strings."""
 
     if self._upload_http_client is None:
@@ -1000,7 +1015,8 @@ class JsonClient(cloud_api.CloudApi):
           destination_resource,
           should_gzip_in_flight,
           request_config,
-          source_resource,
+          posix_to_set=posix_to_set,
+          source_resource=source_resource,
       )
     elif upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
       uploader = upload.ResumableUpload(
@@ -1010,9 +1026,10 @@ class JsonClient(cloud_api.CloudApi):
           destination_resource,
           should_gzip_in_flight,
           request_config,
-          source_resource,
-          serialization_data,
-          tracker_callback,
+          posix_to_set=posix_to_set,
+          serialization_data=serialization_data,
+          source_resource=source_resource,
+          tracker_callback=tracker_callback,
       )
     elif upload_strategy == cloud_api.UploadStrategy.STREAMING:
       uploader = upload.StreamingUpload(
@@ -1022,7 +1039,8 @@ class JsonClient(cloud_api.CloudApi):
           destination_resource,
           should_gzip_in_flight,
           request_config,
-          source_resource,
+          posix_to_set=posix_to_set,
+          source_resource=source_resource,
       )
     else:
       raise command_errors.Error('Invalid upload strategy: {}.'.format(

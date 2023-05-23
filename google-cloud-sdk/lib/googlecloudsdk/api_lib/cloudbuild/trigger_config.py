@@ -858,7 +858,6 @@ def AddGitRepoSource(flag_config):
   repo_config = flag_config.add_argument_group(
       help='Flags for repository and branch information')
   gen_config = repo_config.add_mutually_exclusive_group(
-      required=True,
       help='Flags for repository information')
   gen_config.add_argument(
       '--repository',
@@ -889,7 +888,7 @@ The resource name of the GitHub Enterprise config that should be applied to this
 Format: projects/{project}/locations/{location}/githubEnterpriseConfigs/{id} or projects/{project}/githubEnterpriseConfigs/{id}
 """)
 
-  ref_config = repo_config.add_mutually_exclusive_group(required=True)
+  ref_config = repo_config.add_mutually_exclusive_group()
   ref_config.add_argument('--branch', help='Branch to build.')
   ref_config.add_argument('--tag', help='Tag to build.')
 
@@ -919,7 +918,22 @@ def ParseGitRepoSource(trigger, args, messages, required=False):
 
   # Repoless trigger.
   if not args.repo and not args.repository:
+    if args.branch or args.tag:
+      raise c_exceptions.RequiredArgumentException(
+          'REPO',
+          (
+              '--repo or --repository is required when specifying a'
+              ' --branch or --tag.'
+          ),
+      )
     return
+
+  if not args.branch and not args.tag:
+    raise c_exceptions.RequiredArgumentException(
+        'REVISION',
+        '--branch or --tag is required when specifying a --repository'
+        ' or --repo.',
+    )
 
   if args.branch:
     ref = 'refs/heads/' + args.branch

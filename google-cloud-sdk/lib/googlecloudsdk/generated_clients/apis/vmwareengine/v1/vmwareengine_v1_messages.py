@@ -1191,6 +1191,9 @@ class NetworkConfig(_messages.Message):
   to be done.
 
   Fields:
+    dnsServerIp: Output only. DNS Server IP of the Private Cloud. All DNS
+      queries can be forwarded to this address for name resolution of Private
+      Cloud's management entities like vCenter, NSX-T Manager and ESXi hosts.
     managementCidr: Required. Management CIDR used by VMware management
       appliances.
     managementIpAddressLayoutVersion: Output only. The IP address layout
@@ -1219,12 +1222,13 @@ class NetworkConfig(_messages.Message):
       {location}/vmwareEngineNetworks/{vmware_engine_network_id}`
   """
 
-  managementCidr = _messages.StringField(1)
-  managementIpAddressLayoutVersion = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  network = _messages.StringField(3)
-  serviceNetwork = _messages.StringField(4)
-  vmwareEngineNetwork = _messages.StringField(5)
-  vmwareEngineNetworkCanonical = _messages.StringField(6)
+  dnsServerIp = _messages.StringField(1)
+  managementCidr = _messages.StringField(2)
+  managementIpAddressLayoutVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  network = _messages.StringField(4)
+  serviceNetwork = _messages.StringField(5)
+  vmwareEngineNetwork = _messages.StringField(6)
+  vmwareEngineNetworkCanonical = _messages.StringField(7)
 
 
 class NetworkPeering(_messages.Message):

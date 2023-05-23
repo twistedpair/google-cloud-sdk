@@ -32,15 +32,14 @@ class _ObjectFormatWrapper(BaseFormatWrapper):
   def __str__(self):
     """Returns string of select properties from resource."""
     size = getattr(self.resource, 'size', 0)
-    url_string, metageneration_string = self._check_and_handles_all_versions()
+    url_string, _ = self._check_and_handles_all_versions()
 
-    # Example: 6194    gs://test/doc/README.md   metageneration
-    return ('{size:<13}{url}{metageneration}').format(
+    # Example: 6194    gs://test/doc/README.md
+    return ('{size:<13}{url}').format(
         size=list_util.check_and_convert_to_readable_sizes(
             size, self._readable_sizes, use_gsutil_style=self._use_gsutil_style
         ),
         url=url_string,
-        metageneration=metageneration_string,
     )
 
 
@@ -67,15 +66,21 @@ class _ContainerSummaryFormatWrapper(BaseFormatWrapper):
 
   def __str__(self):
     """Returns string of select properties from resource."""
+    raw_url_string = self.resource.storage_url.versionless_url_string
     # Buckets and prefixes: only print container_size.
-    url_string = self.resource.storage_url.versionless_url_string
+    if self.resource.storage_url.is_bucket():
+      # For parity:
+      # https://github.com/GoogleCloudPlatform/gsutil/blob/417c4a187ec4ae5c8b84a3dc4c099af9e1f5bbb1/gslib/commands/du.py#L290
+      url_string = raw_url_string.rstrip('/')
+    else:
+      url_string = raw_url_string
 
     # Convert to human readable format.
     size = list_util.check_and_convert_to_readable_sizes(
         self._container_size, self._readable_sizes, self._use_gsutil_style
     )
 
-    # Example: 6194    gs://test/doc/README.md   metageneration
+    # Example: 6194    gs://test/doc/README.md
     return ('{size:<13}{url}').format(
         size=size,
         url=url_string,
@@ -89,6 +94,7 @@ class DuExecutor(BaseListExecutor):
       self,
       cloud_urls,
       all_versions=False,
+      exclude_patterns=None,
       readable_sizes=False,
       summarize=False,
       total=False,
@@ -100,9 +106,10 @@ class DuExecutor(BaseListExecutor):
     super(DuExecutor, self).__init__(
         cloud_urls=cloud_urls,
         all_versions=all_versions,
-        total=total,
+        exclude_patterns=exclude_patterns,
         readable_sizes=readable_sizes,
         recursion_flag=True,
+        total=total,
         use_gsutil_style=use_gsutil_style,
         zero_terminator=zero_terminator,
     )
@@ -110,6 +117,10 @@ class DuExecutor(BaseListExecutor):
     if not self._summarize:
       self._container_summary_wrapper = _ContainerSummaryFormatWrapper
       self._object_wrapper = _ObjectFormatWrapper
+
+  def _should_only_display_buckets(self, raw_cloud_url):
+    # Du should always list objects, even for providers.
+    return False
 
   def _print_summary_for_top_level_url(
       self, resource_url, only_display_buckets, object_count, total_bytes
@@ -120,10 +131,19 @@ class DuExecutor(BaseListExecutor):
       total_bytes = shim_format_util.get_human_readable_byte_value(
           total_bytes, use_gsutil_style=self._use_gsutil_style
       )
+
+    if resource_url.is_bucket():
+      # For parity:
+      # https://github.com/GoogleCloudPlatform/gsutil/blob/417c4a187ec4ae5c8b84a3dc4c099af9e1f5bbb1/gslib/commands/du.py#L290
+      url_string = resource_url.url_string.rstrip('/')
+    else:
+      url_string = resource_url.url_string
+
     print(
         '{size:<13}{url}'.format(
-            size=total_bytes, url=resource_url.url_string
-        )
+            size=total_bytes, url=url_string
+        ),
+        end='\0' if self._zero_terminator else '\n'
     )
 
   def _print_total(self, all_sources_total_bytes):
@@ -134,5 +154,6 @@ class DuExecutor(BaseListExecutor):
                 self._readable_sizes,
                 self._use_gsutil_style,
             )
-        )
+        ),
+        end='\0' if self._zero_terminator else '\n'
     )

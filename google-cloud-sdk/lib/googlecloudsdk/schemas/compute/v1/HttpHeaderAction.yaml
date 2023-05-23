@@ -27,21 +27,21 @@ properties:
       type: string
   requestHeadersToAdd:
     description: |-
-      Headers to add to a matching request prior to forwarding the request to
-      the backendService.
+      Headers to add to a matching request before forwarding the request to the
+      backendService.
     type: array
     items:
       $ref: HttpHeaderOption.yaml
   requestHeadersToRemove:
     description: |-
       A list of header names for headers that need to be removed from the
-      request prior to forwarding the request to the backendService.
+      request before forwarding the request to the backendService.
     type: array
     items:
       type: string
   responseHeadersToAdd:
     description: |-
-      Headers to add the response prior to sending the response back to
+      Headers to add the response before sending the response back to
       the client.
     type: array
     items:
@@ -49,7 +49,7 @@ properties:
   responseHeadersToRemove:
     description: |-
       A list of header names for headers that need to be removed
-      from the response prior to sending the response back to the
+      from the response before sending the response back to the
       client.
     type: array
     items:

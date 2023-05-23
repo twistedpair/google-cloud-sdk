@@ -498,3 +498,31 @@ def AddPhaseId(parser, required=True, hidden=False):
       hidden=hidden,
       help='Phase ID on a rollout resource',
       required=required)
+
+
+def AddDeployParametersFlag(parser, hidden=True):
+  # TODO(b/281834910) Unhide --deploy-parameters flag
+  """Add --deploy-parameters flag."""
+  help_text = (
+      textwrap.dedent(
+          """\
+  Deployment parameters to apply to the release. Deployment parameters take the form of key/value string pairs.
+
+  Examples:
+
+  Add deployment parameters:
+
+    $ {command} --deploy-parameters="key1=value1,key2=value2"
+
+"""
+      )
+  )
+
+  parser.add_argument(
+      '--deploy-parameters',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      hidden=hidden,
+      help=help_text,
+  )
+

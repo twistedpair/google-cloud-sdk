@@ -1350,6 +1350,11 @@ class GoogleCloudGkemulticloudV1AwsClusterNetworking(_messages.Message):
   and node pool nodes.
 
   Fields:
+    perNodePoolSgRulesDisabled: Optional. Disable the per node pool subnet
+      security group rules on the control plane security group. When set to
+      true, you must also provide one or more security groups that ensure
+      node pools are able to send requests to the control plane on TCP/443 and
+      TCP/8132. Failure to do so may result in unavailable node pools.
     podAddressCidrBlocks: Required. All pods in the cluster are assigned an
       IPv4 address from these ranges. Only a single range is supported. This
       field cannot be changed after creation.
@@ -1361,9 +1366,10 @@ class GoogleCloudGkemulticloudV1AwsClusterNetworking(_messages.Message):
       field cannot be changed after creation.
   """
 
-  podAddressCidrBlocks = _messages.StringField(1, repeated=True)
-  serviceAddressCidrBlocks = _messages.StringField(2, repeated=True)
-  vpcId = _messages.StringField(3)
+  perNodePoolSgRulesDisabled = _messages.BooleanField(1)
+  podAddressCidrBlocks = _messages.StringField(2, repeated=True)
+  serviceAddressCidrBlocks = _messages.StringField(3, repeated=True)
+  vpcId = _messages.StringField(4)
 
 
 class GoogleCloudGkemulticloudV1AwsClusterUser(_messages.Message):

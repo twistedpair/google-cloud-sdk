@@ -43,17 +43,6 @@ _LINK_TYPE_CHOICES = {
     'LINK_TYPE_ETHERNET_100G_LR': '100Gbps Ethernet, LR Optics.'
 }
 
-_CUSTOMER_NAME_HELP_TEXT_GA_AND_BETA = """\
-      Customer name to put in the Letter of Authorization as the party
-      authorized to request an interconnect.
-      """
-
-_CUSTOMER_NAME_HELP_TEXT_ALPHA = """\
-    Customer name to put in the Letter of Authorization as the party
-    authorized to request an interconnect. This field is required for most
-    Interconnects, however it is prohibited when creating a Cross-Cloud Interconnect.
-    """
-
 
 class InterconnectsCompleter(compute_completers.ListCommandCompleter):
 
@@ -129,17 +118,6 @@ def AddCreateCommonArgs(parser):
   AddRequestedLinkCount(parser)
 
 
-def AddCreateCommonArgsForAlpha(parser):
-  """Adds alpha shared flags for create command to the argparse.ArgumentParser.
-  """
-  AddAdminEnabled(parser)
-  AddDescription(parser)
-  AddCustomerName(parser, False, _CUSTOMER_NAME_HELP_TEXT_ALPHA)
-  AddLinkType(parser)
-  AddNocContactEmail(parser)
-  AddRequestedLinkCount(parser)
-
-
 def AddCreateGaArgs(parser):
   """Adds GA flags for create command to the argparse.ArgumentParser."""
   AddCreateCommonArgs(parser)
@@ -149,12 +127,6 @@ def AddCreateGaArgs(parser):
 def AddCreateBetaArgs(parser):
   """Adds beta flags for create command to the argparse.ArgumentParser."""
   AddCreateCommonArgs(parser)
-  AddInterconnectTypeBetaAndAlpha(parser)
-
-
-def AddCreateAlphaArgs(parser):
-  """Adds alpha flags for create command to the argparse.ArgumentParser."""
-  AddCreateCommonArgsForAlpha(parser)
   AddInterconnectTypeBetaAndAlpha(parser)
 
 
@@ -244,11 +216,16 @@ def AddNocContactEmail(parser):
       """)
 
 
-def AddCustomerName(parser,
-                    required=True,
-                    help_text=_CUSTOMER_NAME_HELP_TEXT_GA_AND_BETA):
+def AddCustomerName(parser):
   """Adds customerName flag to the argparse.ArgumentParser."""
-  parser.add_argument('--customer-name', required=required, help=help_text)
+  parser.add_argument(
+      '--customer-name',
+      help="""\
+    Customer name to put in the Letter of Authorization as the party
+    authorized to request an interconnect. This field is required for most
+    interconnects, however it is prohibited when creating a Cross-Cloud Interconnect.
+    """,
+  )
 
 
 def AddAdminEnabled(parser):

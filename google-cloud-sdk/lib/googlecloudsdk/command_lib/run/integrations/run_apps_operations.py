@@ -134,6 +134,8 @@ class RunAppsOperations(object):
         res_name = config['name']
         match_type_names.append({'type': res_type, 'name': res_name})
 
+    match_type_names.sort(key=lambda x: x['type'])
+
     self.ApplyAppConfig(
         tracker, name, appconfig, match_type_names=match_type_names
     )

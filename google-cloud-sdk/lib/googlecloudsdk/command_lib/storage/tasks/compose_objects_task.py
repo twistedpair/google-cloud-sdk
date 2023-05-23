@@ -30,12 +30,15 @@ from googlecloudsdk.core import log
 class ComposeObjectsTask(task.Task):
   """Composes storage objects."""
 
-  def __init__(self,
-               source_resources,
-               destination_resource,
-               original_source_resource=None,
-               user_request_args=None,
-               print_status_message=False):
+  def __init__(
+      self,
+      source_resources,
+      destination_resource,
+      original_source_resource=None,
+      posix_to_set=None,
+      print_status_message=False,
+      user_request_args=None,
+  ):
     """Initializes task.
 
     Args:
@@ -48,16 +51,19 @@ class ComposeObjectsTask(task.Task):
       original_source_resource (Resource|None): Useful for finding metadata to
         apply to final object. For instance, if doing a composite upload, this
         would represent the pre-split local file.
+      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
+        metadata on target. If preserving POSIX, avoids re-parsing metadata from
+        file system.
+      print_status_message (bool): If True, the task prints the status message.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
-      print_status_message (bool): If True, the task prints the status
-        message.
     """
     super(ComposeObjectsTask, self).__init__()
     self._source_resources = source_resources
     self._destination_resource = destination_resource
     self._original_source_resource = original_source_resource
+    self._posix_to_set = posix_to_set
+    self._print_status_message = print_status_message
     self._user_request_args = user_request_args
-    self.print_status_message = print_status_message
 
   def execute(self, task_status_queue=None):
     del task_status_queue  # Unused.
@@ -75,7 +81,7 @@ class ComposeObjectsTask(task.Task):
         self._destination_resource.storage_url,
         user_request_args=self._user_request_args)
 
-    if self.print_status_message:
+    if self._print_status_message:
       log.status.write('Composing {} from {} component object(s).\n'.format(
           self._destination_resource, len(self._source_resources)))
 
@@ -83,7 +89,9 @@ class ComposeObjectsTask(task.Task):
         self._source_resources,
         self._destination_resource,
         request_config,
-        original_source_resource=self._original_source_resource)
+        original_source_resource=self._original_source_resource,
+        posix_to_set=self._posix_to_set,
+    )
 
     return task.Output(
         messages=[

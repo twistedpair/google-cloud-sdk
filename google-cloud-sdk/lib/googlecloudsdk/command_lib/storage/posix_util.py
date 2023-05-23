@@ -569,8 +569,10 @@ def raise_if_source_and_destination_not_valid_for_preserve_posix(
     raise ValueError('Cannot preserve POSIX data for cloud-to-cloud copies')
 
 
-def run_if_preserving_posix(user_request_args, function, *args, **kwargs):
+def run_if_setting_posix(
+    posix_to_set, user_request_args, function, *args, **kwargs
+):
   """Useful for gating functions without repeating the below if statement."""
-  if user_request_args and user_request_args.preserve_posix:
+  if posix_to_set or (user_request_args and user_request_args.preserve_posix):
     return function(*args, **kwargs)
   return None

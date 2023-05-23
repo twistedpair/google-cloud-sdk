@@ -5077,6 +5077,8 @@ class ParameterMetadata(_messages.Message):
       SERVICE_ACCOUNT: The parameter specifies a Service Account email.
       MACHINE_TYPE: The parameter specifies a Machine Type.
       KMS_KEY_NAME: The parameter specifies a KMS Key name.
+      WORKER_REGION: The parameter specifies a Worker Region.
+      WORKER_ZONE: The parameter specifies a Worker Zone.
     """
     DEFAULT = 0
     TEXT = 1
@@ -5093,6 +5095,8 @@ class ParameterMetadata(_messages.Message):
     SERVICE_ACCOUNT = 12
     MACHINE_TYPE = 13
     KMS_KEY_NAME = 14
+    WORKER_REGION = 15
+    WORKER_ZONE = 16
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomMetadataValue(_messages.Message):

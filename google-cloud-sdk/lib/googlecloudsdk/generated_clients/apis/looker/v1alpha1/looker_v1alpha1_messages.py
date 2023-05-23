@@ -65,7 +65,6 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
-    ignoreChildExemptions: A boolean attribute.
     logType: The log type that this config enables.
   """
 
@@ -84,45 +83,13 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  ignoreChildExemptions = _messages.BooleanField(2)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
-
-
-class AuthorizationLoggingOptions(_messages.Message):
-  r"""Authorization-related information used by Cloud Audit Logging.
-
-  Enums:
-    PermissionTypeValueValuesEnum: The type of the permission that was
-      checked.
-
-  Fields:
-    permissionType: The type of the permission that was checked.
-  """
-
-  class PermissionTypeValueValuesEnum(_messages.Enum):
-    r"""The type of the permission that was checked.
-
-    Values:
-      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
-      ADMIN_READ: A read of admin (meta) data.
-      ADMIN_WRITE: A write of admin (meta) data.
-      DATA_READ: A read of standard data.
-      DATA_WRITE: A write of standard data.
-    """
-    PERMISSION_TYPE_UNSPECIFIED = 0
-    ADMIN_READ = 1
-    ADMIN_WRITE = 2
-    DATA_READ = 3
-    DATA_WRITE = 4
-
-  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -174,215 +141,37 @@ class Binding(_messages.Message):
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class CloudAuditOptions(_messages.Message):
-  r"""Write a Cloud Audit log
-
-  Enums:
-    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
-      Record.
-
-  Fields:
-    authorizationLoggingOptions: Information used by the Cloud Audit Logging
-      pipeline.
-    logName: The log_name to populate in the Cloud Audit Record.
-  """
-
-  class LogNameValueValuesEnum(_messages.Enum):
-    r"""The log_name to populate in the Cloud Audit Record.
-
-    Values:
-      UNSPECIFIED_LOG_NAME: Default. Should not be used.
-      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
-      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
-    """
-    UNSPECIFIED_LOG_NAME = 0
-    ADMIN_ACTIVITY = 1
-    DATA_ACCESS = 2
-
-  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
-  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
-
-
-class Condition(_messages.Message):
-  r"""A condition to be met.
-
-  Enums:
-    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
-    OpValueValuesEnum: An operator to apply the subject with.
-    SysValueValuesEnum: Trusted attributes supplied by any service that owns
-      resources and uses the IAM system for access control.
-
-  Fields:
-    iam: Trusted attributes supplied by the IAM system.
-    op: An operator to apply the subject with.
-    svc: Trusted attributes discharged by the service.
-    sys: Trusted attributes supplied by any service that owns resources and
-      uses the IAM system for access control.
-    values: The objects of the condition.
-  """
-
-  class IamValueValuesEnum(_messages.Enum):
-    r"""Trusted attributes supplied by the IAM system.
-
-    Values:
-      NO_ATTR: Default non-attribute.
-      AUTHORITY: Either principal or (if present) authority selector.
-      ATTRIBUTION: The principal (even if an authority selector is present),
-        which must only be used for attribution, not authorization.
-      SECURITY_REALM: Any of the security realms in the IAMContext
-        (go/security-realms). When used with IN, the condition indicates "any
-        of the request's realms match one of the given values; with NOT_IN,
-        "none of the realms match any of the given values". Note that a value
-        can be: - 'self:campus' (i.e., clients that are in the same campus) -
-        'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-
-        region' (i.e., allow connections from clients that are in the same
-        cloud region) - 'self:prod-region' (i.e., allow connections from
-        clients that are in the same prod region) - 'guardians' (i.e., allow
-        connections from its guardian realms. See go/security-realms-
-        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
-        allow connections from clients that are in the same security realm,
-        which is currently but not guaranteed to be campus-sized) - a realm
-        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
-        see: go/realm-groups) A match is determined by a realm group
-        membership check performed by a RealmAclRep object (go/realm-acl-
-        howto). It is not permitted to grant access based on the *absence* of
-        a realm, so realm conditions can only be used in a "positive" context
-        (e.g., ALLOW/IN or DENY/NOT_IN).
-      APPROVER: An approver (distinct from the requester) that has authorized
-        this request. When used with IN, the condition indicates that one of
-        the approvers associated with the request matches the specified
-        principal, or is a member of the specified group. Approvers can only
-        grant additional access, and are thus only used in a strictly positive
-        context (e.g. ALLOW/IN or DENY/NOT_IN).
-      JUSTIFICATION_TYPE: What types of justifications have been supplied with
-        this request. String values should match enum names from
-        security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
-        not permitted to grant access based on the *absence* of a
-        justification, so justification conditions can only be used in a
-        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN). Multiple
-        justifications, e.g., a Buganizer ID and a manually-entered reason,
-        are normal and supported.
-      CREDENTIALS_TYPE: What type of credentials have been supplied with this
-        request. String values should match enum names from
-        security_loas_l2.CredentialsType - currently, only
-        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
-        based on the *absence* of a credentials type, so the conditions can
-        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
-      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE. The conditions can only be
-        used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
-    """
-    NO_ATTR = 0
-    AUTHORITY = 1
-    ATTRIBUTION = 2
-    SECURITY_REALM = 3
-    APPROVER = 4
-    JUSTIFICATION_TYPE = 5
-    CREDENTIALS_TYPE = 6
-    CREDS_ASSERTION = 7
-
-  class OpValueValuesEnum(_messages.Enum):
-    r"""An operator to apply the subject with.
-
-    Values:
-      NO_OP: Default no-op.
-      EQUALS: DEPRECATED. Use IN instead.
-      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
-      IN: The condition is true if the subject (or any element of it if it is
-        a set) matches any of the supplied values.
-      NOT_IN: The condition is true if the subject (or every element of it if
-        it is a set) matches none of the supplied values.
-      DISCHARGED: Subject is discharged
-    """
-    NO_OP = 0
-    EQUALS = 1
-    NOT_EQUALS = 2
-    IN = 3
-    NOT_IN = 4
-    DISCHARGED = 5
-
-  class SysValueValuesEnum(_messages.Enum):
-    r"""Trusted attributes supplied by any service that owns resources and
-    uses the IAM system for access control.
-
-    Values:
-      NO_ATTR: Default non-attribute type
-      REGION: Region of the resource
-      SERVICE: Service name
-      NAME: Resource name
-      IP: IP address of the caller
-    """
-    NO_ATTR = 0
-    REGION = 1
-    SERVICE = 2
-    NAME = 3
-    IP = 4
-
-  iam = _messages.EnumField('IamValueValuesEnum', 1)
-  op = _messages.EnumField('OpValueValuesEnum', 2)
-  svc = _messages.StringField(3)
-  sys = _messages.EnumField('SysValueValuesEnum', 4)
-  values = _messages.StringField(5, repeated=True)
-
-
-class CounterOptions(_messages.Message):
-  r"""Increment a streamz counter with the specified metric and field names.
-  Metric names should start with a '/', generally be lowercase-only, and end
-  in "_count". Field names should not contain an initial slash. The actual
-  exported metric names will have "/iam/policy" prepended. Field names
-  correspond to IAM request parameters and field values are their respective
-  values. Supported field names: - "authority", which is "[token]" if
-  IAMContext.token is present, otherwise the value of
-  IAMContext.authority_selector if present, and otherwise a representation of
-  IAMContext.principal; or - "iam_principal", a representation of
-  IAMContext.principal even if a token or authority selector is present; or -
-  "" (empty string), resulting in a counter with no fields. Examples: counter
-  { metric: "/debug_access_count" field: "iam_principal" } ==> increment
-  counter /iam/policy/debug_access_count {iam_principal=[value of
-  IAMContext.principal]}
-
-  Fields:
-    customFields: Custom fields.
-    field: The field value to attribute.
-    metric: The metric to update.
-  """
-
-  customFields = _messages.MessageField('CustomField', 1, repeated=True)
-  field = _messages.StringField(2)
-  metric = _messages.StringField(3)
-
-
 class CustomDomain(_messages.Message):
-  r"""Custom Domain
+  r"""Custom domain information.
 
   Enums:
-    StateValueValuesEnum: domain state
+    StateValueValuesEnum: Domain state.
 
   Fields:
-    domain: domain name
-    state: domain state
+    domain: Domain name.
+    state: Domain state.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""domain state
+    r"""Domain state.
 
     Values:
-      CUSTOM_DOMAIN_STATE_UNSPECIFIED: Unspecified state
-      UNVERIFIED: DNS record is not created
-      VERIFIED: DNS record is created
-      MODIFYING: Calling SLM to update
-      AVAILABLE: ManagedCertificate is ready
-      UNAVAILABLE: ManagedCertificate is not ready
-      UNKNOWN: Status is not known
+      CUSTOM_DOMAIN_STATE_UNSPECIFIED: Unspecified state.
+      UNVERIFIED: DNS record is not created.
+      VERIFIED: DNS record is created.
+      MODIFYING: Calling SLM to update.
+      AVAILABLE: ManagedCertificate is ready.
+      UNAVAILABLE: ManagedCertificate is not ready.
+      UNKNOWN: Status is not known.
     """
     CUSTOM_DOMAIN_STATE_UNSPECIFIED = 0
     UNVERIFIED = 1
@@ -394,55 +183,6 @@ class CustomDomain(_messages.Message):
 
   domain = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
-
-
-class CustomField(_messages.Message):
-  r"""Custom fields. These can be used to create a counter with arbitrary
-  field/value pairs. See: go/rpcsp-custom-fields.
-
-  Fields:
-    name: Name is the field name.
-    value: Value is the field value. It is important that in contrast to the
-      CounterOptions.field, the value here is a constant that is not derived
-      from the IAMContext.
-  """
-
-  name = _messages.StringField(1)
-  value = _messages.StringField(2)
-
-
-class DataAccessOptions(_messages.Message):
-  r"""Write a Data Access (Gin) log
-
-  Enums:
-    LogModeValueValuesEnum:
-
-  Fields:
-    logMode: A LogModeValueValuesEnum attribute.
-  """
-
-  class LogModeValueValuesEnum(_messages.Enum):
-    r"""LogModeValueValuesEnum enum type.
-
-    Values:
-      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
-        immediately after the authorization check. If client chooses to write
-        one and it fails, client may either fail open (allow the operation to
-        continue) or fail closed (handle as a DENY outcome).
-      LOG_FAIL_CLOSED: The application's operation in the context of which
-        this authorization check is being made may only be performed if it is
-        successfully logged to Gin. For instance, the authorization library
-        may satisfy this obligation by emitting a partial log entry at
-        authorization check time and only returning ALLOW to the application
-        if it succeeds. If a matching Rule has this directive, but the client
-        has not indicated that it will honor such requirements, then the IAM
-        check will result in authorization failure by setting
-        CheckPolicyResponse.success=false.
-    """
-    LOG_MODE_UNSPECIFIED = 0
-    LOG_FAIL_CLOSED = 1
-
-  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
 class Date(_messages.Message):
@@ -475,8 +215,8 @@ class DenyMaintenancePeriod(_messages.Message):
   r"""Specifies the maintenance denial period.
 
   Fields:
-    endDate: Required. End date of the deny maintenance period
-    startDate: Required. Start date of the deny maintenance period
+    endDate: Required. End date of the deny maintenance period.
+    startDate: Required. Start date of the deny maintenance period.
     time: Required. Time in UTC when the period starts and ends.
   """
 
@@ -495,32 +235,28 @@ class Empty(_messages.Message):
 
 
 class EncryptionConfig(_messages.Message):
-  r"""Configuration for Encryption - e.g. CMEK Currently we only allow the key
-  name to be modified here, but in the future we may add some additional
-  tuning parameters that are currently hard-coded. Other fields are *output*
-  fields reflecting the current status of the instance w.r.t. CMEK encryption
-  and should not be set by the user.
+  r"""Encryption configuration (i.e. CMEK).
 
   Enums:
-    KmsKeyStateValueValuesEnum: Output only. Current status of this instance
-      w.r.t. CMEK
+    KmsKeyStateValueValuesEnum: Output only. Status of the CMEK key.
 
   Fields:
-    kmsKeyName: Name of the CMEK key in KMS (input parameter)
-    kmsKeyNameVersion: Output only. Full name+version of the CMEK key
-      currently in use to encrypt Looker data Empty if CMEK is not configured
-      in this instance
-    kmsKeyState: Output only. Current status of this instance w.r.t. CMEK
+    kmsKeyName: Name of the CMEK key in KMS (input parameter).
+    kmsKeyNameVersion: Output only. Full name and version of the CMEK key
+      currently in use to encrypt Looker data. Format: `projects/{project}/loc
+      ations/{location}/keyRings/{ring}/cryptoKeys/{key}/cryptoKeyVersions/{ve
+      rsion}`. Empty if CMEK is not configured in this instance.
+    kmsKeyState: Output only. Status of the CMEK key.
   """
 
   class KmsKeyStateValueValuesEnum(_messages.Enum):
-    r"""Output only. Current status of this instance w.r.t. CMEK
+    r"""Output only. Status of the CMEK key.
 
     Values:
-      KMS_KEY_STATE_UNSPECIFIED: CMEK status not specified
-      VALID: CMEK key is currently valid
+      KMS_KEY_STATE_UNSPECIFIED: CMEK status not specified.
+      VALID: CMEK key is currently valid.
       REVOKED: CMEK key is currently revoked (instance should in restricted
-        mode)
+        mode).
     """
     KMS_KEY_STATE_UNSPECIFIED = 0
     VALID = 1
@@ -532,7 +268,7 @@ class EncryptionConfig(_messages.Message):
 
 
 class ExportEncryptionConfig(_messages.Message):
-  r"""Configuration for Encryption - e.g. CMEK
+  r"""Configuration for Encryption - e.g. CMEK.
 
   Fields:
     kmsKeyName: Required. Name of the CMEK key in KMS.
@@ -542,7 +278,7 @@ class ExportEncryptionConfig(_messages.Message):
 
 
 class ExportInstanceRequest(_messages.Message):
-  r"""Requestion options for exporting data of an Instance.
+  r"""Request options for exporting data of an Instance.
 
   Fields:
     encryptionConfig: Required. Encryption configuration (CMEK). For CMEK
@@ -648,40 +384,40 @@ class Instance(_messages.Message):
     StateValueValuesEnum: Output only. The state of the instance.
 
   Fields:
-    adminSettings: Looker Instance Admin settings.
+    adminSettings: Looker instance admin settings.
     consumerNetwork: Network name in the consumer project. Format:
-      projects/{project}/global/networks/{network} Note that the consumer
+      `projects/{project}/global/networks/{network}`. Note that the consumer
       network may be in a different GCP project than the consumer project that
       is hosting the Looker Instance.
     createTime: Output only. The time when the Looker instance provisioning
       was first requested.
-    customDomain: Custom Domain Information
+    customDomain: Custom domain information.
     denyMaintenancePeriod: Maintenance denial period for this instance.
     egressPublicIp: Output only. Public Egress IP (IPv4).
     enablePrivateIp: Whether private IP is enabled on the Looker instance.
     enablePublicIp: Whether public IP is enabled on the Looker instance.
-    encryptionConfig: Encryption configuration (CMEK) -- if enabled
+    encryptionConfig: Encryption configuration (CMEK). Only set if CMEK has
+      been enabled on the instance.
     ingressPrivateIp: Output only. Private Ingress IP (IPv4).
     ingressPublicIp: Output only. Public Ingress IP (IPv4).
-    lastDenyMaintenancePeriod: Last maintenance denial period for this
-      instance. Used to determine the next eligible deny_maintenance_period
-      even if the customer removes deny_maintenance_period.
+    lastDenyMaintenancePeriod: Output only. Last computed maintenance denial
+      period for this instance.
     lookerUri: Output only. Looker instance URI which can be used to access
       the Looker Instance UI.
     lookerVersion: Output only. The Looker version that the instance is using.
-    maintenanceSchedule: Maintenance schedule for this instance
+    maintenanceSchedule: Maintenance schedule for this instance.
     maintenanceWindow: Maintenance window for this instance.
     name: Output only. Format:
-      projects/{project}/locations/{location}/instances/{instance}
-    oauthConfig: Looker Instance OAuth login settings.
+      `projects/{project}/locations/{location}/instances/{instance}`.
+    oauthConfig: Looker instance OAuth login settings.
     platformEdition: Platform edition.
-    reservedRange: Name of a reserved IP address range within the consumer
-      network, to be used for private servicie access connection. User may or
-      may not specify this in a request.
+    reservedRange: Name of a reserved IP address range within the
+      Instance.consumer_network, to be used for private services access
+      connection. May or may not be specified in a create request.
     state: Output only. The state of the instance.
     updateTime: Output only. The time when the Looker instance was last
       updated.
-    users: User metadata
+    users: User metadata.
   """
 
   class PlatformEditionValueValuesEnum(_messages.Enum):
@@ -811,9 +547,10 @@ class ListInstancesResponse(_messages.Message):
 
   Fields:
     instances: The list of instances matching the request filters, up to the
-      requested `page_size`.
+      requested ListInstancesRequest.pageSize.
     nextPageToken: If provided, a page token that can look up the next
-      `page_size` results. If empty, the results list is exhausted.
+      ListInstancesRequest.pageSize results. If empty, the results list is
+      exhausted.
     unreachable: Locations that could not be reached.
   """
 
@@ -928,20 +665,6 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
-class LogConfig(_messages.Message):
-  r"""Specifies what kind of log the caller must write
-
-  Fields:
-    cloudAudit: Cloud audit options.
-    counter: Counter options.
-    dataAccess: Data access options.
-  """
-
-  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
-  counter = _messages.MessageField('CounterOptions', 2)
-  dataAccess = _messages.MessageField('DataAccessOptions', 3)
-
-
 class LookerProjectsLocationsGetRequest(_messages.Message):
   r"""A LookerProjectsLocationsGetRequest object.
 
@@ -1007,8 +730,8 @@ class LookerProjectsLocationsInstancesBackupsGetRequest(_messages.Message):
   r"""A LookerProjectsLocationsInstancesBackupsGetRequest object.
 
   Fields:
-    name: Required. Format: projects/{project}/locations/{location}/instances/
-      {instance}/backups/{backup}
+    name: Required. Format: `projects/{project}/locations/{location}/instances
+      /{instance}/backups/{backup}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1019,12 +742,12 @@ class LookerProjectsLocationsInstancesBackupsListRequest(_messages.Message):
 
   Fields:
     orderBy: Sort results. Default order is "create_time desc". Other
-      supported fields are "State" and "expire_time"
+      supported fields are "state" and "expire_time".
       https://google.aip.dev/132#ordering
     pageSize: The maximum number of instances to return.
     pageToken: A page token received from a previous ListInstances request.
     parent: Required. Format:
-      projects/{project}/locations/{location}/instances/{instance}
+      projects/{project}/locations/{location}/instances/{instance}.
   """
 
   orderBy = _messages.StringField(1)
@@ -1074,7 +797,7 @@ class LookerProjectsLocationsInstancesCreateRequest(_messages.Message):
     instanceId: Required. The unique instance identifier. Must contain only
       lowercase letters, numbers, or hyphens, with the first character a
       letter and the last a letter or a number. 63 characters maximum.
-    parent: Required. Format: projects/{project}/locations/{location}
+    parent: Required. Format: `projects/{project}/locations/{location}`.
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -1086,9 +809,9 @@ class LookerProjectsLocationsInstancesDeleteRequest(_messages.Message):
   r"""A LookerProjectsLocationsInstancesDeleteRequest object.
 
   Fields:
-    force: Whether to force cascading delete
-    name: Required. Format: projects/{project}/locations/{location}/locations/
-      {location}/instances/{instance}
+    force: Whether to force cascading delete.
+    name: Required. Format:
+      `projects/{project}/locations/{location}/instances/{instance}`.
   """
 
   force = _messages.BooleanField(1)
@@ -1102,7 +825,7 @@ class LookerProjectsLocationsInstancesExportRequest(_messages.Message):
     exportInstanceRequest: A ExportInstanceRequest resource to be passed as
       the request body.
     name: Required. Format:
-      projects/{project}/locations/{location}/instances/{instance}
+      `projects/{project}/locations/{location}/instances/{instance}`.
   """
 
   exportInstanceRequest = _messages.MessageField('ExportInstanceRequest', 1)
@@ -1140,7 +863,7 @@ class LookerProjectsLocationsInstancesGetRequest(_messages.Message):
 
   Fields:
     name: Required. Format:
-      projects/{project}/locations/{location}/instances/{instance}
+      `projects/{project}/locations/{location}/instances/{instance}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1153,7 +876,7 @@ class LookerProjectsLocationsInstancesImportRequest(_messages.Message):
     importInstanceRequest: A ImportInstanceRequest resource to be passed as
       the request body.
     name: Required. Format:
-      projects/{project}/locations/{location}/instances/{instance}
+      `projects/{project}/locations/{location}/instances/{instance}`.
   """
 
   importInstanceRequest = _messages.MessageField('ImportInstanceRequest', 1)
@@ -1165,9 +888,9 @@ class LookerProjectsLocationsInstancesListRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of instances to return. If unspecified at
-      most X will be returned. The maximum value is Y.
-    pageToken: A page token received from a previous ListInstances request.
-    parent: Required. Format: projects/{project}/locations/{location}
+      most 256 will be returned. The maximum possible value is 2048.
+    pageToken: A page token received from a previous ListInstancesRequest.
+    parent: Required. Format: `projects/{project}/locations/{location}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1181,11 +904,11 @@ class LookerProjectsLocationsInstancesPatchRequest(_messages.Message):
   Fields:
     instance: A Instance resource to be passed as the request body.
     name: Output only. Format:
-      projects/{project}/locations/{location}/instances/{instance}
-    updateMask: Required. Field mask is used to specify the fields to be
+      `projects/{project}/locations/{location}/instances/{instance}`.
+    updateMask: Required. Field mask used to specify the fields to be
       overwritten in the Instance resource by the update. The fields specified
-      in the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask.
+      in the mask are relative to the resource, not the full request. A field
+      will be overwritten if it is in the mask.
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -1198,7 +921,7 @@ class LookerProjectsLocationsInstancesRestartRequest(_messages.Message):
 
   Fields:
     name: Required. Format:
-      projects/{project}/locations/{location}/instances/{instance}
+      `projects/{project}/locations/{location}/instances/{instance}`.
     restartInstanceRequest: A RestartInstanceRequest resource to be passed as
       the request body.
   """
@@ -1260,8 +983,6 @@ class LookerProjectsLocationsListRequest(_messages.Message):
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
-    includeUnrevealedLocations: If true, the returned list will include
-      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
       selects a default.
@@ -1270,10 +991,9 @@ class LookerProjectsLocationsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class LookerProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1326,8 +1046,7 @@ class LookerProjectsLocationsOperationsListRequest(_messages.Message):
 
 
 class MaintenanceSchedule(_messages.Message):
-  r"""Maintenance schedule which is exposed to customer and potentially end
-  user, indicating published upcoming future maintenance schedule
+  r"""Published upcoming future maintenance schedule.
 
   Fields:
     endTime: The scheduled end time for the maintenance.
@@ -1378,12 +1097,12 @@ class MaintenanceWindow(_messages.Message):
 
 
 class OAuthConfig(_messages.Message):
-  r"""Looker Instance OAuth login settings.
+  r"""Looker instance OAuth login settings.
 
   Fields:
-    clientId: Input only. client_id from an external OAuth application. This
+    clientId: Input only. Client ID from an external OAuth application. This
       is an input-only field, and thus will not be set in any responses.
-    clientSecret: Input only. client_secret from an external OAuth
+    clientSecret: Input only. Client secret from an external OAuth
       application. This is an input-only field, and thus will not be set in
       any responses.
   """
@@ -1578,13 +1297,6 @@ class Policy(_messages.Message):
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    rules: If more than one rule is specified, the rules are applied in the
-      following manner: - All matching LOG rules are always applied. - If any
-      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
-      applied if one or more matching rule requires logging. - Otherwise, if
-      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
-      will be applied if one or more matching rule requires logging. -
-      Otherwise, if no rule applies, permission is denied.
     version: Specifies the format of the policy. Valid values are `0`, `1`,
       and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
@@ -1607,8 +1319,7 @@ class Policy(_messages.Message):
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  rules = _messages.MessageField('Rule', 4, repeated=True)
-  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class RestartInstanceRequest(_messages.Message):
@@ -1624,59 +1335,6 @@ class RestoreInstanceRequest(_messages.Message):
   """
 
   backup = _messages.StringField(1)
-
-
-class Rule(_messages.Message):
-  r"""A rule to be applied in a Policy.
-
-  Enums:
-    ActionValueValuesEnum: Required
-
-  Fields:
-    action: Required
-    conditions: Additional restrictions that must be met. All conditions must
-      pass for the rule to match.
-    description: Human-readable description of the rule.
-    in_: If one or more 'in' clauses are specified, the rule matches if the
-      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfig: The config returned to callers of CheckPolicy for any entries
-      that match the LOG action.
-    notIn: If one or more 'not_in' clauses are specified, the rule matches if
-      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
-      for in and not_in entries can be found at in the Local IAM documentation
-      (see go/local-iam#features).
-    permissions: A permission is a string of form '..' (e.g.,
-      'storage.buckets.list'). A value of '*' matches all permissions, and a
-      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
-  """
-
-  class ActionValueValuesEnum(_messages.Enum):
-    r"""Required
-
-    Values:
-      NO_ACTION: Default no action.
-      ALLOW: Matching 'Entries' grant access.
-      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
-        to log the request per the returned log_configs.
-      DENY: Matching 'Entries' deny access.
-      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
-        log the request per the returned log_configs.
-      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
-    """
-    NO_ACTION = 0
-    ALLOW = 1
-    ALLOW_WITH_LOG = 2
-    DENY = 3
-    DENY_WITH_LOG = 4
-    LOG = 5
-
-  action = _messages.EnumField('ActionValueValuesEnum', 1)
-  conditions = _messages.MessageField('Condition', 2, repeated=True)
-  description = _messages.StringField(3)
-  in_ = _messages.StringField(4, repeated=True)
-  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
-  notIn = _messages.StringField(6, repeated=True)
-  permissions = _messages.StringField(7, repeated=True)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1872,8 +1530,6 @@ class Users(_messages.Message):
   additionalViewerUsers = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
-encoding.AddCustomJsonFieldMapping(
-    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

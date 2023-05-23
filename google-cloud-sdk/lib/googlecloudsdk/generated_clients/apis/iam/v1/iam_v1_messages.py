@@ -16,26 +16,26 @@ from apitools.base.py import extra_types
 package = 'iam'
 
 
-class AddAttestationConditionRequest(_messages.Message):
-  r"""Request message for AddAttestationCondition
+class AddWorkloadSourceRequest(_messages.Message):
+  r"""Request message for AddWorkloadSource
 
   Fields:
-    attributeCondition: Required. A single CEL expression used to match
-      workloads from the workload source. If using a GCP workload source, only
-      the following are supported: * `attribute.gcp.resource_name`: Canonical
-      name of the resource, prefixed by the service hosting it. *
+    condition: Required. A single CEL expression used to match workloads from
+      the workload source. If using a GCP workload source, only the following
+      are supported: * `attribute.gcp.resource_name`: Canonical name of the
+      resource, prefixed by the service hosting it. *
       `attribute.gcp.attached_service_account.email`: The email address of the
       service account attached to the workload, if applicable. The aggregate
-      size of all attribute conditions per workload source is restricted to a
-      maximum of 4096 characters. The request will be rejected if, after
-      adding, the length exceeds this number.
-    workloadSource: Required. The source of workload attributes to match on.
-      Available workload sources include: * `projects/`: Matches workloads
-      running in a GCP project.
+      size of all conditions per workload source is restricted to a maximum of
+      4096 characters. The request will be rejected if, after adding, the
+      length exceeds this number.
+    container: Required. Matches workloads running in a GCP project. Available
+      containers include: * `projects/`: Matches workloads running in a GCP
+      project.
   """
 
-  attributeCondition = _messages.StringField(1)
-  workloadSource = _messages.StringField(2)
+  condition = _messages.StringField(1)
+  container = _messages.StringField(2)
 
 
 class AdminAuditData(_messages.Message):
@@ -51,51 +51,26 @@ class AdminAuditData(_messages.Message):
   permissionDelta = _messages.MessageField('PermissionDelta', 1)
 
 
-class AttestationCondition(_messages.Message):
-  r"""Defines the conditions under which workloads from a given source are
-  matched by this policy.
-
-  Fields:
-    attributeConditions: A list of CEL expressions used to match workloads
-      from the workload source. The workload is considered to match the policy
-      if at least one condition matches the workload. If using a GCP workload
-      source, only the following are supported: *
-      `attribute.gcp.resource_name`: Canonical name of the resource, prefixed
-      by the service hosting it. *
-      `attribute.gcp.attached_service_account.email`: The email address of the
-      service account attached to the workload, if applicable. The aggregate
-      size of all attribute conditions per workload source is restricted to a
-      maximum of 4096 characters.
-    workloadSource: Required. The source of workload attributes to match on.
-      Only a single AttestationCondition can be defined for each workload
-      source in the policy. Available workload sources include: * `projects/`:
-      Matches workloads running in a GCP project.
-  """
-
-  attributeConditions = _messages.StringField(1, repeated=True)
-  workloadSource = _messages.StringField(2)
-
-
 class AttestationPolicy(_messages.Message):
   r"""Represents a policy of a WorkloadIdentityPoolNamespace or a
   WorkloadIdentityPoolManagedIdentity which is used to determine whether a
   workload can attest an identity based on the attributes. An example
-  attestation policy would look like: ``` { attestation_conditions: [ {
-  workload_source: "projects/123" attribute_conditions: [ "attribute.gcp.resou
-  rce_name='//foo.googleapis.com/projects/123/locations/global/foos/foo1'", "a
-  ttribute.gcp.resource_name='//foo.googleapis.com/projects/123/locations/glob
-  al/foos/foo2'", ] }, { workload_source: "projects/456" attribute_conditions:
-  ["true"] }, ] } } ``` which implies that * For workloads in project 123,
-  allow attestation if the resource name is one of the two. * For workloads in
-  project 456, allow all attestations.
+  attestation policy would look like: ``` { workload_sources: [ { container:
+  "projects/123" conditions: [ "attribute.gcp.resource_name='//foo.googleapis.
+  com/projects/123/locations/global/foos/foo1'", "attribute.gcp.resource_name=
+  '//foo.googleapis.com/projects/123/locations/global/foos/foo2'", ] }, {
+  container: "projects/456" conditions: ["true"] }, ] } } ``` which implies
+  that * For workloads in project 123, allow attestation if the resource name
+  is one of the two resource_names. * For workloads in project 456, allow all
+  attestations.
 
   Fields:
-    attestationConditions: The set of conditions under which a workload is
-      matched by this policy. The workload is considered to match the policy
-      if at least one condition matches the workload.
+    workloadSources: The set of conditions under which a workload is matched
+      by this policy. The workload is considered to match the policy if at
+      least one condition matches the workload.
   """
 
-  attestationConditions = _messages.MessageField('AttestationCondition', 1, repeated=True)
+  workloadSources = _messages.MessageField('WorkloadSource', 1, repeated=True)
 
 
 class AttributeTranslatorCEL(_messages.Message):
@@ -1359,19 +1334,20 @@ class IamProjectsLocationsWorkloadIdentityPoolsListRequest(_messages.Message):
   showDeleted = _messages.BooleanField(4)
 
 
-class IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddAttestationConditionRequest(_messages.Message):
-  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddAttestationCondi
-  tionRequest object.
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddWorkloadSourceRequest(_messages.Message):
+  r"""A
+  IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddWorkloadSourceRequest
+  object.
 
   Fields:
-    addAttestationConditionRequest: A AddAttestationConditionRequest resource
-      to be passed as the request body.
-    name: Required. The name of the resource to which the attestation
-      condition will be added. This can be either a namespace resource or a
-      managed identity resource.
+    addWorkloadSourceRequest: A AddWorkloadSourceRequest resource to be passed
+      as the request body.
+    name: Required. The name of the resource to which the workload source will
+      be added. This must be either a namespace resource or a managed identity
+      resource.
   """
 
-  addAttestationConditionRequest = _messages.MessageField('AddAttestationConditionRequest', 1)
+  addWorkloadSourceRequest = _messages.MessageField('AddWorkloadSourceRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -1438,19 +1414,19 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesListRequest(_messages.M
   showDeleted = _messages.BooleanField(4)
 
 
-class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAddAttestationConditionRequest(_messages.Message):
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAddWorkloadSourceRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAd
-  dAttestationConditionRequest object.
+  dWorkloadSourceRequest object.
 
   Fields:
-    addAttestationConditionRequest: A AddAttestationConditionRequest resource
-      to be passed as the request body.
-    name: Required. The name of the resource to which the attestation
-      condition will be added. This can be either a namespace resource or a
-      managed identity resource.
+    addWorkloadSourceRequest: A AddWorkloadSourceRequest resource to be passed
+      as the request body.
+    name: Required. The name of the resource to which the workload source will
+      be added. This must be either a namespace resource or a managed identity
+      resource.
   """
 
-  addAttestationConditionRequest = _messages.MessageField('AddAttestationConditionRequest', 1)
+  addWorkloadSourceRequest = _messages.MessageField('AddWorkloadSourceRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -1535,20 +1511,20 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPatchR
   workloadIdentityPoolManagedIdentity = _messages.MessageField('WorkloadIdentityPoolManagedIdentity', 3)
 
 
-class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRemoveAttestationConditionRequest(_messages.Message):
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRemoveWorkloadSourceRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRe
-  moveAttestationConditionRequest object.
+  moveWorkloadSourceRequest object.
 
   Fields:
-    name: Required. The name of the resource from which the attestation
-      condition will be removed. This can be either a namespace resource or a
-      managed identity resource.
-    removeAttestationConditionRequest: A RemoveAttestationConditionRequest
-      resource to be passed as the request body.
+    name: Required. The name of the resource from which the workload source
+      will be removed. This must be either a namespace resource or a managed
+      identity resource.
+    removeWorkloadSourceRequest: A RemoveWorkloadSourceRequest resource to be
+      passed as the request body.
   """
 
   name = _messages.StringField(1, required=True)
-  removeAttestationConditionRequest = _messages.MessageField('RemoveAttestationConditionRequest', 2)
+  removeWorkloadSourceRequest = _messages.MessageField('RemoveWorkloadSourceRequest', 2)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesUndeleteRequest(_messages.Message):
@@ -1582,20 +1558,20 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesPatchRequest(_messages.
   workloadIdentityPoolNamespace = _messages.MessageField('WorkloadIdentityPoolNamespace', 3)
 
 
-class IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveAttestationConditionRequest(_messages.Message):
-  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveAttestationCo
-  nditionRequest object.
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveWorkloadSourceRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveWorkloadSourc
+  eRequest object.
 
   Fields:
-    name: Required. The name of the resource from which the attestation
-      condition will be removed. This can be either a namespace resource or a
-      managed identity resource.
-    removeAttestationConditionRequest: A RemoveAttestationConditionRequest
-      resource to be passed as the request body.
+    name: Required. The name of the resource from which the workload source
+      will be removed. This must be either a namespace resource or a managed
+      identity resource.
+    removeWorkloadSourceRequest: A RemoveWorkloadSourceRequest resource to be
+      passed as the request body.
   """
 
   name = _messages.StringField(1, required=True)
-  removeAttestationConditionRequest = _messages.MessageField('RemoveAttestationConditionRequest', 2)
+  removeWorkloadSourceRequest = _messages.MessageField('RemoveWorkloadSourceRequest', 2)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesUndeleteRequest(_messages.Message):
@@ -3467,25 +3443,23 @@ class QueryTestablePermissionsResponse(_messages.Message):
   permissions = _messages.MessageField('Permission', 2, repeated=True)
 
 
-class RemoveAttestationConditionRequest(_messages.Message):
-  r"""Request message for RemoveAttestationCondition
+class RemoveWorkloadSourceRequest(_messages.Message):
+  r"""Request message for RemoveWorkloadSource
 
   Fields:
-    attributeCondition: Required. A single CEL expression used to match
-      workloads from the workload source. If using a GCP workload source, only
-      the following are supported: * `attribute.gcp.resource_name`: Canonical
-      name of the resource, prefixed by the service hosting it. *
+    condition: Required. A single CEL expression used to match workloads from
+      the workload source. If using a GCP workload source, only the following
+      are supported: * `attribute.gcp.resource_name`: Canonical name of the
+      resource, prefixed by the service hosting it. *
       `attribute.gcp.attached_service_account.email`: The email address of the
-      service account attached to the workload, if applicable. The aggregate
-      size of all attribute conditions per workload source is restricted to a
-      maximum of 4096 characters.
-    workloadSource: Required. The source of workload attributes to match on.
-      Available workload sources include: * `projects/`: Matches workloads
-      running in a GCP project.
+      service account attached to the workload, if applicable.
+    container: Required. Matches workloads running in a GCP project. Available
+      containers include: * `projects/`: Matches workloads running in a GCP
+      project.
   """
 
-  attributeCondition = _messages.StringField(1)
-  workloadSource = _messages.StringField(2)
+  condition = _messages.StringField(1)
+  container = _messages.StringField(2)
 
 
 class Role(_messages.Message):
@@ -4803,6 +4777,30 @@ class WorkloadIdentityPoolProviderKey(_messages.Message):
   name = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
   use = _messages.EnumField('UseValueValuesEnum', 5)
+
+
+class WorkloadSource(_messages.Message):
+  r"""Defines the conditions under which workloads from a given source are
+  matched by this policy.
+
+  Fields:
+    conditions: A list of CEL expressions used to match workloads from the
+      workload source. The workload is considered to match the policy if at
+      least one condition matches the workload. If using a GCP workload
+      source, only the following are supported: *
+      `attribute.gcp.resource_name`: Canonical name of the resource, prefixed
+      by the service hosting it. *
+      `attribute.gcp.attached_service_account.email`: The email address of the
+      service account attached to the workload, if applicable. The aggregate
+      size of all conditions per workload source is restricted to a maximum of
+      4096 characters. //
+    container: Required. Matches workloads running in the specified container.
+      Available containers include: * `projects/`: Matches workloads running
+      in a GCP project.
+  """
+
+  conditions = _messages.StringField(1, repeated=True)
+  container = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -30,6 +30,7 @@ from googlecloudsdk.api_lib.clouddeploy import client_util
 from googlecloudsdk.api_lib.clouddeploy import delivery_pipeline
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.calliope import exceptions as c_exceptions
+from googlecloudsdk.command_lib.deploy import deploy_util
 from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import rollout_util
 from googlecloudsdk.command_lib.deploy import staging_bucket_util
@@ -166,6 +167,7 @@ def CreateReleaseConfig(source,
                         pipeline_uuid,
                         from_k8s_manifest,
                         from_run_manifest,
+                        deploy_parameters=None,
                         hide_logs=False):
   """Returns a build config."""
 
@@ -191,6 +193,12 @@ def CreateReleaseConfig(source,
       hide_logs,
   )
   release_config = _SetImages(messages, release_config, images, build_artifacts)
+  release_config = _SetDeployParameters(messages,
+                                        deploy_util.ResourceType.RELEASE,
+                                        release_config,
+                                        deploy_parameters
+                                        )
+
   return release_config
 
 
@@ -470,6 +478,22 @@ def _SetSkaffoldConfigPath(release_config, skaffold_file, is_generated):
   if is_generated:
     release_config.skaffoldConfigPath = GENERATED_SKAFFOLD
 
+  return release_config
+
+
+def _SetDeployParameters(messages, resource_type, release_config,
+                         deploy_parameters):
+  """Set the deploy parameters for the release config."""
+  if deploy_parameters:
+    dps_value_msg = getattr(messages, resource_type.value).DeployParametersValue
+    dps_value = dps_value_msg()
+    for key, value in deploy_parameters.items():
+      dps_value.additionalProperties.append(
+          dps_value_msg.AdditionalProperty(
+              key=key,
+              value=value))
+
+    release_config.deployParameters = dps_value
   return release_config
 
 

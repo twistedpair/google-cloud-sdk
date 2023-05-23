@@ -679,8 +679,7 @@ def AddCreateDiskArgs(parser,
                       include_name=True,
                       support_boot=False,
                       support_multi_writer=False,
-                      support_replica_zones=False,
-                      support_provisioned_throughput=False):
+                      support_replica_zones=False):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_device_name_help = GetDiskDeviceNameHelp(
@@ -748,6 +747,10 @@ def AddCreateDiskArgs(parser,
       *provisioned-iops*::: Indicates how many IOPS to provision for the disk.
       This sets the number of I/O operations per second that the disk can
       handle. Value must be between 10,000 and 120,000.
+
+      *provisioned-throughput*::: Indicates how much throughput to provision for
+      the disk. This sets the number of throughput mb per second that the disk
+      can handle.
 
       *disk-resource-policy*::: Resource policy to apply to the disk. Specify a full or partial URL. For example:
         * ``https://www.googleapis.com/compute/v1/projects/my-project/regions/us-central1/resourcePolicies/my-resource-policy''
@@ -829,6 +832,7 @@ def AddCreateDiskArgs(parser,
       'device-name': str,
       'auto-delete': arg_parsers.ArgBoolean(),
       'provisioned-iops': int,
+      'provisioned-throughput': int,
       'disk-resource-policy': arg_parsers.ArgList(max_length=1),
       'architecture': str,
   }
@@ -908,14 +912,6 @@ def AddCreateDiskArgs(parser,
       disks.
     """
     spec['replica-zones'] = arg_parsers.ArgList(max_length=2)
-
-  if support_provisioned_throughput:
-    spec['provisioned-throughput'] = int
-    disk_help += """
-      *provisioned-throughput*::: Indicates how much throughput to provision for
-      the disk. This sets the number of throughput mb per second that the disk
-      can handle.
-    """
 
   parser.add_argument(
       '--create-disk',

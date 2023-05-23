@@ -463,6 +463,7 @@ def AddAcceleratorArgs(parser,
                        enable_gpu_partition=False,
                        enable_gpu_sharing=False,
                        enable_gpu_deprecated_fields=False,
+                       enable_gpu_driver_installation=False,
                        hidden=False):
   """Adds Accelerator-related args."""
 
@@ -480,6 +481,9 @@ def AddAcceleratorArgs(parser,
   if enable_gpu_sharing:
     spec['max-shared-clients-per-gpu'] = int
     spec['gpu-sharing-strategy'] = str
+
+  if enable_gpu_driver_installation:
+    spec['gpu-driver-version'] = str
 
   parser.add_argument(
       '--accelerator',
@@ -5290,3 +5294,62 @@ def AddEnableDNSEndpoint(parser):
       action='store_true',
       help=help_text
   )
+
+
+def AddWorkloadPoliciesFlag(parser, hidden=True):
+  """Adds workload policies related flags to parser."""
+  type_validator = arg_parsers.RegexpValidator(
+      r'^allow-net-admin$', 'Workload policy only supports "allow-net-admin"')
+  help_text = """\
+Add autopilot workload policies to the cluster
+
+Examples:
+
+  $ {command} example-cluster --workload-policies=allow-net-admin
+
+The only supported workload policy is 'allow-net-admin'.
+"""
+
+  parser.add_argument(
+      '--workload-policies',
+      type=type_validator,
+      help=help_text,
+      hidden=hidden)
+
+
+def AddRemoveWorkloadPoliciesFlag(parser, hidden=True):
+  """Adds Remove workload policies related flags to parser."""
+  type_validator = arg_parsers.RegexpValidator(
+      r'^allow-net-admin$', 'Workload policy only supports "allow-net-admin"')
+  help_text = """\
+Remove autopilot workload policies from the cluster
+
+Examples:
+
+  $ {command} example-cluster --remove-workload-policies=allow-net-admin
+
+The only supported workload policy is 'allow-net-admin'.
+"""
+
+  parser.add_argument(
+      '--remove-workload-policies',
+      type=type_validator,
+      help=help_text,
+      hidden=hidden)
+
+
+def AddEnableFqdnNetworkPolicyFlag(parser):
+  """adds --enable-fqdn-network-policy flag to the given parser.
+
+  Args:
+    parser: A given parser.
+  """
+  help_text = """\
+  Enables FQDN Network Policies on the cluster. FQDN Network Policies are disabled by default.
+  """
+  parser.add_argument(
+      '--enable-fqdn-network-policy',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=True)

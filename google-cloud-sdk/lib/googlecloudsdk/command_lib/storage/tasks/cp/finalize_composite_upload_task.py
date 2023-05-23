@@ -36,15 +36,18 @@ from googlecloudsdk.core import log
 class FinalizeCompositeUploadTask(copy_util.CopyTaskWithExitHandler):
   """Composes and deletes object resources received as messages."""
 
-  def __init__(self,
-               expected_component_count,
-               source_resource,
-               destination_resource,
-               source_path,
-               random_prefix='',
-               delete_source=False,
-               print_created_message=False,
-               user_request_args=None):
+  def __init__(
+      self,
+      expected_component_count,
+      source_resource,
+      destination_resource,
+      source_path,
+      delete_source=False,
+      posix_to_set=None,
+      print_created_message=False,
+      random_prefix='',
+      user_request_args=None,
+  ):
     """Initializes task.
 
     Args:
@@ -55,22 +58,27 @@ class FinalizeCompositeUploadTask(copy_util.CopyTaskWithExitHandler):
         the final composite object.
       source_path (str): Path to file to upload. May be the original or a
         transformed temporary file.
-      random_prefix (str): Random id added to component names.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
-      print_created_message (bool): Print a message containing the versioned
-        URL of the copy result.
+      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
+        metadata on target. If provided and preserving POSIX, skip re-parsing
+        from file system.
+      print_created_message (bool): Print a message containing the versioned URL
+        of the copy result.
+      random_prefix (str): Random id added to component names.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(FinalizeCompositeUploadTask, self).__init__(
         source_resource,
         destination_resource,
-        user_request_args=user_request_args)
+        posix_to_set=posix_to_set,
+        user_request_args=user_request_args,
+    )
     self._expected_component_count = expected_component_count
     self._source_path = source_path
-    self._random_prefix = random_prefix
     self._delete_source = delete_source
     self._print_created_message = print_created_message
+    self._random_prefix = random_prefix
 
   def execute(self, task_status_queue=None):
     uploaded_components = [
@@ -94,7 +102,9 @@ class FinalizeCompositeUploadTask(copy_util.CopyTaskWithExitHandler):
         uploaded_objects,
         self._destination_resource,
         original_source_resource=self._source_resource,
-        user_request_args=self._user_request_args)
+        posix_to_set=self._posix_to_set,
+        user_request_args=self._user_request_args,
+    )
     compose_task_output = compose_task.execute(
         task_status_queue=task_status_queue)
 

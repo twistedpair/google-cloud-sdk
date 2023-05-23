@@ -1606,6 +1606,7 @@ class InstanceConfig(_messages.Message):
     FreeInstanceAvailabilityValueValuesEnum: Output only. Describes whether
       free instances are available to be created in this instance config.
     StateValueValuesEnum: Output only. The current instance config state.
+      Applicable only for USER_MANAGED configs.
 
   Messages:
     LabelsValue: Cloud Labels are a flexible and lightweight mechanism for
@@ -1681,7 +1682,8 @@ class InstanceConfig(_messages.Message):
       config.
     replicas: The geographic placement of nodes in this instance configuration
       and their replication properties.
-    state: Output only. The current instance config state.
+    state: Output only. The current instance config state. Applicable only for
+      USER_MANAGED configs.
   """
 
   class AllowedStorageTypesValueListEntryValuesEnum(_messages.Enum):
@@ -1732,7 +1734,8 @@ class InstanceConfig(_messages.Message):
     QUOTA_EXCEEDED = 4
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The current instance config state.
+    r"""Output only. The current instance config state. Applicable only for
+    USER_MANAGED configs.
 
     Values:
       STATE_UNSPECIFIED: Not specified.
@@ -4960,6 +4963,23 @@ class SpannerProjectsInstancesInstancePartitionsOperationsListRequest(_messages.
   pageToken = _messages.StringField(4)
 
 
+class SpannerProjectsInstancesInstancePartitionsPatchRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesInstancePartitionsPatchRequest object.
+
+  Fields:
+    name: Required. A unique identifier for the instance partition. Values are
+      of the form `projects//instances//instancePartitions/a-z*[a-z0-9]`. The
+      final segment of the name must be between 2 and 64 characters in length.
+      An instance partition's name cannot be changed after the instance
+      partition is created.
+    updateInstancePartitionRequest: A UpdateInstancePartitionRequest resource
+      to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateInstancePartitionRequest = _messages.MessageField('UpdateInstancePartitionRequest', 2)
+
+
 class SpannerProjectsInstancesListRequest(_messages.Message):
   r"""A SpannerProjectsInstancesListRequest object.
 
@@ -5915,6 +5935,42 @@ class UpdateInstanceMetadata(_messages.Message):
   endTime = _messages.StringField(2)
   instance = _messages.MessageField('Instance', 3)
   startTime = _messages.StringField(4)
+
+
+class UpdateInstancePartitionMetadata(_messages.Message):
+  r"""Metadata type for the operation returned by UpdateInstancePartition.
+
+  Fields:
+    cancelTime: The time at which this operation was cancelled. If set, this
+      operation is in the process of undoing itself (which is guaranteed to
+      succeed) and cannot be cancelled again.
+    endTime: The time at which this operation failed or was completed
+      successfully.
+    instancePartition: The desired end state of the update.
+    startTime: The time at which UpdateInstancePartition request was received.
+  """
+
+  cancelTime = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  instancePartition = _messages.MessageField('InstancePartition', 3)
+  startTime = _messages.StringField(4)
+
+
+class UpdateInstancePartitionRequest(_messages.Message):
+  r"""The request for UpdateInstancePartition.
+
+  Fields:
+    fieldMask: Required. A mask specifying which fields in InstancePartition
+      should be updated. The field mask must always be specified; this
+      prevents any future fields in InstancePartition from being erased
+      accidentally by clients that do not know about them.
+    instancePartition: Required. The instance partition to update, which must
+      always include the instance partition name. Otherwise, only fields
+      mentioned in field_mask need be included.
+  """
+
+  fieldMask = _messages.StringField(1)
+  instancePartition = _messages.MessageField('InstancePartition', 2)
 
 
 class UpdateInstanceRequest(_messages.Message):

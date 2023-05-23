@@ -3168,14 +3168,17 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsListRequest(_messages.Me
       require values specified in RFC-3339 format. For example: `create_time =
       "2020-11-19T11:30:00-04:00"` * **Metadata field**: To filter on metadata
       fields use traversal operation as follows: `metadata..`. For example:
-      `metadata.field_1.number_value = 10.0` * **Context based filtering**: To
-      filter Artifacts based on the contexts to which they belong, use the
-      function operator with the full resource name `in_context()`. For
-      example: `in_context("projects//locations//metadataStores//contexts/")`
-      Each of the above supported filter types can be combined together using
-      logical operators (`AND` & `OR`). Maximum nested expression depth
-      allowed is 5. For example: `display_name = "test" AND
-      metadata.field1.bool_value = true`.
+      `metadata.field_1.number_value = 10.0` In case the field name contains
+      special characters (such as colon), one can embed it inside double
+      quote. For example: `metadata."field:1".number_value = 10.0` * **Context
+      based filtering**: To filter Artifacts based on the contexts to which
+      they belong, use the function operator with the full resource name
+      `in_context()`. For example:
+      `in_context("projects//locations//metadataStores//contexts/")` Each of
+      the above supported filter types can be combined together using logical
+      operators (`AND` & `OR`). Maximum nested expression depth allowed is 5.
+      For example: `display_name = "test" AND metadata.field1.bool_value =
+      true`.
     orderBy: How the list of messages is ordered. Specify the values to order
       by and an ordering operation. The default sorting order is ascending. To
       specify descending order for a field, users append a " desc" suffix; for
@@ -3257,11 +3260,13 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsQueryArtifactLineageSubg
       `update_time`, require values specified in RFC-3339 format. For example:
       `create_time = "2020-11-19T11:30:00-04:00"` * **Metadata field**: To
       filter on metadata fields use traversal operation as follows:
-      `metadata..`. For example: `metadata.field_1.number_value = 10.0` Each
-      of the above supported filter types can be combined together using
-      logical operators (`AND` & `OR`). Maximum nested expression depth
-      allowed is 5. For example: `display_name = "test" AND
-      metadata.field1.bool_value = true`.
+      `metadata..`. For example: `metadata.field_1.number_value = 10.0` In
+      case the field name contains special characters (such as colon), one can
+      embed it inside double quote. For example:
+      `metadata."field:1".number_value = 10.0` Each of the above supported
+      filter types can be combined together using logical operators (`AND` &
+      `OR`). Maximum nested expression depth allowed is 5. For example:
+      `display_name = "test" AND metadata.field1.bool_value = true`.
     maxHops: Specifies the size of the lineage graph in terms of number of
       hops from the specified artifact. Negative Value: INVALID_ARGUMENT error
       is returned 0: Only input artifact is returned. No value: Transitive
@@ -3377,9 +3382,11 @@ class AiplatformProjectsLocationsMetadataStoresContextsListRequest(_messages.Mes
       specified in RFC-3339 format. For example: `create_time =
       "2020-11-19T11:30:00-04:00"`. * **Metadata field**: To filter on
       metadata fields use traversal operation as follows: `metadata..`. For
-      example: `metadata.field_1.number_value = 10.0`. * **Parent Child
-      filtering**: To filter Contexts based on parent-child relationship use
-      the HAS operator as follows: ``` parent_contexts:
+      example: `metadata.field_1.number_value = 10.0`. In case the field name
+      contains special characters (such as colon), one can embed it inside
+      double quote. For example: `metadata."field:1".number_value = 10.0` *
+      **Parent Child filtering**: To filter Contexts based on parent-child
+      relationship use the HAS operator as follows: ``` parent_contexts:
       "projects//locations//metadataStores//contexts/" child_contexts:
       "projects//locations//metadataStores//contexts/" ``` Each of the above
       supported filters can be combined together using logical operators
@@ -3603,10 +3610,12 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsListRequest(_messages.M
       require values specified in RFC-3339 format. For example: `create_time =
       "2020-11-19T11:30:00-04:00"`. * **Metadata field**: To filter on
       metadata fields use traversal operation as follows: `metadata..` For
-      example: `metadata.field_1.number_value = 10.0` * **Context based
-      filtering**: To filter Executions based on the contexts to which they
-      belong use the function operator with the full resource name:
-      `in_context()`. For example:
+      example: `metadata.field_1.number_value = 10.0` In case the field name
+      contains special characters (such as colon), one can embed it inside
+      double quote. For example: `metadata."field:1".number_value = 10.0` *
+      **Context based filtering**: To filter Executions based on the contexts
+      to which they belong use the function operator with the full resource
+      name: `in_context()`. For example:
       `in_context("projects//locations//metadataStores//contexts/")` Each of
       the above supported filters can be combined together using logical
       operators (`AND` & `OR`). Maximum nested expression depth allowed is 5.
@@ -4882,6 +4891,63 @@ class AiplatformProjectsLocationsOperationsWaitRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsPersistentResourcesCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPersistentResourcesCreateRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1PersistentResource: A
+      GoogleCloudAiplatformV1beta1PersistentResource resource to be passed as
+      the request body.
+    parent: A string attribute.
+    persistentResourceId: Required. The ID to use for the PersistentResource,
+      which become the final component of the PersistentResource's resource
+      name. The maximum length is 63 characters, and valid characters are
+      /^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$/.
+  """
+
+  googleCloudAiplatformV1beta1PersistentResource = _messages.MessageField('GoogleCloudAiplatformV1beta1PersistentResource', 1)
+  parent = _messages.StringField(2, required=True)
+  persistentResourceId = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsPersistentResourcesDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPersistentResourcesDeleteRequest object.
+
+  Fields:
+    name: A string attribute.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsPersistentResourcesGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPersistentResourcesGetRequest object.
+
+  Fields:
+    name: A string attribute.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsPersistentResourcesListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPersistentResourcesListRequest object.
+
+  Fields:
+    filter: An expression for filtering the results of the request.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token. Typically obtained via
+      ListPersistentResourceResponse.next_page_token of the previous
+      PersistentResourceService.ListPersistentResource call.
+    parent: A string attribute.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class AiplatformProjectsLocationsPersistentResourcesOperationsCancelRequest(_messages.Message):
@@ -6767,6 +6833,44 @@ class AiplatformProjectsLocationsTrainingPipelinesOperationsWaitRequest(_message
   timeout = _messages.StringField(2)
 
 
+class AiplatformPublishersModelsGetRequest(_messages.Message):
+  r"""A AiplatformPublishersModelsGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. PublisherModel view specifying which fields
+      to read.
+
+  Fields:
+    languageCode: Optional. The IETF BCP-47 language code representing the
+      language in which the publisher model's text information should be
+      written in (see go/bcp47).
+    name: Required. The name of the PublisherModel resource. Format:
+      `publishers/{publisher}/models/{publisher_model}`
+    view: Optional. PublisherModel view specifying which fields to read.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. PublisherModel view specifying which fields to read.
+
+    Values:
+      PUBLISHER_MODEL_VIEW_UNSPECIFIED: The default / unset value. The API
+        will default to the BASIC view.
+      PUBLISHER_MODEL_VIEW_BASIC: Include basic metadata about the publisher
+        model, but not the full contents.
+      PUBLISHER_MODEL_VIEW_FULL: Include everything.
+      PUBLISHER_MODEL_VERSION_VIEW_BASIC: Include: VersionId,
+        ModelVersionExternalName, and SupportedActions.
+    """
+    PUBLISHER_MODEL_VIEW_UNSPECIFIED = 0
+    PUBLISHER_MODEL_VIEW_BASIC = 1
+    PUBLISHER_MODEL_VIEW_FULL = 2
+    PUBLISHER_MODEL_VERSION_VIEW_BASIC = 3
+
+  languageCode = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 3)
+
+
 class GoogleApiHttpBody(_messages.Message):
   r"""Message that represents an arbitrary HTTP body. It should only be used
   for payload formats that can't be represented as JSON, such as raw binary or
@@ -7539,6 +7643,7 @@ class GoogleCloudAiplatformInternalExamples(_messages.Message):
   provided dataset.
 
   Fields:
+    exampleGcsSource: The Cloud Storage input instances.
     gcsSource: The Cloud Storage locations that contain the instances to be
       indexed for approximate nearest neighbor search.
     nearestNeighborSearchConfig: The full configuration for the generated
@@ -7553,10 +7658,40 @@ class GoogleCloudAiplatformInternalExamples(_messages.Message):
       off and modality.
   """
 
-  gcsSource = _messages.MessageField('GoogleCloudAiplatformInternalGcsSource', 1)
-  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
-  neighborCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  presets = _messages.MessageField('GoogleCloudAiplatformInternalPresets', 4)
+  exampleGcsSource = _messages.MessageField('GoogleCloudAiplatformInternalExamplesExampleGcsSource', 1)
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformInternalGcsSource', 2)
+  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 3)
+  neighborCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  presets = _messages.MessageField('GoogleCloudAiplatformInternalPresets', 5)
+
+
+class GoogleCloudAiplatformInternalExamplesExampleGcsSource(_messages.Message):
+  r"""The Cloud Storage input instances.
+
+  Enums:
+    DataFormatValueValuesEnum: The format in which instances are given, if not
+      specified, assume it's JSONL format. Currently only JSONL format is
+      supported.
+
+  Fields:
+    dataFormat: The format in which instances are given, if not specified,
+      assume it's JSONL format. Currently only JSONL format is supported.
+    gcsSource: The Cloud Storage location for the input instances.
+  """
+
+  class DataFormatValueValuesEnum(_messages.Enum):
+    r"""The format in which instances are given, if not specified, assume it's
+    JSONL format. Currently only JSONL format is supported.
+
+    Values:
+      DATA_FORMAT_UNSPECIFIED: Format unspecified, used when unset.
+      JSONL: Examples are stored in JSONL files.
+    """
+    DATA_FORMAT_UNSPECIFIED = 0
+    JSONL = 1
+
+  dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 1)
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformInternalGcsSource', 2)
 
 
 class GoogleCloudAiplatformInternalExplanationMetadata(_messages.Message):
@@ -10428,14 +10563,14 @@ class GoogleCloudAiplatformUiDeployedIndex(_messages.Message):
       on its original Index. Additionally when certain changes to the original
       Index are being done (e.g. when what the Index contains is being
       changed) the DeployedIndex may be asynchronously updated in the
-      background to reflect this changes. If this timestamp's value is at
+      background to reflect these changes. If this timestamp's value is at
       least the Index.update_time of the original Index, it means that this
       DeployedIndex and the original Index are in sync. If this timestamp is
       older, then to see which updates this DeployedIndex already contains
-      (and which not), one must list Operations working on the original Index.
-      Only the successfully completed Operations with
-      Operations.metadata.generic_metadata.update_time equal or before this
-      sync time are contained in this DeployedIndex.
+      (and which it does not), one must list the operations that are running
+      on the original Index. Only the successfully completed Operations with
+      update_time equal or before this sync time are contained in this
+      DeployedIndex.
     privateEndpoints: Output only. Provides paths for users to send requests
       directly to the deployed index services running on Cloud via private
       services access. This field is populated if network is configured.
@@ -10677,6 +10812,7 @@ class GoogleCloudAiplatformUiExamples(_messages.Message):
   provided dataset.
 
   Fields:
+    exampleGcsSource: The Cloud Storage input instances.
     gcsSource: The Cloud Storage locations that contain the instances to be
       indexed for approximate nearest neighbor search.
     nearestNeighborSearchConfig: The full configuration for the generated
@@ -10691,10 +10827,40 @@ class GoogleCloudAiplatformUiExamples(_messages.Message):
       off and modality.
   """
 
-  gcsSource = _messages.MessageField('GoogleCloudAiplatformUiGcsSource', 1)
-  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
-  neighborCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  presets = _messages.MessageField('GoogleCloudAiplatformUiPresets', 4)
+  exampleGcsSource = _messages.MessageField('GoogleCloudAiplatformUiExamplesExampleGcsSource', 1)
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformUiGcsSource', 2)
+  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 3)
+  neighborCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  presets = _messages.MessageField('GoogleCloudAiplatformUiPresets', 5)
+
+
+class GoogleCloudAiplatformUiExamplesExampleGcsSource(_messages.Message):
+  r"""The Cloud Storage input instances.
+
+  Enums:
+    DataFormatValueValuesEnum: The format in which instances are given, if not
+      specified, assume it's JSONL format. Currently only JSONL format is
+      supported.
+
+  Fields:
+    dataFormat: The format in which instances are given, if not specified,
+      assume it's JSONL format. Currently only JSONL format is supported.
+    gcsSource: The Cloud Storage location for the input instances.
+  """
+
+  class DataFormatValueValuesEnum(_messages.Enum):
+    r"""The format in which instances are given, if not specified, assume it's
+    JSONL format. Currently only JSONL format is supported.
+
+    Values:
+      DATA_FORMAT_UNSPECIFIED: Format unspecified, used when unset.
+      JSONL: Examples are stored in JSONL files.
+    """
+    DATA_FORMAT_UNSPECIFIED = 0
+    JSONL = 1
+
+  dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 1)
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformUiGcsSource', 2)
 
 
 class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
@@ -12070,6 +12236,7 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      NVIDIA_A100_80GB: Nvidia A100 80GB GPU.
       NVIDIA_L4: Nvidia L4 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
@@ -12082,10 +12249,11 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
-    NVIDIA_L4 = 7
-    TPU_V2 = 8
-    TPU_V3 = 9
-    TPU_V4_POD = 10
+    NVIDIA_A100_80GB = 7
+    NVIDIA_L4 = 8
+    TPU_V2 = 9
+    TPU_V3 = 10
+    TPU_V4_POD = 11
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -13009,6 +13177,50 @@ class GoogleCloudAiplatformUiPredictRequest(_messages.Message):
   parameters = _messages.MessageField('extra_types.JsonValue', 3)
 
 
+class GoogleCloudAiplatformUiPredictSchemata(_messages.Message):
+  r"""Contains the schemata used in Model's predictions and explanations via
+  PredictionService.Predict, PredictionService.Explain and BatchPredictionJob.
+
+  Fields:
+    instanceSchemaUri: Immutable. Points to a YAML file stored on Google Cloud
+      Storage describing the format of a single instance, which are used in
+      PredictRequest.instances, ExplainRequest.instances and
+      BatchPredictionJob.input_config. The schema is defined as an OpenAPI
+      3.0.2 [Schema Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML Models
+      always have this field populated by Vertex AI. Note: The URI given on
+      output will be immutable and probably different, including the URI
+      scheme, than the one given on input. The output URI will point to a
+      location where the user only has a read access.
+    parametersSchemaUri: Immutable. Points to a YAML file stored on Google
+      Cloud Storage describing the parameters of prediction and explanation
+      via PredictRequest.parameters, ExplainRequest.parameters and
+      BatchPredictionJob.model_parameters. The schema is defined as an OpenAPI
+      3.0.2 [Schema Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML Models
+      always have this field populated by Vertex AI, if no parameters are
+      supported, then it is set to an empty string. Note: The URI given on
+      output will be immutable and probably different, including the URI
+      scheme, than the one given on input. The output URI will point to a
+      location where the user only has a read access.
+    predictionSchemaUri: Immutable. Points to a YAML file stored on Google
+      Cloud Storage describing the format of a single prediction produced by
+      this Model, which are returned via PredictResponse.predictions,
+      ExplainResponse.explanations, and BatchPredictionJob.output_config. The
+      schema is defined as an OpenAPI 3.0.2 [Schema
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML Models
+      always have this field populated by Vertex AI. Note: The URI given on
+      output will be immutable and probably different, including the URI
+      scheme, than the one given on input. The output URI will point to a
+      location where the user only has a read access.
+  """
+
+  instanceSchemaUri = _messages.StringField(1)
+  parametersSchemaUri = _messages.StringField(2)
+  predictionSchemaUri = _messages.StringField(3)
+
+
 class GoogleCloudAiplatformUiPresets(_messages.Message):
   r"""Preset configuration for example-based explanations
 
@@ -13613,6 +13825,12 @@ class GoogleCloudAiplatformUiPublisherModel(_messages.Message):
     parent: Optional. The parent that this model was customized from. E.g.,
       Vision API, Natural Language API, LaMDA, T5, etc. Foundation models
       don't have parents.
+    predictSchemata: Optional. The schemata that describes formats of the
+      PublisherModel's predictions and explanations as given and returned via
+      PredictionService.Predict.
+    publisherModelTemplate: Optional. Output only. Immutable. Used to indicate
+      this model has a publisher model and provide the template of the
+      publisher model resource name.
     skillLevels: Optional. Additional information about the model's skill
       levels.
     supportedActions: Optional. Supported call-to-action options.
@@ -13805,13 +14023,15 @@ class GoogleCloudAiplatformUiPublisherModel(_messages.Message):
   overview = _messages.StringField(17)
   owners = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelOwner', 18, repeated=True)
   parent = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelParent', 19)
-  skillLevels = _messages.StringField(20, repeated=True)
-  supportedActions = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToAction', 21)
-  supportedTasks = _messages.EnumField('SupportedTasksValueListEntryValuesEnum', 22, repeated=True)
-  tryItOut = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelTryItOut', 23)
-  updateTime = _messages.StringField(24)
-  versionExternalName = _messages.StringField(25)
-  versionId = _messages.StringField(26)
+  predictSchemata = _messages.MessageField('GoogleCloudAiplatformUiPredictSchemata', 20)
+  publisherModelTemplate = _messages.StringField(21)
+  skillLevels = _messages.StringField(22, repeated=True)
+  supportedActions = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToAction', 23)
+  supportedTasks = _messages.EnumField('SupportedTasksValueListEntryValuesEnum', 24, repeated=True)
+  tryItOut = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelTryItOut', 25)
+  updateTime = _messages.StringField(26)
+  versionExternalName = _messages.StringField(27)
+  versionId = _messages.StringField(28)
 
 
 class GoogleCloudAiplatformUiPublisherModelCallToAction(_messages.Message):
@@ -16735,6 +16955,19 @@ class GoogleCloudAiplatformUiSearchPublicModelsResponse(_messages.Message):
   publicModels = _messages.MessageField('GoogleCloudAiplatformUiPublicModel', 2, repeated=True)
 
 
+class GoogleCloudAiplatformUiSearchPublisherModelsResponse(_messages.Message):
+  r"""Response message for ModelGardenService.SearchPublisherModels.
+
+  Fields:
+    nextPageToken: A token to retrieve the next page of results. Pass to
+      SearchPublisherModelsRequest.page_token to obtain that page.
+    publisherModels: List of PublisherModels in the queried page.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  publisherModels = _messages.MessageField('GoogleCloudAiplatformUiPublisherModel', 2, repeated=True)
+
+
 class GoogleCloudAiplatformUiSmoothGradConfig(_messages.Message):
   r"""Config for SmoothGrad approximation of gradients. When enabled, the
   gradients are approximated by averaging the gradients from noisy samples in
@@ -18339,14 +18572,14 @@ class GoogleCloudAiplatformV1DeployedIndex(_messages.Message):
       on its original Index. Additionally when certain changes to the original
       Index are being done (e.g. when what the Index contains is being
       changed) the DeployedIndex may be asynchronously updated in the
-      background to reflect this changes. If this timestamp's value is at
+      background to reflect these changes. If this timestamp's value is at
       least the Index.update_time of the original Index, it means that this
       DeployedIndex and the original Index are in sync. If this timestamp is
       older, then to see which updates this DeployedIndex already contains
-      (and which not), one must list Operations working on the original Index.
-      Only the successfully completed Operations with
-      Operations.metadata.generic_metadata.update_time equal or before this
-      sync time are contained in this DeployedIndex.
+      (and which it does not), one must list the operations that are running
+      on the original Index. Only the successfully completed Operations with
+      update_time equal or before this sync time are contained in this
+      DeployedIndex.
     privateEndpoints: Output only. Provides paths for users to send requests
       directly to the deployed index services running on Cloud via private
       services access. This field is populated if network is configured.
@@ -19446,6 +19679,7 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      NVIDIA_A100_80GB: Nvidia A100 80GB GPU.
       NVIDIA_L4: Nvidia L4 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
@@ -19458,10 +19692,11 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
-    NVIDIA_L4 = 7
-    TPU_V2 = 8
-    TPU_V3 = 9
-    TPU_V4_POD = 10
+    NVIDIA_A100_80GB = 7
+    NVIDIA_L4 = 8
+    TPU_V2 = 9
+    TPU_V3 = 10
+    TPU_V4_POD = 11
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -24312,14 +24547,14 @@ class GoogleCloudAiplatformV1alpha1DeployedIndex(_messages.Message):
       on its original Index. Additionally when certain changes to the original
       Index are being done (e.g. when what the Index contains is being
       changed) the DeployedIndex may be asynchronously updated in the
-      background to reflect this changes. If this timestamp's value is at
+      background to reflect these changes. If this timestamp's value is at
       least the Index.update_time of the original Index, it means that this
       DeployedIndex and the original Index are in sync. If this timestamp is
       older, then to see which updates this DeployedIndex already contains
-      (and which not), one must list Operations working on the original Index.
-      Only the successfully completed Operations with
-      Operations.metadata.generic_metadata.update_time equal or before this
-      sync time are contained in this DeployedIndex.
+      (and which it does not), one must list the operations that are running
+      on the original Index. Only the successfully completed Operations with
+      update_time equal or before this sync time are contained in this
+      DeployedIndex.
     privateEndpoints: Output only. Provides paths for users to send requests
       directly to the deployed index services running on Cloud via private
       services access. This field is populated if network is configured.
@@ -24380,6 +24615,7 @@ class GoogleCloudAiplatformV1alpha1Examples(_messages.Message):
   provided dataset.
 
   Fields:
+    exampleGcsSource: The Cloud Storage input instances.
     nearestNeighborSearchConfig: The full configuration for the generated
       index, the semantics are the same as metadata and should match
       [NearestNeighborSearchConfig](https://cloud.google.com/vertex-
@@ -24392,9 +24628,39 @@ class GoogleCloudAiplatformV1alpha1Examples(_messages.Message):
       off and modality.
   """
 
-  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 1)
-  neighborCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  presets = _messages.MessageField('GoogleCloudAiplatformV1alpha1Presets', 3)
+  exampleGcsSource = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExamplesExampleGcsSource', 1)
+  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
+  neighborCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  presets = _messages.MessageField('GoogleCloudAiplatformV1alpha1Presets', 4)
+
+
+class GoogleCloudAiplatformV1alpha1ExamplesExampleGcsSource(_messages.Message):
+  r"""The Cloud Storage input instances.
+
+  Enums:
+    DataFormatValueValuesEnum: The format in which instances are given, if not
+      specified, assume it's JSONL format. Currently only JSONL format is
+      supported.
+
+  Fields:
+    dataFormat: The format in which instances are given, if not specified,
+      assume it's JSONL format. Currently only JSONL format is supported.
+    gcsSource: The Cloud Storage location for the input instances.
+  """
+
+  class DataFormatValueValuesEnum(_messages.Enum):
+    r"""The format in which instances are given, if not specified, assume it's
+    JSONL format. Currently only JSONL format is supported.
+
+    Values:
+      DATA_FORMAT_UNSPECIFIED: Format unspecified, used when unset.
+      JSONL: Examples are stored in JSONL files.
+    """
+    DATA_FORMAT_UNSPECIFIED = 0
+    JSONL = 1
+
+  dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 1)
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1alpha1GcsSource', 2)
 
 
 class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
@@ -24718,6 +24984,18 @@ class GoogleCloudAiplatformV1alpha1ExportModelResponse(_messages.Message):
   r"""Response message of ModelService.ExportModel operation."""
 
 
+class GoogleCloudAiplatformV1alpha1GcsSource(_messages.Message):
+  r"""The Google Cloud Storage location for the input content.
+
+  Fields:
+    uris: Required. Google Cloud Storage URI(-s) to the input file(s). May
+      contain wildcards. For more information on wildcards, see
+      https://cloud.google.com/storage/docs/gsutil/addlhelp/WildcardNames.
+  """
+
+  uris = _messages.StringField(1, repeated=True)
+
+
 class GoogleCloudAiplatformV1alpha1GenericOperationMetadata(_messages.Message):
   r"""Generic Metadata shared by all operations.
 
@@ -24802,6 +25080,7 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      NVIDIA_A100_80GB: Nvidia A100 80GB GPU.
       NVIDIA_L4: Nvidia L4 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
@@ -24814,10 +25093,11 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
-    NVIDIA_L4 = 7
-    TPU_V2 = 8
-    TPU_V3 = 9
-    TPU_V4_POD = 10
+    NVIDIA_A100_80GB = 7
+    NVIDIA_L4 = 8
+    TPU_V2 = 9
+    TPU_V3 = 10
+    TPU_V4_POD = 11
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -27664,6 +27944,16 @@ class GoogleCloudAiplatformV1beta1CreateMetadataStoreOperationMetadata(_messages
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1beta1CreatePersistentResourceOperationMetadata(_messages.Message):
+  r"""Details of operations that perform create PersistentResource.
+
+  Fields:
+    genericMetadata: Operation metadata for PersistentResource.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1beta1CreatePipelineJobRequest(_messages.Message):
   r"""Request message for PipelineService.CreatePipelineJob.
 
@@ -28763,14 +29053,14 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
       on its original Index. Additionally when certain changes to the original
       Index are being done (e.g. when what the Index contains is being
       changed) the DeployedIndex may be asynchronously updated in the
-      background to reflect this changes. If this timestamp's value is at
+      background to reflect these changes. If this timestamp's value is at
       least the Index.update_time of the original Index, it means that this
       DeployedIndex and the original Index are in sync. If this timestamp is
       older, then to see which updates this DeployedIndex already contains
-      (and which not), one must list Operations working on the original Index.
-      Only the successfully completed Operations with
-      Operations.metadata.generic_metadata.update_time equal or before this
-      sync time are contained in this DeployedIndex.
+      (and which it does not), one must list the operations that are running
+      on the original Index. Only the successfully completed Operations with
+      update_time equal or before this sync time are contained in this
+      DeployedIndex.
     privateEndpoints: Output only. Provides paths for users to send requests
       directly to the deployed index services running on Cloud via private
       services access. This field is populated if network is configured.
@@ -29484,6 +29774,7 @@ class GoogleCloudAiplatformV1beta1Examples(_messages.Message):
   provided dataset.
 
   Fields:
+    exampleGcsSource: The Cloud Storage input instances.
     gcsSource: The Cloud Storage locations that contain the instances to be
       indexed for approximate nearest neighbor search.
     nearestNeighborSearchConfig: The full configuration for the generated
@@ -29498,10 +29789,40 @@ class GoogleCloudAiplatformV1beta1Examples(_messages.Message):
       off and modality.
   """
 
-  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsSource', 1)
-  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
-  neighborCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  presets = _messages.MessageField('GoogleCloudAiplatformV1beta1Presets', 4)
+  exampleGcsSource = _messages.MessageField('GoogleCloudAiplatformV1beta1ExamplesExampleGcsSource', 1)
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsSource', 2)
+  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 3)
+  neighborCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  presets = _messages.MessageField('GoogleCloudAiplatformV1beta1Presets', 5)
+
+
+class GoogleCloudAiplatformV1beta1ExamplesExampleGcsSource(_messages.Message):
+  r"""The Cloud Storage input instances.
+
+  Enums:
+    DataFormatValueValuesEnum: The format in which instances are given, if not
+      specified, assume it's JSONL format. Currently only JSONL format is
+      supported.
+
+  Fields:
+    dataFormat: The format in which instances are given, if not specified,
+      assume it's JSONL format. Currently only JSONL format is supported.
+    gcsSource: The Cloud Storage location for the input instances.
+  """
+
+  class DataFormatValueValuesEnum(_messages.Enum):
+    r"""The format in which instances are given, if not specified, assume it's
+    JSONL format. Currently only JSONL format is supported.
+
+    Values:
+      DATA_FORMAT_UNSPECIFIED: Format unspecified, used when unset.
+      JSONL: Examples are stored in JSONL files.
+    """
+    DATA_FORMAT_UNSPECIFIED = 0
+    JSONL = 1
+
+  dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 1)
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsSource', 2)
 
 
 class GoogleCloudAiplatformV1beta1ExamplesOverride(_messages.Message):
@@ -32226,6 +32547,18 @@ class GoogleCloudAiplatformV1beta1IntegratedGradientsAttribution(_messages.Messa
   stepCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1beta1LargeModelReference(_messages.Message):
+  r"""Contains information about the Large Model.
+
+  Fields:
+    name: Required. The unique name of the large Foundation or pre-built
+      model. Like "chat-panda", "text-panda". Or model name with version ID,
+      like "chat-panda-001", "text-panda-005", etc.
+  """
+
+  name = _messages.StringField(1)
+
+
 class GoogleCloudAiplatformV1beta1LineageSubgraph(_messages.Message):
   r"""A subgraph of the overall lineage graph. Event edges connect Artifact
   and Execution nodes.
@@ -32607,6 +32940,20 @@ class GoogleCloudAiplatformV1beta1ListOptimalTrialsResponse(_messages.Message):
   """
 
   optimalTrials = _messages.MessageField('GoogleCloudAiplatformV1beta1Trial', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ListPersistentResourcesResponse(_messages.Message):
+  r"""Response message for PersistentResourceService.ListPersistentResources
+
+  Fields:
+    nextPageToken: A token to retrieve next page of results. Pass to
+      ListPersistentResourcesRequest.page_token to obtain that page.
+    persistentResources: A GoogleCloudAiplatformV1beta1PersistentResource
+      attribute.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  persistentResources = _messages.MessageField('GoogleCloudAiplatformV1beta1PersistentResource', 2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1ListPipelineJobsResponse(_messages.Message):
@@ -35085,6 +35432,129 @@ class GoogleCloudAiplatformV1beta1PauseScheduleRequest(_messages.Message):
   r"""Request message for ScheduleService.PauseSchedule."""
 
 
+class GoogleCloudAiplatformV1beta1PersistentResource(_messages.Message):
+  r"""Represents long-lasting resources that are dedicated to users to runs
+  custom workloads. A PersistentResource can have multiple node pools and each
+  node pool can have its own machine spec.
+
+  Enums:
+    StateValueValuesEnum: Output only. The detailed state of a Study.
+
+  Messages:
+    LabelsValue: Optional. The labels with user-defined metadata to organize
+      PersistentResource. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels.
+
+  Fields:
+    createTime: Output only. Time when the PersistentResource was created.
+    displayName: Optional. The display name of the PersistentResource. The
+      name can be up to 128 characters long and can consist of any UTF-8
+      characters.
+    encryptionSpec: Optional. Customer-managed encryption key spec for a
+      PersistentResource. If set, this PersistentResource and all sub-
+      resources of this PersistentResource will be secured by this key.
+    error: Output only. Only populated when persistent resource's state is
+      `STOPPING` or `ERROR`.
+    labels: Optional. The labels with user-defined metadata to organize
+      PersistentResource. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels.
+    name: Output only. Resource name of a PersistentResource.
+    network: Optional. The full name of the Compute Engine
+      [network](/compute/docs/networks-and-firewalls#networks) to peered with
+      Vertex AI to host the persistent resources. For example,
+      `projects/12345/global/networks/myVPC`.
+      [Format](/compute/docs/reference/rest/v1/networks/insert) is of the form
+      `projects/{project}/global/networks/{network}`. Where {project} is a
+      project number, as in `12345`, and {network} is a network name. To
+      specify this field, you must have already [configured VPC Network
+      Peering for Vertex AI](https://cloud.google.com/vertex-
+      ai/docs/general/vpc-peering). If this field is left unspecified, the
+      resources is not peered with any network.
+    reservedIpRanges: Optional. A list of names for the reserved ip ranges
+      under the VPC network that can be used for this persistent resource. If
+      set, we will deploy the persistent resource within the provided ip
+      ranges. Otherwise, the persistent resource will be deployed to any ip
+      ranges under the provided VPC network. Example: ['vertex-ai-ip-range'].
+    resourcePools: Required. The spec of the pools of different resources.
+    resourceRuntimeSpec: Optional. Persistent Resource runtime spec. Used for
+      e.g. Ray cluster configuration.
+    startTime: Output only. Time when the PersistentResource for the first
+      time entered the `RUNNING` state.
+    state: Output only. The detailed state of a Study.
+    updateTime: Output only. Time when the PersistentResource was most
+      recently updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The detailed state of a Study.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      PROVISIONING: The PROVISIONING state indicates the persistent resources
+        is being created.
+      RUNNING: The RUNNING state indicates the persistent resources is healthy
+        and fully usable.
+      STOPPING: The STOPPING state indicates the persistent resources is being
+        deleted.
+      ERROR: The ERROR state indicates the persistent resources may be
+        unusable. Details can be found in the `error` field.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    RUNNING = 2
+    STOPPING = 3
+    ERROR = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels with user-defined metadata to organize
+    PersistentResource. Label keys and values can be no longer than 64
+    characters (Unicode codepoints), can only contain lowercase letters,
+    numeric characters, underscores and dashes. International characters are
+    allowed. See https://goo.gl/xmQnxf for more information and examples of
+    labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 3)
+  error = _messages.MessageField('GoogleRpcStatus', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  reservedIpRanges = _messages.StringField(8, repeated=True)
+  resourcePools = _messages.MessageField('GoogleCloudAiplatformV1beta1ResourcePool', 9, repeated=True)
+  resourceRuntimeSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ResourceRuntimeSpec', 10)
+  startTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
+
+
 class GoogleCloudAiplatformV1beta1PipelineJob(_messages.Message):
   r"""An instance of a machine learning PipelineJob.
 
@@ -35916,6 +36386,202 @@ class GoogleCloudAiplatformV1beta1PrivateServiceConnectConfig(_messages.Message)
   projectAllowlist = _messages.StringField(2, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1PublisherModel(_messages.Message):
+  r"""A Model Garden Publisher Model.
+
+  Enums:
+    OpenSourceCategoryValueValuesEnum: Required. Indicates the open source
+      category of the publisher model.
+
+  Fields:
+    frameworks: Optional. Additional information about the model's Frameworks.
+    name: Output only. The resource name of the PublisherModel.
+    openSourceCategory: Required. Indicates the open source category of the
+      publisher model.
+    predictSchemata: Optional. The schemata that describes formats of the
+      PublisherModel's predictions and explanations as given and returned via
+      PredictionService.Predict.
+    publisherModelTemplate: Optional. Output only. Immutable. Used to indicate
+      this model has a publisher model and provide the template of the
+      publisher model resource name.
+    supportedActions: Optional. Supported call-to-action options.
+    versionId: Output only. Immutable. The version ID of the PublisherModel. A
+      new version is committed when a new model version is uploaded under an
+      existing model id. It is an auto-incrementing decimal number in string
+      representation.
+  """
+
+  class OpenSourceCategoryValueValuesEnum(_messages.Enum):
+    r"""Required. Indicates the open source category of the publisher model.
+
+    Values:
+      OPEN_SOURCE_CATEGORY_UNSPECIFIED: The open source category is
+        unspecified, which should not be used.
+      PROPRIETARY: Used to indicate the PublisherModel is not open sourced.
+      GOOGLE_OWNED_OSS_WITH_GOOGLE_CHECKPOINT: Used to indicate the
+        PublisherModel is a Google-owned open source model w/ Google
+        checkpoint.
+      THIRD_PARTY_OWNED_OSS_WITH_GOOGLE_CHECKPOINT: Used to indicate the
+        PublisherModel is a 3p-owned open source model w/ Google checkpoint.
+      GOOGLE_OWNED_OSS: Used to indicate the PublisherModel is a Google-owned
+        pure open source model.
+      THIRD_PARTY_OWNED_OSS: Used to indicate the PublisherModel is a 3p-owned
+        pure open source model.
+    """
+    OPEN_SOURCE_CATEGORY_UNSPECIFIED = 0
+    PROPRIETARY = 1
+    GOOGLE_OWNED_OSS_WITH_GOOGLE_CHECKPOINT = 2
+    THIRD_PARTY_OWNED_OSS_WITH_GOOGLE_CHECKPOINT = 3
+    GOOGLE_OWNED_OSS = 4
+    THIRD_PARTY_OWNED_OSS = 5
+
+  frameworks = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(2)
+  openSourceCategory = _messages.EnumField('OpenSourceCategoryValueValuesEnum', 3)
+  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictSchemata', 4)
+  publisherModelTemplate = _messages.StringField(5)
+  supportedActions = _messages.MessageField('GoogleCloudAiplatformV1beta1PublisherModelCallToAction', 6)
+  versionId = _messages.StringField(7)
+
+
+class GoogleCloudAiplatformV1beta1PublisherModelCallToAction(_messages.Message):
+  r"""Actions could take on this Publisher Model.
+
+  Fields:
+    createApplication: Optional. Create application using the PublisherModel.
+    deploy: Optional. Deploy the PublisherModel to Vertex Endpoint.
+    openFineTuningPipeline: Optional. Open fine-tuning pipeline of the
+      PublisherModel.
+    openGenerationAiStudio: Optional. Open in Generation AI Studio.
+    openGenie: Optional. Open Genie / Playground.
+    openNotebook: Optional. Open notebook of the PublisherModel.
+    openPromptTuningPipeline: Optional. Open prompt-tuning pipeline of the
+      PublisherModel.
+    viewRestApi: Optional. To view Rest API docs.
+  """
+
+  createApplication = _messages.MessageField('GoogleCloudAiplatformV1beta1PublisherModelCallToActionRegionalResourceReferences', 1)
+  deploy = _messages.MessageField('GoogleCloudAiplatformV1beta1PublisherModelCallToActionDeploy', 2)
+  openFineTuningPipeline = _messages.MessageField('GoogleCloudAiplatformV1beta1PublisherModelCallToActionRegionalResourceReferences', 3)
+  openGenerationAiStudio = _messages.MessageField('GoogleCloudAiplatformV1beta1PublisherModelCallToActionRegionalResourceReferences', 4)
+  openGenie = _messages.MessageField('GoogleCloudAiplatformV1beta1PublisherModelCallToActionRegionalResourceReferences', 5)
+  openNotebook = _messages.MessageField('GoogleCloudAiplatformV1beta1PublisherModelCallToActionRegionalResourceReferences', 6)
+  openPromptTuningPipeline = _messages.MessageField('GoogleCloudAiplatformV1beta1PublisherModelCallToActionRegionalResourceReferences', 7)
+  viewRestApi = _messages.MessageField('GoogleCloudAiplatformV1beta1PublisherModelCallToActionViewRestApi', 8)
+
+
+class GoogleCloudAiplatformV1beta1PublisherModelCallToActionDeploy(_messages.Message):
+  r"""Model metadata that is needed for UploadModel or
+  DeployModel/CreateEndpoint requests.
+
+  Fields:
+    artifactUri: Optional. The path to the directory containing the Model
+      artifact and any of its supporting files.
+    automaticResources: A description of resources that to large degree are
+      decided by Vertex AI, and require only a modest additional
+      configuration.
+    containerSpec: Optional. The specification of the container that is to be
+      used when deploying this Model in Vertex AI. Not present for Large
+      Models.
+    dedicatedResources: A description of resources that are dedicated to the
+      DeployedModel, and that need a higher degree of manual configuration.
+    largeModelReference: Optional. Large model reference. When this is set,
+      model_artifact_spec is not needed.
+    modelDisplayName: Optional. Default model display name.
+    sharedResources: The resource name of the shared DeploymentResourcePool to
+      deploy on. Format: `projects/{project}/locations/{location}/deploymentRe
+      sourcePools/{deployment_resource_pool}`
+    title: Required. The title of the regional resource reference.
+  """
+
+  artifactUri = _messages.StringField(1)
+  automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 2)
+  containerSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelContainerSpec', 3)
+  dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1DedicatedResources', 4)
+  largeModelReference = _messages.MessageField('GoogleCloudAiplatformV1beta1LargeModelReference', 5)
+  modelDisplayName = _messages.StringField(6)
+  sharedResources = _messages.StringField(7)
+  title = _messages.StringField(8)
+
+
+class GoogleCloudAiplatformV1beta1PublisherModelCallToActionRegionalResourceReferences(_messages.Message):
+  r"""The regional resource name or the URI. Key is region, e.g., us-central1,
+  europe-west2, global, etc..
+
+  Messages:
+    ReferencesValue: Required.
+
+  Fields:
+    references: Required.
+    title: Required. The title of the regional resource reference.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ReferencesValue(_messages.Message):
+    r"""Required.
+
+    Messages:
+      AdditionalProperty: An additional property for a ReferencesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ReferencesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ReferencesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1beta1PublisherModelResourceReference
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1beta1PublisherModelResourceReference', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  references = _messages.MessageField('ReferencesValue', 1)
+  title = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1PublisherModelCallToActionViewRestApi(_messages.Message):
+  r"""Rest API docs.
+
+  Fields:
+    documentations: Required.
+    title: Required. The title of the view rest API.
+  """
+
+  documentations = _messages.MessageField('GoogleCloudAiplatformV1beta1PublisherModelDocumentation', 1, repeated=True)
+  title = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1PublisherModelDocumentation(_messages.Message):
+  r"""A named piece of documentation.
+
+  Fields:
+    content: Required. Content of this piece of document (in Markdown format).
+    title: Required. E.g., OVERVIEW, USE CASES, DOCUMENTATION, SDK & SAMPLES,
+      JAVA, NODE.JS, etc..
+  """
+
+  content = _messages.StringField(1)
+  title = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1PublisherModelResourceReference(_messages.Message):
+  r"""Reference to a resource.
+
+  Fields:
+    resourceName: The resource name of the GCP resource.
+    uri: The URI of the resource.
+  """
+
+  resourceName = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1beta1PurgeArtifactsMetadata(_messages.Message):
   r"""Details of operations that perform MetadataService.PurgeArtifacts.
 
@@ -36324,6 +36990,41 @@ class GoogleCloudAiplatformV1beta1RemoveDatapointsRequest(_messages.Message):
 
 class GoogleCloudAiplatformV1beta1RemoveDatapointsResponse(_messages.Message):
   r"""Response message for IndexService.RemoveDatapoints"""
+
+
+class GoogleCloudAiplatformV1beta1ResourcePool(_messages.Message):
+  r"""Represents the spec a group of resources of same type, e.g. machine,
+  disk and accelerators, in a PersistentResource.
+
+  Fields:
+    diskSpec: Optional. Disk spec for the machine in this node pool.
+    id: Output only. The unique ID in a PersistentResource to refer the this
+      resource pool.
+    idleReplicaCount: Output only. The number of machines currently not in use
+      by training jobs for this resource pool.
+    machineSpec: Required. Immutable. The specification of a single machine.
+    replicaCount: Required. The total number of machines to use for this
+      resource pool.
+  """
+
+  diskSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1DiskSpec', 1)
+  id = _messages.StringField(2)
+  idleReplicaCount = _messages.IntegerField(3)
+  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1MachineSpec', 4)
+  replicaCount = _messages.IntegerField(5)
+
+
+class GoogleCloudAiplatformV1beta1ResourceRuntimeSpec(_messages.Message):
+  r"""Configure runtime on a PersistentResource instance, including but may
+  not limited to: * Service accounts used to run the workloads; * Whether make
+  it a dedicated Ray Cluster;
+
+  Fields:
+    serviceAccountSpec: Optional. Configure the use of workload identity on
+      the PersistentResource
+  """
+
+  serviceAccountSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ServiceAccountSpec', 1)
 
 
 class GoogleCloudAiplatformV1beta1ResourcesConsumed(_messages.Message):
@@ -39934,6 +40635,21 @@ class GoogleCloudAiplatformV1beta1SearchModelDeploymentMonitoringStatsAnomaliesR
 
   monitoringStats = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringStatsAnomalies', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1ServiceAccountSpec(_messages.Message):
+  r"""Configuration for the use of custom service account to run the
+  workloads.
+
+  Fields:
+    enableCustomServiceAccount: Required. If true, custom user-managed service
+      account is enforced to run any workloads (e.g. Vertex Jobs) on the
+      resource; Otherwise, will always use [Vertex AI Custom Code Service
+      Agent](https://cloud.google.com/vertex-ai/docs/general/access-
+      control#service-agents)
+  """
+
+  enableCustomServiceAccount = _messages.BooleanField(1)
 
 
 class GoogleCloudAiplatformV1beta1SmoothGradConfig(_messages.Message):

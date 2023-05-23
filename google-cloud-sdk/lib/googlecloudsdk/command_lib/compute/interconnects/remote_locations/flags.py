@@ -34,7 +34,7 @@ class InterconnectRemoteLocationsCompleter(
 
 def InterconnectRemoteLocationArgument(required=True):
   return compute_flags.ResourceArgument(
-      resource_name='interconnect remote location',
+      resource_name='Cloud Interconnect remote location',
       completer=InterconnectRemoteLocationsCompleter,
       plural=False,
       required=required,

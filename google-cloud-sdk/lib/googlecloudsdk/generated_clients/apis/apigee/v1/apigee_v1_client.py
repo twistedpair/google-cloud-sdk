@@ -8518,7 +8518,7 @@ class ApigeeV1(base_api.BaseApiClient):
         request: (ApigeeOrganizationsSitesApicategoriesDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudApigeeV1ApiResponseWrapper) The response message.
+        (GoogleCloudApigeeV1DeleteResponse) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -8534,7 +8534,7 @@ class ApigeeV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='ApigeeOrganizationsSitesApicategoriesDeleteRequest',
-        response_type_name='GoogleCloudApigeeV1ApiResponseWrapper',
+        response_type_name='GoogleCloudApigeeV1DeleteResponse',
         supports_download=False,
     )
 

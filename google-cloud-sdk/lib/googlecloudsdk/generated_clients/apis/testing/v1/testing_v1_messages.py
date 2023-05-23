@@ -419,6 +419,7 @@ class ApkManifest(_messages.Message):
     minSdkVersion: Minimum API level required for the application to run.
     packageName: Full Java-style package name for this application, e.g.
       "com.example.foo".
+    services: Services contained in the tag.
     targetSdkVersion: Specifies the API Level on which the application is
       designed to run.
     usesFeature: Feature usage tags defined in the manifest.
@@ -433,11 +434,12 @@ class ApkManifest(_messages.Message):
   metadata = _messages.MessageField('Metadata', 4, repeated=True)
   minSdkVersion = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   packageName = _messages.StringField(6)
-  targetSdkVersion = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  usesFeature = _messages.MessageField('UsesFeature', 8, repeated=True)
-  usesPermission = _messages.StringField(9, repeated=True)
-  versionCode = _messages.IntegerField(10)
-  versionName = _messages.StringField(11)
+  services = _messages.MessageField('Service', 7, repeated=True)
+  targetSdkVersion = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  usesFeature = _messages.MessageField('UsesFeature', 9, repeated=True)
+  usesPermission = _messages.StringField(10, repeated=True)
+  versionCode = _messages.IntegerField(11)
+  versionName = _messages.StringField(12)
 
 
 class AppBundle(_messages.Message):
@@ -1303,6 +1305,19 @@ class RoboStartingIntent(_messages.Message):
   timeout = _messages.StringField(3)
 
 
+class Service(_messages.Message):
+  r"""The section of an tag.
+  https://developer.android.com/guide/topics/manifest/service-element
+
+  Fields:
+    intentFilter: Intent filters in the service
+    name: The android:name value
+  """
+
+  intentFilter = _messages.MessageField('IntentFilter', 1, repeated=True)
+  name = _messages.StringField(2)
+
+
 class Shard(_messages.Message):
   r"""Output only. Details about the shard.
 
@@ -1324,12 +1339,50 @@ class ShardingOption(_messages.Message):
   Fields:
     manualSharding: Shards test cases into the specified groups of packages,
       classes, and/or methods.
+    smartSharding: Shards test based on previous test case timing records.
     uniformSharding: Uniformly shards test cases given a total number of
       shards.
   """
 
   manualSharding = _messages.MessageField('ManualSharding', 1)
-  uniformSharding = _messages.MessageField('UniformSharding', 2)
+  smartSharding = _messages.MessageField('SmartSharding', 2)
+  uniformSharding = _messages.MessageField('UniformSharding', 3)
+
+
+class SmartSharding(_messages.Message):
+  r"""Shards test based on previous test case timing records.
+
+  Fields:
+    targetedShardDuration: The amount of time tests within a shard should
+      take. Default: 300 seconds (5 minutes). The minimum allowed: 120 seconds
+      (2 minutes). The shard count is dynamically set based on time, up to the
+      maximum shard limit (described below). To guarantee at least one test
+      case for each shard, the number of shards will not exceed the number of
+      test cases. Shard duration will be exceeded if: - The maximum shard
+      limit is reached and there is more calculated test time remaining to
+      allocate into shards. - Any individual test is estimated to be longer
+      than the targeted shard duration. Shard duration is not guaranteed
+      because smart sharding uses test case history and default durations
+      which may not be accurate. The rules for finding the test case timing
+      records are: - If the service has seen a test case in the last 30 days,
+      the record of the latest successful one will be used. - For new test
+      cases, the average duration of other known test cases will be used. - If
+      there are no previous test case timing records available, the test case
+      is considered to be 15 seconds long by default. Because the actual shard
+      duration can exceed the targeted shard duration, we recommend setting
+      the targeted value at least 5 minutes less than the maximum allowed test
+      timeout (45 minutes for physical devices and 60 minutes for virtual), or
+      using the custom test timeout value you set. This approach avoids
+      cancelling the shard before all tests can finish. Note that there is a
+      limit for maximum number of shards. When you select one or more physical
+      devices, the number of shards must be <= 50. When you select one or more
+      ARM virtual devices, it must be <= 100. When you select only x86 virtual
+      devices, it must be <= 500. To guarantee at least one test case for per
+      shard, the number of shards will not exceed the number of test cases.
+      Each shard created will count toward daily test quota.
+  """
+
+  targetedShardDuration = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):

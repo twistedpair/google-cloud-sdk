@@ -65,7 +65,10 @@ def cached_read_yaml_json_file(file_path):
 
 
 def get_updated_custom_fields(
-    existing_custom_fields, request_config, attributes_resource=None
+    existing_custom_fields,
+    request_config,
+    attributes_resource=None,
+    known_posix=None,
 ):
   """Returns a dictionary containing new custom metadata for an object.
 
@@ -82,6 +85,8 @@ def get_updated_custom_fields(
       symlink data from a resource for the --preserve-posix and/or
       --preserve_symlink flags. This value is ignored unless it is an instance
       of FileObjectResource.
+    known_posix (PosixAttributes|None): Set as custom metadata on target,
+      skipping re-parsing from system.
 
   Returns:
     Optional[dict] that should be the value of the storage provider's custom
@@ -112,6 +117,7 @@ def get_updated_custom_fields(
 
   if (
       not should_parse_file_posix
+      and not known_posix
       and not should_parse_symlinks
       and not resource_args.custom_fields_to_set
       and not resource_args.custom_fields_to_remove
@@ -120,10 +126,13 @@ def get_updated_custom_fields(
     return
 
   posix_metadata = {}
-  if should_parse_file_posix:
-    posix_attributes = posix_util.get_posix_attributes_from_resource(
-        file_resource, preserve_symlinks=request_config.preserve_symlinks
-    )
+  if known_posix or should_parse_file_posix:
+    if known_posix:
+      posix_attributes = known_posix
+    else:
+      posix_attributes = posix_util.get_posix_attributes_from_resource(
+          file_resource, preserve_symlinks=request_config.preserve_symlinks
+      )
     posix_util.update_custom_metadata_dict_with_posix_attributes(
         posix_metadata, posix_attributes)
 

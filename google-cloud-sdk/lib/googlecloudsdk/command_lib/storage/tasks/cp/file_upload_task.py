@@ -55,6 +55,7 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
       destination_resource,
       delete_source=False,
       is_composite_upload_eligible=False,
+      posix_to_set=None,
       print_created_message=False,
       print_source_version=False,
       user_request_args=None,
@@ -73,6 +74,9 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
         object afterwards.
       is_composite_upload_eligible (bool): If True, parallel composite upload
         may be performed.
+      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
+        metadata on target. If provided and preserving POSIX, skip re-parsing
+        from file system.
       print_created_message (bool): Print a message containing the versioned URL
         of the copy result.
       print_source_version (bool): Print source object version in status message
@@ -83,6 +87,7 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
     super(FileUploadTask, self).__init__(
         source_resource,
         destination_resource,
+        posix_to_set=posix_to_set,
         print_source_version=print_source_version,
         user_request_args=user_request_args,
         verbose=verbose,
@@ -168,7 +173,9 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
           source_path,
           offset=0,
           length=size,
-          user_request_args=self._user_request_args).execute(task_status_queue)
+          posix_to_set=self._posix_to_set,
+          user_request_args=self._user_request_args,
+      ).execute(task_status_queue)
       result_resource = task_util.get_first_matching_message_payload(
           task_output.messages, task.Topic.CREATED_RESOURCE)
       if result_resource:
@@ -236,10 +243,13 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
               source_resource=self._source_resource,
               destination_resource=self._destination_resource,
               source_path=source_path,
-              random_prefix=random_prefix,
               delete_source=self._delete_source,
+              posix_to_set=self._posix_to_set,
               print_created_message=self._print_created_message,
-              user_request_args=self._user_request_args))
+              random_prefix=random_prefix,
+              user_request_args=self._user_request_args,
+          )
+      )
 
       return task.Output(
           additional_task_iterators=[

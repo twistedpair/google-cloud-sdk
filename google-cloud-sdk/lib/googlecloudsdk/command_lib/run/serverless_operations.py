@@ -87,10 +87,10 @@ def Connect(conn_context, already_activated_service=False):
   Arguments:
     conn_context: a context manager that yields a ConnectionInfo and manages a
       dynamic context that makes connecting to serverless possible.
-    already_activated_service: bool that should be true if we already checked
-    if the run.googleapis.com service was enabled. If this is true,
-    we skip prompting the user to enable the service because they should have
-    already been prompted if the API wasn't activated.
+    already_activated_service: bool that should be true if we already checked if
+      the run.googleapis.com service was enabled. If this is true, we skip
+      prompting the user to enable the service because they should have already
+      been prompted if the API wasn't activated.
 
   Yields:
     A ServerlessOperations instance.
@@ -105,14 +105,16 @@ def Connect(conn_context, already_activated_service=False):
   op_client = apis.GetClientInstance(
       conn_context.api_name,
       conn_context.api_version,
-      skip_activation_prompt=already_activated_service
+      skip_activation_prompt=already_activated_service,
   )
   # pylint: enable=protected-access
 
   with conn_context as conn_info:
     response_func = (
         apis.CheckResponseForApiEnablement(already_activated_service)
-        if conn_context.supports_one_platform else None)
+        if conn_context.supports_one_platform
+        else None
+    )
     # pylint: disable=protected-access
     client = apis_internal._GetClientInstance(
         conn_info.api_name,
@@ -1630,32 +1632,29 @@ class ServerlessOperations(object):
   def RunJob(
       self,
       job_ref,
-      args,
       tracker=None,
+      wait=False,
+      asyn=False,
       release_track=None,
-      from_execute_surface=False,
+      overrides=None
   ):
     """Run a Cloud Run Job, creating an Execution.
 
     Args:
       job_ref: Resource, the job to run
-      args: Command line arguments, to propagate wait, async_, overrides values
       tracker: StagedProgressTracker, to report on the progress of running
+      wait: boolean, True to wait until the job is complete
+      asyn: bool, if True, return without waiting for anything
       release_track: ReleaseTrack, the release track of a command calling this
-      from_execute_surface: bool, if True, this operation is called from `jobs
-        execute` surface. Execution overrides are only applied when True.
+      overrides: ExecutionOverrides to be applied for this run of a job
 
     Returns:
       An Execution Resource in its state when RunJob returns.
     """
     messages = self.messages_module
     run_job_request = messages.RunJobRequest()
-    if (
-        from_execute_surface
-        and release_track.prefix == 'alpha'
-        and flags.HasExecutionOverrides(args)
-    ):
-      run_job_request.overrides = self._GetExecutionOverrides(args)
+    if overrides:
+      run_job_request.overrides = overrides
     run_request = messages.RunNamespacesJobsRunRequest(
         name=job_ref.RelativeName(), runJobRequest=run_job_request
     )
@@ -1670,7 +1669,7 @@ class ServerlessOperations(object):
               'completes before creating a new one.'
           )
         raise e
-    if args.async_:
+    if asyn:
       return execution.Execution(execution_message, messages)
 
     execution_ref = self._registry.Parse(
@@ -1681,7 +1680,7 @@ class ServerlessOperations(object):
     getter = functools.partial(self.GetExecution, execution_ref)
     terminal_condition = (
         execution.COMPLETED_CONDITION
-        if args.wait
+        if wait
         else execution.STARTED_CONDITION
     )
     ex = self.GetExecution(execution_ref)
@@ -1696,7 +1695,7 @@ class ServerlessOperations(object):
         dependencies=stages.ExecutionDependencies(),
     )
     try:
-      self.WaitForCondition(poller, None if args.wait else 0)
+      self.WaitForCondition(poller, None if wait else 0)
     except serverless_exceptions.ExecutionFailedError:
       raise serverless_exceptions.ExecutionFailedError(
           'The execution failed.'
@@ -1937,7 +1936,23 @@ class ServerlessOperations(object):
     operation = waiter.PollUntilDone(poller, build_op_ref)
     return encoding.MessageToPyValue(operation.response)
 
-  def _GetExecutionOverrides(self, args):
+  def ValidateConfigOverrides(self, job_ref, config_overrides):
+    """Apply config changes to Job resource to validate.
+
+    This is to replicate the same validation logic in `jobs/services update`.
+    Override attempts with types (out of string literals, secrets,
+    config maps) that are different from currently set value type will appear as
+    errors in the console.
+
+    Args:
+      job_ref: Resource, job resource.
+      config_overrides: Job configuration changes from Overrides
+    """
+    run_job = self.GetJob(job_ref)
+    for override in config_overrides:
+      run_job = override.Adjust(run_job)
+
+  def GetExecutionOverrides(self, args):
     container_overrides = self._GetContainerOverrides(args)
     return self.messages_module.Overrides(
         containerOverrides=container_overrides,

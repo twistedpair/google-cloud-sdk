@@ -2201,13 +2201,16 @@ class ModifyColumnFamiliesRequest(_messages.Message):
   google.bigtable.admin.v2.BigtableTableAdmin.ModifyColumnFamilies
 
   Fields:
+    ignoreWarnings: If true, ignore safety checks when modifying the column
+      families.
     modifications: Required. Modifications to be atomically applied to the
       specified table's families. Entries are applied in order, meaning that
       earlier modifications can be masked by later ones (in the case of
       repeated updates to the same family, for example).
   """
 
-  modifications = _messages.MessageField('Modification', 1, repeated=True)
+  ignoreWarnings = _messages.BooleanField(1)
+  modifications = _messages.MessageField('Modification', 2, repeated=True)
 
 
 class MultiClusterRoutingUseAny(_messages.Message):

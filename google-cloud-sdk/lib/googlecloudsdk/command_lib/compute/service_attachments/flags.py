@@ -105,19 +105,6 @@ def AddConsumerRejectList(parser):
       metavar='REJECT_LIST',
       default=None,
       help="""\
-      Specifies a comma separated list of projects that are not allowed to
-      connect to this service attachment. The project can be specified using its
-      id or number.
-      """)
-
-
-def AddConsumerRejectListAlpha(parser):
-  parser.add_argument(
-      '--consumer-reject-list',
-      type=arg_parsers.ArgList(),
-      metavar='REJECT_LIST',
-      default=None,
-      help="""\
       Specifies a comma separated list of projects or networks that are not
       allowed to connect to this service attachment. The project can be
       specified using its project ID or project number and the network can be
@@ -128,25 +115,6 @@ def AddConsumerRejectListAlpha(parser):
 
 
 def AddConsumerAcceptList(parser):
-  parser.add_argument(
-      '--consumer-accept-list',
-      type=arg_parsers.ArgDict(),
-      action='append',
-      metavar='PROJECT=LIMIT',
-      default=None,
-      help="""\
-      Adds consumer project(s) with connection limit(s) to the accept list of
-      the service attachment.
-
-      For example, `--consumer-accept-list myProjectId1=20` accepts a consumer
-      project myProjectId1 with connection limit 20.
-
-      * `PROJECT_ID_OR_NUM` - Consumer project id or number.
-      * `CONNECTION_LIMIT` - The max number of allowed connections.
-      """)
-
-
-def AddConsumerAcceptListAlpha(parser):
   parser.add_argument(
       '--consumer-accept-list',
       type=arg_parsers.ArgDict(),

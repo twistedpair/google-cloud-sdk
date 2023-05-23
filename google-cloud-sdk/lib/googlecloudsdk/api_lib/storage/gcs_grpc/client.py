@@ -20,7 +20,8 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage.gcs_grpc import download
-from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
+from googlecloudsdk.api_lib.storage.gcs_grpc import metadata_util
+from googlecloudsdk.api_lib.storage.gcs_grpc import upload
 from googlecloudsdk.api_lib.storage.gcs_json import client as gcs_json_client
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
@@ -83,16 +84,29 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
     # server encoding here.
     return None
 
-  def upload_object(self,
-                    source_stream,
-                    destination_resource,
-                    request_config,
-                    source_resource=None,
-                    serialization_data=None,
-                    tracker_callback=None,
-                    upload_strategy=cloud_api.UploadStrategy.SIMPLE):
-    """See CloudApi class for function doc strings."""
-    return grpc_util.upload_object(self._get_gapic_client(),
-                                   source_stream,
-                                   destination_resource,
-                                   request_config)
+  def upload_object(
+      self,
+      source_stream,
+      destination_resource,
+      request_config,
+      posix_to_set=None,
+      serialization_data=None,
+      source_resource=None,
+      tracker_callback=None,
+      upload_strategy=cloud_api.UploadStrategy.SIMPLE,
+  ):
+    """See super class."""
+    client = self._get_gapic_client()
+    if upload_strategy == cloud_api.UploadStrategy.SIMPLE:
+      uploader = upload.SimpleUpload(
+          client=client,
+          source_stream=source_stream,
+          destination_resource=destination_resource,
+          request_config=request_config
+      )
+    # TODO(b/271930144) Add resumable upload support
+    # TODO(b/279041215) Add streaming upload support
+
+    response = uploader.run()
+    return metadata_util.get_object_resource_from_grpc_object(
+        response.resource)

@@ -1773,3 +1773,11 @@ def AddUpdateAnnotations(parser):
       type=arg_parsers.ArgDict(),
       help='Replace all the current annotations',
   )
+
+
+def AddOperationTimeout(parser):
+  parser.add_argument(
+      '--timeout',
+      type=int,
+      help='Timeout (seconds) waiting for the operation to complete.',
+  )

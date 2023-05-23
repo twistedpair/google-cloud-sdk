@@ -650,10 +650,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_PERSISTENTRESOURCES = (
       'projects.locations.persistentResources',
-      'projects/{projectsId}/locations/{locationsId}/persistentResources/'
-      '{persistentResourcesId}',
-      {},
-      ['projectsId', 'locationsId', 'persistentResourcesId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'persistentResources/{persistentResourcesId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_PERSISTENTRESOURCES_OPERATIONS = (
@@ -889,6 +892,23 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'trainingPipelines/{trainingPipelinesId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PUBLISHERS = (
+      'publishers',
+      'publishers/{publishersId}',
+      {},
+      ['publishersId'],
+      True
+  )
+  PUBLISHERS_MODELS = (
+      'publishers.models',
+      '{+name}',
+      {
+          '':
+              'publishers/{publishersId}/models/{modelsId}',
       },
       ['name'],
       True

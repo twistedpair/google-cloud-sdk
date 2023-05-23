@@ -625,7 +625,7 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
     )
 
     def GetAuditLog(self, request, global_params=None):
-      r"""Returns the requested AuditLog resource.
+      r"""Returns the requested AuditLog resource. To be deprecated.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsOrdersGetAuditLogRequest) input message

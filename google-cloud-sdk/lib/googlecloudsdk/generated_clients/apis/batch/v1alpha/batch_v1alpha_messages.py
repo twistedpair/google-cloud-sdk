@@ -1765,8 +1765,7 @@ class TaskExecution(_messages.Message):
 
 
 class TaskGroup(_messages.Message):
-  r"""A TaskGroup contains one or multiple Tasks that share the same Runnable
-  but with different runtime parameters.
+  r"""A TaskGroup defines one or more Tasks that all share the same TaskSpec.
 
   Enums:
     SchedulingPolicyValueValuesEnum: Scheduling policy for Tasks in the
@@ -1812,7 +1811,6 @@ class TaskGroup(_messages.Message):
       to any environment variables set in task_environments, specifying the
       number of Tasks in the Task's parent TaskGroup, and the specific Task's
       index in the TaskGroup (0 through BATCH_TASK_COUNT - 1).
-      task_environments supports up to 200 entries.
     taskSpec: Required. Tasks in the group share the same task spec.
   """
 
@@ -1825,8 +1823,7 @@ class TaskGroup(_messages.Message):
       AS_SOON_AS_POSSIBLE: Run Tasks as soon as resources are available. Tasks
         might be executed in parallel depending on parallelism and task_count
         values.
-      IN_ORDER: Run Tasks sequentially with increased task index. Not yet
-        implemented.
+      IN_ORDER: Run Tasks sequentially with increased task index.
     """
     SCHEDULING_POLICY_UNSPECIFIED = 0
     AS_SOON_AS_POSSIBLE = 1

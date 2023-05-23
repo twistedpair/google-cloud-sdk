@@ -57,6 +57,7 @@ VMWARE_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
     'node_labels': 'config.labels',
     'enable_load_balancer': 'config.enable_load_balancer',
     'disable_load_balancer': 'config.enable_load_balancer',
+    'upgrade_policy': 'upgrade_policy',
 }
 
 VMWARE_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS = {

@@ -122,6 +122,8 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects_locations_trainingPipelines = self.ProjectsLocationsTrainingPipelinesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+    self.publishers_models = self.PublishersModelsService(self)
+    self.publishers = self.PublishersService(self)
 
   class ProjectsLocationsBatchPredictionJobsService(base_api.BaseApiService):
     """Service class for the projects_locations_batchPredictionJobs resource."""
@@ -8624,6 +8626,114 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Uploads a Model artifact into Vertex AI.
+
+      Args:
+        request: (AiplatformProjectsLocationsPersistentResourcesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/persistentResources',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.persistentResources.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['persistentResourceId'],
+        relative_path='v1beta1/{+parent}/persistentResources',
+        request_field='googleCloudAiplatformV1beta1PersistentResource',
+        request_type_name='AiplatformProjectsLocationsPersistentResourcesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a PersistentResource.
+
+      Args:
+        request: (AiplatformProjectsLocationsPersistentResourcesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/persistentResources/{persistentResourcesId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.persistentResources.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsPersistentResourcesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a PersistentResource.
+
+      Args:
+        request: (AiplatformProjectsLocationsPersistentResourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1PersistentResource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/persistentResources/{persistentResourcesId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.persistentResources.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsPersistentResourcesGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1PersistentResource',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists PersistentResources in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsPersistentResourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListPersistentResourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/persistentResources',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.persistentResources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/persistentResources',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsPersistentResourcesListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListPersistentResourcesResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsPipelineJobsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_pipelineJobs_operations resource."""
 
@@ -12074,5 +12184,52 @@ class AiplatformV1beta1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(AiplatformV1beta1.ProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class PublishersModelsService(base_api.BaseApiService):
+    """Service class for the publishers_models resource."""
+
+    _NAME = 'publishers_models'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.PublishersModelsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Model Garden publisher model.
+
+      Args:
+        request: (AiplatformPublishersModelsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1PublisherModel) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/publishers/{publishersId}/models/{modelsId}',
+        http_method='GET',
+        method_id='aiplatform.publishers.models.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['languageCode', 'view'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformPublishersModelsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1PublisherModel',
+        supports_download=False,
+    )
+
+  class PublishersService(base_api.BaseApiService):
+    """Service class for the publishers resource."""
+
+    _NAME = 'publishers'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.PublishersService, self).__init__(client)
       self._upload_configs = {
           }

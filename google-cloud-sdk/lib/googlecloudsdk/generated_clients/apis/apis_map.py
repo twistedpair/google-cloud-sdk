@@ -2578,16 +2578,6 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
-        'v2alpha1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.orgpolicy.v2alpha1',
-                    client_classpath='orgpolicy_v2alpha1_client.OrgpolicyV2alpha1',
-                    base_url='https://orgpolicy.googleapis.com/',
-                    messages_modulepath='orgpolicy_v2alpha1_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
     },
     'osconfig': {
         'v1':

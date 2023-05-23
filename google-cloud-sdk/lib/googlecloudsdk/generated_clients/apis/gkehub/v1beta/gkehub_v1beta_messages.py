@@ -2655,6 +2655,8 @@ class GkehubProjectsLocationsMembershipsBindingsListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsBindingsListRequest object.
 
   Fields:
+    filter: Optional. Lists MembershipBindings that match the filter
+      expression, following the syntax outlined in https://google.aip.dev/160.
     pageSize: Optional. When requesting a 'page' of resources, `page_size`
       specifies number of resources to return. If unspecified or set to 0, all
       resources will be returned.
@@ -2666,9 +2668,10 @@ class GkehubProjectsLocationsMembershipsBindingsListRequest(_messages.Message):
       `projects/*/locations/*/memberships/*`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class GkehubProjectsLocationsMembershipsBindingsPatchRequest(_messages.Message):
@@ -4239,7 +4242,7 @@ class MembershipBinding(_messages.Message):
     name: The resource name for the membershipbinding itself `projects/{projec
       t}/locations/{location}/memberships/{membership}/bindings/{membershipbin
       ding}`
-    scope: A Workspace resource name in the format
+    scope: A Scope resource name in the format
       `projects/*/locations/*/scopes/*`.
     state: Output only. State of the membership binding resource.
     uid: Output only. Google-generated UUID for this resource. This is unique

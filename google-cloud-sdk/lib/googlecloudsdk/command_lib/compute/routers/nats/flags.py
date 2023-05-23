@@ -94,9 +94,9 @@ def AddTypeArg(parser):
       help=help_text)
 
 
-def AddEndpointTypesArg(parser):
+def AddEndpointTypesArg(parser, with_managed_proxy_lb_endpoint_type=False):
   """Adds the --endpoint-type argument."""
-  help_text = textwrap.dedent("""\
+  help_text = """\
     Endpoint Types supported by the NAT Gateway.
 
     ENDPOINT_TYPE must be one of:
@@ -104,11 +104,21 @@ def AddEndpointTypesArg(parser):
     ENDPOINT_TYPE_VM
       For VM Endpoints
     ENDPOINT_TYPE_SWG
-      For Secure Web Gateway Endpoints
+      For Secure Web Gateway Endpoints"""
+  if with_managed_proxy_lb_endpoint_type:
+    help_text = (
+        help_text
+        + """
+    ENDPOINT_TYPE_MANAGED_PROXY_LB
+      For Regional Internal/External HTTP(S) and TCP Proxy load balancer endpoints"""
+    )
+  help_text = textwrap.dedent(help_text + """
 
   The default is ENDPOINT_TYPE_VM.
   """)
   choices = ['ENDPOINT_TYPE_VM', 'ENDPOINT_TYPE_SWG']
+  if with_managed_proxy_lb_endpoint_type:
+    choices.append('ENDPOINT_TYPE_MANAGED_PROXY_LB')
   parser.add_argument(
       '--endpoint-types',
       type=arg_parsers.ArgList(choices=choices),

@@ -347,6 +347,13 @@ class ConnectionProfilesClient(object):
           cp_type, args.availability_type
       )
       cloud_sql_settings.secondaryZone = args.secondary_zone
+    if (
+        self._release_track == base.ReleaseTrack.GA
+        and args.CONCEPTS.cmek_key.Parse() is not None
+    ):
+      cloud_sql_settings.cmekKeyName = (
+          args.CONCEPTS.cmek_key.Parse().RelativeName()
+      )
     return cloud_sql_settings
 
   def _GetCloudSqlConnectionProfile(self, args):
@@ -391,6 +398,12 @@ class ConnectionProfilesClient(object):
         vpcNetwork=args.network,
         labels=cluster_labels,
         primaryInstanceSettings=primary_settings)
+
+    kms_key_ref = args.CONCEPTS.kms_key.Parse()
+    if kms_key_ref is not None:
+      cluster_settings.encryptionConfig = self.messages.EncryptionConfig(
+          kmsKeyName=kms_key_ref.RelativeName()
+      )
     return self.messages.AlloyDbConnectionProfile(
         clusterId=connection_profile_id, settings=cluster_settings)
 

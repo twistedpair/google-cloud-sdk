@@ -56,7 +56,6 @@ class SupportedFeatures:
       support_local_ssd_recovery_timeout,
       support_enable_target_shape,
       support_confidential_compute_type,
-      support_provisioned_throughput=False,
       support_max_count_per_zone=True,
       support_performance_monitoring_unit=False,
   ):
@@ -83,7 +82,6 @@ class SupportedFeatures:
     self.support_max_run_duration = support_max_run_duration
     self.support_enable_target_shape = support_enable_target_shape
     self.support_confidential_compute_type = support_confidential_compute_type
-    self.support_provisioned_throughput = support_provisioned_throughput
     self.support_max_count_per_zone = support_max_count_per_zone
     self.support_local_ssd_recovery_timeout = support_local_ssd_recovery_timeout
     self.support_performance_monitoring_unit = (
@@ -316,9 +314,7 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
         support_image_csek=supported_features.support_image_csek,
         support_create_disk_snapshots=supported_features
         .support_create_disk_snapshots,
-        use_disk_type_uri=False,
-        support_provisioned_throughput=supported_features
-        .support_provisioned_throughput)
+        use_disk_type_uri=False)
 
   machine_type_name = None
   if instance_utils.CheckSpecifiedMachineTypeArgs(args, skip_defaults):

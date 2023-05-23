@@ -4992,6 +4992,7 @@ class GoogleCloudApigeeV1ApiCategoryData(_messages.Message):
   r"""the Api category resource.
 
   Fields:
+    gcpResource: GCP name of api category resource.
     id: ID of the category (a UUID).
     name: Name of the category.
     siteId: Name of the portal.
@@ -4999,10 +5000,11 @@ class GoogleCloudApigeeV1ApiCategoryData(_messages.Message):
       epoch.
   """
 
-  id = _messages.StringField(1)
-  name = _messages.StringField(2)
-  siteId = _messages.StringField(3)
-  updateTime = _messages.IntegerField(4)
+  gcpResource = _messages.StringField(1)
+  id = _messages.StringField(2)
+  name = _messages.StringField(3)
+  siteId = _messages.StringField(4)
+  updateTime = _messages.IntegerField(5)
 
 
 class GoogleCloudApigeeV1ApiProduct(_messages.Message):
@@ -5367,22 +5369,6 @@ class GoogleCloudApigeeV1ApiProxyRevision(_messages.Message):
   targets = _messages.StringField(22, repeated=True)
   teams = _messages.StringField(23, repeated=True)
   type = _messages.StringField(24)
-
-
-class GoogleCloudApigeeV1ApiResponseWrapper(_messages.Message):
-  r"""A GoogleCloudApigeeV1ApiResponseWrapper object.
-
-  Fields:
-    errorCode: ID that can be used to find errors in the log files.
-    message: Description of the operation.
-    requestId: ID that can be used to find request details in the log files.
-    status: Status of the operation.
-  """
-
-  errorCode = _messages.StringField(1)
-  message = _messages.StringField(2)
-  requestId = _messages.StringField(3)
-  status = _messages.StringField(4)
 
 
 class GoogleCloudApigeeV1ApiSecurityConfig(_messages.Message):
@@ -6375,6 +6361,24 @@ class GoogleCloudApigeeV1DeleteCustomReportResponse(_messages.Message):
   """
 
   message = _messages.StringField(1)
+
+
+class GoogleCloudApigeeV1DeleteResponse(_messages.Message):
+  r"""Response for certain delete operations.
+
+  Fields:
+    errorCode: ID that can be used to find errors in the log files.
+    gcpResource: GCP name of deleted resource.
+    message: Description of the operation.
+    requestId: ID that can be used to find request details in the log files.
+    status: Status of the operation.
+  """
+
+  errorCode = _messages.StringField(1)
+  gcpResource = _messages.StringField(2)
+  message = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+  status = _messages.StringField(5)
 
 
 class GoogleCloudApigeeV1Deployment(_messages.Message):
@@ -10289,33 +10293,16 @@ class GoogleCloudApigeeV1SecurityActionAttributeConfig(_messages.Message):
   developer="dev2"))
 
   Fields:
-    accessTokens: Optional. A list of access_tokens. Limit 1000 per action.
-    apiKeys: Optional. A list of API keys. Limit 1000 per action.
-    apiProducts: Optional. A list of API Products. Limit 1000 per action.
     botReasons: Optional. A list of Bot Reasons. Current options: Flooder,
       Brute Guessor, Static Content Scraper, OAuth Abuser, Robot Abuser,
       TorListRule and Anomaly Detection.
-    developerApps: Optional. A list of developer apps. Limit 1000 per action.
-    developers: Optional. A list of developers. Limit 1000 per action.
-    httpMethods: Optional. Act only on particular HTTP methods. E.g. A read-
-      only API can block POST/PUT/DELETE methods. Accepted values are: GET,
-      HEAD, POST, PUT, DELETE, CONNECT, OPTIONS, TRACE and PATCH.
     ipAddressRanges: Optional. A list of IP ranges. This could be either IPv4
       or IPv6. 200,000 per rule at the environment level or 1000 at the proxy
       level.
-    userAgents: Optional. A list of user agents to deny. We look for exact
-      matches. Limit 50 per action.
   """
 
-  accessTokens = _messages.StringField(1, repeated=True)
-  apiKeys = _messages.StringField(2, repeated=True)
-  apiProducts = _messages.StringField(3, repeated=True)
-  botReasons = _messages.StringField(4, repeated=True)
-  developerApps = _messages.StringField(5, repeated=True)
-  developers = _messages.StringField(6, repeated=True)
-  httpMethods = _messages.StringField(7, repeated=True)
-  ipAddressRanges = _messages.StringField(8, repeated=True)
-  userAgents = _messages.StringField(9, repeated=True)
+  botReasons = _messages.StringField(1, repeated=True)
+  ipAddressRanges = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudApigeeV1SecurityActionDeny(_messages.Message):

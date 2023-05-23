@@ -65,6 +65,13 @@ NETWORK = base.Argument(
       If unspecified, the Job is not peered with any network.
       """))
 
+PUBLIC_ENDPOINT_ENABLED = base.Argument(
+    '--public-endpoint-enabled',
+    help=textwrap.dedent("""\
+      If true, the deployed index will be accessible through public endpoint.
+      """),
+)
+
 TRAINING_SERVICE_ACCOUNT = base.Argument(
     '--service-account',
     type=core_iam_util.GetIamAccountFormatValidator(),
@@ -1007,14 +1014,26 @@ def GetIndexEndpointResourceSpec(resource_name='index_endpoint'):
 
 
 # TODO(b/357812579): Consider switch to use resource arg.
-def GetNetworkArg(required=True):
+def GetNetworkArg():
   """Add arguments for VPC network."""
   return base.Argument(
       '--network',
-      required=required,
       help="""
       The Google Compute Engine network name to which the IndexEndpoint should be peered.
       """)
+
+
+def GetPublicEndpointEnabledArg():
+  """Add arguments for pubic endpoint enabled."""
+  return base.Argument(
+      '--public-endpoint-enabled',
+      action='store_true',
+      required=False,
+      default=False,
+      help="""
+      If true, the deployed index will be accessible through public endpoint.
+      """,
+  )
 
 
 def TensorboardRunAttributeConfig():

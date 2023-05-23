@@ -1338,7 +1338,7 @@ class ReservationAffinity(_messages.Message):
 
 
 class ResetInstanceRequest(_messages.Message):
-  r"""Request for reseting a notebook instance"""
+  r"""Request for resetting a notebook instance"""
 
 
 class SetIamPolicyRequest(_messages.Message):

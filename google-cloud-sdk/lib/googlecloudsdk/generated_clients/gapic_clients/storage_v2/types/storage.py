@@ -999,10 +999,11 @@ class ReadObjectResponse(proto.Message):
             still live while it is running an operation to generate more
             data.
         object_checksums (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ObjectChecksums):
-            The checksums of the complete object. The
-            client should compute one of these checksums
-            over the downloaded object and compare it
-            against the value provided here.
+            The checksums of the complete object. If the
+            object is downloaded in full, the client should
+            compute one of these checksums over the
+            downloaded object and compare it against the
+            value provided here.
         content_range (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ContentRange):
             If read_offset and or read_limit was specified on the
             ReadObjectRequest, ContentRange will be populated on the
@@ -1171,9 +1172,9 @@ class WriteObjectRequest(proto.Message):
             This field is a member of `oneof`_ ``data``.
         object_checksums (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ObjectChecksums):
             Checksums for the complete object. If the checksums computed
-            by the service don't match the specifified checksums the
-            call will fail. May only be provided in the first or last
-            request (either with first_message, or finish_write set).
+            by the service don't match the specified checksums the call
+            will fail. May only be provided in the first or last request
+            (either with first_message, or finish_write set).
         finish_write (bool):
             If ``true``, this indicates that the write is complete.
             Sending any ``WriteObjectRequest``\ s subsequent to one in
@@ -3267,10 +3268,10 @@ class Object(proto.Message):
             [https://tools.ietf.org/html/rfc7231#section-3.1.3.2][RFC
             7231 $3.1.3.2].
         delete_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. The deletion time of the object. Will be
-            returned if and only if this version of the object has been
-            deleted. Attempting to set or update this field will result
-            in a [FieldViolation][google.rpc.BadRequest.FieldViolation].
+            Output only. If this object is noncurrent, this is the time
+            when the object became noncurrent. Attempting to set or
+            update this field will result in a
+            [FieldViolation][google.rpc.BadRequest.FieldViolation].
         content_type (str):
             Content-Type of the object data, matching
             [https://tools.ietf.org/html/rfc7231#section-3.1.1.5][RFC

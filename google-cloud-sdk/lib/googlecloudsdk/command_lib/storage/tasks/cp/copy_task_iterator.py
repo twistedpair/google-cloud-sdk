@@ -387,11 +387,12 @@ class CopyTaskIterator:
 
       source_url = source.resource.storage_url
       destination_url = destination_resource.storage_url
-      posix_util.run_if_preserving_posix(
-          self._user_request_args,
-          posix_util.raise_if_source_and_destination_not_valid_for_preserve_posix,
-          source_url,
-          destination_url,
+      posix_util.run_if_setting_posix(
+          posix_to_set=None,
+          user_request_args=self._user_request_args,
+          function=posix_util.raise_if_source_and_destination_not_valid_for_preserve_posix,
+          source_url=source_url,
+          destination_url=destination_url,
       )
       if (isinstance(source.resource, resource_reference.ObjectResource) and
           isinstance(destination_url, storage_url.FileUrl) and

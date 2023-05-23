@@ -531,6 +531,7 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
         'name': self._admin_cluster_name(args),
         'allowMissing': self.GetFlag(args, 'allow_missing'),
         'validateOnly': self.GetFlag(args, 'validate_only'),
+        'ignoreErrors': self.GetFlag(args, 'ignore_errors'),
     }
     req = self._messages.GkeonpremProjectsLocationsBareMetalAdminClustersUnenrollRequest(
         **kwargs

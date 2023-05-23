@@ -43,11 +43,17 @@ def _Run(args, release_track):
   region = properties.VALUES.functions.region.GetOrFail()
   log_filter = [
       'resource.type="cloud_run_revision"',
-      'resource.labels.location="%s"' % region, 'logName:"run.googleapis.com"'
+      'resource.labels.location="%s"' % region,
+      'logName:"run.googleapis.com"',
+      'labels."goog-managed-by"="cloudfunctions"',
   ]
 
   if args.name:
-    log_filter.append('resource.labels.service_name="%s"' % args.name)
+    # To conform to Cloud Run resource formats, GCFv2 functions' service names
+    # are the function name lower-cased with '_' replaced with '-'.
+    # Context: go/upper-case-function-ids
+    service_name = args.name.lower().replace('_', '-')
+    log_filter.append('resource.labels.service_name="{}"'.format(service_name))
   if args.min_log_level:
     log_filter.append('severity>=%s' % args.min_log_level.upper())
 

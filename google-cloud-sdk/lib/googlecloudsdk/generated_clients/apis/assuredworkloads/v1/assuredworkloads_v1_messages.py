@@ -78,8 +78,8 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsGetRequest(_messages.Messag
 
   Fields:
     name: Required. The resource name of the Workload to fetch. This is the
-      workload's relative path in the API, formatted as "organizations/{organi
-      zation_id}/locations/{location_id}/workloads/{workload_id}". For
+      workloads's relative path in the API, formatted as "organizations/{organ
+      ization_id}/locations/{location_id}/workloads/{workload_id}". For
       example, "organizations/123/locations/us-east1/workloads/assured-
       workload-1".
   """
@@ -272,8 +272,8 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
       AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
         Support controls Available for public preview consumption. Don't
         create production workloads.
-      ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners
-      ISR_REGIONS: Assured Workloads for Israel Regions
+      ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners;
+      ISR_REGIONS: Assured Workloads for Israel
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
     """
@@ -326,7 +326,7 @@ class GoogleCloudAssuredworkloadsV1ListWorkloadsResponse(_messages.Message):
 
 
 class GoogleCloudAssuredworkloadsV1MutatePartnerPermissionsRequest(_messages.Message):
-  r"""Request of updating permission settings for a partner workload.
+  r"""Request for updating permission settings for a partner workload.
 
   Fields:
     etag: Optional. The etag of the workload. If this is provided, it must
@@ -367,7 +367,7 @@ class GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesRequest(_messages.Mes
         allowed list changes. See - https://cloud.google.com/assured-
         workloads/docs/supported-products for the list of supported resources.
       APPEND_COMPLIANT_RESOURCES: Similar to ALLOW_COMPLIANT_RESOURCES but
-        adds the list of compliant resources to the existing list of
+        adds the list of compliant resources to the existing list of compliant
         resources. Effective org-policy of the Folder is considered to ensure
         there is no disruption to the existing customer workflows.
     """
@@ -594,6 +594,8 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       organizations/{organization}/locations/{location}/workloads/{workload}
       Read-only.
     partner: Optional. Partner regime associated with this workload.
+    partnerPermissions: Optional. Permissions granted to the AW Partner SA
+      account for the customer workload
     provisionedResourcesParent: Input only. The parent resource for the
       resources managed by this Assured Workload. May be either empty or a
       folder resource which is a child of the Workload parent. If not
@@ -615,7 +617,8 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       notification for a violation is enabled for a workload. This value will
       be by default True, and if not present will be considered as true. This
       should only be updated via updateWorkload call. Any Changes to this
-      field during the createWorkload call will not be honored.
+      field during the createWorkload call will not be honored. This will
+      always be true while creating the workload.
   """
 
   class ComplianceRegimeValueValuesEnum(_messages.Enum):
@@ -639,8 +642,8 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
         Support controls Available for public preview consumption. Don't
         create production workloads.
-      ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners
-      ISR_REGIONS: Assured Workloads for Israel Regions
+      ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners;
+      ISR_REGIONS: Assured Workloads for Israel
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
     """
@@ -730,11 +733,12 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 12)
   name = _messages.StringField(13)
   partner = _messages.EnumField('PartnerValueValuesEnum', 14)
-  provisionedResourcesParent = _messages.StringField(15)
-  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceSettings', 16, repeated=True)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceInfo', 17, repeated=True)
-  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadSaaEnrollmentResponse', 18)
-  violationNotificationsEnabled = _messages.BooleanField(19)
+  partnerPermissions = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadPartnerPermissions', 15)
+  provisionedResourcesParent = _messages.StringField(16)
+  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceSettings', 17, repeated=True)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceInfo', 18, repeated=True)
+  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadSaaEnrollmentResponse', 19)
+  violationNotificationsEnabled = _messages.BooleanField(20)
 
 
 class GoogleCloudAssuredworkloadsV1WorkloadComplianceStatus(_messages.Message):
@@ -827,9 +831,7 @@ class GoogleCloudAssuredworkloadsV1WorkloadEkmProvisioningResponse(_messages.Mes
 
 
 class GoogleCloudAssuredworkloadsV1WorkloadKMSSettings(_messages.Message):
-  r"""Settings specific to the Key Management Service. This message is
-  deprecated. In order to create a Keyring, callers should specify,
-  ENCRYPTION_KEYS_PROJECT or KEYRING in ResourceSettings.resource_type field.
+  r"""Settings specific to the Key Management Service.
 
   Fields:
     nextRotationTime: Required. Input only. Immutable. The time at which the
@@ -853,13 +855,10 @@ class GoogleCloudAssuredworkloadsV1WorkloadPartnerPermissions(_messages.Message)
       monitoring violations.
     remediateFolderViolations: Allow partner to monitor folder and remediate
       violations
-    serviceAccessApprover: Allow partner to approve or reject Service Access
-      requests
   """
 
   dataLogsViewer = _messages.BooleanField(1)
   remediateFolderViolations = _messages.BooleanField(2)
-  serviceAccessApprover = _messages.BooleanField(3)
 
 
 class GoogleCloudAssuredworkloadsV1WorkloadResourceInfo(_messages.Message):
@@ -879,10 +878,9 @@ class GoogleCloudAssuredworkloadsV1WorkloadResourceInfo(_messages.Message):
 
     Values:
       RESOURCE_TYPE_UNSPECIFIED: Unknown resource type.
-      CONSUMER_PROJECT: Consumer project. AssuredWorkloads Projects are no
-        longer supported. This field will be ignored only in CreateWorkload
-        requests. ListWorkloads and GetWorkload will continue to provide
-        projects information. Use CONSUMER_FOLDER instead.
+      CONSUMER_PROJECT: Deprecated. Existing workloads will continue to
+        support this, but new CreateWorkloadRequests should not specify this
+        as an input value.
       CONSUMER_FOLDER: Consumer Folder.
       ENCRYPTION_KEYS_PROJECT: Consumer project containing encryption keys.
       KEYRING: Keyring resource that hosts encryption keys.
@@ -902,8 +900,8 @@ class GoogleCloudAssuredworkloadsV1WorkloadResourceSettings(_messages.Message):
 
   Enums:
     ResourceTypeValueValuesEnum: Indicates the type of resource. This field
-      should be specified to correspond the id to the right resource type
-      (CONSUMER_FOLDER or ENCRYPTION_KEYS_PROJECT)
+      should be specified to correspond the id to the right project type
+      (CONSUMER_PROJECT or ENCRYPTION_KEYS_PROJECT)
 
   Fields:
     displayName: User-assigned resource display name. If not empty it will be
@@ -913,21 +911,20 @@ class GoogleCloudAssuredworkloadsV1WorkloadResourceSettings(_messages.Message):
       KeyRing, this represents the keyring_id. For a folder, don't set this
       value as folder_id is assigned by Google.
     resourceType: Indicates the type of resource. This field should be
-      specified to correspond the id to the right resource type
-      (CONSUMER_FOLDER or ENCRYPTION_KEYS_PROJECT)
+      specified to correspond the id to the right project type
+      (CONSUMER_PROJECT or ENCRYPTION_KEYS_PROJECT)
   """
 
   class ResourceTypeValueValuesEnum(_messages.Enum):
     r"""Indicates the type of resource. This field should be specified to
-    correspond the id to the right resource type (CONSUMER_FOLDER or
+    correspond the id to the right project type (CONSUMER_PROJECT or
     ENCRYPTION_KEYS_PROJECT)
 
     Values:
       RESOURCE_TYPE_UNSPECIFIED: Unknown resource type.
-      CONSUMER_PROJECT: Consumer project. AssuredWorkloads Projects are no
-        longer supported. This field will be ignored only in CreateWorkload
-        requests. ListWorkloads and GetWorkload will continue to provide
-        projects information. Use CONSUMER_FOLDER instead.
+      CONSUMER_PROJECT: Deprecated. Existing workloads will continue to
+        support this, but new CreateWorkloadRequests should not specify this
+        as an input value.
       CONSUMER_FOLDER: Consumer Folder.
       ENCRYPTION_KEYS_PROJECT: Consumer project containing encryption keys.
       KEYRING: Keyring resource that hosts encryption keys.

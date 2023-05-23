@@ -77,6 +77,13 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AutomaticUpdatePolicy(_messages.Message):
+  r"""Security patches are applied automatically to the runtime without
+  requiring the function to be redeployed.
+  """
+
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -176,8 +183,6 @@ class CloudFunction(_messages.Message):
       backend for eligible deployments.
     IngressSettingsValueValuesEnum: The ingress settings for the function,
       controlling what traffic can reach it.
-    RuntimeUpdatePolicyValueValuesEnum: The policy that determines when
-      security updates are applied to the runtime environment.
     StatusValueValuesEnum: Output only. Status of the function deployment.
     VpcConnectorEgressSettingsValueValuesEnum: The egress settings for the
       connector, controlling what traffic is diverted through it.
@@ -190,6 +195,8 @@ class CloudFunction(_messages.Message):
     LabelsValue: Labels associated with this Cloud Function.
 
   Fields:
+    automaticUpdatePolicy: See the comment next to this message for more
+      details.
     availableMemoryMb: The amount of memory in MB available for a function.
       Defaults to 256MB.
     buildDockerfile: Local path to the dockerfile for customizing the base
@@ -290,6 +297,10 @@ class CloudFunction(_messages.Message):
       exclusive with `vpc_connector` and will be replaced by it. See [the VPC
       documentation](https://cloud.google.com/compute/docs/vpc) for more
       information on connecting Cloud projects.
+    onDeployUpdatePolicy: See the comment next to this message for more
+      details.
+    pinnedRuntimeVersionPolicy: See the comment next to this message for more
+      details.
     runDockerfile: Local path to the dockerfile for customizing the base image
       for the worker, located within the source folder.
     runtime: The runtime in which to run the function. Required when deploying
@@ -297,8 +308,6 @@ class CloudFunction(_messages.Message):
       complete list of possible choices, see the [`gcloud` command reference](
       https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--
       runtime).
-    runtimeUpdatePolicy: The policy that determines when security updates are
-      applied to the runtime environment.
     secretEnvironmentVariables: Secret environment variables configuration.
     secretVolumes: Secret volumes configuration.
     serviceAccountEmail: The email of the function's service account. If
@@ -369,22 +378,6 @@ class CloudFunction(_messages.Message):
     ALLOW_ALL = 1
     ALLOW_INTERNAL_ONLY = 2
     ALLOW_INTERNAL_AND_GCLB = 3
-
-  class RuntimeUpdatePolicyValueValuesEnum(_messages.Enum):
-    r"""The policy that determines when security updates are applied to the
-    runtime environment.
-
-    Values:
-      RUNTIME_UPDATE_POLICY_UNSPECIFIED: Unspecified.
-      AUTOMATIC: Security patches are applied automatically to the runtime
-        without requiring the function to be redeployed.
-      DISABLED: Security patches are not automatically applied to the runtime.
-        The function must be regularly redeployed to keep the runtime
-        environment up to date
-    """
-    RUNTIME_UPDATE_POLICY_UNSPECIFIED = 0
-    AUTOMATIC = 1
-    DISABLED = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""Output only. Status of the function deployment.
@@ -498,44 +491,46 @@ class CloudFunction(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  buildDockerfile = _messages.StringField(2)
-  buildEnvironmentVariables = _messages.MessageField('BuildEnvironmentVariablesValue', 3)
-  buildId = _messages.StringField(4)
-  buildName = _messages.StringField(5)
-  buildWorkerPool = _messages.StringField(6)
-  buildpackStack = _messages.StringField(7)
-  customStackUri = _messages.StringField(8)
-  description = _messages.StringField(9)
-  dockerRegistry = _messages.EnumField('DockerRegistryValueValuesEnum', 10)
-  dockerRepository = _messages.StringField(11)
-  entryPoint = _messages.StringField(12)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 13)
-  eventTrigger = _messages.MessageField('EventTrigger', 14)
-  httpsTrigger = _messages.MessageField('HttpsTrigger', 15)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 16)
-  kmsKeyName = _messages.StringField(17)
-  labels = _messages.MessageField('LabelsValue', 18)
-  maxInstances = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  minInstances = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  name = _messages.StringField(21)
-  network = _messages.StringField(22)
-  runDockerfile = _messages.StringField(23)
-  runtime = _messages.StringField(24)
-  runtimeUpdatePolicy = _messages.EnumField('RuntimeUpdatePolicyValueValuesEnum', 25)
-  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 26, repeated=True)
-  secretVolumes = _messages.MessageField('SecretVolume', 27, repeated=True)
-  serviceAccountEmail = _messages.StringField(28)
-  sourceArchiveUrl = _messages.StringField(29)
-  sourceRepository = _messages.MessageField('SourceRepository', 30)
-  sourceToken = _messages.StringField(31)
-  sourceUploadUrl = _messages.StringField(32)
-  status = _messages.EnumField('StatusValueValuesEnum', 33)
-  timeout = _messages.StringField(34)
-  updateTime = _messages.StringField(35)
-  versionId = _messages.IntegerField(36)
-  vpcConnector = _messages.StringField(37)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 38)
+  automaticUpdatePolicy = _messages.MessageField('AutomaticUpdatePolicy', 1)
+  availableMemoryMb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  buildDockerfile = _messages.StringField(3)
+  buildEnvironmentVariables = _messages.MessageField('BuildEnvironmentVariablesValue', 4)
+  buildId = _messages.StringField(5)
+  buildName = _messages.StringField(6)
+  buildWorkerPool = _messages.StringField(7)
+  buildpackStack = _messages.StringField(8)
+  customStackUri = _messages.StringField(9)
+  description = _messages.StringField(10)
+  dockerRegistry = _messages.EnumField('DockerRegistryValueValuesEnum', 11)
+  dockerRepository = _messages.StringField(12)
+  entryPoint = _messages.StringField(13)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 14)
+  eventTrigger = _messages.MessageField('EventTrigger', 15)
+  httpsTrigger = _messages.MessageField('HttpsTrigger', 16)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 17)
+  kmsKeyName = _messages.StringField(18)
+  labels = _messages.MessageField('LabelsValue', 19)
+  maxInstances = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  minInstances = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  name = _messages.StringField(22)
+  network = _messages.StringField(23)
+  onDeployUpdatePolicy = _messages.MessageField('OnDeployUpdatePolicy', 24)
+  pinnedRuntimeVersionPolicy = _messages.MessageField('PinnedRuntimeVersionPolicy', 25)
+  runDockerfile = _messages.StringField(26)
+  runtime = _messages.StringField(27)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 28, repeated=True)
+  secretVolumes = _messages.MessageField('SecretVolume', 29, repeated=True)
+  serviceAccountEmail = _messages.StringField(30)
+  sourceArchiveUrl = _messages.StringField(31)
+  sourceRepository = _messages.MessageField('SourceRepository', 32)
+  sourceToken = _messages.StringField(33)
+  sourceUploadUrl = _messages.StringField(34)
+  status = _messages.EnumField('StatusValueValuesEnum', 35)
+  timeout = _messages.StringField(36)
+  updateTime = _messages.StringField(37)
+  versionId = _messages.IntegerField(38)
+  vpcConnector = _messages.StringField(39)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 40)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -909,6 +904,31 @@ class GenerateUploadUrlResponse(_messages.Message):
   uploadUrl = _messages.StringField(1)
 
 
+class GoogleCloudFunctionsV2LocationMetadata(_messages.Message):
+  r"""Extra GCF specific location information.
+
+  Enums:
+    EnvironmentsValueListEntryValuesEnum:
+
+  Fields:
+    environments: The Cloud Function environments this location supports.
+  """
+
+  class EnvironmentsValueListEntryValuesEnum(_messages.Enum):
+    r"""EnvironmentsValueListEntryValuesEnum enum type.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Unspecified
+      GEN_1: Gen 1
+      GEN_2: Gen 2
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    GEN_1 = 1
+    GEN_2 = 2
+
+  environments = _messages.EnumField('EnvironmentsValueListEntryValuesEnum', 1, repeated=True)
+
+
 class GoogleCloudFunctionsV2OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -1058,6 +1078,31 @@ class GoogleCloudFunctionsV2StateMessage(_messages.Message):
   type = _messages.StringField(3)
 
 
+class GoogleCloudFunctionsV2alphaLocationMetadata(_messages.Message):
+  r"""Extra GCF specific location information.
+
+  Enums:
+    EnvironmentsValueListEntryValuesEnum:
+
+  Fields:
+    environments: The Cloud Function environments this location supports.
+  """
+
+  class EnvironmentsValueListEntryValuesEnum(_messages.Enum):
+    r"""EnvironmentsValueListEntryValuesEnum enum type.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Unspecified
+      GEN_1: Gen 1
+      GEN_2: Gen 2
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    GEN_1 = 1
+    GEN_2 = 2
+
+  environments = _messages.EnumField('EnvironmentsValueListEntryValuesEnum', 1, repeated=True)
+
+
 class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -1205,6 +1250,31 @@ class GoogleCloudFunctionsV2alphaStateMessage(_messages.Message):
   message = _messages.StringField(1)
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)
   type = _messages.StringField(3)
+
+
+class GoogleCloudFunctionsV2betaLocationMetadata(_messages.Message):
+  r"""Extra GCF specific location information.
+
+  Enums:
+    EnvironmentsValueListEntryValuesEnum:
+
+  Fields:
+    environments: The Cloud Function environments this location supports.
+  """
+
+  class EnvironmentsValueListEntryValuesEnum(_messages.Enum):
+    r"""EnvironmentsValueListEntryValuesEnum enum type.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Unspecified
+      GEN_1: Gen 1
+      GEN_2: Gen 2
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    GEN_1 = 1
+    GEN_2 = 2
+
+  environments = _messages.EnumField('EnvironmentsValueListEntryValuesEnum', 1, repeated=True)
 
 
 class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
@@ -1510,6 +1580,17 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class OnDeployUpdatePolicy(_messages.Message):
+  r"""Security patches are only applied when a function is redeployed.
+
+  Fields:
+    runtimeVersion: Output only. contains the runtime version which was used
+      during latest function deployment.
+  """
+
+  runtimeVersion = _messages.StringField(1)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1693,6 +1774,18 @@ class OperationMetadataV1(_messages.Message):
   versionId = _messages.IntegerField(8)
 
 
+class PinnedRuntimeVersionPolicy(_messages.Message):
+  r"""The function is pinned to a specific runtime version and it will not
+  receive security patches, even after redeploying.
+
+  Fields:
+    runtimeVersion: The runtime version this function is pinned to. This
+      version will be used every time this function is deployed.
+  """
+
+  runtimeVersion = _messages.StringField(1)
+
+
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -1813,7 +1906,7 @@ class SecretVersion(_messages.Message):
       setting the mount_path as '/etc/secrets' and path as `/secret_foo` would
       mount the secret value file at `/etc/secrets/secret_foo`.
     version: Version of the secret (version number or the string 'latest'). It
-      is preferrable to use `latest` version with secret volumes as secret
+      is preferable to use `latest` version with secret volumes as secret
       value changes are reflected immediately.
   """
 

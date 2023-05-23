@@ -161,8 +161,8 @@ class VolumesClient(object):
     self._adapter.ParseProtocols(volume, protocols)
     volume.unixPermissions = unix_permissions
     volume.network = network.get('name')
-    if 'reserved-ip-range' in network:
-      volume.psaRange = network.get('reserved-ip-range')
+    if 'psa-range' in network:
+      volume.psaRange = network.get('psa-range')
     volume.smbSettings = smb_settings
     self._adapter.ParseSnapshotPolicy(volume, snapshot_policy)
     volume.snapReserve = snap_reserve
@@ -449,8 +449,8 @@ class BetaVolumesAdapter(object):
       self.ParseExportPolicy(volume_config, export_policy)
     if network is not None:
       volume_config.network = network.get('name')
-      if 'reserved-ip-range' in network:
-        volume_config.psaRange = network.get('reserved-ip-range')
+      if 'psa-range' in network:
+        volume_config.psaRange = network.get('psa-ranges')
     if unix_permissions is not None:
       volume_config.unixPermissions = unix_permissions
     if smb_settings is not None:

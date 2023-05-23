@@ -530,10 +530,6 @@ class NoWrapper(_messages.Message):
 class OidcToken(_messages.Message):
   r"""Contains information needed for generating an [OpenID Connect
   token](https://developers.google.com/identity/protocols/OpenIDConnect).
-  [Service account email](https://cloud.google.com/iam/docs/service-accounts)
-  used for generating the OIDC token. For more information on setting up
-  authentication, see [Push
-  subscriptions](https://cloud.google.com/pubsub/docs/push).
 
   Fields:
     audience: Audience to be used when generating OIDC token. The audience
@@ -543,7 +539,11 @@ class OidcToken(_messages.Message):
       OIDC JWT token audience here:
       https://tools.ietf.org/html/rfc7519#section-4.1.3 Note: if not
       specified, the Push endpoint URL will be used.
-    serviceAccountEmail: A string attribute.
+    serviceAccountEmail: [Service account
+      email](https://cloud.google.com/iam/docs/service-accounts) used for
+      generating the OIDC token. For more information on setting up
+      authentication, see [Push
+      subscriptions](https://cloud.google.com/pubsub/docs/push).
   """
 
   audience = _messages.StringField(1)

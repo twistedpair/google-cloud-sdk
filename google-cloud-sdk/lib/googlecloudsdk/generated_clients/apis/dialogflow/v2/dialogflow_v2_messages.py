@@ -4223,6 +4223,22 @@ class DialogflowProjectsLocationsSetAgentRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class DialogflowProjectsLocationsSuggestionsGenerateStatelessSummaryRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsSuggestionsGenerateStatelessSummaryRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2GenerateStatelessSummaryRequest: A
+      GoogleCloudDialogflowV2GenerateStatelessSummaryRequest resource to be
+      passed as the request body.
+    parent: Required. The parent resource to charge for the Summary's
+      generation. Format: `projects//locations/`.
+  """
+
+  googleCloudDialogflowV2GenerateStatelessSummaryRequest = _messages.MessageField('GoogleCloudDialogflowV2GenerateStatelessSummaryRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class DialogflowProjectsOperationsCancelRequest(_messages.Message):
   r"""A DialogflowProjectsOperationsCancelRequest object.
 
@@ -4272,6 +4288,21 @@ class DialogflowProjectsSetAgentRequest(_messages.Message):
   googleCloudDialogflowV2Agent = _messages.MessageField('GoogleCloudDialogflowV2Agent', 1)
   parent = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class DialogflowProjectsSuggestionsGenerateStatelessSummaryRequest(_messages.Message):
+  r"""A DialogflowProjectsSuggestionsGenerateStatelessSummaryRequest object.
+
+  Fields:
+    googleCloudDialogflowV2GenerateStatelessSummaryRequest: A
+      GoogleCloudDialogflowV2GenerateStatelessSummaryRequest resource to be
+      passed as the request body.
+    parent: Required. The parent resource to charge for the Summary's
+      generation. Format: `projects//locations/`.
+  """
+
+  googleCloudDialogflowV2GenerateStatelessSummaryRequest = _messages.MessageField('GoogleCloudDialogflowV2GenerateStatelessSummaryRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class GoogleCloudDialogflowCxV3AudioInput(_messages.Message):
@@ -6060,6 +6091,12 @@ class GoogleCloudDialogflowCxV3TurnSignals(_messages.Message):
     noMatch: Whether NLU predicted NO_MATCH.
     noUserInput: Whether user provided no input.
     reachedEndPage: Whether turn resulted in End Session page.
+    sentimentMagnitude: Sentiment magnitude of the user utterance if
+      [sentiment](https://cloud.google.com/dialogflow/cx/docs/concept/sentimen
+      t) was enabled.
+    sentimentScore: Sentiment score of the user utterance if
+      [sentiment](https://cloud.google.com/dialogflow/cx/docs/concept/sentimen
+      t) was enabled.
     userEscalated: Whether user was specifically asking for a live agent.
     webhookStatuses: Human-readable statuses of the webhooks triggered during
       this turn.
@@ -6083,8 +6120,10 @@ class GoogleCloudDialogflowCxV3TurnSignals(_messages.Message):
   noMatch = _messages.BooleanField(4)
   noUserInput = _messages.BooleanField(5)
   reachedEndPage = _messages.BooleanField(6)
-  userEscalated = _messages.BooleanField(7)
-  webhookStatuses = _messages.StringField(8, repeated=True)
+  sentimentMagnitude = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  sentimentScore = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  userEscalated = _messages.BooleanField(9)
+  webhookStatuses = _messages.StringField(10, repeated=True)
 
 
 class GoogleCloudDialogflowCxV3UpdateDocumentOperationMetadata(_messages.Message):
@@ -6130,7 +6169,15 @@ class GoogleCloudDialogflowCxV3Webhook(_messages.Message):
 class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
   r"""Represents configuration for a generic web service.
 
+  Enums:
+    HttpMethodValueValuesEnum: Optional. HTTP method for the flexible webhook
+      calls. Standard webhook always uses POST.
+    WebhookTypeValueValuesEnum: Optional. Type of the webhook.
+
   Messages:
+    ParameterMappingValue: Optional. Maps the values extracted from specific
+      fields of the flexible webhook response into session parameters. - Key:
+      session parameter name - Value: field path in the webhook response
     RequestHeadersValue: The HTTP request headers to send together with
       webhook requests.
 
@@ -6144,13 +6191,84 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
       command, ``` openssl x509 -req -days 200 -in example.com.csr \ -signkey
       example.com.key \ -out example.com.crt \ -extfile <(printf
       "\nsubjectAltName='DNS:www.example.com'") ```
+    httpMethod: Optional. HTTP method for the flexible webhook calls. Standard
+      webhook always uses POST.
+    parameterMapping: Optional. Maps the values extracted from specific fields
+      of the flexible webhook response into session parameters. - Key: session
+      parameter name - Value: field path in the webhook response
     password: The password for HTTP Basic authentication.
+    requestBody: Optional. Defines a custom JSON object as request body to
+      send to flexible webhook.
     requestHeaders: The HTTP request headers to send together with webhook
       requests.
     uri: Required. The webhook URI for receiving POST requests. It must use
       https protocol.
     username: The user name for HTTP Basic authentication.
+    webhookType: Optional. Type of the webhook.
   """
+
+  class HttpMethodValueValuesEnum(_messages.Enum):
+    r"""Optional. HTTP method for the flexible webhook calls. Standard webhook
+    always uses POST.
+
+    Values:
+      HTTP_METHOD_UNSPECIFIED: HTTP method not specified.
+      POST: HTTP POST Method.
+      GET: HTTP GET Method.
+      HEAD: HTTP HEAD Method.
+      PUT: HTTP PUT Method.
+      DELETE: HTTP DELETE Method.
+      PATCH: HTTP PATCH Method.
+      OPTIONS: HTTP OPTIONS Method.
+    """
+    HTTP_METHOD_UNSPECIFIED = 0
+    POST = 1
+    GET = 2
+    HEAD = 3
+    PUT = 4
+    DELETE = 5
+    PATCH = 6
+    OPTIONS = 7
+
+  class WebhookTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of the webhook.
+
+    Values:
+      WEBHOOK_TYPE_UNSPECIFIED: Default value. This value is unused.
+      STANDARD: Represents a standard webhook.
+      FLEXIBLE: Represents a flexible webhook.
+    """
+    WEBHOOK_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    FLEXIBLE = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParameterMappingValue(_messages.Message):
+    r"""Optional. Maps the values extracted from specific fields of the
+    flexible webhook response into session parameters. - Key: session
+    parameter name - Value: field path in the webhook response
+
+    Messages:
+      AdditionalProperty: An additional property for a ParameterMappingValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ParameterMappingValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParameterMappingValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestHeadersValue(_messages.Message):
@@ -6178,10 +6296,14 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   allowedCaCerts = _messages.BytesField(1, repeated=True)
-  password = _messages.StringField(2)
-  requestHeaders = _messages.MessageField('RequestHeadersValue', 3)
-  uri = _messages.StringField(4)
-  username = _messages.StringField(5)
+  httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 2)
+  parameterMapping = _messages.MessageField('ParameterMappingValue', 3)
+  password = _messages.StringField(4)
+  requestBody = _messages.StringField(5)
+  requestHeaders = _messages.MessageField('RequestHeadersValue', 6)
+  uri = _messages.StringField(7)
+  username = _messages.StringField(8)
+  webhookType = _messages.EnumField('WebhookTypeValueValuesEnum', 9)
 
 
 class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
@@ -8245,6 +8367,12 @@ class GoogleCloudDialogflowCxV3beta1TurnSignals(_messages.Message):
     noMatch: Whether NLU predicted NO_MATCH.
     noUserInput: Whether user provided no input.
     reachedEndPage: Whether turn resulted in End Session page.
+    sentimentMagnitude: Sentiment magnitude of the user utterance if
+      [sentiment](https://cloud.google.com/dialogflow/cx/docs/concept/sentimen
+      t) was enabled.
+    sentimentScore: Sentiment score of the user utterance if
+      [sentiment](https://cloud.google.com/dialogflow/cx/docs/concept/sentimen
+      t) was enabled.
     userEscalated: Whether user was specifically asking for a live agent.
     webhookStatuses: Human-readable statuses of the webhooks triggered during
       this turn.
@@ -8268,8 +8396,10 @@ class GoogleCloudDialogflowCxV3beta1TurnSignals(_messages.Message):
   noMatch = _messages.BooleanField(4)
   noUserInput = _messages.BooleanField(5)
   reachedEndPage = _messages.BooleanField(6)
-  userEscalated = _messages.BooleanField(7)
-  webhookStatuses = _messages.StringField(8, repeated=True)
+  sentimentMagnitude = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  sentimentScore = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  userEscalated = _messages.BooleanField(9)
+  webhookStatuses = _messages.StringField(10, repeated=True)
 
 
 class GoogleCloudDialogflowCxV3beta1UpdateDocumentOperationMetadata(_messages.Message):
@@ -8315,7 +8445,15 @@ class GoogleCloudDialogflowCxV3beta1Webhook(_messages.Message):
 class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
   r"""Represents configuration for a generic web service.
 
+  Enums:
+    HttpMethodValueValuesEnum: Optional. HTTP method for the flexible webhook
+      calls. Standard webhook always uses POST.
+    WebhookTypeValueValuesEnum: Optional. Type of the webhook.
+
   Messages:
+    ParameterMappingValue: Optional. Maps the values extracted from specific
+      fields of the flexible webhook response into session parameters. - Key:
+      session parameter name - Value: field path in the webhook response
     RequestHeadersValue: The HTTP request headers to send together with
       webhook requests.
 
@@ -8329,13 +8467,84 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
       command, ``` openssl x509 -req -days 200 -in example.com.csr \ -signkey
       example.com.key \ -out example.com.crt \ -extfile <(printf
       "\nsubjectAltName='DNS:www.example.com'") ```
+    httpMethod: Optional. HTTP method for the flexible webhook calls. Standard
+      webhook always uses POST.
+    parameterMapping: Optional. Maps the values extracted from specific fields
+      of the flexible webhook response into session parameters. - Key: session
+      parameter name - Value: field path in the webhook response
     password: The password for HTTP Basic authentication.
+    requestBody: Optional. Defines a custom JSON object as request body to
+      send to flexible webhook.
     requestHeaders: The HTTP request headers to send together with webhook
       requests.
     uri: Required. The webhook URI for receiving POST requests. It must use
       https protocol.
     username: The user name for HTTP Basic authentication.
+    webhookType: Optional. Type of the webhook.
   """
+
+  class HttpMethodValueValuesEnum(_messages.Enum):
+    r"""Optional. HTTP method for the flexible webhook calls. Standard webhook
+    always uses POST.
+
+    Values:
+      HTTP_METHOD_UNSPECIFIED: HTTP method not specified.
+      POST: HTTP POST Method.
+      GET: HTTP GET Method.
+      HEAD: HTTP HEAD Method.
+      PUT: HTTP PUT Method.
+      DELETE: HTTP DELETE Method.
+      PATCH: HTTP PATCH Method.
+      OPTIONS: HTTP OPTIONS Method.
+    """
+    HTTP_METHOD_UNSPECIFIED = 0
+    POST = 1
+    GET = 2
+    HEAD = 3
+    PUT = 4
+    DELETE = 5
+    PATCH = 6
+    OPTIONS = 7
+
+  class WebhookTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of the webhook.
+
+    Values:
+      WEBHOOK_TYPE_UNSPECIFIED: Default value. This value is unused.
+      STANDARD: Represents a standard webhook.
+      FLEXIBLE: Represents a flexible webhook.
+    """
+    WEBHOOK_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    FLEXIBLE = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParameterMappingValue(_messages.Message):
+    r"""Optional. Maps the values extracted from specific fields of the
+    flexible webhook response into session parameters. - Key: session
+    parameter name - Value: field path in the webhook response
+
+    Messages:
+      AdditionalProperty: An additional property for a ParameterMappingValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ParameterMappingValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParameterMappingValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestHeadersValue(_messages.Message):
@@ -8363,10 +8572,14 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   allowedCaCerts = _messages.BytesField(1, repeated=True)
-  password = _messages.StringField(2)
-  requestHeaders = _messages.MessageField('RequestHeadersValue', 3)
-  uri = _messages.StringField(4)
-  username = _messages.StringField(5)
+  httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 2)
+  parameterMapping = _messages.MessageField('ParameterMappingValue', 3)
+  password = _messages.StringField(4)
+  requestBody = _messages.StringField(5)
+  requestHeaders = _messages.MessageField('RequestHeadersValue', 6)
+  uri = _messages.StringField(7)
+  username = _messages.StringField(8)
+  webhookType = _messages.EnumField('WebhookTypeValueValuesEnum', 9)
 
 
 class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
@@ -9023,7 +9236,9 @@ class GoogleCloudDialogflowV2AnswerFeedback(_messages.Message):
     agentAssistantDetailFeedback: Detail feedback of agent assist suggestions.
     clickTime: Time when the answer/item was clicked.
     clicked: Indicates whether the answer/item was clicked by the human agent
-      or not. Default to false.
+      or not. Default to false. For knowledge search and knowledge assist, the
+      answer record is considered to be clicked if the answer was copied or
+      any URI was clicked.
     correctnessLevel: The correctness level of the specific answer.
     displayTime: Time when the answer/item was displayed.
     displayed: Indicates whether the answer/item was displayed to the human
@@ -10913,6 +11128,112 @@ class GoogleCloudDialogflowV2GcsSources(_messages.Message):
   uris = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudDialogflowV2GenerateStatelessSummaryRequest(_messages.Message):
+  r"""The request message for Conversations.GenerateStatelessSummary.
+
+  Fields:
+    conversationProfile: Required. A ConversationProfile containing
+      information required for Summary generation. Required fields:
+      {language_code, security_settings} Optional fields:
+      {agent_assistant_config}
+    latestMessage: The name of the latest conversation message used as context
+      for generating a Summary. If empty, the latest message of the
+      conversation will be used. The format is specific to the user and the
+      names of the messages provided.
+    maxContextSize: Max number of messages prior to and including
+      [latest_message] to use as context when compiling the suggestion. By
+      default 500 and at most 1000.
+    statelessConversation: Required. The conversation to suggest a summary
+      for.
+  """
+
+  conversationProfile = _messages.MessageField('GoogleCloudDialogflowV2ConversationProfile', 1)
+  latestMessage = _messages.StringField(2)
+  maxContextSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  statelessConversation = _messages.MessageField('GoogleCloudDialogflowV2GenerateStatelessSummaryRequestMinimalConversation', 4)
+
+
+class GoogleCloudDialogflowV2GenerateStatelessSummaryRequestMinimalConversation(_messages.Message):
+  r"""The minimum amount of information required to generate a Summary without
+  having a Conversation resource created.
+
+  Fields:
+    messages: Required. The messages that the Summary will be generated from.
+      It is expected that this message content is already redacted and does
+      not contain any PII. Required fields: {content, language_code,
+      participant, participant_role} Optional fields: {send_time} If send_time
+      is not provided, then the messages must be provided in chronological
+      order.
+  """
+
+  messages = _messages.MessageField('GoogleCloudDialogflowV2Message', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2GenerateStatelessSummaryResponse(_messages.Message):
+  r"""The response message for Conversations.GenerateStatelessSummary.
+
+  Fields:
+    contextSize: Number of messages prior to and including
+      last_conversation_message used to compile the suggestion. It may be
+      smaller than the GenerateStatelessSummaryRequest.context_size field in
+      the request if there weren't that many messages in the conversation.
+    latestMessage: The name of the latest conversation message used as context
+      for compiling suggestion. The format is specific to the user and the
+      names of the messages provided.
+    summary: Generated summary.
+  """
+
+  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  latestMessage = _messages.StringField(2)
+  summary = _messages.MessageField('GoogleCloudDialogflowV2GenerateStatelessSummaryResponseSummary', 3)
+
+
+class GoogleCloudDialogflowV2GenerateStatelessSummaryResponseSummary(_messages.Message):
+  r"""Generated summary for a conversation.
+
+  Messages:
+    TextSectionsValue: The summary content that is divided into sections. The
+      key is the section's name and the value is the section's content. There
+      is no specific format for the key or value.
+
+  Fields:
+    text: The summary content that is concatenated into one string.
+    textSections: The summary content that is divided into sections. The key
+      is the section's name and the value is the section's content. There is
+      no specific format for the key or value.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TextSectionsValue(_messages.Message):
+    r"""The summary content that is divided into sections. The key is the
+    section's name and the value is the section's content. There is no
+    specific format for the key or value.
+
+    Messages:
+      AdditionalProperty: An additional property for a TextSectionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type TextSectionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TextSectionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  text = _messages.StringField(1)
+  textSections = _messages.MessageField('TextSectionsValue', 2)
+
+
 class GoogleCloudDialogflowV2HumanAgentAssistantConfig(_messages.Message):
   r"""Defines the Human Agent Assist to connect to a conversation.
 
@@ -10939,11 +11260,15 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationModelConfig(_m
   CONVERSATION_SUMMARIZATION.
 
   Fields:
+    baselineModelVersion: Version of current baseline model. It will be
+      ignored if model is set. Valid versions are: Article Suggestion baseline
+      model: - 0.9 - 1.0 (default) Summarization baseline model: - 1.0
     model: Conversation model resource name. Format:
       `projects//conversationModels/`.
   """
 
-  model = _messages.StringField(1)
+  baselineModelVersion = _messages.StringField(1)
+  model = _messages.StringField(2)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationProcessConfig(_messages.Message):
@@ -11048,7 +11373,7 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig(_mes
       low value and slowly increasing until you have desired results. If this
       field is not set, it defaults to 0.0, which means that all suggestions
       are returned. Supported features: ARTICLE_SUGGESTION, FAQ, SMART_REPLY,
-      SMART_COMPOSE.
+      SMART_COMPOSE, KNOWLEDGE_SEARCH, KNOWLEDGE_ASSIST.
     contextFilterSettings: Determines how recent conversation context is
       filtered when generating suggestions. If unspecified, no messages will
       be dropped.
@@ -13800,7 +14125,6 @@ class GoogleCloudDialogflowV2SuggestConversationSummaryRequest(_messages.Message
   r"""The request message for Conversations.SuggestConversationSummary.
 
   Fields:
-    assistQueryParams: Parameters for a human assist query.
     contextSize: Max number of messages prior to and including
       [latest_message] to use as context when compiling the suggestion. By
       default 500 and at most 1000.
@@ -13810,9 +14134,8 @@ class GoogleCloudDialogflowV2SuggestConversationSummaryRequest(_messages.Message
       `projects//locations//conversations//messages/`.
   """
 
-  assistQueryParams = _messages.MessageField('GoogleCloudDialogflowV2AssistQueryParameters', 1)
-  contextSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  latestMessage = _messages.StringField(3)
+  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  latestMessage = _messages.StringField(2)
 
 
 class GoogleCloudDialogflowV2SuggestConversationSummaryResponse(_messages.Message):
@@ -17100,6 +17423,12 @@ class GoogleCloudDialogflowV3alpha1TurnSignals(_messages.Message):
     noMatch: Whether NLU predicted NO_MATCH.
     noUserInput: Whether user provided no input.
     reachedEndPage: Whether turn resulted in End Session page.
+    sentimentMagnitude: Sentiment magnitude of the user utterance if
+      [sentiment](https://cloud.google.com/dialogflow/cx/docs/concept/sentimen
+      t) was enabled.
+    sentimentScore: Sentiment score of the user utterance if
+      [sentiment](https://cloud.google.com/dialogflow/cx/docs/concept/sentimen
+      t) was enabled.
     triggeredAbandonmentEvent: Whether agent has triggered the event
       corresponding to user abandoning the conversation.
     userEscalated: Whether user was specifically asking for a live agent.
@@ -17125,9 +17454,11 @@ class GoogleCloudDialogflowV3alpha1TurnSignals(_messages.Message):
   noMatch = _messages.BooleanField(4)
   noUserInput = _messages.BooleanField(5)
   reachedEndPage = _messages.BooleanField(6)
-  triggeredAbandonmentEvent = _messages.BooleanField(7)
-  userEscalated = _messages.BooleanField(8)
-  webhookStatuses = _messages.StringField(9, repeated=True)
+  sentimentMagnitude = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  sentimentScore = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  triggeredAbandonmentEvent = _messages.BooleanField(9)
+  userEscalated = _messages.BooleanField(10)
+  webhookStatuses = _messages.StringField(11, repeated=True)
 
 
 class GoogleCloudDialogflowV3alpha1UpdateDocumentOperationMetadata(_messages.Message):

@@ -84,8 +84,7 @@ class BackupConfiguration(_messages.Message):
     enabled: Whether this configuration is enabled.
     kind: This is always `sql#backupConfiguration`.
     location: Location of the backup
-    pointInTimeRecoveryEnabled: (Postgres only) Whether point in time recovery
-      is enabled.
+    pointInTimeRecoveryEnabled: Whether point in time recovery is enabled.
     replicationLogArchivingEnabled: Reserved for future use.
     startTime: Start time for the daily backup configuration in UTC timezone
       in the 24 hour format - `HH:MM`.
@@ -1151,6 +1150,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class ExportContext(_messages.Message):
@@ -2509,8 +2509,7 @@ class Settings(_messages.Message):
       updating an existing instance, it is left unchanged in the instance.
     DataDiskTypeValueValuesEnum: The type of data disk: `PD_SSD` (default) or
       `PD_HDD`. Not used for First Generation instances.
-    EditionValueValuesEnum: The edition of the instance, can be STANDARD or
-      ENTERPRISE.
+    EditionValueValuesEnum: The edition of the instance.
     PricingPlanValueValuesEnum: The pricing plan for this instance. This can
       be either `PER_USE` or `PACKAGE`. Only `PER_USE` is supported for Second
       Generation instances.
@@ -2567,7 +2566,7 @@ class Settings(_messages.Message):
     deletionProtectionEnabled: Configuration to protect against accidental
       instance deletion.
     denyMaintenancePeriods: Deny maintenance periods
-    edition: The edition of the instance, can be STANDARD or ENTERPRISE.
+    edition: The edition of the instance.
     insightsConfig: Insights configuration, for now relevant only for
       Postgres.
     instanceVersion: The current software version the instance is running on.
@@ -2685,16 +2684,18 @@ class Settings(_messages.Message):
     OBSOLETE_LOCAL_SSD = 3
 
   class EditionValueValuesEnum(_messages.Enum):
-    r"""The edition of the instance, can be STANDARD or ENTERPRISE.
+    r"""The edition of the instance.
 
     Values:
       EDITION_UNSPECIFIED: The instance did not specify the edition.
       STANDARD: The instance is a standard edition.
       ENTERPRISE: The instance is an enterprise edition.
+      ENTERPRISE_PLUS: The instance is an Enterprise Plus edition.
     """
     EDITION_UNSPECIFIED = 0
     STANDARD = 1
     ENTERPRISE = 2
+    ENTERPRISE_PLUS = 3
 
   class PricingPlanValueValuesEnum(_messages.Enum):
     r"""The pricing plan for this instance. This can be either `PER_USE` or
@@ -2778,9 +2779,7 @@ class Settings(_messages.Message):
   locationPreference = _messages.MessageField('LocationPreference', 22)
   maintenanceVersion = _messages.StringField(23)
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 24)
-  passwordValidationPolicy = _messages.MessageField(
-      'PasswordValidationPolicy', 25
-  )
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 25)
   pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 26)
   recreateReplicasOnPrimaryCrash = _messages.BooleanField(27)
   replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 28)
@@ -3039,6 +3038,9 @@ class SqlExternalSyncSettingError(_messages.Message):
       EXISTING_DATA_IN_REPLICA: The replica instance contains existing data.
       MISSING_OPTIONAL_PRIVILEGES: The replication user is missing privileges
         that are optional.
+      RISKY_BACKUP_ADMIN_PRIVILEGE: Additional BACKUP_ADMIN privilege is
+        granted to the replication user which may lock source MySQL 8 instance
+        for DDLs during initial sync.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3070,6 +3072,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     LIMITED_SUPPORT_TABLES = 27
     EXISTING_DATA_IN_REPLICA = 28
     MISSING_OPTIONAL_PRIVILEGES = 29
+    RISKY_BACKUP_ADMIN_PRIVILEGE = 30
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

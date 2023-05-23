@@ -26,15 +26,15 @@ from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
 ENDPOINT_RESOURCE_NAME = "FIREWALL_ENDPOINT"
-API_VERSION = "v1alpha1"
 
 
-def AddEndpointResource(parser):
+def AddEndpointResource(release_track, parser):
   """Adds Firewall Plus endpoint resource."""
+  api_version = activation_api.GetApiVersion(release_track)
   resource_spec = concepts.ResourceSpec(
       "networksecurity.organizations.locations.firewallEndpoints",
       "firewall endpoint",
-      api_version=API_VERSION,
+      api_version=api_version,
       organizationsId=concepts.ResourceParameterAttributeConfig(
           "organization",
           "Organization ID of the {resource}.",

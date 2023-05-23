@@ -1384,6 +1384,8 @@ class ExternalDataConfiguration(_messages.Message):
       Trailing columns JSON: Named values that don't match any column names
       Google Cloud Bigtable: This setting is ignored. Google Cloud Datastore
       backups: This setting is ignored. Avro: This setting is ignored.
+    jsonOptions: Additional properties to set if `sourceFormat` is set to
+      `NEWLINE_DELIMITED_JSON`.
     maxBadRecords: [Optional] The maximum number of bad records that BigQuery
       can ignore when reading data. If the number of bad records exceeds this
       value, an invalid error is returned in the job result. This is only
@@ -1428,14 +1430,15 @@ class ExternalDataConfiguration(_messages.Message):
   googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 8)
   hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 9)
   ignoreUnknownValues = _messages.BooleanField(10)
-  maxBadRecords = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  metadataCacheMode = _messages.StringField(12)
-  objectMetadata = _messages.StringField(13)
-  parquetOptions = _messages.MessageField('ParquetOptions', 14)
-  referenceFileSchemaUri = _messages.StringField(15)
-  schema = _messages.MessageField('TableSchema', 16)
-  sourceFormat = _messages.StringField(17)
-  sourceUris = _messages.StringField(18, repeated=True)
+  jsonOptions = _messages.MessageField('JsonOptions', 11)
+  maxBadRecords = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  metadataCacheMode = _messages.StringField(13)
+  objectMetadata = _messages.StringField(14)
+  parquetOptions = _messages.MessageField('ParquetOptions', 15)
+  referenceFileSchemaUri = _messages.StringField(16)
+  schema = _messages.MessageField('TableSchema', 17)
+  sourceFormat = _messages.StringField(18)
+  sourceUris = _messages.StringField(19, repeated=True)
 
 
 class GetQueryResultsResponse(_messages.Message):
@@ -2545,6 +2548,18 @@ class JsonObject(_messages.Message):
   additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
 
+class JsonOptions(_messages.Message):
+  r"""A JsonOptions object.
+
+  Fields:
+    encoding: [Optional] The character encoding of the data. The supported
+      values are UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, and UTF-32LE. The
+      default value is UTF-8.
+  """
+
+  encoding = _messages.StringField(1)
+
+
 JsonValue = extra_types.JsonValue
 
 
@@ -3348,35 +3363,34 @@ class Table(_messages.Message):
     model: [Output-only, Beta] Present iff this table represents a ML model.
       Describes the training information for the model, and it is required to
       run 'PREDICT' queries.
+    numActiveLogicalBytes: [Output-only] Number of logical bytes that are less
+      than 90 days old.
+    numActivePhysicalBytes: [Output-only] Number of physical bytes less than
+      90 days old. This data is not kept in real time, and might be delayed by
+      a few seconds to a few minutes.
     numBytes: [Output-only] The size of this table in bytes, excluding any
       data in the streaming buffer.
     numLongTermBytes: [Output-only] The number of bytes in the table that are
       considered "long-term storage".
+    numLongTermLogicalBytes: [Output-only] Number of logical bytes that are
+      more than 90 days old.
+    numLongTermPhysicalBytes: [Output-only] Number of physical bytes more than
+      90 days old. This data is not kept in real time, and might be delayed by
+      a few seconds to a few minutes.
+    numPartitions: [Output-only] The number of partitions present in the table
+      or materialized view. This data is not kept in real time, and might be
+      delayed by a few seconds to a few minutes.
     numPhysicalBytes: [Output-only] [TrustedTester] The physical size of this
       table in bytes, excluding any data in the streaming buffer. This
       includes compression and storage used for time travel.
     numRows: [Output-only] The number of rows of data in this table, excluding
       any data in the streaming buffer.
-    num_active_logical_bytes: [Output-only] Number of logical bytes that are
-      less than 90 days old.
-    num_active_physical_bytes: [Output-only] Number of physical bytes less
-      than 90 days old. This data is not kept in real time, and might be
-      delayed by a few seconds to a few minutes.
-    num_long_term_logical_bytes: [Output-only] Number of logical bytes that
-      are more than 90 days old.
-    num_long_term_physical_bytes: [Output-only] Number of physical bytes more
-      than 90 days old. This data is not kept in real time, and might be
-      delayed by a few seconds to a few minutes.
-    num_partitions: [Output-only] The number of partitions present in the
-      table or materialized view. This data is not kept in real time, and
-      might be delayed by a few seconds to a few minutes.
-    num_time_travel_physical_bytes: [Output-only] Number of physical bytes
-      used by time travel storage (deleted or changed data). This data is not
-      kept in real time, and might be delayed by a few seconds to a few
-      minutes.
-    num_total_logical_bytes: [Output-only] Total number of logical bytes in
-      the table or materialized view.
-    num_total_physical_bytes: [Output-only] The physical size of this table in
+    numTimeTravelPhysicalBytes: [Output-only] Number of physical bytes used by
+      time travel storage (deleted or changed data). This data is not kept in
+      real time, and might be delayed by a few seconds to a few minutes.
+    numTotalLogicalBytes: [Output-only] Total number of logical bytes in the
+      table or materialized view.
+    numTotalPhysicalBytes: [Output-only] The physical size of this table in
       bytes. This also includes storage used for time travel. This data is not
       kept in real time, and might be delayed by a few seconds to a few
       minutes.
@@ -3394,6 +3408,7 @@ class Table(_messages.Message):
       streaming buffer, if one is present. This field will be absent if the
       table is not being streamed to or if there is no data in the streaming
       buffer.
+    tableConstraints: [Optional] The table constraints on the table.
     tableReference: [Required] Reference describing the ID of this table.
     timePartitioning: Time-based partitioning specification for this table.
       Only one of timePartitioning and rangePartitioning should be specified.
@@ -3455,28 +3470,29 @@ class Table(_messages.Message):
   materializedView = _messages.MessageField('MaterializedViewDefinition', 17)
   maxStaleness = _messages.BytesField(18)
   model = _messages.MessageField('ModelDefinition', 19)
-  numBytes = _messages.IntegerField(20)
-  numLongTermBytes = _messages.IntegerField(21)
-  numPhysicalBytes = _messages.IntegerField(22)
-  numRows = _messages.IntegerField(23, variant=_messages.Variant.UINT64)
-  num_active_logical_bytes = _messages.IntegerField(24)
-  num_active_physical_bytes = _messages.IntegerField(25)
-  num_long_term_logical_bytes = _messages.IntegerField(26)
-  num_long_term_physical_bytes = _messages.IntegerField(27)
-  num_partitions = _messages.IntegerField(28)
-  num_time_travel_physical_bytes = _messages.IntegerField(29)
-  num_total_logical_bytes = _messages.IntegerField(30)
-  num_total_physical_bytes = _messages.IntegerField(31)
+  numActiveLogicalBytes = _messages.IntegerField(20)
+  numActivePhysicalBytes = _messages.IntegerField(21)
+  numBytes = _messages.IntegerField(22)
+  numLongTermBytes = _messages.IntegerField(23)
+  numLongTermLogicalBytes = _messages.IntegerField(24)
+  numLongTermPhysicalBytes = _messages.IntegerField(25)
+  numPartitions = _messages.IntegerField(26)
+  numPhysicalBytes = _messages.IntegerField(27)
+  numRows = _messages.IntegerField(28, variant=_messages.Variant.UINT64)
+  numTimeTravelPhysicalBytes = _messages.IntegerField(29)
+  numTotalLogicalBytes = _messages.IntegerField(30)
+  numTotalPhysicalBytes = _messages.IntegerField(31)
   rangePartitioning = _messages.MessageField('RangePartitioning', 32)
   requirePartitionFilter = _messages.BooleanField(33, default=False)
   schema = _messages.MessageField('TableSchema', 34)
   selfLink = _messages.StringField(35)
   snapshotDefinition = _messages.MessageField('SnapshotDefinition', 36)
   streamingBuffer = _messages.MessageField('Streamingbuffer', 37)
-  tableReference = _messages.MessageField('TableReference', 38)
-  timePartitioning = _messages.MessageField('TimePartitioning', 39)
-  type = _messages.StringField(40)
-  view = _messages.MessageField('ViewDefinition', 41)
+  tableConstraints = _messages.MessageField('TableConstraints', 38)
+  tableReference = _messages.MessageField('TableReference', 39)
+  timePartitioning = _messages.MessageField('TimePartitioning', 40)
+  type = _messages.StringField(41)
+  view = _messages.MessageField('ViewDefinition', 42)
 
 
 class TableCell(_messages.Message):
@@ -3487,6 +3503,72 @@ class TableCell(_messages.Message):
   """
 
   v = _messages.MessageField('extra_types.JsonValue', 1)
+
+
+class TableConstraints(_messages.Message):
+  r"""A TableConstraints object.
+
+  Messages:
+    ForeignKeysValueListEntry: A ForeignKeysValueListEntry object.
+    PrimaryKeyValue: [Optional] The primary key of the table.
+
+  Fields:
+    foreignKeys: [Optional] The foreign keys of the tables.
+    primaryKey: [Optional] The primary key of the table.
+  """
+
+  class ForeignKeysValueListEntry(_messages.Message):
+    r"""A ForeignKeysValueListEntry object.
+
+    Messages:
+      ColumnReferencesValueListEntry: A ColumnReferencesValueListEntry object.
+      ReferencedTableValue: A ReferencedTableValue object.
+
+    Fields:
+      columnReferences: A ColumnReferencesValueListEntry attribute.
+      name: A string attribute.
+      referencedTable: A ReferencedTableValue attribute.
+    """
+
+    class ColumnReferencesValueListEntry(_messages.Message):
+      r"""A ColumnReferencesValueListEntry object.
+
+      Fields:
+        referencedColumn: A string attribute.
+        referencingColumn: A string attribute.
+      """
+
+      referencedColumn = _messages.StringField(1)
+      referencingColumn = _messages.StringField(2)
+
+    class ReferencedTableValue(_messages.Message):
+      r"""A ReferencedTableValue object.
+
+      Fields:
+        datasetId: A string attribute.
+        projectId: A string attribute.
+        tableId: A string attribute.
+      """
+
+      datasetId = _messages.StringField(1)
+      projectId = _messages.StringField(2)
+      tableId = _messages.StringField(3)
+
+    columnReferences = _messages.MessageField('ColumnReferencesValueListEntry', 1, repeated=True)
+    name = _messages.StringField(2)
+    referencedTable = _messages.MessageField('ReferencedTableValue', 3)
+
+  class PrimaryKeyValue(_messages.Message):
+    r"""[Optional] The primary key of the table.
+
+    Fields:
+      columns: A string attribute.
+    """
+
+    columns = _messages.StringField(1, repeated=True)
+
+  foreignKeys = _messages.MessageField('ForeignKeysValueListEntry', 1, repeated=True)
+  primaryKey = _messages.MessageField('PrimaryKeyValue', 2)
 
 
 class TableDataInsertAllRequest(_messages.Message):

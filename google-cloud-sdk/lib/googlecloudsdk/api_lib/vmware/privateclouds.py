@@ -21,6 +21,26 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
 from googlecloudsdk.api_lib.vmware.networks import NetworksClient
+from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.core.exceptions import Error
+
+
+class SecondaryZoneNotProvidedError(Error):
+
+  def __init__(self):
+    super(SecondaryZoneNotProvidedError, self).__init__(
+        'FAILED_PRECONDITION: Secondary Zone value is required for Stretched'
+        ' Private Cloud.'
+    )
+
+
+class PreferredZoneNotProvidedError(Error):
+
+  def __init__(self):
+    super(PreferredZoneNotProvidedError, self).__init__(
+        'FAILED_PRECONDITION: Preferred Zone value is required for Stretched'
+        ' Private Cloud.'
+    )
 
 
 class PrivateCloudsClient(util.VmwareClientBase):
@@ -32,8 +52,11 @@ class PrivateCloudsClient(util.VmwareClientBase):
     self.networks_client = NetworksClient()
 
   def Get(self, resource):
-    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsGetRequest(
-        name=resource.RelativeName())
+    request = (
+        self.messages.VmwareengineProjectsLocationsPrivateCloudsGetRequest(
+            name=resource.RelativeName()
+        )
+    )
 
     response = self.service.Get(request)
     return response
@@ -46,28 +69,50 @@ class PrivateCloudsClient(util.VmwareClientBase):
       network_cidr,
       vmware_engine_network_id,
       private_cloud_type,
-      description=None):
+      description=None,
+      secondary_zone=None,
+      preferred_zone=None):
     parent = resource.Parent().RelativeName()
     project = resource.Parent().Parent().Name()
     private_cloud_id = resource.Name()
     private_cloud = self.messages.PrivateCloud(description=description)
-    private_cloud.type = self.messages.PrivateCloud.TypeValueValuesEnum(
-        private_cloud_type)
+    private_cloud.type = self.GetPrivateCloudType(private_cloud_type)
     ven = self.networks_client.GetByID(project, vmware_engine_network_id)
     network_config = self.messages.NetworkConfig(
-        managementCidr=network_cidr, vmwareEngineNetwork=ven.name)
+        managementCidr=network_cidr, vmwareEngineNetwork=ven.name
+    )
 
     management_cluster = self.messages.ManagementCluster(clusterId=cluster_id)
-    management_cluster.nodeTypeConfigs = util.ConstructNodeParameterConfigMessage(
-        self.messages.ManagementCluster.NodeTypeConfigsValue,
-        self.messages.NodeTypeConfig, nodes_configs)
+    management_cluster.nodeTypeConfigs = (
+        util.ConstructNodeParameterConfigMessage(
+            self.messages.ManagementCluster.NodeTypeConfigsValue,
+            self.messages.NodeTypeConfig,
+            nodes_configs,
+        )
+    )
+    if (
+        private_cloud.type
+        is self.messages.PrivateCloud.TypeValueValuesEnum.STRETCHED
+    ):
+      if not preferred_zone:
+        raise PreferredZoneNotProvidedError()
+      if not secondary_zone:
+        raise SecondaryZoneNotProvidedError()
+      management_cluster.stretchedClusterConfig = (
+          self.messages.StretchedClusterConfig(
+              preferredLocation=preferred_zone, secondaryLocation=secondary_zone
+          )
+      )
 
     private_cloud.managementCluster = management_cluster
     private_cloud.networkConfig = network_config
-    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsCreateRequest(
-        parent=parent,
-        privateCloudId=private_cloud_id,
-        privateCloud=private_cloud)
+    request = (
+        self.messages.VmwareengineProjectsLocationsPrivateCloudsCreateRequest(
+            parent=parent,
+            privateCloudId=private_cloud_id,
+            privateCloud=private_cloud,
+        )
+    )
     return self.service.Create(request)
 
   def Update(self, resource, description):
@@ -75,21 +120,29 @@ class PrivateCloudsClient(util.VmwareClientBase):
     update_mask = []
     private_cloud.description = description
     update_mask.append('description')
-    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsPatchRequest(
-        privateCloud=private_cloud,
-        name=resource.RelativeName(),
-        updateMask=','.join(update_mask))
+    request = (
+        self.messages.VmwareengineProjectsLocationsPrivateCloudsPatchRequest(
+            privateCloud=private_cloud,
+            name=resource.RelativeName(),
+            updateMask=','.join(update_mask),
+        )
+    )
     return self.service.Patch(request)
 
   def UnDelete(self, resource):
-    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest(
-        name=resource.RelativeName())
+    request = (
+        self.messages.VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest(
+            name=resource.RelativeName()
+        )
+    )
     return self.service.Undelete(request)
 
   def Delete(self, resource, delay_hours=None):
     return self.service.Delete(
         self.messages.VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(
-            name=resource.RelativeName(), delayHours=delay_hours))
+            name=resource.RelativeName(), delayHours=delay_hours
+        )
+    )
 
   def List(self, location_resource):
     location = location_resource.RelativeName()
@@ -123,3 +176,11 @@ class PrivateCloudsClient(util.VmwareClientBase):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsResetVcenterCredentialsRequest(
         privateCloud=resource.RelativeName())
     return self.service.ResetVcenterCredentials(request)
+
+  def GetPrivateCloudType(self, private_cloud_type):
+    type_enum = arg_utils.ChoiceEnumMapper(
+        arg_name='type',
+        default='STANDARD',
+        message_enum=self.messages.PrivateCloud.TypeValueValuesEnum,
+    ).GetEnumForChoice(arg_utils.EnumNameToChoice(private_cloud_type))
+    return type_enum

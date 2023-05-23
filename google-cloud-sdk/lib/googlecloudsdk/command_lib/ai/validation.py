@@ -113,3 +113,19 @@ def ValidateSharedResourceArgs(shared_resources_ref=None,
     raise exceptions.InvalidArgumentException(
         '--autoscaling-metric-specs', """Cannot use autoscaling metric specs
         and shared resources in the same command.""")
+
+
+def ValidateEndpointArgs(network=None, public_endpoint_enabled=None):
+  """Validates the network and public_endpoint_enabled."""
+  if network is not None and public_endpoint_enabled:
+    raise exceptions.InvalidArgumentException(
+        'Please either set --network for private endpoint, or set'
+        ' --public-endpoint-enabled',
+        'for public enpdoint.',
+    )
+  if network is None and not public_endpoint_enabled:
+    raise exceptions.InvalidArgumentException(
+        'Please either set --network for private endpoint, or set'
+        ' --public-endpoint-enabled',
+        'for public enpdoint.',
+    )

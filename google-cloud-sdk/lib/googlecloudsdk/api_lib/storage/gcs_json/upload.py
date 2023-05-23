@@ -40,14 +40,17 @@ import six
 class _Upload(six.with_metaclass(abc.ABCMeta, object)):
   """Base class shared by different upload strategies."""
 
-  def __init__(self,
-               gcs_api,
-               http_client,
-               source_stream,
-               destination_resource,
-               should_gzip_in_flight,
-               request_config,
-               source_resource=None):
+  def __init__(
+      self,
+      gcs_api,
+      http_client,
+      source_stream,
+      destination_resource,
+      should_gzip_in_flight,
+      request_config,
+      posix_to_set=None,
+      source_resource=None,
+  ):
     """Initializes an _Upload instance.
 
     Args:
@@ -59,6 +62,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
       should_gzip_in_flight (bool): Should gzip encode upload in flight.
       request_config (gcs_api.GcsRequestConfig): Tracks additional request
         preferences.
+      posix_to_set (PosixAttributes|None): Set as custom metadata on target.
       source_resource (FileObjectResource|ObjectResource|None): Contains the
         source StorageUrl and source object metadata for daisy chain transfers.
         Can be None if source is pure stream.
@@ -69,6 +73,8 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     self._destination_resource = destination_resource
     self._should_gzip_in_flight = should_gzip_in_flight
     self._request_config = request_config
+
+    self._posix_to_set = posix_to_set
     self._source_resource = source_resource
 
     self._messages = apis.GetMessagesModule('storage', 'v1')
@@ -113,6 +119,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
         object_metadata,
         self._request_config,
         attributes_resource=self._source_resource,
+        posix_to_set=self._posix_to_set,
     )
 
     return self._messages.StorageObjectsInsertRequest(
@@ -228,28 +235,39 @@ class ResumableUpload(_BaseRecoverableUpload):
   """Uploads objects with support for resuming between runs of a command."""
 
   # pylint: disable=g-doc-args
-  def __init__(self,
-               gcs_api,
-               http_client,
-               source_stream,
-               destination_resource,
-               should_gzip_in_flight,
-               request_config,
-               source_resource=None,
-               serialization_data=None,
-               tracker_callback=None):
+  def __init__(
+      self,
+      gcs_api,
+      http_client,
+      source_stream,
+      destination_resource,
+      should_gzip_in_flight,
+      request_config,
+      posix_to_set=None,
+      serialization_data=None,
+      source_resource=None,
+      tracker_callback=None,
+  ):
     """Initializes a ResumableUpload instance.
 
     See super class for arguments not described below.
 
     New Args:
       serialization_data (dict): JSON used by apitools to resume an upload.
+      tracker_callback (Callable[[dict]|None]): Function that writes a tracker
+        file with serialization data.
     """
     # pylint: enable=g-doc-args
-    super(ResumableUpload,
-          self).__init__(gcs_api, http_client, source_stream,
-                         destination_resource, should_gzip_in_flight,
-                         request_config, source_resource)
+    super(ResumableUpload, self).__init__(
+        gcs_api,
+        http_client,
+        source_stream,
+        destination_resource,
+        should_gzip_in_flight,
+        request_config,
+        posix_to_set=posix_to_set,
+        source_resource=source_resource,
+    )
     self._serialization_data = serialization_data
     self._tracker_callback = tracker_callback
 

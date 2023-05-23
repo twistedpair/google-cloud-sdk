@@ -92,8 +92,7 @@ def CreateDiskMessages(args,
                        support_persistent_attached_disks=True,
                        support_replica_zones=False,
                        use_disk_type_uri=True,
-                       support_multi_writer=False,
-                       support_provisioned_throughput=False):
+                       support_multi_writer=False):
   """Creates disk messages for a single instance."""
 
   container_mount_disk = []
@@ -131,8 +130,7 @@ def CreateDiskMessages(args,
           enable_image_csek=support_image_csek,
           support_replica_zones=support_replica_zones,
           use_disk_type_uri=use_disk_type_uri,
-          support_multi_writer=support_multi_writer,
-          support_provisioned_throughput=support_provisioned_throughput))
+          support_multi_writer=support_multi_writer))
 
   local_nvdimms = []
   if support_nvdimm:
@@ -263,8 +261,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
                                        support_replica_zones=False,
                                        use_disk_type_uri=True,
                                        support_multi_writer=False,
-                                       support_image_family_scope=False,
-                                       support_provisioned_throughput=False):
+                                       support_image_family_scope=False):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
   Args:
@@ -297,8 +294,6 @@ def CreatePersistentCreateDiskMessages(compute_client,
     use_disk_type_uri: True to use disk type URI, False if naked type.
     support_multi_writer: True if we allow multiple instances to write to disk.
     support_image_family_scope: True if the zonal image views are supported.
-    support_provisioned_throughput: True if the provisioned throughput is
-      supported
 
   Returns:
     list of API messages for attached disks
@@ -409,8 +404,8 @@ def CreatePersistentCreateDiskMessages(compute_client,
     if provisioned_iops:
       initialize_params.provisionedIops = provisioned_iops
 
-    if support_provisioned_throughput:
-      provisioned_throughput = disk.get('provisioned-throughput')
+    provisioned_throughput = disk.get('provisioned-throughput')
+    if provisioned_throughput:
       initialize_params.provisionedThroughput = provisioned_throughput
 
     disk_architecture = disk.get('architecture')

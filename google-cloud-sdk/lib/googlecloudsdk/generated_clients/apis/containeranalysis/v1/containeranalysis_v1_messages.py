@@ -2883,6 +2883,7 @@ class DiscoveryNote(_messages.Message):
       COMPLIANCE: This represents a Compliance Note
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
+      SBOM_REFERENCE: This represents an SBOM Reference.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -2896,6 +2897,7 @@ class DiscoveryNote(_messages.Message):
     COMPLIANCE = 9
     DSSE_ATTESTATION = 10
     VULNERABILITY_ASSESSMENT = 11
+    SBOM_REFERENCE = 12
 
   analysisKind = _messages.EnumField('AnalysisKindValueValuesEnum', 1)
 
@@ -3818,6 +3820,7 @@ class Note(_messages.Message):
     package: A note describing a package hosted by various package managers.
     relatedNoteNames: Other notes related to this note.
     relatedUrl: URLs associated with this note.
+    sbomReference: A note describing an SBOM reference.
     shortDescription: A one sentence description of this note.
     updateTime: Output only. The time this note was last updated. This field
       can be used as a filter in list requests.
@@ -3846,6 +3849,7 @@ class Note(_messages.Message):
       COMPLIANCE: This represents a Compliance Note
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
+      SBOM_REFERENCE: This represents an SBOM Reference.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -3859,6 +3863,7 @@ class Note(_messages.Message):
     COMPLIANCE = 9
     DSSE_ATTESTATION = 10
     VULNERABILITY_ASSESSMENT = 11
+    SBOM_REFERENCE = 12
 
   attestation = _messages.MessageField('AttestationNote', 1)
   build = _messages.MessageField('BuildNote', 2)
@@ -3875,11 +3880,12 @@ class Note(_messages.Message):
   package = _messages.MessageField('PackageNote', 13)
   relatedNoteNames = _messages.StringField(14, repeated=True)
   relatedUrl = _messages.MessageField('RelatedUrl', 15, repeated=True)
-  shortDescription = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
-  upgrade = _messages.MessageField('UpgradeNote', 18)
-  vulnerability = _messages.MessageField('VulnerabilityNote', 19)
-  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 20)
+  sbomReference = _messages.MessageField('SBOMReferenceNote', 16)
+  shortDescription = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
+  upgrade = _messages.MessageField('UpgradeNote', 19)
+  vulnerability = _messages.MessageField('VulnerabilityNote', 20)
+  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 21)
 
 
 class Occurrence(_messages.Message):
@@ -3914,6 +3920,7 @@ class Occurrence(_messages.Message):
     resourceUri: Required. Immutable. A URI that represents the resource for
       which the occurrence applies. For example,
       `https://gcr.io/project/image@sha256:123abc` for a Docker image.
+    sbomReference: Describes a specific SBOM reference occurrences.
     updateTime: Output only. The time this occurrence was last updated.
     upgrade: Describes an available package upgrade on the linked resource.
     vulnerability: Describes a security vulnerability.
@@ -3939,6 +3946,7 @@ class Occurrence(_messages.Message):
       COMPLIANCE: This represents a Compliance Note
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
+      SBOM_REFERENCE: This represents an SBOM Reference.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -3952,6 +3960,7 @@ class Occurrence(_messages.Message):
     COMPLIANCE = 9
     DSSE_ATTESTATION = 10
     VULNERABILITY_ASSESSMENT = 11
+    SBOM_REFERENCE = 12
 
   attestation = _messages.MessageField('AttestationOccurrence', 1)
   build = _messages.MessageField('BuildOccurrence', 2)
@@ -3968,9 +3977,10 @@ class Occurrence(_messages.Message):
   package = _messages.MessageField('PackageOccurrence', 13)
   remediation = _messages.StringField(14)
   resourceUri = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
-  upgrade = _messages.MessageField('UpgradeOccurrence', 17)
-  vulnerability = _messages.MessageField('VulnerabilityOccurrence', 18)
+  sbomReference = _messages.MessageField('SBOMReferenceOccurrence', 16)
+  updateTime = _messages.StringField(17)
+  upgrade = _messages.MessageField('UpgradeOccurrence', 18)
+  vulnerability = _messages.MessageField('VulnerabilityOccurrence', 19)
 
 
 class PackageIssue(_messages.Message):
@@ -4418,6 +4428,101 @@ class RepoId(_messages.Message):
 
   projectRepoId = _messages.MessageField('ProjectRepoId', 1)
   uid = _messages.StringField(2)
+
+
+class SBOMReferenceNote(_messages.Message):
+  r"""The note representing an SBOM reference.
+
+  Fields:
+    format: The format that SBOM takes. E.g. may be spdx, cyclonedx, etc...
+    version: The version of the format that the SBOM takes. E.g. if the format
+      is spdx, the version may be 2.3.
+  """
+
+  format = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
+class SBOMReferenceOccurrence(_messages.Message):
+  r"""The occurrence representing an SBOM reference as applied to a specific
+  resource. The occurrence follows the DSSE specification. See
+  https://github.com/secure-systems-lab/dsse/blob/master/envelope.md for more
+  details.
+
+  Fields:
+    payload: The actual payload that contains the SBOM reference data.
+    payloadType: The kind of payload that SbomReferenceIntotoPayload takes.
+      Since it's in the intoto format, this value is expected to be
+      'application/vnd.in-toto+json'.
+    signatures: The signatures over the payload.
+  """
+
+  payload = _messages.MessageField('SbomReferenceIntotoPayload', 1)
+  payloadType = _messages.StringField(2)
+  signatures = _messages.MessageField('EnvelopeSignature', 3, repeated=True)
+
+
+class SbomReferenceIntotoPayload(_messages.Message):
+  r"""The actual payload that contains the SBOM Reference data. The payload
+  follows the intoto statement specification. See https://github.com/in-
+  toto/attestation/blob/main/spec/v1.0/statement.md for more details.
+
+  Fields:
+    _type: Identifier for the schema of the Statement.
+    predicate: Additional parameters of the Predicate. Includes the actual
+      data about the SBOM.
+    predicateType: URI identifying the type of the Predicate.
+    subject: Set of software artifacts that the attestation applies to. Each
+      element represents a single software artifact.
+  """
+
+  _type = _messages.StringField(1)
+  predicate = _messages.MessageField('SbomReferenceIntotoPredicate', 2)
+  predicateType = _messages.StringField(3)
+  subject = _messages.MessageField('Subject', 4, repeated=True)
+
+
+class SbomReferenceIntotoPredicate(_messages.Message):
+  r"""A predicate which describes the SBOM being referenced.
+
+  Messages:
+    DigestValue: A map of algorithm to digest of the contents of the SBOM.
+
+  Fields:
+    digest: A map of algorithm to digest of the contents of the SBOM.
+    location: The location of the SBOM.
+    mimeType: The mime type of the SBOM.
+    referrerId: The person or system referring this predicate to the consumer.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""A map of algorithm to digest of the contents of the SBOM.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  location = _messages.StringField(2)
+  mimeType = _messages.StringField(3)
+  referrerId = _messages.StringField(4)
 
 
 class SetIamPolicyRequest(_messages.Message):

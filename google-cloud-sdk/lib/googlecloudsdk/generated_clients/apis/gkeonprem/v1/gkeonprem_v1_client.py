@@ -45,6 +45,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     self.projects_locations_bareMetalClusters_bareMetalNodePools = self.ProjectsLocationsBareMetalClustersBareMetalNodePoolsService(self)
     self.projects_locations_bareMetalClusters_operations = self.ProjectsLocationsBareMetalClustersOperationsService(self)
     self.projects_locations_bareMetalClusters = self.ProjectsLocationsBareMetalClustersService(self)
+    self.projects_locations_bareMetalStandaloneClusters_bareMetalStandaloneNodePools = self.ProjectsLocationsBareMetalStandaloneClustersBareMetalStandaloneNodePoolsService(self)
     self.projects_locations_bareMetalStandaloneClusters = self.ProjectsLocationsBareMetalStandaloneClustersService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_vmwareAdminClusters_operations = self.ProjectsLocationsVmwareAdminClustersOperationsService(self)
@@ -131,7 +132,7 @@ class GkeonpremV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new bare metal admin cluster in a given project and location.
+      r"""Creates a new bare metal admin cluster in a given project and location. The API needs to be combined with creating a bootstrap cluster to work. See: https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/installing/creating-clusters/create-admin-cluster-api#prepare_bootstrap_environment.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalAdminClustersCreateRequest) input message
@@ -158,7 +159,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Enroll(self, request, global_params=None):
-      r"""Enrolls an existing bare metal admin cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing admin cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
+      r"""Enrolls an existing bare metal admin cluster to the Anthos On-Prem API within a given project and location. Through enrollment, an existing admin cluster will become Anthos On-Prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalAdminClustersEnrollRequest) input message
@@ -203,7 +204,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.bareMetalAdminClusters.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsBareMetalAdminClustersGetRequest',
@@ -257,7 +258,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.bareMetalAdminClusters.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        query_params=['pageSize', 'pageToken', 'view'],
         relative_path='v1/{+parent}/bareMetalAdminClusters',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsBareMetalAdminClustersListRequest',
@@ -284,7 +285,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.bareMetalAdminClusters.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'updateMask', 'validateOnly'],
+        query_params=['updateMask', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='bareMetalAdminCluster',
         request_type_name='GkeonpremProjectsLocationsBareMetalAdminClustersPatchRequest',
@@ -374,7 +375,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Unenroll(self, request, global_params=None):
-      r"""Unenrolls an existing bare metal admin cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients.
+      r"""Unenrolls an existing bare metal admin cluster from the Anthos On-Prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the Anthos On-Prem API or its clients.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalAdminClustersUnenrollRequest) input message
@@ -392,7 +393,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.bareMetalAdminClusters.unenroll',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'etag', 'validateOnly'],
+        query_params=['allowMissing', 'etag', 'ignoreErrors', 'validateOnly'],
         relative_path='v1/{+name}:unenroll',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsBareMetalAdminClustersUnenrollRequest',
@@ -475,7 +476,7 @@ class GkeonpremV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new bare metal Node Pool in a given project, location and Bare Metal cluster.
+      r"""Creates a new bare metal node pool in a given project, location and Bare Metal cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsCreateRequest) input message
@@ -529,7 +530,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Enroll(self, request, global_params=None):
-      r"""Enrolls an existing Bare Metal Node Pool to the GKE on-prem API within a given project and location. Through enrollment, an existing node pool will become GKE on-prem API managed. The corresponding GCP resources will be created.
+      r"""Enrolls an existing bare metal node pool to the Anthos On-Prem API within a given project and location. Through enrollment, an existing node pool will become Anthos On-Prem API managed. The corresponding GCP resources will be created.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsEnrollRequest) input message
@@ -574,7 +575,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsGetRequest',
@@ -610,7 +611,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists bare metal Node Pools in a given project, location and bare metal cluster.
+      r"""Lists bare metal node pools in a given project, location and bare metal cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsListRequest) input message
@@ -628,7 +629,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        query_params=['pageSize', 'pageToken', 'view'],
         relative_path='v1/{+parent}/bareMetalNodePools',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsListRequest',
@@ -718,7 +719,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Unenroll(self, request, global_params=None):
-      r"""Unenrolls a Bare Metal Node Pool from GKE OnPrem API.
+      r"""Unenrolls a bare metal node pool from Anthos On-Prem API.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsUnenrollRequest) input message
@@ -819,7 +820,7 @@ class GkeonpremV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new bare metal Cluster in a given project and location.
+      r"""Creates a new bare metal cluster in a given project and location.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersCreateRequest) input message
@@ -873,7 +874,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Enroll(self, request, global_params=None):
-      r"""Enrolls an existing bare metal user cluster and its Node Pools to the GKE on-prem API within a given project and location. Through enrollment, an existing cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster and/or its node pools will be expected to be performed through the API.
+      r"""Enrolls an existing bare metal user cluster and its node pools to the Anthos On-Prem API within a given project and location. Through enrollment, an existing cluster will become Anthos On-Prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster and/or its node pools will be expected to be performed through the API.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersEnrollRequest) input message
@@ -918,7 +919,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.bareMetalClusters.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsBareMetalClustersGetRequest',
@@ -954,7 +955,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists bare metal Clusters in a given project and location.
+      r"""Lists bare metal clusters in a given project and location.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersListRequest) input message
@@ -972,7 +973,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.bareMetalClusters.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken', 'showDeleted', 'view'],
+        query_params=['filter', 'pageSize', 'pageToken', 'view'],
         relative_path='v1/{+parent}/bareMetalClusters',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsBareMetalClustersListRequest',
@@ -1089,7 +1090,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Unenroll(self, request, global_params=None):
-      r"""Unenrolls an existing bare metal user cluster and its Node Pools from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters and Node Pools will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients.
+      r"""Unenrolls an existing bare metal user cluster and its node pools from the Anthos On-Prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters and node pools will continue to run; however, they will no longer be accessible through the Anthos On-Prem API or its clients.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersUnenrollRequest) input message
@@ -1115,6 +1116,43 @@ class GkeonpremV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsBareMetalStandaloneClustersBareMetalStandaloneNodePoolsService(base_api.BaseApiService):
+    """Service class for the projects_locations_bareMetalStandaloneClusters_bareMetalStandaloneNodePools resource."""
+
+    _NAME = 'projects_locations_bareMetalStandaloneClusters_bareMetalStandaloneNodePools'
+
+    def __init__(self, client):
+      super(GkeonpremV1.ProjectsLocationsBareMetalStandaloneClustersBareMetalStandaloneNodePoolsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Enroll(self, request, global_params=None):
+      r"""Enrolls an existing bare metal standalone node pool to the Anthos On-Prem API within a given project and location. Through enrollment, an existing standalone node pool will become Anthos On-Prem API managed. The corresponding GCP resources will be created.
+
+      Args:
+        request: (GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandaloneNodePoolsEnrollRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Enroll')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Enroll.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/bareMetalStandaloneClusters/{bareMetalStandaloneClustersId}/bareMetalStandaloneNodePools:enroll',
+        http_method='POST',
+        method_id='gkeonprem.projects.locations.bareMetalStandaloneClusters.bareMetalStandaloneNodePools.enroll',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/bareMetalStandaloneNodePools:enroll',
+        request_field='enrollBareMetalStandaloneNodePoolRequest',
+        request_type_name='GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandaloneNodePoolsEnrollRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsBareMetalStandaloneClustersService(base_api.BaseApiService):
     """Service class for the projects_locations_bareMetalStandaloneClusters resource."""
 
@@ -1126,7 +1164,7 @@ class GkeonpremV1(base_api.BaseApiClient):
           }
 
     def Enroll(self, request, global_params=None):
-      r"""Enrolls an existing bare metal standalone cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing standalone cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
+      r"""Enrolls an existing bare metal standalone cluster to the Anthos On-Prem API within a given project and location. Through enrollment, an existing standalone cluster will become Anthos On-Prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalStandaloneClustersEnrollRequest) input message
@@ -1198,7 +1236,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.bareMetalStandaloneClusters.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        query_params=['pageSize', 'pageToken'],
         relative_path='v1/{+parent}/bareMetalStandaloneClusters',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsBareMetalStandaloneClustersListRequest',
@@ -1261,7 +1299,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Unenroll(self, request, global_params=None):
-      r"""Unenrolls an existing bare metal standalone cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients.
+      r"""Unenrolls an existing bare metal standalone cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the Anthos On-Prem API or its clients.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalStandaloneClustersUnenrollRequest) input message
@@ -1480,7 +1518,7 @@ class GkeonpremV1(base_api.BaseApiClient):
           }
 
     def Enroll(self, request, global_params=None):
-      r"""Enrolls an existing VMware admin cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing admin cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
+      r"""Enrolls an existing VMware admin cluster to the Anthos On-Prem API within a given project and location. Through enrollment, an existing admin cluster will become Anthos On-Prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest) input message
@@ -1525,7 +1563,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.vmwareAdminClusters.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersGetRequest',
@@ -1579,7 +1617,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.vmwareAdminClusters.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        query_params=['pageSize', 'pageToken', 'view'],
         relative_path='v1/{+parent}/vmwareAdminClusters',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersListRequest',
@@ -1606,7 +1644,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.vmwareAdminClusters.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'updateMask', 'validateOnly'],
+        query_params=['updateMask', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='vmwareAdminCluster',
         request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersPatchRequest',
@@ -1669,7 +1707,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Unenroll(self, request, global_params=None):
-      r"""Unenrolls an existing Vmware admin cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients.
+      r"""Unenrolls an existing VMware admin cluster from the Anthos On-Prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the Anthos On-Prem API or its clients.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareAdminClustersUnenrollRequest) input message
@@ -1834,7 +1872,7 @@ class GkeonpremV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new VMware Node Pool in a given project, location and VMWare cluster.
+      r"""Creates a new VMware node pool in a given project, location and VMWare cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsCreateRequest) input message
@@ -1888,7 +1926,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Enroll(self, request, global_params=None):
-      r"""Enrolls a VMware node pool to GKE OnPrem API.
+      r"""Enrolls a VMware node pool to Anthos On-Prem API.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsEnrollRequest) input message
@@ -1933,7 +1971,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsGetRequest',
@@ -1969,7 +2007,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists VMware Node Pools in a given project, location and VMWare cluster.
+      r"""Lists VMware node pools in a given project, location and VMWare cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsListRequest) input message
@@ -1987,7 +2025,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        query_params=['pageSize', 'pageToken', 'view'],
         relative_path='v1/{+parent}/vmwareNodePools',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsListRequest',
@@ -1996,7 +2034,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single VMware Node Pool.
+      r"""Updates the parameters of a single VMware node pool.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsPatchRequest) input message
@@ -2077,7 +2115,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Unenroll(self, request, global_params=None):
-      r"""Unenrolls a VMware node pool to GKE OnPrem API.
+      r"""Unenrolls a VMware node pool to Anthos On-Prem API.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsUnenrollRequest) input message
@@ -2114,7 +2152,7 @@ class GkeonpremV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new VMware Cluster in a given project and location.
+      r"""Creates a new VMware user cluster in a given project and location.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersCreateRequest) input message
@@ -2168,7 +2206,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Enroll(self, request, global_params=None):
-      r"""Enrolls an existing VMware user cluster and its Node Pools to the GKE on-prem API within a given project and location. Through enrollment, an existing cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster and/or its node pools will be expected to be performed through the API.
+      r"""Enrolls an existing VMware user cluster and its node pools to the Anthos On-Prem API within a given project and location. Through enrollment, an existing cluster will become Anthos On-Prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster and/or its node pools will be expected to be performed through the API.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersEnrollRequest) input message
@@ -2213,7 +2251,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.vmwareClusters.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsVmwareClustersGetRequest',
@@ -2267,7 +2305,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.vmwareClusters.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken', 'showDeleted', 'view'],
+        query_params=['filter', 'pageSize', 'pageToken', 'view'],
         relative_path='v1/{+parent}/vmwareClusters',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsVmwareClustersListRequest',
@@ -2384,7 +2422,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Unenroll(self, request, global_params=None):
-      r"""Unenrolls an existing VMware user cluster and its Node Pools from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters and Node Pools will continue to run; however, they will no longer be accessible through the GKE on-prem API or UI.
+      r"""Unenrolls an existing VMware user cluster and its node pools from the Anthos On-Prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters and node pools will continue to run; however, they will no longer be accessible through the Anthos On-Prem API or UI.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersUnenrollRequest) input message

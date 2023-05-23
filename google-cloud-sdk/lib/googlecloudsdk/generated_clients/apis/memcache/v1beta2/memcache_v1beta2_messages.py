@@ -854,11 +854,11 @@ class Instance(_messages.Message):
       MEMCACHE_VERSION_UNSPECIFIED: Memcache version is not specified by
         customer
       MEMCACHE_1_5: Memcached 1.5 version.
-      MEMCACHE_1_6: Memcached 1.6 version.
+      MEMCACHE_1_6_15: Memcached 1.6.15 version.
     """
     MEMCACHE_VERSION_UNSPECIFIED = 0
     MEMCACHE_1_5 = 1
-    MEMCACHE_1_6 = 2
+    MEMCACHE_1_6_15 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of this Memcached instance.
@@ -1536,11 +1536,11 @@ class Node(_messages.Message):
       MEMCACHE_VERSION_UNSPECIFIED: Memcache version is not specified by
         customer
       MEMCACHE_1_5: Memcached 1.5 version.
-      MEMCACHE_1_6: Memcached 1.6 version.
+      MEMCACHE_1_6_15: Memcached 1.6.15 version.
     """
     MEMCACHE_VERSION_UNSPECIFIED = 0
     MEMCACHE_1_5 = 1
-    MEMCACHE_1_6 = 2
+    MEMCACHE_1_6_15 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the Memcached node.

@@ -218,6 +218,50 @@ class BeginTransactionResponse(_messages.Message):
   transaction = _messages.BytesField(1)
 
 
+class BitSequence(_messages.Message):
+  r"""A sequence of bits, encoded in a byte array. Each byte in the `bitmap`
+  byte array stores 8 bits of the sequence. The only exception is the last
+  byte, which may store 8 _or fewer_ bits. The `padding` defines the number of
+  bits of the last byte to be ignored as "padding". The values of these
+  "padding" bits are unspecified and must be ignored. To retrieve the first
+  bit, bit 0, calculate: `(bitmap[0] & 0x01) != 0`. To retrieve the second
+  bit, bit 1, calculate: `(bitmap[0] & 0x02) != 0`. To retrieve the third bit,
+  bit 2, calculate: `(bitmap[0] & 0x04) != 0`. To retrieve the fourth bit, bit
+  3, calculate: `(bitmap[0] & 0x08) != 0`. To retrieve bit n, calculate:
+  `(bitmap[n / 8] & (0x01 << (n % 8))) != 0`. The "size" of a `BitSequence`
+  (the number of bits it contains) is calculated by this formula:
+  `(bitmap.length * 8) - padding`.
+
+  Fields:
+    bitmap: The bytes that encode the bit sequence. May have a length of zero.
+    padding: The number of bits of the last byte in `bitmap` to ignore as
+      "padding". If the length of `bitmap` is zero, then this value must be
+      `0`. Otherwise, this value must be between 0 and 7, inclusive.
+  """
+
+  bitmap = _messages.BytesField(1)
+  padding = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class BloomFilter(_messages.Message):
+  r"""A bloom filter (https://en.wikipedia.org/wiki/Bloom_filter). The bloom
+  filter hashes the entries with MD5 and treats the resulting 128-bit hash as
+  2 distinct 64-bit hash values, interpreted as unsigned integers using 2's
+  complement encoding. These two hash values, named `h1` and `h2`, are then
+  used to compute the `hash_count` hash values using the formula, starting at
+  `i=0`: h(i) = h1 + (i * h2) These resulting values are then taken modulo the
+  number of bits in the bloom filter to get the bits of the bloom filter to
+  test for the given entry.
+
+  Fields:
+    bits: The bloom filter data.
+    hashCount: The number of hashes used by the algorithm.
+  """
+
+  bits = _messages.MessageField('BitSequence', 1)
+  hashCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class CollectionSelector(_messages.Message):
   r"""A selection of a collection, such as `messages as m1`.
 
@@ -532,10 +576,22 @@ class ExistenceFilter(_messages.Message):
       from the count of documents in the client that match, the client must
       manually determine which documents no longer match the target.
     targetId: The target ID to which this filter applies.
+    unchangedNames: A bloom filter that contains the UTF-8 byte encodings of
+      the resource names of the documents that match target_id, in the form `p
+      rojects/{project_id}/databases/{database_id}/documents/{document_path}`
+      that have NOT changed since the query results indicated by the resume
+      token or timestamp given in `Target.resume_type`. This bloom filter may
+      be omitted at the server's discretion, such as if it is deemed that the
+      client will not make use of it or if it is too computationally expensive
+      to calculate or transmit. Clients must gracefully handle this field
+      being absent by falling back to the logic used before this field
+      existed; that is, re-add the target without a resume token to figure out
+      which documents in the client's cache are out of sync.
   """
 
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   targetId = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  unchangedNames = _messages.MessageField('BloomFilter', 3)
 
 
 class FieldFilter(_messages.Message):
@@ -2153,6 +2209,11 @@ class Target(_messages.Message):
 
   Fields:
     documents: A target specified by a set of document names.
+    expectedCount: The number of documents that last matched the query at the
+      resume token or read time. This value is only relevant when a
+      `resume_type` is provided. This value being present and greater than
+      zero signals that the client wants `ExistenceFilter.unchanged_names` to
+      be included in the response.
     once: If the target should be removed once it is current and consistent.
     query: A target specified by a query.
     readTime: Start listening after a specific `read_time`. The client must
@@ -2165,11 +2226,12 @@ class Target(_messages.Message):
   """
 
   documents = _messages.MessageField('DocumentsTarget', 1)
-  once = _messages.BooleanField(2)
-  query = _messages.MessageField('QueryTarget', 3)
-  readTime = _messages.StringField(4)
-  resumeToken = _messages.BytesField(5)
-  targetId = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  expectedCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  once = _messages.BooleanField(3)
+  query = _messages.MessageField('QueryTarget', 4)
+  readTime = _messages.StringField(5)
+  resumeToken = _messages.BytesField(6)
+  targetId = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class TargetChange(_messages.Message):

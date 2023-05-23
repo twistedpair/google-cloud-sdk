@@ -45,7 +45,7 @@ import six
 
 _ALLOWED_SOURCE_EXT = ['.zip', '.tgz', '.gz']
 
-_DEFAULT_BUILDPACK_BUILDER = 'gcr.io/buildpacks/builder'
+_DEFAULT_BUILDPACK_BUILDER = 'gcr.io/buildpacks/builder:v1'
 
 _CLUSTER_NAME_FMT = (
     'projects/{project}/locations/{location}/clusters/{cluster_name}'

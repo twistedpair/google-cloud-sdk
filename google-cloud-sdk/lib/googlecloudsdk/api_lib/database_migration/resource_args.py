@@ -145,6 +145,19 @@ def GetCmekKeyResourceSpec(resource_name='cmek-key'):
   )
 
 
+def GetKMSKeyResourceSpec(resource_name='kms-key'):
+  return concepts.ResourceSpec(
+      'cloudkms.projects.locations.keyRings.cryptoKeys',
+      resource_name=resource_name,
+      api_version='v1',
+      cryptoKeysId=CmekKeyAttributeConfig('kms-key'),
+      keyRingsId=CmekKeyringAttributeConfig('kms-keyring'),
+      locationsId=RegionAttributeConfig(),
+      projectsId=CmekProjectAttributeConfig('kms-project'),
+      disable_auto_completers=False,
+  )
+
+
 def AddConnectionProfileResourceArg(parser, verb, positional=True):
   """Add a resource argument for a database migration connection profile.
 
@@ -190,6 +203,53 @@ def AddCloudSqlConnectionProfileResourceArgs(parser, verb):
       command_level_fallthroughs={
           '--source-id.region': ['--region']
       }).AddToParser(parser)
+
+
+def AddAlloyDBConnectionProfileResourceArgs(parser, verb):
+  """Add resource arguments for a database migration AlloyDB connection profile.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          'connection_profile',
+          GetConnectionProfileResourceSpec(),
+          'The connection profile {}.'.format(verb),
+          required=True,
+      ),
+      presentation_specs.ResourcePresentationSpec(
+          '--kms-key',
+          GetKMSKeyResourceSpec(),
+          (
+              'Name of the CMEK (customer-managed encryption key) used for this'
+              ' AlloyDB cluster. For example,'
+              ' projects/myProject/locations/us-central1/keyRings/myKeyRing/cryptoKeys/myKey.'
+          ),
+          flag_name_overrides={'region': ''},
+      ),
+  ]
+  concept_parsers.ConceptParser(
+      resource_specs,
+      command_level_fallthroughs={'--kms-key.region': ['--region']},
+  ).AddToParser(parser)
+
+
+def AddCmekResourceArgs(parser):
+  """Add a resource argument for a connection profile cmek.
+
+  Args:
+    parser: the parser for the command.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      '--cmek-key',
+      GetCmekKeyResourceSpec(),
+      'Name of the CMEK (customer-managed encryption key) used for'
+      ' the connection profile. For example,'
+      ' projects/myProject/locations/us-central1/keyRings/myKeyRing/cryptoKeys/myKey.',
+      flag_name_overrides={'region': ''},
+  ).AddToParser(parser)
 
 
 def AddOracleConnectionProfileResourceArg(parser,

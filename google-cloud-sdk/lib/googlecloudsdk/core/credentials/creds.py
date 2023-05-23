@@ -482,7 +482,8 @@ class AccessTokenStoreGoogleAuth(object):
   def Put(self):
     """Puts the short lived tokens of the credentials to the internal cache."""
     id_token = getattr(self._credentials, 'id_tokenb64', None) or getattr(
-        self._credentials, 'id_token', None)
+        self._credentials, '_id_token', None
+    )
     expiry = getattr(self._credentials, 'expiry', None)
     rapt_token = getattr(self._credentials, 'rapt_token', None)
     access_token = getattr(self._credentials, 'token', None)
@@ -584,7 +585,7 @@ def MaybeAttachAccessTokenCacheStoreGoogleAuth(credentials,
 
   def _WrappedRefresh(request):
     orig_refresh(request)
-    credentials.id_tokenb64 = getattr(credentials, 'id_token', None)
+    credentials.id_tokenb64 = getattr(credentials, '_id_token', None)
     # credentials are part of store. Calling Put() on store caches the
     # short lived tokens of the credentials.
     store.Put()

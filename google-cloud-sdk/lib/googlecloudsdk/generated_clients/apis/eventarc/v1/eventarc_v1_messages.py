@@ -301,8 +301,10 @@ class EventFilter(_messages.Message):
 
   Fields:
     attribute: Required. The name of a CloudEvents attribute. Currently, only
-      a subset of attributes are supported for filtering. All triggers MUST
-      provide a filter for the 'type' attribute.
+      a subset of attributes are supported for filtering. You can [retrieve a
+      specific provider's supported event types](/eventarc/docs/list-
+      providers#describe-provider). All triggers MUST provide a filter for the
+      'type' attribute.
     operator: Optional. The operator used for matching the events with the
       value of the filter. If not specified, only events that have an exact
       key-value pair specified in the filter are matched. The only allowed
@@ -461,7 +463,7 @@ class EventarcProjectsLocationsChannelsCreateRequest(_messages.Message):
     channel: A Channel resource to be passed as the request body.
     channelId: Required. The user-provided ID to be assigned to the channel.
     parent: Required. The parent collection in which to add this channel.
-    validateOnly: Required. If set, validate the request and preview the
+    validateOnly: Optional. If set, validate the request and preview the
       review, but do not post it.
   """
 
@@ -476,7 +478,7 @@ class EventarcProjectsLocationsChannelsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the channel to be deleted.
-    validateOnly: Required. If set, validate the request and preview the
+    validateOnly: Optional. If set, validate the request and preview the
       review, but do not post it.
   """
 
@@ -554,7 +556,7 @@ class EventarcProjectsLocationsChannelsPatchRequest(_messages.Message):
     updateMask: The fields to be updated; only fields explicitly provided are
       updated. If no field mask is provided, all provided fields in the
       request are updated. To update all fields, provide a field mask of "*".
-    validateOnly: Required. If set, validate the request and preview the
+    validateOnly: Optional. If set, validate the request and preview the
       review, but do not post it.
   """
 
@@ -727,7 +729,7 @@ class EventarcProjectsLocationsTriggersCreateRequest(_messages.Message):
     parent: Required. The parent collection in which to add this trigger.
     trigger: A Trigger resource to be passed as the request body.
     triggerId: Required. The user-provided ID to be assigned to the trigger.
-    validateOnly: Required. If set, validate the request and preview the
+    validateOnly: Optional. If set, validate the request and preview the
       review, but do not post it.
   """
 
@@ -746,7 +748,7 @@ class EventarcProjectsLocationsTriggersDeleteRequest(_messages.Message):
     etag: If provided, the trigger will only be deleted if the etag matches
       the current etag on the resource.
     name: Required. The name of the trigger to be deleted.
-    validateOnly: Required. If set, validate the request and preview the
+    validateOnly: Optional. If set, validate the request and preview the
       review, but do not post it.
   """
 
@@ -833,7 +835,7 @@ class EventarcProjectsLocationsTriggersPatchRequest(_messages.Message):
     updateMask: The fields to be updated; only fields explicitly provided are
       updated. If no field mask is provided, all provided fields in the
       request are updated. To update all fields, provide a field mask of "*".
-    validateOnly: Required. If set, validate the request and preview the
+    validateOnly: Optional. If set, validate the request and preview the
       review, but do not post it.
   """
 
@@ -1740,16 +1742,11 @@ class Trigger(_messages.Message):
       `projects/{project}/locations/{location}/triggers/{trigger}` format.
     serviceAccount: Optional. The IAM service account email associated with
       the trigger. The service account represents the identity of the trigger.
-      The principal who calls this API must have the
-      `iam.serviceAccounts.actAs` permission in the service account. See
-      https://cloud.google.com/iam/docs/understanding-service-
-      accounts?hl=en#sa_common for more information. For Cloud Run
-      destinations, this service account is used to generate identity tokens
-      when invoking the service. See
-      https://cloud.google.com/run/docs/triggering/pubsub-push#create-service-
-      account for information on how to invoke authenticated Cloud Run
-      services. To create Audit Log triggers, the service account should also
-      have the `roles/eventarc.eventReceiver` IAM role.
+      The `iam.serviceAccounts.actAs` permission must be granted on the
+      service account to allow a principal to impersonate the service account.
+      For more information, see the [Roles and
+      permissions](/eventarc/docs/all-roles-permissions) page specific to the
+      trigger destination.
     transport: Optional. To deliver messages, Eventarc might use other Google
       Cloud products as a transport intermediary. This field contains a
       reference to that transport intermediary. This information can be used

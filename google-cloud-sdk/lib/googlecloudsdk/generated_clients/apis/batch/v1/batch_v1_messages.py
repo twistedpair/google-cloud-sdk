@@ -1603,8 +1603,11 @@ class TaskExecution(_messages.Message):
 
 
 class TaskGroup(_messages.Message):
-  r"""A TaskGroup contains one or multiple Tasks that share the same Runnable
-  but with different runtime parameters.
+  r"""A TaskGroup defines one or more Tasks that all share the same TaskSpec.
+
+  Enums:
+    SchedulingPolicyValueValuesEnum: Scheduling policy for Tasks in the
+      TaskGroup. The default value is AS_SOON_AS_POSSIBLE.
 
   Fields:
     name: Output only. TaskGroup name. The system generates this field based
@@ -1618,6 +1621,8 @@ class TaskGroup(_messages.Message):
     requireHostsFile: When true, Batch will populate a file with a list of all
       VMs assigned to the TaskGroup and set the BATCH_HOSTS_FILE environment
       variable to the path of that file. Defaults to false.
+    schedulingPolicy: Scheduling policy for Tasks in the TaskGroup. The
+      default value is AS_SOON_AS_POSSIBLE.
     taskCount: Number of Tasks in the TaskGroup. Default is 1.
     taskCountPerNode: Max number of tasks that can be run on a VM at the same
       time. If not specified, the system will decide a value based on
@@ -1630,18 +1635,33 @@ class TaskGroup(_messages.Message):
       to any environment variables set in task_environments, specifying the
       number of Tasks in the Task's parent TaskGroup, and the specific Task's
       index in the TaskGroup (0 through BATCH_TASK_COUNT - 1).
-      task_environments supports up to 200 entries.
     taskSpec: Required. Tasks in the group share the same task spec.
   """
+
+  class SchedulingPolicyValueValuesEnum(_messages.Enum):
+    r"""Scheduling policy for Tasks in the TaskGroup. The default value is
+    AS_SOON_AS_POSSIBLE.
+
+    Values:
+      SCHEDULING_POLICY_UNSPECIFIED: Unspecified.
+      AS_SOON_AS_POSSIBLE: Run Tasks as soon as resources are available. Tasks
+        might be executed in parallel depending on parallelism and task_count
+        values.
+      IN_ORDER: Run Tasks sequentially with increased task index.
+    """
+    SCHEDULING_POLICY_UNSPECIFIED = 0
+    AS_SOON_AS_POSSIBLE = 1
+    IN_ORDER = 2
 
   name = _messages.StringField(1)
   parallelism = _messages.IntegerField(2)
   permissiveSsh = _messages.BooleanField(3)
   requireHostsFile = _messages.BooleanField(4)
-  taskCount = _messages.IntegerField(5)
-  taskCountPerNode = _messages.IntegerField(6)
-  taskEnvironments = _messages.MessageField('Environment', 7, repeated=True)
-  taskSpec = _messages.MessageField('TaskSpec', 8)
+  schedulingPolicy = _messages.EnumField('SchedulingPolicyValueValuesEnum', 5)
+  taskCount = _messages.IntegerField(6)
+  taskCountPerNode = _messages.IntegerField(7)
+  taskEnvironments = _messages.MessageField('Environment', 8, repeated=True)
+  taskSpec = _messages.MessageField('TaskSpec', 9)
 
 
 class TaskGroupStatus(_messages.Message):

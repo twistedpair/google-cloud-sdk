@@ -1296,8 +1296,8 @@ def AddIgnoreErrors(parser):
   parser.add_argument(
       '--ignore-errors',
       help=(
-          'If set, the deletion of a bare metal user cluster resource will'
-          ' succeed even if errors occur during deletion.'
+          'If set, the unenrollment of a bare metal admin cluster'
+          ' resource will succeed even if errors occur during unenrollment.'
       ),
       action='store_true',
   )

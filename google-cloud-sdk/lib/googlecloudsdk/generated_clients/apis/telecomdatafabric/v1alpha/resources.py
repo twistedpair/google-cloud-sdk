@@ -41,61 +41,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_BATCHINGESTIONPIPELINES = (
-      'projects.locations.batchIngestionPipelines',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'batchIngestionPipelines/{batchIngestionPipelinesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_DATAADAPTERS = (
-      'projects.locations.dataAdapters',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/dataAdapters/'
-              '{dataAdaptersId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_DATAAPISERVERS = (
-      'projects.locations.dataApiServers',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/dataApiServers/'
-              '{dataApiServersId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_DATAASSETMANAGERS = (
-      'projects.locations.dataAssetManagers',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'dataAssetManagers/{dataAssetManagersId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_DATAASSETS = (
-      'projects.locations.dataAssets',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/dataAssets/'
-              '{dataAssetsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_DEPLOYMENTS = (
       'projects.locations.deployments',
       '{+name}',
@@ -103,50 +48,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/deployments/'
               '{deploymentsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_IAASMETRICSCOLLECTORS = (
-      'projects.locations.iaasMetricsCollectors',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'iaasMetricsCollectors/{iaasMetricsCollectorsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_METRICSCORRELATIONS = (
-      'projects.locations.metricsCorrelations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'metricsCorrelations/{metricsCorrelationsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_METRICSINGESTIONPIPELINES = (
-      'projects.locations.metricsIngestionPipelines',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'metricsIngestionPipelines/{metricsIngestionPipelinesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_METRICSPROCESSORS = (
-      'projects.locations.metricsProcessors',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'metricsProcessors/{metricsProcessorsId}',
       },
       ['name'],
       True
@@ -162,17 +63,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_PIPELINESCHEDULERS = (
-      'projects.locations.pipelineSchedulers',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'pipelineSchedulers/{pipelineSchedulersId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_PUBLICTEMPLATES = (
       'projects.locations.publicTemplates',
       '{+name}',
@@ -180,17 +70,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/publicTemplates/'
               '{publicTemplatesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_STREAMINGESTIONPIPELINES = (
-      'projects.locations.streamIngestionPipelines',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'streamIngestionPipelines/{streamIngestionPipelinesId}',
       },
       ['name'],
       True

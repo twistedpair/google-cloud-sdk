@@ -326,7 +326,6 @@ def AddCommonBulkInsertArgs(
     support_enable_target_shape=False,
     add_zone_region_flags=True,
     support_confidential_compute_type=False,
-    support_provisioned_throughput=False,
     support_no_address_in_networking=False,
     support_max_count_per_zone=False,
     support_network_queue_count=False,
@@ -342,8 +341,7 @@ def AddCommonBulkInsertArgs(
       source_snapshot_csek=snapshot_csek,
       image_csek=image_csek,
       include_name=False,
-      support_boot=True,
-      support_provisioned_throughput=support_provisioned_throughput)
+      support_boot=True)
   instances_flags.AddCanIpForwardArgs(parser)
   instances_flags.AddAcceleratorArgs(parser)
   instances_flags.AddMachineTypeArgs(parser)

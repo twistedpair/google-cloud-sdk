@@ -55,6 +55,10 @@ def GetApiBaseUrl(release_track=base.ReleaseTrack.ALPHA):
   return resources.GetApiBaseUrlOrThrow(_API_NAME, api_version)
 
 
+def GetApiVersion(release_track=base.ReleaseTrack.ALPHA):
+  return _API_VERSION_FOR_TRACK.get(release_track)
+
+
 class Client:
   """API client for FWP activation commands.
 

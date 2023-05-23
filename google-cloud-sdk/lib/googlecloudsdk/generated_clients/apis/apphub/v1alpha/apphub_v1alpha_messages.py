@@ -23,73 +23,23 @@ class ApphubProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class ApphubProjectsLocationsGlobalTelemetryDisableRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsGlobalTelemetryDisableRequest object.
+class ApphubProjectsLocationsGetTelemetryRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsGetTelemetryRequest object.
 
   Fields:
-    disableTelemetryRequest: A DisableTelemetryRequest resource to be passed
-      as the request body.
-    name: Required. Name of the resource
-  """
-
-  disableTelemetryRequest = _messages.MessageField('DisableTelemetryRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class ApphubProjectsLocationsGlobalTelemetryEnableRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsGlobalTelemetryEnableRequest object.
-
-  Fields:
-    enableTelemetryRequest: A EnableTelemetryRequest resource to be passed as
-      the request body.
-    name: Required. Name of the resource
-  """
-
-  enableTelemetryRequest = _messages.MessageField('EnableTelemetryRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class ApphubProjectsLocationsGlobalTelemetryRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsGlobalTelemetryRequest object.
-
-  Fields:
-    name: Required. Name of the resource
+    name: Required. The full resource name of the telemetry object in the
+      format of: "projects/{project}/locations/global/telemetry".
   """
 
   name = _messages.StringField(1, required=True)
 
 
-class ApphubProjectsLocationsGlobalTopologyDisableRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsGlobalTopologyDisableRequest object.
+class ApphubProjectsLocationsGetTopologyRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsGetTopologyRequest object.
 
   Fields:
-    disableTopologyRequest: A DisableTopologyRequest resource to be passed as
-      the request body.
-    name: Required. Name of the resource
-  """
-
-  disableTopologyRequest = _messages.MessageField('DisableTopologyRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class ApphubProjectsLocationsGlobalTopologyEnableRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsGlobalTopologyEnableRequest object.
-
-  Fields:
-    enableTopologyRequest: A EnableTopologyRequest resource to be passed as
-      the request body.
-    name: Required. Name of the resource
-  """
-
-  enableTopologyRequest = _messages.MessageField('EnableTopologyRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class ApphubProjectsLocationsGlobalTopologyRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsGlobalTopologyRequest object.
-
-  Fields:
-    name: Required. Name of the resource
+    name: Required. The full resource name of the topology object in the
+      format of: "projects/{project}/locations/{location}/topology"
   """
 
   name = _messages.StringField(1, required=True)
@@ -164,16 +114,40 @@ class ApphubProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class ApphubProjectsLocationsUpdateTelemetryRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsUpdateTelemetryRequest object.
+
+  Fields:
+    name: The full resource name of the telemetry object in the format of:
+      "projects/{project}/locations/global/telemetry".
+    telemetry: A Telemetry resource to be passed as the request body.
+    updateMask: Optional. The mask to control which fields of the telemetry
+      get updated. If the mask is not present, all fields will be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  telemetry = _messages.MessageField('Telemetry', 2)
+  updateMask = _messages.StringField(3)
+
+
+class ApphubProjectsLocationsUpdateTopologyRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsUpdateTopologyRequest object.
+
+  Fields:
+    name: The full resource name of the topology object in the format of:
+      "projects/{project}/locations/{location}/topology"
+    topology: A Topology resource to be passed as the request body.
+    updateMask: Optional. The mask to control which fields of the topology get
+      updated. If the mask is not present, all fields will be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  topology = _messages.MessageField('Topology', 2)
+  updateMask = _messages.StringField(3)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
-
-
-class DisableTelemetryRequest(_messages.Message):
-  r"""Represents the request for enabling telemetry."""
-
-
-class DisableTopologyRequest(_messages.Message):
-  r"""Represents the request for enabing topology."""
 
 
 class Empty(_messages.Message):
@@ -183,14 +157,6 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
-
-
-class EnableTelemetryRequest(_messages.Message):
-  r"""Represents the request for enabling telemetry."""
-
-
-class EnableTopologyRequest(_messages.Message):
-  r"""Represents the request for enabing topology."""
 
 
 class ListLocationsResponse(_messages.Message):
@@ -549,63 +515,30 @@ class Status(_messages.Message):
 
 
 class Telemetry(_messages.Message):
-  r"""Message describing Telemetry object
-
-  Enums:
-    MonitoringValueValuesEnum: Output only. State of the telemetry monitoring
-      configuration
+  r"""Message describing Telemetry object.
 
   Fields:
-    monitoring: Output only. State of the telemetry monitoring configuration
+    monitoringEnabled: Enablement status of the telemetry monitoring
+      configuration.
     name: The full resource name of the telemetry object in the format of:
-      "projects/{project}/locations/global/telemetry"
+      "projects/{project}/locations/global/telemetry".
   """
 
-  class MonitoringValueValuesEnum(_messages.Enum):
-    r"""Output only. State of the telemetry monitoring configuration
-
-    Values:
-      STATE_UNSPECIFIED: The default value. This value is used if the state is
-        omitted.
-      STATE_ENABLED: <no description>
-      STATE_DISABLED: <no description>
-    """
-    STATE_UNSPECIFIED = 0
-    STATE_ENABLED = 1
-    STATE_DISABLED = 2
-
-  monitoring = _messages.EnumField('MonitoringValueValuesEnum', 1)
+  monitoringEnabled = _messages.BooleanField(1)
   name = _messages.StringField(2)
 
 
 class Topology(_messages.Message):
   r"""Message describing Topology object
 
-  Enums:
-    StateValueValuesEnum: Output only. State of the topology monitoring
-      configuration
-
   Fields:
+    enabled: Whether or not Topology is enabled for the project
     name: The full resource name of the topology object in the format of:
-      "projects/{project}/locations/global/topology"
-    state: Output only. State of the topology monitoring configuration
+      "projects/{project}/locations/{location}/topology"
   """
 
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. State of the topology monitoring configuration
-
-    Values:
-      STATE_UNSPECIFIED: The default value. This value is used if the state is
-        omitted.
-      STATE_ENABLED: <no description>
-      STATE_DISABLED: <no description>
-    """
-    STATE_UNSPECIFIED = 0
-    STATE_ENABLED = 1
-    STATE_DISABLED = 2
-
-  name = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
+  enabled = _messages.BooleanField(1)
+  name = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -40,6 +40,7 @@ class PolicytroubleshooterV3alpha(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.iam = self.IamService(self)
+    self.servicePerimeter = self.ServicePerimeterService(self)
 
   class IamService(base_api.BaseApiService):
     """Service class for the iam resource."""
@@ -74,5 +75,41 @@ class PolicytroubleshooterV3alpha(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyRequest',
         response_type_name='GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyResponse',
+        supports_download=False,
+    )
+
+  class ServicePerimeterService(base_api.BaseApiService):
+    """Service class for the servicePerimeter resource."""
+
+    _NAME = 'servicePerimeter'
+
+    def __init__(self, client):
+      super(PolicytroubleshooterV3alpha.ServicePerimeterService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Troubleshoot(self, request, global_params=None):
+      r"""Checks why an access is granted or not with service perimeters.
+
+      Args:
+        request: (GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServicePerimeterRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServicePerimeterResponse) The response message.
+      """
+      config = self.GetMethodConfig('Troubleshoot')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Troubleshoot.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='policytroubleshooter.servicePerimeter.troubleshoot',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v3alpha/servicePerimeter:troubleshoot',
+        request_field='<request>',
+        request_type_name='GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServicePerimeterRequest',
+        response_type_name='GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServicePerimeterResponse',
         supports_download=False,
     )

@@ -14,6 +14,62 @@ from apitools.base.py import extra_types
 package = 'dataplex'
 
 
+class DataplexProjectsLocationsAspectTypesGetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsAspectTypesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsAspectTypesSetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsAspectTypesSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsAspectTypesTestIamPermissionsRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsAspectTypesTestIamPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsDataAttributeBindingsCreateRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataAttributeBindingsCreateRequest object.
 
@@ -711,6 +767,118 @@ class DataplexProjectsLocationsDataTaxonomiesSetIamPolicyRequest(_messages.Messa
 class DataplexProjectsLocationsDataTaxonomiesTestIamPermissionsRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataTaxonomiesTestIamPermissionsRequest
   object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsEntryGroupsGetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsEntryGroupsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsEntryGroupsSetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsEntryGroupsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsEntryGroupsTestIamPermissionsRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsEntryGroupsTestIamPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsEntryTypesGetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsEntryTypesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsEntryTypesSetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsEntryTypesSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsEntryTypesTestIamPermissionsRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsEntryTypesTestIamPermissionsRequest object.
 
   Fields:
     googleIamV1TestIamPermissionsRequest: A
@@ -3261,13 +3429,17 @@ class GoogleCloudDataplexV1DataProfileSpec(_messages.Message):
   r"""DataProfileScan related setting.
 
   Fields:
+    rowFilter: Optional. A filter applied to all rows in a single DataScan
+      job. The filter needs to be a valid SQL expression for a WHERE clause in
+      BigQuery standard SQL syntax. Example: col1 >= 0 AND col2 < 10
     samplingPercent: Optional. The percentage of the records to be selected
       from the dataset for DataScan. Value can range between 0.0 and 100.0
       with up to 3 significant decimal digits. Sampling is not applied if
       sampling_percent is not specified, 0 or 100.
   """
 
-  samplingPercent = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  rowFilter = _messages.StringField(1)
+  samplingPercent = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataQualityDimensionResult(_messages.Message):
@@ -3501,6 +3673,9 @@ class GoogleCloudDataplexV1DataQualitySpec(_messages.Message):
   r"""DataQualityScan related setting.
 
   Fields:
+    rowFilter: Optional. A filter applied to all rows in a single DataScan
+      job. The filter needs to be a valid SQL expression for a WHERE clause in
+      BigQuery standard SQL syntax. Example: col1 >= 0 AND col2 < 10
     rules: The list of rules to evaluate against a data source. At least one
       rule is required.
     samplingPercent: Optional. The percentage of the records to be selected
@@ -3509,8 +3684,9 @@ class GoogleCloudDataplexV1DataQualitySpec(_messages.Message):
       sampling_percent is not specified, 0 or 100.
   """
 
-  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 1, repeated=True)
-  samplingPercent = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  rowFilter = _messages.StringField(1)
+  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 2, repeated=True)
+  samplingPercent = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataScan(_messages.Message):
@@ -3637,7 +3813,9 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
 
   Fields:
     dataProfile: Data profile result for data profile type data scan.
+    dataProfileConfigs: Applied configs for data profile type data scan.
     dataQuality: Data quality result for data quality type data scan.
+    dataQualityConfigs: Applied configs for data quality type data scan.
     dataSource: The data source of the data scan
     endTime: The time when the data scan job finished.
     jobId: The identifier of the specific data scan job this log entry is for.
@@ -3704,17 +3882,34 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
     DATA_QUALITY = 2
 
   dataProfile = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataProfileResult', 1)
-  dataQuality = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataQualityResult', 2)
-  dataSource = _messages.StringField(3)
-  endTime = _messages.StringField(4)
-  jobId = _messages.StringField(5)
-  message = _messages.StringField(6)
-  scope = _messages.EnumField('ScopeValueValuesEnum', 7)
-  specVersion = _messages.StringField(8)
-  startTime = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  trigger = _messages.EnumField('TriggerValueValuesEnum', 11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12)
+  dataProfileConfigs = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataProfileAppliedConfigs', 2)
+  dataQuality = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataQualityResult', 3)
+  dataQualityConfigs = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataQualityAppliedConfigs', 4)
+  dataSource = _messages.StringField(5)
+  endTime = _messages.StringField(6)
+  jobId = _messages.StringField(7)
+  message = _messages.StringField(8)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 9)
+  specVersion = _messages.StringField(10)
+  startTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  trigger = _messages.EnumField('TriggerValueValuesEnum', 13)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
+
+
+class GoogleCloudDataplexV1DataScanEventDataProfileAppliedConfigs(_messages.Message):
+  r"""Applied configs for data profile type data scan job.
+
+  Fields:
+    rowFilterApplied: Boolean indicating whether a row filter was applied in
+      the DataScan job.
+    samplingPercent: The percentage of the records selected from the dataset
+      for DataScan. Value ranges between 0.0 and 100.0. Value 0.0 or 100.0
+      imply that sampling was not applied.
+  """
+
+  rowFilterApplied = _messages.BooleanField(1)
+  samplingPercent = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataScanEventDataProfileResult(_messages.Message):
@@ -3725,6 +3920,21 @@ class GoogleCloudDataplexV1DataScanEventDataProfileResult(_messages.Message):
   """
 
   rowCount = _messages.IntegerField(1)
+
+
+class GoogleCloudDataplexV1DataScanEventDataQualityAppliedConfigs(_messages.Message):
+  r"""Applied configs for data quality type data scan job.
+
+  Fields:
+    rowFilterApplied: Boolean indicating whether a row filter was applied in
+      the DataScan job.
+    samplingPercent: The percentage of the records selected from the dataset
+      for DataScan. Value ranges between 0.0 and 100.0. Value 0.0 or 100.0
+      imply that sampling was not applied.
+  """
+
+  rowFilterApplied = _messages.BooleanField(1)
+  samplingPercent = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataScanEventDataQualityResult(_messages.Message):

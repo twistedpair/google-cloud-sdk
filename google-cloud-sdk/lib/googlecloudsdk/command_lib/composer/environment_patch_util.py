@@ -429,7 +429,7 @@ def _ConstructVpcConnectivityPatch(
   config = messages.EnvironmentConfig(nodeConfig=node_config)
   update_mask = None
   if disable_vpc_connectivity:
-    update_mask = 'config.node_config.network_attachment,config.node_config.network,config.node_config.subnetwork'
+    update_mask = 'config.node_config.network,config.node_config.subnetwork'
   elif network_attachment:
     update_mask = 'config.node_config.network_attachment'
     node_config.composerNetworkAttachment = network_attachment

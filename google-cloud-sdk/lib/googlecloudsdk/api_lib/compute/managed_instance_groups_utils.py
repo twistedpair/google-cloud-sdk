@@ -1278,6 +1278,11 @@ def CreateInstanceLifecyclePolicy(messages, args):
     else:
       policy.forceUpdateOnRepair = messages.InstanceGroupManagerInstanceLifecyclePolicy.ForceUpdateOnRepairValueValuesEnum.NO
 
+  if args.IsKnownAndSpecified('default_action_on_vm_failure'):
+    policy.defaultActionOnFailure = arg_utils.ChoiceToEnum(
+        args.default_action_on_vm_failure,
+        messages.InstanceGroupManagerInstanceLifecyclePolicy.DefaultActionOnFailureValueValuesEnum)
+
   return ValueOrNone(policy)
 
 

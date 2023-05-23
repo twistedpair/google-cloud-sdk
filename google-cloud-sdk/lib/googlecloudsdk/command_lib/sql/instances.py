@@ -164,7 +164,7 @@ def _ParseStorageType(sql_messages, storage_type):
 def _ParseEdition(sql_messages, edition):
   if edition:
     return sql_messages.Settings.EditionValueValuesEnum.lookup_by_name(
-        edition.upper()
+        edition.replace('-', '_').upper()
     )
   return None
 

@@ -68,18 +68,22 @@ def AddArgsUpdateNetworkFirewallPolicy(parser):
             ' policy.'))
 
 
-def NetworkFirewallPolicyAssociationArgument(required=False,
-                                             plural=False,
-                                             operation=None):
+def NetworkFirewallPolicyAssociationArgument(
+    required=False, plural=False, operation=None, allow_global=True
+):
   return compute_flags.ResourceArgument(
       name='--firewall-policy',
       resource_name='firewall policy',
       plural=plural,
       required=required,
       short_help='Firewall policy ID with which to {0} association.'.format(
-          operation),
-      global_collection='compute.networkFirewallPolicies',
-      regional_collection='compute.regionNetworkFirewallPolicies')
+          operation
+      ),
+      global_collection=(
+          'compute.networkFirewallPolicies' if allow_global else None
+      ),
+      regional_collection='compute.regionNetworkFirewallPolicies',
+  )
 
 
 def AddArgsCreateAssociation(parser, support_priority=False):
@@ -113,10 +117,20 @@ def AddArgsCreateAssociation(parser, support_priority=False):
           'association is created.'))
 
 
+def AddArgsUpdateAssociation(parser):
+  """Adds the arguments of association update."""
+  parser.add_argument('--name', required=True, help='Name of the association.')
+
+  parser.add_argument(
+      '--priority', required=True, help='Priority of the association.'
+  )
+
+
 def AddArgsDeleteAssociation(parser):
   """Adds the arguments of association deletion."""
   parser.add_argument(
-      '--name', required=True, help=('Name of the association to delete.'))
+      '--name', required=True, help='Name of the association to delete.'
+  )
 
 
 class NetworksCompleter(compute_completers.ListCommandCompleter):
@@ -443,7 +457,6 @@ def AddSecurityProfileGroup(parser):
       '--security-profile-group',
       metavar='SECURITY_PROFILE_GROUP',
       required=False,
-      hidden=True,
       help=(
           'A security profile group to be used with apply_security_profile_group action.'
       ))

@@ -1280,6 +1280,7 @@ class RuntimeChange(ConfigChanger):
     self._runtime = runtime
 
   def Adjust(self, resource):
+    # TODO(b/278556672): Decide if the annotation should be cleaned up.
     if self._runtime == 'default':
       if k8s_object.RUNTIME_ANNOTATION in resource.template.annotations:
         del resource.template.annotations[k8s_object.RUNTIME_ANNOTATION]
@@ -1287,4 +1288,5 @@ class RuntimeChange(ConfigChanger):
       resource.template.annotations[k8s_object.RUNTIME_ANNOTATION] = str(
           self._runtime
       )
+    resource.template.spec.runtimeClassName = self._runtime
     return resource

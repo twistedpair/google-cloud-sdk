@@ -35,6 +35,7 @@ class StreamingUploadTask(copy_util.CopyTask):
       self,
       source_resource,
       destination_resource,
+      posix_to_set=None,
       print_created_message=False,
       print_source_version=False,
       user_request_args=None,
@@ -47,6 +48,8 @@ class StreamingUploadTask(copy_util.CopyTask):
         to read from.
       destination_resource (UnknownResource|ObjectResource): The full path of
         object to upload to.
+      posix_to_set (PosixAttributes|None): Triggers setting POSIX on result of
+        copy and avoids re-parsing POSIX info.
       print_created_message (bool): Print the versioned URL of each successfully
         copied object.
       print_source_version (bool): Print source object version in status message
@@ -57,6 +60,7 @@ class StreamingUploadTask(copy_util.CopyTask):
     super(StreamingUploadTask, self).__init__(
         source_resource,
         destination_resource,
+        posix_to_set=posix_to_set,
         print_source_version=print_source_version,
         user_request_args=user_request_args,
         verbose=verbose,
@@ -98,8 +102,10 @@ class StreamingUploadTask(copy_util.CopyTask):
           source_stream=stream,
           destination_resource=self._destination_resource,
           request_config=request_config,
+          posix_to_set=self._posix_to_set,
           source_resource=self._source_resource,
-          upload_strategy=cloud_api.UploadStrategy.STREAMING)
+          upload_strategy=cloud_api.UploadStrategy.STREAMING,
+      )
 
     upload_util.validate_uploaded_object(
         digesters,

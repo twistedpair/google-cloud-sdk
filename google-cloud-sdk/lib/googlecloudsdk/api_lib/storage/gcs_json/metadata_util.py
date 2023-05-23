@@ -543,7 +543,10 @@ def _process_value_or_clear_flag(metadata, key, value):
 
 
 def update_object_metadata_from_request_config(
-    object_metadata, request_config, attributes_resource=None
+    object_metadata,
+    request_config,
+    attributes_resource=None,
+    posix_to_set=None,
 ):
   """Sets Apitools Object fields based on values in request_config.
 
@@ -557,6 +560,7 @@ def update_object_metadata_from_request_config(
       symlink data from a resource for the --preserve-posix and/or
       --preserve_symlink flags. This value is ignored unless it is an instance
       of FileObjectResource.
+    posix_to_set (PosixAttributes|None): Set as custom metadata on target.
   """
   resource_args = request_config.resource_args
 
@@ -568,7 +572,10 @@ def update_object_metadata_from_request_config(
         object_metadata.metadata)
 
   custom_fields_dict = metadata_util.get_updated_custom_fields(
-      existing_metadata, request_config, attributes_resource=attributes_resource
+      existing_metadata,
+      request_config,
+      attributes_resource=attributes_resource,
+      known_posix=posix_to_set,
   )
   if custom_fields_dict is not None:
     messages = apis.GetMessagesModule('storage', 'v1')

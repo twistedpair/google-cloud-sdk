@@ -355,11 +355,14 @@ class CloudApi(object):
     """
     raise NotImplementedError('patch_hmac_key must be overridden.')
 
-  def compose_objects(self,
-                      source_resources,
-                      destination_resource,
-                      request_config,
-                      original_source_resource=None):
+  def compose_objects(
+      self,
+      source_resources,
+      destination_resource,
+      request_config,
+      original_source_resource=None,
+      posix_to_set=None,
+  ):
     """Concatenates a list of objects into a new object.
 
     Args:
@@ -372,6 +375,7 @@ class CloudApi(object):
       original_source_resource (Resource|None): Useful for finding metadata to
         apply to final object. For instance, if doing a composite upload, this
         would represent the pre-split local file.
+      posix_to_set (PosixAttributes|None): Set as custom metadata on target.
 
     Returns:
       resource_reference.ObjectResource with composite object's metadata.
@@ -383,27 +387,31 @@ class CloudApi(object):
     """
     raise NotImplementedError('compose_object must be overridden.')
 
-  def copy_object(self,
-                  source_resource,
-                  destination_resource,
-                  request_config,
-                  should_deep_copy_metadata=False,
-                  progress_callback=None):
+  def copy_object(
+      self,
+      source_resource,
+      destination_resource,
+      request_config,
+      posix_to_set=None,
+      progress_callback=None,
+      should_deep_copy_metadata=False,
+  ):
     """Copies an object within the cloud of one provider.
 
     Args:
-      source_resource (resource_reference.ObjectResource): Resource for
-        source object. Must have been confirmed to exist in the cloud.
+      source_resource (resource_reference.ObjectResource): Resource for source
+        object. Must have been confirmed to exist in the cloud.
       destination_resource (resource_reference.ObjectResource|UnknownResource):
         Resource for destination object. Existence doesn't have to be confirmed.
       request_config (RequestConfig): Object containing general API function
         arguments. Subclasses for specific cloud providers are available.
-      should_deep_copy_metadata (bool): Rather than copying select fields of
-        the source metadata, if True, copy everything. The request_config data
-        (containing user args) overrides the deep-copied data.
+      posix_to_set (PosixAttributes|None): Set as custom metadata on target.
       progress_callback (function): Optional callback function for progress
         notifications. Receives calls with arguments (bytes_transferred,
         total_size).
+      should_deep_copy_metadata (bool): Rather than copying select fields of the
+        source metadata, if True, copy everything. The request_config data
+        (containing user args) overrides the deep-copied data.
 
     Returns:
       resource_reference.ObjectResource with new object's metadata.
@@ -554,13 +562,16 @@ class CloudApi(object):
     """
     raise NotImplementedError('list_objects must be overridden.')
 
-  def patch_object_metadata(self,
-                            bucket_name,
-                            object_name,
-                            object_resource,
-                            request_config,
-                            fields_scope=None,
-                            generation=None):
+  def patch_object_metadata(
+      self,
+      bucket_name,
+      object_name,
+      object_resource,
+      request_config,
+      fields_scope=None,
+      generation=None,
+      posix_to_set=None,
+  ):
     """Updates object metadata with patch semantics.
 
     Args:
@@ -574,6 +585,7 @@ class CloudApi(object):
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
       generation (string): Generation (or version) of the object to update.
+      posix_to_set (PosixAttributes|None): Set as custom metadata on target.
 
     Returns:
       resource_reference.ObjectResource with patched object metadata.
@@ -613,14 +625,17 @@ class CloudApi(object):
     """
     raise NotImplementedError('set_bucket_iam_policy must be overridden.')
 
-  def upload_object(self,
-                    source_stream,
-                    destination_resource,
-                    request_config,
-                    source_resource=None,
-                    serialization_data=None,
-                    tracker_callback=None,
-                    upload_strategy=UploadStrategy.SIMPLE):
+  def upload_object(
+      self,
+      source_stream,
+      destination_resource,
+      request_config,
+      posix_to_set=None,
+      serialization_data=None,
+      source_resource=None,
+      tracker_callback=None,
+      upload_strategy=UploadStrategy.SIMPLE,
+  ):
     """Uploads object data and metadata.
 
     Args:
@@ -629,11 +644,12 @@ class CloudApi(object):
         Contains the correct metadata to upload.
       request_config (RequestConfig): Object containing general API function
         arguments. Subclasses for specific cloud providers are available.
-      source_resource (resource_reference.FileObjectResource|None):
-        Contains the source StorageUrl. Can be None if source is pure stream.
+      posix_to_set (PosixAttributes|None): Set as custom metadata on target.
       serialization_data (dict): API-specific data needed to resume an upload.
         Only used with UploadStrategy.RESUMABLE.
-      tracker_callback (Callable[[dict], None]): Function that writes a tracker
+      source_resource (resource_reference.FileObjectResource|None): Contains the
+        source StorageUrl. Can be None if source is pure stream.
+      tracker_callback (Callable[[dict]|None]): Function that writes a tracker
         file with serialization data. Only used with UploadStrategy.RESUMABLE.
       upload_strategy (UploadStrategy): Strategy to use for this upload.
 

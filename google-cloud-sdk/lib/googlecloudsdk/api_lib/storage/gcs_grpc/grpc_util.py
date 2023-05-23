@@ -24,9 +24,7 @@ import base64
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
-from googlecloudsdk.api_lib.storage.gcs_grpc import metadata_util
 from googlecloudsdk.command_lib.storage import encryption_util
-from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.core import log
 
 
@@ -116,72 +114,3 @@ def download_object(gapic_client,
             target_size, total_downloaded_data))
     log.debug(message)
     raise cloud_errors.RetryableApiError(message)
-
-
-def _get_write_object_spec(client, object_resource, size):
-  destination_object = client.types.Object(
-      name=object_resource.storage_url.object_name,
-      bucket='projects/_/buckets/{}'.format(
-          object_resource.storage_url.bucket_name
-      ),
-      size=size,
-  )
-  return client.types.WriteObjectSpec(
-      resource=destination_object, object_size=size
-  )
-
-
-def _simple_upload_write_object_request_generator(
-    client, stream, destination_resource, resource_args
-):
-  """Yields the WriteObjectRequest for each chunk of the source stream."""
-  first_request_done = False
-  while True:
-    data = stream.read(
-        client.types.ServiceConstants.Values.MAX_WRITE_CHUNK_BYTES
-    )
-    if data:
-      if not first_request_done:
-        write_object_spec = _get_write_object_spec(
-            client, destination_resource, resource_args.size
-        )
-        object_checksums = client.types.ObjectChecksums(
-            md5_hash=(
-                hash_util.get_bytes_from_base64_string(resource_args.md5_hash)
-                if resource_args.md5_hash is not None
-                else None
-            )
-        )
-        write_offset = 0
-        first_request_done = True
-      else:
-        write_object_spec = None
-        object_checksums = None
-        write_offset = None
-
-      yield client.types.WriteObjectRequest(
-          write_object_spec=write_object_spec,
-          write_offset=write_offset,
-          checksummed_data=client.types.ChecksummedData(content=data),
-          object_checksums=object_checksums)
-    else:
-      yield client.types.WriteObjectRequest(
-          checksummed_data=client.types.ChecksummedData(content=b''),
-          finish_write=True)
-      break
-
-
-def upload_object(gapic_client,
-                  source_stream,
-                  destination_resource,
-                  request_config):
-  """Uploads the object using gRPC."""
-  response = gapic_client.storage.write_object(
-      requests=_simple_upload_write_object_request_generator(
-          gapic_client,
-          source_stream,
-          destination_resource,
-          request_config.resource_args))
-  return metadata_util.get_object_resource_from_grpc_object(
-      response.resource)
-

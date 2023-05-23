@@ -246,6 +246,10 @@ GPU_SHARING_STRATEGY_ERROR_MSG = """\
 Invalid gpu sharing strategy [{gpu-sharing-strategy}] for argument --accelerator. Valid value is time-sharing'
 """
 
+GPU_DRIVER_VERSION_ERROR_MSG = """\
+Invalid gpu driver version [{gpu-driver-version}] for argument --accelerator. Valid values are default, latest, or disabled'
+"""
+
 MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED = """\
 Provided maintenance interval type '{type}' not supported.
 """
@@ -681,6 +685,8 @@ class CreateClusterOptions(object):
       workload_vulnerability_scanning=None,
       enable_runtime_vulnerability_insight=None,
       enable_dns_endpoint=None,
+      workload_policies=None,
+      enable_fqdn_network_policy=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -876,6 +882,8 @@ class CreateClusterOptions(object):
         enable_runtime_vulnerability_insight
     )
     self.enable_dns_endpoint = enable_dns_endpoint
+    self.workload_policies = workload_policies
+    self.enable_fqdn_network_policy = enable_fqdn_network_policy
 
 
 class UpdateClusterOptions(object):
@@ -1006,6 +1014,9 @@ class UpdateClusterOptions(object):
       security_posture=None,
       workload_vulnerability_scanning=None,
       enable_runtime_vulnerability_insight=None,
+      workload_policies=None,
+      remove_workload_policies=None,
+      enable_fqdn_network_policy=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1135,6 +1146,9 @@ class UpdateClusterOptions(object):
     self.enable_runtime_vulnerability_insight = (
         enable_runtime_vulnerability_insight
     )
+    self.workload_policies = workload_policies
+    self.remove_workload_policies = remove_workload_policies
+    self.enable_fqdn_network_policy = enable_fqdn_network_policy
 
 
 class SetMasterAuthOptions(object):
@@ -1883,6 +1897,13 @@ class APIAdapter(object):
       cluster.autopilot = self.messages.Autopilot()
       cluster.autopilot.enabled = True
 
+      if options.workload_policies:
+        if cluster.autopilot.workloadPolicyConfig is None:
+          cluster.autopilot.workloadPolicyConfig = (
+              self.messages.WorkloadPolicyConfig())
+        if options.workload_policies == 'allow-net-admin':
+          cluster.autopilot.workloadPolicyConfig.allowNetAdmin = True
+
       if options.boot_disk_kms_key:
         if cluster.autoscaling is None:
           cluster.autoscaling = self.messages.ClusterAutoscaling()
@@ -2325,6 +2346,34 @@ class APIAdapter(object):
             maxSharedClientsPerGpu=max_shared_clients_per_gpu,
             gpuSharingStrategy=gpu_sharing_strategy)
         accelerator_config.gpuSharingConfig = gpu_sharing_config
+
+      gpu_driver_version = options.accelerators.get(
+          'gpu-driver-version', None
+      )
+      if gpu_driver_version is not None:
+        if gpu_driver_version.lower() == 'default':
+          gpu_driver_version = (
+              self.messages.GPUDriverInstallationConfig.GpuDriverVersionValueValuesEnum.DEFAULT
+          )
+        elif gpu_driver_version.lower() == 'latest':
+          gpu_driver_version = (
+              self.messages.GPUDriverInstallationConfig.GpuDriverVersionValueValuesEnum.LATEST
+          )
+        elif gpu_driver_version.lower() == 'disabled':
+          gpu_driver_version = (
+              self.messages.GPUDriverInstallationConfig.GpuDriverVersionValueValuesEnum.INSTALLATION_DISABLED
+          )
+        else:
+          raise util.Error(GPU_DRIVER_VERSION_ERROR_MSG)
+
+        gpu_driver_installation_config = (
+            self.messages.GPUDriverInstallationConfig(
+                gpuDriverVersion=gpu_driver_version
+            )
+        )
+        accelerator_config.gpuDriverInstallationConfig = (
+            gpu_driver_installation_config
+        )
 
       node_config.accelerators = [
           accelerator_config,
@@ -3349,6 +3398,21 @@ class APIAdapter(object):
       # pylint: disable=line-too-long
       update = self.messages.ClusterUpdate(desiredAutopilotInsecureKubeletReadonlyPortEnabled=options.enble_insecure_kubelet_readonly_port)
 
+    if options.workload_policies is not None:
+      workload_policies = self.messages.WorkloadPolicyConfig()
+      if options.workload_policies == 'allow-net-admin':
+        workload_policies.allowNetAdmin = True
+      update = self.messages.ClusterUpdate(
+          desiredAutopilotWorkloadPolicyConfig=workload_policies
+      )
+
+    if options.remove_workload_policies is not None:
+      workload_policies = self.messages.WorkloadPolicyConfig()
+      if options.remove_workload_policies == 'allow-net-admin':
+        workload_policies.allowNetAdmin = False
+      update = self.messages.ClusterUpdate(
+          desiredAutopilotWorkloadPolicyConfig=workload_policies
+      )
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -4916,6 +4980,12 @@ class V1Beta1Adapter(V1Adapter):
           dns_endpoint_config
       )
 
+    if options.enable_fqdn_network_policy is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.enableFqdnNetworkPolicy = (
+          options.enable_fqdn_network_policy)
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -5027,6 +5097,10 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredCostManagementConfig=self.messages.CostManagementConfig(
               enabled=options.enable_cost_allocation))
+
+    if options.enable_fqdn_network_policy is not None:
+      update = self.messages.ClusterUpdate(
+          desiredEnableFqdnNetworkPolicy=options.enable_fqdn_network_policy)
 
     if not update:
       # if reached here, it's possible:
@@ -5461,6 +5535,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     cluster.kubernetesObjectsExportConfig = _GetKubernetesObjectsExportConfigForClusterCreate(
         options, self.messages)
 
+    if options.enable_fqdn_network_policy is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.enableFqdnNetworkPolicy = (
+          options.enable_fqdn_network_policy)
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -5566,6 +5646,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredDatapathProvider=(
               self.messages.ClusterUpdate.DesiredDatapathProviderValueValuesEnum
               .ADVANCED_DATAPATH))
+
+    if options.enable_fqdn_network_policy is not None:
+      update = self.messages.ClusterUpdate(
+          desiredEnableFqdnNetworkPolicy=options.enable_fqdn_network_policy)
 
     if not update:
       # if reached here, it's possible:

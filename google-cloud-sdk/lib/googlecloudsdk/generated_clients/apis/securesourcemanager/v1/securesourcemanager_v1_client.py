@@ -56,7 +56,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Instance in a given project and location.
+      r"""Creates a new instance in a given project and location.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsInstancesCreateRequest) input message
@@ -83,7 +83,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Instance.
+      r"""Deletes a single instance.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsInstancesDeleteRequest) input message
@@ -110,7 +110,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Instance.
+      r"""Gets details of a single instance.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsInstancesGetRequest) input message
@@ -400,7 +400,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Repository in a given project and location. **Host: Data Plane**.
+      r"""Creates a new repository in a given project and location. **Host: Data Plane**.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesCreateRequest) input message
@@ -508,7 +508,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets metadata of a Repository. **Host: Data Plane**.
+      r"""Gets metadata of a repository. **Host: Data Plane**.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesGetRequest) input message

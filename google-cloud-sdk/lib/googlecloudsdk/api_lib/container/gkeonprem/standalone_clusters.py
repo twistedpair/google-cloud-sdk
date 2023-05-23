@@ -1000,7 +1000,6 @@ class StandaloneClustersClient(_BareMetalStandaloneClusterClient):
     kwargs = {
         'membership': self._standalone_cluster_membership_name(args),
         'bareMetalStandaloneClusterId': self._standalone_cluster_id(args),
-        'localName': getattr(args, 'local_name', None),
     }
     req = (
         self._messages.GkeonpremProjectsLocationsBareMetalStandaloneClustersEnrollRequest(

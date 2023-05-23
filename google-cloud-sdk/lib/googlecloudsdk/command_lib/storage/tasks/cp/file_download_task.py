@@ -80,6 +80,7 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
       destination_resource,
       delete_source=False,
       do_not_decompress=False,
+      posix_to_set=None,
       print_created_message=False,
       print_source_version=False,
       system_posix_data=None,
@@ -99,6 +100,8 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
         object afterwards.
       do_not_decompress (bool): Prevents automatically decompressing downloaded
         gzips.
+      posix_to_set (PosixAttributes|None): Set as local POSIX attributes on
+        target.
       print_created_message (bool): Print a message containing the versioned URL
         of the copy result.
       print_source_version (bool): Print source object version in status message
@@ -110,6 +113,7 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
     super(FileDownloadTask, self).__init__(
         source_resource,
         destination_resource,
+        posix_to_set=posix_to_set,
         print_source_version=print_source_version,
         user_request_args=user_request_args,
         verbose=verbose,
@@ -170,6 +174,7 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
             self._destination_resource,
             delete_source=self._delete_source,
             do_not_decompress=self._do_not_decompress,
+            posix_to_set=self._posix_to_set,
             system_posix_data=self._system_posix_data,
             user_request_args=self._user_request_args,
         )
@@ -186,11 +191,13 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
 
   def execute(self, task_status_queue=None):
     """Creates appropriate download tasks."""
-    posix_util.run_if_preserving_posix(
+    posix_util.run_if_setting_posix(
+        self._posix_to_set,
         self._user_request_args,
         posix_util.raise_if_invalid_file_permissions,
         self._system_posix_data,
         self._source_resource,
+        known_posix=self._posix_to_set,
     )
 
     destination_url = self._destination_resource.storage_url
@@ -281,12 +288,14 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
     # were left behind.
     tracker_file_util.delete_download_tracker_files(temporary_file_url)
 
-    posix_util.run_if_preserving_posix(
+    posix_util.run_if_setting_posix(
+        self._posix_to_set,
         self._user_request_args,
         posix_util.set_posix_attributes_on_file_if_valid,
         self._system_posix_data,
         self._source_resource,
         self._destination_resource,
+        known_source_posix=self._posix_to_set,
         preserve_symlinks=preserve_symlinks,
     )
 

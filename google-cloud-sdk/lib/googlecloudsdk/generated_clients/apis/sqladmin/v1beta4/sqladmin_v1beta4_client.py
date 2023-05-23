@@ -290,14 +290,11 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Inserts a resource containing information about a database inside a Cloud SQL instance.
-
-      **Note:** You can't modify the default character set and collation.
+      r"""Inserts a resource containing information about a database inside a Cloud SQL instance. **Note:** You can't modify the default character set and collation.
 
       Args:
         request: (Database) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (Operation) The response message.
       """
@@ -1142,15 +1139,14 @@ class SqladminV1beta4(base_api.BaseApiClient):
       r"""Get Latest Recovery Time for a given instance.
 
       Args:
-        request: (SqlProjectsInstancesGetLatestRecoveryTimeRequest) input
-          message
+        request: (SqlProjectsInstancesGetLatestRecoveryTimeRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (SqlInstancesGetLatestRecoveryTimeResponse) The response message.
       """
       config = self.GetMethodConfig('GetLatestRecoveryTime')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     GetLatestRecoveryTime.method_config = lambda: base_api.ApiMethodInfo(
         http_method='GET',

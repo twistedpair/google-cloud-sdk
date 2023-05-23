@@ -24,6 +24,7 @@ from apitools.base.py import encoding
 import frozendict
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.asset import client_util as asset
+from googlecloudsdk.api_lib.cloudresourcemanager import projects_api as crm
 from googlecloudsdk.command_lib.artifacts import requests as artifacts
 
 _DOMAIN_TO_BUCKET_PREFIX = frozendict.frozendict({
@@ -67,13 +68,12 @@ def bucket_resource_name(domain, project):
   return "//storage.googleapis.com/{0}artifacts.{1}".format(prefix, suffix)
 
 
-def iam_policy(domain, project, parent):
+def iam_policy(domain, project):
   """Generates an AR-equivalent IAM policy for a GCR registry.
 
   Args:
     domain: The domain of the GCR registry.
     project: The project of the GCR registry.
-    parent: The parent scope to consider when generating the IAM Policy.
 
   Returns:
     An iam.Policy.
@@ -82,8 +82,9 @@ def iam_policy(domain, project, parent):
     Exception: A problem was encountered while generating the policy.
   """
   bucket = bucket_resource_name(domain, project)
+  root = get_root(project)
   analysis = analyze_iam_policy(
-      tuple(_PERMISSION_TO_ROLE), bucket, parent
+      tuple(_PERMISSION_TO_ROLE), bucket, root
   )
 
   # If we see any false fullyExplored, that indicates that AnalyzeIamPolicy is
@@ -152,13 +153,13 @@ def is_convenience(s):
   )
 
 
-def analyze_iam_policy(permissions, resource, parent):
+def analyze_iam_policy(permissions, resource, scope):
   """Calls AnalyzeIamPolicy for the given resource.
 
   Args:
     permissions: for the access selector
     resource: for the resource selector
-    parent: for the scope
+    scope: for the scope
 
   Returns:
     An CloudassetAnalyzeIamPolicyResponse.
@@ -182,6 +183,22 @@ def analyze_iam_policy(permissions, resource, parent):
       messages.CloudassetAnalyzeIamPolicyRequest(
           analysisQuery_accessSelector_permissions=permissions,
           analysisQuery_resourceSelector_fullResourceName=resource,
-          scope=parent,
+          scope=scope,
       )
   )
+
+
+def get_root(project_id):
+  """Returns the root of a project.
+
+  Args:
+    project_id: Project ID.
+
+  Returns:
+    An organization if the project has one, otherwise the project itself.
+  """
+  ancestry = crm.GetAncestry(project_id=project_id)
+  for resource in ancestry.ancestor:
+    if resource.resourceId.type == "organization":
+      return "organizations/{0}".format(resource.resourceId.id)
+  return "projects/{0}".format(project_id)

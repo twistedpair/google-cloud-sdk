@@ -35,19 +35,23 @@ API_VERSION_FOR_TRACK = {
 API_NAME = 'networksecurity'
 
 
-def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
+def GetMessagesModule(release_track=base.ReleaseTrack.BETA):
   api_version = API_VERSION_FOR_TRACK.get(release_track)
   return apis.GetMessagesModule(API_NAME, api_version)
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
+def GetClientInstance(release_track=base.ReleaseTrack.BETA):
   api_version = API_VERSION_FOR_TRACK.get(release_track)
   return apis.GetClientInstance(API_NAME, api_version)
 
 
-def GetApiBaseUrl(release_track=base.ReleaseTrack.ALPHA):
+def GetApiBaseUrl(release_track=base.ReleaseTrack.BETA):
   api_version = API_VERSION_FOR_TRACK.get(release_track)
   return resources.GetApiBaseUrlOrThrow(API_NAME, api_version)
+
+
+def GetApiVersion(release_track=base.ReleaseTrack.BETA):
+  return API_VERSION_FOR_TRACK.get(release_track)
 
 
 class Client:

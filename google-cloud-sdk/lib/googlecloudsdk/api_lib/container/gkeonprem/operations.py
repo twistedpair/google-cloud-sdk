@@ -37,12 +37,13 @@ class OperationsClient(client.ClientBase):
     super(OperationsClient, self).__init__(**kwargs)
     self._service = self._client.projects_locations_operations
 
-  def Wait(self, operation=None, operation_ref=None):
+  def Wait(self, operation=None, operation_ref=None, timeout=None):
     """Waits for an LRO to complete.
 
     Args:
       operation: object, operation to wait for.
       operation_ref: operation resource argument reference.
+      timeout: int, time in seconds to wait for the operation to complete.
 
     Returns:
       The GetOperation API response after the operation completes.
@@ -53,18 +54,22 @@ class OperationsClient(client.ClientBase):
           collection='gkeonprem.projects.locations.operations',
       )
 
+    max_wait_ms = timeout * 1000 if timeout is not None else MAX_LRO_WAIT_MS
     return waiter.WaitFor(
         waiter.CloudOperationPollerNoResources(self._service),
         operation_ref,
         'Waiting for operation [{}] to complete'.format(
-            operation_ref.RelativeName()),
+            operation_ref.RelativeName()
+        ),
         wait_ceiling_ms=MAX_LRO_POLL_INTERVAL_MS,
-        max_wait_ms=MAX_LRO_WAIT_MS)
+        max_wait_ms=max_wait_ms,
+    )
 
   def List(self, args):
     """List operations."""
     list_req = self._messages.GkeonpremProjectsLocationsOperationsListRequest(
-        name=self._location_name(args))
+        name=self._location_name(args)
+    )
     return list_pager.YieldFromList(
         self._service,
         list_req,

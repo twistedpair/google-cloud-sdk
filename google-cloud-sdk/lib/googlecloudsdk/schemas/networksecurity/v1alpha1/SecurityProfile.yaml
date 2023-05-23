@@ -26,7 +26,8 @@ properties:
     items:
       type: string
   description:
-    description: An optional description of the profile.
+    description: |-
+      An optional description of the profile. Max length 512 characters.
     type: string
   labels:
     description: Labels as key value pairs.

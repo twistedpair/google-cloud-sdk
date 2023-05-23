@@ -26,7 +26,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-import copy
 import re
 
 from googlecloudsdk.api_lib.util import apis_internal
@@ -530,16 +529,6 @@ def _GRIsAreEnabled():
           properties.VALUES.core.resource_completion_style.Get() == 'gri')
 
 
-def _CopyNestedDictSpine(maybe_dictionary):
-  if isinstance(maybe_dictionary, dict):
-    result = {}
-    for key, val in six.iteritems(maybe_dictionary):
-      result[key] = _CopyNestedDictSpine(val)
-    return result
-  else:
-    return maybe_dictionary
-
-
 def _APINameFromCollection(collection):
   """Get the API name from a collection name like 'api.parents.children'.
 
@@ -782,23 +771,29 @@ class Registry(object):
         and each key after that is one of the remaining tokens which can be
         either a constant or a parameter name. At the end, a key of None
         indicates the value is a _ResourceParser.
-    registered_apis: {str: list}, All the api versions that have been
-        registered, in order of registration.
-        For instance, {'compute': ['v1', 'beta', 'alpha']}.
+    registered_apis: {str: str}, The most recently registered API version for
+        each API. For instance, {'dns': 'v1', 'compute': 'alpha'}.
   """
 
   def __init__(self, parsers_by_collection=None, parsers_by_url=None,
                registered_apis=None):
     self.parsers_by_collection = parsers_by_collection or {}
     self.parsers_by_url = parsers_by_url or {}
-    self.registered_apis = registered_apis or collections.defaultdict(list)
+    self.registered_apis = registered_apis or {}
 
   def Clone(self):
-    """Fully clones this registry."""
+    """Clones this registry.
+
+    Clones share the same underlying parser data and differ only in which API
+    versions were most recently registered.
+
+    Returns:
+      Registry, The cloned registry.
+    """
     return Registry(
-        parsers_by_collection=_CopyNestedDictSpine(self.parsers_by_collection),
-        parsers_by_url=_CopyNestedDictSpine(self.parsers_by_url),
-        registered_apis=copy.deepcopy(self.registered_apis))
+        parsers_by_collection=self.parsers_by_collection,
+        parsers_by_url=self.parsers_by_url,
+        registered_apis=self.registered_apis.copy())
 
   def RegisterApiByName(self, api_name, api_version=None):
     """Register the given API if it has not been registered already.
@@ -809,24 +804,21 @@ class Registry(object):
     Returns:
       api version which was registered.
     """
-    registered_versions = self.registered_apis.get(api_name, [])
-    if api_version in registered_versions:
-      # This API version has been registered.
-      registered_versions.remove(api_version)
-      registered_versions.append(api_version)
-      return api_version
+    registered_version = self.registered_apis.get(api_name, None)
     if api_version is None:
-      if registered_versions:
+      if registered_version:
         # Use last registered api version as default.
-        return registered_versions[-1]
+        api_version = registered_version
+      else:
+        api_version = apis_internal._GetDefaultVersion(api_name)  # pylint:disable=protected-access
+
+    # Populate the collection info if we haven't already.
+    if api_version not in self.parsers_by_collection.get(api_name, {}):
       # pylint:disable=protected-access
-      api_version = apis_internal._GetDefaultVersion(api_name)
+      for collection in apis_internal._GetApiCollections(api_name, api_version):
+        self._RegisterCollection(collection)
 
-    # pylint:disable=protected-access
-    for collection in apis_internal._GetApiCollections(api_name, api_version):
-      self._RegisterCollection(collection)
-
-    self.registered_apis[api_name].append(api_version)
+    self.registered_apis[api_name] = api_version
     return api_version
 
   def _RegisterCollection(self, collection_info):
@@ -1026,7 +1018,7 @@ class Registry(object):
         # Use last registered, or default, api version in case of override.
         api_version = self.registered_apis.get(
             # pylint:disable=protected-access
-            api_name, [apis_internal._GetDefaultVersion(api_name)])[-1]
+            api_name, apis_internal._GetDefaultVersion(api_name))
 
     if api_version not in versions:
       raise InvalidResourceException(
@@ -1215,11 +1207,6 @@ class Registry(object):
       Resource, The constructed resource.
     """
     return self.Parse(None, collection=collection, params=params)
-
-  def Clear(self):
-    self.parsers_by_collection = {}
-    self.parsers_by_url = {}
-    self.registered_apis = collections.defaultdict(list)
 
 
 REGISTRY = Registry()

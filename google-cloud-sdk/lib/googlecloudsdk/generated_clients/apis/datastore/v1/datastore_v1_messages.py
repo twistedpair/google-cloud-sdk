@@ -555,9 +555,7 @@ class Empty(_messages.Message):
 
 
 class Entity(_messages.Message):
-  r"""A Datastore data object. An entity is limited to 1 megabyte when stored.
-  That _roughly_ corresponds to a limit of 1 megabyte for the serialized form
-  of this message.
+  r"""A Datastore data object. Must not exceed 1 MiB - 4 bytes.
 
   Messages:
     PropertiesValue: The entity's properties. The map's keys are property

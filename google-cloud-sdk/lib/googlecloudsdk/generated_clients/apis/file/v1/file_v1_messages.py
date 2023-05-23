@@ -70,6 +70,8 @@ class Backup(_messages.Message):
         performance scaling capabilities.
       ENTERPRISE: ENTERPRISE instances offer the features and availability
         needed for mission-critical workloads.
+      ZONAL: ZONAL instances offer expanded capacity and performance scaling
+        capabilities.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
@@ -78,6 +80,7 @@ class Backup(_messages.Message):
     BASIC_SSD = 4
     HIGH_SCALE_SSD = 5
     ENTERPRISE = 6
+    ZONAL = 7
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The backup state.
@@ -1251,6 +1254,8 @@ class Instance(_messages.Message):
         performance scaling capabilities.
       ENTERPRISE: ENTERPRISE instances offer the features and availability
         needed for mission-critical workloads.
+      ZONAL: ZONAL instances offer expanded capacity and performance scaling
+        capabilities.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
@@ -1259,6 +1264,7 @@ class Instance(_messages.Message):
     BASIC_SSD = 4
     HIGH_SCALE_SSD = 5
     ENTERPRISE = 6
+    ZONAL = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
