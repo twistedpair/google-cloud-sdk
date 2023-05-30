@@ -518,3 +518,23 @@ def AddLabelsField(parser):
       type=arg_parsers.ArgDict(key_type=str, value_type=str),
       help=help_text,
   )
+
+
+def AddAcceleratorFields(parser):
+  """Adds the --accelerator-type and --accelerator-count flags to the given parser."""
+  group = parser.add_group(help='Accelerator settings')
+
+  help_text = """\
+  The type of accelerator resource to attach to the instance, for example,
+  "nvidia-tesla-p100".
+  """
+  group.add_argument(
+      '--accelerator-type', type=str, help=help_text, required=True
+  )
+
+  help_text = """\
+  The number of accelerator cards exposed to the instance.
+  """
+  group.add_argument(
+      '--accelerator-count', type=int, help=help_text, required=True
+  )

@@ -472,18 +472,6 @@ workforce_pool_provider:
         help_text: |-
           Clear the OIDC client secret.
       - *oidc_client_secret_value
-  oidc_web_sso_response_type:
-    api_field: workforcePoolProvider.oidc.webSsoConfig.responseType
-    arg_name: web-sso-response-type
-    help_text: |-
-      Response Type to request for in the OIDC Authorization Request for web sign-in.
-      Use `id-token` to select the [implicit flow](https://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth).
-  oidc_web_sso_assertion_claims_behavior:
-    api_field: workforcePoolProvider.oidc.webSsoConfig.assertionClaimsBehavior
-    arg_name: web-sso-assertion-claims-behavior
-    help_text: |-
-      The behavior for how OIDC Claims are included in the `assertion` object used for attribute mapping and attribute condition.
-      Use `only-id-token-claims` to include only ID token claims.
   saml_idp_metadata_path:
     api_field: workforcePoolProvider.saml.idpMetadataXml
     type: "googlecloudsdk.calliope.arg_parsers:FileContents:"

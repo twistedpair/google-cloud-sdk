@@ -33,7 +33,7 @@ class SbomPrinter(cp.CustomPrinterBase):
   def Transform(self, sbom_ref):
     printer = fp.FlattenedPrinter()
     printer.AddRecord(
-        {"resource_uri": sbom_ref.occ.resource.uri}, delimit=False
+        {"resource_uri": sbom_ref.occ.resourceUri}, delimit=False
     )
     printer.AddRecord(
         {"location": sbom_ref.occ.sbomReference.payload.predicate.location},

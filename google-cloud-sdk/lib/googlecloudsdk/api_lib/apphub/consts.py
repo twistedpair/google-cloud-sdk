@@ -27,3 +27,13 @@ class UpdateTopology:
   STATE_DISABLED = 'disabled'
 
   UPDATE_MASK_ENABLED_FIELD_NAME = 'enabled'
+
+
+class UpdateTelemetry:
+
+  EMPTY_UPDATE_HELP_TEXT = 'Please specify fields to update.'
+
+  MONITORING_STATE_ENABLED = 'enabled'
+  MONITORING_STATE_DISABLED = 'disabled'
+
+  UPDATE_MASK_MONITORING_ENABLED_FIELD_NAME = 'monitoringEnabled'

@@ -24,6 +24,7 @@ import threading
 
 from googlecloudsdk.api_lib.storage.gcs_grpc import client as gcs_grpc_client
 from googlecloudsdk.api_lib.storage.gcs_json import client as gcs_json_client
+from googlecloudsdk.api_lib.storage.gcs_xml import client as gcs_xml_client
 from googlecloudsdk.api_lib.storage.s3_xml import client as s3_xml_client
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core import log
@@ -56,6 +57,11 @@ def _get_api_class(provider):
     ):
       log.debug('Using gRPC client with JSON Fallback.')
       return gcs_grpc_client.GrpcClientWithJsonFallback
+    if (
+        properties.VALUES.storage.gs_xml_access_key_id.Get()
+        and properties.VALUES.storage.gs_xml_secret_access_key.Get()
+    ):
+      return gcs_xml_client.XmlClient
     return gcs_json_client.JsonClient
   elif provider == storage_url.ProviderPrefix.S3:
     # TODO(b/275749579): Change this after the refactor is done.

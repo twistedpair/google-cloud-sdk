@@ -388,7 +388,8 @@ class UpdateManager(object):
     stream.flush()
 
   def _ShouldDoFastUpdate(self, allow_no_backup=False,
-                          fast_mode_impossible=False):
+                          fast_mode_impossible=False,
+                          has_components_to_remove=False):
     """Determine whether we should do an in-place fast update or make a backup.
 
     This method also ensures the CWD is valid for the mode we are going to use.
@@ -400,6 +401,9 @@ class UpdateManager(object):
         so we only do it if necessary.
       fast_mode_impossible: bool, True if we can't do a fast update for this
         particular operation (overrides forced fast mode).
+      has_components_to_remove: bool, Whether the update operation involves
+        removing any components. Affects whether we can perform an in-place
+        update from inside the root dir.
 
     Returns:
       bool, True if allow_no_backup was True and we are under the SDK root (so
@@ -424,10 +428,10 @@ class UpdateManager(object):
       return force_fast
 
     # We are somewhere under the install root.
-    if ((allow_no_backup or force_fast) and
-        (self.__sdk_root == cwd or self.__sdk_root == os.path.dirname(cwd))):
-      # Backups are disabled and we are in the root itself, or in a top level
-      # directory.  This is OK since these directories won't ever be deleted.
+    if ((allow_no_backup or force_fast) and not has_components_to_remove):
+      # If backups are disabled, we can update in place as long as the current
+      # working directory in the install doesn't get deleted out from underneath
+      # us. We know this will be safe if we're not removing any components.
       return True
 
     # 1) On linux it usually works ok, but then your CWD ends up being in the
@@ -978,7 +982,7 @@ version [{1}].  To clear your fixed version setting, run:
     Raises:
       InvalidComponentError: If any of the given component ids do not exist.
     """
-    md5dict1 = self._HashRcfiles(_SHELL_RCFILES)
+    sha256dict1 = self._HashRcfiles(_SHELL_RCFILES)
     if update_seed:
       self._CheckIfDisabledAndThrowError(
           components=update_seed, command='update')
@@ -1032,7 +1036,9 @@ version [{1}].  To clear your fixed version setting, run:
     current_version, _ = self._PrintVersions(
         diff, latest_msg=latest_msg)
 
-    disable_backup = self._ShouldDoFastUpdate(allow_no_backup=allow_no_backup)
+    disable_backup = self._ShouldDoFastUpdate(
+        allow_no_backup=allow_no_backup,
+        has_components_to_remove=bool(to_remove))
     self._PrintPendingAction(
         FilterMetaComponents(
             diff.DetailsForCurrent(to_remove - to_install)), 'removed')
@@ -1100,8 +1106,8 @@ version [{1}].  To clear your fixed version setting, run:
 
     self._PostProcess(snapshot=diff.latest)
 
-    md5dict2 = self._HashRcfiles(_SHELL_RCFILES)
-    if md5dict1 != md5dict2:
+    sha256dict2 = self._HashRcfiles(_SHELL_RCFILES)
+    if sha256dict1 != sha256dict2:
       self.__Write(
           log.status,
           console_io.FormatRequiredUserAction(
@@ -1316,7 +1322,8 @@ To revert your CLI to the previously installed version, you may run:
       self.__Write(log.status, 'No components to remove.\n')
       return
 
-    disable_backup = self._ShouldDoFastUpdate(allow_no_backup=allow_no_backup)
+    disable_backup = self._ShouldDoFastUpdate(
+        allow_no_backup=allow_no_backup, has_components_to_remove=True)
     components_to_remove = sorted(snapshot.ComponentsFromIds(to_remove),
                                   key=lambda c: c.details.display_name)
     components_to_display = FilterMetaComponents(
@@ -1371,7 +1378,9 @@ To revert your CLI to the previously installed version, you may run:
     if not install_state.HasBackup():
       raise NoBackupError('There is currently no backup to restore.')
 
-    self._ShouldDoFastUpdate(allow_no_backup=False, fast_mode_impossible=True)
+    self._ShouldDoFastUpdate(
+        allow_no_backup=False, fast_mode_impossible=True,
+        has_components_to_remove=False)
     # Ensure we have the rights to update the SDK now that we know an update is
     # necessary.
     config.EnsureSDKWriteAccess(self.__sdk_root)
@@ -1461,7 +1470,9 @@ To revert your CLI to the previously installed version, you may run:
     if not answer:
       return False
 
-    self._ShouldDoFastUpdate(allow_no_backup=False, fast_mode_impossible=True)
+    self._ShouldDoFastUpdate(
+        allow_no_backup=False, fast_mode_impossible=True,
+        has_components_to_remove=False)
     install_state = self._GetInstallState()
 
     try:

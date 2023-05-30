@@ -18,28 +18,58 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.command_lib.apphub import consts
-
-
-def ValidateTopologyUpdateFlags(args):
-  if args.state is not None:
-    if args.state not in consts.Topology.VALID_STATES:
-      raise exceptions.InvalidArgumentException(
-          parameter_name="--state",
-          message="--state can only be [enabled/disabled]."
-      )
-
 
 def AddTopologyUpdateFlags(parser):
   """Adds flags to topology update command.
 
   Flags include:
-    --state=[enabled/disabled]
+    --enable
+    --disable
 
   Args:
-    parser: The argparser
+    parser: The argparser.
   """
 
-  help_text = "Set to enabled/disabled."
-  parser.add_argument("--state", help=help_text)
+  state_group = parser.add_group(
+      mutex=True, help='Manage topology state.'
+  )
+  state_group.add_argument(
+      '--enable',
+      action='store_const',
+      const=True,
+      help='Enable topology.',
+  )
+  state_group.add_argument(
+      '--disable',
+      action='store_const',
+      const=True,
+      help='Disable topology.',
+  )
+
+
+def AddTelemetryUpdateFlags(parser):
+  """Adds flags to telemetry update command.
+
+  Flags include:
+    --enable-monitoring
+    --disable-monitoring
+
+  Args:
+    parser: The argparser.
+  """
+
+  state_group = parser.add_group(
+      mutex=True, help='Manage telemetry monitoring state.'
+  )
+  state_group.add_argument(
+      '--enable-monitoring',
+      action='store_const',
+      const=True,
+      help='Enable telemetry monitoring.',
+  )
+  state_group.add_argument(
+      '--disable-monitoring',
+      action='store_const',
+      const=True,
+      help='Disable telemetry monitoring.',
+  )

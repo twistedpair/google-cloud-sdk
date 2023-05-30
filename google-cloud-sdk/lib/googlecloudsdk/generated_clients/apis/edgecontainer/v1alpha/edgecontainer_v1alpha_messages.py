@@ -82,6 +82,7 @@ class Cluster(_messages.Message):
     nodeVersion: Output only. The lowest release version among all worker
       nodes. This field can be empty if the cluster does not have any worker
       nodes.
+    port: Output only. The port number of the Kubernetes API server.
     systemAddonsConfig: Optional. The configuration of the system add-ons.
     updateTime: Output only. The time when the cluster was last updated.
   """
@@ -125,8 +126,9 @@ class Cluster(_messages.Message):
   name = _messages.StringField(13)
   networking = _messages.MessageField('ClusterNetworking', 14)
   nodeVersion = _messages.StringField(15)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 16)
-  updateTime = _messages.StringField(17)
+  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 17)
+  updateTime = _messages.StringField(18)
 
 
 class ClusterNetworking(_messages.Message):

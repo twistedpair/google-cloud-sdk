@@ -108,6 +108,10 @@ _VERSION_COLLECTION_NAME = (
     "artifactregistry.projects.locations.repositories.packages.versions"
 )
 
+DOCKER_URI_REGEX = (
+    r"https://((us\.|eu\.|asia\.)?gcr.io)?(?P<docker_string>.*docker\.pkg\.dev.*)"
+)
+
 
 def _GetDefaultResources():
   """Gets default config values for project, location, and repository."""
@@ -137,7 +141,13 @@ def _ParseInput(input_str):
   Returns:
     A DockerRepo.
   """
-  matches = re.match(DOCKER_REPO_REGEX, input_str)
+  # To support testing in staging, we have to check if artifact registry
+  # endpoints have a prefix and if so remove them before making API
+  # calls to artifact registy.
+  prefix = properties.VALUES.artifacts.registry_endpoint_prefix.Get()
+  prefix = re.escape(prefix)
+  regex = "^" + prefix + DOCKER_REPO_REGEX[1:]
+  matches = re.match(regex, input_str)
   if not matches:
     raise ar_exceptions.InvalidInputValueError()
   location = matches.group("location")
@@ -450,7 +460,8 @@ class DockerImage(object):
                                    self.pkg.replace("/", "%2F"))
 
   def GetDockerString(self):
-    return "{}-docker.pkg.dev/{}/{}/{}".format(
+    return "{}{}-docker.pkg.dev/{}/{}/{}".format(
+        properties.VALUES.artifacts.registry_endpoint_prefix.Get(),
         self.docker_repo.location,
         self.docker_repo.project,
         self.docker_repo.repo,

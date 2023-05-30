@@ -19,13 +19,14 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import re
+
 from googlecloudsdk.calliope import exceptions
 
 STRING_MAX_LENGTH = 1000
 METASTORE_TYPE_DICT = {
     'dpms': 'DATAPROC_METASTORE',
     'dataplex': 'DATAPLEX',
-    'bigquery': 'BIGQUERY'
+    'bigquery': 'BIGQUERY',
 }
 METASTORE_RESOURCE_PATH_DICT = {'dpms': 'services', 'dataplex': 'lakes'}
 
@@ -34,7 +35,8 @@ def ValidatePort(port):
   """Python hook to validate that the port is between 1024 and 65535, inclusive."""
   if port < 1024 or port > 65535:
     raise exceptions.BadArgumentException(
-        '--port', 'Port ({0}) is not in the range [1025, 65535].'.format(port))
+        '--port', 'Port ({0}) is not in the range [1025, 65535].'.format(port)
+    )
   return port
 
 
@@ -47,7 +49,7 @@ def ValidateScalingFactor(scaling_factor):
             scaling_factor
         ),
     )
-  elif scaling_factor < 1 and scaling_factor % 0.1 != 0:
+  elif scaling_factor < 1 and scaling_factor * 10 % 1 != 0:
     raise exceptions.BadArgumentException(
         '--scaling-factor',
         'Scaling factor less than 1.0 ({0}) should be a'
@@ -68,7 +70,8 @@ def ValidateGcsUri(arg_name):
   def Process(gcs_uri):
     if not gcs_uri.startswith('gs://'):
       raise exceptions.BadArgumentException(
-          arg_name, 'Expected URI {0} to start with `gs://`.'.format(gcs_uri))
+          arg_name, 'Expected URI {0} to start with `gs://`.'.format(gcs_uri)
+      )
     return gcs_uri
 
   return Process
@@ -80,7 +83,9 @@ def ValidateKerberosPrincipal(kerberos_principal):
     raise exceptions.BadArgumentException(
         '--kerberos-principal',
         'Kerberos Principal {0} does not match ReGeX {1}.'.format(
-            kerberos_principal, pattern))
+            kerberos_principal, pattern
+        ),
+    )
   return kerberos_principal
 
 
@@ -89,21 +94,21 @@ def ValidateHourOfDay(hour):
   if hour < 0 or hour > 23:
     raise exceptions.BadArgumentException(
         '--maintenance-window-hour-of-day',
-        'Hour of day ({0}) is not in [0, 23].'.format(hour))
+        'Hour of day ({0}) is not in [0, 23].'.format(hour),
+    )
   return hour
 
 
 def ValidateStringField(arg_name):
   """Validates that the string field is not longer than STRING_MAX_LENGTH, to avoid abuse issues."""
-
-  def Process(string):
-    if len(string) > STRING_MAX_LENGTH:
-      raise exceptions.BadArgumentException(
-          arg_name,
-          'The string field can not be longer than {0} characters.'.format(
-              STRING_MAX_LENGTH))
-
-  return Process
+  if len(arg_name) > STRING_MAX_LENGTH:
+    raise exceptions.BadArgumentException(
+        arg_name,
+        'The string field can not be longer than {0} characters.'.format(
+            STRING_MAX_LENGTH
+        ),
+    )
+  return arg_name
 
 
 def ValidateServiceMutexConfig(unused_ref, unused_args, req):
@@ -118,11 +123,15 @@ def ValidateServiceMutexConfig(unused_ref, unused_args, req):
     BadArgumentException: when mutual exclusive configurations of service are
     set at the same time.
   """
-  if (req.service.encryptionConfig and req.service.encryptionConfig.kmsKey and
-      req.service.metadataIntegration.dataCatalogConfig.enabled):
+  if (
+      req.service.encryptionConfig
+      and req.service.encryptionConfig.kmsKey
+      and req.service.metadataIntegration.dataCatalogConfig.enabled
+  ):
     raise exceptions.BadArgumentException(
         '--data-catalog-sync',
-        'Data Catalog synchronization cannot be used in conjunction with customer-managed encryption keys.'
+        'Data Catalog synchronization cannot be used in conjunction with'
+        ' customer-managed encryption keys.',
     )
 
   return ValidateServiceMutexConfigForV1(unused_ref, unused_args, req)
@@ -140,13 +149,16 @@ def ValidateServiceMutexConfigForV1(unused_ref, unused_args, req):
     BadArgumentException: when mutual exclusive configurations of service are
     set at the same time.
   """
-  if (req.service.hiveMetastoreConfig and
-      req.service.hiveMetastoreConfig.kerberosConfig and
-      req.service.hiveMetastoreConfig.kerberosConfig.principal and
-      _IsNetworkConfigPresentInService(req.service)):
+  if (
+      req.service.hiveMetastoreConfig
+      and req.service.hiveMetastoreConfig.kerberosConfig
+      and req.service.hiveMetastoreConfig.kerberosConfig.principal
+      and _IsNetworkConfigPresentInService(req.service)
+  ):
     raise exceptions.BadArgumentException(
         '--kerberos-principal',
-        'Kerberos configuration cannot be used in conjunction with --network-config-from-file or --consumer-subnetworks.'
+        'Kerberos configuration cannot be used in conjunction with'
+        ' --network-config-from-file or --consumer-subnetworks.',
     )
   return req
 
@@ -171,11 +183,11 @@ def ValidateClearBackends(unused_ref, args, update_federation_req):
   """
 
   args_set = set(args.GetSpecifiedArgNames())
-  if '--clear-backends' in args_set:
-    if '--update-backends' not in args_set:
-      raise exceptions.BadArgumentException(
-          '--clear-backends',
-          '--clear-backends must be used with --update-backends')
+  if '--clear-backends' in args_set and '--update-backends' not in args_set:
+    raise exceptions.BadArgumentException(
+        '--clear-backends',
+        '--clear-backends must be used with --update-backends',
+    )
   return update_federation_req
 
 
@@ -205,20 +217,28 @@ def _GenerateShortOrLongBackendNames(metastore_type_and_name):
   if metastore_type_and_name[0].lower() == 'bigquery':
     long_name_regex = r'^projects\/.*[^\/]'
   else:
-    long_name_regex = r'^projects\/.*[^\/]\/locations\/.[^\/]*\/(' + _GetMetastoreTypeFromDict(
-        METASTORE_RESOURCE_PATH_DICT) + r')\/.[^\/]*$'
+    long_name_regex = (
+        r'^projects\/.*[^\/]\/locations\/.[^\/]*\/('
+        + _GetMetastoreTypeFromDict(METASTORE_RESOURCE_PATH_DICT)
+        + r')\/.[^\/]*$'
+    )
   if '/' in metastore_type_and_name[1]:
     if re.search(long_name_regex, metastore_type_and_name[1]):
       return metastore_type_and_name[1]
     else:
-      raise exceptions.BadArgumentException('--backends',
-                                            'Invalid backends format')
+      raise exceptions.BadArgumentException(
+          '--backends', 'Invalid backends format'
+      )
   else:
     if metastore_type_and_name[0].lower() == 'bigquery':
       return 'projects/' + metastore_type_and_name[1]
     else:
-      return '{0}/' + METASTORE_RESOURCE_PATH_DICT[
-          metastore_type_and_name[0]] + '/' + metastore_type_and_name[1]
+      return (
+          '{0}/'
+          + METASTORE_RESOURCE_PATH_DICT[metastore_type_and_name[0]]
+          + '/'
+          + metastore_type_and_name[1]
+      )
 
 
 def ValidateBackendsAndReturnMetastoreDict(backends):
@@ -244,28 +264,33 @@ def ValidateBackendsAndReturnMetastoreDict(backends):
   for data in backend:
     rank_and_metastore = data.split('=')
     if len(rank_and_metastore) != 2:
-      raise exceptions.BadArgumentException('--backends',
-                                            'Invalid backends format')
+      raise exceptions.BadArgumentException(
+          '--backends', 'Invalid backends format'
+      )
     key = rank_and_metastore[0]
     if not _IsZeroOrPositiveNumber(key):
       raise exceptions.BadArgumentException(
           '--backends',
-          'Invalid backends format or key of backend is less than 0')
+          'Invalid backends format or key of backend is less than 0',
+      )
     value = rank_and_metastore[1]
     metastore_type_and_name = value.split(':')
     if len(metastore_type_and_name) != 2:
-      raise exceptions.BadArgumentException('--backends',
-                                            'Invalid backends format')
+      raise exceptions.BadArgumentException(
+          '--backends', 'Invalid backends format'
+      )
     if key in backend_dict:
-      raise exceptions.BadArgumentException('--backends',
-                                            'Duplicated keys of backends')
+      raise exceptions.BadArgumentException(
+          '--backends', 'Duplicated keys of backends'
+      )
     if metastore_type_and_name[0] not in METASTORE_TYPE_DICT.keys():
-      raise exceptions.BadArgumentException('--backends',
-                                            'Invalid backends type')
+      raise exceptions.BadArgumentException(
+          '--backends', 'Invalid backends type'
+      )
     generated_name = _GenerateShortOrLongBackendNames(metastore_type_and_name)
     backend_metastores_dict = {
         'name': generated_name,
-        'metastoreType': METASTORE_TYPE_DICT[metastore_type_and_name[0]]
+        'metastoreType': METASTORE_TYPE_DICT[metastore_type_and_name[0]],
     }
     backend_dict[key] = backend_metastores_dict
   return backend_dict

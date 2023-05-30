@@ -28,6 +28,7 @@ from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import regex_util
 from googlecloudsdk.command_lib.storage import rsync_command_util
+from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.core import log
@@ -61,11 +62,18 @@ class GetSortedContainerContentsTask(task.Task):
     self._output_path = output_path
 
     if exclude_pattern_strings:
-      container_prefix_length = len(container.storage_url.join('').url_string)
+      container_url_trailing_delimiter = container.storage_url.join('')
+      if isinstance(container_url_trailing_delimiter, storage_url.FileUrl):
+        # Remove 'file://' prefix.
+        container_prefix = container_url_trailing_delimiter.object_name
+      else:
+        container_prefix = (
+            container_url_trailing_delimiter.versionless_url_string
+        )
       self._exclude_patterns = regex_util.Patterns(
           exclude_pattern_strings,
           # Confirm container URL ends in a delimiter.
-          ignore_prefix_length=container_prefix_length,
+          ignore_prefix_length=len(container_prefix),
       )
     else:
       self._exclude_patterns = None

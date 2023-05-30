@@ -45,11 +45,8 @@ class TopologyClient(object):
     topology = self.messages.Topology()
     update_mask = ''
 
-    if args.state:
-      if args.state == api_lib_consts.UpdateTopology.STATE_ENABLED:
-        topology.enabled = True
-      elif args.state == api_lib_consts.UpdateTopology.STATE_DISABLED:
-        topology.enabled = False
+    if args.enable or args.disable:
+      topology.enabled = bool(args.enable)
       update_mask = api_lib_utils.AddToUpdateMask(
           update_mask,
           api_lib_consts.UpdateTopology.UPDATE_MASK_ENABLED_FIELD_NAME,

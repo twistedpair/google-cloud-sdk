@@ -120,16 +120,14 @@ def EncodeSubstitutions(substitutions, messages):
       substitutions, messages.Build.SubstitutionsValue, sort_items=True)
 
 
-def EncodeTriggerSubstitutions(substitutions, messages):
+def EncodeTriggerSubstitutions(substitutions, value_type):
   if not substitutions:
     return None
   substitution_properties = []
   for key, value in sorted(six.iteritems(substitutions)):  # Sort for tests
     substitution_properties.append(
-        messages.BuildTrigger.SubstitutionsValue.AdditionalProperty(
-            key=key, value=value))
-  return messages.BuildTrigger.SubstitutionsValue(
-      additionalProperties=substitution_properties)
+        value_type.AdditionalProperty(key=key, value=value))
+  return value_type(additionalProperties=substitution_properties)
 
 
 def EncodeUpdatedTriggerSubstitutions(old_substitutions, substitutions,

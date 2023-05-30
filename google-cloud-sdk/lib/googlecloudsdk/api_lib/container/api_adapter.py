@@ -1248,7 +1248,8 @@ class CreateNodePoolOptions(object):
                min_provision_nodes=None,
                additional_node_network=None,
                additional_pod_network=None,
-               enable_nested_virtualization=None):
+               enable_nested_virtualization=None,
+               sole_tenant_node_affinity_file=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1324,6 +1325,7 @@ class CreateNodePoolOptions(object):
     self.min_provision_nodes = min_provision_nodes
     self.additional_node_network = additional_node_network
     self.additional_pod_network = additional_pod_network
+    self.sole_tenant_node_affinity_file = sole_tenant_node_affinity_file
 
 
 class UpdateNodePoolOptions(object):
@@ -3960,6 +3962,14 @@ class APIAdapter(object):
     if options.enable_queued_provisioning:
       pool.queuedProvisioning = self.messages.QueuedProvisioning()
       pool.queuedProvisioning.enabled = True
+
+    # Explicitly check None for empty list
+    if options.sole_tenant_node_affinity_file is not None:
+      node_config.soleTenantConfig = (
+          util.LoadSoleTenantConfigFromNodeAffinityYaml(
+              options.sole_tenant_node_affinity_file, self.messages
+          )
+      )
 
     return pool
 

@@ -86,6 +86,46 @@ def AddEnableProxyProtocolForUpdate(parser):
       """)
 
 
+def AddReconcileConnectionsForCreate(parser):
+  parser.add_argument(
+      '--reconcile-connections',
+      action='store_true',
+      help="""\
+      Determines whether to apply changes to consumer accept or reject lists
+      to existing connections or only to new connections.
+
+      If false, existing endpoints with a connection status of ACCEPTED or
+      REJECTED are not updated.
+
+      If true, existing endpoints with a connection status of ACCEPTED or
+      REJECTED are updated based on the connection policy update. For example,
+      if a project or network is removed from the --consumer-accept-list and
+      added to --consumer-reject-list, all the endpoints in that project or
+      network with the ACCEPTED state are set to REJECTED.
+      """,
+  )
+
+
+def AddReconcileConnectionsForUpdate(parser):
+  parser.add_argument(
+      '--reconcile-connections',
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""\
+      Determines whether to apply changes to consumer accept or reject lists
+      to existing connections or only to new connections.
+
+      If false, existing endpoints with a connection status of ACCEPTED or
+      REJECTED are not updated.
+
+      If true, existing endpoints with a connection status of ACCEPTED or
+      REJECTED are updated based on the connection policy update. For example,
+      if a project or network is removed from the --consumer-accept-list and
+      added to --consumer-reject-list, all the endpoints in that project or
+      network with the ACCEPTED state are set to REJECTED.
+      """,
+  )
+
+
 def AddDomainNames(parser):
   parser.add_argument(
       '--domain-names',

@@ -19,6 +19,16 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
+def ParseBakType(sql_messages, bak_type):
+  if bak_type is None:
+    return (
+        sql_messages.ImportContext.BakImportOptionsValue.BakTypeValueValuesEnum.FULL
+    )
+  return sql_messages.ImportContext.BakImportOptionsValue.BakTypeValueValuesEnum.lookup_by_name(
+      bak_type.upper()
+  )
+
+
 def SqlImportContext(sql_messages, uri, database=None, user=None):
   """Generates the ImportContext for the given args, for importing from SQL.
 
@@ -84,8 +94,18 @@ def CsvImportContext(sql_messages,
       importUser=user)
 
 
-def BakImportContext(sql_messages, uri, database, cert_path, pvk_path,
-                     pvk_password, striped):
+def BakImportContext(
+    sql_messages,
+    uri,
+    database,
+    cert_path,
+    pvk_path,
+    pvk_password,
+    striped,
+    no_recovery,
+    recovery_only,
+    bak_type,
+):
   """Generates the ImportContext for the given args, for importing from BAK.
 
   Args:
@@ -99,6 +119,9 @@ def BakImportContext(sql_messages, uri, database, cert_path, pvk_path,
     pvk_password: The private key password used for encrypted .bak; the output
       of the `--pvk-password` or `--prompt-for-pvk-password` flag.
     striped: Whether or not the import is striped.
+    no_recovery: Whether the import executes with NORECOVERY keyword.
+    recovery_only: Whether the import skip download and bring database online.
+    bak_type: Type of the bak file.
 
   Returns:
     ImportContext, for use in InstancesImportRequest.importContext.
@@ -109,9 +132,15 @@ def BakImportContext(sql_messages, uri, database, cert_path, pvk_path,
         encryptionOptions=sql_messages.ImportContext.BakImportOptionsValue
         .EncryptionOptionsValue(
             certPath=cert_path, pvkPath=pvk_path, pvkPassword=pvk_password))
-  elif striped:
-    bak_import_options = sql_messages.ImportContext.BakImportOptionsValue(
-        striped=striped)
+  else:
+    bak_import_options = sql_messages.ImportContext.BakImportOptionsValue()
+
+  if striped:
+    bak_import_options.striped = striped
+
+  bak_import_options.noRecovery = no_recovery
+  bak_import_options.recoveryOnly = recovery_only
+  bak_import_options.bakType = ParseBakType(sql_messages, bak_type)
 
   return sql_messages.ImportContext(
       kind='sql#importContext',

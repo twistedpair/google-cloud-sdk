@@ -60,9 +60,7 @@ def GenerateTrigger(args):
   """Generate DataQualitySpec From Arguments."""
   module = dataplex_api.GetMessageModule()
   trigger = module.GoogleCloudDataplexV1Trigger()
-  if args.IsSpecified('disabled'):
-    trigger.disabled = args.disabled
-  elif args.IsSpecified('schedule'):
+  if args.IsSpecified('schedule'):
     trigger.schedule = GenerateSchedule(args)
   else:
     trigger.onDemand = module.GoogleCloudDataplexV1TriggerOnDemand()

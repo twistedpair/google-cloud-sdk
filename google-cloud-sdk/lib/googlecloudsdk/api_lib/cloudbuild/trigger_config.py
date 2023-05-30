@@ -607,7 +607,7 @@ def ParseBuildConfigArgs(trigger,
     if not need_repo:
       trigger.filename = args.build_config
     trigger.substitutions = cloudbuild_util.EncodeTriggerSubstitutions(
-        args.substitutions, messages)
+        args.substitutions, messages.BuildTrigger.SubstitutionsValue)
   if args.dockerfile:
 
     if args.substitutions:
@@ -629,7 +629,7 @@ def ParseBuildConfigArgs(trigger,
                                                         'inline build config',
                                                         ['substitutions'])
     trigger.substitutions = cloudbuild_util.EncodeTriggerSubstitutions(
-        args.substitutions, messages)
+        args.substitutions, messages.BuildTrigger.SubstitutionsValue)
 
   if need_repo:
     # Repo is required if a build config (filename) or dockerfile was provided.

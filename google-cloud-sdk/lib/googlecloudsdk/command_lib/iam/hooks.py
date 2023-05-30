@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.iam import util
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.command_lib.iam import iam_util
@@ -180,3 +181,55 @@ def ClearFlag(args):
   del args
   return None
 
+
+def AddWebSsoConfigToRequest(ref, args, request):
+  """Add WebSsoConfig fields to create and update workforcePoolProvider request."""
+
+  del ref
+  messages = apis.GetMessagesModule('iam', 'v1')
+  request.workforcePoolProvider.oidc.webSsoConfig = (
+      messages.GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig()
+  )
+  if args.web_sso_response_type is not None:
+    response_type = (
+        messages.GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig.ResponseTypeValueValuesEnum
+    )
+    if 'id-token' in args.web_sso_response_type:
+      request.workforcePoolProvider.oidc.webSsoConfig.responseType = (
+          response_type.ID_TOKEN
+      )
+    elif 'code' in args.web_sso_response_type:
+      request.workforcePoolProvider.oidc.webSsoConfig.responseType = (
+          response_type.CODE
+      )
+  if args.web_sso_assertion_claims_behavior is not None:
+    assertion_claims_behavior = (
+        messages.GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig.AssertionClaimsBehaviorValueValuesEnum
+    )
+    if 'only-id-token-claims' in args.web_sso_assertion_claims_behavior:
+      request.workforcePoolProvider.oidc.webSsoConfig.assertionClaimsBehavior = (
+          assertion_claims_behavior.ONLY_ID_TOKEN_CLAIMS
+      )
+    elif (
+        'merge-user-info-over-id-token-claims'
+        in args.web_sso_assertion_claims_behavior
+    ):
+      request.workforcePoolProvider.oidc.webSsoConfig.assertionClaimsBehavior = (
+          assertion_claims_behavior.MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS
+      )
+  return request
+
+
+def AddWebSsoConfigFieldMask(unused_ref, args, request):
+  """Adds webSsoConfig specific fieldmask entries to update workforcePoolProvider request"""
+
+  mask_fields = []
+  if request.updateMask:
+    mask_fields = request.updateMask.split(',')
+  if args.web_sso_assertion_claims_behavior is not None:
+    mask_fields.append('oidc.webSsoConfig.assertionClaimsBehavior')
+  if args.web_sso_response_type is not None:
+    mask_fields.append('oidc.webSsoConfig.responseType')
+  if mask_fields:
+    request.updateMask = ','.join(mask_fields)
+  return request

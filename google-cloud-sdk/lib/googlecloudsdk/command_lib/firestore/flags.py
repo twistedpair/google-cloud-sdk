@@ -40,13 +40,15 @@ def AddCollectionIdsFlag(parser):
       """)
 
 
-def AddDatabaseIdFlag(parser):
+def AddDatabaseIdFlag(parser, required=False, hidden=False):
   """Adds flag for database id to the given parser."""
   parser.add_argument(
       '--database',
       metavar='DATABASE',
       type=str,
-      default='(default)',
+      default='(default)' if not required else None,
+      hidden=hidden,
+      required=required,
       help="""
       The database to operate on. The default value is `(default)`.
 
@@ -74,12 +76,12 @@ def AddNamespaceIdsFlag(parser):
       """)
 
 
-def AddLocationFlag(parser):
+def AddLocationFlag(parser, required=False):
   """Adds flag for location to the given parser."""
   parser.add_argument(
       '--location',
       metavar='LOCATION',
-      required=True,
+      required=required,
       hidden=True,
       type=str,
       help="""
@@ -108,23 +110,6 @@ def AddBackupFlag(parser):
         $ {command} --backup='cf9f748a-7980-4703-b1a1-d1ffff591db0'
       """,
   )
-
-
-def AddRequiredDatabaseIdFlag(parser):
-  """Adds flag for database id to the given parser."""
-  parser.add_argument(
-      '--database',
-      metavar='DATABASE',
-      required=True,
-      hidden=True,
-      type=str,
-      help="""
-      The database to operate on.
-
-      For example, to operate on database `foo`:
-
-        $ {command} --database='foo'
-      """)
 
 
 def AddBackupScheduleFlag(parser):

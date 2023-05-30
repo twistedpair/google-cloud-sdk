@@ -102,6 +102,10 @@ class Client:
             'threatOverrides': [],
         }
       else:
+        if profile.get('severityOverrides') is None:
+          profile['severityOverrides'] = []
+        if profile.get('threatOverrides') is None:
+          profile['threatOverrides'] = []
         return response.etag, profile
 
   def GetOperationsRef(self, operation):

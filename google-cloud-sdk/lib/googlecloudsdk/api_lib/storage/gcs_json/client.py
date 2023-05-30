@@ -60,6 +60,7 @@ from googlecloudsdk.core import requests
 from googlecloudsdk.core.credentials import transports
 from googlecloudsdk.core.util import scaled_integer
 import six
+from six.moves import urllib
 
 
 # TODO(b/171296237): Remove this when fixes are submitted in apitools.
@@ -77,6 +78,24 @@ _NOTIFICATION_PAYLOAD_FORMAT_KEY_TO_API_CONSTANT = {
 }
 
 
+def _get_download_link(object_resource):
+  """Generates link https://cloud.google.com/storage/docs/request-endpoints."""
+  custom_endpoint = properties.VALUES.api_endpoint_overrides.storage.Get()
+  if custom_endpoint:
+    base = custom_endpoint.replace('storage/v1/', '')
+  else:
+    base = 'https://storage.googleapis.com/'
+  url_string = '{}download/storage/{}/b/{}/o/{}?alt=media'.format(
+      base,
+      properties.VALUES.storage.json_api_version.Get(),
+      object_resource.bucket,
+      urllib.parse.quote(object_resource.name.encode('utf-8')),
+  )
+  if object_resource.generation:
+    return url_string + '&generation={}'.format(object_resource.generation)
+  return url_string
+
+
 def get_download_serialization_data(object_resource, progress):
   """Generates download serialization data for Apitools.
 
@@ -87,11 +106,15 @@ def get_download_serialization_data(object_resource, progress):
   Returns:
     JSON string for use with Apitools.
   """
+  if object_resource.metadata:
+    download_link = object_resource.metadata.mediaLink
+  else:
+    download_link = _get_download_link(object_resource)
   serialization_dict = {
       'auto_transfer': False,  # Apitools JSON API feature not used.
       'progress': progress,
       'total_size': object_resource.size,
-      'url': object_resource.metadata.mediaLink,  # HTTP download link.
+      'url': download_link,  # HTTP download link.
   }
   return json.dumps(serialization_dict)
 
@@ -213,9 +236,6 @@ def _get_encryption_headers(key):
 
 def _update_api_version_for_uploads_if_needed(client):
   api_version = properties.VALUES.storage.json_api_version.Get()
-  if api_version is None:
-    return
-
   insert_config = client.objects._upload_configs.get('Insert')  # pylint: disable=protected-access
   if insert_config is None:
     return

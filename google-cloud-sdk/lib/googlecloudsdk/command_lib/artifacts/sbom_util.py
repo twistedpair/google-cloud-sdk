@@ -25,10 +25,16 @@ import re
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
+from containerregistry.client import docker_creds
+from containerregistry.client import docker_name
+from containerregistry.client.v2_2 import docker_http as v2_2_docker_http
+from containerregistry.client.v2_2 import docker_image as v2_2_image
+from containerregistry.client.v2_2 import docker_image_list as v2_2_image_list
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.cloudkms import base as cloudkms_base
+from googlecloudsdk.api_lib.container.images import util as gcr_util
 from googlecloudsdk.api_lib.containeranalysis import filter_util
-from googlecloudsdk.api_lib.containeranalysis import requests
+from googlecloudsdk.api_lib.containeranalysis import requests as ca_requests
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.command_lib.artifacts import docker_util
@@ -36,7 +42,9 @@ from googlecloudsdk.command_lib.artifacts import util
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import transports
 from googlecloudsdk.core.util import files
+import requests
 import six
 from six.moves import urllib
 
@@ -66,6 +74,16 @@ _SBOM_REFERENCE_CYCLONEDX_EXTENSION = 'bom.json'
 _BUCKET_NAME_CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789'
 _BUCKET_SUFFIX_LENGTH = 5
 
+_DEFAULT_DOCKER_REGISTRY = 'registry.hub.docker.com'
+_DEFAULT_DOCKER_REPOSITORY = 'library'
+
+_REGISTRY_SCHEME_HTTP = 'http'
+_REGISTRY_SCHEME_HTTPS = 'https'
+
+ARTIFACT_TYPE_AR_IMAGE = 'artifactregistry'
+ARTIFACT_TYPE_GCR_IMAGE = 'gcr'
+ARTIFACT_TYPE_OTHER = 'other'
+
 
 def _ParseSpdx(data):
   """Retrieves version from the given SBOM dict.
@@ -79,15 +97,13 @@ def _ParseSpdx(data):
   Returns:
     A SbomFile object with metadata of the given sbom.
   """
-  invalid = True
   spdx_version = data['spdxVersion']
-
+  version = None
   if isinstance(spdx_version, six.string_types):
     r = re.match(r'^SPDX-([0-9]+[.][0-9]+)$', spdx_version)
     if r is not None:
       version = r.group(1)
-      invalid = False
-  if invalid:
+  if not version:
     raise ar_exceptions.InvalidInputValueError(
         'Unable to read spdxVersion {0}.'.format(spdx_version)
     )
@@ -112,13 +128,12 @@ def _ParseCycloneDx(data):
         'Unable to find specVersion in the CycloneDX file.'
     )
 
-  invalid = True
+  version = None
   if isinstance(data['specVersion'], six.string_types):
     r = re.match(r'^[0-9]+[.][0-9]+$', data['specVersion'])
     if r is not None:
       version = r.group()
-      invalid = False
-  if invalid:
+  if not version:
     raise ar_exceptions.InvalidInputValueError(
         'Unable to read specVersion {0}.'.format(data['specVersion'].__str__())
     )
@@ -150,7 +165,6 @@ def ParseJsonSbom(file_path):
     raise ar_exceptions.InvalidInputValueError(
         'Failed to read the sbom file', e
     )
-  res = None
   # Detect if it's spdx or cyclonedx.
   if 'spdxVersion' in data:
     res = _ParseSpdx(data)
@@ -165,6 +179,14 @@ def ParseJsonSbom(file_path):
 
 def _IsARDockerImage(uri):
   return re.match(docker_util.DOCKER_REPO_REGEX, uri) is not None
+
+
+def _IsGCRImage(uri):
+  return (
+      re.match(docker_util.GCR_DOCKER_REPO_REGEX, uri) is not None
+      or re.match(docker_util.GCR_DOCKER_DOMAIN_SCOPED_REPO_REGEX, uri)
+      is not None
+  )
 
 
 def _GetARDockerImage(uri):
@@ -188,6 +210,150 @@ def _GetARDockerImage(uri):
       project=repo.project,
       location=repo.location,
       digests=digests,
+      artifact_type=ARTIFACT_TYPE_AR_IMAGE,
+      scheme=_REGISTRY_SCHEME_HTTPS,
+  )
+
+
+def _GetGCRImage(uri):
+  """Retrieves information about the given GCR image.
+
+  Args:
+    uri: str, The artifact uri.
+
+  Raises:
+    ar_exceptions.InvalidInputValueError: If the uri is invalid.
+
+  Returns:
+    An Artifact object with metadata of the given artifact.
+  """
+  location_map = {
+      'us.gcr.io': 'us',
+      'gcr.io': 'us',
+      'eu.gcr.io': 'europe',
+      'asia.gcr.io': 'asia',
+  }
+  # Get digest by using image.
+  try:
+    docker_digest = gcr_util.GetDigestFromName(uri)
+  except gcr_util.InvalidImageNameError as e:
+    raise ar_exceptions.InvalidInputValueError(
+        'Failed to resolve digest of the GCR image: {}'.format(e)
+    )
+  project = None
+  location = None
+  matches = re.match(docker_util.GCR_DOCKER_REPO_REGEX, uri)
+  if matches:
+    location = location_map[matches.group('repo')]
+    project = matches.group('project')
+  matches = re.match(docker_util.GCR_DOCKER_DOMAIN_SCOPED_REPO_REGEX, uri)
+  if matches:
+    location = location_map[matches.group('repo')]
+    project = matches.group('project').replace('/', ':', 1)
+  if not project or not location:
+    raise ar_exceptions.InvalidInputValueError(
+        'Failed to parse project and location from the GCR image.'
+    )
+  return Artifact(
+      resource_uri=docker_digest.__str__(),
+      project=project,
+      location=location,
+      digests={'sha256': docker_digest.digest.replace('sha256:', '')},
+      artifact_type=ARTIFACT_TYPE_GCR_IMAGE,
+      scheme=_REGISTRY_SCHEME_HTTPS,
+  )
+
+
+def _ResolveDockerImageDigest(image):
+  """Returns Digest of the given Docker image.
+
+  Lookup registry to get the manifest's digest. If it returns a list of
+  manifests, will return the first one.
+
+  Args:
+    image: docker_name.Tag or docker_name.Digest, Docker image.
+
+  Returns:
+    An str for the digest.
+  """
+  with v2_2_image_list.FromRegistry(
+      basic_creds=docker_creds.Anonymous(),
+      name=image,
+      transport=transports.GetApitoolsTransport(),
+  ) as manifest_list:
+    if manifest_list.exists():
+      return manifest_list.digest()
+  with v2_2_image.FromRegistry(
+      basic_creds=docker_creds.Anonymous(),
+      name=image,
+      transport=transports.GetApitoolsTransport(),
+      accepted_mimes=v2_2_docker_http.SUPPORTED_MANIFEST_MIMES,
+  ) as v2_2_img:
+    if v2_2_img.exists():
+      return v2_2_img.digest()
+
+    return None
+
+
+def _GetDockerImage(uri):
+  """Retrieves information about the given docker image.
+
+  Args:
+    uri: str, The artifact uri.
+
+  Raises:
+    ar_exceptions.InvalidInputValueError: If the artifact is with tag, and it
+    can not be resolved by querying the docker http APIs.
+
+  Returns:
+    An Artifact object with metadata of the given artifact.
+  """
+  try:
+    image_digest = docker_name.from_string(uri)
+    if isinstance(image_digest, docker_name.Digest):
+      return Artifact(
+          resource_uri=uri,
+          digests={'sha256': image_digest.digest.replace('sha256:', '')},
+          artifact_type=ARTIFACT_TYPE_OTHER,
+          project=None,
+          location=None,
+          scheme=None,
+      )
+  except (
+      docker_name.BadNameException,
+  ) as e:
+    raise ar_exceptions.InvalidInputValueError(
+        'Failed to resolve {0}: {1}'.format(uri, str(e))
+    )
+
+  image_uri = uri
+  if ':' not in uri:
+    image_uri = uri + ':latest'
+  image_tag = docker_name.Tag(name=image_uri)
+  scheme = v2_2_docker_http.Scheme(image_tag.registry)
+  try:
+    digest = _ResolveDockerImageDigest(image_tag)
+  except (
+      v2_2_docker_http.V2DiagnosticException,
+      requests.exceptions.InvalidURL,
+  ) as e:
+    raise ar_exceptions.InvalidInputValueError(
+        'Failed to resolve {0}: {1}'.format(uri, str(e))
+    )
+  if not digest:
+    raise ar_exceptions.InvalidInputValueError(
+        'Failed to resolve {0}.'.format(uri)
+    )
+  resource_uri = '{registry}/{repo}@{digest}'.format(
+      registry=image_tag.registry, repo=image_tag.repository, digest=digest
+  )
+  return Artifact(
+      resource_uri=resource_uri,
+      digests={'sha256': digest.replace('sha256:', '')},
+      artifact_type=ARTIFACT_TYPE_OTHER,
+      project=None,
+      location=None,
+      scheme=scheme,
   )
 
 
@@ -206,10 +372,11 @@ def ProcessArtifact(uri):
 
   if _IsARDockerImage(uri):
     return _GetARDockerImage(uri)
+  elif _IsGCRImage(uri):
+    return _GetGCRImage(uri)
   else:
-    raise ar_exceptions.InvalidInputValueError(
-        'Unsupported artifact {0}.'.format(uri)
-    )
+    # Handle as normal docker containers
+    return _GetDockerImage(uri)
 
 
 def _RemovePrefix(value, prefix):
@@ -257,7 +424,9 @@ def ListSbomReferences(args):
     )
 
     package_occs = list(
-        requests.ListOccurrences(project, dependency_filters.GetFilter(), None)
+        ca_requests.ListOccurrences(
+            project, dependency_filters.GetFilter(), None
+        )
     )
     if not package_occs:
       return []
@@ -285,7 +454,7 @@ def ListSbomReferences(args):
             artifact.resource_uri,
         ]
 
-    except ar_exceptions.InvalidInputValueError:
+    except (ar_exceptions.InvalidInputValueError, docker_name.BadNameException):
       # Failed to process the artifact. Use the uri directly
       log.status.Print(
           'Failed to resolve the artifact. Filter on the URI directly.'
@@ -301,14 +470,13 @@ def ListSbomReferences(args):
         path_prefix,
     ])
 
-  occs = None
   if dependency:
     # Calling ListOccurrencesWithFilters ignoring page_size.
-    occs = requests.ListOccurrencesWithFiltersV1beta1(
+    occs = ca_requests.ListOccurrencesWithFilters(
         project, filters.GetChunkifiedFilters()
     )
   else:
-    occs = requests.ListOccurrencesV1beta1(
+    occs = ca_requests.ListOccurrences(
         project, filters.GetFilter(), args.page_size
     )
 
@@ -361,12 +529,11 @@ def _GetSbomGCSPath(storage_path, resource_uri, sbom):
   uri_encoded = urllib.parse.urlencode({'uri': resource_uri})[4:]
   version = sbom.version.replace('.', '-')
   return (
-      'gs://{storage_path}/{uri_encoded}/sbom/user-{format}-{version}.{ext}'
+      'gs://{storage_path}/{uri_encoded}/sbom/user-{version}.{ext}'
   ).format(
       **{
           'storage_path': storage_path.replace('gs://', '').rstrip('/'),
           'uri_encoded': uri_encoded,
-          'format': sbom.sbom_format,
           'version': version,
           'ext': sbom.GetExtension(),
       }
@@ -481,23 +648,23 @@ def UploadSbomToGCS(source, artifact, sbom, gcs_path=None):
   return dest
 
 
-def _CreateSbomRefNoteIfNotExists(artifact, sbom):
+def _CreateSbomRefNoteIfNotExists(project_id, sbom):
   """Create the SBOM reference note if not exists.
 
   Args:
-    artifact: Artifact, the artifact metadata SBOM file generated from.
+    project_id: str, the project we will use to create the note.
     sbom: SbomFile, metadata of the SBOM file.
 
   Returns:
     A Note object for the targetting SBOM reference note.
   """
-  client = requests.GetClientV1beta1()
-  messages = requests.GetMessagesV1beta1()
+  client = ca_requests.GetClient()
+  messages = ca_requests.GetMessages()
 
   note_id = _GetReferenceNoteID(sbom.sbom_format, sbom.version)
   name = resources.REGISTRY.Create(
       collection='containeranalysis.projects.notes',
-      projectsId=artifact.project,
+      projectsId=project_id,
       notesId=note_id,
   ).RelativeName()
 
@@ -514,7 +681,7 @@ def _CreateSbomRefNoteIfNotExists(artifact, sbom):
         sbomReference=sbom_reference,
     )
     create_request = messages.ContaineranalysisProjectsNotesCreateRequest(
-        parent='projects/{project}'.format(project=artifact.project),
+        parent='projects/{project}'.format(project=project_id),
         noteId=note_id,
         note=new_note,
     )
@@ -536,7 +703,7 @@ def _GenerateSbomRefOccurrence(artifact, sbom, note, storage):
   Returns:
     An Occurrence object for the SBOM reference.
   """
-  messages = requests.GetMessagesV1beta1()
+  messages = ca_requests.GetMessages()
 
   sbom_digsets = messages.SbomReferenceIntotoPredicate.DigestValue()
   for k, v in sbom.digests.items():
@@ -576,13 +743,10 @@ def _GenerateSbomRefOccurrence(artifact, sbom, note, storage):
       payloadType=_SBOM_REFERENCE_PAYLOAD_TYPE,
   )
   # ResourceURI stored in Occurrences should have https:// prefix.
-  resource = messages.Resource(
-      uri='https://' + artifact.resource_uri,
-  )
   occ = messages.Occurrence(
       sbomReference=ref_occ,
       noteName=note.name,
-      resource=resource,
+      resourceUri=artifact.GetOccurrenceResourceUri(),
   )
 
   return occ
@@ -593,13 +757,13 @@ def _GetReferenceNoteID(sbom_format, sbom_version):
   return 'sbom-{0}-{1}'.format(sbom_format, sbom_version_encoded)
 
 
-def _GenerateSbomRefOccurrenceListFilter(artifact, sbom):
+def _GenerateSbomRefOccurrenceListFilter(artifact, sbom, project_id):
   f = filter_util.ContainerAnalysisFilter()
-  f.WithResources(['https://' + artifact.resource_uri])
+  f.WithResources([artifact.GetOccurrenceResourceUri()])
   f.WithKinds(['SBOM_REFERENCE'])
   note_id = _GetReferenceNoteID(sbom.sbom_format, sbom.version)
   f.WithCustomFilter(
-      'noteId="{0}" AND noteProjectId="{1}"'.format(note_id, artifact.project)
+      'noteId="{0}" AND noteProjectId="{1}"'.format(note_id, project_id)
   )
   return f.GetFilter()
 
@@ -649,7 +813,7 @@ def _SignSbomRefOccurrencePayload(occ, kms_key_version):
   resp = kms_client.projects_locations_keyRings_cryptoKeys_cryptoKeyVersions.AsymmetricSign(  # pylint: disable=line-too-long
       req
   )
-  messages = requests.GetMessagesV1beta1()
+  messages = ca_requests.GetMessages()
   evelope_signature = messages.EnvelopeSignature(
       keyid=kms_key_version, sig=resp.signature
   )
@@ -664,11 +828,14 @@ def _SignSbomRefOccurrencePayload(occ, kms_key_version):
   return occ
 
 
-def WriteReferenceOccurrence(artifact, storage, sbom, kms_key_version):
+def WriteReferenceOccurrence(
+    artifact, project_id, storage, sbom, kms_key_version
+):
   """Write the reference occurrence to link the artifact and the SBOM.
 
   Args:
     artifact: Artifact, the artifact metadata SBOM file generated from.
+    project_id: str, the project_id where we will use to store the Occurrence.
     storage: str, the path that SBOM is stored remotely.
     sbom: SbomFile, metadata of the SBOM file.
     kms_key_version: str, the kms key to sign the reference occurrence payload.
@@ -677,7 +844,7 @@ def WriteReferenceOccurrence(artifact, storage, sbom, kms_key_version):
     A str for occurrence ID.
   """
   # Check if the note exists or not.
-  note = _CreateSbomRefNoteIfNotExists(artifact, sbom)
+  note = _CreateSbomRefNoteIfNotExists(project_id, sbom)
 
   # Generate the occurrence.
   occ = _GenerateSbomRefOccurrence(artifact, sbom, note, storage)
@@ -686,11 +853,11 @@ def WriteReferenceOccurrence(artifact, storage, sbom, kms_key_version):
     occ = _SignSbomRefOccurrencePayload(occ, kms_key_version)
 
   # Check existing occurrence for updates.
-  f = _GenerateSbomRefOccurrenceListFilter(artifact, sbom)
+  f = _GenerateSbomRefOccurrenceListFilter(artifact, sbom, project_id)
   log.debug('listing occurrence with filter {0}.'.format(f))
-  client = requests.GetClientV1beta1()
-  messages = requests.GetMessagesV1beta1()
-  occs = requests.ListOccurrencesV1beta1(artifact.project, f, None)
+  client = ca_requests.GetClient()
+  messages = ca_requests.GetMessages()
+  occs = ca_requests.ListOccurrences(project_id, f, None)
   log.debug('list successfully: {}'.format(occs))
   old_occ = None
   for o in occs:
@@ -709,7 +876,7 @@ def WriteReferenceOccurrence(artifact, storage, sbom, kms_key_version):
   else:
     request = messages.ContaineranalysisProjectsOccurrencesCreateRequest(
         occurrence=occ,
-        parent='projects/{project}'.format(project=artifact.project),
+        parent='projects/{project}'.format(project=project_id),
     )
     occ = client.projects_occurrences.Create(request)
 
@@ -787,13 +954,19 @@ class Artifact(object):
     project: str, Project of the artifact.
     location: str, Location of the artifact.
     digests: A dictionary of digests, where key is the algorithm.
+    artifact_type: str, Type of the provided artifact.
+    scheme: str, Scheme of the registry.
   """
 
-  def __init__(self, resource_uri, project, location, digests):
+  def __init__(
+      self, resource_uri, project, location, digests, artifact_type, scheme
+  ):
     self._resource_uri = resource_uri
     self._project = project
     self._location = location
     self._digests = digests
+    self._artifact_type = artifact_type
+    self._scheme = scheme
 
   @property
   def resource_uri(self):
@@ -810,3 +983,12 @@ class Artifact(object):
   @property
   def digests(self):
     return self._digests
+
+  @property
+  def artifact_type(self):
+    return self._artifact_type
+
+  def GetOccurrenceResourceUri(self):
+    if self._scheme is None:
+      return self.resource_uri
+    return '{scheme}://{uri}'.format(scheme=self._scheme, uri=self.resource_uri)

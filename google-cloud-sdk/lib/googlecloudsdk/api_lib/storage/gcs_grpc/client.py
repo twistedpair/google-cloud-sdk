@@ -104,7 +104,15 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
           destination_resource=destination_resource,
           request_config=request_config
       )
-    # TODO(b/271930144) Add resumable upload support
+    elif upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
+      uploader = upload.ResumableUpload(
+          client=client,
+          source_stream=source_stream,
+          destination_resource=destination_resource,
+          request_config=request_config,
+          serialization_data=serialization_data,
+          tracker_callback=tracker_callback
+      )
     # TODO(b/279041215) Add streaming upload support
 
     response = uploader.run()

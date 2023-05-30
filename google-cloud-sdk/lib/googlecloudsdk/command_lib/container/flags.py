@@ -5148,7 +5148,7 @@ def AddWindowsOsVersionFlag(parser, hidden=False):
       default=None)
 
 
-def AddBestEffortProvisionFlags(parser, hidden=True):
+def AddBestEffortProvisionFlags(parser, hidden=False):
   """Adds the argument to enable best effort provisioning."""
   group_text = """\
       Specifies minimum number of nodes to be created when best effort
@@ -5353,3 +5353,35 @@ def AddEnableFqdnNetworkPolicyFlag(parser):
       default=None,
       help=help_text,
       hidden=True)
+
+
+def AddSoleTenantNodeAffinityFileFlag(parser, hidden=False):
+  """Adds --sole-tenant-node-affinity-file flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+
+  parser.add_argument(
+      '--sole-tenant-node-affinity-file',
+      type=arg_parsers.YAMLFileContents(),
+      hidden=hidden,
+      help="""\
+      The JSON/YAML file containing the configuration of desired sole tenant
+      nodes onto which this node pool could be backed by. These rules filter the
+      nodes according to their node affinity labels. A node's affinity labels
+      come from the node template of the group the node is in.
+
+      The file should contain a list of a JSON/YAML objects. For an example,
+      see https://cloud.google.com/compute/docs/nodes/provisioning-sole-tenant-vms#configure_node_affinity_labels.
+      The following list describes the fields:
+
+      *key*::: Corresponds to the node affinity label keys of
+      the Node resource.
+      *operator*::: Specifies the node selection type. Must be one of:
+        `IN`: Requires Compute Engine to seek for matched nodes.
+        `NOT_IN`: Requires Compute Engine to avoid certain nodes.
+      *values*::: Optional. A list of values which correspond to the node
+      affinity label values of the Node resource.
+      """)

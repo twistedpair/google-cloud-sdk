@@ -128,6 +128,21 @@ class ComposerProjectsLocationsEnvironmentsCreateRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class ComposerProjectsLocationsEnvironmentsDatabaseFailoverRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsDatabaseFailoverRequest object.
+
+  Fields:
+    databaseFailoverRequest: A DatabaseFailoverRequest resource to be passed
+      as the request body.
+    environment: Target environment:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+  """
+
+  databaseFailoverRequest = _messages.MessageField('DatabaseFailoverRequest', 1)
+  environment = _messages.StringField(2, required=True)
+
+
 class ComposerProjectsLocationsEnvironmentsDeleteRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsDeleteRequest object.
 
@@ -138,6 +153,34 @@ class ComposerProjectsLocationsEnvironmentsDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ComposerProjectsLocationsEnvironmentsExecuteAirflowCommandRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsExecuteAirflowCommandRequest
+  object.
+
+  Fields:
+    environment: The resource name of the environment in the form: "projects/{
+      projectId}/locations/{locationId}/environments/{environmentId}".
+    executeAirflowCommandRequest: A ExecuteAirflowCommandRequest resource to
+      be passed as the request body.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  executeAirflowCommandRequest = _messages.MessageField('ExecuteAirflowCommandRequest', 2)
+
+
+class ComposerProjectsLocationsEnvironmentsFetchDatabasePropertiesRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsFetchDatabasePropertiesRequest
+  object.
+
+  Fields:
+    environment: Required. The resource name of the environment, in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+  """
+
+  environment = _messages.StringField(1, required=True)
 
 
 class ComposerProjectsLocationsEnvironmentsGetRequest(_messages.Message):
@@ -276,6 +319,21 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class ComposerProjectsLocationsEnvironmentsPollAirflowCommandRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsPollAirflowCommandRequest object.
+
+  Fields:
+    environment: The resource name of the environment in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+    pollAirflowCommandRequest: A PollAirflowCommandRequest resource to be
+      passed as the request body.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  pollAirflowCommandRequest = _messages.MessageField('PollAirflowCommandRequest', 2)
+
+
 class ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest object.
 
@@ -289,6 +347,20 @@ class ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest(_messages.Message
 
   environment = _messages.StringField(1, required=True)
   saveSnapshotRequest = _messages.MessageField('SaveSnapshotRequest', 2)
+
+
+class ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest object.
+
+  Fields:
+    environment: The resource name of the environment in the form: "projects/{
+      projectId}/locations/{locationId}/environments/{environmentId}".
+    stopAirflowCommandRequest: A StopAirflowCommandRequest resource to be
+      passed as the request body.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  stopAirflowCommandRequest = _messages.MessageField('StopAirflowCommandRequest', 2)
 
 
 class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
@@ -359,6 +431,17 @@ class DatabaseConfig(_messages.Message):
   """
 
   machineType = _messages.StringField(1)
+
+
+class DatabaseFailoverRequest(_messages.Message):
+  r"""Request to trigger database failover (only for highly resilient
+  environments).
+  """
+
+
+
+class DatabaseFailoverResponse(_messages.Message):
+  r"""Response for DatabaseFailoverRequest."""
 
 
 class Date(_messages.Message):
@@ -510,6 +593,9 @@ class EnvironmentConfig(_messages.Message):
     EnvironmentSizeValueValuesEnum: Optional. The size of the Cloud Composer
       environment. This field is supported for Cloud Composer environments in
       versions composer-2.*.*-airflow-*.*.* and newer.
+    ResilienceModeValueValuesEnum: Optional. Resilience mode of the Cloud
+      Composer Environment. This field is supported for Cloud Composer
+      environments in versions composer-2.2.0-airflow-*.*.* and newer.
 
   Fields:
     airflowByoidUri: Output only. The 'bring your own identity' variant of the
@@ -559,6 +645,9 @@ class EnvironmentConfig(_messages.Message):
     recoveryConfig: Optional. The Recovery settings configuration of an
       environment. This field is supported for Cloud Composer environments in
       versions composer-2.*.*-airflow-*.*.* and newer.
+    resilienceMode: Optional. Resilience mode of the Cloud Composer
+      Environment. This field is supported for Cloud Composer environments in
+      versions composer-2.2.0-airflow-*.*.* and newer.
     softwareConfig: The configuration settings for software inside the
       environment.
     webServerConfig: Optional. The configuration settings for the Airflow web
@@ -590,6 +679,19 @@ class EnvironmentConfig(_messages.Message):
     ENVIRONMENT_SIZE_MEDIUM = 2
     ENVIRONMENT_SIZE_LARGE = 3
 
+  class ResilienceModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Resilience mode of the Cloud Composer Environment. This
+    field is supported for Cloud Composer environments in versions
+    composer-2.2.0-airflow-*.*.* and newer.
+
+    Values:
+      RESILIENCE_MODE_UNSPECIFIED: Default mode doesn't change environment
+        parameters.
+      HIGH_RESILIENCE: Enabled High Resilience mode, including Cloud SQL HA.
+    """
+    RESILIENCE_MODE_UNSPECIFIED = 0
+    HIGH_RESILIENCE = 1
+
   airflowByoidUri = _messages.StringField(1)
   airflowUri = _messages.StringField(2)
   dagGcsPrefix = _messages.StringField(3)
@@ -603,10 +705,75 @@ class EnvironmentConfig(_messages.Message):
   nodeCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
   privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 12)
   recoveryConfig = _messages.MessageField('RecoveryConfig', 13)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 14)
-  webServerConfig = _messages.MessageField('WebServerConfig', 15)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 16)
-  workloadsConfig = _messages.MessageField('WorkloadsConfig', 17)
+  resilienceMode = _messages.EnumField('ResilienceModeValueValuesEnum', 14)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 15)
+  webServerConfig = _messages.MessageField('WebServerConfig', 16)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 17)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 18)
+
+
+class ExecuteAirflowCommandRequest(_messages.Message):
+  r"""Execute Airflow Command request.
+
+  Fields:
+    command: Airflow command.
+    parameters: Parameters for the Airflow command/subcommand as an array of
+      arguments. It may contain positional arguments like `["my-dag-id"]`,
+      key-value parameters like `["--foo=bar"]` or `["--foo","bar"]`, or other
+      flags like `["-f"]`.
+    subcommand: Airflow subcommand.
+  """
+
+  command = _messages.StringField(1)
+  parameters = _messages.StringField(2, repeated=True)
+  subcommand = _messages.StringField(3)
+
+
+class ExecuteAirflowCommandResponse(_messages.Message):
+  r"""Response to ExecuteAirflowCommandRequest.
+
+  Fields:
+    error: Error message. Empty if there was no error.
+    executionId: The unique ID of the command execution for polling.
+    pod: The name of the pod where the command is executed.
+    podNamespace: The namespace of the pod where the command is executed.
+  """
+
+  error = _messages.StringField(1)
+  executionId = _messages.StringField(2)
+  pod = _messages.StringField(3)
+  podNamespace = _messages.StringField(4)
+
+
+class ExitInfo(_messages.Message):
+  r"""Information about how a command ended.
+
+  Fields:
+    error: Error message. Empty if there was no error.
+    exitCode: The exit code from the command execution.
+  """
+
+  error = _messages.StringField(1)
+  exitCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class FetchDatabasePropertiesResponse(_messages.Message):
+  r"""Response for FetchDatabasePropertiesRequest.
+
+  Fields:
+    isFailoverReplicaAvailable: The availability status of the failover
+      replica. A false status indicates that the failover replica is out of
+      sync. The primary instance can only fail over to the failover replica
+      when the status is true.
+    primaryGceZone: The Compute Engine zone that the instance is currently
+      serving from.
+    secondaryGceZone: The Compute Engine zone that the failover instance is
+      currently serving from for a regional Cloud SQL instance.
+  """
+
+  isFailoverReplicaAvailable = _messages.BooleanField(1)
+  primaryGceZone = _messages.StringField(2)
+  secondaryGceZone = _messages.StringField(3)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -678,6 +845,18 @@ class ImageVersion(_messages.Message):
   releaseDate = _messages.MessageField('Date', 4)
   supportedPythonVersions = _messages.StringField(5, repeated=True)
   upgradeDisabled = _messages.BooleanField(6)
+
+
+class Line(_messages.Message):
+  r"""Contains information about a single line from logs.
+
+  Fields:
+    content: Text content of the log line.
+    lineNumber: Number of the line.
+  """
+
+  content = _messages.StringField(1)
+  lineNumber = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class ListEnvironmentsResponse(_messages.Message):
@@ -1052,6 +1231,8 @@ class OperationMetadata(_messages.Message):
       CHECK: A resource check operation.
       SAVE_SNAPSHOT: Saves snapshot of the resource operation.
       LOAD_SNAPSHOT: Loads snapshot of the resource operation.
+      DATABASE_FAILOVER: Triggers failover of environment's Cloud SQL instance
+        (only for highly resilient environments).
     """
     TYPE_UNSPECIFIED = 0
     CREATE = 1
@@ -1060,6 +1241,7 @@ class OperationMetadata(_messages.Message):
     CHECK = 4
     SAVE_SNAPSHOT = 5
     LOAD_SNAPSHOT = 6
+    DATABASE_FAILOVER = 7
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current operation state.
@@ -1085,6 +1267,38 @@ class OperationMetadata(_messages.Message):
   resource = _messages.StringField(4)
   resourceUuid = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class PollAirflowCommandRequest(_messages.Message):
+  r"""Poll Airflow Command request.
+
+  Fields:
+    executionId: The unique ID of the command execution.
+    nextLineNumber: Line number from which new logs should be fetched.
+    pod: The name of the pod where the command is executed.
+    podNamespace: The namespace of the pod where the command is executed.
+  """
+
+  executionId = _messages.StringField(1)
+  nextLineNumber = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pod = _messages.StringField(3)
+  podNamespace = _messages.StringField(4)
+
+
+class PollAirflowCommandResponse(_messages.Message):
+  r"""Response to PollAirflowCommandRequest.
+
+  Fields:
+    exitInfo: The result exit status of the command.
+    output: Output from the command execution. It may not contain the full
+      output and the caller may need to poll for more lines.
+    outputEnd: Whether the command execution has finished and there is no more
+      output.
+  """
+
+  exitInfo = _messages.MessageField('ExitInfo', 1)
+  output = _messages.MessageField('Line', 2, repeated=True)
+  outputEnd = _messages.BooleanField(3)
 
 
 class PrivateClusterConfig(_messages.Message):
@@ -1555,6 +1769,35 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StopAirflowCommandRequest(_messages.Message):
+  r"""Stop Airflow Command request.
+
+  Fields:
+    executionId: The unique ID of the command execution.
+    force: If true, the execution is terminated forcefully (SIGKILL). If
+      false, the execution is stopped gracefully, giving it time for cleanup.
+    pod: The name of the pod where the command is executed.
+    podNamespace: The namespace of the pod where the command is executed.
+  """
+
+  executionId = _messages.StringField(1)
+  force = _messages.BooleanField(2)
+  pod = _messages.StringField(3)
+  podNamespace = _messages.StringField(4)
+
+
+class StopAirflowCommandResponse(_messages.Message):
+  r"""Response to StopAirflowCommandRequest.
+
+  Fields:
+    isDone: Whether the execution is still running.
+    output: Output message from stopping execution request.
+  """
+
+  isDone = _messages.BooleanField(1)
+  output = _messages.StringField(2, repeated=True)
 
 
 class WebServerConfig(_messages.Message):

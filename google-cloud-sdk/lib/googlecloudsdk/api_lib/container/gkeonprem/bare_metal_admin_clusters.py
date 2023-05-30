@@ -24,6 +24,7 @@ from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import properties
 
 
 class _BareMetalAdminClusterClient(client.ClientBase):
@@ -540,6 +541,14 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
 
   def List(self, args):
     """Lists admin clusters in the GKE On-Prem bare metal API."""
+    # If location is not specified, and container_bare_metal/location is not set
+    # list clusters of all locations within a project.
+    if (
+        'location' not in args.GetSpecifiedArgsDict()
+        and not properties.VALUES.container_bare_metal.location.Get()
+    ):
+      args.location = '-'
+
     list_req = self._messages.GkeonpremProjectsLocationsBareMetalAdminClustersListRequest(
         parent=self._location_name(args)
     )

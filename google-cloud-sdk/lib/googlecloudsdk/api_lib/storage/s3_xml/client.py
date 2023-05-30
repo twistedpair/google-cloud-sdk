@@ -75,31 +75,6 @@ def _catch_client_error_raise_s3_api_error(format_str=None):
   )
 
 
-def _create_client(resource_location=None):
-  disable_ssl_validation = (
-      properties.VALUES.auth.disable_ssl_validation.GetBool())
-  if disable_ssl_validation:
-    verify_ssl = False
-  else:
-    # Setting to None so that AWS_CA_BUNDLE env variable
-    #  can be used. See b/266098045.
-    verify_ssl = None
-  # Using a lock since the boto3.client creation is not thread-safe.
-  with BOTO3_CLIENT_LOCK:
-    return boto3.client(
-        storage_url.ProviderPrefix.S3.value,
-        region_name=resource_location,
-        endpoint_url=properties.VALUES.storage.s3_endpoint_url.Get(),
-        verify=verify_ssl)
-
-
-def _add_additional_headers_to_request(request, **kwargs):
-  del kwargs
-  headers = headers_util.get_additional_header_dict()
-  for key, value in headers.items():
-    request.headers.add_header(key, value)
-
-
 def _modifies_full_acl_policy(request_config):
   """Checks if RequestConfig has ACL setting aside from predefined ACL."""
   return bool(
@@ -120,18 +95,56 @@ class S3XmlClient(cloud_api.CloudApi):
       # Boto3 implements its own unskippable validation.
       cloud_api.Capability.CLIENT_SIDE_HASH_VALIDATION,
   }
+  access_key_id = None
+  access_key_secret = None
   scheme = storage_url.ProviderPrefix.S3
 
   def __init__(self):
     log.warning(
         'S3 support is currently unstable and should not be relied on for'
         ' production workloads.')
-    self.client = _create_client()
+    self.endpoint_url = properties.VALUES.storage.s3_endpoint_url.Get()
+    self.client = self.create_client()
 
-    # Adding headers to s3 calls requires registering an event handler.
-    # https://github.com/boto/boto3/issues/2251
-    self.client.meta.events.register_first('before-sign.s3.*',
-                                           _add_additional_headers_to_request)
+  def _add_additional_headers_to_request(self, request, **kwargs):
+    del kwargs
+    headers = headers_util.get_additional_header_dict()
+    for key, value in headers.items():
+      request.headers.add_header(key, value)
+
+  def create_client(self, resource_location=None):
+    """Creates the Boto3 client.
+
+    Args:
+      resource_location: (string) The name of the region associated with the
+        client.
+
+    Returns:
+      A boto3 client.
+    """
+    disable_ssl_validation = (
+        properties.VALUES.auth.disable_ssl_validation.GetBool())
+    if disable_ssl_validation:
+      verify_ssl = False
+    else:
+      # Setting to None so that AWS_CA_BUNDLE env variable
+      #  can be used. See b/266098045.
+      verify_ssl = None
+    # Using a lock since the boto3.client creation is not thread-safe.
+    with BOTO3_CLIENT_LOCK:
+      client = boto3.client(
+          storage_url.ProviderPrefix.S3.value,
+          aws_access_key_id=self.access_key_id,
+          aws_secret_access_key=self.access_key_secret,
+          region_name=resource_location,
+          endpoint_url=self.endpoint_url,
+          verify=verify_ssl)
+      # Adding headers to s3 calls requires registering an event handler.
+      # https://github.com/boto/boto3/issues/2251
+      client.meta.events.register_first(
+          'before-sign.s3.*', self._add_additional_headers_to_request
+      )
+      return client
 
   @_catch_client_error_raise_s3_api_error()
   def create_bucket(self, bucket_resource, request_config, fields_scope=None):
@@ -140,7 +153,7 @@ class S3XmlClient(cloud_api.CloudApi):
 
     resource_args = request_config.resource_args
     if resource_args.location:
-      client = _create_client(resource_args.location)
+      client = self.create_client(resource_args.location)
       location_constraint = resource_args.location
     else:
       client = self.client

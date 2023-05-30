@@ -37,6 +37,13 @@ project for [{instance}], use only '{instance}' for the argument, and either add
 """.format(project=possible_project, instance=possible_instance))
 
 
+def ValidateURI(uri, recovery_only):
+  if (uri is None or not uri) and (not recovery_only):
+    raise sql_exceptions.ArgumentError("""\
+missing URI arg, please include URI arg or set the recovery-only flag if you meant to bring database online only
+""")
+
+
 def ValidateInstanceLocation(args):
   """Construct a Cloud SQL instance from command line args.
 

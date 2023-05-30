@@ -22,8 +22,10 @@ from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import properties
 
 
-def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
-  """Validates command line input arguments and passes parent's resources.
+def ConstructCreateRequestFromArgsGA(
+    client, alloydb_messages, project_ref, args
+):
+  """Validates command line input arguments and passes parent's resources for GA track.
 
   Args:
     client: Client for api_utils.py class.
@@ -33,6 +35,57 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
 
   Returns:
     Fully-constructed request to create an AlloyDB instance.
+  """
+  instance_resource = _ConstructInstanceFromArgs(client, alloydb_messages, args)
+
+  return (
+      alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreateRequest(
+          instance=instance_resource,
+          instanceId=args.instance,
+          parent=project_ref.RelativeName(),
+      )
+  )
+
+
+def ConstructCreateRequestFromArgsAlphaBeta(
+    client, alloydb_messages, project_ref, args
+):
+  """Validates command line input arguments and passes parent's resources for alpha and beta tracks.
+
+  Args:
+    client: Client for api_utils.py class.
+    alloydb_messages: Messages module for the API client.
+    project_ref: Parent resource path of the resource being created
+    args: Command line input arguments.
+
+  Returns:
+    Fully-constructed request to create an AlloyDB instance.
+  """
+  instance_resource = _ConstructInstanceFromArgs(client, alloydb_messages, args)
+
+  instance_resource.clientConnectionConfig = _ClientConnectionConfig(
+      alloydb_messages, args.ssl_mode
+  )
+
+  return (
+      alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreateRequest(
+          instance=instance_resource,
+          instanceId=args.instance,
+          parent=project_ref.RelativeName(),
+      )
+  )
+
+
+def _ConstructInstanceFromArgs(client, alloydb_messages, args):
+  """Validates command line input arguments and passes parent's resources to create an AlloyDB instance.
+
+  Args:
+    client: Client for api_utils.py class.
+    alloydb_messages: Messages module for the API client.
+    args: Command line input arguments.
+
+  Returns:
+    An AlloyDB instance to create with the specified command line arguments.
   """
   instance_resource = alloydb_messages.Instance()
 
@@ -72,11 +125,7 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
       insights_config_record_client_address=args.insights_config_record_client_address,
   )
 
-  return (
-      alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreateRequest(
-          instance=instance_resource,
-          instanceId=args.instance,
-          parent=project_ref.RelativeName()))
+  return instance_resource
 
 
 def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
@@ -228,6 +277,35 @@ def _QueryInsightsConfig(
   return insights_config
 
 
+def _ClientConnectionConfig(
+    alloydb_messages,
+    ssl_mode=None,
+):
+  """Generates the client connection config for the instance.
+
+  Args:
+    alloydb_messages: module, Message module for the API client.
+    ssl_mode: string, SSL mode to use when connecting to the database.
+
+  Returns:
+    alloydb_messages.ClientConnectionConfig
+  """
+
+  # TODO(b/270442834): Always pass the SSL config even if it's empty once we
+  # unhide the flag
+  if ssl_mode is None:
+    return None
+
+  # Config exists, generate client connection config.
+  client_connection_config = alloydb_messages.ClientConnectionConfig()
+  ssl_config = alloydb_messages.SslConfig()
+  # Set SSL mode if provided
+  ssl_config.sslMode = _ParseSSLMode(alloydb_messages, ssl_mode)
+  client_connection_config.sslConfig = ssl_config
+
+  return client_connection_config
+
+
 def _ParseAvailabilityType(alloydb_messages, availability_type):
   if availability_type:
     return alloydb_messages.Instance.AvailabilityTypeValueValuesEnum.lookup_by_name(
@@ -246,6 +324,16 @@ def _ParseUpdateMode(alloydb_messages, update_mode):
   if update_mode:
     return alloydb_messages.UpdatePolicy.ModeValueValuesEnum.lookup_by_name(
         update_mode.upper())
+  return None
+
+
+def _ParseSSLMode(alloydb_messages, ssl_mode):
+  if ssl_mode == 'ENCRYPTED_ONLY':
+    return alloydb_messages.SslConfig.SslModeValueValuesEnum.ENCRYPTED_ONLY
+  elif ssl_mode == 'ALLOW_UNENCRYPTED_AND_ENCRYPTED':
+    return (
+        alloydb_messages.SslConfig.SslModeValueValuesEnum.ALLOW_UNENCRYPTED_AND_ENCRYPTED
+    )
   return None
 
 
@@ -284,5 +372,11 @@ def ConstructInstanceAndUpdatePathsFromArgsAlphaBeta(
         mode=_ParseUpdateMode(alloydb_messages, args.update_mode))
     update_mode_path = 'updatePolicy.mode'
     paths.append(update_mode_path)
+  if args.ssl_mode:
+    instance_resource.clientConnectionConfig = _ClientConnectionConfig(
+        alloydb_messages, args.ssl_mode
+    )
+    ssl_mode_path = 'clientConnectionConfig.sslConfig.sslMode'
+    paths.append(ssl_mode_path)
 
   return instance_resource, paths

@@ -156,7 +156,9 @@ def ConstructPatch(is_composer_v1,
                    network=None,
                    subnetwork=None,
                    network_attachment=None,
-                   workload_updated=None):
+                   workload_updated=None,
+                   enable_private_environment=None,
+                   disable_private_environment=None):
   """Constructs an environment patch.
 
   Args:
@@ -272,6 +274,12 @@ def ConstructPatch(is_composer_v1,
     network_attachment: str or None, the Compute Engine network attachment that
       is used as PSC Network entry point.
     workload_updated: bool or None, verify if workload config has been updated
+    enable_private_environment: bool or None, defines whether the internet
+      access is disabled from Composer components.
+      Can be specified only in Composer 2.5.
+    disable_private_environment: bool or None, defines whether the internet
+      access is enabled from Composer components.
+      Can be specified only in Composer 2.5.
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -294,6 +302,10 @@ def ConstructPatch(is_composer_v1,
         clear_pypi_packages,
         remove_pypi_packages,
         update_pypi_packages,
+        release_track=release_track)
+  if enable_private_environment or disable_private_environment:
+    return _ConstructPrivateEnvironmentPatch(
+        enable_private_environment,
         release_track=release_track)
   if clear_labels or remove_labels or update_labels:
     return _ConstructLabelsPatch(
@@ -383,18 +395,58 @@ def ConstructPatch(is_composer_v1,
           dag_processor_cpu=dag_processor_cpu,
           dag_processor_memory_gb=dag_processor_memory_gb,
           dag_processor_count=dag_processor_count,
-          dag_processor_storage_gb=dag_processor_storage_gb)
-  if maintenance_window_start and maintenance_window_end and maintenance_window_recurrence:
+          dag_processor_storage_gb=dag_processor_storage_gb,
+      )
+  if (
+      maintenance_window_start
+      and maintenance_window_end
+      and maintenance_window_recurrence
+  ):
     return _ConstructMaintenanceWindowPatch(
         maintenance_window_start,
         maintenance_window_end,
         maintenance_window_recurrence,
-        release_track=release_track)
+        release_track=release_track,
+    )
   if cloud_data_lineage_integration_enabled is not None:
     return _ConstructSoftwareConfigurationCloudDataLineageIntegrationPatch(
-        cloud_data_lineage_integration_enabled, release_track)
+        cloud_data_lineage_integration_enabled, release_track
+    )
   raise command_util.Error(
-      'Cannot update Environment with no update type specified.')
+      'Cannot update Environment with no update type specified.'
+  )
+
+
+def _ConstructPrivateEnvironmentPatch(
+    enable_private_environment,
+    release_track=base.ReleaseTrack.GA,
+):
+  """Constructs an environment patch for private environment.
+
+  Args:
+    enable_private_environment: bool or None, defines whether the internet
+      access is disabled from Composer components. Can be specified only in
+      Composer 2.5.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Composer client library will be used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  private_environment_config = messages.PrivateEnvironmentConfig()
+  config = messages.EnvironmentConfig(
+      privateEnvironmentConfig=private_environment_config
+  )
+  update_mask = 'config.private_environment_config.enable_private_environment'
+  private_environment_config.enablePrivateEnvironment = bool(
+      enable_private_environment
+  )
+
+  return (
+      update_mask,
+      messages.Environment(config=config),
+  )
 
 
 def _ConstructVpcConnectivityPatch(

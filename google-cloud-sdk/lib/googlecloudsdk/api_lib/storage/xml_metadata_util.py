@@ -196,6 +196,16 @@ def _get_md5_hash_from_etag(etag, object_url):
   return None
 
 
+def _get_crc32c_hash_from_object_dict(object_dict):
+  """Returns base64 encoded CRC32C hash from object response headers."""
+  response_metadata = object_dict.get('ResponseMetadata', {})
+  headers = response_metadata.get('HTTPHeaders', {})
+  hash_header = headers.get('x-goog-hash', '').strip()
+  result = re.search(r'crc32c\=([^,]+)', hash_header)
+  if result:
+    return result.group(1)
+
+
 def _get_error_or_value(value):
   """Returns the error string if value is error or the value itself."""
   if isinstance(value, dict) and 'ResponseMetadata' in value:
@@ -282,7 +292,7 @@ def get_object_resource_from_xml_response(scheme,
     object_dict['ACL'] = raw_acl_data
   acl = _get_error_or_value(raw_acl_data)
 
-  return _SCHEME_TO_OBJECT_RESOURCE_DICT[scheme](
+  object_resource = _SCHEME_TO_OBJECT_RESOURCE_DICT[scheme](
       object_url,
       acl=acl,
       cache_control=object_dict.get('CacheControl'),
@@ -300,6 +310,10 @@ def get_object_resource_from_xml_response(scheme,
       size=size,
       storage_class=object_dict.get('StorageClass'),
       update_time=object_dict.get('LastModified'))
+  # The CRC32C is added if available only for GCS.
+  if scheme == storage_url.ProviderPrefix.GCS:
+    object_resource.crc32c_hash = _get_crc32c_hash_from_object_dict(object_dict)
+  return object_resource
 
 
 def get_prefix_resource_from_xml_response(scheme, prefix_dict, bucket_name):

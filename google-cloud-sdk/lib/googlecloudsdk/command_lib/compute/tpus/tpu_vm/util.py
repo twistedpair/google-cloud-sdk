@@ -25,11 +25,17 @@ from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 import six
+
+
+class NoFieldsSpecifiedError(exceptions.Error):
+  """Error if no fields are specified for an update request."""
 
 
 def GetProject(release_track, ssh_helper):
@@ -66,6 +72,48 @@ def MergeMetadata(api_version='v2'):
       request.node.metadata.additionalProperties.append(
           tpu_messages.Node.MetadataValue.AdditionalProperty(
               key=key, value=value))
+    return request
+
+  return Process
+
+
+def GenerateUpdateMask(api_version='v2'):
+  """Request hook for constructing the updateMask for update requests."""
+
+  def Process(unused_ref, args, request):
+    """Request hook for constructing the updateMask for update requests.
+
+    Args:
+      unused_ref: ref to the service.
+      args:  The args for this method.
+      request: The request to be made.
+
+    Returns:
+      Request with updateMask field populated.
+
+    Raises:
+      NoFieldsSpecifiedError: if no fields were specified.
+    """
+
+    update_mask = set()
+    tpu_messages = GetMessagesModule(version=api_version)
+
+    if (args.IsSpecified('update_labels') or
+        args.IsSpecified('remove_labels') or args.IsSpecified('clear_labels')):
+      labels_diff = labels_util.Diff.FromUpdateArgs(args)
+      if labels_diff.MayHaveUpdates():
+        labels_update = labels_diff.Apply(
+            tpu_messages.Node.LabelsValue,
+            request.node.labels)
+        if labels_update.needs_update:
+          request.node.labels = labels_update.labels
+          update_mask.add('labels')
+
+    if not update_mask:
+      raise NoFieldsSpecifiedError(
+          'Must specify at least one field to update.')
+
+    request.updateMask = ','.join(update_mask)
     return request
 
   return Process

@@ -46,19 +46,15 @@ class Destination(_messages.Message):
       `projects/{project}/locations/{location}/functions/{function}`
     cloudRun: Cloud Run fully-managed resource that receives the data. The
       resource should be in the same region as the stream.
+    httpEndpoint: An HTTP endpoint destination described by an URI.
     networkConfig: Optional. Network config is used to configure how Message
       Streams resolves and connect to a destination.
-    uri: The URI of the target service. The value must be a RFC2396 URI
-      string. Examples: `http://10.10.10.8:80/route`, `http://svc.us-
-      central1.p.local:8080/`. Only HTTP and HTTPS protocols are supported.
-      The host can be either a static IP address or a internal DNS hostname of
-      the service resolvable via Cloud DNS.
   """
 
   cloudFunction = _messages.StringField(1)
   cloudRun = _messages.MessageField('CloudRun', 2)
-  networkConfig = _messages.MessageField('NetworkConfig', 3)
-  uri = _messages.StringField(4)
+  httpEndpoint = _messages.MessageField('HttpEndpoint', 3)
+  networkConfig = _messages.MessageField('NetworkConfig', 4)
 
 
 class Empty(_messages.Message):
@@ -68,6 +64,29 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class HttpEndpoint(_messages.Message):
+  r"""Represents a HTTP endpoint destination.
+
+  Fields:
+    forwardDnsRequests: Optional. Forwards DNS requests to the VPC specified
+      by network config to resolve the HTTP endpoint. Default to false. If set
+      to true, Message Streams will create a peering zone to the consumer VPC
+      and forward DNS requests. See:
+      https://cloud.google.com/dns/docs/zones/zones-overview#peering_zones
+      Enable this if the URI uses an internal DNS name or a private Cloud DNS
+      zone.
+    uri: Required. The URI of the HTTP enpdoint. The value must be a RFC2396
+      URI string. Examples: `http://10.10.10.8:80/route`, `http://svc.us-
+      central1.p.local:8080/`. Only HTTP and HTTPS protocols are supported.
+      The host can be either a static IP addressable from the VPC specified by
+      the network config, or an internal DNS hostname of the service
+      resolvable via Cloud DNS.
+  """
+
+  forwardDnsRequests = _messages.BooleanField(1)
+  uri = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -389,16 +408,12 @@ class NetworkConfig(_messages.Message):
   connectivity.
 
   Fields:
-    domainSuffix: Optional. The domain suffix of the private DNS zone in
-      target VPC. The DNS zone should reside in the same project and VPC of
-      the `network_attachment` field. Example: `my_project.internal`.
     networkAttachment: Required. Name of the NetworkAttachment that allows
       access to the consumer VPC. Format: `projects/{PROJECT_ID}/regions/{REGI
       ON}/networkAttachments/{NETWORK_ATTACHMENT_NAME}`
   """
 
-  domainSuffix = _messages.StringField(1)
-  networkAttachment = _messages.StringField(2)
+  networkAttachment = _messages.StringField(1)
 
 
 class Operation(_messages.Message):

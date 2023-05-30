@@ -23,6 +23,24 @@ from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
+# Needs to be indented to show up correctly in help text
+LIST_WITH_CUSTOM_FIELDS_FORMAT = """\
+table(
+                    name.segment(-1):label=NAME,,
+                    priority,
+                    ipProtocol,
+                    sourceIpRanges.flatten(show='values'),
+                    sourcePorts.list(),
+                    destinationIpRanges.flatten(show='values'),
+                    destinationPorts.list(),
+                    action
+                )"""
+
+LIST_NOTICE = """\
+To show all fields, please show in JSON format: --format=json
+To show custom set of fields in table format, please see the examples in --help.
+"""
+
 
 def AddExternalAccessRuleToParser(parser, positional=False):
   """Sets up an argument for the VMware Engine external access rule resource."""

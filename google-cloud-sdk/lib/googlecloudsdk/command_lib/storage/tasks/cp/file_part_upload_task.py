@@ -33,7 +33,6 @@ from googlecloudsdk.api_lib.storage import errors as api_errors
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
-from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.resources import resource_reference
@@ -42,7 +41,6 @@ from googlecloudsdk.command_lib.storage.tasks.cp import file_part_task
 from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import hashing
 from googlecloudsdk.core.util import retry
 
 
@@ -115,21 +113,10 @@ class FilePartUploadTask(file_part_task.FilePartTask):
               topic=task.Topic.CREATED_RESOURCE, payload=destination_resource))
     return task.Output(additional_task_iterators=None, messages=messages)
 
-  def _get_digesters(self):
-    provider = self._destination_resource.storage_url.scheme
-    check_hashes = properties.CheckHashes(
-        properties.VALUES.storage.check_hashes.Get())
-
-    if (self._source_resource.md5_hash or
-        # Boto3 implements its own unskippable validation.
-        provider == storage_url.ProviderPrefix.S3 or
-        check_hashes == properties.CheckHashes.NEVER):
-      return {}
-    return {hash_util.HashAlgorithm.MD5: hashing.get_md5()}
-
   def _existing_destination_is_valid(self, destination_resource):
     """Returns True if a completed temporary component can be reused."""
-    digesters = self._get_digesters()
+    digesters = upload_util.get_digesters(
+        self._source_resource, destination_resource)
     with upload_util.get_stream(
         self._transformed_source_resource,
         length=self._length,
@@ -146,7 +133,8 @@ class FilePartUploadTask(file_part_task.FilePartTask):
 
   def execute(self, task_status_queue=None):
     """Performs upload."""
-    digesters = self._get_digesters()
+    digesters = upload_util.get_digesters(
+        self._source_resource, self._destination_resource)
     destination_url = self._destination_resource.storage_url
     provider = destination_url.scheme
     api = api_factory.get_api(provider)

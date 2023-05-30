@@ -189,7 +189,7 @@ def PriorityArgument(operation, is_plural=False):
       completer=SecurityPolicyRulesCompleter,
       global_collection='compute.securityPolicyRules',
       regional_collection='compute.regionSecurityPolicyRules',
-      region_hidden=True,
+      region_hidden=False,
       scope_flags_usage=compute_flags.ScopeFlagsUsage.DONT_USE_SCOPE_FLAGS,
       plural=is_plural,
       required=(False if is_plural else True),
@@ -203,7 +203,10 @@ def PriorityArgument(operation, is_plural=False):
 def AddRegionFlag(parser, operation):
   """Adds the region argument to the argparse to specify the security policy region."""
   return compute_flags.AddRegionFlag(
-      parser, 'security policy', operation, hidden=True)
+      parser,
+      'security policy',
+      operation,
+      explanation=compute_flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
 
 
 def AddMatcher(parser, required=True):

@@ -1076,7 +1076,7 @@ class EnvironmentConfig(_messages.Message):
       versions composer-2.*.*-airflow-*.*.* and newer.
     ResilienceModeValueValuesEnum: Optional. Resilience mode of the Cloud
       Composer Environment. This field is supported for Cloud Composer
-      environments in versions composer-2.1.15-airflow-*.*.* and newer.
+      environments in versions composer-2.2.0-airflow-*.*.* and newer.
 
   Fields:
     airflowByoidUri: Output only. The 'bring your own identity' variant of the
@@ -1129,7 +1129,7 @@ class EnvironmentConfig(_messages.Message):
       versions composer-2.*.*-airflow-*.*.* and newer.
     resilienceMode: Optional. Resilience mode of the Cloud Composer
       Environment. This field is supported for Cloud Composer environments in
-      versions composer-2.1.15-airflow-*.*.* and newer.
+      versions composer-2.2.0-airflow-*.*.* and newer.
     softwareConfig: The configuration settings for software inside the
       environment.
     webServerConfig: Optional. The configuration settings for the Airflow web
@@ -1165,7 +1165,7 @@ class EnvironmentConfig(_messages.Message):
   class ResilienceModeValueValuesEnum(_messages.Enum):
     r"""Optional. Resilience mode of the Cloud Composer Environment. This
     field is supported for Cloud Composer environments in versions
-    composer-2.1.15-airflow-*.*.* and newer.
+    composer-2.2.0-airflow-*.*.* and newer.
 
     Values:
       RESILIENCE_MODE_UNSPECIFIED: Default mode doesn't change environment

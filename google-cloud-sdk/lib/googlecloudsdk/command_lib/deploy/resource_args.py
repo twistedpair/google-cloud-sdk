@@ -260,3 +260,37 @@ def AddJobRunResourceArg(
       required=required,
       plural=False,
   ).AddToParser(parser)
+
+
+def AddAutomationRunResourceArg(
+    parser, help_text=None, positional=False, required=True
+):
+  """Add --automation-run resource argument to the parser.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser for the command.
+    help_text: help text for this flag.
+    positional: if it is a positional flag.
+    required: if it is required.
+  """
+  help_text = help_text or 'The name of the AutomationRun.'
+
+  concept_parsers.ConceptParser.ForResource(
+      'automation_run' if positional else '--automation-run',
+      GetAutomationRunResourceSpec(),
+      help_text,
+      required=required,
+      plural=False,
+  ).AddToParser(parser)
+
+
+def GetAutomationRunResourceSpec():
+  """Constructs and returns the Resource specification for AutomationRun."""
+  return concepts.ResourceSpec(
+      'clouddeploy.projects.locations.deliveryPipelines.automationRuns',
+      resource_name='automation_run',
+      deliveryPipelinesId=DeliveryPipelineAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      disable_auto_completers=False,
+  )

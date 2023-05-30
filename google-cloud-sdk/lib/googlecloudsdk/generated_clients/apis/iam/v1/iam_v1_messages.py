@@ -597,10 +597,15 @@ class GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig(_messages.Message):
     Values:
       ASSERTION_CLAIMS_BEHAVIOR_UNSPECIFIED: No assertion claims behavior
         specified.
+      MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS: Merge the UserInfo Endpoint Claims
+        with ID Token Claims, preferring UserInfo Claim Values for the same
+        Claim Name. Only possible for flows granting an Access Token, which
+        comprise only the Authorization Code Flow at the moment.
       ONLY_ID_TOKEN_CLAIMS: Only include ID Token Claims.
     """
     ASSERTION_CLAIMS_BEHAVIOR_UNSPECIFIED = 0
-    ONLY_ID_TOKEN_CLAIMS = 1
+    MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS = 1
+    ONLY_ID_TOKEN_CLAIMS = 2
 
   class ResponseTypeValueValuesEnum(_messages.Enum):
     r"""Required. The Response Type to request for in the OIDC Authorization
@@ -608,11 +613,14 @@ class GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig(_messages.Message):
 
     Values:
       RESPONSE_TYPE_UNSPECIFIED: No Response Type specified.
+      CODE: The `response_type=code` selection uses the Authorization Code
+        Flow for web sign-in. Requires a configured client secret.
       ID_TOKEN: The `response_type=id_token` selection uses the Implicit Flow
         for web sign-in.
     """
     RESPONSE_TYPE_UNSPECIFIED = 0
-    ID_TOKEN = 1
+    CODE = 1
+    ID_TOKEN = 2
 
   assertionClaimsBehavior = _messages.EnumField('AssertionClaimsBehaviorValueValuesEnum', 1)
   responseType = _messages.EnumField('ResponseTypeValueValuesEnum', 2)

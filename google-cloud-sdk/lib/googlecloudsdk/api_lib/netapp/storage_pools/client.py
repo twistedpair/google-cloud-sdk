@@ -35,9 +35,10 @@ class StoragePoolsClient(object):
   """
 
   def __init__(self, release_track=base.ReleaseTrack.ALPHA):
-    if release_track == base.ReleaseTrack.ALPHA:
+    self.release_track = release_track
+    if self.release_track == base.ReleaseTrack.ALPHA:
       self._adapter = AlphaStoragePoolsAdapter()
-    elif release_track == base.ReleaseTrack.BETA:
+    elif self.release_track == base.ReleaseTrack.BETA:
       self._adapter = BetaStoragePoolsAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
@@ -84,29 +85,34 @@ class StoragePoolsClient(object):
   def ParseStoragePoolConfig(self,
                              name=None,
                              service_level=None,
+                             network=None,
+                             active_directory=None,
+                             kms_config=None,
+                             enable_ldap=None,
                              capacity=None,
                              description=None,
                              labels=None):
-    """Parses the command line arguments for Create Storage Pool into a config.
-
-    Args:
-      name: the name of the Storage Pool
-      service_level: the service level of the Storage Pool
-      capacity: the storage capacity of the Storage Pool
-      description: the description of the Storage Pool
-      labels: the parsed labels value
-
-    Returns:
-      The configuration that will be used as the request body for creating a
-      Cloud NetApp Storage Pool.
-    """
-    storage_pool = self.messages.StoragePool()
-    storage_pool.name = name
-    storage_pool.serviceLevel = service_level
-    storage_pool.capacityGib = capacity
-    storage_pool.description = description
-    storage_pool.labels = labels
-    return storage_pool
+    """Parses the command line arguments for Create Storage Pool into a config."""
+    if self.release_track == base.ReleaseTrack.BETA:
+      return self._adapter.ParseStoragePoolConfigBeta(
+          name=name,
+          service_level=service_level,
+          network=network,
+          kms_config=kms_config,
+          active_directory=active_directory,
+          enable_ldap=enable_ldap,
+          capacity=capacity,
+          description=description,
+          labels=labels
+      )
+    elif self.release_track == base.ReleaseTrack.ALPHA:
+      return self._adapter.ParseStoragePoolConfigAlpha(
+          name=name,
+          service_level=service_level,
+          capacity=capacity,
+          description=description,
+          labels=labels
+      )
 
   def ListStoragePools(self, location_ref, limit=None):
     """Make API calls to List active Cloud NetApp Storage Pools.
@@ -155,6 +161,7 @@ class StoragePoolsClient(object):
   def ParseUpdatedStoragePoolConfig(self,
                                     storagepool_config,
                                     capacity=None,
+                                    active_directory=None,
                                     description=None,
                                     labels=None):
     """Parses updates into a storage pool config.
@@ -162,21 +169,33 @@ class StoragePoolsClient(object):
     Args:
       storagepool_config: The storage pool message to update.
       capacity: capacity of a storage pool
+      active_directory: the Active Directory attached to a storage pool
       description: str, a new description, if any.
       labels: LabelsValue message, the new labels value, if any.
 
     Returns:
       The storage pool message.
     """
-    storage_pool = self._adapter.ParseUpdatedStoragePoolConfig(
-        storagepool_config,
-        capacity=capacity,
-        description=description,
-        labels=labels)
+    if self.release_track == base.ReleaseTrack.BETA:
+      storage_pool = self._adapter.ParseUpdatedStoragePoolConfigBeta(
+          storagepool_config,
+          capacity=capacity,
+          active_directory=active_directory,
+          description=description,
+          labels=labels
+      )
+    elif self.release_track == base.ReleaseTrack.ALPHA:
+      storage_pool = self._adapter.ParseUpdatedStoragePoolConfigAlpha(
+          storagepool_config,
+          capacity=capacity,
+          description=description,
+          labels=labels,
+      )
     return storage_pool
 
-  def UpdateStoragePool(self, storagepool_ref, storagepool_config, update_mask,
-                        async_):
+  def UpdateStoragePool(
+      self, storagepool_ref, storagepool_config, update_mask, async_
+  ):
     """Updates a Storage Pool.
 
     Args:
@@ -205,14 +224,64 @@ class BetaStoragePoolsAdapter(object):
     self.client = GetClientInstance(release_track=self.release_track)
     self.messages = GetMessagesModule(release_track=self.release_track)
 
-  def ParseUpdatedStoragePoolConfig(self,
-                                    storagepool_config,
-                                    description=None,
-                                    labels=None,
-                                    capacity=None):
+  @base.ReleaseTracks(base.ReleaseTrack.BETA)
+  def ParseStoragePoolConfigBeta(
+      self,
+      name,
+      service_level,
+      network,
+      kms_config,
+      active_directory,
+      enable_ldap,
+      capacity,
+      description,
+      labels,
+  ):
+    """Parses the command line arguments for Create Storage Pool into a config.
+
+    Args:
+      name: the name of the Storage Pool
+      service_level: the service level of the Storage Pool
+      network: the network of the Storage Pool
+      kms_config: the KMS Config of the Storage Pool
+      active_directory: the Active Directory of the Storage Pool
+      enable_ldap: Bool on whether to enable LDAP on Storage Pool
+      capacity: the storage capacity of the Storage Pool
+      description: the description of the Storage Pool
+      labels: the parsed labels value
+
+    Returns:
+      The configuration that will be used as the request body for creating a
+      Cloud NetApp Storage Pool.
+    """
+    storage_pool = self.messages.StoragePool()
+    storage_pool.name = name
+    storage_pool.serviceLevel = service_level
+    storage_pool.network = network.get('name')
+    if 'psa-range' in network:
+      storage_pool.psaRange = network.get('psa-range')
+    storage_pool.kmsConfig = kms_config
+    storage_pool.activeDirectory = active_directory
+    storage_pool.ldapEnabled = enable_ldap
+    storage_pool.capacityGib = capacity
+    storage_pool.description = description
+    storage_pool.labels = labels
+    return storage_pool
+
+  @base.ReleaseTracks(base.ReleaseTrack.BETA)
+  def ParseUpdatedStoragePoolConfigBeta(
+      self,
+      storagepool_config,
+      description=None,
+      active_directory=None,
+      labels=None,
+      capacity=None,
+  ):
     """Parse update information into an updated Storage Pool message."""
     if capacity is not None:
       storagepool_config.capacityGib = capacity
+    if active_directory is not None:
+      storagepool_config.activeDirectory = active_directory
     if description is not None:
       storagepool_config.description = description
     if labels is not None:
@@ -242,3 +311,41 @@ class AlphaStoragePoolsAdapter(BetaStoragePoolsAdapter):
     self.release_track = base.ReleaseTrack.ALPHA
     self.client = GetClientInstance(release_track=self.release_track)
     self.messages = GetMessagesModule(release_track=self.release_track)
+
+  @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
+  def ParseStoragePoolConfigAlpha(
+      self, name, service_level, capacity, description, labels
+  ):
+    """Parses the command line arguments for Create Storage Pool into a config.
+
+    Args:
+      name: the name of the Storage Pool
+      service_level: the service level of the Storage Pool
+      capacity: the storage capacity of the Storage Pool
+      description: the description of the Storage Pool
+      labels: the parsed labels value
+
+    Returns:
+      The configuration that will be used as the request body for creating a
+      Cloud NetApp Storage Pool.
+    """
+    storage_pool = self.messages.StoragePool()
+    storage_pool.name = name
+    storage_pool.serviceLevel = service_level
+    storage_pool.capacityGib = capacity
+    storage_pool.description = description
+    storage_pool.labels = labels
+    return storage_pool
+
+  @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
+  def ParseUpdatedStoragePoolConfigAlpha(
+      self, storagepool_config, description=None, labels=None, capacity=None
+  ):
+    """Parse update information into an updated Storage Pool message."""
+    if capacity is not None:
+      storagepool_config.capacityGib = capacity
+    if description is not None:
+      storagepool_config.description = description
+    if labels is not None:
+      storagepool_config.labels = labels
+    return storagepool_config

@@ -116,6 +116,15 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
       if field == 'executionConfigs':
         SetExecutionConfig(messages, resource, value)
         continue
+      if field == 'deployParameters' and kind == TARGET_KIND_V1BETA1:
+        SetDeployParametersForTarget(messages, resource, value)
+        continue
+      if field == 'serialPipeline' and kind == DELIVERY_PIPELINE_KIND_V1BETA1:
+        serial_pipeline = manifest.get('serialPipeline')
+        stages = serial_pipeline.get('stages')
+        for stage in stages:
+          SetDeployParametersForPipelineStage(messages, stage)
+
       setattr(resource, field, value)
 
   # Sets the properties in metadata.
@@ -218,3 +227,77 @@ def SetExecutionConfig(messages, target, execution_configs):
               valid_choices=USAGE_CHOICES))
 
     target.executionConfigs.append(execution_config_message)
+
+
+def SetDeployParametersForPipelineStage(messages, stage):
+  """Sets the deployParameter field of cloud deploy delivery pipeline stage message.
+
+  Args:
+   messages: module containing the definitions of messages for Cloud Deploy.
+   stage:
+    dict[str,str], cloud deploy stage yaml definition.
+  """
+
+  deploy_parameters = stage.get('deployParameters')
+  if deploy_parameters is None:
+    return
+
+  dps_message = getattr(messages, 'DeployParameters')
+  dps_values = []
+
+  for dp in deploy_parameters:
+    dps_value = dps_message()
+    values = dp.get('values')
+    if values:
+      values_message = dps_message.ValuesValue
+      values_dict = values_message()
+
+      for key, value in values.items():
+        values_dict.additionalProperties.append(
+            values_message.AdditionalProperty(
+                key=key,
+                value=value))
+      dps_value.values = values_dict
+
+    match_target_labels = dp.get('matchTargetLabels')
+    if match_target_labels:
+      mtls_message = dps_message.MatchTargetLabelsValue
+      mtls_dict = mtls_message()
+
+      for key, value in match_target_labels.items():
+        mtls_dict.additionalProperties.append(
+            mtls_message.AdditionalProperty(
+                key=key,
+                value=value))
+      dps_value.matchTargetLabels = mtls_dict
+
+    dps_values.append(dps_value)
+
+  stage['deployParameters'] = dps_values
+
+
+def SetDeployParametersForTarget(messages,
+                                 target, deploy_parameters=None):
+  """Sets the deployParameters field of cloud deploy target message.
+
+  Args:
+   messages: module containing the definitions of messages for Cloud Deploy.
+   target: googlecloudsdk.generated_clients.apis.clouddeploy.Target message.
+   deploy_parameters:
+    dict[str,str], a dict of deploy parameters (key,value) pairs.
+  """
+
+  if deploy_parameters is None:
+    return
+
+  dps_message = getattr(messages,
+                        deploy_util.ResourceType.TARGET.value
+                        ).DeployParametersValue
+  dps_value = dps_message()
+  for key, value in deploy_parameters.items():
+    dps_value.additionalProperties.append(
+        dps_message.AdditionalProperty(
+            key=key,
+            value=value))
+  target.deployParameters = dps_value
+

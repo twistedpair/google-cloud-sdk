@@ -27,12 +27,13 @@ def CreateDeprecationAction(name):
   return actions.DeprecationAction(
       name,
       warn=(
-          'The `--no-serve-while-stale` option is deprecated and will be '
-          'removed in an upcoming release; use `--serve-while-stale` instead. '
-          'If you\'re currently using this argument, you should remove it from'
-          ' your workflows.'),
+          'The %s option is deprecated and will be removed in an upcoming'
+          " release. If you're currently using this argument, you should remove"
+          ' it from your workflows.' % name
+      ),
       removed=False,
-      action='store_true')
+      action='store_true',
+  )
 
 
 def AddCdnPolicyArgs(parser, resource_name, update_command=False):
@@ -97,7 +98,10 @@ def AddCdnPolicyArgs(parser, resource_name, update_command=False):
   )
   if update_command:
     client_ttl_group.add_argument(
-        '--no-client-ttl', action='store_true', help='Clears client TTL value.')
+        '--no-client-ttl',
+        action=CreateDeprecationAction('--no-client-ttl'),
+        help='Clears client TTL value.',
+    )
   default_ttl_help = """\
   Specifies the default TTL for cached content served by this origin for
   responses that do not have an existing valid TTL (max-age or s-maxage).
@@ -162,7 +166,10 @@ def AddCdnPolicyArgs(parser, resource_name, update_command=False):
   )
   if update_command:
     max_ttl_group.add_argument(
-        '--no-max-ttl', action='store_true', help='Clears max TTL value.')
+        '--no-max-ttl',
+        action=CreateDeprecationAction('--no-max-ttl'),
+        help='Clears max TTL value.',
+    )
   custom_response_header_help = """\
   Custom headers that the external HTTP(S) load balancer adds to proxied responses.
   For the list of headers, see [Creating custom headers](https://cloud.google.com/load-balancing/docs/custom-headers).

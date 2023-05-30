@@ -18,9 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import progress_callbacks
+from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.core import log
 
@@ -32,10 +35,10 @@ class DeleteObjectTask(task.Task):
     """Initializes task.
 
     Args:
-      object_url (storage_url.CloudUrl): URL of the object to delete.
+      object_url (CloudUrl|FileUrl): URL of the object to delete.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
-      verbose (bool): If true, prints status messages. Otherwise, does not
-          print anything.
+      verbose (bool): If true, prints status messages. Otherwise, does not print
+        anything.
     """
     super(DeleteObjectTask, self).__init__()
     self._object_url = object_url
@@ -45,14 +48,20 @@ class DeleteObjectTask(task.Task):
     self.parallel_processing_key = object_url.url_string
 
   def execute(self, task_status_queue=None):
-    provider = self._object_url.scheme
-    request_config = request_config_factory.get_request_config(
-        self._object_url, user_request_args=self._user_request_args)
-
     if self._verbose:
       log.status.Print('Removing {}...'.format(self._object_url))
-    api_factory.get_api(provider).delete_object(self._object_url,
-                                                request_config)
+
+    if isinstance(self._object_url, storage_url.CloudUrl):
+      provider = self._object_url.scheme
+      request_config = request_config_factory.get_request_config(
+          self._object_url, user_request_args=self._user_request_args
+      )
+      api_factory.get_api(provider).delete_object(
+          self._object_url, request_config
+      )
+    else:
+      os.remove(self._object_url.object_name)
+
     if task_status_queue:
       progress_callbacks.increment_count_callback(task_status_queue)
 

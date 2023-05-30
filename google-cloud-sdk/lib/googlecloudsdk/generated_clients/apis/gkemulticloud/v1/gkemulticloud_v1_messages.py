@@ -416,27 +416,7 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       `projects//locations//awsClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
       details on Google Cloud Platform resource names.
-    updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. The elements of the repeated paths field can
-      only include these fields from AwsCluster: * `description`. *
-      `annotations`. * `control_plane.version`. * `authorization.admin_users`.
-      * `control_plane.aws_services_authentication.role_arn`. *
-      `control_plane.aws_services_authentication.role_session_name`. *
-      `control_plane.config_encryption.kms_key_arn`. *
-      `control_plane.instance_type`. * `control_plane.security_group_ids`. *
-      `control_plane.proxy_config`. * `control_plane.proxy_config.secret_arn`.
-      * `control_plane.proxy_config.secret_version`. *
-      `control_plane.root_volume.size_gib`. *
-      `control_plane.root_volume.volume_type`. *
-      `control_plane.root_volume.iops`. *
-      `control_plane.root_volume.throughput`. *
-      `control_plane.root_volume.kms_key_arn`. * `control_plane.ssh_config`. *
-      `control_plane.ssh_config.ec2_key_pair`. *
-      `control_plane.instance_placement.tenancy`. *
-      `control_plane.iam_instance_profile`. *
-      `logging_config.component_config.enable_components`. *
-      `control_plane.tags`. *
-      `monitoring_config.managed_prometheus_config.enabled`.
+    updateMask: Required.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -1352,8 +1332,8 @@ class GoogleCloudGkemulticloudV1AwsClusterNetworking(_messages.Message):
   Fields:
     perNodePoolSgRulesDisabled: Optional. Disable the per node pool subnet
       security group rules on the control plane security group. When set to
-      true, you must also provide one or more security groups that ensure
-      node pools are able to send requests to the control plane on TCP/443 and
+      true, you must also provide one or more security groups that ensure node
+      pools are able to send requests to the control plane on TCP/443 and
       TCP/8132. Failure to do so may result in unavailable node pools.
     podAddressCidrBlocks: Required. All pods in the cluster are assigned an
       IPv4 address from these ranges. Only a single range is supported. This
@@ -1540,13 +1520,27 @@ class GoogleCloudGkemulticloudV1AwsK8sVersionInfo(_messages.Message):
   r"""Kubernetes version information of GKE cluster on AWS.
 
   Fields:
-    enabled: Optional. Whether new clusters can be created using this version.
-      This is false for end of life cluster versions.
+    enabled: Optional. True if the version is available for cluster creation.
+      If a version is enabled for creation, it can be used to create new
+      clusters. Otherwise, cluster creation will fail. However, cluster
+      upgrade operations may succeed, even if the version is not enabled.
+    endOfLife: Optional. True if this cluster version belongs to a minor
+      version that has reached its end of life and is no longer in scope to
+      receive security and bug fixes.
+    endOfLifeDate: Optional. The estimated date (in Pacific Time) when this
+      cluster version will reach its end of life. The actual date when a
+      version gets turned down will generally be after this date, but not
+      before.
+    releaseDate: Optional. The date (in Pacific Time) when the cluster version
+      was released.
     version: Kubernetes version name.
   """
 
   enabled = _messages.BooleanField(1)
-  version = _messages.StringField(2)
+  endOfLife = _messages.BooleanField(2)
+  endOfLifeDate = _messages.MessageField('GoogleTypeDate', 3)
+  releaseDate = _messages.MessageField('GoogleTypeDate', 4)
+  version = _messages.StringField(5)
 
 
 class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
@@ -2426,16 +2420,30 @@ class GoogleCloudGkemulticloudV1AzureJsonWebKeys(_messages.Message):
 
 
 class GoogleCloudGkemulticloudV1AzureK8sVersionInfo(_messages.Message):
-  r"""Information about a supported Kubernetes version.
+  r"""Kubernetes version information of GKE cluster on Azure.
 
   Fields:
-    enabled: Optional. Whether new clusters can be created using this version.
-      This is false for end of life cluster versions.
-    version: A supported Kubernetes version (for example, `1.19.10-gke.1000`)
+    enabled: Optional. True if the version is available for cluster creation.
+      If a version is enabled for creation, it can be used to create new
+      clusters. Otherwise, cluster creation will fail. However, cluster
+      upgrade operations may succeed, even if the version is not enabled.
+    endOfLife: Optional. True if this cluster version belongs to a minor
+      version that has reached its end of life and is no longer in scope to
+      receive security and bug fixes.
+    endOfLifeDate: Optional. The estimated date (in Pacific Time) when this
+      cluster version will reach its end of life. The actual date when a
+      version gets turned down will generally be after this date, but not
+      before.
+    releaseDate: Optional. The date (in Pacific Time) when the cluster version
+      was released.
+    version: Kubernetes version name (for example, `1.19.10-gke.1000`)
   """
 
   enabled = _messages.BooleanField(1)
-  version = _messages.StringField(2)
+  endOfLife = _messages.BooleanField(2)
+  endOfLifeDate = _messages.MessageField('GoogleTypeDate', 3)
+  releaseDate = _messages.MessageField('GoogleTypeDate', 4)
+  version = _messages.StringField(5)
 
 
 class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
@@ -3345,6 +3353,32 @@ class GoogleRpcStatus(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class GoogleTypeDate(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values. * A month and day, with a zero year (for example, an
+  anniversary). * A year on its own, with a zero month and a zero day. * A
+  year and month, with a zero day (for example, a credit card expiration
+  date). Related types: * google.type.TimeOfDay * google.type.DateTime *
+  google.protobuf.Timestamp
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):

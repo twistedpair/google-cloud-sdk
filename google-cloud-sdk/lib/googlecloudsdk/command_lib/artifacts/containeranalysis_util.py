@@ -43,6 +43,7 @@ class ContainerAnalysisMetadata:
     self.upgrade = UpgradeSummary()
     self.compliance = ComplianceSummary()
     self.dsse_attestation = DsseAttestaionSummary()
+    self.sbom_reference = SbomReferenceSummary()
 
   def AddOccurrence(self, occ, include_build=True):
     """Adds occurrences retrieved from containeranalysis API.
@@ -86,6 +87,8 @@ class ContainerAnalysisMetadata:
       self.upgrade.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.COMPLIANCE:
       self.compliance.AddOccurrence(occ)
+    elif occ.kind == messages.Occurrence.KindValueValuesEnum.SBOM_REFERENCE:
+      self.sbom_reference.AddOccurrence(occ)
     # DSSEAttestation should also have its own section, even if it was already
     # added to the provenance section, as a user can make a non-provenance dsse.
     if occ.kind == messages.Occurrence.KindValueValuesEnum.DSSE_ATTESTATION:
@@ -122,6 +125,8 @@ class ContainerAnalysisMetadata:
       view['COMPLIANCE'] = self.compliance.compliances
     if self.dsse_attestation.dsse_attestations:
       view['DSSE_ATTESTATION'] = self.dsse_attestation.dsse_attestations
+    if self.sbom_reference.sbom_references:
+      view['SBOM_REFERENCE'] = self.sbom_reference.sbom_references
     view.update(self.vulnerability.ImagesListView())
     return view
 
@@ -318,6 +323,16 @@ class DsseAttestaionSummary:
 
   def AddOccurrence(self, occ):
     self.dsse_attestations.append(occ)
+
+
+class SbomReferenceSummary:
+  """SbomReferenceSummary holds image SBOM reference information."""
+
+  def __init__(self):
+    self.sbom_references = []
+
+  def AddOccurrence(self, occ):
+    self.sbom_references.append(occ)
 
 
 def GetContainerAnalysisMetadata(docker_version, args):

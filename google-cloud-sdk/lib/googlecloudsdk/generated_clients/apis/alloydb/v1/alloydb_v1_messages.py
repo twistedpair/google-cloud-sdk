@@ -430,6 +430,22 @@ class AlloydbProjectsLocationsClustersInstancesGetRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
+class AlloydbProjectsLocationsClustersInstancesInjectFaultRequest(
+    _messages.Message
+):
+  r"""A AlloydbProjectsLocationsClustersInstancesInjectFaultRequest object.
+
+  Fields:
+    injectFaultRequest: A InjectFaultRequest resource to be passed as the
+      request body.
+    name: Required. The name of the resource. For the required format, see the
+      comment on the Instance.name field.
+  """
+
+  injectFaultRequest = _messages.MessageField('InjectFaultRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AlloydbProjectsLocationsClustersInstancesListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersInstancesListRequest object.
 
@@ -1422,7 +1438,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class EncryptionConfig(_messages.Message):
   r"""EncryptionConfig describes the encryption config of a cluster or a
   backup that is encrypted with a CMEK (customer-managed encryption key).
@@ -1605,6 +1620,48 @@ class GoogleTypeTimeOfDay(_messages.Message):
   minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class InjectFaultRequest(_messages.Message):
+  r"""Message for triggering fault injection on an instance
+
+  Enums:
+    FaultTypeValueValuesEnum: Required. The type of fault to be injected in an
+      instance.
+
+  Fields:
+    faultType: Required. The type of fault to be injected in an instance.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation (e.g.
+      permission checks and any other type of validation), but do not actually
+      execute the fault injection.
+  """
+
+  class FaultTypeValueValuesEnum(_messages.Enum):
+    r"""Required.
+
+    The type of fault to be injected in an instance.
+
+    Values:
+      FAULT_TYPE_UNSPECIFIED: The fault type is unknown.
+      STOP_VM: Stop the VM
+    """
+    FAULT_TYPE_UNSPECIFIED = 0
+    STOP_VM = 1
+
+  faultType = _messages.EnumField('FaultTypeValueValuesEnum', 1)
+  requestId = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
 
 
 class Instance(_messages.Message):

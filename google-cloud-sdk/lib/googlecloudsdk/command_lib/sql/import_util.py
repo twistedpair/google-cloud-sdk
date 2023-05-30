@@ -28,10 +28,9 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
-def AddBaseImportFlags(parser,
-                       filetype,
-                       gz_supported=True,
-                       user_supported=True):
+def AddBaseImportFlags(
+    parser, filetype, gz_supported=True, user_supported=True
+):
   """Adds the base flags for importing data.
 
   Args:
@@ -43,13 +42,43 @@ def AddBaseImportFlags(parser,
   """
   base.ASYNC_FLAG.AddToParser(parser)
   flags.AddInstanceArgument(parser)
-  uri_help_text = ('Path to the {filetype} file in Google Cloud Storage from '
-                   'which the import is made. The URI is in the form '
-                   '`gs://bucketName/fileName`.')
+  uri_help_text = (
+      'Path to the {filetype} file in Google Cloud Storage from '
+      'which the import is made. The URI is in the form '
+      '`gs://bucketName/fileName`.'
+  )
   if gz_supported:
-    uri_help_text = uri_help_text + (' Compressed gzip files (.gz) are also '
-                                     'supported.')
+    uri_help_text = uri_help_text + (
+        ' Compressed gzip files (.gz) are also supported.'
+    )
   flags.AddUriArgument(parser, uri_help_text.format(filetype=filetype))
+
+  if user_supported:
+    flags.AddUser(parser, 'PostgreSQL user for this import operation.')
+
+
+def AddBakImportFlags(parser, filetype, gz_supported=True, user_supported=True):
+  """Adds the base flags for importing data for bak import.
+
+  Args:
+    parser: An argparse parser that you can use to add arguments that go on the
+      command line after this command. Positional arguments are allowed.
+    filetype: String, description of the file type being imported.
+    gz_supported: Boolean, if True then .gz compressed files are supported.
+    user_supported: Boolean, if True then a Postgres user can be specified.
+  """
+  base.ASYNC_FLAG.AddToParser(parser)
+  flags.AddInstanceArgument(parser)
+  uri_help_text = (
+      'Path to the {filetype} file in Google Cloud Storage from '
+      'which the import is made. The URI is in the form '
+      '`gs://bucketName/fileName`.'
+  )
+  if gz_supported:
+    uri_help_text = uri_help_text + (
+        ' Compressed gzip files (.gz) are also supported.'
+    )
+  flags.AddBakImportUriArgument(parser, uri_help_text.format(filetype=filetype))
 
   if user_supported:
     flags.AddUser(parser, 'PostgreSQL user for this import operation.')
@@ -76,42 +105,82 @@ def RunImportCommand(args, client, import_context):
   """
   sql_client = client.sql_client
   sql_messages = client.sql_messages
+  is_bak_import = (
+      import_context.fileType
+      == sql_messages.ImportContext.FileTypeValueValuesEnum.BAK
+  )
 
   validate.ValidateInstanceName(args.instance)
+  if is_bak_import:
+    validate.ValidateURI(args.uri, args.recovery_only)
   instance_ref = client.resource_parser.Parse(
       args.instance,
       params={'project': properties.VALUES.core.project.GetOrFail},
-      collection='sql.instances')
+      collection='sql.instances',
+  )
 
-  console_io.PromptContinue(
-      message='Data from [{uri}] will be imported to [{instance}].'.format(
-          uri=args.uri, instance=args.instance),
-      default=True,
-      cancel_on_no=True)
+  if is_bak_import and args.recovery_only:
+    console_io.PromptContinue(
+        message=(
+            'Bring database [{database}] online with recovery-only.'.format(
+                database=args.database
+            )
+        ),
+        default=True,
+        cancel_on_no=True,
+    )
+  else:
+    console_io.PromptContinue(
+        message='Data from [{uri}] will be imported to [{instance}].'.format(
+            uri=args.uri, instance=args.instance
+        ),
+        default=True,
+        cancel_on_no=True,
+    )
 
   import_request = sql_messages.SqlInstancesImportRequest(
       instance=instance_ref.instance,
       project=instance_ref.project,
       instancesImportRequest=sql_messages.InstancesImportRequest(
-          importContext=import_context))
+          importContext=import_context
+      ),
+  )
 
   result_operation = sql_client.instances.Import(import_request)
 
   operation_ref = client.resource_parser.Create(
       'sql.operations',
       operation=result_operation.name,
-      project=instance_ref.project)
+      project=instance_ref.project,
+  )
 
   if args.async_:
     return sql_client.operations.Get(
         sql_messages.SqlOperationsGetRequest(
-            project=operation_ref.project, operation=operation_ref.operation))
+            project=operation_ref.project, operation=operation_ref.operation
+        )
+    )
+
+  message = 'Importing data into Cloud SQL instance'
+  if is_bak_import and args.recovery_only:
+    message = 'Bring database online'
 
   operations.OperationsV1Beta4.WaitForOperation(
-      sql_client, operation_ref, 'Importing data into Cloud SQL instance')
+      sql_client, operation_ref, message
+  )
 
-  log.status.write('Imported data from [{bucket}] into [{instance}].\n'.format(
-      instance=instance_ref, bucket=args.uri))
+  if is_bak_import and args.recovery_only:
+    log.status.write(
+        'Bring database [{database}] online with recovery-only.\n'.format(
+            database=args.database
+        )
+    )
+  else:
+    log.status.write(
+        'Imported data from [{bucket}] into [{instance}].\n'.format(
+            instance=instance_ref, bucket=args.uri
+        )
+    )
 
   return None
 
@@ -128,9 +197,9 @@ def RunSqlImportCommand(args, client):
     A dict representing the import operation resource, if '--async' is used,
     or else None.
   """
-  sql_import_context = import_util.SqlImportContext(client.sql_messages,
-                                                    args.uri, args.database,
-                                                    args.user)
+  sql_import_context = import_util.SqlImportContext(
+      client.sql_messages, args.uri, args.database, args.user
+  )
   return RunImportCommand(args, client, sql_import_context)
 
 
@@ -147,9 +216,17 @@ def RunCsvImportCommand(args, client):
     or else None.
   """
   csv_import_context = import_util.CsvImportContext(
-      client.sql_messages, args.uri, args.database, args.table, args.columns,
-      args.user, args.quote, args.escape, args.fields_terminated_by,
-      args.lines_terminated_by)
+      client.sql_messages,
+      args.uri,
+      args.database,
+      args.table,
+      args.columns,
+      args.user,
+      args.quote,
+      args.escape,
+      args.fields_terminated_by,
+      args.lines_terminated_by,
+  )
   return RunImportCommand(args, client, csv_import_context)
 
 
@@ -165,10 +242,16 @@ def RunBakImportCommand(args, client):
     A dict representing the import operation resource, if '--async' is used,
     or else None.
   """
-  sql_import_context = import_util.BakImportContext(client.sql_messages,
-                                                    args.uri, args.database,
-                                                    args.cert_path,
-                                                    args.pvk_path,
-                                                    args.pvk_password,
-                                                    args.striped)
+  sql_import_context = import_util.BakImportContext(
+      client.sql_messages,
+      args.uri,
+      args.database,
+      args.cert_path,
+      args.pvk_path,
+      args.pvk_password,
+      args.striped,
+      args.no_recovery,
+      args.recovery_only,
+      args.bak_type,
+  )
   return RunImportCommand(args, client, sql_import_context)

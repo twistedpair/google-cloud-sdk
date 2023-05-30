@@ -19,6 +19,16 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
+def ParseBakType(sql_messages, bak_type):
+  if bak_type is None:
+    return (
+        sql_messages.ExportContext.BakExportOptionsValue.BakTypeValueValuesEnum.FULL
+    )
+  return sql_messages.ExportContext.BakExportOptionsValue.BakTypeValueValuesEnum.lookup_by_name(
+      bak_type.upper()
+  )
+
+
 def SqlExportContext(sql_messages,
                      uri,
                      database=None,
@@ -92,7 +102,15 @@ def CsvExportContext(sql_messages,
           linesTerminatedBy=lines_terminated_by))
 
 
-def BakExportContext(sql_messages, uri, database, stripe_count, striped):
+def BakExportContext(
+    sql_messages,
+    uri,
+    database,
+    stripe_count,
+    striped,
+    bak_type,
+    differential_base,
+):
   """Generates the ExportContext for the given args, for exporting to BAK.
 
   Args:
@@ -102,14 +120,21 @@ def BakExportContext(sql_messages, uri, database, stripe_count, striped):
       '--database' flag.
     stripe_count: How many stripes to perform the export with.
     striped: Whether the export should be striped.
+    bak_type: Type of bak file that will be exported. SQL Server only.
+    differential_base: Whether the bak file export can be used as differential
+      base for future differential backup. SQL Server only.
 
   Returns:
     ExportContext, for use in InstancesExportRequest.exportContext.
   """
-  bak_export_options = None
-  if striped is not None or stripe_count is not None:
-    bak_export_options = sql_messages.ExportContext.BakExportOptionsValue(
-        stripeCount=stripe_count, striped=striped)
+  bak_export_options = sql_messages.ExportContext.BakExportOptionsValue()
+  if striped is not None:
+    bak_export_options.striped = striped
+  if stripe_count is not None:
+    bak_export_options.stripeCount = stripe_count
+
+  bak_export_options.differentialBase = differential_base
+  bak_export_options.bakType = ParseBakType(sql_messages, bak_type)
 
   return sql_messages.ExportContext(
       kind='sql#exportContext',

@@ -6702,11 +6702,14 @@ class QueryDataRequest(_messages.Message):
       query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BU
       CKET_ID]/views/[VIEW_ID]Requires appropriate permissions on each
       resource such as 'logging.views.access' on log view resources.
+    timeout: Optional. The timeout for the query. BigQuery will terminate the
+      job if this duration is exceeded. If not set, the default is 5 minutes.
   """
 
   disableQueryCaching = _messages.BooleanField(1)
   querySteps = _messages.MessageField('QueryStep', 2, repeated=True)
   resourceNames = _messages.StringField(3, repeated=True)
+  timeout = _messages.StringField(4)
 
 
 class QueryDataResponse(_messages.Message):
@@ -7230,6 +7233,9 @@ class Settings(_messages.Message):
       obtain the service account ID.See Enabling CMEK for Log Router
       (https://cloud.google.com/logging/docs/routing/managed-encryption) for
       more information.
+    loggingServiceAccountId: Output only. The service account for the given
+      container. Sinks use this service account as their writer_identity if no
+      custom service account is provided.
     name: Output only. The resource name of the settings.
     storageLocation: Optional. The Cloud region that will be used for _Default
       and _Required log buckets for newly created projects and folders. For
@@ -7240,8 +7246,9 @@ class Settings(_messages.Message):
   disableDefaultSink = _messages.BooleanField(1)
   kmsKeyName = _messages.StringField(2)
   kmsServiceAccountId = _messages.StringField(3)
-  name = _messages.StringField(4)
-  storageLocation = _messages.StringField(5)
+  loggingServiceAccountId = _messages.StringField(4)
+  name = _messages.StringField(5)
+  storageLocation = _messages.StringField(6)
 
 
 class SourceLocation(_messages.Message):

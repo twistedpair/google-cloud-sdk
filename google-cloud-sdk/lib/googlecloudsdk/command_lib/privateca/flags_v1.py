@@ -939,7 +939,6 @@ _ENCODING_FORMAT_MAPPER = arg_utils.ChoiceEnumMapper(
     help_str='The encoding format of the content published to storage buckets.',
     message_enum=privateca_base.GetMessagesModule(
         'v1').PublishingOptions.EncodingFormatValueValuesEnum,
-    hidden=True,
     custom_mappings=_ENCODING_FORMAT_MAPPING)
 
 _TIER_MAPPING = {

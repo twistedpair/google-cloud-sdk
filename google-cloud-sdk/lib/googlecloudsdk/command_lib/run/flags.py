@@ -240,17 +240,22 @@ def AddAllowUnauthenticatedFlag(parser):
   )
 
 
-def AddAsyncFlag(parser, default_async_for_cluster=False):
+def AddAsyncFlag(parser, default_async_for_cluster=False, is_job=False):
   """Add an async flag."""
+  help_text = """\
+    Return immediately, without waiting for the operation in progress to
+    complete."""
+  if is_job:
+    help_text += ' Defaults to --no-async.'
+  else:
+    help_text += """ Defaults to --no-async for Cloud Run (fully managed) and --async
+    for Cloud Run for Anthos."""
   if default_async_for_cluster:
     modified_async_flag = base.Argument(
         '--async',
         action=arg_parsers.StoreTrueFalseAction,
         dest='async_',
-        help="""\
-    Return immediately, without waiting for the operation in progress to
-    complete. Defaults to --no-async for Cloud Run (fully managed) and --async
-    for Cloud Run for Anthos.""",
+        help=help_text,
     )
     modified_async_flag.AddToParser(parser)
   else:

@@ -126,6 +126,7 @@ class RunAppsOperations(object):
     name = app_dict.pop('name')
     appconfig = {'config': yaml.dump(yaml_content).encode('utf-8')}
     match_type_names = []
+    vpc = False
 
     for res_type, res_configs in app_dict.items():
       if res_type == 'name':
@@ -133,7 +134,11 @@ class RunAppsOperations(object):
       for config in res_configs:
         res_name = config['name']
         match_type_names.append({'type': res_type, 'name': res_name})
+        if res_type == 'redis':
+          vpc = True
 
+    if vpc:
+      match_type_names.append({'type': 'vpc', 'name': '*'})
     match_type_names.sort(key=lambda x: x['type'])
 
     self.ApplyAppConfig(

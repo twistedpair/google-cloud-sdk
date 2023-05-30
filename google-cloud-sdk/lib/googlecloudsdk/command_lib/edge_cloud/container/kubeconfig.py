@@ -144,8 +144,13 @@ def GenerateKubeconfig(cluster, context, cmd_path, cmd_args, exec_args):
     log.warning('Cluster is missing certificate authority data.')
   else:
     cluster_kwargs['ca_data'] = _GetCaData(cluster.clusterCaCertificate)
+  # Note that we use port 6443 for RCP clusters if not specified, and we rely
+  # on the cluster.port for LCP clusters (default: 6443).
+  port = getattr(cluster, 'port', 6443)
+  if port is None:
+    port = 6443
   kubeconfig.clusters[context] = Cluster(
-      context, 'https://{}:6443'.format(cluster.endpoint), **cluster_kwargs)
+      context, 'https://{}:{}'.format(cluster.endpoint, port), **cluster_kwargs)
   kubeconfig.SetCurrentContext(context)
   kubeconfig.SaveToFile()
   log.status.Print(

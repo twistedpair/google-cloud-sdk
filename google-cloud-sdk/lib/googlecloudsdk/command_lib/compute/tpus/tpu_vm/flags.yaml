@@ -146,6 +146,42 @@ labels:
     Resource labels to represent user-provided metadata. See
     https://cloud.google.com/compute/docs/labeling-resources for details.
 
+update_labels:
+  arg_name: update-labels
+  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+  required: false
+  metavar: KEY=VALUE
+  help_text: |
+    Resource labels to update that represent user-provided metadata. If a label exists, its value is
+    modified. Otherwise, a new label is created.
+    See https://cloud.google.com/compute/docs/labeling-resources for details.
+
+clear_labels:
+  arg_name: clear-labels
+  type: bool
+  default: false
+  required: false
+  help_text: |
+    Remove all labels. If `--update-labels` is also specified then `--clear-labels` is applied
+    first.
+
+    For example, to remove all labels:
+
+      $ {command} --clear-labels
+
+    To remove all existing labels and create two new labels, 'foo' and 'baz':
+
+      $ {command} --clear-labels --update-labels foo=bar,baz=qux
+
+remove_labels:
+  arg_name: remove-labels
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  required: false
+  metavar: KEY
+  help_text: |
+    List of label keys to remove. If a label does not exist it is silently ignored. If
+    `--update-labels` is also specified then `--update-labels` is applied first.
+
 tags:
   api_field: node.tags
   arg_name: tags

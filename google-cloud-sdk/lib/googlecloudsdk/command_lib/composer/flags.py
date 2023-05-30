@@ -799,14 +799,14 @@ TRIGGERER_COUNT = base.Argument(
     """.format(MIN_TRIGGERER_COMPOSER_VERSION, MIN_TRIGGERER_AIRFLOW_VERSION),
 )
 
+# TODO(b/259928145): Update Composer version in requirements
 ENABLE_HIGH_RESILIENCE = base.Argument(
     '--enable-high-resilience',
     default=None,
-    hidden=True,
     const=True,
     action='store_const',
     help="""\
-    Enable use of a high resilience, supported in the Environments with Composer 2.X or greater.
+    Enable use of a high resilience, supported for Composer 2 Environments.
     """
 )
 
@@ -818,6 +818,30 @@ DISABLE_VPC_CONNECTIVITY = base.Argument(
     action='store_const',
     help="""\
     Disable connectivity with a user's VPC network,
+    supported in Composer {} environments or greater.
+    """.format(MIN_COMPOSER25_VERSION),
+)
+
+# Composer 25 only for update
+ENABLE_PRIVATE_ENVIRONMENT_UPDATE_FLAG = base.Argument(
+    '--enable-private-environment',
+    default=None,
+    hidden=True,
+    action='store_true',
+    help="""\
+    Disable internet connection from any Composer component,
+    supported in Composer {} environments or greater.
+    """.format(MIN_COMPOSER25_VERSION),
+)
+
+# Composer 25 only for update
+DISABLE_PRIVATE_ENVIRONMENT_UPDATE_FLAG = base.Argument(
+    '--disable-private-environment',
+    default=None,
+    hidden=True,
+    action='store_true',
+    help="""\
+    Enable internet connection from any Composer component,
     supported in Composer {} environments or greater.
     """.format(MIN_COMPOSER25_VERSION),
 )
@@ -1759,6 +1783,9 @@ def AddComposer25FlagsToGroup(update_type_group):
   )
   NETWORK_FLAG.AddToParser(network_subnetwork_group)
   SUBNETWORK_FLAG.AddToParser(network_subnetwork_group)
+
+  ENABLE_PRIVATE_ENVIRONMENT_UPDATE_FLAG.AddToParser(update_type_group)
+  DISABLE_PRIVATE_ENVIRONMENT_UPDATE_FLAG.AddToParser(update_type_group)
 
 
 def FallthroughToLocationProperty(location_refs, flag_name, failure_msg):

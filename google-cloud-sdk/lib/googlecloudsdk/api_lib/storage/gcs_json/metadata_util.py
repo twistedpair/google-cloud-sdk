@@ -158,7 +158,7 @@ def get_bucket_resource_from_metadata(metadata):
               metadata.defaultObjectAcl
           )
       ),
-      default_event_based_hold=metadata.defaultEventBasedHold,
+      default_event_based_hold=metadata.defaultEventBasedHold or None,
       default_kms_key=getattr(metadata.encryption, 'defaultKmsKeyName', None),
       default_storage_class=metadata.storageClass,
       etag=metadata.etag,

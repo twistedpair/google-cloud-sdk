@@ -31,15 +31,15 @@ ASSOCIATION_RESOURCE_NAME = "FIREWALL_ENDPOINT_ASSOCIATION"
 ASSOCIATION_RESOURCE_COLLECTION = "networksecurity.projects.locations.firewallEndpointAssociations"
 ENDPOINT_RESOURCE_NAME = "FIREWALL_ENDPOINT"
 ENDPOINT_RESOURCE_COLLECTION = "networksecurity.organizations.locations.firewallEndpoints"
-API_VERSION = "v1alpha1"
 
 
-def AddAssociationResource(parser):
+def AddAssociationResource(release_track, parser):
   """Adds Association resource."""
+  api_version = activation_api.GetApiVersion(release_track)
   resource_spec = concepts.ResourceSpec(
       ASSOCIATION_RESOURCE_COLLECTION,
       "firewall endpoint association",
-      api_version=API_VERSION,
+      api_version=api_version,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=concepts.ResourceParameterAttributeConfig(
           "zone",
@@ -61,16 +61,16 @@ def AddAssociationResource(parser):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
-def AddEndpointResource(parser):
+def AddEndpointResource(release_track, parser):
   """Adds Firewall Plus endpoint resource."""
+  api_version = activation_api.GetApiVersion(release_track)
   collection_info = resources.REGISTRY.Clone().GetCollectionInfo(
-      ASSOCIATION_RESOURCE_COLLECTION,
-      API_VERSION
+      ASSOCIATION_RESOURCE_COLLECTION, api_version
   )
   resource_spec = concepts.ResourceSpec(
       ENDPOINT_RESOURCE_COLLECTION,
       "firewall endpoint",
-      api_version=API_VERSION,
+      api_version=api_version,
       organizationsId=concepts.ResourceParameterAttributeConfig(
           "organization",
           "Organization ID to which the changes should apply.",
@@ -85,8 +85,8 @@ def AddEndpointResource(parser):
               deps.FullySpecifiedAnchorFallthrough(
                   deps.ArgFallthrough(ASSOCIATION_RESOURCE_NAME),
                   collection_info,
-                  "locationsId"
-              )
+                  "locationsId",
+              ),
           ],
       ),
       firewallEndpointsId=concepts.ResourceParameterAttributeConfig(

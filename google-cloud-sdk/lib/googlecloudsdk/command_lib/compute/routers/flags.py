@@ -504,6 +504,15 @@ def AddGetNatMappingInfoArgs(parser):
       help='The NAT name to filter out NAT mapping information')
 
 
+def AddGetNatIpInfoArgs(parser):
+  """Adds common arguments for get-ip-mapping-info."""
+
+  parser.add_argument(
+      '--nat-name',
+      required=False,
+      help='The NAT name to filter out NAT IP information')
+
+
 def AddEncryptedInterconnectRouter(parser):
   """Adds encrypted interconnect router flag."""
   parser.add_argument(

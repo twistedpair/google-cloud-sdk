@@ -83,8 +83,8 @@ def GetDurationHelpText():
 def GetSharedSettingFlag(custom_name=None):
   """Gets the --share-setting flag."""
   help_text = """\
-  Specify if this reservation is shared, and if so, the type of sharing. If you
-  omit this flag, this value is local (not shared) by default.
+  Specify if this future reservation is shared, and if so, the type of sharing.
+  If you omit this flag, this value is local (not shared) by default.
   """
   return base.Argument(
       custom_name if custom_name else '--share-setting',
@@ -95,14 +95,25 @@ def GetSharedSettingFlag(custom_name=None):
 def GetShareWithFlag(custom_name=None):
   """Gets the --share-with flag."""
   help_text = """\
-  If this reservation is shared (--share-setting is not local), provide a list
-  of all of the specific projects that this reservation is shared with. List
-  must contain project IDs or project numbers.
+  If this future reservation is shared (--share-setting is not local), provide
+  a list of all of the specific projects that this future reservation is shared
+  with. List must contain project IDs or project numbers.
   """
   return base.Argument(
       custom_name if custom_name else '--share-with',
       type=arg_parsers.ArgList(min_length=1),
       metavar='PROJECT',
+      help=help_text)
+
+
+def GetClearShareSettingsFlag():
+  """Gets the --clear-share-settings help text."""
+  help_text = """\
+  Clear share settings on future reservation. This will result in non-shared
+  future reservation.
+  """
+  return base.Argument(
+      '--clear-share-settings', action='store_true',
       help=help_text)
 
 
@@ -185,11 +196,14 @@ def AddCreateFlags(
     share_group.AddToParser(parser)
 
 
-def AddUpdateFlags(parser,
-                   support_location_hint=False,
-                   support_fleet=False,
-                   support_planning_status=False,
-                   support_local_ssd_count=False):
+def AddUpdateFlags(
+    parser,
+    support_location_hint=False,
+    support_fleet=False,
+    support_planning_status=False,
+    support_local_ssd_count=False,
+    support_share_setting=False,
+):
   """Adds all flags needed for the update command."""
   GetTotalCountFlag(required=False).AddToParser(parser)
   if support_planning_status:
@@ -210,6 +224,23 @@ def AddUpdateFlags(parser,
     group.AddArgument(instance_flags.AddMaintenanceInterval())
   group.AddToParser(parser)
   AddTimeWindowFlags(parser, time_window_requird=False)
+
+  if support_share_setting:
+    share_group = base.ArgumentGroup(
+        'Manage the properties of a shared future reservation.',
+        required=False,
+        mutex=True,
+    )
+    share_group.AddArgument(GetClearShareSettingsFlag())
+
+    share_setting_group = base.ArgumentGroup(
+        'Manage the share settings of a future reservation.', required=False
+    )
+    share_setting_group.AddArgument(GetSharedSettingFlag())
+    share_setting_group.AddArgument(GetShareWithFlag())
+
+    share_group.AddArgument(share_setting_group)
+    share_group.AddToParser(parser)
 
 
 def AddTimeWindowFlags(parser, time_window_requird=False):

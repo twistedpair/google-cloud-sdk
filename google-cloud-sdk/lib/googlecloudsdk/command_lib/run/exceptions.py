@@ -44,6 +44,12 @@ class BucketAccessError(exceptions.Error):
   """Indicates a failed attempt to access a GCS bucket."""
 
 
+class CancellationFailedError(exceptions.Error):
+  """Indicates failure to cancel."""
+
+  pass
+
+
 class DeletionFailedError(exceptions.Error):
   """Indicates failure to delete."""
   pass

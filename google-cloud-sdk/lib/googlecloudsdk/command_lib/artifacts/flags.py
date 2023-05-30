@@ -319,7 +319,7 @@ def GetShowOccurrencesFlag():
   return base.Argument(
       '--show-occurrences',
       action='store_true',
-      help='Show summaries of the various Occurrence types.')
+      help='Show summaries of the various occurrence types.')
 
 
 def GetShowOccurrencesFromFlag():
@@ -328,14 +328,25 @@ def GetShowOccurrencesFromFlag():
       type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
       default=10,
       help=('The number of the most recent images for which to '
-            'summarize Occurences.'))
+            'summarize occurrences.'))
 
 
 def GetOccurrenceFilterFlag():
   return base.Argument(
       '--occurrence-filter',
-      default='kind="BUILD" OR kind="IMAGE" OR kind="DISCOVERY"',
-      help='A filter for the Occurrences which will be summarized.')
+      default=(
+          'kind="BUILD" OR kind="IMAGE" OR kind="DISCOVERY" OR'
+          ' kind="SBOM_REFERENCE"'
+      ),
+      help='A filter for the occurrences which will be summarized.')
+
+
+def GetVulnerabilitiesOccurrenceFilterFlag():
+  return base.Argument(
+      '--occurrence-filter',
+      help='A filter for the occurrences which will be summarized. See link for '
+      'officially supported filters: '
+      'https://cloud.google.com/container-analysis/docs/os-scanning-automatically#filtering')
 
 
 def GetShowProvenanceFlag():
@@ -353,6 +364,14 @@ def GetResourceURIArg():
       'RESOURCE_URI',
       help=('A container image in a Google Cloud registry (Artifact Registry '
             'or Container Registry), or a local container image.'))
+
+
+def GetListURIArg():
+  """Gets list uri required positional argument."""
+  return base.Argument(
+      'URI',
+      help=('An URI identifying a container image or package in '
+            'Artifact Registry or Google Cloud Registry.'))
 
 
 def GetRemoteFlag():
@@ -393,11 +412,14 @@ def GetAdditionalPackageTypesFlag():
       '--additional-package-types',
       type=arg_parsers.ArgList(
           choices=_PACKAGE_TYPE_CHOICES,
-          element_type=lambda package_type: package_type.upper()),
+          element_type=lambda package_type: package_type.upper(),
+      ),
       metavar='ADDITIONAL_PACKAGE_TYPES',
       help=(
-          'A comma-separated list of package types to scan in addition to OS packages.'
-      ))
+          'A comma-separated list of package types to scan in addition to OS'
+          ' packages.'
+      ),
+  )
 
 
 def GetExperimentalPackageTypesFlag():
@@ -405,12 +427,16 @@ def GetExperimentalPackageTypesFlag():
       '--experimental-package-types',
       type=arg_parsers.ArgList(
           choices=_EXPERIMENTAL_PACKAGE_TYPE_CHOICES,
-          element_type=lambda package_type: package_type.upper()),
+          element_type=lambda package_type: package_type.upper(),
+      ),
       hidden=True,
       metavar='EXPERIMENTAL_PACKAGE_TYPES',
       help=(
-          'A comma-separated list of experimental package types to scan in addition to OS packages and officially supported third party packages.'
-      ))
+          'A comma-separated list of experimental package types to scan in'
+          ' addition to OS packages and officially supported third party'
+          ' packages.'
+      ),
+  )
 
 
 def GetVerboseErrorsFlag():
@@ -420,3 +446,5 @@ def GetVerboseErrorsFlag():
       default=False,
       hidden=True,
       help=('Log internal errors.'))
+
+

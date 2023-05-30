@@ -541,7 +541,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest(_mess
       10,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
-    parent: The name of the parent resource whose tags will be listed.
+    parent: The name of the parent package whose tags will be listed. Example:
+      "projects/p1/locations/us-central1/repositories/repo1/packages/pkg1
   """
 
   filter = _messages.StringField(1)
@@ -1352,6 +1353,7 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryPublicR
       CENTOS_VAULT: CentOS Vault.
       CENTOS_STREAM: CentOS Stream.
       ROCKY: Rocky.
+      EPEL: Fedora Extra Packages for Enterprise Linux (EPEL).
     """
     REPOSITORY_BASE_UNSPECIFIED = 0
     CENTOS = 1
@@ -1359,6 +1361,7 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryPublicR
     CENTOS_VAULT = 3
     CENTOS_STREAM = 4
     ROCKY = 5
+    EPEL = 6
 
   repositoryBase = _messages.EnumField('RepositoryBaseValueValuesEnum', 1)
   repositoryPath = _messages.StringField(2)
@@ -1458,7 +1461,7 @@ class ImportGoogetArtifactsGcsSource(_messages.Message):
   r"""Google Cloud Storage location where the artifacts currently reside.
 
   Fields:
-    uris: Cloud Storage paths URI (e.g., gs://my_bucket/my_object).
+    uris: Cloud Storage paths URI (e.g., `gs://my_bucket/my_object`).
     useWildcards: Supports URI wildcards for matching multiple objects from a
       single URI.
   """
@@ -2037,8 +2040,8 @@ class Package(_messages.Message):
   Fields:
     createTime: The time when the package was created.
     displayName: The display name of the package.
-    name: The name of the package, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1". If the package ID part
+    name: The name of the package, for example: `projects/p1/locations/us-
+      central1/repositories/repo1/packages/pkg1`. If the package ID part
       contains slashes, the slashes are escaped.
     updateTime: The time when the package was last updated. This includes
       publishing a new version of the package.
@@ -2308,7 +2311,7 @@ class Repository(_messages.Message):
       GOOGET: GooGet package format.
       PYTHON: Python package format.
       KFP: Kubeflow Pipelines package format.
-      GO: GO package format.
+      GO: Go package format.
       GENERIC: Generic package format.
     """
     FORMAT_UNSPECIFIED = 0
@@ -2702,7 +2705,7 @@ class UploadGoogetArtifactResponse(_messages.Message):
   is contained in the Operation and available to users.
 
   Fields:
-    googetArtifacts: The Apt artifacts updated.
+    googetArtifacts: The GooGet artifacts updated.
   """
 
   googetArtifacts = _messages.MessageField('GoogetArtifact', 1, repeated=True)

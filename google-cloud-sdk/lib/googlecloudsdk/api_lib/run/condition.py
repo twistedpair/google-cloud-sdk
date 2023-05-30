@@ -145,6 +145,16 @@ class Conditions(collections_abc.Mapping):
   def TerminalCondition(self):
     return self._ready_condition
 
+  def TerminalConditionReason(self):
+    """Returns the reason of the terminal condition."""
+    if (
+        self._ready_condition
+        and self._ready_condition in self
+        and self[self._ready_condition]['reason']
+    ):
+      return self[self._ready_condition]['reason']
+    return None
+
   def DescriptiveMessage(self):
     """Descriptive message about what's happened to the last user operation."""
     if (self._ready_condition and

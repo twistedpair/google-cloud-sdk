@@ -19,9 +19,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.netapp import netapp_client
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.netapp import flags
+from googlecloudsdk.command_lib.netapp import util as netapp_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -32,12 +34,15 @@ STORAGE_POOLS_LIST_FORMAT = """\
         name.segment(3):label=LOCATION,
         serviceLevel,
         capacityGib,
+        network,
         state,
         stateDetails,
         createTime.date(),
         description,
         volumeCount,
         volumeCapacityGib,
+        activeDirectory,
+        kmsConfig,
         labels
     )"""
 
@@ -64,13 +69,15 @@ def GetStoragePoolServiceLevelArg(messages, required=True):
         """,
           custom_mappings={
               'PREMIUM': ('premium',
-                          """Premium Service Level for Cloud NetApp Storage Pool.
-                   The Premium Service Level has a throughput per TiB of
-                   allocated volume size of 64 MiB/s."""),
+                          """
+                          Premium Service Level for Cloud NetApp Storage Pool.
+                          The Premium Service Level has a throughput per TiB of
+                          allocated volume size of 64 MiB/s."""),
               'EXTREME': ('extreme',
-                          """Extreme Service Level for Cloud NetApp Storage Pool.
-                  The Extreme Service Level has a throughput per TiB of
-                  allocated volume size of 128 MiB/s."""),
+                          """
+                          Extreme Service Level for Cloud NetApp Storage Pool.
+                          The Extreme Service Level has a throughput per TiB of
+                          allocated volume size of 128 MiB/s."""),
           },
           required=required))
   return service_level_arg
@@ -87,6 +94,65 @@ def AddStoragePoolAsyncFlag(parser):
   concepts.ResourceParameterAttributeConfig(name='async', help_text=help_text)
   base.ASYNC_FLAG.AddToParser(parser)
 
+
+def AddStoragePoolNetworkArg(parser, required=True):
+  """Adds a --network arg to the given parser.
+
+  Args:
+    parser: argparse parser.
+    required: bool whether arg is required or not
+  """
+
+  network_arg_spec = {
+      'name': str,
+      'psa-range': str,
+  }
+
+  network_help = """\
+        Network configuration for a Cloud NetApp Files Storage Pool. Specifying
+        `psa-range` is optional.
+        *name*::: The name of the Google Compute Engine
+        [VPC network](/compute/docs/networks-and-firewalls#networks) to which
+        the volume is connected.
+        *psa-range*::: The `psa-range` is the name of the allocated range of the
+        Private Service Access connection. The range you specify can't
+        overlap with either existing subnets or assigned IP address ranges for
+        other Cloud NetApp Files Storage Pools in the selected VPC network.
+  """
+
+  parser.add_argument(
+      '--network',
+      type=arg_parsers.ArgDict(spec=network_arg_spec, required_keys=['name']),
+      required=required,
+      help=network_help)
+
+
+def AddStoragePoolActiveDirectoryArg(parser):
+  """Adds a --active-directory arg to the given parser."""
+  concept_parsers.ConceptParser.ForResource(
+      '--active-directory',
+      flags.GetActiveDirectoryResourceSpec(),
+      'The Active Directory to attach to the Storage Pool.',
+      flag_name_overrides={'location': ''}).AddToParser(parser)
+
+
+def AddStoragePoolKmsConfigArg(parser):
+  """Adds a --kms-config arg to the given parser."""
+  concept_parsers.ConceptParser.ForResource(
+      '--kms-config',
+      flags.GetKmsConfigResourceSpec(),
+      'The KMS config to attach to the Storage Pool.',
+      flag_name_overrides={'location': ''}).AddToParser(parser)
+
+
+def AddStoragePoolEnableLdapArg(parser):
+  """Adds the --enable-ladp arg to the given parser."""
+  parser.add_argument(
+      '--enable-ldap',
+      type=arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey),
+      help="""Boolean flag indicating whether Storage Pool is a NFS LDAP Storage Pool or not"""
+  )
 
 ## Helper functions to combine Storage Pools args / flags for gcloud commands ##
 

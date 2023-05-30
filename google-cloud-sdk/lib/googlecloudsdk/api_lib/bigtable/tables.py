@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.bigtable import util
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.util import times
 
@@ -231,7 +232,8 @@ def AddFieldToUpdateMask(field, req):
   return req
 
 
-def RefreshUpdateMask(unused_ref, args, req):
+# TODO(b/240411657): Remove 'Alpha' and use for all release tracks
+def RefreshUpdateMaskAlpha(unused_ref, args, req):
   """Refresh the update mask of the updateTableRequest according to the input arguments.
 
   Args:
@@ -242,6 +244,59 @@ def RefreshUpdateMask(unused_ref, args, req):
   Returns:
     req: the updateTableRequest with update mask refreshed.
   """
-  if args.deletion_protection:
-    req = AddFieldToUpdateMask('deletion_protection', req)
+  if args.clear_change_stream_retention_period:
+    req = AddFieldToUpdateMask('changeStreamConfig', req)
+  if args.change_stream_retention_period:
+    req = AddFieldToUpdateMask('changeStreamConfig.retentionPeriod', req)
   return req
+
+
+def AddChangeStreamConfigUpdateTableParams():
+  """Adds the change stream commands to upate table CLI.
+
+  This can't be defined in the yaml because that automatically generates the
+  inverse for any boolean args and we don't want the nonsensical
+  'no-clear-change-stream-retention-period`. We use store_const to only allow
+  `clear-change-stream-retention-period` or `change-stream-retention-period`
+  arguments
+
+  Returns:
+    Argument group containing change stream args
+  """
+  argument_group = base.ArgumentGroup(mutex=True)
+  argument_group.AddArgument(
+      base.Argument(
+          '--clear-change-stream-retention-period',
+          help=(
+              'This disables the change stream and eventually removes the '
+              'change stream data within your retention period.'
+          ),
+          action='store_const',
+          const=True,
+      )
+  )
+  argument_group.AddArgument(
+      base.Argument(
+          '--change-stream-retention-period',
+          help=(
+              'The length of time to retain change stream data for the table, '
+              'in the range of [1 day, 7 days]. Acceptable units are days (d), '
+              'hours (h), minutes (m), and seconds (s). If not already '
+              'specified, enables a change stream for the table. Examples: `5d`'
+              ' or `48h`.'
+          )
+      )
+  )
+  return [argument_group]
+
+
+def HandleChangeStreamArgs(unused_ref, args, req):
+  if args.change_stream_retention_period:
+    req.table.changeStreamConfig = CreateChangeStreamConfig(
+        args.change_stream_retention_period)
+  return req
+
+
+def CreateChangeStreamConfig(duration):
+  return util.GetAdminMessages().ChangeStreamConfig(
+      retentionPeriod=ConvertDurationToSeconds(duration))

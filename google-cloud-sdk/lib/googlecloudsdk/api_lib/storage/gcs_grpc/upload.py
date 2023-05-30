@@ -19,15 +19,18 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import functools
 import os
 
+from googlecloudsdk.api_lib.storage import retry_util as storage_retry_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import retry_util
 from googlecloudsdk.command_lib.storage import hash_util
+from googlecloudsdk.core import log
 import six
 
 
-def _get_write_object_spec(client, object_resource, size):
+def _get_write_object_spec(client, object_resource, size=None):
   """Returns the WriteObjectSpec instance.
 
   Args:
@@ -80,7 +83,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     self._uploaded_so_far = start_offset
 
   def _get_md5_hash_if_given(self):
-    """Get MD5 hash bytes sequence from resource args if given.
+    """Returns MD5 hash bytes sequence from resource args if given.
 
     Returns:
       bytes|None: MD5 hash bytes sequence if MD5 string was given, otherwise
@@ -96,7 +99,8 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     """Yields the WriteObjectRequest for each chunk of the source stream.
 
     Args:
-      first_message (WriteObjectSpec): WriteObjectSpec.
+      first_message (WriteObjectSpec|str): WriteObjectSpec for Simple uploads,
+      str that is the upload id for Resumable uploads.
 
     Yields:
       (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.WriteObjectRequest)
@@ -104,7 +108,12 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     """
     first_request_done = False
 
-    write_object_spec = first_message
+    if isinstance(first_message, self._client.types.WriteObjectSpec):
+      write_object_spec = first_message
+      upload_id = None
+    else:
+      write_object_spec = None
+      upload_id = first_message
 
     # If this method is called multiple times, it is needed to reset
     # what has been uploaded so far.
@@ -123,6 +132,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
           # the WriteObjectSpec or the upload_id.
           yield self._client.types.WriteObjectRequest(
               write_object_spec=write_object_spec,
+              upload_id=upload_id,
               write_offset=self._uploaded_so_far,
               checksummed_data=self._client.types.ChecksummedData(
                   content=data
@@ -170,3 +180,121 @@ class SimpleUpload(_Upload):
         requests=self._upload_write_object_request_generator(
             first_message=write_object_spec
         ))
+
+
+class RecoverableUpload(_Upload):
+  """Common logic for strategies allowing retries in-flight."""
+
+  def _initialize_upload(self):
+    """Sets up the upload session and returns the upload id.
+
+    This method sets the start offset to 0.
+
+    Returns:
+      (str) Session URI for resumable upload operation.
+    """
+
+    # TODO(b/267555253): Add size to the spec once the fix is in prod.
+    write_object_spec = _get_write_object_spec(
+        self._client,
+        self._destination_resource,
+    )
+
+    request = self._client.types.StartResumableWriteRequest(
+        write_object_spec=write_object_spec
+    )
+
+    upload_id = self._client.storage.start_resumable_write(
+        request=request).upload_id
+    self._start_offset = 0
+    return upload_id
+
+  def _get_write_offset(self, upload_id):
+    """Returns the amount of data persisted on the server.
+
+    Args:
+      upload_id (str): Session URI for resumable upload operation.
+    Returns:
+      (int) The total number of bytes that have been persisted for an object
+      on the server. This value can be used as the write_offset.
+    """
+    request = self._client.types.QueryWriteStatusRequest(
+        upload_id=upload_id
+    )
+
+    return self._client.storage.query_write_status(
+        request=request,
+    ).persisted_size
+
+  def _should_retry(self, upload_id, exc_type=None, exc_value=None,
+                    exc_traceback=None, state=None):
+    if not retry_util.is_retriable(exc_type, exc_value, exc_traceback, state):
+      return False
+
+    persisted_size = self._get_write_offset(upload_id)
+    is_progress_made_since_last_uplaod = persisted_size > self._start_offset
+    if is_progress_made_since_last_uplaod:
+      self._start_offset = persisted_size
+
+    return True
+
+  def _perform_upload(self, upload_id):
+    return self._client.storage.write_object(
+        requests=self._upload_write_object_request_generator(
+            first_message=upload_id
+        )
+    )
+
+  def run(self):
+    upload_id = self._initialize_upload()
+
+    new_should_retry = functools.partial(self._should_retry, upload_id)
+    return storage_retry_util.retryer(
+        target=self._perform_upload,
+        should_retry_if=new_should_retry,
+        target_args=[upload_id],
+    )
+
+
+class ResumableUpload(RecoverableUpload):
+  """Uploads objects with support for resuming between runs of a command."""
+
+  def __init__(
+      self,
+      client,
+      source_stream,
+      destination_resource,
+      request_config,
+      serialization_data=None,
+      tracker_callback=None,
+  ):
+    super(ResumableUpload, self).__init__(client, source_stream,
+                                          destination_resource, request_config)
+    self._serialization_data = serialization_data
+    self._tracker_callback = tracker_callback
+
+  def _initialize_upload(self):
+    """Sets up the upload session and returns the upload id.
+
+    Additionally, it does the following tasks:
+    1. Grabs the persisted size on the backend.
+    2. Sets the appropiate write offset.
+    3. Calls the tracker callback.
+
+    Returns:
+      The upload session ID.
+    """
+
+    if self._serialization_data is not None:
+      upload_id = self._serialization_data['upload_id']
+
+      write_offset = self._get_write_offset(upload_id)
+      self._start_offset = write_offset
+      log.debug('Write offset after resuming: %s', write_offset)
+    else:
+      upload_id = super(ResumableUpload, self)._initialize_upload()
+
+    if self._tracker_callback is not None:
+      self._tracker_callback({'upload_id': upload_id})
+
+    return upload_id

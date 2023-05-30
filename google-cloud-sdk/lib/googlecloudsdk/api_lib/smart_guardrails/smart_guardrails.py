@@ -64,8 +64,8 @@ def _GetAssociatedRecommendationLink(gcloud_insight, project_id):
   ).format(_RECOMMENDATIONS_HOME_URL, project_id)
 
 
-def _GetProjectRiskReasons(gcloud_insight):
-  """Extracts a list of string reasons from the project change insight.
+def _GetResourceRiskReasons(gcloud_insight):
+  """Extracts a list of string reasons from the resource change insight.
 
   Args:
     gcloud_insight: Insight object returned by the recommender API.
@@ -75,15 +75,11 @@ def _GetProjectRiskReasons(gcloud_insight):
   """
   reasons = []
   for additional_property in gcloud_insight.content.additionalProperties:
-    if additional_property.key == "risk":
+    if additional_property.key == "importance":
       for p in additional_property.value.object_value.properties:
-        if p.key == "usageAtRisk":
-          for f in p.value.object_value.properties:
-            if f.key == "projectUtilization":
-              for proj_p in f.value.object_value.properties:
-                if proj_p.key == "reasons":
-                  for reason in proj_p.value.array_value.entries:
-                    reasons.append(reason.string_value)
+        if p.key == "detailedReasons":
+          for reason in p.value.array_value.entries:
+            reasons.append(reason.string_value)
   return reasons
 
 
@@ -96,7 +92,7 @@ def _GetDeletionRiskMessage(gcloud_insight):
   Returns:
     String risk message with reasons if any.
   """
-  reasons = _GetProjectRiskReasons(gcloud_insight)[:_MAX_NUMBER_OF_REASONS]
+  reasons = _GetResourceRiskReasons(gcloud_insight)[:_MAX_NUMBER_OF_REASONS]
   if not reasons:
     return _RISK_MESSAGE + ".\n"
   message = _RISK_MESSAGE + " because in the past 30 days:\n"

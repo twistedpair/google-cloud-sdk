@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.artifacts import docker_util
 from  googlecloudsdk.core.util.files import FileReader
 
+
 POSSIBLE_JUSTIFICATION_FLAGS = [
     'component_not_present',
     'vulnerable_code_not_present',
@@ -58,7 +59,6 @@ def ParseVexFile(filename, uri):
         'Reading json file has failed'
     )
   _Validate(vex)
-
   publisher = ca_messages.Publisher(
       name=vex['document']['publisher']['name'],
       publisherNamespace=vex['document']['publisher']['namespace'],

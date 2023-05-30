@@ -175,8 +175,13 @@ def RunBakExportCommand(args, client):
     A dict object representing the operations resource describing the export
     operation if the export was successful.
   """
-  sql_export_context = export_util.BakExportContext(client.sql_messages,
-                                                    args.uri, args.database,
-                                                    args.stripe_count,
-                                                    args.striped)
+  sql_export_context = export_util.BakExportContext(
+      client.sql_messages,
+      args.uri,
+      args.database,
+      args.stripe_count,
+      args.striped,
+      args.bak_type,
+      args.differential_base,
+  )
   return RunExportCommand(args, client, sql_export_context)

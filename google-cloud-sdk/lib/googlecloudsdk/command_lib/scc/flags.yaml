@@ -25,9 +25,11 @@ page_token:
     page-token explicitly or let gcloud fetch one-page-at-a-time.
 read_time:
   arg_name: read-time
+  type: googlecloudsdk.core.util.times:ParseDateTime
+  processor: googlecloudsdk.core.util.times:FormatDateTime
   api_field: readTime
   is_positional: false
   required: false
   help_text: |
     Time used as a reference point when filtering. Absence of this field will default to the API's
-    version of NOW. For example --read-time "2019-02-28T07:00:00Z"
+    version of NOW. See `$ gcloud topic datetimes` for information on supported time formats.

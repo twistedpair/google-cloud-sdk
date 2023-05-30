@@ -1044,6 +1044,11 @@ def AddUriArgument(parser, help_text):
   parser.add_argument('uri', help=help_text)
 
 
+def AddBakImportUriArgument(parser, help_text):
+  """Add the 'uri' argument to the parser, with help text help_text."""
+  parser.add_argument('uri', help=help_text, nargs='?', default='')
+
+
 def AddOffloadArgument(parser):
   """Add the 'offload' argument to the parser."""
   parser.add_argument(
@@ -1253,6 +1258,38 @@ def AddBakExportStripedArgument(parser, show_negated_in_help=True):
   )
 
 
+def AddBakExportBakTypeArgument(parser):
+  """Add the 'bak-type' argument to the parser for bak import."""
+  choices = [
+      messages.ExportContext.BakExportOptionsValue.BakTypeValueValuesEnum.FULL.name,
+      messages.ExportContext.BakExportOptionsValue.BakTypeValueValuesEnum.DIFF.name,
+  ]
+  help_text = (
+      'Type of bak file that will be exported, FULL or DIFF. SQL Server only.'
+  )
+  parser.add_argument(
+      '--bak-type',
+      choices=choices,
+      required=False,
+      default=messages.ExportContext.BakExportOptionsValue.BakTypeValueValuesEnum.FULL.name,
+      help=help_text,
+  )
+
+
+def AddBakExportDifferentialBaseArgument(parser):
+  """Add the 'dfferential-base' argument to the parser for export."""
+  parser.add_argument(
+      '--differential-base',
+      required=False,
+      default=False,
+      action='store_true',
+      help=(
+          'Whether the bak file export can be used as differential base for'
+          ' future differential backup. SQL Server only'
+      ),
+  )
+
+
 def AddBakImportStripedArgument(parser, show_negated_in_help=True):
   """Add the 'striped' argument to the parser for striped import."""
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
@@ -1261,6 +1298,52 @@ def AddBakImportStripedArgument(parser, show_negated_in_help=True):
       required=False,
       help='Whether SQL Server import should be striped.',
       **kwargs
+  )
+
+
+def AddBakImportNoRecoveryArgument(parser):
+  """Add the 'no-recovery' argument to the parser for import with no recovery option."""
+  parser.add_argument(
+      '--no-recovery',
+      required=False,
+      default=False,
+      action='store_true',
+      help=(
+          'Whether or not the SQL Server import '
+          'is execueted with NORECOVERY keyword.'
+      ),
+  )
+
+
+def AddBakImportRecoveryOnlyArgument(parser):
+  """Add the 'recovery-only' argument to the parser for bak import."""
+  parser.add_argument(
+      '--recovery-only',
+      required=False,
+      default=False,
+      action='store_true',
+      help=(
+          'Whether or not the SQL Server import '
+          'skip download and bring database online.'
+      ),
+  )
+
+
+def AddBakImportBakTypeArgument(parser):
+  """Add the 'bak-type' argument to the parser for bak import."""
+  choices = [
+      messages.ImportContext.BakImportOptionsValue.BakTypeValueValuesEnum.FULL.name,
+      messages.ImportContext.BakImportOptionsValue.BakTypeValueValuesEnum.DIFF.name,
+  ]
+  help_text = (
+      'Type of bak file that will be imported, FULL or DIFF. SQL Server only.'
+  )
+  parser.add_argument(
+      '--bak-type',
+      choices=choices,
+      required=False,
+      default=messages.ImportContext.BakImportOptionsValue.BakTypeValueValuesEnum.FULL.name,
+      help=help_text,
   )
 
 
@@ -1589,6 +1672,18 @@ def AddThreadsPerCore(parser):
   )
 
 
+def AddShowSqlNetworkArchitecture(parser):
+  """Adds the `--show-sql-network-architecture` flag to the parser."""
+  kwargs = _GetKwargsForBoolFlag(False)
+  parser.add_argument(
+      '--show-sql-network-architecture',
+      hidden=True,
+      required=False,
+      help="""Show the instance's current SqlNetworkArchitecture backend""",
+      **kwargs
+  )
+
+
 INSTANCES_USERLABELS_FORMAT = ':(settings.userLabels:alias=labels:label=LABELS)'
 
 INSTANCES_FORMAT_COLUMNS = [
@@ -1606,6 +1701,33 @@ INSTANCES_FORMAT_COLUMNS = [
     ),
     'state:label=STATUS',
 ]
+
+INSTANCES_FORMAT_COLUMNS_WITH_NETWORK_ARCHITECTURE = [
+    'name',
+    'databaseVersion',
+    'firstof(gceZone,region):label=LOCATION',
+    'settings.tier',
+    (
+        'ip_addresses.filter("type:PRIMARY").*extract(ip_address).flatten()'
+        '.yesno(no="-"):label=PRIMARY_ADDRESS'
+    ),
+    (
+        'ip_addresses.filter("type:PRIVATE").*extract(ip_address).flatten()'
+        '.yesno(no="-"):label=PRIVATE_ADDRESS'
+    ),
+    'state:label=STATUS',
+    'sqlNetworkArchitecture:label=NETWORK_ARCHITECTURE',
+]
+
+
+def GetInstanceListFormatForNetworkArchitectureUpgrade():
+  """Returns the table format for listing instances with current network architecture field."""
+  table_format = '{} table({})'.format(
+      INSTANCES_USERLABELS_FORMAT,
+      ','.join(INSTANCES_FORMAT_COLUMNS_WITH_NETWORK_ARCHITECTURE),
+  )
+
+  return table_format
 
 
 def GetInstanceListFormat():

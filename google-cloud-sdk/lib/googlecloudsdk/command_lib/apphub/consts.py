@@ -38,3 +38,10 @@ class Topology:
 
 class Telemetry:
   TELEMETRY_SUFFIX = '/telemetry'
+
+  MONITORING_STATE_ENABLED = 'enabled'
+  MONITORING_STATE_DISABLED = 'disabled'
+  VALID_MONITORING_STATES = [
+      MONITORING_STATE_ENABLED,
+      MONITORING_STATE_DISABLED,
+  ]

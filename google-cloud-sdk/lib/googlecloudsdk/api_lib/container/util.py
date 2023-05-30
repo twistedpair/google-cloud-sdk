@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import io
 import os
 
+from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.container import kubeconfig as kconfig
 from googlecloudsdk.api_lib.services import enable_api
@@ -955,3 +956,36 @@ def CheckForContainerFileSystemApiEnablementWithPrompt(project):
         'Please make sure to enable it for image streaming to work. '
         'For additional details, please refer to https://cloud.google.com/kubernetes-engine/docs/how-to/image-streaming#requirements'
     )
+
+
+def LoadSoleTenantConfigFromNodeAffinityYaml(affinities_yaml, messages):
+  """Loads json/yaml node affinities from yaml file contents."""
+
+  if not affinities_yaml:
+    raise Error(
+        'No node affinity labels specified. You must specify at least one '
+        'label to create a sole tenancy instance.')
+
+  if not yaml.list_like(affinities_yaml):
+    raise Error('Node affinities must be specified as JSON/YAML list')
+
+  node_affinities = []
+  for affinity in affinities_yaml:
+    node_affinity = None
+    if not affinity:  # Catches None and empty dicts
+      raise Error('Empty list item in JSON/YAML file.')
+    try:
+      node_affinity = encoding.PyValueToMessage(
+          messages.NodeAffinity, affinity)
+    except Exception as e:  # pylint: disable=broad-except
+      raise Error(e)
+    if not node_affinity.key:
+      raise Error(
+          'A key must be specified for every node affinity label.')
+    if node_affinity.all_unrecognized_fields():
+      raise Error(
+          'Key [{0}] has invalid field formats for: {1}'.format(
+              node_affinity.key, node_affinity.all_unrecognized_fields()))
+    node_affinities.append(node_affinity)
+
+  return messages.SoleTenantConfig(nodeAffinities=node_affinities)

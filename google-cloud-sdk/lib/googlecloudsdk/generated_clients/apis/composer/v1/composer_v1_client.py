@@ -82,6 +82,33 @@ class ComposerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DatabaseFailover(self, request, global_params=None):
+      r"""Triggers database failover (only for highly resilient environments).
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsDatabaseFailoverRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DatabaseFailover')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DatabaseFailover.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:databaseFailover',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.databaseFailover',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1/{+environment}:databaseFailover',
+        request_field='databaseFailoverRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsDatabaseFailoverRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Delete an environment.
 
@@ -106,6 +133,60 @@ class ComposerV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComposerProjectsLocationsEnvironmentsDeleteRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def ExecuteAirflowCommand(self, request, global_params=None):
+      r"""Executes Airflow CLI command.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsExecuteAirflowCommandRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExecuteAirflowCommandResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExecuteAirflowCommand')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExecuteAirflowCommand.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:executeAirflowCommand',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.executeAirflowCommand',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1/{+environment}:executeAirflowCommand',
+        request_field='executeAirflowCommandRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsExecuteAirflowCommandRequest',
+        response_type_name='ExecuteAirflowCommandResponse',
+        supports_download=False,
+    )
+
+    def FetchDatabaseProperties(self, request, global_params=None):
+      r"""Fetches database properties.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsFetchDatabasePropertiesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchDatabasePropertiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchDatabaseProperties')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchDatabaseProperties.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:fetchDatabaseProperties',
+        http_method='GET',
+        method_id='composer.projects.locations.environments.fetchDatabaseProperties',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1/{+environment}:fetchDatabaseProperties',
+        request_field='',
+        request_type_name='ComposerProjectsLocationsEnvironmentsFetchDatabasePropertiesRequest',
+        response_type_name='FetchDatabasePropertiesResponse',
         supports_download=False,
     )
 
@@ -217,6 +298,33 @@ class ComposerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PollAirflowCommand(self, request, global_params=None):
+      r"""Polls Airflow CLI command execution and fetches logs.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsPollAirflowCommandRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PollAirflowCommandResponse) The response message.
+      """
+      config = self.GetMethodConfig('PollAirflowCommand')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PollAirflowCommand.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:pollAirflowCommand',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.pollAirflowCommand',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1/{+environment}:pollAirflowCommand',
+        request_field='pollAirflowCommandRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsPollAirflowCommandRequest',
+        response_type_name='PollAirflowCommandResponse',
+        supports_download=False,
+    )
+
     def SaveSnapshot(self, request, global_params=None):
       r"""Creates a snapshots of a Cloud Composer environment. As a result of this operation, snapshot of environment's state is stored in a location specified in the SaveSnapshotRequest.
 
@@ -241,6 +349,33 @@ class ComposerV1(base_api.BaseApiClient):
         request_field='saveSnapshotRequest',
         request_type_name='ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StopAirflowCommand(self, request, global_params=None):
+      r"""Stops Airflow CLI command execution.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StopAirflowCommandResponse) The response message.
+      """
+      config = self.GetMethodConfig('StopAirflowCommand')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopAirflowCommand.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:stopAirflowCommand',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.stopAirflowCommand',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1/{+environment}:stopAirflowCommand',
+        request_field='stopAirflowCommandRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest',
+        response_type_name='StopAirflowCommandResponse',
         supports_download=False,
     )
 

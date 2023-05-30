@@ -111,8 +111,8 @@ def get_digesters(source_resource, destination_resource):
   """Gets appropriate hash objects for upload validation.
 
   Args:
-    source_resource (resource_reference.ObjectResource): The upload source.
-    destination_resource (resource_reference.FileObjectResource): The upload
+    source_resource (resource_reference.FileObjectResource): The upload source.
+    destination_resource (resource_reference.ObjectResource): The upload
       destination.
 
   Returns:

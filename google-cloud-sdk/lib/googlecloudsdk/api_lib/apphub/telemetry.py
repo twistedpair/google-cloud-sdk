@@ -18,8 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.apphub import consts as api_lib_consts
 from googlecloudsdk.api_lib.apphub import utils as api_lib_utils
 from googlecloudsdk.command_lib.apphub import utils as command_lib_utils
+from googlecloudsdk.core import log
 
 
 class TelemetryClient(object):
@@ -37,3 +39,35 @@ class TelemetryClient(object):
         )
     )
     return self._telemetry_client.GetTelemetry(get_request)
+
+  def _UpdateHelper(self, args):
+    """Helper to generate telemetry and update_mask fields for update_request."""
+    telemetry = self.messages.Telemetry()
+    update_mask = ''
+
+    if args.enable_monitoring or args.disable_monitoring:
+      telemetry.monitoringEnabled = bool(args.enable_monitoring)
+      update_mask = api_lib_utils.AddToUpdateMask(
+          update_mask,
+          api_lib_consts.UpdateTelemetry.UPDATE_MASK_MONITORING_ENABLED_FIELD_NAME,
+      )
+
+    return telemetry, update_mask
+
+  def Update(self, args):
+    """Update telemetry."""
+    telemetry, update_mask = self._UpdateHelper(args)
+
+    if not update_mask:
+      log.status.Print(api_lib_consts.UpdateTelemetry.EMPTY_UPDATE_HELP_TEXT)
+      return
+
+    update_request = (
+        self.messages.ApphubProjectsLocationsUpdateTelemetryRequest(
+            name=command_lib_utils.GetGlobalTelemetryResourceRelativeName(),
+            telemetry=telemetry,
+            updateMask=update_mask
+        )
+    )
+
+    return self._telemetry_client.UpdateTelemetry(update_request)
