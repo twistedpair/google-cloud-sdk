@@ -6,7 +6,18 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
-## 433.0.0 (2023-05-30)
+## 433.0.1 (2023-06-1)
+
+### Google Cloud CLI
+
+* Disabled self-signed jwt usage for service accounts.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
+## 433.0.0 (2023-05-31)
 
 ### Breaking Changes
 

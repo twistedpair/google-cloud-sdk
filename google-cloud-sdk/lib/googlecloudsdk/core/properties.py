@@ -1573,7 +1573,7 @@ class _SectionAuth(_Section):
         'use this login configuration unless it is explicitly unset.')
     self.service_account_use_self_signed_jwt = self._Add(
         'service_account_use_self_signed_jwt',
-        default=True,
+        default=False,
         help_text=(
             'If True, use self signed jwt flow to get service account'
             ' credentials access token. This only applies to service account'
@@ -1583,6 +1583,7 @@ class _SectionAuth(_Section):
             _BooleanValidator, 'service_account_use_self_signed_jwt'
         ),
         choices=('true', 'false'),
+        is_feature_flag=True,
     )
     self.service_account_disable_id_token_refresh = self._AddBool(
         'service_account_disable_id_token_refresh',
