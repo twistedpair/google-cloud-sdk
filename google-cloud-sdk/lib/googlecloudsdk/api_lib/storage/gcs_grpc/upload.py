@@ -125,33 +125,34 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
       data = self._source_stream.read(
           self._client.types.ServiceConstants.Values.MAX_WRITE_CHUNK_BYTES
       )
-      if data:
-        if not first_request_done:
-          first_request_done = True
-          # The first WriteObjectRequest should specify either
-          # the WriteObjectSpec or the upload_id.
-          yield self._client.types.WriteObjectRequest(
-              write_object_spec=write_object_spec,
-              upload_id=upload_id,
-              write_offset=self._uploaded_so_far,
-              checksummed_data=self._client.types.ChecksummedData(
-                  content=data
-              ))
-        else:
-          yield self._client.types.WriteObjectRequest(
-              write_offset=self._uploaded_so_far,
-              checksummed_data=self._client.types.ChecksummedData(
-                  content=data))
-        self._uploaded_so_far += len(data)
+
+      if not first_request_done:
+        first_request_done = True
       else:
-        md5_hash = self._get_md5_hash_if_given()
-        yield self._client.types.WriteObjectRequest(
-            write_offset=self._uploaded_so_far,
-            checksummed_data=self._client.types.ChecksummedData(
-                content=b''),
-            object_checksums=self._client.types.ObjectChecksums(
-                md5_hash=md5_hash),
-            finish_write=True)
+        write_object_spec = None
+        upload_id = None
+
+      if data:
+        object_checksums = None
+        finish_write = False
+      else:
+        # Handles final request case.
+        object_checksums = self._client.types.ObjectChecksums(
+            md5_hash=self._get_md5_hash_if_given()
+        )
+        finish_write = True
+
+      yield self._client.types.WriteObjectRequest(
+          write_object_spec=write_object_spec,
+          upload_id=upload_id,
+          write_offset=self._uploaded_so_far,
+          checksummed_data=self._client.types.ChecksummedData(content=data),
+          object_checksums=object_checksums,
+          finish_write=finish_write,
+      )
+      self._uploaded_so_far += len(data)
+
+      if finish_write:
         break
 
   @abc.abstractmethod

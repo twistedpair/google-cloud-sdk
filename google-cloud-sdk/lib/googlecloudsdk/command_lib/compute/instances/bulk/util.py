@@ -56,8 +56,9 @@ class SupportedFeatures:
       support_local_ssd_recovery_timeout,
       support_enable_target_shape,
       support_confidential_compute_type,
-      support_max_count_per_zone=True,
-      support_performance_monitoring_unit=False,
+      support_max_count_per_zone,
+      support_performance_monitoring_unit,
+      support_custom_hostnames,
   ):
     self.support_rsa_encrypted = support_rsa_encrypted
     self.support_secure_tags = support_secure_tags
@@ -87,6 +88,7 @@ class SupportedFeatures:
     self.support_performance_monitoring_unit = (
         support_performance_monitoring_unit
     )
+    self.support_custom_hostnames = support_custom_hostnames
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -204,6 +206,33 @@ def _GetLocationPolicyLocationsMaxCountPerZoneFeatureEnabled(args, messages):
   return messages.LocationPolicy.LocationsValue(additionalProperties=locations)
 
 
+def _GetPerInstanceProperties(
+    args, messages, instance_names, support_custom_hostnames
+):
+  """Helper function for getting per_instance_properties."""
+  per_instance_hostnames = {}
+  if support_custom_hostnames and args.IsSpecified('per_instance_hostnames'):
+    per_instance_hostnames = args.per_instance_hostnames
+
+  per_instance_properties = {}
+  for name in instance_names:
+    if name in per_instance_hostnames:
+      per_instance_properties[name] = (
+          messages.BulkInsertInstanceResourcePerInstanceProperties(
+              hostname=per_instance_hostnames[name]
+          )
+      )
+    else:
+      per_instance_properties[name] = (
+          messages.BulkInsertInstanceResourcePerInstanceProperties()
+      )
+
+  return encoding.DictToAdditionalPropertyMessage(
+      per_instance_properties,
+      messages.BulkInsertInstanceResource.PerInstancePropertiesValue,
+  )
+
+
 def CreateBulkInsertInstanceResource(args, holder, compute_client,
                                      resource_parser, project, location, scope,
                                      instance_template_resource,
@@ -218,9 +247,12 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
   name_pattern = args.name_pattern
   instance_names = args.predefined_names or []
   instance_count = args.count or len(instance_names)
-  per_instance_props = encoding.DictToAdditionalPropertyMessage(
-      {el: {} for el in instance_names}, compute_client.messages
-      .BulkInsertInstanceResource.PerInstancePropertiesValue)
+  per_instance_props = _GetPerInstanceProperties(
+      args,
+      compute_client.messages,
+      instance_names,
+      supported_features.support_custom_hostnames,
+  )
 
   location_policy = _GetLocationPolicy(
       args,

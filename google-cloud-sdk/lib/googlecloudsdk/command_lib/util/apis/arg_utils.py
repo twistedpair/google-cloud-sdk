@@ -114,6 +114,8 @@ def GetFieldValueFromMessage(message, field_path):
       # Split field path segment (e.g. abc[1]) into abc and 1.
       f, index = index_found.groups()
       index = int(index)
+    else:
+      index = None
 
     try:
       field = message.field_by_name(f)
@@ -217,6 +219,36 @@ def PageSize(method, namespace):
     return getattr(namespace, 'page_size')
 
 
+class ArgObjectType(object):
+  """An interface for custom type generators that bind directly to a message.
+
+  Like ArgDict, ArgObject type can only be generated one we know the type
+  of the message.
+  """
+
+  def GenerateType(self, message):
+    """Generates an argparse type function to use to parse the argument.
+
+    Args:
+      message: The apitools message class.
+    """
+    pass
+
+  def Action(self, unused_repeated):
+    """The argparse action to use for this argument.
+
+    'store' is the default action, but sometimes something like 'append' might
+    be required to allow the argument to be repeated and all values collected.
+
+    Args:
+      unused_repeated: whether or not the message is repeated
+
+    Returns:
+      str, The argparse action to use.
+    """
+    return 'store'
+
+
 class RepeatedMessageBindableType(object):
   """An interface for custom type generators that bind directly to a message.
 
@@ -247,6 +279,94 @@ class RepeatedMessageBindableType(object):
     return 'store'
 
 
+def GenerateChoices(field, attributes):
+  variant = field.variant if field else None
+  choices = None
+  if attributes.choices is not None:
+    choice_map = {c.arg_value: c.help_text for c in attributes.choices}
+    # If help text is provided, give a choice map. Otherwise, just use the
+    # choice values.
+    choices = (choice_map if any(choice_map.values())
+               else sorted(choice_map.keys()))
+  elif variant == messages.Variant.ENUM:
+    choices = [EnumNameToChoice(name) for name in sorted(field.type.names())]
+  return choices
+
+
+def GenerateFlagType(field, attributes, fix_bools=True):
+  """Generates the type and action for a flag.
+
+  Translates the yaml type (or deault apitools type) to python type. If the
+  type is for a repeated field, then a function that turns the input into an
+  apitools message is returned.
+
+  Args:
+    field: apitools field object flag is associated with
+    attributes: yaml_arg_schema.Argument, data about flag being generated
+    fix_bools: bool, whether to update flags to store_true action
+
+  Raises:
+    ArgumentGenerationError: user cannot specify action for repeated field
+    ArgumentGenerationError: cannot use a dictionary on a non-repeating field
+    ArgumentGenerationError: append action can only be used for repeated fields
+
+  Returns:
+    (str) -> Any, a type or function that returns input into correct type
+    action, flag action used with a given type
+  """
+  variant = field.variant if field else None
+  flag_type = attributes.type or TYPES.get(variant, None)
+
+  action = attributes.action
+  if flag_type == bool and fix_bools and not action:
+    # For boolean flags, we want to create a flag with action 'store_true'
+    # rather than a flag that takes a value and converts it to a boolean. Only
+    # do this if not using a custom action.
+    action = 'store_true'
+
+  append_action = 'append'
+  repeated = (field and field.repeated) and attributes.repeated is not False  # repeated as None should default to True, so pylint: disable=g-bool-id-comparison
+  if isinstance(flag_type, ArgObjectType):
+    if action:
+      raise ArgumentGenerationError(
+          field.name,
+          'Type {0} cannot be used with a custom action. Remove '
+          'action {1} from spec.'.format(type(flag_type).__name__, action))
+    action = flag_type.Action(repeated)
+    flag_type = flag_type.GenerateType(field.type)
+  elif repeated:
+    if flag_type:
+      is_repeatable_message = isinstance(flag_type, RepeatedMessageBindableType)
+      is_arg_list = isinstance(flag_type, arg_parsers.ArgList)
+      if (is_repeatable_message or is_arg_list) and action:
+        raise ArgumentGenerationError(
+            field.name,
+            'Type {0} cannot be used with a custom action. Remove '
+            'action {1} from spec.'.format(type(flag_type).__name__, action))
+      # A special ArgDict wrapper type was given, bind it to the message so it
+      # can generate the message from the key/value pairs.
+      if is_repeatable_message:
+        action = flag_type.Action()
+        flag_type = flag_type.GenerateType(field.type)
+      # If a simple type was provided, just use a list of that type (even if it
+      # is a message). The type function will be responsible for converting to
+      # the correct value. If type is an ArgList or ArgDict, don't try to wrap
+      # it.
+      elif not is_arg_list and action != append_action:
+        flag_type = arg_parsers.ArgList(
+            element_type=flag_type, choices=GenerateChoices(field, attributes))
+  elif isinstance(flag_type, RepeatedMessageBindableType):
+    raise ArgumentGenerationError(
+        field.name,
+        'Type {0} can only be used on repeated '
+        'fields.'.format(type(flag_type).__name__))
+  elif action == append_action:
+    raise ArgumentGenerationError(
+        field.name,
+        '{0} custom action can only be used on repeated fields.'.format(action))
+  return (flag_type, action)
+
+
 def GenerateFlag(field, attributes, fix_bools=True, category=None):
   """Generates a flag for a single field in a message.
 
@@ -265,63 +385,15 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
   Returns:
     calliope.base.Argument, The generated argument.
   """
-  variant = field.variant if field else None
-  t = attributes.type or TYPES.get(variant, None)
+  flag_type, action = GenerateFlagType(field, attributes, fix_bools)
 
-  choices = None
-  if attributes.choices is not None:
-    choice_map = {c.arg_value: c.help_text for c in attributes.choices}
-    # If help text is provided, give a choice map. Otherwise, just use the
-    # choice values.
-    choices = (choice_map if any(choice_map.values())
-               else sorted(choice_map.keys()))
-  elif variant == messages.Variant.ENUM:
-    choices = [EnumNameToChoice(name) for name in sorted(field.type.names())]
+  if isinstance(flag_type, arg_parsers.ArgList):
+    choices = None
+  else:
+    # Choices are already combined in the ArgList
+    choices = GenerateChoices(field, attributes)
 
-  action = attributes.action
-  if t == bool and fix_bools and not action:
-    # For boolean flags, we want to create a flag with action 'store_true'
-    # rather than a flag that takes a value and converts it to a boolean. Only
-    # do this if not using a custom action.
-    action = 'store_true'
-
-  repeated = (field and field.repeated) and attributes.repeated is not False  # repeated as None should default to True, so pylint: disable=g-bool-id-comparison
-
-  append_action = 'append'
-  if repeated:
-    if t:
-      is_repeatable_message = isinstance(t, RepeatedMessageBindableType)
-      is_arg_list = isinstance(t, arg_parsers.ArgList)
-      if (is_repeatable_message or is_arg_list) and action:
-        raise ArgumentGenerationError(
-            field.name,
-            'Type {0} cannot be used with a custom action. Remove '
-            'action {1} from spec.'.format(type(t).__name__, action))
-      # A special ArgDict wrapper type was given, bind it to the message so it
-      # can generate the message from the key/value pairs.
-      if is_repeatable_message:
-        action = t.Action()
-        t = t.GenerateType(field.type)
-      # If a simple type was provided, just use a list of that type (even if it
-      # is a message). The type function will be responsible for converting to
-      # the correct value. If type is an ArgList or ArgDict, don't try to wrap
-      # it.
-      elif not is_arg_list and action != append_action:
-        t = arg_parsers.ArgList(element_type=t, choices=choices)
-        # Don't register the choices on the argparse arg because it is validated
-        # by the ArgList.
-        choices = None
-  elif isinstance(t, RepeatedMessageBindableType):
-    raise ArgumentGenerationError(
-        field.name,
-        'Type {0} can only be used on repeated '
-        'fields.'.format(type(t).__name__))
-  elif action == append_action:
-    raise ArgumentGenerationError(
-        field.name,
-        '{0} custom action can only be used on repeated fields.'.format(action))
-
-  if field and not t and not action and not attributes.processor:
+  if field and not flag_type and not action and not attributes.processor:
     # The type is unknown and there is no custom action or processor, we don't
     # know what to do with this.
     raise ArgumentGenerationError(
@@ -345,7 +417,7 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
     metavar = attributes.metavar or name
     arg.kwargs['metavar'] = resource_property.ConvertToAngrySnakeCase(
         metavar.replace('-', '_'))
-    arg.kwargs['type'] = t
+    arg.kwargs['type'] = flag_type
     arg.kwargs['choices'] = choices
   if not attributes.is_positional:
     arg.kwargs['required'] = attributes.required

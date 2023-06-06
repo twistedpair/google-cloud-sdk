@@ -55,7 +55,7 @@ def is_destination_composite_upload_compatible(destination_resource,
         destination_resource.storage_url.bucket_name)
   except errors.CloudApiError as e:
     status = getattr(e, 'status_code', None)
-    if status == 403:
+    if status in (401, 403):
       log.error(
           'Cannot check if the destination bucket is compatible for running'
           ' parallel composite uploads as the user does not permission to'

@@ -55,6 +55,13 @@ DEFAULT_DISK_SIZE_GB_MAP = {
     DISK_TYPE_HD_THROUGHPUT: 2048,
 }
 
+LEGACY_DISK_TYPE_LIST = [
+    DISK_TYPE_PD_STANDARD,
+    DISK_TYPE_PD_BALANCED,
+    DISK_TYPE_PD_SSD,
+    DISK_TYPE_PD_EXTREME,
+]
+
 # The maximum number of results that can be returned in a single list
 # response.
 MAX_RESULTS_PER_PAGE = 500

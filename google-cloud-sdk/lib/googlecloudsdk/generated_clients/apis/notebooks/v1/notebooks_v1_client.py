@@ -430,7 +430,7 @@ class NotebooksV1(base_api.BaseApiClient):
     )
 
     def GetInstanceHealth(self, request, global_params=None):
-      r"""Check if a notebook instance is healthy.
+      r"""Checks whether a notebook instance is healthy.
 
       Args:
         request: (NotebooksProjectsLocationsInstancesGetInstanceHealthRequest) input message
@@ -457,7 +457,7 @@ class NotebooksV1(base_api.BaseApiClient):
     )
 
     def IsUpgradeable(self, request, global_params=None):
-      r"""Check if a notebook instance is upgradable.
+      r"""Checks whether a notebook instance is upgradable.
 
       Args:
         request: (NotebooksProjectsLocationsInstancesIsUpgradeableRequest) input message
@@ -1314,7 +1314,7 @@ class NotebooksV1(base_api.BaseApiClient):
     )
 
     def ReportEvent(self, request, global_params=None):
-      r"""Report and process a runtime event.
+      r"""Reports and processes a runtime event.
 
       Args:
         request: (NotebooksProjectsLocationsRuntimesReportEventRequest) input message

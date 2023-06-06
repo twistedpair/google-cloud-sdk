@@ -27,6 +27,7 @@ from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.calliope.concepts import util as resource_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import registry
+from googlecloudsdk.command_lib.util.apis import update_args
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
@@ -292,6 +293,7 @@ class Argument(YAMLArgument):
         action=util.ParseAction(data.get('action'), flag_name),
         repeated=data.get('repeated'),
         disable_unused_arg_check=disable_unused_arg_check,
+        clearable=data.get('clearable', False),
     )
 
   # pylint:disable=redefined-builtin, type param needs to match the schema.
@@ -312,7 +314,8 @@ class Argument(YAMLArgument):
                action=None,
                repeated=None,
                generate=True,
-               disable_unused_arg_check=False):
+               disable_unused_arg_check=False,
+               clearable=False):
     self.api_field = api_field
     self.disable_unused_arg_check = disable_unused_arg_check
     self.arg_name = arg_name
@@ -330,6 +333,21 @@ class Argument(YAMLArgument):
     self.action = action
     self.repeated = repeated
     self.generate = generate
+    self.clearable = clearable
+
+  def _GetField(self, message):
+    """Gets apitools field associated with api_field."""
+    if message and self.api_field:
+      return arg_utils.GetFieldFromMessage(message, self.api_field)
+    return None
+
+  def _GenerateUpdateFlags(self, message):
+    """Creates update flags generator using aptiools message."""
+    return update_args.UpdateArgumentGenerator.FromArgData(self, message)
+
+  def _ParseUpdateArgsFromNamespace(self, namespace, message):
+    """Parses update flags and returns modified apitools message field."""
+    return self._GenerateUpdateFlags(message).Parse(namespace, message)
 
   def Generate(self, method, message, shared_resource_flags=None):
     """Generates and returns the base argument.
@@ -342,10 +360,10 @@ class Argument(YAMLArgument):
     Returns:
       The base argument.
     """
-    if message and self.api_field:
-      field = arg_utils.GetFieldFromMessage(message, self.api_field)
-    else:
-      field = None
+    if self.clearable and self.api_field:
+      return self._GenerateUpdateFlags(message).Generate()
+
+    field = self._GetField(message)
     return arg_utils.GenerateFlag(field, self)
 
   def Parse(self, method, message, namespace, group_required=True):
@@ -360,14 +378,22 @@ class Argument(YAMLArgument):
     """
     if self.api_field is None:
       return
+
+    if self.clearable:
+      value = self._ParseUpdateArgsFromNamespace(namespace, message)
+      arg_utils.SetFieldInMessage(message, self.api_field, value)
+      return
+
     value = arg_utils.GetFromNamespace(
         namespace, self.arg_name, fallback=self.fallback)
     if value is None:
       return
-    field = arg_utils.GetFieldFromMessage(message, self.api_field)
+
+    field = self._GetField(message)
     value = arg_utils.ConvertValue(
         field, value, repeated=self.repeated, processor=self.processor,
         choices=util.Choice.ToChoiceMap(self.choices))
+
     arg_utils.SetFieldInMessage(message, self.api_field, value)
 
 

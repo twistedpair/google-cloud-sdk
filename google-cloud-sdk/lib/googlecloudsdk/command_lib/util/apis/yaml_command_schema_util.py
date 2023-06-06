@@ -237,6 +237,13 @@ def ParseType(t):
   if not t:
     return None
 
+  if 'arg_object' in t:
+    if isinstance(t, dict):
+      data = t.get('arg_object')
+    else:
+      data = None
+    return ArgObject.FromData(data)
+
   if isinstance(t, six.string_types):
     builtin_type = BUILTIN_TYPES.get(t)
     if builtin_type:
@@ -280,6 +287,45 @@ class Choice(object):
     if not choices:
       return {}
     return {c.arg_value: c.enum_value for c in choices}
+
+
+class ArgObject(arg_utils.ArgObjectType):
+  """A wrapper to bind an ArgObject argument to a message or field."""
+
+  @classmethod
+  def FromData(cls, unused_data=None):
+    """Creates ArgObject from yaml data."""
+    # TODO(b/278780718) parse spec data that can be specifed by the user
+    return cls()
+
+  def Action(self, repeated):
+    """Returns the correct argument action.
+
+    Args:
+      repeated: bool, whether the field is repeated.
+
+    Returns:
+      str, argument action string.
+    """
+    if repeated:
+      return 'append'
+    return 'store'
+
+  def GenerateType(self, field):
+    """Generates an argparse type function.
+
+    The argparse type function takes in the user input and returns the correct
+    type based off of the apitools message/field provided
+
+    Args:
+      field: The apitools message/field class for field.
+
+    Returns:
+      f(str) -> message/field, The type function that parses user input into
+        apitools message.
+    """
+    # TODO(b/278780718) pass in spec, key_type, and value_type from data
+    return arg_parsers.ArgObject(field)
 
 
 class ArgDict(arg_utils.RepeatedMessageBindableType):

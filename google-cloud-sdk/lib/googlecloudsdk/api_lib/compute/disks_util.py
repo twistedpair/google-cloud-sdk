@@ -204,14 +204,15 @@ def IsProvisioingTypeIops(disk_type):
     disk_type: name of URI of the disk type to be checked.
 
   Returns:
-    Boolean, true if the disk_type supports IOPS provisioning (currently only
-    pd-extreme and cs-extreme support it), false otherwise.
+    Whether the disk_type supports IOPS provisioning.
   """
 
   return (disk_type.endswith('/pd-extreme') or
           disk_type.endswith('/cs-extreme') or
           disk_type.endswith('/hyperdisk-extreme') or
-          disk_type in ['pd-extreme', 'cs-extreme', 'hyperdisk-extreme'])
+          disk_type.endswith('/hyperdisk-balanced') or
+          disk_type in ['pd-extreme', 'cs-extreme', 'hyperdisk-extreme',
+                        'hyperdisk-balanced'])
 
 
 def IsProvisioningTypeThroughput(disk_type):
@@ -221,11 +222,12 @@ def IsProvisioningTypeThroughput(disk_type):
     disk_type: name of URI of the disk type to be checked.
 
   Returns:
-    Boolean, true if the disk_type supports throughput provisioning (currently
-    only cs-throughput support it), false otherwise.
+    Boolean, true if the disk_type supports throughput provisioning, false
+    otherwise.
   """
 
   return (disk_type.endswith('/cs-throughput') or
           disk_type in ['cs-throughput'] or
           disk_type.endswith('/hyperdisk-throughput') or
-          disk_type in ['hyperdisk-throughput'])
+          disk_type.endswith('/hyperdisk-balanced') or
+          disk_type in ['hyperdisk-throughput', 'hyperdisk-balanced'])

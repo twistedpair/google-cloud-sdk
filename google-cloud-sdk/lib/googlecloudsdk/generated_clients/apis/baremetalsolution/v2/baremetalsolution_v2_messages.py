@@ -2433,6 +2433,10 @@ class ResetInstanceRequest(_messages.Message):
   r"""Message requesting to reset a server."""
 
 
+class ResetInstanceResponse(_messages.Message):
+  r"""Response message from resetting a server."""
+
+
 class ResizeVolumeRequest(_messages.Message):
   r"""Request for emergency resize Volume.
 
@@ -2650,6 +2654,10 @@ class StartInstanceRequest(_messages.Message):
   r"""Message requesting to start a server."""
 
 
+class StartInstanceResponse(_messages.Message):
+  r"""Response message from starting a server."""
+
+
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -2703,6 +2711,10 @@ class Status(_messages.Message):
 
 class StopInstanceRequest(_messages.Message):
   r"""Message requesting to stop a server."""
+
+
+class StopInstanceResponse(_messages.Message):
+  r"""Response message from stopping a server."""
 
 
 class StorageQuota(_messages.Message):

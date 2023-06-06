@@ -74,6 +74,8 @@ class AbortInfo(_messages.Message):
       GKE_KONNECTIVITY_PROXY_UNSUPPORTED: Aborted because the connection
         between the control plane and the node of the source cluster is
         initiated by the node and managed by the Konnectivity proxy.
+      RESOURCE_CONFIG_NOT_FOUND: Aborted because expected resource
+        configuration was missing.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -93,6 +95,7 @@ class AbortInfo(_messages.Message):
     UNSUPPORTED = 15
     MISMATCHED_IP_VERSION = 16
     GKE_KONNECTIVITY_PROXY_UNSUPPORTED = 17
+    RESOURCE_CONFIG_NOT_FOUND = 18
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   projectsMissingPermission = _messages.StringField(2, repeated=True)
@@ -574,6 +577,8 @@ class DropInfo(_messages.Message):
         is not ready.
       DROPPED_INSIDE_PSC_SERVICE_PRODUCER: Packet was dropped inside Private
         Service Connect service producer.
+      LOAD_BALANCER_HAS_NO_PROXY_SUBNET: Packet sent to a load balancer, which
+        requires a proxy-only subnet and the subnet is not found.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -613,6 +618,7 @@ class DropInfo(_messages.Message):
     PSC_CONNECTION_NOT_ACCEPTED = 35
     CLOUD_RUN_REVISION_NOT_READY = 36
     DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 37
+    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 38
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)

@@ -157,6 +157,23 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersCancelRequest(_messag
   name = _messages.StringField(2, required=True)
 
 
+class CloudcommerceconsumerprocurementBillingAccountsOrdersEventsListRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersEventsListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of entries requested. The default page size
+      is 25 and the maximum page size is 200.
+    pageToken: The token for fetching the next page.
+    parent: Required. The parent resource to request for events. This field
+      has the format 'billingAccounts/{billing-account-id}/orders/{order-id}'.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class CloudcommerceconsumerprocurementBillingAccountsOrdersGetAuditLogRequest(_messages.Message):
   r"""A
   CloudcommerceconsumerprocurementBillingAccountsOrdersGetAuditLogRequest
@@ -351,6 +368,17 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributionsList
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributionsOperationsGetRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributions
+  OperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributionsPatchRequest(_messages.Message):
@@ -792,7 +820,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest(_message
   Fields:
     agreement: Required. Agreement to be checked against. A valid format would
       be - commerceoffercatalog.googleapis.com/billingAccounts/{billing_accoun
-      t}/offers/{offer_id}/agreements/{agreement_id}
+      t}/offers/{offer_id}/agreements/{agreement_id} commerceoffercatalog.goog
+      leapis.com/services/{service}/standardOffers/{offer_id}/agreements/{agre
+      ement_id}
     financialContract: Financial contract this consent applies to. This is a
       system full resource name. E.g.: //commerceoffercatalog.googleapis.com/b
       illingAccounts/{billing_account}/offers/{offer-id}
@@ -809,8 +839,8 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest(_message
       string.
     offer: Offer associated with the consent. Formats include "commerceofferca
       talog.googleapis.com/billingAccounts/{billing_account}/offers/{offer_id}
-      ". "commerceoffercatalog.googleapis.com/services/{service}/offers/{offer
-      _id}".
+      ". "commerceoffercatalog.googleapis.com/services/{service}/standardOffer
+      s/{offer_id}".
   """
 
   agreement = _messages.StringField(1)
@@ -1113,6 +1143,47 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementService(_messages
 
   serviceName = _messages.StringField(1)
   serviceState = _messages.EnumField('ServiceStateValueValuesEnum', 2)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1Event(_messages.Message):
+  r"""Consumer Procurement Order Event
+
+  Enums:
+    EventTypeValueValuesEnum: The type of action
+
+  Fields:
+    eventTime: The time when the event takes place
+    eventType: The type of action
+    name: Immutable. The resource name of the order event Format:
+      `billingAccounts/{billing_account}/orders/{order}/events/{event}`
+    offerId: The offer id corresponding to the event.
+    userEmail: The email of the user taking the action. This field can be
+      empty for users authenticated through 3P identity provider.
+    userName: The name of the user taking the action. For users authenticated
+      through 3P identity provider (BYOID), the field value format is
+      described in go/byoid-data-pattern:displaying-users.
+  """
+
+  class EventTypeValueValuesEnum(_messages.Enum):
+    r"""The type of action
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: Default value, do not use.
+      ORDER_PLACED: The action of accepting an offer.
+      ORDER_CANCELLED: The action of cancelling an order.
+      ORDER_MODIFIED: The action of modifying an order.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    ORDER_PLACED = 1
+    ORDER_CANCELLED = 2
+    ORDER_MODIFIED = 3
+
+  eventTime = _messages.StringField(1)
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 2)
+  name = _messages.StringField(3)
+  offerId = _messages.StringField(4)
+  userEmail = _messages.StringField(5)
+  userName = _messages.StringField(6)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial(_messages.Message):
@@ -1418,6 +1489,18 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ListEntitlementsResponse(_me
   """
 
   entitlements = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1ListEventsResponse(_messages.Message):
+  r"""Response to listing order events
+
+  Fields:
+    events: The list of events in this response.
+    nextPageToken: The token for fetching the next page.
+  """
+
+  events = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Event', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -2051,6 +2134,13 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1UpdateOrderAllocationMetadat
 
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1UpdateOrderAttributionMetadata(_messages.Message):
+  r"""Metadata for a long-running operation initiated by
+  ConsumerProcurementService.UpdateOrderAttribution.
+  """
+
+
+
 class GoogleCloudCommerceConsumerProcurementV1mainCancelOrderMetadata(_messages.Message):
   r"""Message stored in the metadata field of the Operation returned by
   ConsumerProcurementService.CancelOrder.
@@ -2196,6 +2286,13 @@ class GoogleCloudCommerceConsumerProcurementV1mainReplaceOrderAllocationsRespons
 class GoogleCloudCommerceConsumerProcurementV1mainUpdateOrderAllocationMetadata(_messages.Message):
   r"""Message stored in the metadata field of the Operation returned by
   ConsumerProcurementService.UpdateOrderAllocation.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainUpdateOrderAttributionMetadata(_messages.Message):
+  r"""Metadata for a long-running operation initiated by
+  ConsumerProcurementService.UpdateOrderAttribution.
   """
 
 

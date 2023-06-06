@@ -65,6 +65,7 @@ def get_wildcard_iterator(
     fetch_encrypted_object_hashes=False,
     fields_scope=cloud_api.FieldsScope.NO_ACL,
     files_only=False,
+    force_include_hidden_files=False,
     get_bucket_metadata=False,
     ignore_symlinks=False,
     preserve_symlinks=False,
@@ -86,6 +87,9 @@ def get_wildcard_iterator(
       by API.
     files_only (bool): Skips containers. Raises error for stream types. Still
       returns symlinks.
+    force_include_hidden_files (bool): Include local hidden files even if not
+      recursive iteration. URL should be for directory or directory followed by
+      wildcards.
     get_bucket_metadata (bool): If true, perform a bucket GET request when
       fetching bucket resources.
     ignore_symlinks (bool): Skip over symlinks instead of following them.
@@ -111,6 +115,7 @@ def get_wildcard_iterator(
         url,
         exclude_patterns=exclude_patterns,
         files_only=files_only,
+        force_include_hidden_files=force_include_hidden_files,
         ignore_symlinks=ignore_symlinks,
         preserve_symlinks=preserve_symlinks,
     )
@@ -166,6 +171,7 @@ class FileWildcardIterator(WildcardIterator):
       url,
       exclude_patterns=None,
       files_only=False,
+      force_include_hidden_files=False,
       ignore_symlinks=False,
       preserve_symlinks=False,
   ):
@@ -176,6 +182,9 @@ class FileWildcardIterator(WildcardIterator):
       exclude_patterns (Patterns|None): See get_wildcard_iterator.
       files_only (bool): Returns files and symlinks, skips folders, errors on
         streams.
+      force_include_hidden_files (bool): Include hidden files even if not
+        recursive iteration. URL should be for directory or directory followed
+        by wildcards.
       ignore_symlinks (bool): Skip over symlinks instead of following them.
       preserve_symlinks (bool): Preserve symlinks instead of following them.
     """
@@ -187,7 +196,24 @@ class FileWildcardIterator(WildcardIterator):
     self._ignore_symlinks = ignore_symlinks
     self._preserve_symlinks = preserve_symlinks
 
+    if force_include_hidden_files and url.object_name.rstrip('*')[-1] != os.sep:
+      raise command_errors.InvalidUrlError(
+          'If force-including hidden files, input URL must be directory or'
+          ' directory followed by wildcards.'
+      )
     self._path = self._url.object_name
+    self._recurse = '**' in self._path
+    self._include_hidden_files = self._recurse or force_include_hidden_files
+    # TODO(b/284493911): This can be removed with better hidden file handling.
+    if self._include_hidden_files and re.search(
+        r'{sep}\.[^{sep}]+'.format(sep=re.escape(os.sep)), self._path
+    ):
+      # Example matches: `\.hidden-file.txt` & `/.**hidden-dir/file.txt`
+      # Does not match: `/./`
+      log.warning(
+          'Wildcard input pattern may match hidden files, which could cause'
+          ' duplicate matches to the hidden files matched by other flags.'
+      )
 
   def __iter__(self):
     # Files named '-' will not be copied, as that string makes is_stdio true.
@@ -198,11 +224,22 @@ class FileWildcardIterator(WildcardIterator):
         )
       yield resource_reference.FileObjectResource(self._url)
 
-    recursion_needed = '**' in self._path
-    normal_file_iterator = glob.iglob(self._path, recursive=recursion_needed)
-    if recursion_needed:
+    normal_file_iterator = glob.iglob(self._path, recursive=self._recurse)
+    # TODO(b/284493911): Current hidden file handling misses some cases.
+    if self._include_hidden_files:
+      # Python 3.11 supports a hidden file kwarg, so if we drop all previous
+      # versions, we can stop this pattern nonsense.
+      if self._recurse:
+        # `**` requires `recursive=True` to work.
+        # Ex: /some/path -> some/path/**/.* (also matches `some/path/.*`)
+        hidden_file_glob_pattern = os.path.join(self._path, '**', '.*')
+      else:
+        # Should error in __init__ for non-compliant URLs.
+        # Ex: /some/path/** -> some/path/.*
+        hidden_file_glob_pattern = self._path.rstrip('*') + '.*'
       hidden_file_iterator = glob.iglob(
-          os.path.join(self._path, '**', '.*'), recursive=recursion_needed)
+          hidden_file_glob_pattern, recursive=True
+      )
     else:
       hidden_file_iterator = []
     for path in itertools.chain(normal_file_iterator, hidden_file_iterator):
@@ -274,7 +311,9 @@ class CloudWildcardIterator(WildcardIterator):
         encrypted objects in order to fetch their hash values.
       fields_scope (cloud_api.FieldsScope): Determines amount of metadata
         returned by API.
-      files_only (bool): Returns cloud objects, not prefixes or buckets.
+      files_only (bool): Returns cloud objects, not prefixes or buckets. Also
+        skips directory placeholder objects, although they are technically
+        objects.
       get_bucket_metadata (bool): If true, perform a bucket GET request when
         fetching bucket resources. Otherwise, bucket URLs without wildcards may
         be returned without verifying the buckets exist.
@@ -303,14 +342,17 @@ class CloudWildcardIterator(WildcardIterator):
         else:  # URL is an object or prefix.
           for obj_resource in self._fetch_objects(
               bucket_or_unknown_resource.storage_url.bucket_name):
-            if (
-                self._exclude_patterns
-                and self._exclude_patterns.match(
-                    obj_resource.storage_url.versionless_url_string
-                )
-                or self._files_only
-                and not isinstance(
-                    obj_resource, resource_reference.ObjectResource
+            if self._exclude_patterns and self._exclude_patterns.match(
+                obj_resource.storage_url.versionless_url_string
+            ):
+              continue
+            if self._files_only and (
+                not isinstance(obj_resource, resource_reference.ObjectResource)
+                or (  # Directory placeholder object.
+                    obj_resource.storage_url.object_name.endswith(
+                        storage_url.CLOUD_URL_DELIMITER
+                    )
+                    and obj_resource.size == 0
                 )
             ):
               continue

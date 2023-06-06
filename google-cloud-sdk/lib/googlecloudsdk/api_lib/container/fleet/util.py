@@ -163,6 +163,39 @@ def NamespaceResourceName(project,
           'namespacesId': name,
       },
       collection='gkehub.projects.locations.namespaces',
+      api_version=VERSION_MAP[release_track],
+  ).RelativeName()
+
+
+def ScopeNamespaceParentName(
+    project, scope, release_track=base.ReleaseTrack.ALPHA
+):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Parse(
+      line=None,
+      params={
+          'projectsId': project,
+          'locationsId': 'global',
+          'scopesId': scope,
+      },
+      collection='gkehub.projects.locations.scopes',
+      api_version=VERSION_MAP[release_track],
+  ).RelativeName()
+
+
+def ScopeNamespaceResourceName(
+    project, scope, name, release_track=base.ReleaseTrack.ALPHA
+):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Parse(
+      line=None,
+      params={
+          'projectsId': project,
+          'locationsId': 'global',
+          'scopesId': scope,
+          'namespacesId': name,
+      },
+      collection='gkehub.projects.locations.scopes.namespaces',
       api_version=VERSION_MAP[release_track]).RelativeName()
 
 
@@ -196,6 +229,34 @@ def RBACRoleBindingResourceName(project,
       },
       collection='gkehub.projects.locations.namespaces.rbacrolebindings',
       api_version=VERSION_MAP[release_track]).RelativeName()
+
+
+def MembershipRBACRoleBindingResourceName(
+    project, location, membership, name, release_track=base.ReleaseTrack.ALPHA):
+  """Parses a Membership RBAC Role Binding resource.
+
+  Args:
+    project: the full project ID or number for the resource.
+    location: the location of the resource.
+    membership: the parent membership of the resource.
+    name: the resource name for the role binding.
+    release_track: the API version for the resource parsing.
+
+  Returns:
+    A Membership RBAC Role Binding resource.
+  """
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Parse(
+      line=None,
+      params={
+          'projectsId': project,
+          'locationsId': location,
+          'membershipsId': membership,
+          'rbacrolebindingsId': name,
+      },
+      collection='gkehub.projects.locations.memberships.rbacrolebindings',
+      api_version=VERSION_MAP[release_track],
+  ).RelativeName()
 
 
 def MembershipBindingResourceName(project,

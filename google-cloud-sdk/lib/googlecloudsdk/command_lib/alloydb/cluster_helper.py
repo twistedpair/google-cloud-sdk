@@ -78,7 +78,7 @@ def _ConstructContinuousBackupConfig(alloydb_messages, args, update=False):
   return continuous_backup_config
 
 
-def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
+def _ConstructClusterForCreateRequestGABeta(alloydb_messages, args):
   """Returns the cluster for GA create request based on args."""
   cluster = alloydb_messages.Cluster()
   cluster.network = args.network
@@ -94,13 +94,6 @@ def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
     cluster.automatedBackupPolicy = _ConstructAutomatedBackupPolicy(
         alloydb_messages, args)
 
-  return cluster
-
-
-def _ConstructClusterForCreateRequestBeta(alloydb_messages, args):
-  """Returns the cluster for beta create request based on args."""
-  cluster = _ConstructClusterForCreateRequestGA(alloydb_messages, args)
-
   if (
       args.enable_continuous_backup is not None
       or args.continuous_backup_recovery_window_days
@@ -114,7 +107,7 @@ def _ConstructClusterForCreateRequestBeta(alloydb_messages, args):
 
 def _ConstructClusterForCreateRequestAlpha(alloydb_messages, args):
   """Returns the cluster for alpha create request based on args."""
-  cluster = _ConstructClusterForCreateRequestBeta(alloydb_messages, args)
+  cluster = _ConstructClusterForCreateRequestGABeta(alloydb_messages, args)
 
   if args.allocated_ip_range_name:
     cluster.networkConfig = alloydb_messages.NetworkConfig(
@@ -124,19 +117,9 @@ def _ConstructClusterForCreateRequestAlpha(alloydb_messages, args):
   return cluster
 
 
-def ConstructCreateRequestFromArgsGA(alloydb_messages, location_ref, args):
+def ConstructCreateRequestFromArgsGABeta(alloydb_messages, location_ref, args):
   """Returns the cluster create request for GA track based on args."""
-  cluster = _ConstructClusterForCreateRequestGA(alloydb_messages, args)
-
-  return alloydb_messages.AlloydbProjectsLocationsClustersCreateRequest(
-      cluster=cluster,
-      clusterId=args.cluster,
-      parent=location_ref.RelativeName())
-
-
-def ConstructCreateRequestFromArgsBeta(alloydb_messages, location_ref, args):
-  """Returns the cluster create request for beta track based on args."""
-  cluster = _ConstructClusterForCreateRequestBeta(alloydb_messages, args)
+  cluster = _ConstructClusterForCreateRequestGABeta(alloydb_messages, args)
 
   return alloydb_messages.AlloydbProjectsLocationsClustersCreateRequest(
       cluster=cluster,
@@ -186,25 +169,6 @@ def ConstructRestoreRequestFromArgsGA(alloydb_messages, location_ref,
   cluster_resource = _ConstructClusterResourceForRestoreRequest(
       alloydb_messages, args)
 
-  backup_source = _ConstructBackupSourceForRestoreRequest(
-      alloydb_messages, resource_parser, args)
-
-  return alloydb_messages.AlloydbProjectsLocationsClustersRestoreRequest(
-      parent=location_ref.RelativeName(),
-      restoreClusterRequest=alloydb_messages.RestoreClusterRequest(
-          backupSource=backup_source,
-          clusterId=args.cluster,
-          cluster=cluster_resource,
-      ))
-
-
-def ConstructRestoreRequestFromArgsAlphaBeta(alloydb_messages, location_ref,
-                                             resource_parser, args):
-  """Returns the cluster restore request for alpha and beta tracks based on args.
-  """
-  cluster_resource = _ConstructClusterResourceForRestoreRequest(
-      alloydb_messages, args)
-
   backup_source, continuous_backup_source = None, None
   if args.backup:
     backup_source = _ConstructBackupSourceForRestoreRequest(
@@ -231,22 +195,16 @@ def ConstructRestoreRequestFromArgsAlphaBeta(alloydb_messages, location_ref,
 
 
 def _ConstructClusterAndMaskForPatchRequestGA(alloydb_messages, args):
+  """Returns the cluster resource for patch request."""
   cluster = alloydb_messages.Cluster()
   update_masks = []
+  continuous_backup_update_masks = []
 
   if (args.disable_automated_backup or args.automated_backup_days_of_week or
       args.clear_automated_backup):
     cluster.automatedBackupPolicy = _ConstructAutomatedBackupPolicy(
         alloydb_messages, args)
     update_masks.append('automated_backup_policy')
-  return cluster, update_masks
-
-
-def _ConstructClusterAndMaskForPatchRequestAlphaBeta(alloydb_messages, args):
-  """Returns the cluster patch request for Alpha/Beta track based on args."""
-  cluster, update_masks = _ConstructClusterAndMaskForPatchRequestGA(
-      alloydb_messages, args)
-  continuous_backup_update_masks = []
 
   if args.enable_continuous_backup:
     continuous_backup_update_masks.append('continuous_backup_config.enabled')
@@ -280,17 +238,6 @@ def _ConstructClusterAndMaskForPatchRequestAlphaBeta(alloydb_messages, args):
 def ConstructPatchRequestFromArgsGA(alloydb_messages, cluster_ref, args):
   """Returns the cluster patch request for GA release track based on args."""
   cluster, update_masks = _ConstructClusterAndMaskForPatchRequestGA(
-      alloydb_messages, args)
-  return alloydb_messages.AlloydbProjectsLocationsClustersPatchRequest(
-      name=cluster_ref.RelativeName(),
-      cluster=cluster,
-      updateMask=','.join(update_masks))
-
-
-def ConstructPatchRequestFromArgsAlphaBeta(alloydb_messages, cluster_ref, args):
-  """Returns the cluster patch request for alpha and beta release tracks based on args.
-  """
-  cluster, update_masks = _ConstructClusterAndMaskForPatchRequestAlphaBeta(
       alloydb_messages, args)
   return alloydb_messages.AlloydbProjectsLocationsClustersPatchRequest(
       name=cluster_ref.RelativeName(),

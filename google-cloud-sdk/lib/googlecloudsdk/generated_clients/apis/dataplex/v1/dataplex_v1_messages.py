@@ -4675,9 +4675,15 @@ class GoogleCloudDataplexV1Job(_messages.Message):
   Enums:
     ServiceValueValuesEnum: Output only. The underlying service running a job.
     StateValueValuesEnum: Output only. Execution state for the job.
+    TriggerValueValuesEnum: Output only. Job execution trigger.
+
+  Messages:
+    LabelsValue: Output only. User-defined labels for the task.
 
   Fields:
     endTime: Output only. The time when the job ended.
+    executionSpec: Output only. Spec related to how a task is executed.
+    labels: Output only. User-defined labels for the task.
     message: Output only. Additional information about the current state.
     name: Output only. The relative resource name of the job, of the form: pro
       jects/{project_number}/locations/{location_id}/lakes/{lake_id}/tasks/{ta
@@ -4689,6 +4695,7 @@ class GoogleCloudDataplexV1Job(_messages.Message):
       particular service.
     startTime: Output only. The time when the job was started.
     state: Output only. Execution state for the job.
+    trigger: Output only. Job execution trigger.
     uid: Output only. System generated globally unique ID for the job.
   """
 
@@ -4722,15 +4729,55 @@ class GoogleCloudDataplexV1Job(_messages.Message):
     FAILED = 5
     ABORTED = 6
 
+  class TriggerValueValuesEnum(_messages.Enum):
+    r"""Output only. Job execution trigger.
+
+    Values:
+      TRIGGER_UNSPECIFIED: The trigger is unspecified.
+      TASK_CONFIG: The job was triggered by Dataplex based on trigger spec
+        from task definition.
+      RUN_REQUEST: The job was triggered by the explicit call of Task API.
+    """
+    TRIGGER_UNSPECIFIED = 0
+    TASK_CONFIG = 1
+    RUN_REQUEST = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Output only. User-defined labels for the task.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   endTime = _messages.StringField(1)
-  message = _messages.StringField(2)
-  name = _messages.StringField(3)
-  retryCount = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
-  service = _messages.EnumField('ServiceValueValuesEnum', 5)
-  serviceJob = _messages.StringField(6)
-  startTime = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  uid = _messages.StringField(9)
+  executionSpec = _messages.MessageField('GoogleCloudDataplexV1TaskExecutionSpec', 2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  message = _messages.StringField(4)
+  name = _messages.StringField(5)
+  retryCount = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
+  service = _messages.EnumField('ServiceValueValuesEnum', 7)
+  serviceJob = _messages.StringField(8)
+  startTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  trigger = _messages.EnumField('TriggerValueValuesEnum', 11)
+  uid = _messages.StringField(12)
 
 
 class GoogleCloudDataplexV1JobEvent(_messages.Message):
@@ -5251,7 +5298,103 @@ class GoogleCloudDataplexV1RunDataScanResponse(_messages.Message):
 
 
 class GoogleCloudDataplexV1RunTaskRequest(_messages.Message):
-  r"""A GoogleCloudDataplexV1RunTaskRequest object."""
+  r"""A GoogleCloudDataplexV1RunTaskRequest object.
+
+  Messages:
+    ArgsValue: Optional. Execution spec arguments. If the map is left empty,
+      the task will run with existing execution spec args from task
+      definition. If the map contains an entry with a new key, the same will
+      be added to existing set of args. If the map contains an entry with an
+      existing arg key in task definition, the task will run with new arg
+      value for that entry. Clearing an existing arg will require arg value to
+      be explicitly set to a hyphen "-". The arg value cannot be empty.
+    LabelsValue: Optional. User-defined labels for the task. If the map is
+      left empty, the task will run with existing labels from task definition.
+      If the map contains an entry with a new key, the same will be added to
+      existing set of labels. If the map contains an entry with an existing
+      label key in task definition, the task will run with new label value for
+      that entry. Clearing an existing label will require label value to be
+      explicitly set to a hyphen "-". The label value cannot be empty.
+
+  Fields:
+    args: Optional. Execution spec arguments. If the map is left empty, the
+      task will run with existing execution spec args from task definition. If
+      the map contains an entry with a new key, the same will be added to
+      existing set of args. If the map contains an entry with an existing arg
+      key in task definition, the task will run with new arg value for that
+      entry. Clearing an existing arg will require arg value to be explicitly
+      set to a hyphen "-". The arg value cannot be empty.
+    labels: Optional. User-defined labels for the task. If the map is left
+      empty, the task will run with existing labels from task definition. If
+      the map contains an entry with a new key, the same will be added to
+      existing set of labels. If the map contains an entry with an existing
+      label key in task definition, the task will run with new label value for
+      that entry. Clearing an existing label will require label value to be
+      explicitly set to a hyphen "-". The label value cannot be empty.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ArgsValue(_messages.Message):
+    r"""Optional. Execution spec arguments. If the map is left empty, the task
+    will run with existing execution spec args from task definition. If the
+    map contains an entry with a new key, the same will be added to existing
+    set of args. If the map contains an entry with an existing arg key in task
+    definition, the task will run with new arg value for that entry. Clearing
+    an existing arg will require arg value to be explicitly set to a hyphen
+    "-". The arg value cannot be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a ArgsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ArgsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ArgsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels for the task. If the map is left empty,
+    the task will run with existing labels from task definition. If the map
+    contains an entry with a new key, the same will be added to existing set
+    of labels. If the map contains an entry with an existing label key in task
+    definition, the task will run with new label value for that entry.
+    Clearing an existing label will require label value to be explicitly set
+    to a hyphen "-". The label value cannot be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  args = _messages.MessageField('ArgsValue', 1)
+  labels = _messages.MessageField('LabelsValue', 2)
 
 
 class GoogleCloudDataplexV1RunTaskResponse(_messages.Message):

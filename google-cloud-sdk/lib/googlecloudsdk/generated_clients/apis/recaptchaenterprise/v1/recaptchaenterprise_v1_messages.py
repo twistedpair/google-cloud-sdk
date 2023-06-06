@@ -576,8 +576,8 @@ class GoogleCloudRecaptchaenterpriseV1IOSKeySettings(_messages.Message):
     allowAllBundleIds: If set to true, allowed_bundle_ids are not enforced.
     allowedBundleIds: iOS bundle ids of apps allowed to use the key. Example:
       'com.companyname.productname.appname'
-    appleDeveloperId: Apple Developer account details for the app the
-      reCAPTCHA key will protect. reCAPTCHA Enterprise leverages platform
+    appleDeveloperId: Apple Developer account details for the app that is
+      protected by the reCAPTCHA Key. reCAPTCHA Enterprise leverages platform
       specific checks like Apple AppAttest and Apple DeviceCheck to protect
       your app from abuse. Providing these fields allows reCAPTCHA Enterprise
       to get a better assessment of the integrity of your app.
@@ -939,8 +939,8 @@ class GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsReques
   r"""The request message to search related account group memberships.
 
   Fields:
-    hashedAccountId: Optional. The unique stable hashed user identifier we
-      should search connections to. The identifier should correspond to a
+    hashedAccountId: Optional. The unique stable hashed user identifier used
+      to search connections. The identifier should correspond to a
       `hashed_account_id` provided in a previous `CreateAssessment` or
       `AnnotateAssessment` call.
     pageSize: Optional. The maximum number of groups to return. The service

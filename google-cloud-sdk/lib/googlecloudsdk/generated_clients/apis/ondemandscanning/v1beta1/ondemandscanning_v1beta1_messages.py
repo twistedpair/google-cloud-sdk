@@ -169,6 +169,26 @@ class AttestationOccurrence(_messages.Message):
   signatures = _messages.MessageField('Signature', 3, repeated=True)
 
 
+class BinarySourceInfo(_messages.Message):
+  r"""A BinarySourceInfo object.
+
+  Fields:
+    binaryVersion: The binary package. This is significant when the source is
+      different than the binary itself. Historically if they've differed,
+      we've stored the name of the source and its version in the
+      package/version fields, but we should also store the binary package
+      info, as that's what's actually installed. See b/175908657#comment15.
+    sourceVersion: The source package. Similar to the above, this is
+      significant when the source is different than the binary itself. Since
+      the top-level package/version fields are based on an if/else, we need a
+      separate field for both binary and source if we want to know
+      definitively where the data is coming from.
+  """
+
+  binaryVersion = _messages.MessageField('PackageVersion', 1)
+  sourceVersion = _messages.MessageField('PackageVersion', 2)
+
+
 class BuildOccurrence(_messages.Message):
   r"""Details of a build occurrence.
 
@@ -1609,11 +1629,8 @@ class PackageData(_messages.Message):
 
   Fields:
     architecture: The architecture of the package.
-    binaryVersion: The binary package. This is significant when the source is
-      different than the binary itself. Historically if they've differed,
-      we've stored the name of the source and its version in the
-      package/version fields, but we should also store the binary package
-      info, as that's what's actually installed. See b/175908657#comment15.
+    binarySourceInfo: A bundle containing the binary and source information.
+    binaryVersion: DEPRECATED
     cpeUri: The cpe_uri in [cpe format] (https://cpe.mitre.org/specification/)
       in which the vulnerability may manifest. Examples include distro or
       storage location for vulnerable jar.
@@ -1634,11 +1651,7 @@ class PackageData(_messages.Message):
     packageType: The type of package: os, maven, go, etc.
     patchedCve: CVEs that this package is no longer vulnerable to go/drydock-
       dd-custom-binary-scanning
-    sourceVersion: The source package. Similar to the above, this is
-      significant when the source is different than the binary itself. Since
-      the top-level package/version fields are based on an if/else, we need a
-      separate field for both binary and source if we want to know
-      definitively where the data is coming from.
+    sourceVersion: DEPRECATED
     unused: A string attribute.
     version: The version of the package being analysed
   """
@@ -1664,20 +1677,21 @@ class PackageData(_messages.Message):
     NPM = 6
 
   architecture = _messages.StringField(1)
-  binaryVersion = _messages.MessageField('PackageVersion', 2)
-  cpeUri = _messages.StringField(3)
-  dependencyChain = _messages.MessageField('LanguagePackageDependency', 4, repeated=True)
-  fileLocation = _messages.MessageField('FileLocation', 5, repeated=True)
-  hashDigest = _messages.StringField(6)
-  maintainer = _messages.MessageField('Maintainer', 7)
-  os = _messages.StringField(8)
-  osVersion = _messages.StringField(9)
-  package = _messages.StringField(10)
-  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 11)
-  patchedCve = _messages.StringField(12, repeated=True)
-  sourceVersion = _messages.MessageField('PackageVersion', 13)
-  unused = _messages.StringField(14)
-  version = _messages.StringField(15)
+  binarySourceInfo = _messages.MessageField('BinarySourceInfo', 2, repeated=True)
+  binaryVersion = _messages.MessageField('PackageVersion', 3)
+  cpeUri = _messages.StringField(4)
+  dependencyChain = _messages.MessageField('LanguagePackageDependency', 5, repeated=True)
+  fileLocation = _messages.MessageField('FileLocation', 6, repeated=True)
+  hashDigest = _messages.StringField(7)
+  maintainer = _messages.MessageField('Maintainer', 8)
+  os = _messages.StringField(9)
+  osVersion = _messages.StringField(10)
+  package = _messages.StringField(11)
+  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 12)
+  patchedCve = _messages.StringField(13, repeated=True)
+  sourceVersion = _messages.MessageField('PackageVersion', 14)
+  unused = _messages.StringField(15)
+  version = _messages.StringField(16)
 
 
 class PackageIssue(_messages.Message):

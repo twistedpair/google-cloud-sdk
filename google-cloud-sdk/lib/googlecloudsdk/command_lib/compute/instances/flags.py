@@ -28,6 +28,7 @@ from googlecloudsdk.api_lib.compute import csek_utils
 from googlecloudsdk.api_lib.compute import disks_util
 from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import kms_utils
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute.zones import service as zones_service
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import actions
@@ -624,16 +625,14 @@ def AddBootDiskArgs(parser, enable_kms=False):
       """)
   parser.add_argument(
       '--boot-disk-size',
-      type=arg_parsers.BinarySize(lower_bound='10GB'),
+      type=arg_parsers.BinarySize(lower_bound='1GB'),
       help="""\
       The size of the boot disk. This option can only be specified if a new
       boot disk is being created (as opposed to mounting an existing
       persistent disk). The value must be a whole number followed by a size
       unit of ``KB'' for kilobyte, ``MB'' for megabyte, ``GB'' for gigabyte,
       or ``TB'' for terabyte. For example, ``10GB'' will produce a 10 gigabyte
-      disk. The minimum size a boot disk can have is 10 GB. Disk size must be a
-      multiple of 1 GB. Limit boot disk size to 2 TB to account for MBR
-      partition table limitations. Default size unit is ``GB''.
+      disk. Disk size must be a multiple of 1 GB.  Default size unit is ``GB''.
       """)
 
   parser.add_argument(
@@ -1113,6 +1112,19 @@ def ValidateDiskBootFlags(args, enable_kms=False):
       raise exceptions.InvalidArgumentException(
           '--boot-disk-provisioned-iops',
           '--boot-disk-provisioned-iops cannot be used with the given disk type.'
+      )
+
+  if args.IsSpecified('boot_disk_size'):
+    size_gb = utils.BytesToGb(args.boot_disk_size)
+    if (
+        args.IsSpecified('boot_disk_type')
+        and args.boot_disk_type in constants.LEGACY_DISK_TYPE_LIST
+        and size_gb < 10
+    ):
+      raise exceptions.InvalidArgumentException(
+          '--boot-disk-size',
+          'Value must be greater than or equal to 10 GB; reveived {0} GB'
+          .format(size_gb),
       )
 
   if args.image and boot_disk_specified:

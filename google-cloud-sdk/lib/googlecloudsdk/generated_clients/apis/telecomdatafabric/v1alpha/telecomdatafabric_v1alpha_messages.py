@@ -69,8 +69,9 @@ class Deployment(_messages.Message):
     projectId: Id of project where template will be deployed, if not supplied
       the default is resource's project.
     state: Output only. Current state of the Deployment.
-    templateId: Required. Id of the template to use for deployment. This
-      resource will be in the format "/projects/*/locations/*/template/"
+    templateGcsPath: Cloud Storage path for custom template of format "gs:///"
+    templateId: Id of the template to use for deployment. This resource will
+      be in the format "/projects/*/locations/*/template/"
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -155,8 +156,9 @@ class Deployment(_messages.Message):
   parameters = _messages.MessageField('ParametersValue', 9)
   projectId = _messages.StringField(10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
-  templateId = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  templateGcsPath = _messages.StringField(12)
+  templateId = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class DeploymentAsset(_messages.Message):
@@ -1075,15 +1077,66 @@ class TemplateParameter(_messages.Message):
 
   Fields:
     description: Parameter description.
+    freeform: Freeform type parameter.
     isRequired: True, if parameter is required.
     name: Parameter name.
+    oneOf: Select type parameter.
     regexp: Regex to validate parameter value provided during provisioning.
+    trueOrFalse: Boolean type parameter.
   """
 
   description = _messages.StringField(1)
-  isRequired = _messages.BooleanField(2)
-  name = _messages.StringField(3)
-  regexp = _messages.StringField(4)
+  freeform = _messages.MessageField('TemplateParameterFreeform', 2)
+  isRequired = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  oneOf = _messages.MessageField('TemplateParameterOneOf', 5)
+  regexp = _messages.StringField(6)
+  trueOrFalse = _messages.MessageField('TemplateParameterBoolean', 7)
+
+
+class TemplateParameterBoolean(_messages.Message):
+  r"""Boolean type parameter."""
+
+
+class TemplateParameterFreeform(_messages.Message):
+  r"""Freeform type parameter.
+
+  Enums:
+    SemanticTypeValueValuesEnum: Semantic type of input.
+
+  Fields:
+    regexp: Regex to validate parameter value provided during provisioning.
+    semanticType: Semantic type of input.
+  """
+
+  class SemanticTypeValueValuesEnum(_messages.Enum):
+    r"""Semantic type of input.
+
+    Values:
+      SEMANTIC_TYPE_UNSPECIFIED: Default value. This value is unused.
+      BQ_DATASET: BigQuery dataset.
+      BQ_TABLE: BigQuery table.
+      GCS_BUCKET: Cloud Storage bucket.
+      GCS_OBJECT: Cloud Storage object.
+    """
+    SEMANTIC_TYPE_UNSPECIFIED = 0
+    BQ_DATASET = 1
+    BQ_TABLE = 2
+    GCS_BUCKET = 3
+    GCS_OBJECT = 4
+
+  regexp = _messages.StringField(1)
+  semanticType = _messages.EnumField('SemanticTypeValueValuesEnum', 2)
+
+
+class TemplateParameterOneOf(_messages.Message):
+  r"""OneOf type parameter.
+
+  Fields:
+    acceptableValues: List of acceptable values for oneof.
+  """
+
+  acceptableValues = _messages.StringField(1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -5998,8 +5998,8 @@ class GoogleCloudDialogflowCxV3TestRunDifference(_messages.Message):
     TypeValueValuesEnum: The type of diff.
 
   Fields:
-    description: A description of the diff, showing the actual output vs
-      expected output.
+    description: A human readable description of the diff, showing the actual
+      output vs expected output.
     type: The type of diff.
   """
 
@@ -8274,8 +8274,8 @@ class GoogleCloudDialogflowCxV3beta1TestRunDifference(_messages.Message):
     TypeValueValuesEnum: The type of diff.
 
   Fields:
-    description: A description of the diff, showing the actual output vs
-      expected output.
+    description: A human readable description of the diff, showing the actual
+      output vs expected output.
     type: The type of diff.
   """
 
@@ -11373,7 +11373,7 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig(_mes
       low value and slowly increasing until you have desired results. If this
       field is not set, it defaults to 0.0, which means that all suggestions
       are returned. Supported features: ARTICLE_SUGGESTION, FAQ, SMART_REPLY,
-      SMART_COMPOSE, KNOWLEDGE_SEARCH, KNOWLEDGE_ASSIST.
+      SMART_COMPOSE, KNOWLEDGE_SEARCH, KNOWLEDGE_ASSIST, ENTITY_EXTRACTION.
     contextFilterSettings: Determines how recent conversation context is
       filtered when generating suggestions. If unspecified, no messages will
       be dropped.
@@ -14907,6 +14907,8 @@ class GoogleCloudDialogflowV2beta1ClearSuggestionFeatureConfigOperationMetadata(
       ARTICLE_SUGGESTION: Run article suggestion model for chat.
       FAQ: Run FAQ model.
       SMART_REPLY: Run smart reply model for chat.
+      DIALOGFLOW_ASSIST: Run Dialogflow assist model for chat, which will
+        return automated agent response as suggestion.
       CONVERSATION_SUMMARIZATION: Run conversation summarization model for
         chat.
     """
@@ -14914,7 +14916,8 @@ class GoogleCloudDialogflowV2beta1ClearSuggestionFeatureConfigOperationMetadata(
     ARTICLE_SUGGESTION = 1
     FAQ = 2
     SMART_REPLY = 3
-    CONVERSATION_SUMMARIZATION = 4
+    DIALOGFLOW_ASSIST = 4
+    CONVERSATION_SUMMARIZATION = 5
 
   conversationProfile = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -15065,6 +15068,21 @@ class GoogleCloudDialogflowV2beta1ConversationEvent(_messages.Message):
   errorStatus = _messages.MessageField('GoogleRpcStatus', 2)
   newMessagePayload = _messages.MessageField('GoogleCloudDialogflowV2beta1Message', 3)
   type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class GoogleCloudDialogflowV2beta1DialogflowAssistAnswer(_messages.Message):
+  r"""Represents a Dialogflow assist answer.
+
+  Fields:
+    answerRecord: The name of answer record, in the format of
+      "projects//locations//answerRecords/"
+    intentSuggestion: An intent suggestion generated from conversation.
+    queryResult: Result from v2 agent.
+  """
+
+  answerRecord = _messages.StringField(1)
+  intentSuggestion = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentSuggestion', 2)
+  queryResult = _messages.MessageField('GoogleCloudDialogflowV2beta1QueryResult', 3)
 
 
 class GoogleCloudDialogflowV2beta1EntityType(_messages.Message):
@@ -16427,6 +16445,23 @@ class GoogleCloudDialogflowV2beta1IntentParameter(_messages.Message):
   value = _messages.StringField(8)
 
 
+class GoogleCloudDialogflowV2beta1IntentSuggestion(_messages.Message):
+  r"""Represents an intent suggestion.
+
+  Fields:
+    description: Human readable description for better understanding an intent
+      like its scope, content, result etc. Maximum character limit: 140
+      characters.
+    displayName: The display name of the intent.
+    intentV2: The unique identifier of this intent. Format:
+      `projects//locations//agent/intents/`.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  intentV2 = _messages.StringField(3)
+
+
 class GoogleCloudDialogflowV2beta1IntentTrainingPhrase(_messages.Message):
   r"""Represents an example that the agent is trained on.
 
@@ -17076,6 +17111,8 @@ class GoogleCloudDialogflowV2beta1SetSuggestionFeatureConfigOperationMetadata(_m
       ARTICLE_SUGGESTION: Run article suggestion model for chat.
       FAQ: Run FAQ model.
       SMART_REPLY: Run smart reply model for chat.
+      DIALOGFLOW_ASSIST: Run Dialogflow assist model for chat, which will
+        return automated agent response as suggestion.
       CONVERSATION_SUMMARIZATION: Run conversation summarization model for
         chat.
     """
@@ -17083,7 +17120,8 @@ class GoogleCloudDialogflowV2beta1SetSuggestionFeatureConfigOperationMetadata(_m
     ARTICLE_SUGGESTION = 1
     FAQ = 2
     SMART_REPLY = 3
-    CONVERSATION_SUMMARIZATION = 4
+    DIALOGFLOW_ASSIST = 4
+    CONVERSATION_SUMMARIZATION = 5
 
   conversationProfile = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -17124,6 +17162,26 @@ class GoogleCloudDialogflowV2beta1SuggestArticlesResponse(_messages.Message):
 
   articleAnswers = _messages.MessageField('GoogleCloudDialogflowV2beta1ArticleAnswer', 1, repeated=True)
   contextSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  latestMessage = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowV2beta1SuggestDialogflowAssistsResponse(_messages.Message):
+  r"""The response message for Participants.SuggestDialogflowAssists.
+
+  Fields:
+    contextSize: Number of messages prior to and including latest_message to
+      compile the suggestion. It may be smaller than the
+      SuggestDialogflowAssistsRequest.context_size field in the request if
+      there aren't that many messages in the conversation.
+    dialogflowAssistAnswers: Output only. Multiple reply options provided by
+      Dialogflow assist service. The order is based on the rank of the model
+      prediction.
+    latestMessage: The name of the latest conversation message used to suggest
+      answer. Format: `projects//locations//conversations//messages/`.
+  """
+
+  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  dialogflowAssistAnswers = _messages.MessageField('GoogleCloudDialogflowV2beta1DialogflowAssistAnswer', 2, repeated=True)
   latestMessage = _messages.StringField(3)
 
 
@@ -17174,6 +17232,8 @@ class GoogleCloudDialogflowV2beta1SuggestionResult(_messages.Message):
     error: Error status if the request failed.
     suggestArticlesResponse: SuggestArticlesResponse if request is for
       ARTICLE_SUGGESTION.
+    suggestDialogflowAssistsResponse: SuggestDialogflowAssistsResponse if
+      request is for DIALOGFLOW_ASSIST.
     suggestFaqAnswersResponse: SuggestFaqAnswersResponse if request is for
       FAQ_ANSWER.
     suggestSmartRepliesResponse: SuggestSmartRepliesResponse if request is for
@@ -17182,8 +17242,9 @@ class GoogleCloudDialogflowV2beta1SuggestionResult(_messages.Message):
 
   error = _messages.MessageField('GoogleRpcStatus', 1)
   suggestArticlesResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestArticlesResponse', 2)
-  suggestFaqAnswersResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestFaqAnswersResponse', 3)
-  suggestSmartRepliesResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestSmartRepliesResponse', 4)
+  suggestDialogflowAssistsResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestDialogflowAssistsResponse', 3)
+  suggestFaqAnswersResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestFaqAnswersResponse', 4)
+  suggestSmartRepliesResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestSmartRepliesResponse', 5)
 
 
 class GoogleCloudDialogflowV2beta1WebhookRequest(_messages.Message):

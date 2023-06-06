@@ -90,7 +90,7 @@ class DiscoveryDoc(object):
       list(resource_util.CollectionInfo).
     """
     collections = self._ExtractResources(
-        api_version, self._discovery_doc_dict['resources'])
+        api_version, self._discovery_doc_dict)
     collections.extend(
         self._GenerateMissingParentCollections(
             collections, custom_resources, api_version))
@@ -99,14 +99,16 @@ class DiscoveryDoc(object):
   def _ExtractResources(self, api_version, infos):
     """Extract resource definitions from discovery doc."""
     collections = []
-    for name, info in six.iteritems(infos):
-      if name == 'methods':
-        get_method = info.get('get')
-        if get_method:
-          collection_info = self._GetCollectionFromMethod(
-              api_version, get_method)
-          collections.append(collection_info)
-      else:
+
+    if infos.get('methods'):
+      methods = infos.get('methods')
+      get_method = methods.get('get')
+      if get_method:
+        collection_info = self._GetCollectionFromMethod(
+            api_version, get_method)
+        collections.append(collection_info)
+    if infos.get('resources'):
+      for _, info in infos.get('resources').items():
         subresource_collections = self._ExtractResources(api_version, info)
         collections.extend(subresource_collections)
     return collections

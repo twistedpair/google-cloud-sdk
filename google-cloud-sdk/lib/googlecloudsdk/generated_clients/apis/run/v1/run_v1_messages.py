@@ -1614,17 +1614,18 @@ class Probe(_messages.Message):
     initialDelaySeconds: Number of seconds after the container has started
       before the probe is initiated. Defaults to 0 seconds. Minimum value is
       0. Maximum value for liveness probe is 3600. Maximum value for startup
-      probe is 240.
+      probe is 240. .
     periodSeconds: How often (in seconds) to perform the probe. Default to 10
       seconds. Minimum value is 1. Maximum value for liveness probe is 3600.
       Maximum value for startup probe is 240. Must be greater or equal than
-      timeout_seconds.
+      timeout_seconds. .
     successThreshold: Minimum consecutive successes for the probe to be
       considered successful after having failed. Must be 1 if set.
     tcpSocket: TCPSocket specifies an action involving a TCP port.
     timeoutSeconds: Number of seconds after which the probe times out.
       Defaults to 1 second. Minimum value is 1. Maximum value is 3600. Must be
-      smaller than period_seconds.
+      smaller than period_seconds; if period_seconds is not set, must be less
+      or equal than 10.
   """
 
   exec_ = _messages.MessageField('ExecAction', 1)

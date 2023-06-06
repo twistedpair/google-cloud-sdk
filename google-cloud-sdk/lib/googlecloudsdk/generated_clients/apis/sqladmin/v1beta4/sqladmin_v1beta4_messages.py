@@ -487,6 +487,12 @@ class ConnectSettings(_messages.Message):
         Enterprise.
       SQLSERVER_2019_EXPRESS: The database version is SQL Server 2019 Express.
       SQLSERVER_2019_WEB: The database version is SQL Server 2019 Web.
+      SQLSERVER_2022_STANDARD: The database version is SQL Server 2022
+        Standard.
+      SQLSERVER_2022_ENTERPRISE: The database version is SQL Server 2022
+        Enterprise.
+      SQLSERVER_2022_EXPRESS: The database version is SQL Server 2022 Express.
+      SQLSERVER_2022_WEB: The database version is SQL Server 2022 Web.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -521,6 +527,10 @@ class ConnectSettings(_messages.Message):
     SQLSERVER_2019_ENTERPRISE = 30
     SQLSERVER_2019_EXPRESS = 31
     SQLSERVER_2019_WEB = 32
+    SQLSERVER_2022_STANDARD = 33
+    SQLSERVER_2022_ENTERPRISE = 34
+    SQLSERVER_2022_EXPRESS = 35
+    SQLSERVER_2022_WEB = 36
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -764,6 +774,12 @@ class DatabaseInstance(_messages.Message):
         Enterprise.
       SQLSERVER_2019_EXPRESS: The database version is SQL Server 2019 Express.
       SQLSERVER_2019_WEB: The database version is SQL Server 2019 Web.
+      SQLSERVER_2022_STANDARD: The database version is SQL Server 2022
+        Standard.
+      SQLSERVER_2022_ENTERPRISE: The database version is SQL Server 2022
+        Enterprise.
+      SQLSERVER_2022_EXPRESS: The database version is SQL Server 2022 Express.
+      SQLSERVER_2022_WEB: The database version is SQL Server 2022 Web.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -798,6 +814,10 @@ class DatabaseInstance(_messages.Message):
     SQLSERVER_2019_ENTERPRISE = 30
     SQLSERVER_2019_EXPRESS = 31
     SQLSERVER_2019_WEB = 32
+    SQLSERVER_2022_STANDARD = 33
+    SQLSERVER_2022_ENTERPRISE = 34
+    SQLSERVER_2022_EXPRESS = 35
+    SQLSERVER_2022_WEB = 36
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -853,6 +873,12 @@ class DatabaseInstance(_messages.Message):
         Enterprise.
       SQLSERVER_2019_EXPRESS: The database version is SQL Server 2019 Express.
       SQLSERVER_2019_WEB: The database version is SQL Server 2019 Web.
+      SQLSERVER_2022_STANDARD: The database version is SQL Server 2022
+        Standard.
+      SQLSERVER_2022_ENTERPRISE: The database version is SQL Server 2022
+        Enterprise.
+      SQLSERVER_2022_EXPRESS: The database version is SQL Server 2022 Express.
+      SQLSERVER_2022_WEB: The database version is SQL Server 2022 Web.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -887,6 +913,10 @@ class DatabaseInstance(_messages.Message):
     SQLSERVER_2019_ENTERPRISE = 30
     SQLSERVER_2019_EXPRESS = 31
     SQLSERVER_2019_WEB = 32
+    SQLSERVER_2022_STANDARD = 33
+    SQLSERVER_2022_ENTERPRISE = 34
+    SQLSERVER_2022_EXPRESS = 35
+    SQLSERVER_2022_WEB = 36
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -1414,6 +1444,12 @@ class Flag(_messages.Message):
         Enterprise.
       SQLSERVER_2019_EXPRESS: The database version is SQL Server 2019 Express.
       SQLSERVER_2019_WEB: The database version is SQL Server 2019 Web.
+      SQLSERVER_2022_STANDARD: The database version is SQL Server 2022
+        Standard.
+      SQLSERVER_2022_ENTERPRISE: The database version is SQL Server 2022
+        Enterprise.
+      SQLSERVER_2022_EXPRESS: The database version is SQL Server 2022 Express.
+      SQLSERVER_2022_WEB: The database version is SQL Server 2022 Web.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -1448,6 +1484,10 @@ class Flag(_messages.Message):
     SQLSERVER_2019_ENTERPRISE = 30
     SQLSERVER_2019_EXPRESS = 31
     SQLSERVER_2019_WEB = 32
+    SQLSERVER_2022_STANDARD = 33
+    SQLSERVER_2022_ENTERPRISE = 34
+    SQLSERVER_2022_EXPRESS = 35
+    SQLSERVER_2022_WEB = 36
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being `BOOLEAN`, `STRING`,
@@ -1815,8 +1855,8 @@ class InstancesRestoreBackupRequest(_messages.Message):
 
   Fields:
     backup: The name of the backup to restore from in following format:
-      projects/{project-id}/locations/{location}/backups/{backup-uid} Only one
-      of restore_backup_context or backup can be passed to the input.
+      projects/{project-id}/backups/{backup-uid} Only one of
+      restore_backup_context or backup can be passed to the input.
     restoreBackupContext: Parameters required to perform the restore backup
       operation.
     restoreInstanceSettings: Restore instance settings overrides the instance
@@ -2182,6 +2222,7 @@ class Operation(_messages.Message):
       AUTO_RESTART: Performs auto-restart of an HA-enabled Cloud SQL database
         for auto recovery.
       REENCRYPT: Re-encrypts CMEK instances with latest key version.
+      SWITCHOVER: Switches over to replica instance from primary.
     """
     SQL_OPERATION_TYPE_UNSPECIFIED = 0
     IMPORT = 1
@@ -2221,6 +2262,7 @@ class Operation(_messages.Message):
     LOG_CLEANUP = 35
     AUTO_RESTART = 36
     REENCRYPT = 37
+    SWITCHOVER = 38
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of an operation.
@@ -2688,14 +2730,12 @@ class Settings(_messages.Message):
 
     Values:
       EDITION_UNSPECIFIED: The instance did not specify the edition.
-      STANDARD: The instance is a standard edition.
       ENTERPRISE: The instance is an enterprise edition.
       ENTERPRISE_PLUS: The instance is an Enterprise Plus edition.
     """
     EDITION_UNSPECIFIED = 0
-    STANDARD = 1
-    ENTERPRISE = 2
-    ENTERPRISE_PLUS = 3
+    ENTERPRISE = 1
+    ENTERPRISE_PLUS = 2
 
   class PricingPlanValueValuesEnum(_messages.Enum):
     r"""The pricing plan for this instance. This can be either `PER_USE` or
@@ -3041,6 +3081,12 @@ class SqlExternalSyncSettingError(_messages.Message):
       RISKY_BACKUP_ADMIN_PRIVILEGE: Additional BACKUP_ADMIN privilege is
         granted to the replication user which may lock source MySQL 8 instance
         for DDLs during initial sync.
+      INSUFFICIENT_GCS_PERMISSIONS: The Cloud Storage bucket is missing
+        necessary permissions.
+      INVALID_FILE_INFO: The Cloud Storage bucket has an error in the file or
+        contains invalid file information.
+      UNSUPPORTED_DATABASE_SETTINGS: The source instance has unsupported
+        database settings for migration.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3073,6 +3119,9 @@ class SqlExternalSyncSettingError(_messages.Message):
     EXISTING_DATA_IN_REPLICA = 28
     MISSING_OPTIONAL_PRIVILEGES = 29
     RISKY_BACKUP_ADMIN_PRIVILEGE = 30
+    INSUFFICIENT_GCS_PERMISSIONS = 31
+    INVALID_FILE_INFO = 32
+    UNSUPPORTED_DATABASE_SETTINGS = 33
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -3123,13 +3172,20 @@ class SqlInstancesDeleteRequest(_messages.Message):
   r"""A SqlInstancesDeleteRequest object.
 
   Fields:
+    finalBackupDescription: The description of the final backup.
+    finalBackupRetentionDays: Retention period of the final backup. Default
+      value is 7 days.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance to be
       deleted.
+    skipFinalBackup: By default we opt in for creating final backup
   """
 
-  instance = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
+  finalBackupDescription = _messages.StringField(1)
+  finalBackupRetentionDays = _messages.IntegerField(2)
+  instance = _messages.StringField(3, required=True)
+  project = _messages.StringField(4, required=True)
+  skipFinalBackup = _messages.BooleanField(5)
 
 
 class SqlInstancesDemoteMasterRequest(_messages.Message):
@@ -3402,11 +3458,15 @@ class SqlInstancesStartExternalSyncRequest(_messages.Message):
 
   Enums:
     SyncModeValueValuesEnum: External sync mode.
+    SyncParallelLevelValueValuesEnum: Optional. Parallel level for initial
+      data sync. Currently only applicable for MySQL.
 
   Fields:
     mysqlSyncConfig: MySQL-specific settings for start external sync.
     skipVerification: Whether to skip the verification step (VESS).
     syncMode: External sync mode.
+    syncParallelLevel: Optional. Parallel level for initial data sync.
+      Currently only applicable for MySQL.
   """
 
   class SyncModeValueValuesEnum(_messages.Enum):
@@ -3424,9 +3484,26 @@ class SqlInstancesStartExternalSyncRequest(_messages.Message):
     ONLINE = 1
     OFFLINE = 2
 
+  class SyncParallelLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. Parallel level for initial data sync. Currently only
+    applicable for MySQL.
+
+    Values:
+      EXTERNAL_SYNC_PARALLEL_LEVEL_UNSPECIFIED: Unknown sync parallel level.
+        Will be defaulted to OPTIMAL.
+      MIN: Minimal parallel level.
+      OPTIMAL: Optimal parallel level.
+      MAX: Maximum parallel level.
+    """
+    EXTERNAL_SYNC_PARALLEL_LEVEL_UNSPECIFIED = 0
+    MIN = 1
+    OPTIMAL = 2
+    MAX = 3
+
   mysqlSyncConfig = _messages.MessageField('MySqlSyncConfig', 1)
   skipVerification = _messages.BooleanField(2)
   syncMode = _messages.EnumField('SyncModeValueValuesEnum', 3)
+  syncParallelLevel = _messages.EnumField('SyncParallelLevelValueValuesEnum', 4)
 
 
 class SqlInstancesStartReplicaRequest(_messages.Message):
@@ -3447,6 +3524,18 @@ class SqlInstancesStopReplicaRequest(_messages.Message):
   Fields:
     instance: Cloud SQL read replica instance name.
     project: ID of the project that contains the read replica.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class SqlInstancesSwitchoverRequest(_messages.Message):
+  r"""A SqlInstancesSwitchoverRequest object.
+
+  Fields:
+    instance: Cloud SQL read replica instance name.
+    project: ID of the project that contains the replica.
   """
 
   instance = _messages.StringField(1, required=True)

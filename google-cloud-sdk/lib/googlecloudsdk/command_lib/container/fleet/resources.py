@@ -437,7 +437,7 @@ def ParseMembershipArg(args, membership_flag='MEMBERSHIP_NAME'):
       membership_flag, 'membership is required for this command.')
 
 
-def _DefaultToGlobalLocationAtributeConfig(help_text=''):
+def _DefaultToGlobalLocationAttributeConfig(help_text=''):
   """Create basic attributes that fallthrough location to global in resource argument.
 
   Args:
@@ -474,7 +474,7 @@ def AddScopeResourceArg(
       plural_name='scopes',
       disable_auto_completers=True,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=_DefaultToGlobalLocationAtributeConfig(),
+      locationsId=_DefaultToGlobalLocationAttributeConfig(),
       scopesId=_BasicAttributeConfig('scope', scope_help),
   )
   concept_parsers.ConceptParser.ForResource(
@@ -484,6 +484,36 @@ def AddScopeResourceArg(
       plural=False,
       required=required,
       group=group,
+      # This hides the location flag as we only allow global scope.
+      flag_name_overrides={'location': ''},
+  ).AddToParser(parser)
+
+
+def AddScopeNamespaceResourceArg(
+    parser,
+    flag_name='NAMESPACE',
+    api_version='v1',
+    namespace_help='',
+    required=False,
+):
+  """Add resource arg for projects/{}/locations/{}/scopes/{}/namespaces/{}."""
+  spec = concepts.ResourceSpec(
+      'gkehub.projects.locations.scopes.namespaces',
+      api_version=api_version,
+      resource_name='namespace',
+      plural_name='namespaces',
+      disable_auto_completers=True,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=_DefaultToGlobalLocationAttributeConfig(),
+      scopesId=_BasicAttributeConfig('scope', 'the'),
+      namespacesId=_BasicAttributeConfig('namespace', namespace_help),
+  )
+  concept_parsers.ConceptParser.ForResource(
+      flag_name,
+      spec,
+      'The group of arguments defining the Fleet Namespace.',
+      plural=False,
+      required=required,
       # This hides the location flag as we only allow global scope.
       flag_name_overrides={'location': ''},
   ).AddToParser(parser)

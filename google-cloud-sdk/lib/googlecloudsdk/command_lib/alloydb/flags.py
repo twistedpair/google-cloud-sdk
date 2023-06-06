@@ -585,16 +585,15 @@ def AddEncryptionConfigFlags(parser, verb):
 
 
 def AddRestoreClusterSourceFlags(parser):
-  """Adds RestoreCluster PITR flags.
+  """Adds RestoreCluster flags.
 
   Args:
     parser: argparse.ArgumentParser: Parser object for command line inputs.
   """
-  group = parser.add_group(mutex=True, help='RestoreCluster source types.')
-  backup_source_group = group.add_group(
-      help='Restore a cluster using a specific backup as the source.')
-  backup_source_group.add_argument(
-      '--backup', required=True, type=str, help='AlloyDB backup ID')
+  group = parser.add_group(
+      mutex=True, required=True, help='RestoreCluster source types.'
+  )
+  group.add_argument('--backup', type=str, help='AlloyDB backup ID')
 
   continuous_backup_source_group = group.add_group(
       help='Restore a cluster from a source cluster at a given point in time.')
@@ -877,5 +876,23 @@ def AddSSLMode(parser):
       help=(
           'Specify the SSL mode to use when the instance connects to the '
           'database.'
+      ),
+  )
+
+
+def AddRequireConnectors(parser):
+  """Adds Require Connectors flag.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--require-connectors',
+      required=False,
+      hidden=True,
+      action=arg_parsers.StoreTrueFalseAction,
+      help=(
+          'Enable or disable enforcing connectors only (ex: AuthProxy)'
+          'connections to the database.'
       ),
   )

@@ -81,7 +81,11 @@ def FinalizeCloudbuildConfig(build, path, params=None):
   for key in subst_dict:
     if not _BUILTIN_SUBSTITUTION_REGEX.match(key):
       raise InvalidBuildConfigException(
-          path, 'config cannot specify built-in substitutions')
+          path,
+          'substitution key {} does not respect format {}'.format(
+              key, _BUILTIN_SUBSTITUTION_REGEX.pattern
+          ),
+      )
 
   # Merge the substitutions passed in the flag.
   subst_dict.update(params)

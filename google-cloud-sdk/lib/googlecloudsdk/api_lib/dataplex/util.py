@@ -18,9 +18,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import io
+
+from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
 import six
 
 
@@ -32,28 +38,63 @@ def GetMessageModule():
   return apis.GetMessagesModule('dataplex', 'v1')
 
 
-def WaitForOperation(operation,
-                     resource,
-                     sleep_ms=5000,
-                     pre_start_sleep_ms=1000):
+def WaitForOperation(
+    operation, resource, sleep_ms=5000, pre_start_sleep_ms=1000
+):
   """Waits for the given google.longrunning.Operation to complete."""
   operation_ref = resources.REGISTRY.Parse(
-      operation.name, collection='dataplex.projects.locations.operations')
+      operation.name, collection='dataplex.projects.locations.operations'
+  )
   poller = waiter.CloudOperationPoller(
-      resource,
-      GetClientInstance().projects_locations_operations)
+      resource, GetClientInstance().projects_locations_operations
+  )
   return waiter.WaitFor(
       poller,
       operation_ref,
       'Waiting for [{0}] to finish'.format(operation_ref.RelativeName()),
       sleep_ms=sleep_ms,
-      pre_start_sleep_ms=pre_start_sleep_ms)
+      pre_start_sleep_ms=pre_start_sleep_ms,
+  )
 
 
 def CreateLabels(dataplex_resource, args):
   if getattr(args, 'labels', None):
-    return dataplex_resource.LabelsValue(additionalProperties=[
-        dataplex_resource.LabelsValue.AdditionalProperty(key=key, value=value)
-        for key, value in sorted(six.iteritems(args.labels))
-    ])
+    return dataplex_resource.LabelsValue(
+        additionalProperties=[
+            dataplex_resource.LabelsValue.AdditionalProperty(
+                key=key, value=value
+            )
+            for key, value in sorted(six.iteritems(args.labels))
+        ]
+    )
   return None
+
+
+def ReadObject(object_url, storage_client=None):
+  """Reads an object's content from GCS.
+
+  Args:
+    object_url: Can be a local file path or the URL of the object to be read
+      from gcs bucket (must have "gs://" prefix).
+    storage_client: Storage api client used to read files from gcs.
+
+  Returns:
+    A str for the content of the file.
+
+  Raises:
+    ObjectReadError:
+      If the read of GCS object is not successful.
+  """
+  if not object_url.startswith('gs://'):
+    return yaml.load_path(object_url)
+  client = storage_client or storage_api.StorageClient()
+  object_ref = storage_util.ObjectReference.FromUrl(object_url)
+  try:
+    bytes_io = client.ReadObject(object_ref)
+    wrapper = io.TextIOWrapper(bytes_io, encoding='utf-8')
+    return yaml.load(wrapper.read())
+  except Exception as e:
+    raise exceptions.BadFileException(
+        'Unable to read file {0} due to incorrect file path or insufficient'
+        ' read permissions'.format(object_url)
+    ) from e

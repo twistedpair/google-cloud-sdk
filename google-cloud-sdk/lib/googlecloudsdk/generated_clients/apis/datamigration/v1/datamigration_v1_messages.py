@@ -492,10 +492,12 @@ class CloudSqlSettings(_messages.Message):
       EDITION_UNSPECIFIED: The instance did not specify the edition.
       STANDARD: The instance is a standard edition.
       ENTERPRISE: The instance is an enterprise edition.
+      ENTERPRISE_PLUS: The instance is an enterprise plus edition.
     """
     EDITION_UNSPECIFIED = 0
     STANDARD = 1
     ENTERPRISE = 2
+    ENTERPRISE_PLUS = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DatabaseFlagsValue(_messages.Message):
@@ -3408,6 +3410,9 @@ class OracleConnectionProfile(_messages.Message):
       the request.
     port: Required. The network port of the source Oracle database.
     privateConnectivity: Private connectivity.
+    ssl: SSL configuration for the destination to connect to the source
+      database. The supported configuration for Oracle SSL is of SERVER_ONLY
+      type.
     staticServiceIpConnectivity: Static Service IP connectivity.
     username: Required. The username that Database Migration Service will use
       to connect to the database. The value is encrypted when stored in
@@ -3421,8 +3426,9 @@ class OracleConnectionProfile(_messages.Message):
   passwordSet = _messages.BooleanField(5)
   port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   privateConnectivity = _messages.MessageField('PrivateConnectivity', 7)
-  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 8)
-  username = _messages.StringField(9)
+  ssl = _messages.MessageField('SslConfig', 8)
+  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 9)
+  username = _messages.StringField(10)
 
 
 class PackageEntity(_messages.Message):

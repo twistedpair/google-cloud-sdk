@@ -781,6 +781,10 @@ class DatastreamProjectsLocationsStreamsPatchRequest(_messages.Message):
   r"""A DatastreamProjectsLocationsStreamsPatchRequest object.
 
   Fields:
+    cdcStrategy_specificStartPosition_mysqlLogPosition_logFile: The binary log
+      file name.
+    cdcStrategy_specificStartPosition_mysqlLogPosition_logPosition: The
+      position within the binary log file. Default is head of file.
     force: Optional. Update the stream without validating it.
     name: Output only. The stream's name.
     requestId: Optional. A request ID to identify requests. Specify a unique
@@ -804,12 +808,14 @@ class DatastreamProjectsLocationsStreamsPatchRequest(_messages.Message):
       actually updating it. The default is false.
   """
 
-  force = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  stream = _messages.MessageField('Stream', 4)
-  updateMask = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
+  cdcStrategy_specificStartPosition_mysqlLogPosition_logFile = _messages.StringField(1)
+  cdcStrategy_specificStartPosition_mysqlLogPosition_logPosition = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  force = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+  stream = _messages.MessageField('Stream', 6)
+  updateMask = _messages.StringField(7)
+  validateOnly = _messages.BooleanField(8)
 
 
 class DestinationConfig(_messages.Message):

@@ -3631,6 +3631,21 @@ class InjectSessionCredentialsRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class InstanceFlexibilityPolicy(_messages.Message):
+  r"""Instance flexibility Policy allowing a mixture of VM shapes and
+  provisioning models.
+
+  Fields:
+    instanceSelectionList: Optional. List of instance selection options that
+      the group will use when creating new VMs.
+    provisioningModelMix: Optional. Defines how the Group selects the
+      provisioning model to ensure required reliability.
+  """
+
+  instanceSelectionList = _messages.MessageField('InstanceSelection', 1, repeated=True)
+  provisioningModelMix = _messages.MessageField('ProvisioningModelMix', 2)
+
+
 class InstanceGroupAutoscalingPolicyConfig(_messages.Message):
   r"""Configuration for the size bounds of an instance group, including its
   proportional size to other groups.
@@ -3690,6 +3705,8 @@ class InstanceGroupConfig(_messages.Message):
       projects/[project_id]/global/images/family/[custom-image-family-name]If
       the URI is unspecified, it will be inferred from
       SoftwareConfig.image_version or the system default.
+    instanceFlexibilityPolicy: Optional. Instance flexibility Policy allowing
+      a mixture of VM shapes and provisioning models.
     instanceNames: Output only. The list of instance names. Dataproc derives
       the names from cluster_name, num_instances, and the instance group.
     instanceReferences: Output only. List of references to Compute Engine
@@ -3769,15 +3786,16 @@ class InstanceGroupConfig(_messages.Message):
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   diskConfig = _messages.MessageField('DiskConfig', 2)
   imageUri = _messages.StringField(3)
-  instanceNames = _messages.StringField(4, repeated=True)
-  instanceReferences = _messages.MessageField('InstanceReference', 5, repeated=True)
-  isPreemptible = _messages.BooleanField(6)
-  machineTypeUri = _messages.StringField(7)
-  managedGroupConfig = _messages.MessageField('ManagedGroupConfig', 8)
-  minCpuPlatform = _messages.StringField(9)
-  minNumInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  numInstances = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  preemptibility = _messages.EnumField('PreemptibilityValueValuesEnum', 12)
+  instanceFlexibilityPolicy = _messages.MessageField('InstanceFlexibilityPolicy', 4)
+  instanceNames = _messages.StringField(5, repeated=True)
+  instanceReferences = _messages.MessageField('InstanceReference', 6, repeated=True)
+  isPreemptible = _messages.BooleanField(7)
+  machineTypeUri = _messages.StringField(8)
+  managedGroupConfig = _messages.MessageField('ManagedGroupConfig', 9)
+  minCpuPlatform = _messages.StringField(10)
+  minNumInstances = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  numInstances = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  preemptibility = _messages.EnumField('PreemptibilityValueValuesEnum', 13)
 
 
 class InstanceReference(_messages.Message):
@@ -3795,6 +3813,22 @@ class InstanceReference(_messages.Message):
   instanceName = _messages.StringField(2)
   publicEciesKey = _messages.StringField(3)
   publicKey = _messages.StringField(4)
+
+
+class InstanceSelection(_messages.Message):
+  r"""Defines machines types and a rank to which the machines types belong.
+
+  Fields:
+    machineTypes: Optional. Full machine-type names, e.g. "n1-standard-16".
+    rank: Optional. Preference of this instance selection. Lower number means
+      higher preference. Dataproc will first try to create a VM based on the
+      machine-type with priority rank and fallback to next rank based on
+      availability. Machine types and instance selections with the same
+      priority have the same preference.
+  """
+
+  machineTypes = _messages.StringField(1, repeated=True)
+  rank = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class InstantiateWorkflowTemplateRequest(_messages.Message):
@@ -5444,6 +5478,25 @@ class PrestoJob(_messages.Message):
   properties = _messages.MessageField('PropertiesValue', 5)
   queryFileUri = _messages.StringField(6)
   queryList = _messages.MessageField('QueryList', 7)
+
+
+class ProvisioningModelMix(_messages.Message):
+  r"""Defines how Dataproc should create VMs with a mixture of provisioning
+  models.
+
+  Fields:
+    standardCapacityBase: Optional. The base capacity that will always use
+      Standard VMs to avoid risk of more preemption than the minimum capacity
+      you need. Dataproc will create only standard VMs until it reaches
+      standardCapacityBaseNumber, then it will starting
+      standardCapacityPercentAboveBase to mix Spot with Standard VMs.
+    standardCapacityPercentAboveBase: Optional. The percentage of the capacity
+      above standardCapacityBase that should use Spot VMs. The remaining
+      percentage will use Standard VMs.
+  """
+
+  standardCapacityBase = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  standardCapacityPercentAboveBase = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class PublicKeys(_messages.Message):

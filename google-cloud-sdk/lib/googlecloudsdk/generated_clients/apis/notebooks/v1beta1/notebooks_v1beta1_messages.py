@@ -16,7 +16,7 @@ package = 'notebooks'
 
 class AcceleratorConfig(_messages.Message):
   r"""Definition of a hardware accelerator. Note that not all combinations of
-  `type` and `core_count` are valid. Check [GPUs on Compute
+  `type` and `core_count` are valid. See [GPUs on Compute
   Engine](https://cloud.google.com/compute/docs/gpus/#gpus-list) to find a
   valid combination. TPUs are not supported.
 
@@ -286,7 +286,7 @@ class Instance(_messages.Message):
       be gVNIC or VirtioNet.
     noProxyAccess: If true, the notebook instance will not register with the
       proxy.
-    noPublicIp: If true, no public IP will be assigned to this instance.
+    noPublicIp: If true, no external IP will be assigned to this instance.
     noRemoveDataDisk: Input only. If true, the data disk will not be auto
       deleted when deleting the instance.
     postStartupScript: Path to a Bash script that automatically runs after a
@@ -1362,9 +1362,9 @@ class SetInstanceAcceleratorRequest(_messages.Message):
 
   Fields:
     coreCount: Required. Count of cores of this accelerator. Note that not all
-      combinations of `type` and `core_count` are valid. Check [GPUs on
-      Compute Engine](https://cloud.google.com/compute/docs/gpus/#gpus-list)
-      to find a valid combination. TPUs are not supported.
+      combinations of `type` and `core_count` are valid. See [GPUs on Compute
+      Engine](https://cloud.google.com/compute/docs/gpus/#gpus-list) to find a
+      valid combination. TPUs are not supported.
     type: Required. Type of this accelerator.
   """
 

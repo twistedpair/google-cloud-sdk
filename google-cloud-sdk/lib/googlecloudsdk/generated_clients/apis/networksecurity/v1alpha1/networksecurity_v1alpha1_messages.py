@@ -452,6 +452,8 @@ class FirewallEndpointAssociation(_messages.Message):
     name: Output only. name of resource
     network: Required. The URL of the network that is being associated.
     state: Output only. [Output only] Current state of the association.
+    tlsInspectionPolicy: Optional. The URL of the TlsInspectionPolicy that is
+      being associated.
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -501,7 +503,8 @@ class FirewallEndpointAssociation(_messages.Message):
   name = _messages.StringField(4)
   network = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  tlsInspectionPolicy = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class GatewaySecurityPolicy(_messages.Message):

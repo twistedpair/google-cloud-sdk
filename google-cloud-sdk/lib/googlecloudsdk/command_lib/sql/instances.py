@@ -343,6 +343,13 @@ class _BaseInstances(object):
           sql_messages, args.connector_enforcement
       )
 
+    if args.IsSpecified('edition'):
+      settings.edition = _ParseEdition(sql_messages, args.edition)
+
+    if args.IsKnownAndSpecified('enable_data_cache'):
+      if not settings.dataCacheConfig:
+        settings.dataCacheConfig = sql_messages.DataCacheConfig()
+      settings.dataCacheConfig.dataCacheEnabled = args.enable_data_cache
     # BETA args.
     if IsBetaOrNewer(release_track):
       if args.IsSpecified('storage_auto_increase_limit'):
@@ -395,10 +402,6 @@ class _BaseInstances(object):
         settings.recreateReplicasOnPrimaryCrash = (
             args.recreate_replicas_on_primary_crash
         )
-
-    if _IsAlpha(release_track):
-      if args.IsSpecified('edition'):
-        settings.edition = _ParseEdition(sql_messages, args.edition)
     return settings
 
   @classmethod

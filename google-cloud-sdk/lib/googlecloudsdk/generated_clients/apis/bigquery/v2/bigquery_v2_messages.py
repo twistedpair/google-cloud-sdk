@@ -1221,7 +1221,7 @@ class EncryptionConfiguration(_messages.Message):
   r"""A EncryptionConfiguration object.
 
   Fields:
-    kmsKeyName: [Optional] Describes the Cloud KMS encryption key that will be
+    kmsKeyName: Optional. Describes the Cloud KMS encryption key that will be
       used to protect destination BigQuery table. The BigQuery Service Account
       associated with your project requires access to this encryption key.
   """
@@ -2647,11 +2647,11 @@ class ModelReference(_messages.Message):
   r"""A ModelReference object.
 
   Fields:
-    datasetId: [Required] The ID of the dataset containing this model.
-    modelId: [Required] The ID of the model. The ID must contain only letters
+    datasetId: Required. The ID of the dataset containing this model.
+    modelId: Required. The ID of the model. The ID must contain only letters
       (a-z, A-Z), numbers (0-9), or underscores (_). The maximum length is
       1,024 characters.
-    projectId: [Required] The ID of the project containing this model.
+    projectId: Required. The ID of the project containing this model.
   """
 
   datasetId = _messages.StringField(1)
@@ -3074,9 +3074,9 @@ class RoutineReference(_messages.Message):
   r"""A RoutineReference object.
 
   Fields:
-    datasetId: [Required] The ID of the dataset containing this routine.
-    projectId: [Required] The ID of the project containing this routine.
-    routineId: [Required] The ID of the routine. The ID must contain only
+    datasetId: Required. The ID of the dataset containing this routine.
+    projectId: Required. The ID of the project containing this routine.
+    routineId: Required. The ID of the routine. The ID must contain only
       letters (a-z, A-Z), numbers (0-9), or underscores (_). The maximum
       length is 256 characters.
   """
@@ -3090,14 +3090,14 @@ class RowAccessPolicyReference(_messages.Message):
   r"""A RowAccessPolicyReference object.
 
   Fields:
-    datasetId: [Required] The ID of the dataset containing this row access
+    datasetId: Required. The ID of the dataset containing this row access
       policy.
-    policyId: [Required] The ID of the row access policy. The ID must contain
+    policyId: Required. The ID of the row access policy. The ID must contain
       only letters (a-z, A-Z), numbers (0-9), or underscores (_). The maximum
       length is 256 characters.
-    projectId: [Required] The ID of the project containing this row access
+    projectId: Required. The ID of the project containing this row access
       policy.
-    tableId: [Required] The ID of the table containing this row access policy.
+    tableId: Required. The ID of the table containing this row access policy.
   """
 
   datasetId = _messages.StringField(1)

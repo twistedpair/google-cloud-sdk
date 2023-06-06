@@ -54,7 +54,9 @@ def Cancel(ref, getter, canceller, async_):
     return
   poller = CancellationPoller(getter)
   with progress_tracker.ProgressTracker(
-      message='Cancelling [{}]. It can take up to 1 minute.'.format(ref.Name()),
+      message='Cancelling [{}]. This can take up to 1 minute.'.format(
+          ref.Name()
+      ),
       detail_message_callback=poller.GetMessage,
   ):
     canceller(ref)

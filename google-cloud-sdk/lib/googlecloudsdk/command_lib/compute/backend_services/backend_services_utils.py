@@ -611,21 +611,6 @@ def ApplyFailoverPolicyArgs(messages, args, backend_service, support_failover):
     backend_service: The backend service proto message object.
     support_failover: Failover functionality is supported.
   """
-  if ((support_failover and (args.IsSpecified('connection_drain_on_failover') or
-                             args.IsSpecified('drop_traffic_if_unhealthy'))) and
-      backend_service.loadBalancingScheme
-      == messages.BackendService.LoadBalancingSchemeValueValuesEnum.EXTERNAL):
-    raise exceptions.InvalidArgumentException(
-        '--load-balancing-scheme',
-        'can only specify --connection-drain-on-failover or '
-        '--drop-traffic-if-unhealthy if the load balancing scheme is INTERNAL.')
-  if ((support_failover and args.IsSpecified('connection_drain_on_failover'))
-      and backend_service.protocol !=
-      messages.BackendService.ProtocolValueValuesEnum.TCP):
-    raise exceptions.InvalidArgumentException(
-        '--protocol', 'can only specify --connection-drain-on-failover '
-        'if the protocol is TCP.')
-
   if (support_failover and (args.IsSpecified('connection_drain_on_failover') or
                             args.IsSpecified('drop_traffic_if_unhealthy') or
                             args.IsSpecified('failover_ratio'))):

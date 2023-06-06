@@ -282,7 +282,7 @@ class NotebooksV1beta1(base_api.BaseApiClient):
     )
 
     def IsUpgradeable(self, request, global_params=None):
-      r"""Check if a notebook instance is upgradable. Deprecated. Please consider using v1.
+      r"""Checks whether a notebook instance is upgradable. Deprecated. Please consider using v1.
 
       Args:
         request: (NotebooksProjectsLocationsInstancesIsUpgradeableRequest) input message

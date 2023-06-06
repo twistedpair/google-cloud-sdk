@@ -342,7 +342,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsGcsSource(_mess
   r"""Google Cloud Storage location where the artifacts currently reside.
 
   Fields:
-    uris: Cloud Storage paths URI (e.g., gs://my_bucket/my_object).
+    uris: Cloud Storage paths URI (e.g., `gs://my_bucket/my_object`).
     useWildcards: Supports URI wildcards for matching multiple objects from a
       single URI.
   """
@@ -593,7 +593,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactResponse(_messag
   is contained in the Operation and available to users.
 
   Fields:
-    googetArtifacts: The Apt artifacts updated.
+    googetArtifacts: The GooGet artifacts updated.
   """
 
   googetArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1GoogetArtifact', 1, repeated=True)

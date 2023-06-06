@@ -14,7 +14,7 @@ package = 'blockchainnodeengine'
 
 
 class BlockchainNode(_messages.Message):
-  r"""Client-facing representation of a Blockchain Node.
+  r"""A representation of a blockchain node.
 
   Enums:
     BlockchainTypeValueValuesEnum: Immutable. The blockchain type of the node.
@@ -27,15 +27,15 @@ class BlockchainNode(_messages.Message):
   Fields:
     blockchainType: Immutable. The blockchain type of the node.
     connectionInfo: Output only. The connection information used to interact
-      with a Blockchain Node.
-    createTime: Output only. The timestamp at which the Blockchain Node was
+      with a blockchain node.
+    createTime: Output only. The timestamp at which the blockchain node was
       first created.
-    ethereumDetails: Ethereum-specific Blockchain Node details.
+    ethereumDetails: Ethereum-specific blockchain node details.
     labels: User-provided key-value pairs.
     name: Output only. The fully qualified name of the blockchain node. e.g.
-      projects/my-project/locations/us-central1/blockchainNodes/my-node.
+      `projects/my-project/locations/us-central1/blockchainNodes/my-node`.
     state: Output only. A status representing the state of the node.
-    updateTime: Output only. The timestamp at which the Blockchain Node was
+    updateTime: Output only. The timestamp at which the blockchain node was
       last updated.
   """
 
@@ -57,7 +57,7 @@ class BlockchainNode(_messages.Message):
       STATE_UNSPECIFIED: The state has not been specified.
       CREATING: The node has been requested and is in the process of being
         created.
-      DELETING: The existing node is undergoing deletion, but not yet
+      DELETING: The existing node is undergoing deletion, but is not yet
         finished.
       RUNNING: The node is running and ready for use.
       ERROR: The node is in an unexpected or errored state.
@@ -115,9 +115,7 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesCreateRequest(_message
   Fields:
     blockchainNode: A BlockchainNode resource to be passed as the request
       body.
-    blockchainNodeId: Required. Id of the requesting object If auto-generating
-      Id server-side, remove this field and node_id from the method_signature
-      of Create RPC
+    blockchainNodeId: Required. ID of the requesting object.
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -144,7 +142,8 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesDeleteRequest(_message
 
   Fields:
     name: Required. The fully qualified name of the blockchain node to delete.
-      e.g. projects/my-project/locations/us-central1/blockchainNodes/my-node.
+      e.g. `projects/my-project/locations/us-central1/blockchainNodes/my-
+      node`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -167,7 +166,8 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesGetRequest(_messages.M
 
   Fields:
     name: Required. The fully qualified name of the blockchain node to fetch.
-      e.g. projects/my-project/locations/us-central1/blockchainNodes/my-node.
+      e.g. `projects/my-project/locations/us-central1/blockchainNodes/my-
+      node`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -178,12 +178,12 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesListRequest(_messages.
   object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
+    filter: Filtering results.
+    orderBy: Hint for how to order the results.
     pageSize: Requested page size. Server may return fewer items than
       requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListNodesRequest
+    parent: Required. Parent value for `ListNodesRequest`.
   """
 
   filter = _messages.StringField(1)
@@ -201,7 +201,7 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesPatchRequest(_messages
     blockchainNode: A BlockchainNode resource to be passed as the request
       body.
     name: Output only. The fully qualified name of the blockchain node. e.g.
-      projects/my-project/locations/us-central1/blockchainNodes/my-node.
+      `projects/my-project/locations/us-central1/blockchainNodes/my-node`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -214,10 +214,10 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesPatchRequest(_messages
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the Blockchain Node resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      overwritten in the Blockchain node resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. A field will be overwritten if it is in the mask. If the
+      user does not provide a mask then all fields will be overwritten.
   """
 
   blockchainNode = _messages.MessageField('BlockchainNode', 1)
@@ -310,29 +310,26 @@ class CancelOperationRequest(_messages.Message):
 
 
 class ConnectionInfo(_messages.Message):
-  r"""The connection information through which to interact with a Blockchain
-  Node.
+  r"""The connection information through which to interact with a blockchain
+  node.
 
   Fields:
     endpointInfo: Output only. The endpoint information through which to
-      interact with a Blockchain Node.
-    ipInfo: Output only. The public IP information used to interact with a
-      Blockchain Node.
+      interact with a blockchain node.
   """
 
   endpointInfo = _messages.MessageField('EndpointInfo', 1)
-  ipInfo = _messages.MessageField('IpInfo', 2)
 
 
 class EndpointInfo(_messages.Message):
   r"""Contains endpoint information through which to interact with a
-  Blockchain Node.
+  blockchain node.
 
   Fields:
-    jsonRpcApiEndpoint: Output only. The assigned URL for the node JSON RPC
+    jsonRpcApiEndpoint: Output only. The assigned URL for the node JSON-RPC
       API endpoint.
     websocketsApiEndpoint: Output only. The assigned URL for the node
-      websockets API endpoint.
+      WebSockets API endpoint.
   """
 
   jsonRpcApiEndpoint = _messages.StringField(1)
@@ -340,22 +337,22 @@ class EndpointInfo(_messages.Message):
 
 
 class EthereumDetails(_messages.Message):
-  r"""Ethereum-specific Blockchain Node details.
+  r"""Ethereum-specific blockchain node details.
 
   Enums:
-    ConsensusClientValueValuesEnum: Immutable. The consensus client
+    ConsensusClientValueValuesEnum: Immutable. The consensus client.
     ExecutionClientValueValuesEnum: Immutable. The execution client
     NetworkValueValuesEnum: Immutable. The Ethereum environment being
       accessed.
     NodeTypeValueValuesEnum: Immutable. The type of Ethereum node.
 
   Fields:
-    additionalEndpoints: Output only. Ethereum specific endpoint information.
+    additionalEndpoints: Output only. Ethereum-specific endpoint information.
     apiEnableAdmin: Immutable. Enables JSON-RPC access to functions in the
-      admin namespace. Defaults to false.
+      `admin` namespace. Defaults to `false`.
     apiEnableDebug: Immutable. Enables JSON-RPC access to functions in the
-      debug namespace. Defaults to false.
-    consensusClient: Immutable. The consensus client
+      `debug` namespace. Defaults to `false`.
+    consensusClient: Immutable. The consensus client.
     executionClient: Immutable. The execution client
     gethDetails: Details for the Geth execution client.
     network: Immutable. The Ethereum environment being accessed.
@@ -363,15 +360,19 @@ class EthereumDetails(_messages.Message):
   """
 
   class ConsensusClientValueValuesEnum(_messages.Enum):
-    r"""Immutable. The consensus client
+    r"""Immutable. The consensus client.
 
     Values:
       CONSENSUS_CLIENT_UNSPECIFIED: Consensus client has not been specified,
         but should be.
       LIGHTHOUSE: Consensus client implementation written in Rust, maintained
-        by Sigma Prime. https://lighthouse.sigmaprime.io/
-      ERIGON_EMBEDDED_CONSENSUS_LAYER: Erigon's native Embedded Consensus
-        Layer. https://github.com/ledgerwatch/erigon#embedded-consensus-layer
+        by Sigma Prime. See [Lighthouse - Sigma
+        Prime](https://lighthouse.sigmaprime.io/) for details.
+      ERIGON_EMBEDDED_CONSENSUS_LAYER: Erigon's embedded consensus client
+        embedded in the execution client. Note this option is not currently
+        available when creating new blockchain nodes. See [Erigon on
+        GitHub](https://github.com/ledgerwatch/erigon#embedded-consensus-
+        layer) for details.
     """
     CONSENSUS_CLIENT_UNSPECIFIED = 0
     LIGHTHOUSE = 1
@@ -383,11 +384,11 @@ class EthereumDetails(_messages.Message):
     Values:
       EXECUTION_CLIENT_UNSPECIFIED: Execution client has not been specified,
         but should be.
-      GETH: Official Go implementation of the Ethereum protocol.
-        https://geth.ethereum.org/
+      GETH: Official Go implementation of the Ethereum protocol. See [go-
+        ethereum](https://geth.ethereum.org/) for details.
       ERIGON: An implementation of Ethereum (execution client), on the
-        efficiency frontier, written in Go.
-        https://github.com/ledgerwatch/erigon
+        efficiency frontier, written in Go. See [Erigon on
+        GitHub](https://github.com/ledgerwatch/erigon) for details.
     """
     EXECUTION_CLIENT_UNSPECIFIED = 0
     GETH = 1
@@ -398,9 +399,9 @@ class EthereumDetails(_messages.Message):
 
     Values:
       NETWORK_UNSPECIFIED: The network has not been specified, but should be.
-      MAINNET: The ethereum Mainnet.
-      TESTNET_GOERLI_PRATER: Ethereum Testnet based on Goerli protocol.
-      TESTNET_SEPOLIA: Ethereum Testnet based on Sepolia/Bepolia protocol.
+      MAINNET: The Ethereum Mainnet.
+      TESTNET_GOERLI_PRATER: The Ethereum Testnet based on Goerli protocol.
+      TESTNET_SEPOLIA: The Ethereum Testnet based on Sepolia/Bepolia protocol.
     """
     NETWORK_UNSPECIFIED = 0
     MAINNET = 1
@@ -414,12 +415,9 @@ class EthereumDetails(_messages.Message):
       NODE_TYPE_UNSPECIFIED: Node type has not been specified, but should be.
       LIGHT: An Ethereum node that only downloads Ethereum block headers.
       FULL: Keeps a complete copy of the blockchain data, and contributes to
-        the network by receiving, validating and forwarding transactions. This
-        type is currently only available for nodes running Geth/Lighthouse
-        clients.
+        the network by receiving, validating, and forwarding transactions.
       ARCHIVE: Holds the same data as full node as well as all of the
-        blockchain's history state data dating back to the Genesis Block. This
-        type is currently only available for the nodes running Erigon clients.
+        blockchain's history state data dating back to the Genesis Block.
     """
     NODE_TYPE_UNSPECIFIED = 0
     LIGHT = 1
@@ -437,14 +435,15 @@ class EthereumDetails(_messages.Message):
 
 
 class EthereumEndpoints(_messages.Message):
-  r"""Contains endpoint information specific to Ethereum Nodes.
+  r"""Contains endpoint information specific to Ethereum nodes.
 
   Fields:
     beaconApiEndpoint: Output only. The assigned URL for the node's Beacon API
       endpoint.
     beaconPrometheusMetricsApiEndpoint: Output only. The assigned URL for the
-      node's Beacon Prometheus Metrics endpoint. See https://lighthouse-
-      book.sigmaprime.io/advanced_metrics.html for more details.
+      node's Beacon Prometheus Metrics endpoint. See [Prometheus
+      Metrics](https://lighthouse-book.sigmaprime.io/advanced_metrics.html)
+      for more details.
   """
 
   beaconApiEndpoint = _messages.StringField(1)
@@ -452,9 +451,9 @@ class EthereumEndpoints(_messages.Message):
 
 
 class GethDetails(_messages.Message):
-  r"""Options for the Geth execution client. See
-  https://geth.ethereum.org/docs/fundamentals/command-line-options for more
-  details.
+  r"""Options for the Geth execution client. See [Command-line
+  Options](https://geth.ethereum.org/docs/fundamentals/command-line-options)
+  for more details.
 
   Enums:
     GarbageCollectionModeValueValuesEnum: Immutable. Blockchain garbage
@@ -476,9 +475,9 @@ class GethDetails(_messages.Message):
       ARCHIVE: Configures Geth's garbage collection so that old data is never
         deleted. This is the default mode when creating an archive node. This
         value can also be chosen when creating a full node in order to create
-        a partial/recent archive node. See
-        https://geth.ethereum.org/docs/fundamentals/sync-modes for more
-        details.
+        a partial/recent archive node. See [Sync
+        modes](https://geth.ethereum.org/docs/fundamentals/sync-modes) for
+        more details.
     """
     GARBAGE_COLLECTION_MODE_UNSPECIFIED = 0
     FULL = 1
@@ -496,29 +495,8 @@ class GoogleProtobufEmpty(_messages.Message):
 
 
 
-class IpInfo(_messages.Message):
-  r"""The public IP information through which to interact with a Blockchain
-  Node.
-
-  Fields:
-    p2pIpv4Address: Output only. The IPv4 address for the node peer-to-peer
-      endpoint.
-    p2pIpv6Address: Output only. The IPv6 address for the node peer-to-peer
-      endpoint.
-    rpcIpv4Address: Output only. The IPv4 address for the node RPC API
-      endpoint.
-    rpcIpv6Address: Output only. The IPv6 address for the node RPC API
-      endpoint.
-  """
-
-  p2pIpv4Address = _messages.StringField(1)
-  p2pIpv6Address = _messages.StringField(2)
-  rpcIpv4Address = _messages.StringField(3)
-  rpcIpv6Address = _messages.StringField(4)
-
-
 class ListBlockchainNodesResponse(_messages.Message):
-  r"""Message for response to listing Blockchain Nodes
+  r"""Message for response to listing blockchain nodes.
 
   Fields:
     blockchainNodes: The list of nodes
@@ -755,8 +733,8 @@ class OperationMetadata(_messages.Message):
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have been
-      cancelled successfully have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      cancelled successfully have `Operation.error` value with a
+      `google.rpc.Status.code` of `1`, corresponding to `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the

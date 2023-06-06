@@ -1220,6 +1220,7 @@ class Cluster(_messages.Message):
       "projects/{project_number}/global/networks/{network_id}". This is
       required to create a cluster. It can be updated, but it cannot be
       removed.
+    networkConfig: A NetworkConfig attribute.
     primaryConfig: Output only. Cross Region replication config specific to
       PRIMARY cluster.
     reconciling: Output only. Reconciling
@@ -1371,13 +1372,14 @@ class Cluster(_messages.Message):
   migrationSource = _messages.MessageField('MigrationSource', 16)
   name = _messages.StringField(17)
   network = _messages.StringField(18)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 19)
-  reconciling = _messages.BooleanField(20)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 21)
-  sslConfig = _messages.MessageField('SslConfig', 22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  uid = _messages.StringField(24)
-  updateTime = _messages.StringField(25)
+  networkConfig = _messages.MessageField('NetworkConfig', 19)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 20)
+  reconciling = _messages.BooleanField(21)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 22)
+  sslConfig = _messages.MessageField('SslConfig', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
 
 
 class ConnectionInfo(_messages.Message):
@@ -2133,6 +2135,30 @@ class MigrationSource(_messages.Message):
   hostPort = _messages.StringField(1)
   referenceId = _messages.StringField(2)
   sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 3)
+
+
+class NetworkConfig(_messages.Message):
+  r"""Metadata related to network configuration.
+
+  Fields:
+    allocatedIpRange: Optional. The name of the allocated IP range for the
+      private IP AlloyDB cluster. For example: "google-managed-services-
+      default". If set, the instance IPs for this cluster will be created in
+      the allocated range. The range name must comply with RFC 1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. Field name is intended to
+      be consistent with CloudSQL.
+    network: Required. The resource link for the VPC network in which cluster
+      resources are created and from which they are accessible via Private IP.
+      The network must belong to the same project as the cluster. It is
+      specified in the form:
+      "projects/{project_number}/global/networks/{network_id}". This is
+      required to create a cluster. It can be updated, but it cannot be
+      removed.
+  """
+
+  allocatedIpRange = _messages.StringField(1)
+  network = _messages.StringField(2)
 
 
 class Node(_messages.Message):

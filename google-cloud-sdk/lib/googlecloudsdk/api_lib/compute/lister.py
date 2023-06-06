@@ -1016,16 +1016,21 @@ class MultiScopeLister(object):
     return_partial_success: Allows Lister to pass returnPartialSuccess to
       aggregatedList requests to prevent single scope failures from failng the
       entire operation.
+    image_zone_flag: Returns the images rolled out to the specific zone. This is
+      used for images.list API
   """
 
-  def __init__(self,
-               client,
-               zonal_service=None,
-               regional_service=None,
-               global_service=None,
-               aggregation_service=None,
-               allow_partial_server_failure=True,
-               return_partial_success=True):
+  def __init__(
+      self,
+      client,
+      zonal_service=None,
+      regional_service=None,
+      global_service=None,
+      aggregation_service=None,
+      allow_partial_server_failure=True,
+      return_partial_success=True,
+      image_zone_flag=None,
+  ):
     self.client = client
     self.zonal_service = zonal_service
     self.regional_service = regional_service
@@ -1033,6 +1038,7 @@ class MultiScopeLister(object):
     self.aggregation_service = aggregation_service
     self.allow_partial_server_failure = allow_partial_server_failure
     self.return_partial_success = return_partial_success
+    self.image_zone_flag = image_zone_flag
 
   def __deepcopy__(self, memodict=None):
     return self  # MultiScopeLister is immutable
@@ -1089,11 +1095,27 @@ class MultiScopeLister(object):
                                region=region_ref.region)))
     elif isinstance(scope_set, GlobalScope):
       for project_ref in sorted(list(scope_set)):
-        requests.append((self.global_service, 'List',
-                         self.global_service.GetRequestType('List')(
-                             filter=frontend.filter,
-                             maxResults=frontend.max_results,
-                             project=project_ref.project)))
+        if self.image_zone_flag is not None:
+          requests.append((
+              self.global_service,
+              'List',
+              self.global_service.GetRequestType('List')(
+                  filter=frontend.filter,
+                  maxResults=frontend.max_results,
+                  zone=self.image_zone_flag,
+                  project=project_ref.project,
+              ),
+          ))
+        else:
+          requests.append((
+              self.global_service,
+              'List',
+              self.global_service.GetRequestType('List')(
+                  filter=frontend.filter,
+                  maxResults=frontend.max_results,
+                  project=project_ref.project,
+              ),
+          ))
     else:
       # scopeSet is AllScopes
       # generate AggregatedList

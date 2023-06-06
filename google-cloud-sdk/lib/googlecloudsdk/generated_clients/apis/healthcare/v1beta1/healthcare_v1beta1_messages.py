@@ -1487,6 +1487,13 @@ class EntityMention(_messages.Message):
   r"""An entity mention in the document.
 
   Fields:
+    additionalInfo: Additional information about the entity mention. For
+      example, for an entity mention of type `DATE` this can be its more
+      specific date types from the following list: `ADMISSION_DATE`,
+      `CONSULTATION_DATE`, `DISCHARGE_DATE`, `SERVICE_DATE`, `VISIT_DATE`,
+      `DIAGNOSIS_DATE`, `MED_STARTED_DATE`, `MED_ENDED_DATE`, `NOTE_DATE`,
+      `PROCEDURE_DATE`, `RADIATION_STARTED_DATE`, `RADIATION_ENDED_DATE`,
+      `STAGE_DATE`
     certaintyAssessment: The certainty assessment of the entity mention. Its
       value is one of: LIKELY, SOMEWHAT_LIKELY, UNCERTAIN, SOMEWHAT_UNLIKELY,
       UNLIKELY, CONDITIONAL
@@ -1514,14 +1521,15 @@ class EntityMention(_messages.Message):
       SUBSTANCE_ABUSE, UNCLEAR_FOLLOWUP.
   """
 
-  certaintyAssessment = _messages.MessageField('Feature', 1)
-  confidence = _messages.FloatField(2)
-  linkedEntities = _messages.MessageField('LinkedEntity', 3, repeated=True)
-  mentionId = _messages.StringField(4)
-  subject = _messages.MessageField('Feature', 5)
-  temporalAssessment = _messages.MessageField('Feature', 6)
-  text = _messages.MessageField('TextSpan', 7)
-  type = _messages.StringField(8)
+  additionalInfo = _messages.MessageField('Feature', 1, repeated=True)
+  certaintyAssessment = _messages.MessageField('Feature', 2)
+  confidence = _messages.FloatField(3)
+  linkedEntities = _messages.MessageField('LinkedEntity', 4, repeated=True)
+  mentionId = _messages.StringField(5)
+  subject = _messages.MessageField('Feature', 6)
+  temporalAssessment = _messages.MessageField('Feature', 7)
+  text = _messages.MessageField('TextSpan', 8)
+  type = _messages.StringField(9)
 
 
 class EntityMentionRelationship(_messages.Message):

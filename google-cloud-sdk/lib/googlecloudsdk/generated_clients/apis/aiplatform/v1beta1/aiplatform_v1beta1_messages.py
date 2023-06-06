@@ -3215,7 +3215,7 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsPatchRequest(_messages.M
       request body.
     name: Output only. The resource name of the Artifact.
     updateMask: Optional. A FieldMask indicating which fields should be
-      updated. Functionality of this field is not yet supported.
+      updated.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -3427,7 +3427,7 @@ class AiplatformProjectsLocationsMetadataStoresContextsPatchRequest(_messages.Me
       resource to be passed as the request body.
     name: Output only. The resource name of the Context.
     updateMask: Optional. A FieldMask indicating which fields should be
-      updated. Functionality of this field is not yet supported.
+      updated.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -3658,7 +3658,7 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsPatchRequest(_messages.
       request body.
     name: Output only. The resource name of the Execution.
     updateMask: Optional. A FieldMask indicating which fields should be
-      updated. Functionality of this field is not yet supported.
+      updated.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -5362,6 +5362,23 @@ class AiplatformProjectsLocationsSchedulesOperationsWaitRequest(_messages.Messag
 
   name = _messages.StringField(1, required=True)
   timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsSchedulesPatchRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsSchedulesPatchRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1Schedule: A
+      GoogleCloudAiplatformV1beta1Schedule resource to be passed as the
+      request body.
+    name: Output only. The resource name of the Schedule.
+    updateMask: Required. The update mask applies to the resource. See
+      google.protobuf.FieldMask.
+  """
+
+  googleCloudAiplatformV1beta1Schedule = _messages.MessageField('GoogleCloudAiplatformV1beta1Schedule', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class AiplatformProjectsLocationsSchedulesPauseRequest(_messages.Message):
@@ -12143,8 +12160,8 @@ class GoogleCloudAiplatformUiLargeModelReference(_messages.Message):
 
   Fields:
     name: Required. The unique name of the large Foundation or pre-built
-      model. Like "chat-panda", "text-panda". Or model name with version ID,
-      like "chat-panda-001", "text-panda-005", etc.
+      model. Like "chat-bison", "text-bison". Or model name with version ID,
+      like "chat-bison@001", "text-bison@005", etc.
   """
 
   name = _messages.StringField(1)
@@ -13741,7 +13758,7 @@ class GoogleCloudAiplatformUiPublicModelParent(_messages.Message):
   Fields:
     displayName: Required. The display name of the parent. E.g., LaMDA, T5,
       Vision API, Natural Language API.
-    reference: Optional. The GCP resource name or the URI reference.
+    reference: Optional. The Google Cloud resource name or the URI reference.
   """
 
   displayName = _messages.StringField(1)
@@ -13752,7 +13769,7 @@ class GoogleCloudAiplatformUiPublicModelResourceReference(_messages.Message):
   r"""Reference to a resource.
 
   Fields:
-    resourceName: The resource name of the GCP resource.
+    resourceName: The resource name of the Google Cloud resource.
     uri: The URI of the resource.
   """
 
@@ -14234,7 +14251,7 @@ class GoogleCloudAiplatformUiPublisherModelParent(_messages.Message):
   Fields:
     displayName: Required. The display name of the parent. E.g., LaMDA, T5,
       Vision API, Natural Language API.
-    reference: Optional. The GCP resource name or the URI reference.
+    reference: Optional. The Google Cloud resource name or the URI reference.
   """
 
   displayName = _messages.StringField(1)
@@ -14245,7 +14262,7 @@ class GoogleCloudAiplatformUiPublisherModelResourceReference(_messages.Message):
   r"""Reference to a resource.
 
   Fields:
-    resourceName: The resource name of the GCP resource.
+    resourceName: The resource name of the Google Cloud resource.
     uri: The URI of the resource.
   """
 
@@ -15261,7 +15278,7 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificatio
       EFFICIENTNET: EfficientNet model for Model Garden training with
         customizable hyperparameters. Best tailored to be used within Google
         Cloud, and cannot be exported externally.
-      RESNET: ResNet model for Model Garden training with customizable
+      MAXVIT: MaxViT model for Model Garden training with customizable
         hyperparameters. Best tailored to be used within Google Cloud, and
         cannot be exported externally.
       VIT: ViT model for Model Garden training with customizable
@@ -15278,7 +15295,7 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificatio
     MOBILE_TF_VERSATILE_1 = 4
     MOBILE_TF_HIGH_ACCURACY_1 = 5
     EFFICIENTNET = 6
-    RESNET = 7
+    MAXVIT = 7
     VIT = 8
     COCA = 9
 
@@ -15497,7 +15514,7 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageSegmentationI
       than this value. If further model training ceases to provide any
       improvements, it will stop without using the full budget and the
       metadata.successfulStopReason will be `model-converged`. Note, node_hour
-      = actual_hour * number_of_nodes_involved. Or actaul_wall_clock_hours =
+      = actual_hour * number_of_nodes_involved. Or actual_wall_clock_hours =
       train_budget_milli_node_hours / (number_of_nodes_involved * 1000) For
       modelType `cloud-high-accuracy-1`(default), the budget must be between
       20,000 and 2,000,000 milli node hours, inclusive. The default value is
@@ -18738,6 +18755,59 @@ class GoogleCloudAiplatformV1EnvVar(_messages.Message):
   value = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1Examples(_messages.Message):
+  r"""Example-based explainability that returns the nearest neighbors from the
+  provided dataset.
+
+  Fields:
+    exampleGcsSource: The Cloud Storage input instances.
+    nearestNeighborSearchConfig: The full configuration for the generated
+      index, the semantics are the same as metadata and should match
+      [NearestNeighborSearchConfig](https://cloud.google.com/vertex-
+      ai/docs/explainable-ai/configuring-explanations-example-based#nearest-
+      neighbor-search-config).
+    neighborCount: The number of neighbors to return when querying for
+      examples.
+    presets: Simplified preset configuration, which automatically sets
+      configuration values based on the desired query speed-precision trade-
+      off and modality.
+  """
+
+  exampleGcsSource = _messages.MessageField('GoogleCloudAiplatformV1ExamplesExampleGcsSource', 1)
+  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
+  neighborCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  presets = _messages.MessageField('GoogleCloudAiplatformV1Presets', 4)
+
+
+class GoogleCloudAiplatformV1ExamplesExampleGcsSource(_messages.Message):
+  r"""The Cloud Storage input instances.
+
+  Enums:
+    DataFormatValueValuesEnum: The format in which instances are given, if not
+      specified, assume it's JSONL format. Currently only JSONL format is
+      supported.
+
+  Fields:
+    dataFormat: The format in which instances are given, if not specified,
+      assume it's JSONL format. Currently only JSONL format is supported.
+    gcsSource: The Cloud Storage location for the input instances.
+  """
+
+  class DataFormatValueValuesEnum(_messages.Enum):
+    r"""The format in which instances are given, if not specified, assume it's
+    JSONL format. Currently only JSONL format is supported.
+
+    Values:
+      DATA_FORMAT_UNSPECIFIED: Format unspecified, used when unset.
+      JSONL: Examples are stored in JSONL files.
+    """
+    DATA_FORMAT_UNSPECIFIED = 0
+    JSONL = 1
+
+  dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 1)
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1GcsSource', 2)
+
+
 class GoogleCloudAiplatformV1ExplanationMetadata(_messages.Message):
   r"""Metadata describing the Model's input and output for explanation.
 
@@ -19151,6 +19221,8 @@ class GoogleCloudAiplatformV1ExplanationParameters(_messages.Message):
   r"""Parameters to configure explaining for Model's predictions.
 
   Fields:
+    examples: Example-based explanations that returns the nearest neighbors
+      from the provided dataset.
     integratedGradientsAttribution: An attribution method that computes
       Aumann-Shapley values taking advantage of the model's fully
       differentiable structure. Refer to this paper for more details:
@@ -19181,11 +19253,12 @@ class GoogleCloudAiplatformV1ExplanationParameters(_messages.Message):
       use Integrated Gradients instead.
   """
 
-  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformV1IntegratedGradientsAttribution', 1)
-  outputIndices = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
-  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1SampledShapleyAttribution', 3)
-  topK = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  xraiAttribution = _messages.MessageField('GoogleCloudAiplatformV1XraiAttribution', 5)
+  examples = _messages.MessageField('GoogleCloudAiplatformV1Examples', 1)
+  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformV1IntegratedGradientsAttribution', 2)
+  outputIndices = _messages.MessageField('extra_types.JsonValue', 3, repeated=True)
+  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1SampledShapleyAttribution', 4)
+  topK = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  xraiAttribution = _messages.MessageField('GoogleCloudAiplatformV1XraiAttribution', 6)
 
 
 class GoogleCloudAiplatformV1ExplanationSpec(_messages.Message):
@@ -19517,6 +19590,18 @@ class GoogleCloudAiplatformV1GcsDestination(_messages.Message):
   """
 
   outputUriPrefix = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1GcsSource(_messages.Message):
+  r"""The Google Cloud Storage location for the input content.
+
+  Fields:
+    uris: Required. Google Cloud Storage URI(-s) to the input file(s). May
+      contain wildcards. For more information on wildcards, see
+      https://cloud.google.com/storage/docs/gsutil/addlhelp/WildcardNames.
+  """
+
+  uris = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudAiplatformV1GenericOperationMetadata(_messages.Message):
@@ -20099,6 +20184,61 @@ class GoogleCloudAiplatformV1NfsMount(_messages.Message):
   mountPoint = _messages.StringField(1)
   path = _messages.StringField(2)
   server = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1Presets(_messages.Message):
+  r"""Preset configuration for example-based explanations
+
+  Enums:
+    ModalityValueValuesEnum: The modality of the uploaded model, which
+      automatically configures the distance measurement and feature
+      normalization for the underlying example index and queries. If your
+      model does not precisely fit one of these types, it is okay to choose
+      the closest type.
+    QueryValueValuesEnum: Preset option controlling parameters for speed-
+      precision trade-off when querying for examples. If omitted, defaults to
+      `PRECISE`.
+
+  Fields:
+    modality: The modality of the uploaded model, which automatically
+      configures the distance measurement and feature normalization for the
+      underlying example index and queries. If your model does not precisely
+      fit one of these types, it is okay to choose the closest type.
+    query: Preset option controlling parameters for speed-precision trade-off
+      when querying for examples. If omitted, defaults to `PRECISE`.
+  """
+
+  class ModalityValueValuesEnum(_messages.Enum):
+    r"""The modality of the uploaded model, which automatically configures the
+    distance measurement and feature normalization for the underlying example
+    index and queries. If your model does not precisely fit one of these
+    types, it is okay to choose the closest type.
+
+    Values:
+      MODALITY_UNSPECIFIED: Should not be set. Added as a recommended best
+        practice for enums
+      IMAGE: IMAGE modality
+      TEXT: TEXT modality
+      TABULAR: TABULAR modality
+    """
+    MODALITY_UNSPECIFIED = 0
+    IMAGE = 1
+    TEXT = 2
+    TABULAR = 3
+
+  class QueryValueValuesEnum(_messages.Enum):
+    r"""Preset option controlling parameters for speed-precision trade-off
+    when querying for examples. If omitted, defaults to `PRECISE`.
+
+    Values:
+      PRECISE: More precise neighbors as a trade-off against slower response.
+      FAST: Faster response as a trade-off against less precise neighbors.
+    """
+    PRECISE = 0
+    FAST = 1
+
+  modality = _messages.EnumField('ModalityValueValuesEnum', 1)
+  query = _messages.EnumField('QueryValueValuesEnum', 2)
 
 
 class GoogleCloudAiplatformV1PrivateEndpoints(_messages.Message):
@@ -21788,7 +21928,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificatio
       EFFICIENTNET: EfficientNet model for Model Garden training with
         customizable hyperparameters. Best tailored to be used within Google
         Cloud, and cannot be exported externally.
-      RESNET: ResNet model for Model Garden training with customizable
+      MAXVIT: MaxViT model for Model Garden training with customizable
         hyperparameters. Best tailored to be used within Google Cloud, and
         cannot be exported externally.
       VIT: ViT model for Model Garden training with customizable
@@ -21805,7 +21945,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificatio
     MOBILE_TF_VERSATILE_1 = 4
     MOBILE_TF_HIGH_ACCURACY_1 = 5
     EFFICIENTNET = 6
-    RESNET = 7
+    MAXVIT = 7
     VIT = 8
     COCA = 9
 
@@ -22024,7 +22164,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageSegmentationI
       than this value. If further model training ceases to provide any
       improvements, it will stop without using the full budget and the
       metadata.successfulStopReason will be `model-converged`. Note, node_hour
-      = actual_hour * number_of_nodes_involved. Or actaul_wall_clock_hours =
+      = actual_hour * number_of_nodes_involved. Or actual_wall_clock_hours =
       train_budget_milli_node_hours / (number_of_nodes_involved * 1000) For
       modelType `cloud-high-accuracy-1`(default), the budget must be between
       20,000 and 2,000,000 milli node hours, inclusive. The default value is
@@ -27044,6 +27184,10 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
       pricing](https://cloud.google.com/logging/pricing). User can disable
       container logging by setting this flag to true.
     displayName: Required. The user-defined name of this BatchPredictionJob.
+    enableVisionVertexPipeline: Indicate if vision batch prediction should
+      launch the vertex migrated pipeline. This flag for internal test only,
+      and will be removed once vision batch prediction is fully migrated to
+      vertex.
     encryptionSpec: Customer-managed encryption key options for a
       BatchPredictionJob. If this is set, then all resources created by the
       BatchPredictionJob will be encrypted with the provided encryption key.
@@ -27200,31 +27344,32 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
   dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchDedicatedResources', 3)
   disableContainerLogging = _messages.BooleanField(4)
   displayName = _messages.StringField(5)
-  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 6)
-  endTime = _messages.StringField(7)
-  error = _messages.MessageField('GoogleRpcStatus', 8)
-  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 9)
-  generateExplanation = _messages.BooleanField(10)
-  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobInputConfig', 11)
-  instanceConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobInstanceConfig', 12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1beta1ManualBatchTuningParameters', 14)
-  model = _messages.StringField(15)
-  modelMonitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringConfig', 16)
-  modelMonitoringStatsAnomalies = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringStatsAnomalies', 17, repeated=True)
-  modelMonitoringStatus = _messages.MessageField('GoogleRpcStatus', 18)
-  modelParameters = _messages.MessageField('extra_types.JsonValue', 19)
-  modelVersionId = _messages.StringField(20)
-  name = _messages.StringField(21)
-  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobOutputConfig', 22)
-  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobOutputInfo', 23)
-  partialFailures = _messages.MessageField('GoogleRpcStatus', 24, repeated=True)
-  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1beta1ResourcesConsumed', 25)
-  serviceAccount = _messages.StringField(26)
-  startTime = _messages.StringField(27)
-  state = _messages.EnumField('StateValueValuesEnum', 28)
-  unmanagedContainerModel = _messages.MessageField('GoogleCloudAiplatformV1beta1UnmanagedContainerModel', 29)
-  updateTime = _messages.StringField(30)
+  enableVisionVertexPipeline = _messages.BooleanField(6)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 7)
+  endTime = _messages.StringField(8)
+  error = _messages.MessageField('GoogleRpcStatus', 9)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 10)
+  generateExplanation = _messages.BooleanField(11)
+  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobInputConfig', 12)
+  instanceConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobInstanceConfig', 13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1beta1ManualBatchTuningParameters', 15)
+  model = _messages.StringField(16)
+  modelMonitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringConfig', 17)
+  modelMonitoringStatsAnomalies = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringStatsAnomalies', 18, repeated=True)
+  modelMonitoringStatus = _messages.MessageField('GoogleRpcStatus', 19)
+  modelParameters = _messages.MessageField('extra_types.JsonValue', 20)
+  modelVersionId = _messages.StringField(21)
+  name = _messages.StringField(22)
+  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobOutputConfig', 23)
+  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobOutputInfo', 24)
+  partialFailures = _messages.MessageField('GoogleRpcStatus', 25, repeated=True)
+  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1beta1ResourcesConsumed', 26)
+  serviceAccount = _messages.StringField(27)
+  startTime = _messages.StringField(28)
+  state = _messages.EnumField('StateValueValuesEnum', 29)
+  unmanagedContainerModel = _messages.MessageField('GoogleCloudAiplatformV1beta1UnmanagedContainerModel', 30)
+  updateTime = _messages.StringField(31)
 
 
 class GoogleCloudAiplatformV1beta1BatchPredictionJobInputConfig(_messages.Message):
@@ -32552,8 +32697,8 @@ class GoogleCloudAiplatformV1beta1LargeModelReference(_messages.Message):
 
   Fields:
     name: Required. The unique name of the large Foundation or pre-built
-      model. Like "chat-panda", "text-panda". Or model name with version ID,
-      like "chat-panda-001", "text-panda-005", etc.
+      model. Like "chat-bison", "text-bison". Or model name with version ID,
+      like "chat-bison@001", "text-bison@005", etc.
   """
 
   name = _messages.StringField(1)
@@ -36574,7 +36719,7 @@ class GoogleCloudAiplatformV1beta1PublisherModelResourceReference(_messages.Mess
   r"""Reference to a resource.
 
   Fields:
-    resourceName: The resource name of the GCP resource.
+    resourceName: The resource name of the Google Cloud resource.
     uri: The URI of the resource.
   """
 
@@ -37001,10 +37146,13 @@ class GoogleCloudAiplatformV1beta1ResourcePool(_messages.Message):
     id: Output only. The unique ID in a PersistentResource to refer the this
       resource pool.
     idleReplicaCount: Output only. The number of machines currently not in use
-      by training jobs for this resource pool.
+      by training jobs for this resource pool. Deprecated. Use
+      `used_replica_count` instead.
     machineSpec: Required. Immutable. The specification of a single machine.
     replicaCount: Required. The total number of machines to use for this
       resource pool.
+    usedReplicaCount: Output only. The number of machines currently in use by
+      training jobs for this resource pool. Will replace idle_replica_count.
   """
 
   diskSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1DiskSpec', 1)
@@ -37012,6 +37160,7 @@ class GoogleCloudAiplatformV1beta1ResourcePool(_messages.Message):
   idleReplicaCount = _messages.IntegerField(3)
   machineSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1MachineSpec', 4)
   replicaCount = _messages.IntegerField(5)
+  usedReplicaCount = _messages.IntegerField(6)
 
 
 class GoogleCloudAiplatformV1beta1ResourceRuntimeSpec(_messages.Message):
@@ -38813,7 +38962,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
       EFFICIENTNET: EfficientNet model for Model Garden training with
         customizable hyperparameters. Best tailored to be used within Google
         Cloud, and cannot be exported externally.
-      RESNET: ResNet model for Model Garden training with customizable
+      MAXVIT: MaxViT model for Model Garden training with customizable
         hyperparameters. Best tailored to be used within Google Cloud, and
         cannot be exported externally.
       VIT: ViT model for Model Garden training with customizable
@@ -38830,7 +38979,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
     MOBILE_TF_VERSATILE_1 = 4
     MOBILE_TF_HIGH_ACCURACY_1 = 5
     EFFICIENTNET = 6
-    RESNET = 7
+    MAXVIT = 7
     VIT = 8
     COCA = 9
 
@@ -39049,7 +39198,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageSegmenta
       than this value. If further model training ceases to provide any
       improvements, it will stop without using the full budget and the
       metadata.successfulStopReason will be `model-converged`. Note, node_hour
-      = actual_hour * number_of_nodes_involved. Or actaul_wall_clock_hours =
+      = actual_hour * number_of_nodes_involved. Or actual_wall_clock_hours =
       train_budget_milli_node_hours / (number_of_nodes_involved * 1000) For
       modelType `cloud-high-accuracy-1`(default), the budget must be between
       20,000 and 2,000,000 milli node hours, inclusive. The default value is
@@ -43171,20 +43320,20 @@ class GoogleRpcStatus(_messages.Message):
 
 class GoogleTypeColor(_messages.Message):
   r"""Represents a color in the RGBA color space. This representation is
-  designed for simplicity of conversion to/from color representations in
+  designed for simplicity of conversion to and from color representations in
   various languages over compactness. For example, the fields of this
   representation can be trivially provided to the constructor of
   `java.awt.Color` in Java; it can also be trivially provided to UIColor's
   `+colorWithRed:green:blue:alpha` method in iOS; and, with just a little
   work, it can be easily formatted into a CSS `rgba()` string in JavaScript.
-  This reference page doesn't carry information about the absolute color space
-  that should be used to interpret the RGB value (e.g. sRGB, Adobe RGB,
-  DCI-P3, BT.2020, etc.). By default, applications should assume the sRGB
-  color space. When color equality needs to be decided, implementations,
-  unless documented otherwise, treat two colors as equal if all their red,
-  green, blue, and alpha values each differ by at most 1e-5. Example (Java):
-  import com.google.type.Color; // ... public static java.awt.Color
-  fromProto(Color protocolor) { float alpha = protocolor.hasAlpha() ?
+  This reference page does not have information about the absolute color space
+  that should be used to interpret the RGB value-for example, sRGB, Adobe RGB,
+  DCI-P3, and BT.2020. By default, applications should assume the sRGB color
+  space. When color equality needs to be decided, implementations, unless
+  documented otherwise, treat two colors as equal if all their red, green,
+  blue, and alpha values each differ by at most `1e-5`. Example (Java): import
+  com.google.type.Color; // ... public static java.awt.Color fromProto(Color
+  protocolor) { float alpha = protocolor.hasAlpha() ?
   protocolor.getAlpha().getValue() : 1.0; return new java.awt.Color(
   protocolor.getRed(), protocolor.getGreen(), protocolor.getBlue(), alpha); }
   public static Color toProto(java.awt.Color color) { float red = (float)

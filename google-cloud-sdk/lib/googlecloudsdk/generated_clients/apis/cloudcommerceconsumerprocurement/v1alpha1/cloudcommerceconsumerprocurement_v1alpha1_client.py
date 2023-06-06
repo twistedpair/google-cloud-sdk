@@ -41,8 +41,10 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.billingAccounts_accounts = self.BillingAccountsAccountsService(self)
     self.billingAccounts_consents = self.BillingAccountsConsentsService(self)
+    self.billingAccounts_orders_events = self.BillingAccountsOrdersEventsService(self)
     self.billingAccounts_orders_operations = self.BillingAccountsOrdersOperationsService(self)
     self.billingAccounts_orders_orderAllocations = self.BillingAccountsOrdersOrderAllocationsService(self)
+    self.billingAccounts_orders_orderAttributions_operations = self.BillingAccountsOrdersOrderAttributionsOperationsService(self)
     self.billingAccounts_orders_orderAttributions = self.BillingAccountsOrdersOrderAttributionsService(self)
     self.billingAccounts_orders = self.BillingAccountsOrdersService(self)
     self.billingAccounts = self.BillingAccountsService(self)
@@ -287,6 +289,43 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class BillingAccountsOrdersEventsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_orders_events resource."""
+
+    _NAME = 'billingAccounts_orders_events'
+
+    def __init__(self, client):
+      super(CloudcommerceconsumerprocurementV1alpha1.BillingAccountsOrdersEventsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of events associated with an order.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersEventsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudCommerceConsumerProcurementV1alpha1ListEventsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/events',
+        http_method='GET',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.events.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/events',
+        request_field='',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersEventsListRequest',
+        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1ListEventsResponse',
+        supports_download=False,
+    )
+
   class BillingAccountsOrdersOperationsService(base_api.BaseApiService):
     """Service class for the billingAccounts_orders_operations resource."""
 
@@ -492,6 +531,43 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/orderAllocations:replace',
         request_field='googleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsRequest',
         request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsReplaceRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class BillingAccountsOrdersOrderAttributionsOperationsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_orders_orderAttributions_operations resource."""
+
+    _NAME = 'billingAccounts_orders_orderAttributions_operations'
+
+    def __init__(self, client):
+      super(CloudcommerceconsumerprocurementV1alpha1.BillingAccountsOrdersOrderAttributionsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributionsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAttributions/{orderAttributionsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAttributions.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributionsOperationsGetRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

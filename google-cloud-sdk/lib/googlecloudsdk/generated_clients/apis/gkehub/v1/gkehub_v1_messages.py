@@ -2027,6 +2027,18 @@ class FeatureState(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class FleetObservabilityFeatureError(_messages.Message):
+  r"""All error details of the fleet observability feature.
+
+  Fields:
+    code: The code of the error.
+    description: A human-readable description of the current status.
+  """
+
+  code = _messages.StringField(1)
+  description = _messages.StringField(2)
+
+
 class FleetObservabilityFeatureSpec(_messages.Message):
   r"""**Fleet Observability**: The Hub-wide input for the FleetObservability
   feature.
@@ -2035,10 +2047,70 @@ class FleetObservabilityFeatureSpec(_messages.Message):
 
 
 class FleetObservabilityFeatureState(_messages.Message):
-  r"""**FleetObservability**: An empty state left as an example Hub-wide
-  Feature state.
+  r"""**FleetObservability**: Hub-wide Feature for FleetObservability feature.
+  state.
+
+  Fields:
+    logging: The feature state of default logging.
+    monitoring: The feature state of fleet monitoring.
   """
 
+  logging = _messages.MessageField('FleetObservabilityFleetObservabilityLoggingState', 1)
+  monitoring = _messages.MessageField('FleetObservabilityFleetObservabilityMonitoringState', 2)
+
+
+class FleetObservabilityFleetObservabilityBaseFeatureState(_messages.Message):
+  r"""Base state for fleet observability feature.
+
+  Enums:
+    CodeValueValuesEnum: The high-level, machine-readable status of this
+      Feature.
+
+  Fields:
+    code: The high-level, machine-readable status of this Feature.
+    errors: Errors after reconciling the monitoring and logging feature if the
+      code is not OK.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The high-level, machine-readable status of this Feature.
+
+    Values:
+      CODE_UNSPECIFIED: Unknown or not set.
+      OK: The Feature is operating normally.
+      ERROR: The Feature is encountering errors in the reconciliation. The
+        Feature may need intervention to return to normal operation. See the
+        description and any associated Feature-specific details for more
+        information.
+    """
+    CODE_UNSPECIFIED = 0
+    OK = 1
+    ERROR = 2
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  errors = _messages.MessageField('FleetObservabilityFeatureError', 2, repeated=True)
+
+
+class FleetObservabilityFleetObservabilityLoggingState(_messages.Message):
+  r"""Feature state for logging feature.
+
+  Fields:
+    defaultLog: The base feature state of fleet default log.
+    scopeLog: The base feature state of fleet scope log.
+  """
+
+  defaultLog = _messages.MessageField('FleetObservabilityFleetObservabilityBaseFeatureState', 1)
+  scopeLog = _messages.MessageField('FleetObservabilityFleetObservabilityBaseFeatureState', 2)
+
+
+class FleetObservabilityFleetObservabilityMonitoringState(_messages.Message):
+  r"""Feature state for monitoring feature.
+
+  Fields:
+    state: The base feature state of fleet monitoring feature.
+  """
+
+  state = _messages.MessageField('FleetObservabilityFleetObservabilityBaseFeatureState', 1)
 
 
 class FleetObservabilityMembershipSpec(_messages.Message):
@@ -2049,8 +2121,8 @@ class FleetObservabilityMembershipSpec(_messages.Message):
 
 
 class FleetObservabilityMembershipState(_messages.Message):
-  r"""**FleetObservability**: An empty state left as an example membership-
-  specific Feature state.
+  r"""**FleetObservability**: Membership-specific Feature state for
+  fleetobservability.
   """
 
 

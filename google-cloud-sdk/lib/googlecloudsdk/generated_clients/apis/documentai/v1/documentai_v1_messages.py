@@ -723,18 +723,19 @@ class GoogleCloudDocumentaiUiv1beta3DocumentId(_messages.Message):
   r"""Document Identifier.
 
   Fields:
-    gcsManagedDocId: A
-      GoogleCloudDocumentaiUiv1beta3DocumentIdGCSManagedDocumentId attribute.
+    gcsManagedDocId: A document id within user managed Cloud Storage.
     revisionRef: Points to a specific revision of the document if set.
+    unmanagedDocId: A document id within unmanaged dataset.
   """
 
   gcsManagedDocId = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3DocumentIdGCSManagedDocumentId', 1)
   revisionRef = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3RevisionRef', 2)
+  unmanagedDocId = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3DocumentIdUnmanagedDocumentId', 3)
 
 
 class GoogleCloudDocumentaiUiv1beta3DocumentIdGCSManagedDocumentId(_messages.Message):
-  r"""Identifies a document uniquely within the scope of a dataset in the
-  Cloud Storage option.
+  r"""Identifies a document uniquely within the scope of a dataset in user
+  managed Cloud Storage option.
 
   Fields:
     cwDocId: Id of the document (indexed) managed by Content Warehouse.
@@ -744,6 +745,17 @@ class GoogleCloudDocumentaiUiv1beta3DocumentIdGCSManagedDocumentId(_messages.Mes
 
   cwDocId = _messages.StringField(1)
   gcsUri = _messages.StringField(2)
+
+
+class GoogleCloudDocumentaiUiv1beta3DocumentIdUnmanagedDocumentId(_messages.Message):
+  r"""Identifies a document uniquely within the scope of a dataset in
+  unmanaged option.
+
+  Fields:
+    docId: Required. The id of the document.
+  """
+
+  docId = _messages.StringField(1)
 
 
 class GoogleCloudDocumentaiUiv1beta3EnableProcessorMetadata(_messages.Message):
@@ -6124,20 +6136,20 @@ class GoogleRpcStatus(_messages.Message):
 
 class GoogleTypeColor(_messages.Message):
   r"""Represents a color in the RGBA color space. This representation is
-  designed for simplicity of conversion to/from color representations in
+  designed for simplicity of conversion to and from color representations in
   various languages over compactness. For example, the fields of this
   representation can be trivially provided to the constructor of
   `java.awt.Color` in Java; it can also be trivially provided to UIColor's
   `+colorWithRed:green:blue:alpha` method in iOS; and, with just a little
   work, it can be easily formatted into a CSS `rgba()` string in JavaScript.
-  This reference page doesn't carry information about the absolute color space
-  that should be used to interpret the RGB value (e.g. sRGB, Adobe RGB,
-  DCI-P3, BT.2020, etc.). By default, applications should assume the sRGB
-  color space. When color equality needs to be decided, implementations,
-  unless documented otherwise, treat two colors as equal if all their red,
-  green, blue, and alpha values each differ by at most 1e-5. Example (Java):
-  import com.google.type.Color; // ... public static java.awt.Color
-  fromProto(Color protocolor) { float alpha = protocolor.hasAlpha() ?
+  This reference page does not have information about the absolute color space
+  that should be used to interpret the RGB value-for example, sRGB, Adobe RGB,
+  DCI-P3, and BT.2020. By default, applications should assume the sRGB color
+  space. When color equality needs to be decided, implementations, unless
+  documented otherwise, treat two colors as equal if all their red, green,
+  blue, and alpha values each differ by at most `1e-5`. Example (Java): import
+  com.google.type.Color; // ... public static java.awt.Color fromProto(Color
+  protocolor) { float alpha = protocolor.hasAlpha() ?
   protocolor.getAlpha().getValue() : 1.0; return new java.awt.Color(
   protocolor.getRed(), protocolor.getGreen(), protocolor.getBlue(), alpha); }
   public static Color toProto(java.awt.Color color) { float red = (float)

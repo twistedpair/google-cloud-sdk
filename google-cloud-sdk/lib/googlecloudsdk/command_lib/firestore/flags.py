@@ -76,16 +76,28 @@ def AddNamespaceIdsFlag(parser):
       """)
 
 
-def AddLocationFlag(parser, required=False):
-  """Adds flag for location to the given parser."""
+def AddLocationFlag(
+    parser, required=False, hidden=False, suggestion_aliases=None
+):
+  """Adds flag for location to the given parser.
+
+  Args:
+    parser: The argparse parser.
+    required: Whether the flag must be set for running the command, a bool.
+    hidden: Whether the flag is hidden in document. a bool.
+    suggestion_aliases: A list of flag name aliases. A list of string.
+
+  """
   parser.add_argument(
       '--location',
       metavar='LOCATION',
       required=required,
-      hidden=True,
+      hidden=hidden,
       type=str,
+      suggestion_aliases=suggestion_aliases,
       help="""
-      The location to operate on.
+      The location to operate on. Available locations are listed at
+      https://cloud.google.com/firestore/docs/locations.
 
       For example, to operate on location `us-east1`:
 

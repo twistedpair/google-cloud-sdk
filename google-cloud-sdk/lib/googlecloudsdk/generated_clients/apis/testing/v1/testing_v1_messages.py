@@ -1322,15 +1322,18 @@ class Shard(_messages.Message):
   r"""Output only. Details about the shard.
 
   Fields:
+    estimatedShardDuration: Output only. The estimated shard duration based on
+      previous test case timing records, if available.
     numShards: Output only. The total number of shards.
     shardIndex: Output only. The index of the shard among all the shards.
     testTargetsForShard: Output only. Test targets for each shard. Only set
       for manual sharding.
   """
 
-  numShards = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  shardIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  testTargetsForShard = _messages.MessageField('TestTargetsForShard', 3)
+  estimatedShardDuration = _messages.StringField(1)
+  numShards = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  shardIndex = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  testTargetsForShard = _messages.MessageField('TestTargetsForShard', 4)
 
 
 class ShardingOption(_messages.Message):
@@ -1364,22 +1367,23 @@ class SmartSharding(_messages.Message):
       than the targeted shard duration. Shard duration is not guaranteed
       because smart sharding uses test case history and default durations
       which may not be accurate. The rules for finding the test case timing
-      records are: - If the service has seen a test case in the last 30 days,
-      the record of the latest successful one will be used. - For new test
-      cases, the average duration of other known test cases will be used. - If
-      there are no previous test case timing records available, the test case
-      is considered to be 15 seconds long by default. Because the actual shard
-      duration can exceed the targeted shard duration, we recommend setting
-      the targeted value at least 5 minutes less than the maximum allowed test
-      timeout (45 minutes for physical devices and 60 minutes for virtual), or
-      using the custom test timeout value you set. This approach avoids
-      cancelling the shard before all tests can finish. Note that there is a
-      limit for maximum number of shards. When you select one or more physical
-      devices, the number of shards must be <= 50. When you select one or more
-      ARM virtual devices, it must be <= 100. When you select only x86 virtual
-      devices, it must be <= 500. To guarantee at least one test case for per
-      shard, the number of shards will not exceed the number of test cases.
-      Each shard created will count toward daily test quota.
+      records are: - If the service has processed a test case in the last 30
+      days, the record of the latest successful test case will be used. - For
+      new test cases, the average duration of other known test cases will be
+      used. - If there are no previous test case timing records available, the
+      default test case duration is 15 seconds. Because the actual shard
+      duration can exceed the targeted shard duration, we recommend that you
+      set the targeted value at least 5 minutes less than the maximum allowed
+      test timeout (45 minutes for physical devices and 60 minutes for
+      virtual), or that you use the custom test timeout value that you set.
+      This approach avoids cancelling the shard before all tests can finish.
+      Note that there is a limit for maximum number of shards. When you select
+      one or more physical devices, the number of shards must be <= 50. When
+      you select one or more ARM virtual devices, it must be <= 100. When you
+      select only x86 virtual devices, it must be <= 500. To guarantee at
+      least one test case for per shard, the number of shards will not exceed
+      the number of test cases. Each shard created counts toward daily test
+      quota.
   """
 
   targetedShardDuration = _messages.StringField(1)
@@ -1654,10 +1658,10 @@ class TestMatrix(_messages.Message):
         AndroidJUnitRunner version 1.1 or higher. Orchestrator can be disabled
         by using DO_NOT_USE_ORCHESTRATOR OrchestratorOption.
       NO_TEST_RUNNER_CLASS: The test APK does not contain the test runner
-        class specified by user or in the manifest file. This can be caused by
-        either of the following reasons: - the user provided a runner class
-        name that's incorrect, or - the test runner isn't built into the test
-        APK (might be in the app APK instead).
+        class specified by the user or in the manifest file. This can be
+        caused by one of the following reasons: - the user provided a runner
+        class name that's incorrect, or - the test runner isn't built into the
+        test APK (might be in the app APK instead).
       NO_LAUNCHER_ACTIVITY: A main launcher activity could not be found.
       FORBIDDEN_PERMISSIONS: The app declares one or more permissions that are
         not allowed.
@@ -1765,8 +1769,8 @@ class TestMatrix(_messages.Message):
       SUCCESS: The test matrix run was successful, for instance: - All the
         test cases passed. - Robo did not detect a crash of the application
         under test.
-      FAILURE: A run failed, for instance: - One or more test case failed. - A
-        test timed out. - The application under test crashed.
+      FAILURE: A run failed, for instance: - One or more test cases failed. -
+        A test timed out. - The application under test crashed.
       INCONCLUSIVE: Something unexpected happened. The run should still be
         considered unsuccessful but this is likely a transient problem and re-
         running the test might be successful.

@@ -114,6 +114,26 @@ def ConstructCryptoKeyName(kms_project, kms_location, kms_keyring, kms_key):
   )
 
 
+def ExtractKmsProjectFromCryptoKeyName(name):
+  name_split = name.split('/')
+  return name_split[1]
+
+
+def ExtractKmsLocationFromCryptoKeyName(name):
+  name_split = name.split('/')
+  return name_split[3]
+
+
+def ExtractKmsKeyRingFromCryptoKeyName(name):
+  name_split = name.split('/')
+  return name_split[5]
+
+
+def ExtractKmsCryptoKeyFromCryptoKeyName(name):
+  name_split = name.split('/')
+  return name_split[7]
+
+
 ## Helper functions to combine KMS Configs args / flags for gcloud commands ##
 
 
@@ -141,6 +161,7 @@ def AddKMSConfigUpdateArgs(parser):
   concept_parsers.ConceptParser(
       [flags.GetKmsConfigPresentationSpec('The KMS Config to update')]
   ).AddToParser(parser)
+  AddKmsKeyResourceArg(parser, required=False)
   flags.AddResourceDescriptionArg(parser, 'KMS Config')
   flags.AddResourceAsyncFlag(parser)
   labels_util.AddUpdateLabelsFlags(parser)

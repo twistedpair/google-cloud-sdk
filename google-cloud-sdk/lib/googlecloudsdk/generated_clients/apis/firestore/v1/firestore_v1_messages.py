@@ -1812,11 +1812,18 @@ class GoogleFirestoreAdminV1ExportDocumentsRequest(_messages.Message):
       guidelines: https://cloud.google.com/storage/docs/naming. If the URI is
       a bucket (without a namespace path), a prefix will be generated based on
       the start time.
+    snapshotTime: The timestamp that corresponds to the version of the
+      database to be exported. The timestamp must be rounded to the minute, in
+      the past, and not older than 1 hour. If specified, then the exported
+      documents will represent a consistent view of the database at the
+      provided time. Otherwise, there are no guarantees about the consistency
+      of the exported documents.
   """
 
   collectionIds = _messages.StringField(1, repeated=True)
   namespaceIds = _messages.StringField(2, repeated=True)
   outputUriPrefix = _messages.StringField(3)
+  snapshotTime = _messages.StringField(4)
 
 
 class GoogleFirestoreAdminV1ExportDocumentsResponse(_messages.Message):
@@ -2042,8 +2049,8 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
     r"""The API scope supported by this index.
 
     Values:
-      ANY_API: The index can be used by both Firestore Native and Firestore in
-        Datastore Mode query API. This is the default.
+      ANY_API: The index can only be used by the Firestore Native query API.
+        This is the default.
       DATASTORE_MODE_API: The index can only be used by the Firestore in
         Datastore Mode query API.
     """
@@ -2415,7 +2422,7 @@ class GoogleFirestoreAdminV1TtlConfig(_messages.Message):
 
 
 class GoogleFirestoreAdminV1TtlConfigDelta(_messages.Message):
-  r"""Information about an TTL configuration change.
+  r"""Information about a TTL configuration change.
 
   Enums:
     ChangeTypeValueValuesEnum: Specifies how the TTL configuration is

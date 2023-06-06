@@ -915,25 +915,15 @@ def AddTier(parser, is_patch=False):
   parser.add_argument('--tier', '-t', required=False, help=help_text)
 
 
-def AddEdition(parser, is_alpha=False):
+def AddEdition(parser):
   """Adds '-edition-' flag to the parser."""
-  if not is_alpha:
-    return
   edition_flag = base.ChoiceArgument(
       '--edition',
       required=False,
-      choices={
-          'enterprise': (
-              'Enterprise is the standard option for smaller instances.'
-          ),
-          'enterprise-plus': (
-              'Enterprise plus option recommended for cpu-intensive workloads. '
-              'Offers access to premium features and capabilities.'
-          ),
-      },
+      choices=['enterprise', 'enterprise-plus'],
       default=None,
       hidden=True,
-      help_str='Specifies edition.',
+      help_str='Specifies the edition of Cloud SQL instance.',
   )
   edition_flag.AddToParser(parser)
 
@@ -1930,6 +1920,21 @@ def AddUpgradeSqlNetworkArchitecture(parser):
       help=(
           'Upgrade the specified CloudSQL instance from legacy network'
           ' architecture to the GCP standard.'
+      ),
+      **kwargs
+  )
+
+
+def AddEnableDataCache(parser, show_negated_in_help=False):
+  """Adds '--enable-data-cache' flag to the parser."""
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--enable-data-cache',
+      hidden=True,
+      required=False,
+      help=(
+          'Enable use of data cache for accelerated read performance. This flag'
+          ' is only available for Enterprise Plus edition instances.'
       ),
       **kwargs
   )

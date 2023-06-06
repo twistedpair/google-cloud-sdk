@@ -1259,6 +1259,49 @@ class OutputConfig(_messages.Message):
   gcsDestination = _messages.MessageField('GcsDestination', 1)
 
 
+class Romanization(_messages.Message):
+  r"""A single romanization response.
+
+  Fields:
+    detectedLanguageCode: The ISO-639 language code of source text in the
+      initial request, detected automatically, if no source language was
+      passed within the initial request. If the source language was passed,
+      auto-detection of the language does not occur and this field is empty.
+    romanizedText: Romanized text. If an error occurs during romanization,
+      this field might be excluded from the response.
+  """
+
+  detectedLanguageCode = _messages.StringField(1)
+  romanizedText = _messages.StringField(2)
+
+
+class RomanizeTextRequest(_messages.Message):
+  r"""The request message for synchronous romanization.
+
+  Fields:
+    contents: Required. The content of the input in string format.
+    sourceLanguageCode: Optional. The ISO-639 language code of the input text
+      if known, for example, "hi" or "zh". If the source language isn't
+      specified, the API attempts to identify the source language
+      automatically and returns the source language for each content in the
+      response.
+  """
+
+  contents = _messages.StringField(1, repeated=True)
+  sourceLanguageCode = _messages.StringField(2)
+
+
+class RomanizeTextResponse(_messages.Message):
+  r"""The response message for synchronous romanization.
+
+  Fields:
+    romanizations: Text romanization responses. This field has the same length
+      as `contents`.
+  """
+
+  romanizations = _messages.MessageField('Romanization', 1, repeated=True)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2048,6 +2091,23 @@ class TranslateProjectsLocationsOperationsWaitRequest(_messages.Message):
   waitOperationRequest = _messages.MessageField('WaitOperationRequest', 2)
 
 
+class TranslateProjectsLocationsRomanizeTextRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsRomanizeTextRequest object.
+
+  Fields:
+    parent: Required. Project or location to make a call. Must refer to a
+      caller's project. Format: `projects/{project-number-or-
+      id}/locations/{location-id}` or `projects/{project-number-or-id}`. For
+      global calls, use `projects/{project-number-or-id}/locations/global` or
+      `projects/{project-number-or-id}`.
+    romanizeTextRequest: A RomanizeTextRequest resource to be passed as the
+      request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  romanizeTextRequest = _messages.MessageField('RomanizeTextRequest', 2)
+
+
 class TranslateProjectsLocationsTranslateDocumentRequest(_messages.Message):
   r"""A TranslateProjectsLocationsTranslateDocumentRequest object.
 
@@ -2085,6 +2145,23 @@ class TranslateProjectsLocationsTranslateTextRequest(_messages.Message):
 
   parent = _messages.StringField(1, required=True)
   translateTextRequest = _messages.MessageField('TranslateTextRequest', 2)
+
+
+class TranslateProjectsRomanizeTextRequest(_messages.Message):
+  r"""A TranslateProjectsRomanizeTextRequest object.
+
+  Fields:
+    parent: Required. Project or location to make a call. Must refer to a
+      caller's project. Format: `projects/{project-number-or-
+      id}/locations/{location-id}` or `projects/{project-number-or-id}`. For
+      global calls, use `projects/{project-number-or-id}/locations/global` or
+      `projects/{project-number-or-id}`.
+    romanizeTextRequest: A RomanizeTextRequest resource to be passed as the
+      request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  romanizeTextRequest = _messages.MessageField('RomanizeTextRequest', 2)
 
 
 class TranslateProjectsTranslateTextRequest(_messages.Message):
@@ -2169,6 +2246,7 @@ class TranslateTextRequest(_messages.Message):
     targetLanguageCode: Required. The ISO-639 language code to use for
       translation of the input text, set to one of the language codes listed
       in Language Support.
+    transliterationConfig: Optional. Transliteration to be applied.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2208,6 +2286,7 @@ class TranslateTextRequest(_messages.Message):
   model = _messages.StringField(5)
   sourceLanguageCode = _messages.StringField(6)
   targetLanguageCode = _messages.StringField(7)
+  transliterationConfig = _messages.MessageField('TransliterationConfig', 8)
 
 
 class TranslateTextResponse(_messages.Message):
@@ -2249,6 +2328,17 @@ class Translation(_messages.Message):
   glossaryConfig = _messages.MessageField('TranslateTextGlossaryConfig', 2)
   model = _messages.StringField(3)
   translatedText = _messages.StringField(4)
+
+
+class TransliterationConfig(_messages.Message):
+  r"""Confugures transliteration feature on top of translation.
+
+  Fields:
+    enableTransliteration: If true, source text in romanized form can be
+      translated to the target language.
+  """
+
+  enableTransliteration = _messages.BooleanField(1)
 
 
 class WaitOperationRequest(_messages.Message):

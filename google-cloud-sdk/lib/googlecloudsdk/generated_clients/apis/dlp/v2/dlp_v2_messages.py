@@ -5859,11 +5859,15 @@ class GooglePrivacyDlpV2OtherInfoTypeSummary(_messages.Message):
   Fields:
     estimatedPrevalence: Approximate percentage of non-null rows that
       contained data detected by this infotype.
+    excludedFromAnalysis: Whether this infoType was excluded from sensitivity
+      and risk analysis due to factors such as low prevalence (subject to
+      change).
     infoType: The other infoType.
   """
 
   estimatedPrevalence = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 2)
+  excludedFromAnalysis = _messages.BooleanField(2)
+  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 3)
 
 
 class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
@@ -6028,7 +6032,8 @@ class GooglePrivacyDlpV2ProfileStatus(_messages.Message):
   r"""A GooglePrivacyDlpV2ProfileStatus object.
 
   Fields:
-    status: Profiling status code and optional message
+    status: Profiling status code and optional message. status.code will be 0
+      (default value) for OK.
     timestamp: Time when the profile generation status was updated
   """
 

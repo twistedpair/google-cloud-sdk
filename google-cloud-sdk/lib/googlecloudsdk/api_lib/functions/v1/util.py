@@ -30,6 +30,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.functions.v1 import exceptions
 from googlecloudsdk.api_lib.functions.v1 import operations
+from googlecloudsdk.api_lib.functions.v2 import util as v2_util
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions as exceptions_util
@@ -38,10 +39,10 @@ from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions as base_exceptions
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import encoding
-
 import six.moves.http_client
 
 _DEPLOY_WAIT_NOTICE = 'Deploying function (may take a while - up to 2 minutes)'
@@ -248,6 +249,14 @@ def ValidateRuntimeOrRaise(client, runtime, region):
   Returns:
     warning: None|str, the warning if deprecated
   """
+  if (
+      v2_util.GetCloudFunctionsApiEnv() is not v2_util.ApiEnv.PROD
+      and region != 'us-central1'
+  ):
+    region = 'us-central1'
+    log.warning(
+        'Non-prod env detected. Hard-wiring ListRuntimes call to us-central1.'
+    )
   response = client.ListRuntimes(
       region,
       query_filter='name={} AND environment={}'.format(
@@ -369,18 +378,6 @@ def CatchHTTPErrorRaiseHTTPException(func):
       )
 
   return CatchHTTPErrorRaiseHTTPExceptionFn
-
-
-def FormatTimestamp(timestamp):
-  """Formats a timestamp which will be presented to a user.
-
-  Args:
-    timestamp: Raw timestamp string in RFC3339 UTC "Zulu" format.
-
-  Returns:
-    Formatted timestamp string.
-  """
-  return re.sub(r'(\.\d{3})\d*Z$', r'\1', timestamp.replace('T', ' '))
 
 
 @CatchHTTPErrorRaiseHTTPException

@@ -354,3 +354,13 @@ ASYNC_PRIMARY_DISK_ARG = compute_flags.ResourceArgument(
     .GENERATE_DEDICATED_SCOPE_FLAGS,
     zone_help_text=_ASYNC_PRIMARY_DISK_ZONE_EXPLANATION,
     region_help_text=_ASYNC_PRIMARY_DISK_REGION_EXPLANATION)
+
+STORAGE_POOL_ARG = compute_flags.ResourceArgument(
+    resource_name='storage pool',
+    name='--storage-pool',
+    short_help=('Specifies the URI of the storage pool in which the disk is '
+                'created.'),
+    zonal_collection='compute.storagePools',
+    plural=False,
+    required=False,
+    scope_flags_usage=compute_flags.ScopeFlagsUsage.USE_EXISTING_SCOPE_FLAGS)

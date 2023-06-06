@@ -6,6 +6,58 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 434.0.0 (2023-06-06)
+
+### AlloyDB
+
+* Promote Continuous Backups related commands to the GA track, which include changes to `gcloud alloydb clusters create`, `gcloud alloydb clusters update` and `gcloud alloydb clusters restore`.
+
+### Anthos On-Prem
+
+* Modified `gcloud container vmware admin-clusters list`. When specifying `--location=-`, or when both `--location` and gcloud configuration `container_vmware/location` are not specified, return admin clusters in all locations of the specified project.
+
+### Cloud Functions
+
+* Updated `gcloud functions logs read` to read function logs from both 1st gen
+  and 2nd gen functions when no function name is provided unless `--gen2` or
+  `--no-gen2` is set.
+
+### Cloud Key Management Service
+
+*   Promoted `gcloud kms inventory` which allows viewing and tracking of
+    keys across cloud resources.
+
+### Cloud Logging
+
+* Promoted `--custom-writer-identity` flag of `gcloud logging sinks create` to beta and GA.
+* Promoted `--custom-writer-identity` flag of `gcloud logging sinks update` to beta and GA.
+
+### Compute Engine
+
+* Updated the Interconnect attachment Bring Your Own IP (BYOIP) IPv6 fields to be unavailable.
+* Added  `--size` flag to `gcloud compute disks update` to support size update.
+* Added hyperdisk-balanced support to `gcloud compute disks create` and `gcloud compute instances create`.
+* Added `--per-instance-hostnames` flag to `gcloud compute instances bulk create` for alpha and beta.
+* Promoted `--http-keep-alive-timeout-sec` flag for `gcloud compute <target-http-proxies|target-https-proxies> <create|update>` and `--clear-http-keep-alive-timeout-sec` flag for `gcloud compute <target-http-proxies|target-https-proxies> update` to beta.
+
+### Dataproc Metastore
+
+* Promoted `--endpoint-protocol` flag to GA.
+
+### Kubernetes Engine
+
+* Added `--enable-fqdn-network-policy` flag to `gcloud beta container clusters create` and `gcloud beta container clusters update`.
+
+### Recommender
+
+* Added a `list` command for insights that lists all available insight types.
+* Added a `list` command for recommenders that lists all available recommenders.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
 ## 433.0.1 (2023-06-1)
 
 ### Google Cloud CLI

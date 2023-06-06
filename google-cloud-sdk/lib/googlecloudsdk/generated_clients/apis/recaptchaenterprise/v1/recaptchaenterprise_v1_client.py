@@ -402,7 +402,7 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
     )
 
     def Migrate(self, request, global_params=None):
-      r"""Migrates an existing key from reCAPTCHA to reCAPTCHA Enterprise. Once a key is migrated, it can be used from either product. SiteVerify requests are billed as CreateAssessment calls. You must be authenticated as one of the current owners of the reCAPTCHA Site Key, and your user must have the reCAPTCHA Enterprise Admin IAM role in the destination project.
+      r"""Migrates an existing key from reCAPTCHA to reCAPTCHA Enterprise. Once a key is migrated, it can be used from either product. SiteVerify requests are billed as CreateAssessment calls. You must be authenticated as one of the current owners of the reCAPTCHA Key, and your user must have the reCAPTCHA Enterprise Admin IAM role in the destination project.
 
       Args:
         request: (RecaptchaenterpriseProjectsKeysMigrateRequest) input message

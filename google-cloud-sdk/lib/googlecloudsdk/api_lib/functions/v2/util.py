@@ -20,7 +20,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import enum
-import re
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
@@ -35,7 +34,6 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
-
 from googlecloudsdk.core.util import encoding as encoder
 from googlecloudsdk.core.util import retry
 import six
@@ -333,18 +331,6 @@ def WaitForOperation(
       )
 
   return operation
-
-
-def FormatTimestamp(timestamp):
-  """Formats a timestamp which will be presented to a user.
-
-  Args:
-    timestamp: Raw timestamp string in RFC3339 UTC "Zulu" format.
-
-  Returns:
-    Formatted timestamp string.
-  """
-  return re.sub(r'(\.\d{3})\d*Z$', r'\1', timestamp.replace('T', ' '))
 
 
 def OperationErrorToString(error):

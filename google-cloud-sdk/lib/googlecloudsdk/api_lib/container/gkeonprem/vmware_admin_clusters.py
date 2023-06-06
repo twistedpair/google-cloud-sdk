@@ -22,6 +22,7 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
 from googlecloudsdk.command_lib.container.vmware import flags
+from googlecloudsdk.core import properties
 
 
 class AdminClustersClient(client.ClientBase):
@@ -66,6 +67,12 @@ class AdminClustersClient(client.ClientBase):
 
   def List(self, args):
     """Lists Admin Clusters in the GKE On-Prem VMware API."""
+    if (
+        'location' not in args.GetSpecifiedArgsDict()
+        and not properties.VALUES.container_vmware.location.Get()
+    ):
+      args.location = '-'
+
     list_req = (
         self._messages.GkeonpremProjectsLocationsVmwareAdminClustersListRequest(
             parent=self._location_name(args)))

@@ -199,13 +199,10 @@ def AddPushConfigFlags(
   if enable_no_wrapper_support:
     current_group = parser
     if is_update:
-      mutual_exclusive_group = current_group.add_mutually_exclusive_group(
-          hidden=True
-      )
+      mutual_exclusive_group = current_group.add_mutually_exclusive_group()
       mutual_exclusive_group.add_argument(
           '--clear-push-no-wrapper-config',
           action='store_true',
-          hidden=True,
           help="""If set, clear the NoWrapper config from the subscription.""",
       )
       current_group = mutual_exclusive_group
@@ -213,14 +210,14 @@ def AddPushConfigFlags(
         mutex=False,
         help='NoWrapper Config Options.',
         required=False,
-        hidden=True,
     )
     definition_group.add_argument(
         '--push-no-wrapper',
-        help='When set, the payload to the push endpoint is not wrapped.',
+        help=(
+            'When set, the message data is delivered directly as the HTTP body.'
+        ),
         action='store_true',
         required=True,
-        hidden=True,
     )
     definition_group.add_argument(
         '--push-no-wrapper-write-metadata',
@@ -232,7 +229,6 @@ def AddPushConfigFlags(
         ),
         action='store_true',
         required=False,
-        hidden=True,
     )
 
 

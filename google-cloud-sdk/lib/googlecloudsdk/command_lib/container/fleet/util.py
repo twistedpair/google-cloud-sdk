@@ -49,6 +49,13 @@ NS_LIST_FORMAT = """
     )
 """
 
+SC_NS_LIST_FORMAT = """
+    table(
+      name.segment(7):sort=1:label=NAME,
+      name.segment(1):label=PROJECT
+    )
+"""
+
 RB_LIST_FORMAT = """
     table(
       name.segment(7):sort=1:label=NAME,

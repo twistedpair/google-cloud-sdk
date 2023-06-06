@@ -170,6 +170,8 @@ class Cluster(_messages.Message):
     nodeTypeId: Optional. Deprecated: The canonical identifier of node types
       (`NodeType`) in this cluster. For example: standard-72.
     state: Output only. State of the resource.
+    stretchedClusterConfig: Optional. Configuration of a stretched cluster.
+      Required for clusters that belong to a STRETCHED private cloud.
     uid: Output only. System-generated unique identifier for the resource.
     updateTime: Output only. Last update time of this resource.
   """
@@ -228,8 +230,9 @@ class Cluster(_messages.Message):
   nodeTypeConfigs = _messages.MessageField('NodeTypeConfigsValue', 6)
   nodeTypeId = _messages.StringField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  stretchedClusterConfig = _messages.MessageField('StretchedClusterConfig', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class Credentials(_messages.Message):
@@ -275,6 +278,10 @@ class DnsForwarding(_messages.Message):
   server mappings, and is attached to the private cloud for custom domain
   resolution.
 
+  Enums:
+    StateValueValuesEnum: Output only. The state of the DNS forwarding
+      configuration.
+
   Fields:
     createTime: Output only. Creation time of this resource.
     etag: Checksum that may be sent on update requests to ensure that the
@@ -287,14 +294,29 @@ class DnsForwarding(_messages.Message):
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/dnsForwarding`
+    state: Output only. The state of the DNS forwarding configuration.
     updateTime: Output only. Last update time of this resource.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the DNS forwarding configuration.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value should never be used.
+      ACTIVE: DNS forwarding configuration is operational.
+      MIGRATION_REQUIRED: DNS forwarding operations disabled. Project
+        migration required.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    MIGRATION_REQUIRED = 2
 
   createTime = _messages.StringField(1)
   etag = _messages.StringField(2)
   forwardingRules = _messages.MessageField('ForwardingRule', 3, repeated=True)
   name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
 
 
 class Empty(_messages.Message):

@@ -1194,6 +1194,27 @@ class ArgDict(ArgList):
     return msg
 
 
+# NOTE: ArgObject is still being implemented. Not available for public use yet
+class ArgObject(ArgType):
+  """Catch all arg type that will accept a file, json, or ArgDict."""
+
+  def __init__(self, field):
+    """Initializes ArgObject instance.
+
+    Args:
+      field: apitools message or field instance
+
+    Returns:
+      (str)->Any, A function that parses arg_value into the field's type
+    """
+    self.field = field
+
+  def __call__(self, arg_value):
+    # TODO(b/278780718) implement parsing for files, json, and dictionaries
+    # for primitive, maps, and messges.
+    return None
+
+
 class UpdateAction(argparse.Action):
   r"""Create a single dict value from delimited or repeated flags.
 

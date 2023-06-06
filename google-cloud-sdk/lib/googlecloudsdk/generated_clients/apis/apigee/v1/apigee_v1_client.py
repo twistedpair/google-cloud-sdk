@@ -8073,6 +8073,60 @@ class ApigeeV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""CreateSecurityProfile create a new custom security profile.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityProfilesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityProfile) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityProfiles',
+        http_method='POST',
+        method_id='apigee.organizations.securityProfiles.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['securityProfileId'],
+        relative_path='v1/{+parent}/securityProfiles',
+        request_field='googleCloudApigeeV1SecurityProfile',
+        request_type_name='ApigeeOrganizationsSecurityProfilesCreateRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityProfile',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteSecurityProfile delete a profile with all its revisions.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityProfilesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityProfiles/{securityProfilesId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.securityProfiles.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSecurityProfilesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""GetSecurityProfile gets the specified security profile. Returns NOT_FOUND if security profile is not present for the specified organization.
 
@@ -8151,6 +8205,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsSecurityProfilesListRevisionsRequest',
         response_type_name='GoogleCloudApigeeV1ListSecurityProfileRevisionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""UpdateSecurityProfile update the metadata of security profile.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityProfilesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityProfile) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityProfiles/{securityProfilesId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.securityProfiles.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1SecurityProfile',
+        request_type_name='ApigeeOrganizationsSecurityProfilesPatchRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityProfile',
         supports_download=False,
     )
 

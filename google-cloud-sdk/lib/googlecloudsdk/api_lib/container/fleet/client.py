@@ -327,6 +327,103 @@ class FleetClient(object):
         field='fleets',
         batch_size_attribute=None)
 
+  def GetScopeNamespace(self, namespace_path):
+    """Gets a namespace resource from the GKEHub API.
+
+    Args:
+      namespace_path: Full resource path of the namespace.
+
+    Returns:
+      A namespace resource.
+
+    Raises:
+      apitools.base.py.HttpError: If the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsScopesNamespacesGetRequest(
+        name=namespace_path)
+    return self.client.projects_locations_scopes_namespaces.Get(req)
+
+  def CreateScopeNamespace(self, name, namespace_path, parent):
+    """Creates a namespace resource from the GKEHub API.
+
+    Args:
+      name: The namespace name.
+      namespace_path: Full resource path of the namespace.
+      parent: Full resource path of the scope containing the namespace.
+
+    Returns:
+      A namespace resource.
+
+    Raises:
+      apitools.base.py.HttpError: If the request returns an HTTP error.
+    """
+    namespace = self.messages.Namespace(name=namespace_path, scope='')
+    req = self.messages.GkehubProjectsLocationsScopesNamespacesCreateRequest(
+        namespace=namespace, scopeNamespaceId=name, parent=parent
+    )
+    return self.client.projects_locations_scopes_namespaces.Create(req)
+
+  def DeleteScopeNamespace(self, namespace_path):
+    """Deletes a namespace resource from the fleet.
+
+    Args:
+      namespace_path: Full resource path of the namespace.
+
+    Returns:
+      A long running operation for deleting the namespace.
+
+    Raises:
+      apitools.base.py.HttpError: If the request returns an HTTP error.
+    """
+    req = self.messages.GkehubProjectsLocationsScopesNamespacesDeleteRequest(
+        name=namespace_path
+    )
+    return self.client.projects_locations_scopes_namespaces.Delete(req)
+
+  def UpdateScopeNamespace(self, namespace_path, mask):
+    """Updates a namespace resource in the fleet.
+
+    Args:
+      namespace_path: Full resource path of the namespace.
+      mask: A mask of the fields to update.
+
+    Returns:
+      A longrunning operation for updating the namespace.
+
+    Raises:
+      apitools.base.py.HttpError: If the request returns an HTTP error.
+    """
+    # Namespace containing fields with updated value(s)
+    namespace = self.messages.Namespace(
+        name=namespace_path, scope=''
+    )
+    req = self.messages.GkehubProjectsLocationsScopesNamespacesPatchRequest(
+        namespace=namespace,
+        name=namespace_path,
+        updateMask=mask,
+    )
+    return self.client.projects_locations_scopes_namespaces.Patch(req)
+
+  def ListScopeNamespaces(self, parent):
+    """Lists namespaces in a project.
+
+    Args:
+      parent: Full resource path of the scope containing the namespace.
+
+    Returns:
+      A ListNamespaceResponse (list of namespaces and next page token).
+
+    Raises:
+      apitools.base.py.HttpError: If the request returns an HTTP error.
+    """
+    req = self.messages.GkehubProjectsLocationsScopesNamespacesListRequest(
+        pageToken='', parent=parent)
+    return list_pager.YieldFromList(
+        self.client.projects_locations_scopes_namespaces,
+        req,
+        field='scopeNamespaces',
+        batch_size_attribute=None)
+
   def GetNamespace(self, project, name):
     """Gets a namespace resource from the GKEHub API.
 
@@ -665,4 +762,70 @@ class FleetClient(object):
     req = self.messages.GkehubProjectsLocationsMembershipsBindingsDeleteRequest(
         name=name)
     return self.client.projects_locations_memberships_bindings.Delete(
+        req)
+
+  def GetMembershipRbacRoleBinding(self, name):
+    """Gets a Membership RBAC RoleBinding resource from the GKEHub API.
+
+    Args:
+      name: the full Membership RBAC RoleBinding resource name.
+
+    Returns:
+      A Membership RBAC Role Binding resource.
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error.
+    """
+    req = self.messages.GkehubProjectsLocationsMembershipsRbacrolebindingsGetRequest(
+        name=name)
+    return self.client.projects_locations_memberships_rbacrolebindings.Get(req)
+
+  def CreateMembershipRbacRoleBinding(self, name, role, user, group):
+    """Creates a Membership RBAC RoleBinding resource from the GKEHub API.
+
+    Args:
+      name: the full Membership RBAC Role Binding resource name.
+      role: the role for the RBAC policies.
+      user: the user to apply the RBAC policies for.
+      group: the group to apply the RBAC policies for.
+
+    Returns:
+      A Membership RBAC Role Binding resource.
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error.
+    """
+    rolebinding = self.messages.RBACRoleBinding(
+        name=name,
+        role=self.messages.Role(
+            predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
+                role.upper())),
+        user=user,
+        group=group)
+    resource = resources.REGISTRY.ParseRelativeName(
+        name,
+        'gkehub.projects.locations.memberships.rbacrolebindings',
+        api_version='v1alpha')
+    req = self.messages.GkehubProjectsLocationsMembershipsRbacrolebindingsCreateRequest(
+        rBACRoleBinding=rolebinding,
+        rbacrolebindingId=resource.Name(),
+        parent=resource.Parent().RelativeName())
+    return self.client.projects_locations_memberships_rbacrolebindings.Create(
+        req)
+
+  def DeleteMembershipRbacRoleBinding(self, name):
+    """Deletes a Membership RBAC RoleBinding resource.
+
+    Args:
+      name: the resource name of the Membership RBAC RoleBinding.
+
+    Returns:
+      A long running operation for the deletion.
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error.
+    """
+    req = self.messages.GkehubProjectsLocationsMembershipsRbacrolebindingsDeleteRequest(
+        name=name)
+    return self.client.projects_locations_memberships_rbacrolebindings.Delete(
         req)

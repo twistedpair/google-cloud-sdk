@@ -779,7 +779,7 @@ class InstancePolicy(_messages.Message):
     machineType: The Compute Engine machine type.
     minCpuPlatform: The minimum CPU platform. See
       https://cloud.google.com/compute/docs/instances/specify-min-cpu-
-      platform. Not yet implemented.
+      platform.
     provisioningModel: The provisioning model.
     reservation: If specified, VMs will consume only the specified
       reservation. If not specified (default), VMs will consume any applicable
@@ -2188,6 +2188,8 @@ class TaskSpec(_messages.Message):
       completed. Even though this is likely to result in a non-zero exit
       status for the background runnable, these automatic kills are not
       treated as Task failures.
+    userAccount: UserAccount on the VM to run the runnables in the taskSpec.
+      If not set, the runnable will be run under root user.
     volumes: Volumes to mount before running Tasks using this TaskSpec.
   """
 
@@ -2223,7 +2225,8 @@ class TaskSpec(_messages.Message):
   maxRetryCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   maxRunDuration = _messages.StringField(6)
   runnables = _messages.MessageField('Runnable', 7, repeated=True)
-  volumes = _messages.MessageField('Volume', 8, repeated=True)
+  userAccount = _messages.MessageField('UserAccount', 8)
+  volumes = _messages.MessageField('Volume', 9, repeated=True)
 
 
 class TaskStatus(_messages.Message):
@@ -2261,6 +2264,21 @@ class TaskStatus(_messages.Message):
   resourceUsage = _messages.MessageField('TaskResourceUsage', 1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
   statusEvents = _messages.MessageField('StatusEvent', 3, repeated=True)
+
+
+class UserAccount(_messages.Message):
+  r"""UserAccount contains the information of a POSIX account on the guest os
+  which is used to execute the runnables.
+
+  Fields:
+    gid: gid id an unique identifier of the POSIX account group corresponding
+      to the user account.
+    uid: uid is an unique identifier of the POSIX account corresponding to the
+      user account.
+  """
+
+  gid = _messages.StringField(1)
+  uid = _messages.StringField(2)
 
 
 class Volume(_messages.Message):

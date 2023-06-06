@@ -64,7 +64,9 @@ def ConstructCreateRequestFromArgsAlphaBeta(
   instance_resource = _ConstructInstanceFromArgs(client, alloydb_messages, args)
 
   instance_resource.clientConnectionConfig = _ClientConnectionConfig(
-      alloydb_messages, args.ssl_mode
+      alloydb_messages,
+      args.ssl_mode,
+      args.require_connectors,
   )
 
   return (
@@ -280,12 +282,15 @@ def _QueryInsightsConfig(
 def _ClientConnectionConfig(
     alloydb_messages,
     ssl_mode=None,
+    require_connectors=None,
 ):
   """Generates the client connection config for the instance.
 
   Args:
     alloydb_messages: module, Message module for the API client.
     ssl_mode: string, SSL mode to use when connecting to the database.
+    require_connectors: boolean, whether or not to enforce connections to the
+      database to go through a connector (ex: Auth Proxy).
 
   Returns:
     alloydb_messages.ClientConnectionConfig
@@ -293,11 +298,16 @@ def _ClientConnectionConfig(
 
   # TODO(b/270442834): Always pass the SSL config even if it's empty once we
   # unhide the flag
-  if ssl_mode is None:
+  should_generate_config = any([
+      ssl_mode is not None,
+      require_connectors is not None,
+  ])
+  if not should_generate_config:
     return None
 
   # Config exists, generate client connection config.
   client_connection_config = alloydb_messages.ClientConnectionConfig()
+  client_connection_config.requireConnectors = require_connectors
   ssl_config = alloydb_messages.SslConfig()
   # Set SSL mode if provided
   ssl_config.sslMode = _ParseSSLMode(alloydb_messages, ssl_mode)
@@ -372,11 +382,16 @@ def ConstructInstanceAndUpdatePathsFromArgsAlphaBeta(
         mode=_ParseUpdateMode(alloydb_messages, args.update_mode))
     update_mode_path = 'updatePolicy.mode'
     paths.append(update_mode_path)
+  # Check if require_connectors is set to True/False, then update
+  if args.require_connectors is not None:
+    require_connectors_path = 'clientConnectionConfig.requireConnectors'
+    paths.append(require_connectors_path)
   if args.ssl_mode:
-    instance_resource.clientConnectionConfig = _ClientConnectionConfig(
-        alloydb_messages, args.ssl_mode
-    )
     ssl_mode_path = 'clientConnectionConfig.sslConfig.sslMode'
     paths.append(ssl_mode_path)
+  if args.require_connectors is not None or args.ssl_mode:
+    instance_resource.clientConnectionConfig = _ClientConnectionConfig(
+        alloydb_messages, args.ssl_mode, args.require_connectors
+    )
 
   return instance_resource, paths

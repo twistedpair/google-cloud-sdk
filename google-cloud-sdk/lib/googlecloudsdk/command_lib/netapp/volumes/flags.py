@@ -400,14 +400,14 @@ def AddVolumeRevertSnapshotArg(parser, required=True):
           parser)
 
 
-def AddVolumeFromSnapshotArg(parser):
-  """Adds the --from-snapshot arg to the arg parser."""
+def AddVolumeSourceSnapshotArg(parser):
+  """Adds the --source-snapshot arg to the arg parser."""
   concept_parsers.ConceptParser.ForResource(
-      '--from-snapshot',
+      '--source-snapshot',
       flags.GetSnapshotResourceSpec(revert_op=True, positional=False),
       flag_name_overrides={'location': '',
                            'volume': ''},
-      group_help='The Snapshot to create the Volume from.').AddToParser(
+      group_help='The source Snapshot to create the Volume from.').AddToParser(
           parser)
 
 ## Helper functions to combine Volumes args / flags for gcloud commands #
@@ -428,7 +428,7 @@ def AddVolumeCreateArgs(parser, release_track):
   AddVolumeExportPolicyArg(parser)
   AddVolumeUnixPermissionsArg(parser)
   AddVolumeSmbSettingsArg(parser)
-  AddVolumeFromSnapshotArg(parser)
+  AddVolumeSourceSnapshotArg(parser)
   AddVolumeHourlySnapshotArg(parser)
   AddVolumeDailySnapshotArg(parser)
   AddVolumeWeeklySnapshotArg(parser)
@@ -464,7 +464,7 @@ def AddVolumeUpdateArgs(parser, release_track):
   AddVolumeExportPolicyArg(parser)
   AddVolumeUnixPermissionsArg(parser)
   AddVolumeSmbSettingsArg(parser)
-  AddVolumeFromSnapshotArg(parser)
+  AddVolumeSourceSnapshotArg(parser)
   AddVolumeHourlySnapshotArg(parser)
   AddVolumeDailySnapshotArg(parser)
   AddVolumeWeeklySnapshotArg(parser)

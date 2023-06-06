@@ -74,6 +74,8 @@ class AbortInfo(_messages.Message):
       GKE_KONNECTIVITY_PROXY_UNSUPPORTED: Aborted because the connection
         between the control plane and the node of the source cluster is
         initiated by the node and managed by the Konnectivity proxy.
+      RESOURCE_CONFIG_NOT_FOUND: Aborted because expected resource
+        configuration was missing.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -93,6 +95,7 @@ class AbortInfo(_messages.Message):
     UNSUPPORTED = 15
     MISMATCHED_IP_VERSION = 16
     GKE_KONNECTIVITY_PROXY_UNSUPPORTED = 17
+    RESOURCE_CONFIG_NOT_FOUND = 18
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   projectsMissingPermission = _messages.StringField(2, repeated=True)
@@ -550,6 +553,9 @@ class DropInfo(_messages.Message):
       GOOGLE_MANAGED_SERVICE_NO_PEERING: Packet was dropped because there is
         no peering between the originating network and the Google Managed
         Services Network.
+      GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT: Packet was dropped because the
+        Google-managed service uses Private Service Connect (PSC), but the PSC
+        endpoint is not found in the project.
       GKE_PSC_ENDPOINT_MISSING: Packet was dropped because the GKE cluster
         uses Private Service Connect (PSC), but the PSC endpoint is not found
         in the project.
@@ -583,6 +589,8 @@ class DropInfo(_messages.Message):
         is not ready.
       DROPPED_INSIDE_PSC_SERVICE_PRODUCER: Packet was dropped inside Private
         Service Connect service producer.
+      LOAD_BALANCER_HAS_NO_PROXY_SUBNET: Packet sent to a load balancer, which
+        requires a proxy-only subnet and the subnet is not found.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -608,20 +616,22 @@ class DropInfo(_messages.Message):
     DROPPED_INSIDE_GKE_SERVICE = 21
     DROPPED_INSIDE_CLOUD_SQL_SERVICE = 22
     GOOGLE_MANAGED_SERVICE_NO_PEERING = 23
-    GKE_PSC_ENDPOINT_MISSING = 24
-    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 25
-    GKE_CONTROL_PLANE_REGION_MISMATCH = 26
-    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 27
-    GKE_CONTROL_PLANE_NO_ROUTE = 28
-    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 29
-    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 30
-    CLOUD_SQL_INSTANCE_NO_ROUTE = 31
-    CLOUD_FUNCTION_NOT_ACTIVE = 32
-    VPC_CONNECTOR_NOT_SET = 33
-    VPC_CONNECTOR_NOT_RUNNING = 34
-    PSC_CONNECTION_NOT_ACCEPTED = 35
-    CLOUD_RUN_REVISION_NOT_READY = 36
-    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 37
+    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 24
+    GKE_PSC_ENDPOINT_MISSING = 25
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 26
+    GKE_CONTROL_PLANE_REGION_MISMATCH = 27
+    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 28
+    GKE_CONTROL_PLANE_NO_ROUTE = 29
+    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 30
+    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 31
+    CLOUD_SQL_INSTANCE_NO_ROUTE = 32
+    CLOUD_FUNCTION_NOT_ACTIVE = 33
+    VPC_CONNECTOR_NOT_SET = 34
+    VPC_CONNECTOR_NOT_RUNNING = 35
+    PSC_CONNECTION_NOT_ACCEPTED = 36
+    CLOUD_RUN_REVISION_NOT_READY = 37
+    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 38
+    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 39
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)

@@ -1517,6 +1517,33 @@ class GkeonpremV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a new VMware admin cluster in a given project and location. The API needs to be combined with creating a bootstrap cluster to work.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareAdminClustersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters',
+        http_method='POST',
+        method_id='gkeonprem.projects.locations.vmwareAdminClusters.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['validateOnly', 'vmwareAdminClusterId'],
+        relative_path='v1/{+parent}/vmwareAdminClusters',
+        request_field='vmwareAdminCluster',
+        request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Enroll(self, request, global_params=None):
       r"""Enrolls an existing VMware admin cluster to the Anthos On-Prem API within a given project and location. Through enrollment, an existing admin cluster will become Anthos On-Prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
 

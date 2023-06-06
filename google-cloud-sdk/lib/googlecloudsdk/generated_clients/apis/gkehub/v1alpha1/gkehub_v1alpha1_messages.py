@@ -526,124 +526,52 @@ class CloudBuildMembershipConfig(_messages.Message):
 
 
 class Condition(_messages.Message):
-  r"""A condition to be met.
+  r"""Condition being reported.
 
   Enums:
-    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
-    OpValueValuesEnum: An operator to apply the subject with.
-    SysValueValuesEnum: Trusted attributes supplied by any service that owns
-      resources and uses the IAM system for access control.
+    CodeValueValuesEnum: Unique identifier of the condition which describes
+      the condition recognizable to the user.
+    SeverityValueValuesEnum: Severity level of the condition.
 
   Fields:
-    iam: Trusted attributes supplied by the IAM system.
-    op: An operator to apply the subject with.
-    svc: Trusted attributes discharged by the service.
-    sys: Trusted attributes supplied by any service that owns resources and
-      uses the IAM system for access control.
-    values: The objects of the condition.
+    code: Unique identifier of the condition which describes the condition
+      recognizable to the user.
+    details: A short summary about the issue.
+    documentationLink: Links contains actionable information.
+    severity: Severity level of the condition.
   """
 
-  class IamValueValuesEnum(_messages.Enum):
-    r"""Trusted attributes supplied by the IAM system.
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Unique identifier of the condition which describes the condition
+    recognizable to the user.
 
     Values:
-      NO_ATTR: Default non-attribute.
-      AUTHORITY: Either principal or (if present) authority selector.
-      ATTRIBUTION: The principal (even if an authority selector is present),
-        which must only be used for attribution, not authorization.
-      SECURITY_REALM: Any of the security realms in the IAMContext
-        (go/security-realms). When used with IN, the condition indicates "any
-        of the request's realms match one of the given values; with NOT_IN,
-        "none of the realms match any of the given values". Note that a value
-        can be: - 'self:campus' (i.e., clients that are in the same campus) -
-        'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-
-        region' (i.e., allow connections from clients that are in the same
-        cloud region) - 'self:prod-region' (i.e., allow connections from
-        clients that are in the same prod region) - 'guardians' (i.e., allow
-        connections from its guardian realms. See go/security-realms-
-        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
-        allow connections from clients that are in the same security realm,
-        which is currently but not guaranteed to be campus-sized) - a realm
-        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
-        see: go/realm-groups) A match is determined by a realm group
-        membership check performed by a RealmAclRep object (go/realm-acl-
-        howto). It is not permitted to grant access based on the *absence* of
-        a realm, so realm conditions can only be used in a "positive" context
-        (e.g., ALLOW/IN or DENY/NOT_IN).
-      APPROVER: An approver (distinct from the requester) that has authorized
-        this request. When used with IN, the condition indicates that one of
-        the approvers associated with the request matches the specified
-        principal, or is a member of the specified group. Approvers can only
-        grant additional access, and are thus only used in a strictly positive
-        context (e.g. ALLOW/IN or DENY/NOT_IN).
-      JUSTIFICATION_TYPE: What types of justifications have been supplied with
-        this request. String values should match enum names from
-        security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
-        not permitted to grant access based on the *absence* of a
-        justification, so justification conditions can only be used in a
-        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN). Multiple
-        justifications, e.g., a Buganizer ID and a manually-entered reason,
-        are normal and supported.
-      CREDENTIALS_TYPE: What type of credentials have been supplied with this
-        request. String values should match enum names from
-        security_loas_l2.CredentialsType - currently, only
-        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
-        based on the *absence* of a credentials type, so the conditions can
-        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
-      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE. The conditions can only be
-        used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      CODE_UNSPECIFIED: Default Unspecified code
+      MESH_IAM_PERMISSION_DENIED: Mesh IAM permission denied error code
     """
-    NO_ATTR = 0
-    AUTHORITY = 1
-    ATTRIBUTION = 2
-    SECURITY_REALM = 3
-    APPROVER = 4
-    JUSTIFICATION_TYPE = 5
-    CREDENTIALS_TYPE = 6
-    CREDS_ASSERTION = 7
+    CODE_UNSPECIFIED = 0
+    MESH_IAM_PERMISSION_DENIED = 1
 
-  class OpValueValuesEnum(_messages.Enum):
-    r"""An operator to apply the subject with.
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Severity level of the condition.
 
     Values:
-      NO_OP: Default no-op.
-      EQUALS: DEPRECATED. Use IN instead.
-      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
-      IN: The condition is true if the subject (or any element of it if it is
-        a set) matches any of the supplied values.
-      NOT_IN: The condition is true if the subject (or every element of it if
-        it is a set) matches none of the supplied values.
-      DISCHARGED: Subject is discharged
+      SEVERITY_UNSPECIFIED: Unspecified severity
+      ERROR: Indicates an issue that prevents the mesh from operating
+        correctly
+      WARNING: Indicates a setting is likely wrong, but the mesh is still able
+        to operate
+      INFO: An informational message, not requiring any action
     """
-    NO_OP = 0
-    EQUALS = 1
-    NOT_EQUALS = 2
-    IN = 3
-    NOT_IN = 4
-    DISCHARGED = 5
+    SEVERITY_UNSPECIFIED = 0
+    ERROR = 1
+    WARNING = 2
+    INFO = 3
 
-  class SysValueValuesEnum(_messages.Enum):
-    r"""Trusted attributes supplied by any service that owns resources and
-    uses the IAM system for access control.
-
-    Values:
-      NO_ATTR: Default non-attribute type
-      REGION: Region of the resource
-      SERVICE: Service name
-      NAME: Resource name
-      IP: IP address of the caller
-    """
-    NO_ATTR = 0
-    REGION = 1
-    SERVICE = 2
-    NAME = 3
-    IP = 4
-
-  iam = _messages.EnumField('IamValueValuesEnum', 1)
-  op = _messages.EnumField('OpValueValuesEnum', 2)
-  svc = _messages.StringField(3)
-  sys = _messages.EnumField('SysValueValuesEnum', 4)
-  values = _messages.StringField(5, repeated=True)
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  details = _messages.StringField(2)
+  documentationLink = _messages.StringField(3)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
 
 
 class ConfigManagementFeatureSpec(_messages.Message):
@@ -1390,6 +1318,18 @@ class Feature(_messages.Message):
   workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 27)
 
 
+class FeatureError(_messages.Message):
+  r"""All error details of the fleet observability feature.
+
+  Fields:
+    code: The code of the error.
+    description: A human-readable description of the current status.
+  """
+
+  code = _messages.StringField(1)
+  description = _messages.StringField(2)
+
+
 class FeatureState(_messages.Message):
   r"""FeatureState describes the state of a Feature resource.
 
@@ -1647,22 +1587,8 @@ class FleetDefaultMemberConfig(_messages.Message):
   r"""FleetDefaultMemberConfig contains default configuration information for
   memberships of a fleet.
 
-  Messages:
-    OptedOutMembersValue: Contains Memberships which originally had the fleet
-      default member configuration applied but then the user performed an
-      override to remove the configuration for the member. By storing this
-      intent here, controllers are able to distinguish between new Memberships
-      and old ones which were previously overridden. Keys are of the following
-      structure: `projects/{p}/locations/{l}/memberships/{m}`
-
   Fields:
     identityService: Spec for IdentityService.
-    optedOutMembers: Contains Memberships which originally had the fleet
-      default member configuration applied but then the user performed an
-      override to remove the configuration for the member. By storing this
-      intent here, controllers are able to distinguish between new Memberships
-      and old ones which were previously overridden. Keys are of the following
-      structure: `projects/{p}/locations/{l}/memberships/{m}`
     retroactiveApply: If true, then changes to the default membership spec are
       applied to all existing Memberships in addition to any future
       Memberships.
@@ -1675,41 +1601,42 @@ class FleetDefaultMemberConfig(_messages.Message):
       processed.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class OptedOutMembersValue(_messages.Message):
-    r"""Contains Memberships which originally had the fleet default member
-    configuration applied but then the user performed an override to remove
-    the configuration for the member. By storing this intent here, controllers
-    are able to distinguish between new Memberships and old ones which were
-    previously overridden. Keys are of the following structure:
-    `projects/{p}/locations/{l}/memberships/{m}`
-
-    Messages:
-      AdditionalProperty: An additional property for a OptedOutMembersValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type OptedOutMembersValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a OptedOutMembersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A boolean attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.BooleanField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   identityService = _messages.MessageField('MemberConfig', 1)
-  optedOutMembers = _messages.MessageField('OptedOutMembersValue', 2)
-  retroactiveApply = _messages.BooleanField(3)
-  serviceMesh = _messages.MessageField('ServiceMeshMembershipSpec', 4)
-  setTime = _messages.StringField(5)
+  retroactiveApply = _messages.BooleanField(2)
+  serviceMesh = _messages.MessageField('ServiceMeshMembershipSpec', 3)
+  setTime = _messages.StringField(4)
+
+
+class FleetObservabilityBaseFeatureState(_messages.Message):
+  r"""Base state for fleet observability feature.
+
+  Enums:
+    CodeValueValuesEnum: The high-level, machine-readable status of this
+      Feature.
+
+  Fields:
+    code: The high-level, machine-readable status of this Feature.
+    errors: Errors after reconciling the monitoring and logging feature if the
+      code is not OK.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The high-level, machine-readable status of this Feature.
+
+    Values:
+      CODE_UNSPECIFIED: Unknown or not set.
+      OK: The Feature is operating normally.
+      ERROR: The Feature is encountering errors in the reconciliation. The
+        Feature may need intervention to return to normal operation. See the
+        description and any associated Feature-specific details for more
+        information.
+    """
+    CODE_UNSPECIFIED = 0
+    OK = 1
+    ERROR = 2
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  errors = _messages.MessageField('FeatureError', 2, repeated=True)
 
 
 class FleetObservabilityFeatureSpec(_messages.Message):
@@ -1728,8 +1655,36 @@ class FleetObservabilityFeatureSpec(_messages.Message):
 class FleetObservabilityFeatureState(_messages.Message):
   r"""An empty state for FleetObservability feature. This is required since
   FeatureStateDetails requires a state.
+
+  Fields:
+    logging: The feature state of fleet logging.
+    monitoring: The feature state of fleet monitoring.
   """
 
+  logging = _messages.MessageField('FleetObservabilityLoggingState', 1)
+  monitoring = _messages.MessageField('FleetObservabilityMonitoringState', 2)
+
+
+class FleetObservabilityLoggingState(_messages.Message):
+  r"""Feature state for logging feature.
+
+  Fields:
+    defaultLog: The base feature state of fleet default log.
+    scopeLog: The base feature state of fleet scope log.
+  """
+
+  defaultLog = _messages.MessageField('FleetObservabilityBaseFeatureState', 1)
+  scopeLog = _messages.MessageField('FleetObservabilityBaseFeatureState', 2)
+
+
+class FleetObservabilityMonitoringState(_messages.Message):
+  r"""Feature state for monitoring feature.
+
+  Fields:
+    state: The base feature state of fleet monitoring feature.
+  """
+
+  state = _messages.MessageField('FleetObservabilityBaseFeatureState', 1)
 
 
 class FooBar(_messages.Message):
@@ -2085,6 +2040,127 @@ class GoogleConfig(_messages.Message):
   """
 
   disable = _messages.BooleanField(1)
+
+
+class GoogleIamV1Condition(_messages.Message):
+  r"""A condition to be met.
+
+  Enums:
+    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
+    OpValueValuesEnum: An operator to apply the subject with.
+    SysValueValuesEnum: Trusted attributes supplied by any service that owns
+      resources and uses the IAM system for access control.
+
+  Fields:
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    values: The objects of the condition.
+  """
+
+  class IamValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by the IAM system.
+
+    Values:
+      NO_ATTR: Default non-attribute.
+      AUTHORITY: Either principal or (if present) authority selector.
+      ATTRIBUTION: The principal (even if an authority selector is present),
+        which must only be used for attribution, not authorization.
+      SECURITY_REALM: Any of the security realms in the IAMContext
+        (go/security-realms). When used with IN, the condition indicates "any
+        of the request's realms match one of the given values; with NOT_IN,
+        "none of the realms match any of the given values". Note that a value
+        can be: - 'self:campus' (i.e., clients that are in the same campus) -
+        'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-
+        region' (i.e., allow connections from clients that are in the same
+        cloud region) - 'self:prod-region' (i.e., allow connections from
+        clients that are in the same prod region) - 'guardians' (i.e., allow
+        connections from its guardian realms. See go/security-realms-
+        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
+        allow connections from clients that are in the same security realm,
+        which is currently but not guaranteed to be campus-sized) - a realm
+        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
+        see: go/realm-groups) A match is determined by a realm group
+        membership check performed by a RealmAclRep object (go/realm-acl-
+        howto). It is not permitted to grant access based on the *absence* of
+        a realm, so realm conditions can only be used in a "positive" context
+        (e.g., ALLOW/IN or DENY/NOT_IN).
+      APPROVER: An approver (distinct from the requester) that has authorized
+        this request. When used with IN, the condition indicates that one of
+        the approvers associated with the request matches the specified
+        principal, or is a member of the specified group. Approvers can only
+        grant additional access, and are thus only used in a strictly positive
+        context (e.g. ALLOW/IN or DENY/NOT_IN).
+      JUSTIFICATION_TYPE: What types of justifications have been supplied with
+        this request. String values should match enum names from
+        security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
+        not permitted to grant access based on the *absence* of a
+        justification, so justification conditions can only be used in a
+        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN). Multiple
+        justifications, e.g., a Buganizer ID and a manually-entered reason,
+        are normal and supported.
+      CREDENTIALS_TYPE: What type of credentials have been supplied with this
+        request. String values should match enum names from
+        security_loas_l2.CredentialsType - currently, only
+        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
+        based on the *absence* of a credentials type, so the conditions can
+        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE. The conditions can only be
+        used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+    """
+    NO_ATTR = 0
+    AUTHORITY = 1
+    ATTRIBUTION = 2
+    SECURITY_REALM = 3
+    APPROVER = 4
+    JUSTIFICATION_TYPE = 5
+    CREDENTIALS_TYPE = 6
+    CREDS_ASSERTION = 7
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""An operator to apply the subject with.
+
+    Values:
+      NO_OP: Default no-op.
+      EQUALS: DEPRECATED. Use IN instead.
+      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
+      IN: The condition is true if the subject (or any element of it if it is
+        a set) matches any of the supplied values.
+      NOT_IN: The condition is true if the subject (or every element of it if
+        it is a set) matches none of the supplied values.
+      DISCHARGED: Subject is discharged
+    """
+    NO_OP = 0
+    EQUALS = 1
+    NOT_EQUALS = 2
+    IN = 3
+    NOT_IN = 4
+    DISCHARGED = 5
+
+  class SysValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by any service that owns resources and
+    uses the IAM system for access control.
+
+    Values:
+      NO_ATTR: Default non-attribute type
+      REGION: Region of the resource
+      SERVICE: Service name
+      NAME: Resource name
+      IP: IP address of the caller
+    """
+    NO_ATTR = 0
+    REGION = 1
+    SERVICE = 2
+    NAME = 3
+    IP = 4
+
+  iam = _messages.EnumField('IamValueValuesEnum', 1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  svc = _messages.StringField(3)
+  sys = _messages.EnumField('SysValueValuesEnum', 4)
+  values = _messages.StringField(5, repeated=True)
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -3798,7 +3874,7 @@ class Rule(_messages.Message):
     LOG = 5
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
-  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  conditions = _messages.MessageField('GoogleIamV1Condition', 2, repeated=True)
   description = _messages.StringField(3)
   in_ = _messages.StringField(4, repeated=True)
   logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
@@ -3963,6 +4039,7 @@ class ServiceMeshFeatureState(_messages.Message):
   Fields:
     analysisMessages: Output only. Results of running Service Mesh analyzers
       against member clusters, or the entire mesh.
+    conditions: List of condition reporting membership statues
     configApiVersion: The API version (i.e. Istio CRD version) for configuring
       service mesh in this cluster. This version is influenced by the
       `default_channel` field.
@@ -3994,12 +4071,13 @@ class ServiceMeshFeatureState(_messages.Message):
     STABLE = 3
 
   analysisMessages = _messages.MessageField('ServiceMeshAnalysisMessage', 1, repeated=True)
-  configApiVersion = _messages.StringField(2)
-  controlPlaneManagement = _messages.MessageField('ControlPlaneManagement', 3)
-  controlPlaneRevisions = _messages.MessageField('ControlPlaneRevision', 4, repeated=True)
-  dataPlaneManagement = _messages.MessageField('DataPlaneManagement', 5)
-  defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 6)
-  meshConnectivity = _messages.MessageField('MeshConnectivity', 7)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  configApiVersion = _messages.StringField(3)
+  controlPlaneManagement = _messages.MessageField('ControlPlaneManagement', 4)
+  controlPlaneRevisions = _messages.MessageField('ControlPlaneRevision', 5, repeated=True)
+  dataPlaneManagement = _messages.MessageField('DataPlaneManagement', 6)
+  defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 7)
+  meshConnectivity = _messages.MessageField('MeshConnectivity', 8)
 
 
 class ServiceMeshMembershipSpec(_messages.Message):

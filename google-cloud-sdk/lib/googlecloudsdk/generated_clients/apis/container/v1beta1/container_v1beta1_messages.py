@@ -174,17 +174,41 @@ class AdvancedDatapathObservabilityConfig(_messages.Message):
 class AdvancedMachineFeatures(_messages.Message):
   r"""Specifies options for controlling advanced machine features.
 
+  Enums:
+    PerformanceMonitoringUnitValueValuesEnum: Type of Performance Monitoring
+      Unit (PMU) requested on node pool instances. If unset, PMU will not be
+      available to the node
+
   Fields:
     enableNestedVirtualization: Whether or not to enable nested virtualization
       (defaults to false).
+    performanceMonitoringUnit: Type of Performance Monitoring Unit (PMU)
+      requested on node pool instances. If unset, PMU will not be available to
+      the node
     threadsPerCore: The number of threads per physical core. To disable
       simultaneous multithreading (SMT) set this to 1. If unset, the maximum
       number of threads supported per core by the underlying processor is
       assumed.
   """
 
+  class PerformanceMonitoringUnitValueValuesEnum(_messages.Enum):
+    r"""Type of Performance Monitoring Unit (PMU) requested on node pool
+    instances. If unset, PMU will not be available to the node
+
+    Values:
+      PERFORMANCE_MONITORING_UNIT_UNSPECIFIED: PMU not enabled.
+      ARCHITECTURAL: Architecturally defined non-LLC events.
+      STANDARD: Most documented core/L2 events.
+      ENHANCED: Most documented core/L2 and LLC events.
+    """
+    PERFORMANCE_MONITORING_UNIT_UNSPECIFIED = 0
+    ARCHITECTURAL = 1
+    STANDARD = 2
+    ENHANCED = 3
+
   enableNestedVirtualization = _messages.BooleanField(1)
-  threadsPerCore = _messages.IntegerField(2)
+  performanceMonitoringUnit = _messages.EnumField('PerformanceMonitoringUnitValueValuesEnum', 2)
+  threadsPerCore = _messages.IntegerField(3)
 
 
 class AuthenticatorGroupsConfig(_messages.Message):
@@ -397,6 +421,7 @@ class BinaryAuthorization(_messages.Message):
       evaluation. If unspecified, defaults to DISABLED.
 
   Fields:
+    boundPolicies: Binauthz policies that apply to this cluster.
     enabled: This field is deprecated. Leave this unset and instead configure
       BinaryAuthorization using evaluation_mode. If evaluation_mode is set to
       anything other than EVALUATION_MODE_UNSPECIFIED, this field is ignored.
@@ -425,16 +450,24 @@ class BinaryAuthorization(_messages.Message):
         Authorization in monitoring mode with the policy specified in
         binary_authorization.policy and enforce admission with the project's
         singleton policy.
+      BOUND_POLICIES: Use Binary Authorization with the policies specified in
+        bound_policies.
+      BOUND_POLICIES_AND_PROJECT_SINGLETON_POLICY_ENFORCE: Use Binary
+        Authorization with both the policies specified in bound_policies and
+        the project's singleton policy.
     """
     EVALUATION_MODE_UNSPECIFIED = 0
     DISABLED = 1
     PROJECT_SINGLETON_POLICY_ENFORCE = 2
     MONITORING = 3
     MONITORING_AND_PROJECT_SINGLETON_POLICY_ENFORCE = 4
+    BOUND_POLICIES = 5
+    BOUND_POLICIES_AND_PROJECT_SINGLETON_POLICY_ENFORCE = 6
 
-  enabled = _messages.BooleanField(1)
-  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 2)
-  policy = _messages.StringField(3)
+  boundPolicies = _messages.MessageField('Policy', 1, repeated=True)
+  enabled = _messages.BooleanField(2)
+  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 3)
+  policy = _messages.StringField(4)
 
 
 class BlueGreenInfo(_messages.Message):
@@ -1023,29 +1056,13 @@ class ClusterNetworkPerformanceConfig(_messages.Message):
   r"""Configuration of all network bandwidth tiers
 
   Enums:
-    ExternalIpEgressBandwidthTierValueValuesEnum: Specifies the network
-      bandwidth tier for the NodePool for traffic to external/public IP
-      addresses.
     TotalEgressBandwidthTierValueValuesEnum: Specifies the total network
       bandwidth tier for the NodePool.
 
   Fields:
-    externalIpEgressBandwidthTier: Specifies the network bandwidth tier for
-      the NodePool for traffic to external/public IP addresses.
     totalEgressBandwidthTier: Specifies the total network bandwidth tier for
       the NodePool.
   """
-
-  class ExternalIpEgressBandwidthTierValueValuesEnum(_messages.Enum):
-    r"""Specifies the network bandwidth tier for the NodePool for traffic to
-    external/public IP addresses.
-
-    Values:
-      TIER_UNSPECIFIED: Default value
-      TIER_1: Higher bandwidth, actual values based on VM size.
-    """
-    TIER_UNSPECIFIED = 0
-    TIER_1 = 1
 
   class TotalEgressBandwidthTierValueValuesEnum(_messages.Enum):
     r"""Specifies the total network bandwidth tier for the NodePool.
@@ -1057,8 +1074,7 @@ class ClusterNetworkPerformanceConfig(_messages.Message):
     TIER_UNSPECIFIED = 0
     TIER_1 = 1
 
-  externalIpEgressBandwidthTier = _messages.EnumField('ExternalIpEgressBandwidthTierValueValuesEnum', 1)
-  totalEgressBandwidthTier = _messages.EnumField('TotalEgressBandwidthTierValueValuesEnum', 2)
+  totalEgressBandwidthTier = _messages.EnumField('TotalEgressBandwidthTierValueValuesEnum', 1)
 
 
 class ClusterTelemetry(_messages.Message):
@@ -4858,6 +4874,18 @@ class PodSecurityPolicyConfig(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class Policy(_messages.Message):
+  r"""Binauthz policy that applies to this cluster.
+
+  Fields:
+    name: The relative resource name of the binauthz platform policy to audit.
+      GKE platform policies have the following format:
+      `projects/{project_number}/platforms/gke/policies/{policy_id}`.
+  """
+
+  name = _messages.StringField(1)
 
 
 class PrivateClusterConfig(_messages.Message):

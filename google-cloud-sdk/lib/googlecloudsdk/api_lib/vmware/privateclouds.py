@@ -157,6 +157,30 @@ class PrivateCloudsClient(util.VmwareClientBase):
         batch_size_attribute='pageSize',
         field='privateClouds')
 
+  def GetDnsForwarding(self, resource):
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsGetDnsForwardingRequest(
+        name=resource.RelativeName() + '/dnsForwarding')
+    return self.service.GetDnsForwarding(request)
+
+  def UpdateDnsForwarding(self, resource, args_rules):
+    rules = self._ParseRules(args_rules)
+    dns_forwarding = self.messages.DnsForwarding(forwardingRules=rules)
+    update_mask = 'forwardingRules'
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsUpdateDnsForwardingRequest(
+        name=resource.RelativeName() + '/dnsForwarding',
+        dnsForwarding=dns_forwarding,
+        updateMask=update_mask)
+    return self.service.UpdateDnsForwarding(request)
+
+  def _ParseRules(self, args_rules):
+    return [self._ParseRule(rule) for rule in args_rules]
+
+  def _ParseRule(self, rule):
+    return self.messages.ForwardingRule(
+        domain=rule['domain'],
+        nameServers=rule['name-servers']
+    )
+
   def GetNsxCredentials(self, resource):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsShowNsxCredentialsRequest(
         privateCloud=resource.RelativeName())

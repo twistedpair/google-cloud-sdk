@@ -110,6 +110,29 @@ class AnthospolicycontrollerstatusPaProjectsMembershipConstraintAuditViolationsL
   parent = _messages.StringField(3, required=True)
 
 
+class AnthospolicycontrollerstatusPaProjectsMembershipConstraintAuditViolationsProducerListRequest(_messages.Message):
+  r"""A AnthospolicycontrollerstatusPaProjectsMembershipConstraintAuditViolati
+  onsProducerListRequest object.
+
+  Fields:
+    pageSize: The maximum number of membership constraint audit violations to
+      return. The service may return fewer than this value. If unspecified or
+      0, defaults to 500 results. The maximum value is 2000; values above 2000
+      will be coerced to 2000.
+    pageToken: A page token, received from a previous
+      ListMembershipConstraintAuditViolationsProducer call. Provide this to
+      retrieve the subsequent page. When paginating, all other parameters
+      provided to ListMembershipConstraintAuditViolationsProducer must match
+      the call that provided the page token.
+    parent: Required. The project id for which to fetch membership constraint
+      audit violations. Format: projects/{project_id}.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class AnthospolicycontrollerstatusPaProjectsMembershipConstraintTemplatesGetRequest(_messages.Message):
   r"""A AnthospolicycontrollerstatusPaProjectsMembershipConstraintTemplatesGet
   Request object.
@@ -173,6 +196,29 @@ class AnthospolicycontrollerstatusPaProjectsMembershipConstraintsListRequest(_me
       page. When paginating, all other parameters provided to
       ListMembershipConstraints must match the call that provided the page
       token.
+    parent: Required. The project id for which to fetch membership
+      constraints. Format: projects/{project_id}.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AnthospolicycontrollerstatusPaProjectsMembershipConstraintsProducerListRequest(_messages.Message):
+  r"""A AnthospolicycontrollerstatusPaProjectsMembershipConstraintsProducerLis
+  tRequest object.
+
+  Fields:
+    pageSize: The maximum number of membership constraints to return. The
+      service may return fewer than this value. If unspecified or 0, defaults
+      to 500 results. The maximum value is 2000; values above 2000 will be
+      coerced to 2000.
+    pageToken: A page token, received from a previous
+      ListMembershipConstraintsProducer call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      ListMembershipConstraintsProducer must match the call that provided the
+      page token.
     parent: Required. The project id for which to fetch membership
       constraints. Format: projects/{project_id}.
   """
@@ -380,6 +426,23 @@ class ListFleetConstraintsResponse(_messages.Message):
   totalSize = _messages.IntegerField(3)
 
 
+class ListMembershipConstraintAuditViolationsProducerResponse(_messages.Message):
+  r"""Response schema for ListMembershipConstraintAuditViolationsProducer.
+
+  Fields:
+    membershipConstraintAuditViolations: List of the membership-level
+      constraint audit violation info.
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    totalSize: The number of membership constraint audit violations in the
+      response.
+  """
+
+  membershipConstraintAuditViolations = _messages.MessageField('MembershipConstraintAuditViolation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  totalSize = _messages.IntegerField(3)
+
+
 class ListMembershipConstraintAuditViolationsResponse(_messages.Message):
   r"""Response schema for ListMembershipConstraintAuditViolations.
 
@@ -409,6 +472,21 @@ class ListMembershipConstraintTemplatesResponse(_messages.Message):
   """
 
   membershipConstraintTemplates = _messages.MessageField('MembershipConstraintTemplate', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  totalSize = _messages.IntegerField(3)
+
+
+class ListMembershipConstraintsProducerResponse(_messages.Message):
+  r"""Response schema for ListMembershipConstraintsProducer.
+
+  Fields:
+    membershipConstraints: List of membership-level constraint info.
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    totalSize: The number of membership constraints in the response.
+  """
+
+  membershipConstraints = _messages.MessageField('MembershipConstraint', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   totalSize = _messages.IntegerField(3)
 

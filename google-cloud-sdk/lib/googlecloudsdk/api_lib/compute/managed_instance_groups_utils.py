@@ -1665,15 +1665,13 @@ def ListPerInstanceConfigs(client, igm_ref):
   return results[0].items
 
 
-def IsStateful(client, igm_info, igm_ref):
+def IsStateful(igm_info):
   """For a given IGM, returns if it is stateful."""
-  # TODO(b/129752312): use igm.is_stateful field when launched
-  pics = ListPerInstanceConfigs(client, igm_ref)
-  has_policy = (
-      hasattr(igm_info, 'statefulPolicy') and
-      igm_info.statefulPolicy is not None)
-
-  return has_policy or pics
+  return (
+      hasattr(igm_info.status, 'stateful')
+      and hasattr(igm_info.status.stateful, 'hasStatefulConfig')
+      and igm_info.status.stateful.hasStatefulConfig
+  )
 
 
 def ValidateIgmReadyForStatefulness(igm_resource, client):

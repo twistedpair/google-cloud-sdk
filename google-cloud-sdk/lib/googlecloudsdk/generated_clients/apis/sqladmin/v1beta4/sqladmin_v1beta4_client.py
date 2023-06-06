@@ -509,7 +509,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
         method_id='sql.instances.delete',
         ordered_params=['project', 'instance'],
         path_params=['instance', 'project'],
-        query_params=[],
+        query_params=['finalBackupDescription', 'finalBackupRetentionDays', 'skipFinalBackup'],
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}',
         request_field='',
         request_type_name='SqlInstancesDeleteRequest',
@@ -955,6 +955,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}/stopReplica',
         request_field='',
         request_type_name='SqlInstancesStopReplicaRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Switchover(self, request, global_params=None):
+      r"""Switches over from the primary instance to a replica instance.
+
+      Args:
+        request: (SqlInstancesSwitchoverRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Switchover')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Switchover.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.instances.switchover',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/switchover',
+        request_field='',
+        request_type_name='SqlInstancesSwitchoverRequest',
         response_type_name='Operation',
         supports_download=False,
     )

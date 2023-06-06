@@ -5345,14 +5345,14 @@ def AddEnableFqdnNetworkPolicyFlag(parser):
     parser: A given parser.
   """
   help_text = """\
-  Enables FQDN Network Policies on the cluster. FQDN Network Policies are disabled by default.
+  Enable FQDN Network Policies on the cluster. FQDN Network Policies are disabled by default.
   """
   parser.add_argument(
       '--enable-fqdn-network-policy',
       action='store_true',
       default=None,
       help=help_text,
-      hidden=True)
+      hidden=False)
 
 
 def AddSoleTenantNodeAffinityFileFlag(parser, hidden=False):

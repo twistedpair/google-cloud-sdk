@@ -91,8 +91,7 @@ def CreateRequest(args,
         args.replacement_method, client.messages)
     update_policy.replacementMethod = replacement_method
 
-  ValidateAndFixUpdaterAgainstStateful(update_policy, igm_ref, igm_info, client,
-                                       args)
+  ValidateAndFixUpdaterAgainstStateful(update_policy, igm_info, client, args)
 
   igm_resource = client.messages.InstanceGroupManager(
       instanceTemplate=None, updatePolicy=update_policy, versions=versions)
@@ -113,8 +112,7 @@ def CreateRequest(args,
   return (service, 'Patch', request)
 
 
-def ValidateAndFixUpdaterAgainstStateful(update_policy, igm_ref, igm_info,
-                                         client, args):
+def ValidateAndFixUpdaterAgainstStateful(update_policy, igm_info, client, args):
   """Validates and fixes update policy for patching stateful IGM.
 
   Updating stateful IGMs requires maxSurge=0 and replacementMethod=RECREATE.
@@ -123,12 +121,11 @@ def ValidateAndFixUpdaterAgainstStateful(update_policy, igm_ref, igm_info,
 
   Args:
     update_policy: Update policy to be validated
-    igm_ref: Reference of IGM being validated
     igm_info: Full resource of IGM being validated
     client: The compute API client
     args: argparse namespace used to select used version
   """
-  if not managed_instance_groups_utils.IsStateful(client, igm_info, igm_ref):
+  if not managed_instance_groups_utils.IsStateful(igm_info):
     return
   if hasattr(args, 'replacement_method'):
     recreate = (

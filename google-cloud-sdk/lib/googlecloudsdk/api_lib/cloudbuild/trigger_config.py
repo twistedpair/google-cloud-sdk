@@ -316,27 +316,33 @@ COMMIT_SHA, SHORT_SHA.
 
 For more details, see:
 https://cloud.google.com/build/docs/build-config-file-schema#substitutions
-""")
+""",
+  )
 
   argument_group.add_argument(
       '--clear-substitutions',
       action='store_true',
-      help='Clear existing substitutions.')
+      help='Clear existing substitutions.',
+  )
 
   argument_group.add_argument(
       '--remove-substitutions',
       metavar='KEY',
       type=arg_parsers.ArgList(),
-      help='Remove existing substitutions if present.')
+      help='Remove existing substitutions if present.',
+  )
 
 
-def AddBuildConfigArgs(flag_config, add_docker_args=True):
+def AddBuildConfigArgs(
+    flag_config, add_docker_args=True, require_docker_image=False
+):
   """Adds additional argparse flags to a group for build configuration options.
 
   Args:
     flag_config: argparse argument group. Additional flags will be added to this
       group to cover common build configuration settings.
     add_docker_args: If true, docker args are added automatically.
+    require_docker_image: If true, --dockerfile-image must be provided.
   Returns:
     build_config: a build config.
   """
@@ -365,7 +371,7 @@ For more details, see: https://cloud.google.com/cloud-build/docs/build-config
     """)
 
   if add_docker_args:
-    AddBuildDockerArgs(build_config)
+    AddBuildDockerArgs(build_config, require_docker_image=require_docker_image)
   return build_config
 
 

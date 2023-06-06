@@ -1832,11 +1832,13 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource(_me
       INFO_DENIED: The caller doesn't have permission to resolve this resource
       COMPLETED: The resource has been fully resolved
       NOT_APPLICABLE: The resource cannot be restricted by service perimeters
+      ERROR: The resource cannot be resolved due to an error.
     """
     RESOLVED_STATE_UNSPECIFIED = 0
     INFO_DENIED = 1
     COMPLETED = 2
     NOT_APPLICABLE = 3
+    ERROR = 4
 
   bridgeServicePerimeters = _messages.StringField(1, repeated=True)
   dryrunBridgeServicePerimeters = _messages.StringField(2, repeated=True)

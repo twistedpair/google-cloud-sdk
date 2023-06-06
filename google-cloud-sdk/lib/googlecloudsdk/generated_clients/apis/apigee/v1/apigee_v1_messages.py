@@ -202,8 +202,7 @@ class ApigeeOrganizationsApiproductsListRequest(_messages.Message):
     expand: Flag that specifies whether to expand the results. Set to `true`
       to get expanded details about each API.
     filter: The filter expression to be used to get the list of API products,
-      where filtering can be done on name and createdAt. Example: filter =
-      "name = foobar"
+      where filtering can be done on name. Example: filter = "name = foobar"
     pageSize: Count of API products a single page can have in the response. If
       unspecified, at most 100 API products will be returned. The maximum
       value is 100; values above 100 will be coerced to 100.
@@ -2890,7 +2889,8 @@ class ApigeeOrganizationsEnvironmentsSecurityActionsCreateRequest(_messages.Mess
       organizations/{org}/environments/{env}
     securityActionId: Required. The ID to use for the SecurityAction, which
       will become the final component of the action's resource name. This
-      value should be 4-63 characters, and valid characters are /a-z-/.
+      value should be 0-61 characters, and valid format is
+      (^[a-z]([a-z0-9-]{\u200b0,61}[a-z0-9])?$).
   """
 
   googleCloudApigeeV1SecurityAction = _messages.MessageField('GoogleCloudApigeeV1SecurityAction', 1)
@@ -4289,6 +4289,35 @@ class ApigeeOrganizationsReportsListRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class ApigeeOrganizationsSecurityProfilesCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityProfile: A GoogleCloudApigeeV1SecurityProfile
+      resource to be passed as the request body.
+    parent: Required. Name of organization. Format: organizations/{org}
+    securityProfileId: Required. The ID to use for the SecurityProfile, which
+      will become the final component of the action's resource name. This
+      value should be 4-63 characters, and valid characters are
+      /(^[a-z]([a-z0-9-]{\u200b0,61}[a-z0-9])?$/.
+  """
+
+  googleCloudApigeeV1SecurityProfile = _messages.MessageField('GoogleCloudApigeeV1SecurityProfile', 1)
+  parent = _messages.StringField(2, required=True)
+  securityProfileId = _messages.StringField(3)
+
+
+class ApigeeOrganizationsSecurityProfilesDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesDeleteRequest object.
+
+  Fields:
+    name: Required. Name of profile. Format:
+      organizations/{org}/securityProfiles/{profile}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsSecurityProfilesEnvironmentsComputeEnvironmentScoresRequest(_messages.Message):
   r"""A ApigeeOrganizationsSecurityProfilesEnvironmentsComputeEnvironmentScore
   sRequest object.
@@ -4381,6 +4410,22 @@ class ApigeeOrganizationsSecurityProfilesListRevisionsRequest(_messages.Message)
   name = _messages.StringField(1, required=True)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
+
+
+class ApigeeOrganizationsSecurityProfilesPatchRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesPatchRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityProfile: A GoogleCloudApigeeV1SecurityProfile
+      resource to be passed as the request body.
+    name: Immutable. Name of the security profile resource. Format:
+      organizations/{org}/securityProfiles/{profile}
+    updateMask: Required. The list of fields to update.
+  """
+
+  googleCloudApigeeV1SecurityProfile = _messages.MessageField('GoogleCloudApigeeV1SecurityProfile', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ApigeeOrganizationsSecurityincidentenvironmentsListRequest(_messages.Message):
@@ -8830,11 +8875,11 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
 
   Fields:
     addonsConfig: Addon configurations of the Apigee organization.
-    analyticsRegion: Required. DEPRECATED: This field will be deprecated once
-      Apigee supports DRZ. Primary Google Cloud region for analytics data
-      storage. For valid values, see [Create an Apigee
-      organization](https://cloud.google.com/apigee/docs/api-platform/get-
-      started/create-org).
+    analyticsRegion: Required. DEPRECATED: This field will eventually be
+      deprecated and replaced with a differently-named field. Primary Google
+      Cloud region for analytics data storage. For valid values, see [Create
+      an Apigee organization](https://cloud.google.com/apigee/docs/api-
+      platform/get-started/create-org).
     apiConsumerDataEncryptionKeyName: Cloud KMS key name used for encrypting
       API consumer data. Required for US/EU regions when
       [BillingType](#BillingType) is `SUBSCRIPTION`. When
@@ -9122,6 +9167,77 @@ class GoogleCloudApigeeV1Point(_messages.Message):
 
   id = _messages.StringField(1)
   results = _messages.MessageField('GoogleCloudApigeeV1Result', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1ProfileConfig(_messages.Message):
+  r"""ProfileConfig defines a set of categories and policies which will be
+  used to compute security score.
+
+  Fields:
+    categories: List of categories of profile config.
+  """
+
+  categories = _messages.MessageField('GoogleCloudApigeeV1ProfileConfigCategory', 1, repeated=True)
+
+
+class GoogleCloudApigeeV1ProfileConfigAbuse(_messages.Message):
+  r"""Checks for abuse, which includes any requests sent to the API for
+  purposes other than what it is intended for, such as high volumes of
+  requests, data scraping, and abuse related to authorization.
+  """
+
+
+
+class GoogleCloudApigeeV1ProfileConfigAuthorization(_messages.Message):
+  r"""By default, following policies will be included: - JWS - JWT - OAuth -
+  BasicAuth - APIKey
+  """
+
+
+
+class GoogleCloudApigeeV1ProfileConfigCORS(_messages.Message):
+  r"""Checks to see if you have CORS policy in place."""
+
+
+class GoogleCloudApigeeV1ProfileConfigCategory(_messages.Message):
+  r"""Advanced API Security provides security profile that scores the
+  following categories.
+
+  Fields:
+    abuse: Checks for abuse, which includes any requests sent to the API for
+      purposes other than what it is intended for, such as high volumes of
+      requests, data scraping, and abuse related to authorization.
+    authorization: Checks to see if you have an authorization policy in place.
+    cors: Checks to see if you have CORS policy in place.
+    mediation: Checks to see if you have a mediation policy in place.
+    mtls: Checks to see if you have configured mTLS for the target server.
+    threat: Checks to see if you have a threat protection policy in place.
+  """
+
+  abuse = _messages.MessageField('GoogleCloudApigeeV1ProfileConfigAbuse', 1)
+  authorization = _messages.MessageField('GoogleCloudApigeeV1ProfileConfigAuthorization', 2)
+  cors = _messages.MessageField('GoogleCloudApigeeV1ProfileConfigCORS', 3)
+  mediation = _messages.MessageField('GoogleCloudApigeeV1ProfileConfigMediation', 4)
+  mtls = _messages.MessageField('GoogleCloudApigeeV1ProfileConfigMTLS', 5)
+  threat = _messages.MessageField('GoogleCloudApigeeV1ProfileConfigThreat', 6)
+
+
+class GoogleCloudApigeeV1ProfileConfigMTLS(_messages.Message):
+  r"""Checks to see if you have configured mTLS for the target server."""
+
+
+class GoogleCloudApigeeV1ProfileConfigMediation(_messages.Message):
+  r"""By default, following policies will be included: - OASValidation -
+  SOAPMessageValidation
+  """
+
+
+
+class GoogleCloudApigeeV1ProfileConfigThreat(_messages.Message):
+  r"""By default, following policies will be included: - XMLThreatProtection -
+  JSONThreatProtection
+  """
+
 
 
 class GoogleCloudApigeeV1Properties(_messages.Message):
@@ -10428,6 +10544,7 @@ class GoogleCloudApigeeV1SecurityProfile(_messages.Message):
   r"""Represents a SecurityProfile resource.
 
   Fields:
+    description: Description of the security profile.
     displayName: Display name of the security profile.
     environments: List of environments attached to security profile.
     maxScore: Output only. Maximum security score that can be generated by
@@ -10436,6 +10553,8 @@ class GoogleCloudApigeeV1SecurityProfile(_messages.Message):
       this profile.
     name: Immutable. Name of the security profile resource. Format:
       organizations/{org}/securityProfiles/{profile}
+    profileConfig: Customized profile configuration that computes the security
+      score.
     revisionCreateTime: Output only. The time when revision was created.
     revisionId: Output only. Revision ID of the security profile.
     revisionPublishTime: Output only. The time when revision was published.
@@ -10445,16 +10564,18 @@ class GoogleCloudApigeeV1SecurityProfile(_messages.Message):
     scoringConfigs: List of profile scoring configs in this revision.
   """
 
-  displayName = _messages.StringField(1)
-  environments = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileEnvironment', 2, repeated=True)
-  maxScore = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minScore = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  name = _messages.StringField(5)
-  revisionCreateTime = _messages.StringField(6)
-  revisionId = _messages.IntegerField(7)
-  revisionPublishTime = _messages.StringField(8)
-  revisionUpdateTime = _messages.StringField(9)
-  scoringConfigs = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileScoringConfig', 10, repeated=True)
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  environments = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileEnvironment', 3, repeated=True)
+  maxScore = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  minScore = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  name = _messages.StringField(6)
+  profileConfig = _messages.MessageField('GoogleCloudApigeeV1ProfileConfig', 7)
+  revisionCreateTime = _messages.StringField(8)
+  revisionId = _messages.IntegerField(9)
+  revisionPublishTime = _messages.StringField(10)
+  revisionUpdateTime = _messages.StringField(11)
+  scoringConfigs = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileScoringConfig', 12, repeated=True)
 
 
 class GoogleCloudApigeeV1SecurityProfileEnvironment(_messages.Message):

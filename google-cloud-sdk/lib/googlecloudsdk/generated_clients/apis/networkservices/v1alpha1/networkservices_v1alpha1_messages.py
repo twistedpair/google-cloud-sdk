@@ -6355,6 +6355,8 @@ class ServiceLbPolicy(_messages.Message):
     Values:
       LOAD_BALANCING_ALGORITHM_UNSPECIFIED: The type of the loadbalancing
         algorithm is unspecified.
+      SPRAY_TO_WORLD: Balance traffic across all backends across the world
+        proportionally based on capacity.
       SPRAY_TO_REGION: Direct traffic to the nearest region with endpoints and
         capacity before spilling over to other regions and spread the traffic
         from each client to all the MIGs/NEGs in a region.
@@ -6366,9 +6368,10 @@ class ServiceLbPolicy(_messages.Message):
         the client, before spilling over to other zones.
     """
     LOAD_BALANCING_ALGORITHM_UNSPECIFIED = 0
-    SPRAY_TO_REGION = 1
-    WATERFALL_BY_REGION = 2
-    WATERFALL_BY_ZONE = 3
+    SPRAY_TO_WORLD = 1
+    SPRAY_TO_REGION = 2
+    WATERFALL_BY_REGION = 3
+    WATERFALL_BY_ZONE = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

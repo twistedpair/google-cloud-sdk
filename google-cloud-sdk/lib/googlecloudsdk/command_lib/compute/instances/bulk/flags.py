@@ -131,7 +131,10 @@ def AddDistributionTargetShapeArgs(parser):
 
 
 def AddBulkCreateArgs(
-    parser, add_zone_region_flags, support_max_count_per_zone
+    parser,
+    add_zone_region_flags,
+    support_max_count_per_zone,
+    support_custom_hostnames,
 ):
   """Adds bulk creation specific arguments to parser."""
   parser.add_argument(
@@ -237,6 +240,19 @@ def AddBulkCreateArgs(
               --max-count-per-zone=us-east1-b=2,us-east-1-c=1
         """,
     )
+  if support_custom_hostnames:
+    parser.add_argument(
+        '--per-instance-hostnames',
+        metavar='INSTANCE_NAME=INSTANCE_HOSTNAME',
+        type=arg_parsers.ArgDict(key_type=str, value_type=str),
+        help="""
+          Specify the hostname of the instance to be created. The specified
+          hostname must be RFC1035 compliant. If hostname is not specified, the
+          default hostname is [INSTANCE_NAME].c.[PROJECT_ID].internal when using
+          the global DNS, and [INSTANCE_NAME].[ZONE].c.[PROJECT_ID].internal
+          when using zonal DNS.
+        """,
+    )
 
 
 def AddBulkCreateNetworkingArgs(
@@ -330,6 +346,7 @@ def AddCommonBulkInsertArgs(
     support_max_count_per_zone=False,
     support_network_queue_count=False,
     support_performance_monitoring_unit=False,
+    support_custom_hostnames=False,
 ):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
@@ -429,10 +446,16 @@ def AddCommonBulkInsertArgs(
   instances_flags.AddStackTypeArgs(parser)
   instances_flags.AddMinCpuPlatformArgs(parser, release_track)
   instances_flags.AddPublicDnsArgs(parser, instance=True)
-  instances_flags.AddConfidentialComputeArgs(parser,
-                                             support_confidential_compute_type)
+  instances_flags.AddConfidentialComputeArgs(
+      parser, support_confidential_compute_type
+  )
   instances_flags.AddPostKeyRevocationActionTypeArgs(parser)
-  AddBulkCreateArgs(parser, add_zone_region_flags, support_max_count_per_zone)
+  AddBulkCreateArgs(
+      parser,
+      add_zone_region_flags,
+      support_max_count_per_zone,
+      support_custom_hostnames,
+  )
 
   if support_performance_monitoring_unit:
     instances_flags.AddPerformanceMonitoringUnitArgs(parser)
@@ -481,7 +504,7 @@ def ValidateLocationPolicyArgs(args):
 
 
 def ValidateMaxCountPerZoneArgs(args):
-  """Validates args supplied to --max-count-per-zone ."""
+  """Validates args supplied to --max-count-per-zone."""
   if args.IsKnownAndSpecified('max_count_per_zone'):
     for zone, count in args.max_count_per_zone.items():
       if not ValidateZone(zone):
@@ -492,6 +515,24 @@ def ValidateMaxCountPerZoneArgs(args):
         raise exceptions.InvalidArgumentException(
             '--max-count-per-zone',
             'Value [{}] must be a positive natural number.'.format(count),
+        )
+
+
+def ValidateCustomHostnames(args):
+  """Validates args supplied to --per-instance-hostnames."""
+  if args.IsKnownAndSpecified('per_instance_hostnames'):
+    if not args.IsKnownAndSpecified('predefined_names'):
+      raise exceptions.RequiredArgumentException(
+          '--per-instance-hostnames',
+          """The `--per-instance-hostnames` argument must be used alongside the `--predefined-names` argument.""",
+      )
+    for instance_name, _ in args.per_instance_hostnames.items():
+      if instance_name not in args.predefined_names:
+        raise exceptions.InvalidArgumentException(
+            '--per-instance-hostnames',
+            'Instance [{}] missing in predefined_names. Instance names from'
+            ' --per-instance-hostnames must be included in --predefined-names'
+            ' flag.'.format(instance_name),
         )
 
 
@@ -514,6 +555,7 @@ def ValidateBulkInsertArgs(
     support_image_csek,
     support_max_run_duration,
     support_max_count_per_zone,
+    support_custom_hostnames,
 ):
   """Validates all bulk and instance args."""
   ValidateBulkCreateArgs(args)
@@ -522,6 +564,8 @@ def ValidateBulkInsertArgs(
   ValidateLocationPolicyArgs(args)
   if support_max_count_per_zone:
     ValidateMaxCountPerZoneArgs(args)
+  if support_custom_hostnames:
+    ValidateCustomHostnames(args)
   ValidateBulkDiskFlags(
       args,
       enable_source_snapshot_csek=support_source_snapshot_csek,

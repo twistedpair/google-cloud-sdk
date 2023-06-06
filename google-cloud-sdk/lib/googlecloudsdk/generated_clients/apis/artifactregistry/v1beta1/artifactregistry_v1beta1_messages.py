@@ -261,7 +261,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest(_mess
       10,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
-    parent: The name of the parent resource whose tags will be listed.
+    parent: The name of the parent package whose tags will be listed. Example:
+      "projects/p1/locations/us-central1/repositories/repo1/packages/pkg1
   """
 
   filter = _messages.StringField(1)
@@ -855,8 +856,8 @@ class Package(_messages.Message):
   Fields:
     createTime: The time when the package was created.
     displayName: The display name of the package.
-    name: The name of the package, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1". If the package ID part
+    name: The name of the package, for example: `projects/p1/locations/us-
+      central1/repositories/repo1/packages/pkg1`. If the package ID part
       contains slashes, the slashes are escaped.
     updateTime: The time when the package was last updated. This includes
       publishing a new version of the package.

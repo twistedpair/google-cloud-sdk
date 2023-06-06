@@ -390,11 +390,6 @@ class BackendService(IapIamResource):
     return self._SetBackendServiceIap(False)
 
 
-BOTH_OAUTH_FLAGS_REQUIRED_MESSAGE = (
-    'Both `--oauth2-client-id` and `--oauth2-client-secret` must be '
-    'specified to enable Identity-Aware Proxy.')
-
-
 def _MakeIAPKwargs(is_backend_service, existing_iap_settings, enabled,
                    oauth2_client_id, oauth2_client_secret):
   """Make IAP kwargs for IAP settings.
@@ -411,18 +406,6 @@ def _MakeIAPKwargs(is_backend_service, existing_iap_settings, enabled,
   Returns:
     IAP kwargs for appengine IdentityAwareProxy or compute BackendServiceIAP
   """
-  has_new_oauth_settings = oauth2_client_id and oauth2_client_secret
-  has_existing_oauth_settings = (existing_iap_settings and
-                                 existing_iap_settings.oauth2ClientId and
-                                 existing_iap_settings.oauth2ClientSecret)
-
-  if enabled and not (has_new_oauth_settings or has_existing_oauth_settings):
-    if not oauth2_client_id:
-      raise calliope_exceptions.RequiredArgumentException(
-          '--oauth2-client-id', BOTH_OAUTH_FLAGS_REQUIRED_MESSAGE)
-    if not oauth2_client_secret:
-      raise calliope_exceptions.RequiredArgumentException(
-          '--oauth2-client-secret', BOTH_OAUTH_FLAGS_REQUIRED_MESSAGE)
 
   if (is_backend_service and enabled and
       not (existing_iap_settings and existing_iap_settings.enabled)):

@@ -1230,6 +1230,9 @@ class Operation(_messages.Message):
         INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
           backend service is associated with a health check that is not of
           type HTTP/HTTPS/HTTP2.
+        LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
+          overhead quota exceed which captures the amount of resources
+          filtered out by user-defined list filter.
       """
       DEPRECATED_RESOURCE_USED = 0
       NO_RESULTS_ON_PAGE = 1
@@ -1258,6 +1261,7 @@ class Operation(_messages.Message):
       LARGE_DEPLOYMENT_WARNING = 24
       NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 25
       INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 26
+      LIST_OVERHEAD_QUOTA_EXCEED = 27
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1507,6 +1511,9 @@ class Resource(_messages.Message):
         INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
           backend service is associated with a health check that is not of
           type HTTP/HTTPS/HTTP2.
+        LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
+          overhead quota exceed which captures the amount of resources
+          filtered out by user-defined list filter.
       """
       DEPRECATED_RESOURCE_USED = 0
       NO_RESULTS_ON_PAGE = 1
@@ -1535,6 +1542,7 @@ class Resource(_messages.Message):
       LARGE_DEPLOYMENT_WARNING = 24
       NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 25
       INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 26
+      LIST_OVERHEAD_QUOTA_EXCEED = 27
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1756,6 +1764,9 @@ class ResourceUpdate(_messages.Message):
         INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
           backend service is associated with a health check that is not of
           type HTTP/HTTPS/HTTP2.
+        LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
+          overhead quota exceed which captures the amount of resources
+          filtered out by user-defined list filter.
       """
       DEPRECATED_RESOURCE_USED = 0
       NO_RESULTS_ON_PAGE = 1
@@ -1784,6 +1795,7 @@ class ResourceUpdate(_messages.Message):
       LARGE_DEPLOYMENT_WARNING = 24
       NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 25
       INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 26
+      LIST_OVERHEAD_QUOTA_EXCEED = 27
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.

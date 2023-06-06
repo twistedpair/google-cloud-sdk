@@ -73,6 +73,26 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  BILLINGACCOUNTS_ORDERS_ORDERATTRIBUTIONS = (
+      'billingAccounts.orders.orderAttributions',
+      'billingAccounts/{billingAccountsId}/orders/{ordersId}/'
+      'orderAttributions/{orderAttributionsId}',
+      {},
+      ['billingAccountsId', 'ordersId', 'orderAttributionsId'],
+      True
+  )
+  BILLINGACCOUNTS_ORDERS_ORDERATTRIBUTIONS_OPERATIONS = (
+      'billingAccounts.orders.orderAttributions.operations',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/orders/{ordersId}/'
+              'orderAttributions/{orderAttributionsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

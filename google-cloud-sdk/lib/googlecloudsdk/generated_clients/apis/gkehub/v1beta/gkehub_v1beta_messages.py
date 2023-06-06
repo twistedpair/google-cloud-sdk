@@ -2191,6 +2191,18 @@ class FleetLifecycleState(_messages.Message):
   code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
+class FleetObservabilityFeatureError(_messages.Message):
+  r"""All error details of the fleet observability feature.
+
+  Fields:
+    code: The code of the error.
+    description: A human-readable description of the current status.
+  """
+
+  code = _messages.StringField(1)
+  description = _messages.StringField(2)
+
+
 class FleetObservabilityFeatureSpec(_messages.Message):
   r"""**Fleet Observability**: The Hub-wide input for the FleetObservability
   feature.
@@ -2205,10 +2217,70 @@ class FleetObservabilityFeatureSpec(_messages.Message):
 
 
 class FleetObservabilityFeatureState(_messages.Message):
-  r"""**FleetObservability**: An empty state left as an example Hub-wide
-  Feature state.
+  r"""**FleetObservability**: Hub-wide Feature for FleetObservability feature.
+  state.
+
+  Fields:
+    logging: The feature state of default logging.
+    monitoring: The feature state of fleet monitoring.
   """
 
+  logging = _messages.MessageField('FleetObservabilityFleetObservabilityLoggingState', 1)
+  monitoring = _messages.MessageField('FleetObservabilityFleetObservabilityMonitoringState', 2)
+
+
+class FleetObservabilityFleetObservabilityBaseFeatureState(_messages.Message):
+  r"""Base state for fleet observability feature.
+
+  Enums:
+    CodeValueValuesEnum: The high-level, machine-readable status of this
+      Feature.
+
+  Fields:
+    code: The high-level, machine-readable status of this Feature.
+    errors: Errors after reconciling the monitoring and logging feature if the
+      code is not OK.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The high-level, machine-readable status of this Feature.
+
+    Values:
+      CODE_UNSPECIFIED: Unknown or not set.
+      OK: The Feature is operating normally.
+      ERROR: The Feature is encountering errors in the reconciliation. The
+        Feature may need intervention to return to normal operation. See the
+        description and any associated Feature-specific details for more
+        information.
+    """
+    CODE_UNSPECIFIED = 0
+    OK = 1
+    ERROR = 2
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  errors = _messages.MessageField('FleetObservabilityFeatureError', 2, repeated=True)
+
+
+class FleetObservabilityFleetObservabilityLoggingState(_messages.Message):
+  r"""Feature state for logging feature.
+
+  Fields:
+    defaultLog: The base feature state of fleet default log.
+    scopeLog: The base feature state of fleet scope log.
+  """
+
+  defaultLog = _messages.MessageField('FleetObservabilityFleetObservabilityBaseFeatureState', 1)
+  scopeLog = _messages.MessageField('FleetObservabilityFleetObservabilityBaseFeatureState', 2)
+
+
+class FleetObservabilityFleetObservabilityMonitoringState(_messages.Message):
+  r"""Feature state for monitoring feature.
+
+  Fields:
+    state: The base feature state of fleet monitoring feature.
+  """
+
+  state = _messages.MessageField('FleetObservabilityFleetObservabilityBaseFeatureState', 1)
 
 
 class FleetObservabilityLoggingConfig(_messages.Message):
@@ -2233,8 +2305,8 @@ class FleetObservabilityMembershipSpec(_messages.Message):
 
 
 class FleetObservabilityMembershipState(_messages.Message):
-  r"""**FleetObservability**: An empty state left as an example membership-
-  specific Feature state.
+  r"""**FleetObservability**: Membership-specific Feature state for
+  fleetobservability.
   """
 
 
@@ -3389,6 +3461,88 @@ class GkehubProjectsLocationsScopesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class GkehubProjectsLocationsScopesRbacrolebindingsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesRbacrolebindingsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent (project and location) where the
+      RBACRoleBinding will be created. Specified in the format
+      `projects/*/locations/*/scopes/*`.
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    rbacrolebindingId: Required. Client chosen ID for the RBACRoleBinding.
+      `rbacrolebinding_id` must be a valid RFC 1123 compliant DNS label: 1. At
+      most 63 characters in length 2. It must consist of lower case
+      alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  rbacrolebindingId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsScopesRbacrolebindingsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesRbacrolebindingsDeleteRequest object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/scopes/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesRbacrolebindingsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesRbacrolebindingsGetRequest object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/scopes/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesRbacrolebindingsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesRbacrolebindingsListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to
+      `ListScopeRBACRoleBindings` which specifies the position in the list
+      from where to continue listing the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format
+      `projects/*/locations/*/scopes/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsScopesRbacrolebindingsPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesRbacrolebindingsPatchRequest object.
+
+  Fields:
+    name: The resource name for the rbacrolebinding `projects/{project}/locati
+      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
+      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
+      bacrolebindings/{rbacrolebinding}`
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  updateMask = _messages.StringField(3)
+
+
 class GkehubProjectsLocationsScopesSetIamPolicyRequest(_messages.Message):
   r"""A GkehubProjectsLocationsScopesSetIamPolicyRequest object.
 
@@ -4014,6 +4168,20 @@ class ListScopeNamespacesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   scopeNamespaces = _messages.MessageField('Namespace', 2, repeated=True)
+
+
+class ListScopeRBACRoleBindingsResponse(_messages.Message):
+  r"""List of Scope RBACRoleBindings.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListScopeRBACRoleBindings` method. The value of an empty string means
+      that there are no more resources to return.
+    rbacrolebindings: The list of Scope RBACRoleBindings.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  rbacrolebindings = _messages.MessageField('RBACRoleBinding', 2, repeated=True)
 
 
 class ListScopesResponse(_messages.Message):

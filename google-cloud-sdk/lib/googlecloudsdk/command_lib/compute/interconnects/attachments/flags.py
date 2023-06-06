@@ -424,15 +424,7 @@ def AddCandidateIpv6Subnets(parser):
       '--candidate-ipv6-subnets',
       type=arg_parsers.ArgList(max_length=16),
       metavar='IPV6_SUBNET',
-      help="""\
-      Up to 16 candidate prefixes that control the allocation of
-      `cloudRouterIpv6Address` and `customerRouterIpv6Address` for this
-      attachment. Each prefix must be in the Global Unique Address (GUA)
-      space. It is highly recommended that it be in a range owned by the
-      requestor. A GUA in a range owned by Google will cause the request to
-      fail. Google will select an available prefix from the supplied
-      candidates or fail the request. If not supplied, a /125 from a
-      Google-owned GUA block will be selected.""",
+      help="""The `candididate-ipv6-subnets` field is not available.""",
       default=[])
 
 
@@ -445,11 +437,7 @@ def AddCloudRouterIpv6InterfaceId(parser):
   parser.add_argument(
       '--cloud-router-ipv6-interface-id',
       metavar='INTERFACE_ID',
-      help="""\
-      If supplied, the interface id (index within the subnet) to be used for the
-      Cloud Router address. The id must be in the range of 1 to 6. If a subnet
-      mask is supplied, it must be /125, and the subnet should either be 0 or
-      match the selected subnet.""")
+      help="""The `cloud-router-ipv6-interface-id` field is not available.""")
 
 
 def AddCustomerRouterIpv6InterfaceId(parser):
@@ -461,11 +449,7 @@ def AddCustomerRouterIpv6InterfaceId(parser):
   parser.add_argument(
       '--customer-router-ipv6-interface-id',
       metavar='PEER_INTERFACE_ID',
-      help="""\
-      If supplied, the interface id (index within the subnet) to be used for the
-      Cloud Router address. The id must be in the range of 1 to 6. If a
-      subnet mask is supplied, it must be /125, and the subnet should either be
-      0 or match the selected subnet.""")
+      help="""The `customer-router-ipv6-interface-id` field is not available.""")
 
 
 def AddSubnetLength(parser):

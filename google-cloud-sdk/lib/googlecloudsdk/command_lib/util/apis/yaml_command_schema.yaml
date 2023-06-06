@@ -55,7 +55,8 @@ definitions:
     # The function takes a single parameter which is the parsed string value
     # of the argument and returns the converted parsed value.
     - $ref: "#/definitions/python_hook"
-    # Support for arg_parsers.ArgList
+    # Support for arg_parsers.arg_list
+    # TODO(b/278780718) Add arg_object when implemented
     - enum: [arg_list]
 
   choices:
@@ -404,6 +405,10 @@ definitions:
       required: {type: boolean}
       # Whether the flag is hidden or not.
       hidden: {type: boolean}
+      # TODO(b/280653078): Not ready for public use yet
+      # Whether to add update flags for update commands.
+      # Must be used with read_modify_update
+      clearable: {type: boolean}
 
   arg_group:
     type: object

@@ -26,6 +26,24 @@ def _GetDatabaseService():
   return api_utils.GetClient().projects_databases
 
 
+def GetDatabase(project, database):
+  """Performs a Firestore Admin v1 Database Get.
+
+  Args:
+    project: the project id to get, a string.
+    database: the database id to get, a string.
+
+  Returns:
+    a database.
+  """
+  messages = api_utils.GetMessages()
+  return _GetDatabaseService().Get(
+      messages.FirestoreProjectsDatabasesGetRequest(
+          name='projects/{}/databases/{}'.format(project, database),
+      )
+  )
+
+
 def CreateDatabase(
     project, location, database, database_type, delete_protection_state
 ):

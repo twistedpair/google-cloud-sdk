@@ -286,10 +286,10 @@ def CreateSchedulingMessage(messages,
         )
     )
 
-  if max_run_duration:
+  if max_run_duration is not None:
     scheduling.maxRunDuration = messages.Duration(seconds=max_run_duration)
 
-  if local_ssd_recovery_timeout:
+  if local_ssd_recovery_timeout is not None:
     scheduling.localSsdRecoveryTimeout = messages.Duration(
         seconds=local_ssd_recovery_timeout
     )

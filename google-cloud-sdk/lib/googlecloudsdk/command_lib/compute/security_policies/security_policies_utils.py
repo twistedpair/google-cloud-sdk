@@ -675,7 +675,7 @@ def CreateNetworkMatcher(client, args):
     user_defined_fields = []
     for user_defined_field in args.network_user_defined_fields:
       # user defined field match will be in the following format:
-      # "name:value1,value2,value3"
+      # "name;value1:value2:value3"
       parsed = user_defined_field.split(';')
       name = parsed[0]
       values = parsed[1].split(':')

@@ -115,8 +115,8 @@ class ArtifactResult(_messages.Message):
 
   Fields:
     fileHash: The file hash of the artifact.
-    location: The path of an artifact in a Google Cloud Storage bucket, with
-      the generation number. For example,
+    location: The path of an artifact in a Cloud Storage bucket, with the
+      generation number. For example,
       `gs://mybucket/path/to/output.jar#generation`.
   """
 
@@ -438,8 +438,8 @@ class Build(_messages.Message):
       in the `Build` resource's results field. If any of the images fail to be
       pushed, the build status is marked `FAILURE`.
     logUrl: Output only. URL to logs for this build in Google Cloud Console.
-    logsBucket: Google Cloud Storage bucket where logs should be written (see
-      [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
+    logsBucket: Cloud Storage bucket where logs should be written (see [Bucket
+      Name Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)). Logs file names will be of the format
       `${logs_bucket}/log-${build_id}.txt`.
     name: Output only. The 'Build' name with format:
@@ -648,7 +648,7 @@ class BuildOptions(_messages.Message):
     DockerDaemonValueValuesEnum: Optional. Option to specify how (or if) a
       Docker daemon is provided for the build.
     LogStreamingOptionValueValuesEnum: Option to define build log streaming
-      behavior to Google Cloud Storage.
+      behavior to Cloud Storage.
     LoggingValueValuesEnum: Option to specify the logging mode, which
       determines if and where build logs are stored.
     MachineTypeValueValuesEnum: Compute Engine machine type on which to run
@@ -684,8 +684,8 @@ class BuildOptions(_messages.Message):
       and in a build step, the variable will use the build step value. The
       elements are of the form "KEY=VALUE" for the environment variable "KEY"
       being given the value "VALUE".
-    logStreamingOption: Option to define build log streaming behavior to
-      Google Cloud Storage.
+    logStreamingOption: Option to define build log streaming behavior to Cloud
+      Storage.
     logging: Option to specify the logging mode, which determines if and where
       build logs are stored.
     machineType: Compute Engine machine type on which to run the build.
@@ -747,14 +747,14 @@ class BuildOptions(_messages.Message):
     PRIVILEGED = 3
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
-    r"""Option to define build log streaming behavior to Google Cloud Storage.
+    r"""Option to define build log streaming behavior to Cloud Storage.
 
     Values:
       STREAM_DEFAULT: Service may automatically determine build log streaming
         behavior.
-      STREAM_ON: Build logs should be streamed to Google Cloud Storage.
-      STREAM_OFF: Build logs should not be streamed to Google Cloud Storage;
-        they will be written when the build is completed.
+      STREAM_ON: Build logs should be streamed to Cloud Storage.
+      STREAM_OFF: Build logs should not be streamed to Cloud Storage; they
+        will be written when the build is completed.
     """
     STREAM_DEFAULT = 0
     STREAM_ON = 1
@@ -2619,6 +2619,23 @@ class ClusterOptions(_messages.Message):
   name = _messages.StringField(1)
 
 
+class ConnectedRepository(_messages.Message):
+  r"""Location of the source in a 2nd-gen Google Cloud Build repository
+  resource.
+
+  Fields:
+    dir: Directory, relative to the source root, in which to run the build.
+    repository: Name of the Google Cloud Build repository, formatted as
+      `projects/*locations/*/connections/*repositories/*`.
+    revision: The revision to fetch from the Git repository such as a branch,
+      a tag, a commit SHA, or any Git ref.
+  """
+
+  dir = _messages.StringField(1)
+  repository = _messages.StringField(2)
+  revision = _messages.StringField(3)
+
+
 class ContainerAnalysisStorage(_messages.Message):
   r"""Configuration for provenance storage in Container Analysis.
 
@@ -2868,11 +2885,11 @@ class GCSLocation(_messages.Message):
   r"""Represents a storage location in Cloud Storage
 
   Fields:
-    bucket: Google Cloud Storage bucket. See
+    bucket: Cloud Storage bucket. See
       https://cloud.google.com/storage/docs/naming#requirements
-    generation: Google Cloud Storage generation for the object. If the
-      generation is omitted, the latest generation will be used.
-    object: Google Cloud Storage object. See
+    generation: Cloud Storage generation for the object. If the generation is
+      omitted, the latest generation will be used.
+    object: Cloud Storage object. See
       https://cloud.google.com/storage/docs/naming#objectnames
   """
 
@@ -2898,8 +2915,8 @@ class GitFileSource(_messages.Message):
       `projects/{project}/githubEnterpriseConfigs/{id}`.
     path: The path of the file, with the repo root as the root of the path.
     repoType: See RepoType above.
-    repository: The fully qualified resource name of the Repo API repository.
-      Either uri or repository can be specified. If unspecified, the repo from
+    repository: The fully qualified resource name of the Repos API repository.
+      Either URI or repository can be specified. If unspecified, the repo from
       which the trigger invocation originated is assumed to be the repo from
       which to read the specified path.
     revision: The branch, tag, arbitrary ref, or SHA version of the repo to
@@ -3237,10 +3254,11 @@ class GitRepoSource(_messages.Message):
       `projects/{project}/githubEnterpriseConfigs/{id}`.
     ref: The branch or tag to use. Must start with "refs/" (required).
     repoType: See RepoType below.
-    repository: The qualified resource name of the Repo API repository Either
-      uri or repository can be specified and is required.
-    uri: The URI of the repo. Either uri or repository can be specified and is
-      required.
+    repository: The connected repository resource name, in the format
+      `projects/*/locations/*/connections/*/repositories/*`. Either `uri` or
+      `repository` can be specified and is required.
+    uri: The URI of the repo (e.g. https://github.com/user/repo.git). Either
+      `uri` or `repository` can be specified and is required.
   """
 
   class RepoTypeValueValuesEnum(_messages.Enum):
@@ -4525,21 +4543,24 @@ class Source(_messages.Message):
   r"""Location of the source in a supported storage service.
 
   Fields:
+    connectedRepository: If provided, get the source from this 2nd-gen Google
+      Cloud Build repository resource.
     gitSource: If provided, get the source from this Git repository.
     repoSource: If provided, get the source from this location in a Cloud
       Source Repository.
-    storageSource: If provided, get the source from this location in Google
-      Cloud Storage.
+    storageSource: If provided, get the source from this location in Cloud
+      Storage.
     storageSourceManifest: If provided, get the source from this manifest in
-      Google Cloud Storage. This feature is in Preview; see description
+      Cloud Storage. This feature is in Preview; see description
       [here](https://github.com/GoogleCloudPlatform/cloud-
       builders/tree/master/gcs-fetcher).
   """
 
-  gitSource = _messages.MessageField('GitSource', 1)
-  repoSource = _messages.MessageField('RepoSource', 2)
-  storageSource = _messages.MessageField('StorageSource', 3)
-  storageSourceManifest = _messages.MessageField('StorageSourceManifest', 4)
+  connectedRepository = _messages.MessageField('ConnectedRepository', 1)
+  gitSource = _messages.MessageField('GitSource', 2)
+  repoSource = _messages.MessageField('RepoSource', 3)
+  storageSource = _messages.MessageField('StorageSource', 4)
+  storageSourceManifest = _messages.MessageField('StorageSourceManifest', 5)
 
 
 class SourceProvenance(_messages.Message):
@@ -4725,17 +4746,17 @@ class Status(_messages.Message):
 
 
 class StorageSource(_messages.Message):
-  r"""Location of the source in an archive file in Google Cloud Storage.
+  r"""Location of the source in an archive file in Cloud Storage.
 
   Fields:
-    bucket: Google Cloud Storage bucket containing the source (see [Bucket
-      Name Requirements](https://cloud.google.com/storage/docs/bucket-
+    bucket: Cloud Storage bucket containing the source (see [Bucket Name
+      Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)).
-    generation: Google Cloud Storage generation for the object. If the
-      generation is omitted, the latest generation will be used.
-    object: Google Cloud Storage object containing the source. This object
-      must be a zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing
-      source to build.
+    generation: Cloud Storage generation for the object. If the generation is
+      omitted, the latest generation will be used.
+    object: Cloud Storage object containing the source. This object must be a
+      zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing source to
+      build.
   """
 
   bucket = _messages.StringField(1)
@@ -4744,19 +4765,19 @@ class StorageSource(_messages.Message):
 
 
 class StorageSourceManifest(_messages.Message):
-  r"""Location of the source manifest in Google Cloud Storage. This feature is
-  in Preview; see description
+  r"""Location of the source manifest in Cloud Storage. This feature is in
+  Preview; see description
   [here](https://github.com/GoogleCloudPlatform/cloud-
   builders/tree/master/gcs-fetcher).
 
   Fields:
-    bucket: Google Cloud Storage bucket containing the source manifest (see
-      [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
+    bucket: Cloud Storage bucket containing the source manifest (see [Bucket
+      Name Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)).
-    generation: Google Cloud Storage generation for the object. If the
-      generation is omitted, the latest generation will be used.
-    object: Google Cloud Storage object containing the source manifest. This
-      object must be a JSON file.
+    generation: Cloud Storage generation for the object. If the generation is
+      omitted, the latest generation will be used.
+    object: Cloud Storage object containing the source manifest. This object
+      must be a JSON file.
   """
 
   bucket = _messages.StringField(1)

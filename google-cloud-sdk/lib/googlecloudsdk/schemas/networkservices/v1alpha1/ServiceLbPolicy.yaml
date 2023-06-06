@@ -42,11 +42,12 @@ properties:
   loadBalancingAlgorithm:
     description: |-
       The type of load balancing algorithm to be used. The default behavior is
-      WATERFALL_BY_REGION
+      WATERFALL_BY_REGION.
     type: string
     enum:
     - LOAD_BALANCING_ALGORITHM_UNSPECIFIED
     - SPRAY_TO_REGION
+    - SPRAY_TO_WORLD
     - WATERFALL_BY_REGION
     - WATERFALL_BY_ZONE
   name:

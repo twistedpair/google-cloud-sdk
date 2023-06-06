@@ -982,6 +982,33 @@ class TranslateV3(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RomanizeText(self, request, global_params=None):
+      r"""Romanize input text written in non-Latin scripts to Latin text.
+
+      Args:
+        request: (TranslateProjectsLocationsRomanizeTextRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RomanizeTextResponse) The response message.
+      """
+      config = self.GetMethodConfig('RomanizeText')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RomanizeText.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}:romanizeText',
+        http_method='POST',
+        method_id='translate.projects.locations.romanizeText',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v3/{+parent}:romanizeText',
+        request_field='romanizeTextRequest',
+        request_type_name='TranslateProjectsLocationsRomanizeTextRequest',
+        response_type_name='RomanizeTextResponse',
+        supports_download=False,
+    )
+
     def TranslateDocument(self, request, global_params=None):
       r"""Translates documents in synchronous mode.
 
@@ -1097,6 +1124,33 @@ class TranslateV3(base_api.BaseApiClient):
         request_field='',
         request_type_name='TranslateProjectsGetSupportedLanguagesRequest',
         response_type_name='SupportedLanguages',
+        supports_download=False,
+    )
+
+    def RomanizeText(self, request, global_params=None):
+      r"""Romanize input text written in non-Latin scripts to Latin text.
+
+      Args:
+        request: (TranslateProjectsRomanizeTextRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RomanizeTextResponse) The response message.
+      """
+      config = self.GetMethodConfig('RomanizeText')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RomanizeText.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}:romanizeText',
+        http_method='POST',
+        method_id='translate.projects.romanizeText',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v3/{+parent}:romanizeText',
+        request_field='romanizeTextRequest',
+        request_type_name='TranslateProjectsRomanizeTextRequest',
+        response_type_name='RomanizeTextResponse',
         supports_download=False,
     )
 

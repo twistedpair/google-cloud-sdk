@@ -534,7 +534,7 @@ class InstancePolicy(_messages.Message):
     machineType: The Compute Engine machine type.
     minCpuPlatform: The minimum CPU platform. See
       https://cloud.google.com/compute/docs/instances/specify-min-cpu-
-      platform. Not yet implemented.
+      platform.
     provisioningModel: The provisioning model.
   """
 

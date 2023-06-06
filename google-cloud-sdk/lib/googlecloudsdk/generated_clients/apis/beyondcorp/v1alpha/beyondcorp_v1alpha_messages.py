@@ -181,6 +181,110 @@ class ApplicationEndpoint(_messages.Message):
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesCreateRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesCre
+  ateRequest object.
+
+  Fields:
+    googleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule: A
+      GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule resource to be
+      passed as the request body.
+    parent: Required. The resource name of the BrowserDlpRule parent using the
+      form: `organizations/{organization_id}/locations/global/partnerTenants/{
+      partner_tenant_id}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  googleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule', 1)
+  parent = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGetIamPolicyRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGet
+  IamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGetRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGet
+  Request object.
+
+  Fields:
+    name: Required. The resource name of the BrowserDlpRule using the form: `o
+      rganizations/{organization_id}/locations/global/partnerTenants/{partner_
+      tenant_id}/browserDlpRules/{browser_dlp_rule_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesSetIamPolicyRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesSet
+  IamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesTestIamPermissionsRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesTes
+  tIamPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsCreateRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsCreateRequest
   object.
@@ -189,8 +293,8 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsCreateRequest(_message
     googleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant: A
       GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant resource to be
       passed as the request body.
-    parent: Required. The resource name of the PartnerTenant using the form:
-      `organizations/{organization_id}/locations/global`
+    parent: Required. The resource name of the parent organization using the
+      form: `organizations/{organization_id}/locations/global`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -209,6 +313,57 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsCreateRequest(_message
   requestId = _messages.StringField(3)
 
 
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsDeleteRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetIamPolicyRequest(_messages.Message):
+  r"""A
+  BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetRequest object.
 
@@ -219,6 +374,214 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetRequest(_messages.M
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsListRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter partnerTenants to be returned. See [List Sub-
+      Collections]
+      (https://cloud.google.com/apis/design/design_patterns#list_sub-
+      collections) for more details. All fields can be used in the filter.
+      Usage: field_filter="fieldName1=fieldVal1 AND fieldName2=fieldVal2".
+      NOTE: Only `AND` conditions are allowed.
+    orderBy: Optional. Specifies the ordering of results. Currently, only
+      ordering by the "name" and "create_time" fields are supported. See
+      [Sorting order](https://cloud.google.com/apis/design/design_patterns#sor
+      ting_order) for more information.
+    pageSize: Optional. The maximum number of items to return. The service may
+      return fewer than this value. If unspecified, at most 50 items will be
+      returned. The maximum value is 1000; values above 1000 are coerced to
+      1000. Regardless of the page_size value, the response may include a
+      partial list and a caller should only rely on response's next_page_token
+      to determine if there are more instances left to be queried.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The parent organization to which the PartnerTenants
+      belong. Format: `organizations/{organization_id}/locations/global`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsPatchRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsPatchRequest
+  object.
+
+  Fields:
+    googleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant: A
+      GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant resource to be
+      passed as the request body.
+    name: Output only. Unique resource name of the PartnerTenant. The name is
+      ignored when creating PartnerTenant.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the PartnerTenant resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  googleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsCreateRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsCreate
+  Request object.
+
+  Fields:
+    googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig: A
+      GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig resource to be
+      passed as the request body.
+    parent: Required. The resource name of the Tenant using the form:
+      `organizations/{organization_id}/locations/global/tenants/{tenant_id}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig', 1)
+  parent = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetIamPolicyRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetIam
+  PolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetRequest(_messages.Message):
+  r"""A
+  BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the ProxyConfig using the form: `orga
+      nizations/{organization_id}/locations/global/tenants/{tenant_id}/proxyCo
+      nfigs/{proxy_config_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsSetIamPolicyRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsSetIam
+  PolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsTestIamPermissionsRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsTestIa
+  mPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsSetIamPolicyRequest(_messages.Message):
+  r"""A
+  BeyondcorpOrganizationsLocationsGlobalPartnerTenantsSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsTestIamPermissionsRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsTestIamPermissions
+  Request object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class BeyondcorpOrganizationsLocationsGlobalTenantsCreateRequest(_messages.Message):
@@ -248,6 +611,28 @@ class BeyondcorpOrganizationsLocationsGlobalTenantsCreateRequest(_messages.Messa
   requestId = _messages.StringField(3)
 
 
+class BeyondcorpOrganizationsLocationsGlobalTenantsDeleteRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalTenantsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class BeyondcorpOrganizationsLocationsGlobalTenantsGetRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsGlobalTenantsGetRequest object.
 
@@ -267,7 +652,7 @@ class BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsCreateRequest(_me
     googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig: A
       GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig resource to be
       passed as the request body.
-    parent: Required. The resource name of the ProxyConfig using the form:
+    parent: Required. The resource name of the Tenant using the form:
       `organizations/{organization_id}/locations/global/tenants/{tenant_id}`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -287,14 +672,37 @@ class BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsCreateRequest(_me
   requestId = _messages.StringField(3)
 
 
+class BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsDeleteRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsGetRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsGetRequest
   object.
 
   Fields:
-    name: Required. The resource name of the Tenant using the form: `organizat
-      ions/{organization_id}/locations/global/tenants/{tenant_id}/proxyConfigs
-      /{proxy_config_id}`
+    name: Required. The resource name of the ProxyConfig using the form: `orga
+      nizations/{organization_id}/locations/global/tenants/{tenant_id}/proxyCo
+      nfigs/{proxy_config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -3672,6 +4080,21 @@ class GoogleCloudBeyondcorpAppgatewaysV1AppGatewayOperationMetadata(_messages.Me
   verb = _messages.StringField(7)
 
 
+class GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule(_messages.Message):
+  r"""Browser DLP Rule for a PartnerTenant
+
+  Fields:
+    group: Required. The group to which this Rule should be applied to.
+    name: Output only. Unique resource name. The name is ignored when creating
+      BrowserDlpRule.
+    ruleSetting: Required. The policy settings to apply.
+  """
+
+  group = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaGroup', 1)
+  name = _messages.StringField(2)
+  ruleSetting = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaRuleSetting', 3)
+
+
 class GoogleCloudBeyondcorpPartnerservicesV1alphaEncryptionInfo(_messages.Message):
   r"""Message contains the JWT encryption information for the proxy server.
 
@@ -3682,6 +4105,33 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaEncryptionInfo(_messages.Messag
 
   encryptionSaEmail = _messages.StringField(1)
   jwk = _messages.StringField(2)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaGroup(_messages.Message):
+  r"""Message to capture group information
+
+  Fields:
+    email: The group email id
+    id: Google group id
+  """
+
+  email = _messages.StringField(1)
+  id = _messages.StringField(2)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaListPartnerTenantsResponse(_messages.Message):
+  r"""Message for response to listing PartnerTenants.
+
+  Fields:
+    nextPageToken: A token which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    partnerTenants: The list of PartnerTenant objects.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  partnerTenants = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerMetadata(_messages.Message):
@@ -3729,10 +4179,9 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant(_messages.Message
     createTime: Output only. Timestamp when the resource was created.
     displayName: Optional. An arbitrary caller-provided name for the
       PartnerTenant. Cannot exceed 64 characters.
-    googleGroupEmail: Optional. Google group email to which the PartnerTenant
-      is enabled.
-    googleGroupId: Optional. Google group ID to which the PartnerTenant is
-      enabled.
+    group: Optional. Group information for the users enabled to use the
+      partnerTenant. If the group information is not provided then the
+      partnerTenant will be enabled for all users.
     name: Output only. Unique resource name of the PartnerTenant. The name is
       ignored when creating PartnerTenant.
     partnerMetadata: Optional. Metadata provided by the Partner associated
@@ -3742,11 +4191,10 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant(_messages.Message
 
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  googleGroupEmail = _messages.StringField(3)
-  googleGroupId = _messages.StringField(4)
-  name = _messages.StringField(5)
-  partnerMetadata = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerMetadata', 6)
-  updateTime = _messages.StringField(7)
+  group = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaGroup', 3)
+  name = _messages.StringField(4)
+  partnerMetadata = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerMetadata', 5)
+  updateTime = _messages.StringField(6)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig(_messages.Message):
@@ -3784,6 +4232,45 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo(_messages.Message):
   """
 
   pacUri = _messages.StringField(1)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaRuleSetting(_messages.Message):
+  r"""Message to capture settings for a BrowserDlpRule
+
+  Messages:
+    ValueValue: Required. The value of the Setting.
+
+  Fields:
+    type: Required. Immutable. The type of the Setting. .
+    value: Required. The value of the Setting.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ValueValue(_messages.Message):
+    r"""Required. The value of the Setting.
+
+    Messages:
+      AdditionalProperty: An additional property for a ValueValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ValueValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  type = _messages.StringField(1)
+  value = _messages.MessageField('ValueValue', 2)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaTenant(_messages.Message):

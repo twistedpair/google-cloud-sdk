@@ -2140,6 +2140,20 @@ class ListInstanceConfigsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListInstancePartitionsResponse(_messages.Message):
+  r"""The response for ListInstancePartitions.
+
+  Fields:
+    instancePartitions: The list of requested instancePartitions.
+    nextPageToken: `next_page_token` can be sent in a subsequent
+      ListInstancePartitions call to fetch more of the matching instance
+      partitions.
+  """
+
+  instancePartitions = _messages.MessageField('InstancePartition', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListInstancesResponse(_messages.Message):
   r"""The response for ListInstances.
 
@@ -4912,6 +4926,23 @@ class SpannerProjectsInstancesInstancePartitionsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesInstancePartitionsListRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesInstancePartitionsListRequest object.
+
+  Fields:
+    pageSize: Number of instancePartitions to be returned in the response. If
+      0 or less, defaults to the server's maximum allowed page size.
+    pageToken: If non-empty, `page_token` should contain a next_page_token
+      from a previous ListInstancePartitionsResponse.
+    parent: Required. The instance whose instance partitions should be listed.
+      Values are of the form `projects//instances/`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class SpannerProjectsInstancesInstancePartitionsOperationsCancelRequest(_messages.Message):

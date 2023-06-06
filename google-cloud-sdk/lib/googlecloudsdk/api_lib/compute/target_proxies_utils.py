@@ -75,10 +75,11 @@ def AddHttpKeepAliveTimeoutSec(parser):
       '--http-keep-alive-timeout-sec',
       type=arg_parsers.BoundedInt(5, 1200),
       help="""\
-      Specifies how long to keep a connection open, after completing a response, while
-      there is no matching traffic (in seconds). If an HTTP keep-alive is not specified,
-      a default value (610 seconds) will be used. For Global external HTTP(S) load balancer,
-      the minimum allowed value is 5 seconds and the maximum allowed value is 1200 seconds.
+      Represents the maximum amount of time that a TCP connection can be idle
+      between the (downstream) client and the target HTTP proxy. If an HTTP
+      keepalive  timeout is not specified, the default value is 610 seconds.
+      For global external HTTP(S) load balancer, the minimum allowed
+      value is 5 seconds and the maximum allowed value is 1200 seconds.
       """,
   )
 
@@ -90,6 +91,6 @@ def AddClearHttpKeepAliveTimeoutSec(parser):
       action='store_true',
       default=False,
       help="""\
-      Clears previously configured http keep alive timeout sec
+      Clears the previously configured HTTP keepalive timeout.
       """,
   )

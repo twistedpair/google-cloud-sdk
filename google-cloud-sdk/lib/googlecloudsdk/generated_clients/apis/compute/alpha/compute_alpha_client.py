@@ -44,6 +44,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.autoscalers = self.AutoscalersService(self)
     self.backendBuckets = self.BackendBucketsService(self)
     self.backendServices = self.BackendServicesService(self)
+    self.diskSettings = self.DiskSettingsService(self)
     self.diskTypes = self.DiskTypesService(self)
     self.disks = self.DisksService(self)
     self.externalVpnGateways = self.ExternalVpnGatewaysService(self)
@@ -93,6 +94,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionAutoscalers = self.RegionAutoscalersService(self)
     self.regionBackendServices = self.RegionBackendServicesService(self)
     self.regionCommitments = self.RegionCommitmentsService(self)
+    self.regionDiskSettings = self.RegionDiskSettingsService(self)
     self.regionDiskTypes = self.RegionDiskTypesService(self)
     self.regionDisks = self.RegionDisksService(self)
     self.regionHealthCheckServices = self.RegionHealthCheckServicesService(self)
@@ -113,6 +115,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionTargetHttpsProxies = self.RegionTargetHttpsProxiesService(self)
     self.regionTargetTcpProxies = self.RegionTargetTcpProxiesService(self)
     self.regionUrlMaps = self.RegionUrlMapsService(self)
+    self.regionZones = self.RegionZonesService(self)
     self.regions = self.RegionsService(self)
     self.reservations = self.ReservationsService(self)
     self.resourcePolicies = self.ResourcePoliciesService(self)
@@ -1386,6 +1389,68 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class DiskSettingsService(base_api.BaseApiService):
+    """Service class for the diskSettings resource."""
+
+    _NAME = 'diskSettings'
+
+    def __init__(self, client):
+      super(ComputeAlpha.DiskSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get Zonal Disk Settings.
+
+      Args:
+        request: (ComputeDiskSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DiskSettings) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.diskSettings.get',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/diskSettings',
+        request_field='',
+        request_type_name='ComputeDiskSettingsGetRequest',
+        response_type_name='DiskSettings',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patch Zonal Disk Settings.
+
+      Args:
+        request: (ComputeDiskSettingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.diskSettings.patch',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/zones/{zone}/diskSettings',
+        request_field='diskSettings',
+        request_type_name='ComputeDiskSettingsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class DiskTypesService(base_api.BaseApiService):
     """Service class for the diskTypes resource."""
 
@@ -1868,7 +1933,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         path_params=['disk', 'project', 'zone'],
         query_params=['requestId'],
         relative_path='projects/{project}/zones/{zone}/disks/{disk}/stopAsyncReplication',
-        request_field='disksStopAsyncReplicationRequest',
+        request_field='',
         request_type_name='ComputeDisksStopAsyncReplicationRequest',
         response_type_name='Operation',
         supports_download=False,
@@ -6904,6 +6969,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetPartnerMetadata(self, request, global_params=None):
+      r"""Gets partner metadata of the specified instance and namespaces.
+
+      Args:
+        request: (ComputeInstancesGetPartnerMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PartnerMetadata) The response message.
+      """
+      config = self.GetMethodConfig('GetPartnerMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetPartnerMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instances.getPartnerMetadata',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['namespaces'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/getPartnerMetadata',
+        request_field='',
+        request_type_name='ComputeInstancesGetPartnerMetadataRequest',
+        response_type_name='PartnerMetadata',
+        supports_download=False,
+    )
+
     def GetScreenshot(self, request, global_params=None):
       r"""Returns the screenshot from the specified instance.
 
@@ -7083,6 +7174,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeInstancesListReferrersRequest',
         response_type_name='InstanceListReferrers',
+        supports_download=False,
+    )
+
+    def PatchPartnerMetadata(self, request, global_params=None):
+      r"""Patches partner metadata of the specified instance.
+
+      Args:
+        request: (ComputeInstancesPatchPartnerMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchPartnerMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchPartnerMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.patchPartnerMetadata',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/patchPartnerMetadata',
+        request_field='partnerMetadata',
+        request_type_name='ComputeInstancesPatchPartnerMetadataRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13550,6 +13667,58 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CalculateCancellationFee(self, request, global_params=None):
+      r"""Calculate cancellation fee for the specified commitment.
+
+      Args:
+        request: (ComputeRegionCommitmentsCalculateCancellationFeeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CalculateCancellationFee')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CalculateCancellationFee.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionCommitments.calculateCancellationFee',
+        ordered_params=['project', 'region', 'commitment'],
+        path_params=['commitment', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/commitments/{commitment}/calculateCancellationFee',
+        request_field='',
+        request_type_name='ComputeRegionCommitmentsCalculateCancellationFeeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancel the specified commitment.
+
+      Args:
+        request: (ComputeRegionCommitmentsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionCommitments.cancel',
+        ordered_params=['project', 'region', 'commitment'],
+        path_params=['commitment', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/commitments/{commitment}/cancel',
+        request_field='',
+        request_type_name='ComputeRegionCommitmentsCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Returns the specified commitment resource.
 
@@ -13702,6 +13871,68 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/commitments/{commitment}/updateReservations',
         request_field='regionCommitmentsUpdateReservationsRequest',
         request_type_name='ComputeRegionCommitmentsUpdateReservationsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class RegionDiskSettingsService(base_api.BaseApiService):
+    """Service class for the regionDiskSettings resource."""
+
+    _NAME = 'regionDiskSettings'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionDiskSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get Regional Disk Settings.
+
+      Args:
+        request: (ComputeRegionDiskSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DiskSettings) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionDiskSettings.get',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/diskSettings',
+        request_field='',
+        request_type_name='ComputeRegionDiskSettingsGetRequest',
+        response_type_name='DiskSettings',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patch Regional Disk Settings.
+
+      Args:
+        request: (ComputeRegionDiskSettingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.regionDiskSettings.patch',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/regions/{region}/diskSettings',
+        request_field='diskSettings',
+        request_type_name='ComputeRegionDiskSettingsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -14136,7 +14367,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         path_params=['disk', 'project', 'region'],
         query_params=['requestId'],
         relative_path='projects/{project}/regions/{region}/disks/{disk}/stopAsyncReplication',
-        request_field='regionDisksStopAsyncReplicationRequest',
+        request_field='',
         request_type_name='ComputeRegionDisksStopAsyncReplicationRequest',
         response_type_name='Operation',
         supports_download=False,
@@ -18144,6 +18375,42 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class RegionZonesService(base_api.BaseApiService):
+    """Service class for the regionZones resource."""
+
+    _NAME = 'regionZones'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionZonesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of Zone resources under the specific region available to the specified project.
+
+      Args:
+        request: (ComputeRegionZonesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ZoneList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionZones.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/zones',
+        request_field='',
+        request_type_name='ComputeRegionZonesListRequest',
+        response_type_name='ZoneList',
+        supports_download=False,
+    )
+
   class RegionsService(base_api.BaseApiService):
     """Service class for the regions resource."""
 
@@ -20539,6 +20806,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeStoragePoolsListRequest',
         response_type_name='StoragePoolList',
+        supports_download=False,
+    )
+
+    def ListDisks(self, request, global_params=None):
+      r"""Lists the disks in a specified storage pool.
+
+      Args:
+        request: (ComputeStoragePoolsListDisksRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StoragePoolListDisks) The response message.
+      """
+      config = self.GetMethodConfig('ListDisks')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListDisks.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.storagePools.listDisks',
+        ordered_params=['project', 'zone', 'storagePool'],
+        path_params=['project', 'storagePool', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/storagePools/{storagePool}/listDisks',
+        request_field='',
+        request_type_name='ComputeStoragePoolsListDisksRequest',
+        response_type_name='StoragePoolListDisks',
         supports_download=False,
     )
 

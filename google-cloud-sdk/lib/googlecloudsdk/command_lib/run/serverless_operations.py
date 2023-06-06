@@ -1493,6 +1493,7 @@ class ServerlessOperations(object):
       build_source=None,
       repo_to_create=None,
       prefetch=None,
+      already_activated_services=False,
   ):
     """Deploy to create a new Cloud Run Job or to update an existing one.
 
@@ -1510,6 +1511,8 @@ class ServerlessOperations(object):
       prefetch: the job, pre-fetched for DeployJob. `None` indicates a
         nonexistent job so the job has to be created, else this is for an
         update.
+      already_activated_services: bool. If true, skip activation prompts for
+        services
 
     Returns:
       A job.Job object.
@@ -1526,7 +1529,9 @@ class ServerlessOperations(object):
 
     if repo_to_create:
       self._CreateRepository(
-          tracker, repo_to_create, skip_activation_prompt=False
+          tracker,
+          repo_to_create,
+          skip_activation_prompt=already_activated_services,
       )
 
     if build_source is not None:
@@ -1534,7 +1539,10 @@ class ServerlessOperations(object):
           tracker, build_image, build_source, build_pack
       )
       build_op_ref, build_log_url = self._BuildFromSource(
-          tracker, build_messages, build_config
+          tracker,
+          build_messages,
+          build_config,
+          skip_activation_prompt=already_activated_services,
       )
       response_dict = self._PollUntilBuildCompletes(build_op_ref)
       if response_dict and response_dict['status'] != 'SUCCESS':

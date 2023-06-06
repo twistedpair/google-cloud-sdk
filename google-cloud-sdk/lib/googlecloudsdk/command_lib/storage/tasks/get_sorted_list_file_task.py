@@ -87,9 +87,10 @@ class GetSortedContainerContentsTask(task.Task):
     file_iterator = iter(
         wildcard_iterator.get_wildcard_iterator(
             self._container_query_path,
+            exclude_patterns=self._exclude_patterns,
             fields_scope=cloud_api.FieldsScope.RSYNC,
             files_only=True,
-            exclude_patterns=self._exclude_patterns,
+            force_include_hidden_files=True,
         )
     )
     chunk_count = file_count = 0

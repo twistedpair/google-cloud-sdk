@@ -1276,8 +1276,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Build(_messages.Message):
       in the `Build` resource's results field. If any of the images fail to be
       pushed, the build status is marked `FAILURE`.
     logUrl: Output only. URL to logs for this build in Google Cloud Console.
-    logsBucket: Google Cloud Storage bucket where logs should be written (see
-      [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
+    logsBucket: Cloud Storage bucket where logs should be written (see [Bucket
+      Name Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)). Logs file names will be of the format
       `${logs_bucket}/log-${build_id}.txt`.
     name: Output only. The 'Build' name with format:
@@ -1510,7 +1510,7 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
     DefaultLogsBucketBehaviorValueValuesEnum: Optional. Option to specify how
       default logs buckets are setup.
     LogStreamingOptionValueValuesEnum: Option to define build log streaming
-      behavior to Google Cloud Storage.
+      behavior to Cloud Storage.
     LoggingValueValuesEnum: Option to specify the logging mode, which
       determines if and where build logs are stored.
     MachineTypeValueValuesEnum: Compute Engine machine type on which to run
@@ -1541,8 +1541,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
       and in a build step, the variable will use the build step value. The
       elements are of the form "KEY=VALUE" for the environment variable "KEY"
       being given the value "VALUE".
-    logStreamingOption: Option to define build log streaming behavior to
-      Google Cloud Storage.
+    logStreamingOption: Option to define build log streaming behavior to Cloud
+      Storage.
     logging: Option to specify the logging mode, which determines if and where
       build logs are stored.
     machineType: Compute Engine machine type on which to run the build.
@@ -1583,14 +1583,14 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
     REGIONAL_USER_OWNED_BUCKET = 1
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
-    r"""Option to define build log streaming behavior to Google Cloud Storage.
+    r"""Option to define build log streaming behavior to Cloud Storage.
 
     Values:
       STREAM_DEFAULT: Service may automatically determine build log streaming
         behavior.
-      STREAM_ON: Build logs should be streamed to Google Cloud Storage.
-      STREAM_OFF: Build logs should not be streamed to Google Cloud Storage;
-        they will be written when the build is completed.
+      STREAM_ON: Build logs should be streamed to Cloud Storage.
+      STREAM_OFF: Build logs should not be streamed to Cloud Storage; they
+        will be written when the build is completed.
     """
     STREAM_DEFAULT = 0
     STREAM_ON = 1
@@ -2183,10 +2183,10 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Source(_messages.Message):
     gitSource: If provided, get the source from this Git repository.
     repoSource: If provided, get the source from this location in a Cloud
       Source Repository.
-    storageSource: If provided, get the source from this location in Google
-      Cloud Storage.
+    storageSource: If provided, get the source from this location in Cloud
+      Storage.
     storageSourceManifest: If provided, get the source from this manifest in
-      Google Cloud Storage. This feature is in Preview; see description
+      Cloud Storage. This feature is in Preview; see description
       [here](https://github.com/GoogleCloudPlatform/cloud-
       builders/tree/master/gcs-fetcher).
   """
@@ -2267,17 +2267,17 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1SourceProvenance(_messages.Mess
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource(_messages.Message):
-  r"""Location of the source in an archive file in Google Cloud Storage.
+  r"""Location of the source in an archive file in Cloud Storage.
 
   Fields:
-    bucket: Google Cloud Storage bucket containing the source (see [Bucket
-      Name Requirements](https://cloud.google.com/storage/docs/bucket-
+    bucket: Cloud Storage bucket containing the source (see [Bucket Name
+      Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)).
-    generation: Google Cloud Storage generation for the object. If the
-      generation is omitted, the latest generation will be used.
-    object: Google Cloud Storage object containing the source. This object
-      must be a zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing
-      source to build.
+    generation: Cloud Storage generation for the object. If the generation is
+      omitted, the latest generation will be used.
+    object: Cloud Storage object containing the source. This object must be a
+      zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing source to
+      build.
   """
 
   bucket = _messages.StringField(1)
@@ -2286,19 +2286,19 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource(_messages.Message
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest(_messages.Message):
-  r"""Location of the source manifest in Google Cloud Storage. This feature is
-  in Preview; see description
+  r"""Location of the source manifest in Cloud Storage. This feature is in
+  Preview; see description
   [here](https://github.com/GoogleCloudPlatform/cloud-
   builders/tree/master/gcs-fetcher).
 
   Fields:
-    bucket: Google Cloud Storage bucket containing the source manifest (see
-      [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
+    bucket: Cloud Storage bucket containing the source manifest (see [Bucket
+      Name Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)).
-    generation: Google Cloud Storage generation for the object. If the
-      generation is omitted, the latest generation will be used.
-    object: Google Cloud Storage object containing the source manifest. This
-      object must be a JSON file.
+    generation: Cloud Storage generation for the object. If the generation is
+      omitted, the latest generation will be used.
+    object: Cloud Storage object containing the source manifest. This object
+      must be a JSON file.
   """
 
   bucket = _messages.StringField(1)

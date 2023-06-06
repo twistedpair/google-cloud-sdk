@@ -370,13 +370,15 @@ class ContactInfo(_messages.Message):
 
   Fields:
     channel: Optional. Channel to use to reach the contact, eg. pager, email
+    displayName: Optional. Display name of the contact.
     email: Optional. Email of the contact.
     user: Optional. User name of the contact.
   """
 
   channel = _messages.StringField(1)
-  email = _messages.StringField(2)
-  user = _messages.StringField(3)
+  displayName = _messages.StringField(2)
+  email = _messages.StringField(3)
+  user = _messages.StringField(4)
 
 
 class CounterOptions(_messages.Message):
@@ -1337,6 +1339,8 @@ class Service(_messages.Message):
     endpoints: Output only. Endpoints associated with this service. Returned
       on LookupService.ResolveService. Control plane clients should use
       RegistrationService.ListEndpoints.
+    environment: Optional. User-friendly string that indicates the environment
+      for this service.
     hostname: Optional. Hostname. Service consumer may use for: 1) HTTP
       parameter for Host (HTTP/1.1) or Authority (HTTP/2, HTTP/3) 2) TLS SNI
       Hostname parameter (most commonly used for HTTPS) 3) TLS Hostname
@@ -1363,6 +1367,8 @@ class Service(_messages.Message):
       service. This includes SRE and ops teams that are responsible for
       troubleshooting a service, responding to outages or unhealthiness, and
       maintaining availability.
+    owners: Optional. List of contacts for this service. This can include
+      application engineers, architects, SRE, ops team, business owners etc.
     serviceIdentities: Optional. Authorized Service Identities. If provided,
       the consumer may use this information to determine whether the service
       provider is authorized. Examples: `spiffe_id:spiffe://example.org/my-
@@ -1424,14 +1430,16 @@ class Service(_messages.Message):
   devOwners = _messages.MessageField('ContactInfo', 6, repeated=True)
   displayName = _messages.StringField(7)
   endpoints = _messages.MessageField('Endpoint', 8, repeated=True)
-  hostname = _messages.StringField(9)
-  metadata = _messages.MessageField('MetadataValue', 10)
-  name = _messages.StringField(11)
-  operatorOwners = _messages.MessageField('ContactInfo', 12, repeated=True)
-  serviceIdentities = _messages.MessageField('ServiceIdentity', 13, repeated=True)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  workloads = _messages.StringField(16, repeated=True)
+  environment = _messages.StringField(9)
+  hostname = _messages.StringField(10)
+  metadata = _messages.MessageField('MetadataValue', 11)
+  name = _messages.StringField(12)
+  operatorOwners = _messages.MessageField('ContactInfo', 13, repeated=True)
+  owners = _messages.MessageField('ContactInfo', 14, repeated=True)
+  serviceIdentities = _messages.MessageField('ServiceIdentity', 15, repeated=True)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
+  workloads = _messages.StringField(18, repeated=True)
 
 
 class ServiceCriteria(_messages.Message):
@@ -2444,6 +2452,9 @@ class Workload(_messages.Message):
   the same functionality, with a common set of core attributes, that power
   services in Service Directory and to which policies can be applied.
 
+  Enums:
+    CriticalityValueValuesEnum: Optional. Criticality of this workload.
+
   Fields:
     businessOwners: Optional. List of contacts for business owners of this
       workload. This includes team members who are responsible for business
@@ -2477,10 +2488,15 @@ class Workload(_messages.Message):
       COMPONENT_NAME, value:
       '//compute.googleapis.com/projects/1234/regions/us-
       east1/instanceGroups/mig2' } ]
+    criticality: Optional. Criticality of this workload.
+    description: Optional. Human readable explanation of the workload and what
+      it does.
     devOwners: Optional. List of contacts for developer owners of this
       workload. This includes application engineers and architects writing and
       updating this workload.
     displayName: Optional. Friendly name. User modifiable.
+    environment: Optional. User-friendly string that indicates the environment
+      for this workload.
     internalAttributes: Optional. Internal Attributes associated with this
       workload. This field should stay GOOGLE_INTERNAL post launch.
     name: Immutable. The resource name for the workload in the format
@@ -2489,6 +2505,8 @@ class Workload(_messages.Message):
       workload. This includes SRE and ops teams that are responsible for
       troubleshooting a workload, responding to outages or unhealthiness, and
       maintaining availability.
+    owners: Optional. List of contacts for this workload. This can include
+      application engineers, architects, SRE, ops team, business owners etc.
     reliabilityAttributes: Optional. Properties related to reliability of this
       workload.
     securityAttributes: Optional. Properties related to security of this
@@ -2499,19 +2517,44 @@ class Workload(_messages.Message):
       in Service Directory.
   """
 
+  class CriticalityValueValuesEnum(_messages.Enum):
+    r"""Optional. Criticality of this workload.
+
+    Values:
+      CRITICALITY_UNSPECIFIED: Default. Workload is not supported and is not
+        explected to provide any guarantees.
+      MISSION_CRITICAL: The workload is mission-critical to the organization.
+      UNIT_CRITICAL: The workload is critical to a unit within the
+        organization.
+      HIGH: The workload may not directly affect the mission of a specific
+        unit, but is of high importance to the organization.
+      MEDIUM: The workload is of medium importance to the organization.
+      LOW: The workload is of low importance to the organization.
+    """
+    CRITICALITY_UNSPECIFIED = 0
+    MISSION_CRITICAL = 1
+    UNIT_CRITICAL = 2
+    HIGH = 3
+    MEDIUM = 4
+    LOW = 5
+
   businessOwners = _messages.MessageField('ContactInfo', 1, repeated=True)
   components = _messages.MessageField('Component', 2, repeated=True)
   createTime = _messages.StringField(3)
   criteria = _messages.MessageField('WorkloadCriteria', 4, repeated=True)
-  devOwners = _messages.MessageField('ContactInfo', 5, repeated=True)
-  displayName = _messages.StringField(6)
-  internalAttributes = _messages.MessageField('InternalAttributes', 7)
-  name = _messages.StringField(8)
-  operatorOwners = _messages.MessageField('ContactInfo', 9, repeated=True)
-  reliabilityAttributes = _messages.MessageField('ReliabilityAttributes', 10)
-  securityAttributes = _messages.MessageField('SecurityAttributes', 11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  criticality = _messages.EnumField('CriticalityValueValuesEnum', 5)
+  description = _messages.StringField(6)
+  devOwners = _messages.MessageField('ContactInfo', 7, repeated=True)
+  displayName = _messages.StringField(8)
+  environment = _messages.StringField(9)
+  internalAttributes = _messages.MessageField('InternalAttributes', 10)
+  name = _messages.StringField(11)
+  operatorOwners = _messages.MessageField('ContactInfo', 12, repeated=True)
+  owners = _messages.MessageField('ContactInfo', 13, repeated=True)
+  reliabilityAttributes = _messages.MessageField('ReliabilityAttributes', 14)
+  securityAttributes = _messages.MessageField('SecurityAttributes', 15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class WorkloadCriteria(_messages.Message):

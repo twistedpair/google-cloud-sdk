@@ -5305,6 +5305,8 @@ class PubsubLocation(_messages.Message):
 
   Fields:
     dropLateData: Indicates whether the pipeline allows late-arriving data.
+    dynamicDestinations: If true, then this location represents dynamic
+      topics.
     idLabel: If set, contains a pubsub label from which to extract record ids.
       If left empty, record deduplication will be strictly best effort.
     subscription: A pubsub subscription, in the form of
@@ -5320,12 +5322,13 @@ class PubsubLocation(_messages.Message):
   """
 
   dropLateData = _messages.BooleanField(1)
-  idLabel = _messages.StringField(2)
-  subscription = _messages.StringField(3)
-  timestampLabel = _messages.StringField(4)
-  topic = _messages.StringField(5)
-  trackingSubscription = _messages.StringField(6)
-  withAttributes = _messages.BooleanField(7)
+  dynamicDestinations = _messages.BooleanField(2)
+  idLabel = _messages.StringField(3)
+  subscription = _messages.StringField(4)
+  timestampLabel = _messages.StringField(5)
+  topic = _messages.StringField(6)
+  trackingSubscription = _messages.StringField(7)
+  withAttributes = _messages.BooleanField(8)
 
 
 class PubsubSnapshotMetadata(_messages.Message):

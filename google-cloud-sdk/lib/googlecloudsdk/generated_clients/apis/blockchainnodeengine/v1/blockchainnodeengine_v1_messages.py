@@ -316,12 +316,9 @@ class ConnectionInfo(_messages.Message):
   Fields:
     endpointInfo: Output only. The endpoint information through which to
       interact with a blockchain node.
-    ipInfo: Output only. The public IP address information used to interact
-      with a blockchain node.
   """
 
   endpointInfo = _messages.MessageField('EndpointInfo', 1)
-  ipInfo = _messages.MessageField('IpInfo', 2)
 
 
 class EndpointInfo(_messages.Message):
@@ -496,27 +493,6 @@ class GoogleProtobufEmpty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
-
-
-class IpInfo(_messages.Message):
-  r"""The public IP information through which to interact with a blockchain
-  node.
-
-  Fields:
-    p2pIpv4Address: Output only. The IPv4 address for the node peer-to-peer
-      endpoint.
-    p2pIpv6Address: Output only. The IPv6 address for the node peer-to-peer
-      endpoint.
-    rpcIpv4Address: Output only. The IPv4 address for the node RPC API
-      endpoint.
-    rpcIpv6Address: Output only. The IPv6 address for the node RPC API
-      endpoint.
-  """
-
-  p2pIpv4Address = _messages.StringField(1)
-  p2pIpv6Address = _messages.StringField(2)
-  rpcIpv4Address = _messages.StringField(3)
-  rpcIpv6Address = _messages.StringField(4)
 
 
 class ListBlockchainNodesResponse(_messages.Message):

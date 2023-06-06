@@ -182,6 +182,10 @@ class Binding(_messages.Message):
 class ConsumerPscConfig(_messages.Message):
   r"""Allow the producer to specify which consumers can connect to it.
 
+  Enums:
+    StateValueValuesEnum: Output only. Overall state of PSC Connections
+      management for this consumer psc config.
+
   Fields:
     disableGlobalAccess: This is used in PSC consumer ForwardingRule to
       control whether the PSC endpoint can be accessed from another region.
@@ -191,11 +195,31 @@ class ConsumerPscConfig(_messages.Message):
       projects/{projectNumOrId}/global/networks/{networkId}.
     project: The consumer project where PSC connections are allowed to be
       created in.
+    state: Output only. Overall state of PSC Connections management for this
+      consumer psc config.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Overall state of PSC Connections management for this
+    consumer psc config.
+
+    Values:
+      STATE_UNSPECIFIED: Default state, when Connection Map is created
+        initially.
+      VALID: Set when policy and map configuration is valid, and their
+        matching can lead to allowing creation of PSC Connections subject to
+        other constraints like connections limit.
+      CONNECTION_POLICY_MISSING: No Service Connection Policy found for this
+        network and Service Class
+    """
+    STATE_UNSPECIFIED = 0
+    VALID = 1
+    CONNECTION_POLICY_MISSING = 2
 
   disableGlobalAccess = _messages.BooleanField(1)
   network = _messages.StringField(2)
   project = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class ConsumerPscConnection(_messages.Message):
@@ -876,7 +900,7 @@ class LinkedVpcNetwork(_messages.Message):
   Fields:
     excludeExportRanges: Optional. IP Ranges encompassing the subnets to be
       excluded from peering.
-    uri: The URI of the VPC network resource
+    uri: Required. The URI of the VPC network resource
   """
 
   excludeExportRanges = _messages.StringField(1, repeated=True)
@@ -1296,6 +1320,69 @@ class NetworkconnectivityProjectsLocationsGlobalHubsGetRequest(_messages.Message
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsGroupsGetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsGlobalHubsGroupsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsGroupsSetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsGlobalHubsGroupsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsGroupsTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsGroupsTestIamPermissions
+  Request object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkconnectivityProjectsLocationsGlobalHubsListRequest(_messages.Message):
@@ -2799,7 +2886,7 @@ class PolicyBasedRoute(_messages.Message):
   r"""Policy Based Routes (PBR) are more powerful routes that allows GCP
   customers to route their L4 network traffic based on not just destination
   IP, but also source IP, protocol and more. A PBR always take precedence when
-  it conflicts with other types of routes. Next id: 20
+  it conflicts with other types of routes. Next id: 22
 
   Messages:
     LabelsValue: User-defined labels.
