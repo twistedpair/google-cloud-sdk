@@ -573,6 +573,7 @@ def AddDiskArgs(parser,
 
   if enable_regional_disks:
     disk_arg_spec['scope'] = str
+    disk_arg_spec['force-attach'] = arg_parsers.ArgBoolean()
 
   disk_help = """
       Attaches persistent disks to the instances. The disks
@@ -605,6 +606,9 @@ def AddDiskArgs(parser,
       interpreted as a zonal disk in the same zone as the instance (default).
       If ``regional'', the disk is interpreted as a regional disk in the same
       region as the instance. The default value for this is ``zonal''.
+      *force-attach*::: If ``yes'',  this persistent disk will force-attached to
+      the instance even it is already attached to another instance. The default
+      value is 'no'.
       """
 
   parser.add_argument(
@@ -678,7 +682,8 @@ def AddCreateDiskArgs(parser,
                       include_name=True,
                       support_boot=False,
                       support_multi_writer=False,
-                      support_replica_zones=False):
+                      support_replica_zones=False,
+                      support_storage_pool=False):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_device_name_help = GetDiskDeviceNameHelp(
@@ -912,12 +917,20 @@ def AddCreateDiskArgs(parser,
     """
     spec['replica-zones'] = arg_parsers.ArgList(max_length=2)
 
+  if support_storage_pool:
+    spec['storage-pool'] = str
+    disk_help += """
+      *storage-pool*::: The name of the storage pool in which the new disk is
+      created. The new disk and the storage pool must be in the same location.
+    """
+
   parser.add_argument(
       '--create-disk',
       type=arg_parsers.ArgDict(spec=spec),
       action='append',
       metavar='PROPERTY=VALUE',
-      help=disk_help)
+      help=disk_help,
+  )
 
 
 def AddCustomMachineTypeArgs(parser):

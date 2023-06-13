@@ -887,11 +887,19 @@ Type of the repository (1st gen). Currently only GitHub and Cloud Source Reposit
 are supported.
 """),
   )
-  v1_repo.add_argument(
+  config = v1_repo.add_mutually_exclusive_group()
+  config.add_argument(
       '--github-enterprise-config',
       help="""\
 The resource name of the GitHub Enterprise config that should be applied to this source (1st gen).
 Format: projects/{project}/locations/{location}/githubEnterpriseConfigs/{id} or projects/{project}/githubEnterpriseConfigs/{id}
+""")
+  config.add_argument(
+      '--bitbucket-server-config',
+      hidden=True,
+      help="""\
+The resource name of the Bitbucket Server config that should be applied to this source (1st gen).
+Format: projects/{project}/locations/{location}/bitbucketServerConfigs/{id}
 """)
 
   ref_config = repo_config.add_mutually_exclusive_group()
@@ -957,6 +965,7 @@ def ParseGitRepoSource(trigger, args, messages, required=False):
       ref=ref,
       repoType=parsed_git_repo_source_repo_type,
       githubEnterpriseConfig=args.github_enterprise_config,
+      bitbucketServerConfig=args.bitbucket_server_config,
   )
 
   parsed_git_file_source_repo_type = (
@@ -971,7 +980,8 @@ def ParseGitRepoSource(trigger, args, messages, required=False):
         uri=args.repo,
         revision=ref,
         repoType=parsed_git_file_source_repo_type,
-        githubEnterpriseConfig=args.github_enterprise_config)
+        githubEnterpriseConfig=args.github_enterprise_config,
+        bitbucketServerConfig=args.bitbucket_server_config)
 
 
 def ParseRequireApproval(trigger, args, messages):

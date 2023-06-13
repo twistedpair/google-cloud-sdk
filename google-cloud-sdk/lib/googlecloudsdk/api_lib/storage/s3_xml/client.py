@@ -397,8 +397,6 @@ class S3XmlClient(cloud_api.CloudApi):
       should_deep_copy_metadata=False,
   ):
     """See super class."""
-    del progress_callback  # TODO(b/161900052): Implement resumable copies.
-
     if _modifies_full_acl_policy(request_config):
       acl_file_path = getattr(request_config.resource_args, 'acl_file_path',
                               None)
@@ -448,6 +446,8 @@ class S3XmlClient(cloud_api.CloudApi):
         copy_kwargs, request_config, posix_to_set=posix_to_set
     )
     copy_response = self.client.copy_object(**copy_kwargs)
+    if progress_callback:
+      progress_callback(source_resource.size)
     return xml_metadata_util.get_object_resource_from_xml_response(
         self.scheme,
         copy_response,

@@ -75,11 +75,14 @@ class AdditionalPodRangesConfig(_messages.Message):
   secondary ranges supporting the ClusterUpdate message.
 
   Fields:
+    podRangeInfo: Output only. [Output only] Information for additional pod
+      range.
     podRangeNames: Name for pod secondary ipv4 range which has the actual
       range defined ahead.
   """
 
-  podRangeNames = _messages.StringField(1, repeated=True)
+  podRangeInfo = _messages.MessageField('RangeInfo', 1, repeated=True)
+  podRangeNames = _messages.StringField(2, repeated=True)
 
 
 class AddonsConfig(_messages.Message):
@@ -373,7 +376,6 @@ class BinaryAuthorization(_messages.Message):
       evaluation. If unspecified, defaults to DISABLED.
 
   Fields:
-    boundPolicies: Binauthz policies that apply to this cluster.
     enabled: This field is deprecated. Leave this unset and instead configure
       BinaryAuthorization using evaluation_mode. If evaluation_mode is set to
       anything other than EVALUATION_MODE_UNSPECIFIED, this field is ignored.
@@ -384,6 +386,7 @@ class BinaryAuthorization(_messages.Message):
       format: `projects/{project_number}/platforms/gke/policies/{policy_id}`.
       If absent, this defaults to a Google managed policy with pre-configured
       safeguards.
+    policyBindings: Binauthz policies that apply to this cluster.
   """
 
   class EvaluationModeValueValuesEnum(_messages.Enum):
@@ -402,10 +405,10 @@ class BinaryAuthorization(_messages.Message):
         Authorization in monitoring mode with the policy specified in
         binary_authorization.policy and enforce admission with the project's
         singleton policy.
-      BOUND_POLICIES: Use Binary Authorization with the policies specified in
-        bound_policies.
-      BOUND_POLICIES_AND_PROJECT_SINGLETON_POLICY_ENFORCE: Use Binary
-        Authorization with both the policies specified in bound_policies and
+      POLICY_BINDINGS: Use Binary Authorization with the policies specified in
+        policy_bindings.
+      POLICY_BINDINGS_AND_PROJECT_SINGLETON_POLICY_ENFORCE: Use Binary
+        Authorization with both the policies specified in policy_bindings and
         the project's singleton policy.
     """
     EVALUATION_MODE_UNSPECIFIED = 0
@@ -413,13 +416,13 @@ class BinaryAuthorization(_messages.Message):
     PROJECT_SINGLETON_POLICY_ENFORCE = 2
     MONITORING = 3
     MONITORING_AND_PROJECT_SINGLETON_POLICY_ENFORCE = 4
-    BOUND_POLICIES = 5
-    BOUND_POLICIES_AND_PROJECT_SINGLETON_POLICY_ENFORCE = 6
+    POLICY_BINDINGS = 5
+    POLICY_BINDINGS_AND_PROJECT_SINGLETON_POLICY_ENFORCE = 6
 
-  boundPolicies = _messages.MessageField('Policy', 1, repeated=True)
-  enabled = _messages.BooleanField(2)
-  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 3)
-  policy = _messages.StringField(4)
+  enabled = _messages.BooleanField(1)
+  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 2)
+  policy = _messages.StringField(3)
+  policyBindings = _messages.MessageField('PolicyBinding', 4, repeated=True)
 
 
 class BlueGreenInfo(_messages.Message):
@@ -1953,10 +1956,12 @@ class DNSConfig(_messages.Message):
       PLATFORM_DEFAULT: Use GKE default DNS provider(kube-dns) for DNS
         resolution.
       CLOUD_DNS: Use CloudDNS for DNS resolution.
+      KUBE_DNS: Use KubeDNS for DNS resolution
     """
     PROVIDER_UNSPECIFIED = 0
     PLATFORM_DEFAULT = 1
     CLOUD_DNS = 2
+    KUBE_DNS = 3
 
   clusterDns = _messages.EnumField('ClusterDnsValueValuesEnum', 1)
   clusterDnsDomain = _messages.StringField(2)
@@ -2385,6 +2390,10 @@ class IPAllocationPolicy(_messages.Message):
     createSubnetwork: Whether a new subnetwork will be created automatically
       for the cluster. This field is only applicable when `use_ip_aliases` is
       true.
+    defaultPodIpv4RangeUtilization: Output only. [Output only] The utilization
+      of the cluster default IPv4 range for pod. The ratio is Usage/[Total
+      number of IPs in the secondary range],
+      Usage=numNodes*numZones*podIPsPerNode.
     ipv6AccessType: The ipv6 access type (internal or external) when
       create_subnetwork is true
     nodeIpv4Cidr: This field is deprecated, use node_ipv4_cidr_block.
@@ -2477,20 +2486,21 @@ class IPAllocationPolicy(_messages.Message):
   clusterIpv4CidrBlock = _messages.StringField(3)
   clusterSecondaryRangeName = _messages.StringField(4)
   createSubnetwork = _messages.BooleanField(5)
-  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 6)
-  nodeIpv4Cidr = _messages.StringField(7)
-  nodeIpv4CidrBlock = _messages.StringField(8)
-  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 9)
-  servicesIpv4Cidr = _messages.StringField(10)
-  servicesIpv4CidrBlock = _messages.StringField(11)
-  servicesIpv6CidrBlock = _messages.StringField(12)
-  servicesSecondaryRangeName = _messages.StringField(13)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 14)
-  subnetIpv6CidrBlock = _messages.StringField(15)
-  subnetworkName = _messages.StringField(16)
-  tpuIpv4CidrBlock = _messages.StringField(17)
-  useIpAliases = _messages.BooleanField(18)
-  useRoutes = _messages.BooleanField(19)
+  defaultPodIpv4RangeUtilization = _messages.FloatField(6)
+  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 7)
+  nodeIpv4Cidr = _messages.StringField(8)
+  nodeIpv4CidrBlock = _messages.StringField(9)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 10)
+  servicesIpv4Cidr = _messages.StringField(11)
+  servicesIpv4CidrBlock = _messages.StringField(12)
+  servicesIpv6CidrBlock = _messages.StringField(13)
+  servicesSecondaryRangeName = _messages.StringField(14)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 15)
+  subnetIpv6CidrBlock = _messages.StringField(16)
+  subnetworkName = _messages.StringField(17)
+  tpuIpv4CidrBlock = _messages.StringField(18)
+  useIpAliases = _messages.BooleanField(19)
+  useRoutes = _messages.BooleanField(20)
 
 
 class IdentityServiceConfig(_messages.Message):
@@ -3727,6 +3737,9 @@ class NodeNetworkConfig(_messages.Message):
       notation (e.g. `10.96.0.0/14`) to pick a specific range to use. Only
       applicable if `ip_allocation_policy.use_ip_aliases` is true. This field
       cannot be changed after the node pool has been created.
+    podIpv4RangeUtilization: Output only. [Output only] The utilization of the
+      IPv4 range for pod. The ratio is Usage/[Total number of IPs in the
+      secondary range], Usage=numNodes*numZones*podIPsPerNode.
     podRange: The ID of the secondary range for pod IPs. If `create_pod_range`
       is true, this ID is used for the new range. If `create_pod_range` is
       false, uses an existing secondary range with this ID. Only applicable if
@@ -3741,7 +3754,8 @@ class NodeNetworkConfig(_messages.Message):
   networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 5)
   podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 6)
   podIpv4CidrBlock = _messages.StringField(7)
-  podRange = _messages.StringField(8)
+  podIpv4RangeUtilization = _messages.FloatField(8)
+  podRange = _messages.StringField(9)
 
 
 class NodePool(_messages.Message):
@@ -3792,6 +3806,7 @@ class NodePool(_messages.Message):
     placementPolicy: Specifies the node placement policy.
     podIpv4CidrSize: [Output only] The pod CIDR block size per node in this
       node pool.
+    queuedProvisioning: Specifies the configuration of queued provisioning.
     selfLink: [Output only] Server-defined URL for the resource.
     status: [Output only] The status of the nodes in this pool instance.
     statusMessage: [Output only] Deprecated. Use conditions instead.
@@ -3849,12 +3864,13 @@ class NodePool(_messages.Message):
   networkConfig = _messages.MessageField('NodeNetworkConfig', 12)
   placementPolicy = _messages.MessageField('PlacementPolicy', 13)
   podIpv4CidrSize = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  statusMessage = _messages.StringField(17)
-  updateInfo = _messages.MessageField('UpdateInfo', 18)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 19)
-  version = _messages.StringField(20)
+  queuedProvisioning = _messages.MessageField('QueuedProvisioning', 15)
+  selfLink = _messages.StringField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  statusMessage = _messages.StringField(18)
+  updateInfo = _messages.MessageField('UpdateInfo', 19)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 20)
+  version = _messages.StringField(21)
 
 
 class NodePoolAutoConfig(_messages.Message):
@@ -4224,6 +4240,10 @@ class PlacementPolicy(_messages.Message):
     TypeValueValuesEnum: The type of placement.
 
   Fields:
+    policyName: If set, refers to the name of a custom resource policy
+      supplied by the user. The resource policy must be in the same project
+      and region as the node pool. If not found, InvalidArgument error will be
+      returned.
     tpuTopology: TPU placement topology for pod slice node pool.
       https://cloud.google.com/tpu/docs/types-topologies#tpu_topologies
     type: The type of placement.
@@ -4241,8 +4261,9 @@ class PlacementPolicy(_messages.Message):
     TYPE_UNSPECIFIED = 0
     COMPACT = 1
 
-  tpuTopology = _messages.StringField(1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  policyName = _messages.StringField(1)
+  tpuTopology = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class PodCIDROverprovisionConfig(_messages.Message):
@@ -4256,7 +4277,7 @@ class PodCIDROverprovisionConfig(_messages.Message):
   disable = _messages.BooleanField(1)
 
 
-class Policy(_messages.Message):
+class PolicyBinding(_messages.Message):
   r"""Binauthz policy that applies to this cluster.
 
   Fields:
@@ -4329,6 +4350,32 @@ class PubSub(_messages.Message):
   enabled = _messages.BooleanField(1)
   filter = _messages.MessageField('Filter', 2)
   topic = _messages.StringField(3)
+
+
+class QueuedProvisioning(_messages.Message):
+  r"""QueuedProvisioning defines the queued provisioning used by the node
+  pool.
+
+  Fields:
+    enabled: Denotes that this nodepool is QRM specific. I.e. nodes can be
+      only obtained through queuing via Cluster Autoscaler ProvisioningRequest
+      API.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
+class RangeInfo(_messages.Message):
+  r"""RangeInfo contains the range name and the range utilization by this
+  cluster.
+
+  Fields:
+    rangeName: Output only. [Output only] Name of a range.
+    utilization: Output only. [Output only] The utilization of the range.
+  """
+
+  rangeName = _messages.StringField(1)
+  utilization = _messages.FloatField(2)
 
 
 class RecurringTimeWindow(_messages.Message):
@@ -4707,10 +4754,13 @@ class SecurityPostureConfig(_messages.Message):
       MODE_UNSPECIFIED: Default value not specified.
       DISABLED: Disables Security Posture features on the cluster.
       BASIC: Applies Security Posture features on the cluster.
+      ENTERPRISE: Applies the Security Posture off cluster Enterprise level
+        features.
     """
     MODE_UNSPECIFIED = 0
     DISABLED = 1
     BASIC = 2
+    ENTERPRISE = 3
 
   class VulnerabilityModeValueValuesEnum(_messages.Enum):
     r"""Sets which mode to use for vulnerability scanning.
@@ -4720,10 +4770,13 @@ class SecurityPostureConfig(_messages.Message):
       VULNERABILITY_DISABLED: Disables vulnerability scanning on the cluster.
       VULNERABILITY_BASIC: Applies basic vulnerability scanning on the
         cluster.
+      VULNERABILITY_ENTERPRISE: Applies the Security Posture's vulnerability
+        on cluster Enterprise level features.
     """
     VULNERABILITY_MODE_UNSPECIFIED = 0
     VULNERABILITY_DISABLED = 1
     VULNERABILITY_BASIC = 2
+    VULNERABILITY_ENTERPRISE = 3
 
   mode = _messages.EnumField('ModeValueValuesEnum', 1)
   vulnerabilityMode = _messages.EnumField('VulnerabilityModeValueValuesEnum', 2)

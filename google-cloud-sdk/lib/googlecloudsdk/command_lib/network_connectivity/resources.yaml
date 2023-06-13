@@ -139,3 +139,15 @@ serviceConnectionPolicy:
     parameter_name: serviceConnectionPoliciesId
     attribute_name: service_connection_policy
     help: Id of the service connection policy.
+
+group:
+  name: group
+  collection: networkconnectivity.projects.locations.global.hubs.groups
+  request_id_field: groupsId
+  attributes:
+  - *project
+  - *hub
+  - &group
+    parameter_name: groupsId
+    attribute_name: group
+    help: Id of the group.

@@ -209,6 +209,41 @@ def GetProtocolArg(messages):
           default='NFS_V3'))
   return protocol_arg
 
+def AddManagedActiveDirectoryArg(parser):
+  """Adds a --managed-ad flag to the parser.
+
+  Args:
+    parser: argparse parser.
+  """
+
+  managed_ad_arg_spec = {
+      'domain': str,
+      'computer': str,
+  }
+
+  managed_ad_help = """\
+        Managed Active Directory configuration for an instance. Specifying both
+        domain name and a computer name (unique to the domain) to be created by
+        filestore instance.
+
+         domain
+            The desired domain full uri. i.e:
+            projects/PROJECT/locations/global/domains/DOMAIN
+
+         computer
+            The desired active directory computer name to be created by
+            filestore instance when connecting to the domain.
+  """
+
+  parser.add_argument(
+      '--managed-ad',
+      type=arg_parsers.ArgDict(
+          spec=managed_ad_arg_spec, required_keys=['domain', 'computer']
+      ),
+      required=False,
+      help=managed_ad_help,
+  )
+
 
 def AddNetworkArg(parser):
   """Adds a --network flag to the given parser.
@@ -311,6 +346,16 @@ The default value is 65534.
 Anon_gid may only be set when squash_mode is set to ROOT_SQUASH.
 If NO_ROOT_SQUASH is specified, an error will be returned.
 The default value is 65534.
+
+*security-flavors*:: A list of security flavors that are allowed to be used
+during mount command in NFSv4.1 filestore instances.
+The security flavors supported are:
+- SECURITY_FLAVOR_UNSPECIFIED: SecurityFlavor not set. Defaults to AUTH_SYS.
+- AUTH_SYS: The user's UNIX user-id and group-ids are passed in the clear.
+- KRB5: The end-user authentication is done using Kerberos V5.
+- KRB5I: KRB5 plus integrity protection (data packets are tamper proof).
+- KRB5P: KRB5I plus privacy protection (data packets are tamper proof and
+  encrypted).
 """
 
   file_share_help = {
@@ -411,6 +456,7 @@ def AddInstanceCreateArgs(parser, api_version):
   GetTierArg(messages).choice_arg.AddToParser(parser)
   if api_version == filestore_client.BETA_API_VERSION:
     GetProtocolArg(messages).choice_arg.AddToParser(parser)
+    AddManagedActiveDirectoryArg(parser)
   AddFileShareArg(
       parser,
       api_version,

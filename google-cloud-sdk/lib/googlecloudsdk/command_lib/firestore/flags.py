@@ -24,7 +24,12 @@ from googlecloudsdk.calliope import arg_parsers
 
 
 def AddCollectionIdsFlag(parser):
-  """Adds flag for collection ids to the given parser."""
+  """Adds flag for collection ids to the given parser.
+
+  Args:
+    parser: The argparse parser.
+
+  """
   parser.add_argument(
       '--collection-ids',
       metavar='COLLECTION_IDS',
@@ -37,11 +42,19 @@ def AddCollectionIdsFlag(parser):
       collections:
 
         $ {command} --collection-ids='customers','orders'
-      """)
+      """,
+  )
 
 
 def AddDatabaseIdFlag(parser, required=False, hidden=False):
-  """Adds flag for database id to the given parser."""
+  """Adds flag for database id to the given parser.
+
+  Args:
+    parser: The argparse parser.
+    required: Whether the flag must be set for running the command, a bool.
+    hidden: Whether the flag is hidden in document, a bool.
+
+  """
   parser.add_argument(
       '--database',
       metavar='DATABASE',
@@ -55,7 +68,8 @@ def AddDatabaseIdFlag(parser, required=False, hidden=False):
       For example, to operate on database `foo`:
 
         $ {command} --database='foo'
-      """)
+      """,
+  )
 
 
 def AddNamespaceIdsFlag(parser):
@@ -73,7 +87,36 @@ def AddNamespaceIdsFlag(parser):
       For example, to operate on only the `customers` and `orders` namespaces:
 
         $ {command} --namespaces-ids='customers','orders'
-      """)
+      """,
+  )
+
+
+def AddSnapshotTimeFlag(parser):
+  """Adds flag for snapshot time to the given parser.
+
+  Args:
+    parser: The argparse parser.
+
+  """
+  parser.add_argument(
+      '--snapshot-time',
+      metavar='SNAPSHOT_TIME',
+      type=str,
+      default=None,
+      required=False,
+      help="""
+      The version of the database to export.
+
+      The timestamp must be rounded to the minute, in the past, and not older
+      than 1 hour. If specified, then the exported documents will represent a
+      consistent view of the database at the provided time. Otherwise, there are
+      no guarantees about the consistency of the exported documents.
+
+      For example, to operate on snapshot time `2023-05-26T10:20:00.00Z`:
+
+        $ {command} --snapshot-time='2023-05-26T10:20:00.00Z'
+      """,
+  )
 
 
 def AddLocationFlag(
@@ -107,7 +150,12 @@ def AddLocationFlag(
 
 
 def AddBackupFlag(parser):
-  """Adds flag for backup to the given parser."""
+  """Adds flag for backup to the given parser.
+
+  Args:
+    parser: The argparse parser.
+
+  """
   parser.add_argument(
       '--backup',
       metavar='BACKUP',
@@ -125,7 +173,12 @@ def AddBackupFlag(parser):
 
 
 def AddBackupScheduleFlag(parser):
-  """Adds flag for backup schedule id to the given parser."""
+  """Adds flag for backup schedule id to the given parser.
+
+  Args:
+    parser: The argparse parser.
+
+  """
   parser.add_argument(
       '--backup-schedule',
       metavar='BACKUP_SCHEDULE',
@@ -138,11 +191,18 @@ def AddBackupScheduleFlag(parser):
       For example, to operate on backup schedule `091a49a0-223f-4c98-8c69-a284abbdb26b`:
 
         $ {command} --backup-schedule='091a49a0-223f-4c98-8c69-a284abbdb26b'
-      """)
+      """,
+  )
 
 
 def AddRetentionFlag(parser, required=False):
-  """Adds flag for retention to the given parser."""
+  """Adds flag for retention to the given parser.
+
+  Args:
+    parser: The argparse parser.
+    required: Whether the flag must be set for running the command, a bool.
+
+  """
   parser.add_argument(
       '--retention',
       metavar='RETENTION',
@@ -162,7 +222,12 @@ def AddRetentionFlag(parser, required=False):
 
 
 def AddRecurrenceFlag(parser):
-  """Adds flag for recurrence to the given parser."""
+  """Adds flag for recurrence to the given parser.
+
+  Args:
+    parser: The argparse parser.
+
+  """
   parser.add_argument(
       '--recurrence',
       metavar='RECURRENCE',

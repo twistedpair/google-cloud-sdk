@@ -6903,12 +6903,17 @@ class GoogleCloudApigeeV1DimensionMetric(_messages.Message):
   r"""Encapsulates a metric grouped by dimension.
 
   Fields:
+    individualNames: Individual dimension names. E.g. ["dim1_name",
+      "dim2_name"].
     metrics: List of metrics.
-    name: Name of the dimension.
+    name: Comma joined dimension names. E.g. "dim1_name,dim2_name".
+      Deprecated. If name already has comma before join, we may get wrong
+      splits. Please use individual_names.
   """
 
-  metrics = _messages.MessageField('GoogleCloudApigeeV1Metric', 1, repeated=True)
-  name = _messages.StringField(2)
+  individualNames = _messages.StringField(1, repeated=True)
+  metrics = _messages.MessageField('GoogleCloudApigeeV1Metric', 2, repeated=True)
+  name = _messages.StringField(3)
 
 
 class GoogleCloudApigeeV1DisableSecurityActionRequest(_messages.Message):
@@ -10411,7 +10416,7 @@ class GoogleCloudApigeeV1SecurityActionAttributeConfig(_messages.Message):
   Fields:
     botReasons: Optional. A list of Bot Reasons. Current options: Flooder,
       Brute Guessor, Static Content Scraper, OAuth Abuser, Robot Abuser,
-      TorListRule and Anomaly Detection.
+      TorListRule, Advanced Anomaly Detection and Advanced API Scraper.
     ipAddressRanges: Optional. A list of IP ranges. This could be either IPv4
       or IPv6. 200,000 per rule at the environment level or 1000 at the proxy
       level.

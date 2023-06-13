@@ -170,14 +170,31 @@ def CreateQuotaExceededMsg(error):
   if not hasattr(error, 'errorDetails') or not error.errorDetails[0].quotaInfo:
     return error.message
   details = error.errorDetails[0].quotaInfo
-  msg = '{}\n\tmetric name = {}\n\tlimit name = {}\n'.format(
-      error.message, details.metricName, details.limitName)
+  msg = '{}\n\tmetric name = {}\n\tlimit name = {}\n\tlimit = {}\n'.format(
+      error.message, details.metricName, details.limitName, details.limit
+  )
+  # TODO(b/280371101): remove 'hasattr' condition once published to v1
+  if hasattr(details, 'futureLimit') and details.futureLimit:
+    msg += '\tfuture limit = {}\n\trollout status = {}\n'.format(
+        details.futureLimit, 'in progress'
+    )
   if details.dimensions:
     dim = io.StringIO()
     resource_printer.Print(details.dimensions, 'yaml', out=dim)
-    msg = msg + '\tdimensions = {}'.format(dim.getvalue())
-  return msg + ('Try your request in another zone, or view documentation on how'
-                ' to increase quotas: https://cloud.google.com/compute/quotas.')
+    msg += '\tdimensions = {}'.format(dim.getvalue())
+  if hasattr(details, 'futureLimit') and details.futureLimit:
+    msg += (
+        'The future limit is the new default quota that will be available after'
+        ' a service rollout completes. For more about the rollout process, see'
+        ' the documentation: '
+        'https://cloud.google.com/compute/docs/quota-rollout.'
+    )
+  else:
+    msg += (
+        'Try your request in another zone, or view documentation on how to'
+        ' increase quotas: https://cloud.google.com/compute/quotas.'
+    )
+  return msg
 
 
 # TODO(b/32637269) delete and clean up uses of scope_name.

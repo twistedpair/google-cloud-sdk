@@ -186,7 +186,7 @@ def JobsUriFromId(job_id, region_id):
 
   Args:
     job_id: The job ID
-    region_id: The region ID of the job's regional endpoint.
+    region_id: Region ID of the job's regional endpoint.
 
   Returns:
     URL to the job

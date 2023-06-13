@@ -291,7 +291,8 @@ def CreateDiskMessages(args,
                        support_kms=False,
                        support_multi_writer=False,
                        match_container_mount_disks=False,
-                       support_replica_zones=False):
+                       support_replica_zones=False,
+                       support_storage_pool=False):
   """Create disk messages for a single instance template."""
   container_mount_disk = (
       args.container_mount_disk if match_container_mount_disks else [])
@@ -310,7 +311,8 @@ def CreateDiskMessages(args,
           getattr(args, 'create_disk', []),
           support_kms=support_kms,
           support_multi_writer=support_multi_writer,
-          support_replica_zones=support_replica_zones))
+          support_replica_zones=support_replica_zones,
+          support_storage_pool=support_storage_pool))
 
   if create_boot_disk:
     boot_disk_list = [
@@ -411,7 +413,8 @@ def CreatePersistentCreateDiskMessages(client,
                                        support_kms=False,
                                        container_mount_disk=None,
                                        support_multi_writer=False,
-                                       support_replica_zones=False):
+                                       support_replica_zones=False,
+                                       support_storage_pool=False):
   """Returns a list of AttachedDisk messages.
 
   Args:
@@ -435,11 +438,13 @@ def CreatePersistentCreateDiskMessages(client,
                if True),
              * device-name - device name on VM,
              * disk-resource-policy - resource policies applied to disk.
+             * storage-pool: the storage pool in which the new disk is created.
 
     support_kms: if KMS is supported
     container_mount_disk: list of disks to be mounted to container, if any.
     support_multi_writer: if multi writer disks are supported.
     support_replica_zones: True if we allow creation of regional disks.
+    support_storage_pool: if storage pool is upported
 
   Returns:
     list of API messages for attached disks
@@ -516,6 +521,9 @@ def CreatePersistentCreateDiskMessages(client,
 
     init_params.provisionedThroughput = disk.get('provisioned-throughput')
 
+    if support_storage_pool:
+      init_params.storagePool = disk.get('storage-pool')
+
     create_disk = client.messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=boot,
@@ -523,7 +531,8 @@ def CreatePersistentCreateDiskMessages(client,
         initializeParams=init_params,
         mode=mode,
         type=client.messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
-        diskEncryptionKey=disk_key)
+        diskEncryptionKey=disk_key,
+    )
 
     # The boot disk must end up at index 0.
     if boot:

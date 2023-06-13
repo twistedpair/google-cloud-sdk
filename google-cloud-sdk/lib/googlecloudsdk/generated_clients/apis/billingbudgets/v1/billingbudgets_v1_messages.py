@@ -210,6 +210,12 @@ class GoogleCloudBillingBudgetsV1Filter(_messages.Message):
       specifying that usage from only this set of projects should be included
       in the budget. If omitted, the report includes all usage for the billing
       account, regardless of which project the usage occurred on.
+    resourceAncestors: Optional. A set of folder and organization names of the
+      form `folders/{folderId}` or `organizations/{organizationId}`,
+      specifying that usage from only this set of folders and organizations
+      should be included in the budget. If omitted, the report includes all
+      usage for all organizations, regardless of which organization the usage
+      occurred on.
     services: Optional. A set of services of the form `services/{service_id}`,
       specifying that usage from only this set of services should be included
       in the budget. If omitted, the report includes usage for all the
@@ -299,8 +305,9 @@ class GoogleCloudBillingBudgetsV1Filter(_messages.Message):
   customPeriod = _messages.MessageField('GoogleCloudBillingBudgetsV1CustomPeriod', 4)
   labels = _messages.MessageField('LabelsValue', 5)
   projects = _messages.StringField(6, repeated=True)
-  services = _messages.StringField(7, repeated=True)
-  subaccounts = _messages.StringField(8, repeated=True)
+  resourceAncestors = _messages.StringField(7, repeated=True)
+  services = _messages.StringField(8, repeated=True)
+  subaccounts = _messages.StringField(9, repeated=True)
 
 
 class GoogleCloudBillingBudgetsV1LastPeriodAmount(_messages.Message):

@@ -63,3 +63,43 @@ def AddLabelsFlag(parser):
 
         $ {command} --operation-labels=comment='customer orders','sales rep'=pending
       """)
+
+
+def AddIndexFileFlag(parser):
+  """Adds a index_file flag to the given parser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      'index_file',
+      help="""
+        The path to your `index.yaml` file. For a detailed look into defining
+        your `index.yaml` file, refer to this configuration guide:
+        https://cloud.google.com/datastore/docs/tools/indexconfig#Datastore_About_index_yaml
+        """,
+  )
+
+
+def AddOperationNameFlag(parser, operation_type):
+  """Adds a name flag to the given parser.
+
+  Args:
+    parser: The argparse parser.
+    operation_type: The operate type displayed in help text, a str.
+  """
+  parser.add_argument(
+      'name',
+      type=str,
+      default=None,
+      help="""
+        The unique name of the Operation to {}, formatted as either the full
+        or relative resource path:
+
+          projects/my-app-id/operations/foo
+
+        or:
+
+          foo
+        """.format(operation_type),
+  )

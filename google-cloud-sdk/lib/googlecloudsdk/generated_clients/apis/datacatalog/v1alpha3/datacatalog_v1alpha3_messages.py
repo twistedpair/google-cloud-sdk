@@ -1056,10 +1056,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     IntegratedSystemValueValuesEnum: Output only. Indicates the entry's source
       system that Data Catalog integrates with, such as BigQuery, Pub/Sub, or
       Dataproc Metastore.
-    TypeValueValuesEnum: The type of the entry. Only used for entries with
-      types listed in the `EntryType` enum. Currently, only `FILESET` enum
-      value is allowed. All other entries created in Data Catalog must use the
-      `user_specified_type`.
+    TypeValueValuesEnum: The type of the entry. For details, see
+      [`EntryType`](#entrytype).
 
   Messages:
     LabelsValue: Cloud labels attached to the entry. In Data Catalog, you can
@@ -1139,10 +1137,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     sqlDatabaseSystemSpec: Specification that applies to a relational database
       system. Only settable when `user_specified_system` is equal to
       `SQL_DATABASE`
-    type: The type of the entry. Only used for entries with types listed in
-      the `EntryType` enum. Currently, only `FILESET` enum value is allowed.
-      All other entries created in Data Catalog must use the
-      `user_specified_type`.
+    type: The type of the entry. For details, see [`EntryType`](#entrytype).
     usageSignal: Resource usage statistics.
     userSpecifiedSystem: Indicates the entry's source system that Data Catalog
       doesn't automatically integrate with. The `user_specified_system` string
@@ -1186,17 +1181,14 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     LOOKER = 8
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of the entry. Only used for entries with types listed in the
-    `EntryType` enum. Currently, only `FILESET` enum value is allowed. All
-    other entries created in Data Catalog must use the `user_specified_type`.
+    r"""The type of the entry. For details, see [`EntryType`](#entrytype).
 
     Values:
       ENTRY_TYPE_UNSPECIFIED: Default unknown type.
       TABLE: The entry type that has a GoogleSQL schema, including logical
         views.
-      MODEL: Output only. The type of models. For more information, see
-        [Supported models in BigQuery ML] (https://cloud.google.com/bigquery-
-        ml/docs/introduction#supported_models_in).
+      MODEL: The type of models. For more information, see [Supported models
+        in BigQuery ML](/bigquery/docs/bqml-introduction#supported_models).
       DATA_STREAM: An entry type for streaming entries. For example, a Pub/Sub
         topic.
       FILESET: An entry type for a set of files or objects. For example, a
@@ -1204,9 +1196,9 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       CLUSTER: A group of servers that work together. For example, a Kafka
         cluster.
       DATABASE: A database.
-      DATA_SOURCE_CONNECTION: Output only. Connection to a data source. For
-        example, a BigQuery connection.
-      ROUTINE: Output only. Routine, for example, a BigQuery routine.
+      DATA_SOURCE_CONNECTION: Connection to a data source. For example, a
+        BigQuery connection.
+      ROUTINE: Routine, for example, a BigQuery routine.
       LAKE: A Dataplex lake.
       ZONE: A Dataplex zone.
       SERVICE: A service, for example, a Dataproc Metastore service.

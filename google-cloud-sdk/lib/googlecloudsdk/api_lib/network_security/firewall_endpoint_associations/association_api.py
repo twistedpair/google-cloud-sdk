@@ -75,12 +75,28 @@ class Client:
     )
 
   def CreateAssociation(
-      self, name, parent, network, firewall_endpoint, labels=None
+      self,
+      name,
+      parent,
+      network,
+      firewall_endpoint,
+      tls_inspection_policy,
+      labels=None,
   ):
     """Calls the CreateAssociation API."""
-    association = self.messages.FirewallEndpointAssociation(
-        network=network, firewallEndpoint=firewall_endpoint, labels=labels
-    )
+    association = None
+    if tls_inspection_policy is None:
+      association = self.messages.FirewallEndpointAssociation(
+          network=network, firewallEndpoint=firewall_endpoint, labels=labels
+      )
+    else:
+      association = self.messages.FirewallEndpointAssociation(
+          network=network,
+          firewallEndpoint=firewall_endpoint,
+          labels=labels,
+          tlsInspectionPolicy=tls_inspection_policy,
+      )
+
     create_request = self.messages.NetworksecurityProjectsLocationsFirewallEndpointAssociationsCreateRequest(
         firewallEndpointAssociation=association,
         firewallEndpointAssociationId=name,

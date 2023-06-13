@@ -41,12 +41,16 @@ AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
         'control_plane.security_group_ids',
     'security_group_ids':
         'control_plane.security_group_ids',
+    'per_node_pool_sg_rules_disabled':
+        'networking.per_node_pool_sg_rules_disabled',
     'root_volume_size':
         'control_plane.root_volume.size_gib',
     'root_volume_type':
         'control_plane.root_volume.volume_type',
     'root_volume_iops':
         'control_plane.root_volume.iops',
+    'root_volume_throughput':
+        'control_plane.root_volume.throughput',
     'root_volume_kms_key_arn':
         'control_plane.root_volume.kms_key_arn',
     'role_arn':
@@ -106,6 +110,8 @@ AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
         'config.root_volume.volume_type',
     'root_volume_iops':
         'config.root_volume.iops',
+    'root_volume_throughput':
+        'config.root_volume.throughput',
     'root_volume_kms_key_arn':
         'config.root_volume.kms_key_arn',
     'clear_proxy_config':

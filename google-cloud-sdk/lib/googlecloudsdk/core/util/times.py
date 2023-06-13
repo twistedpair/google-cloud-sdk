@@ -179,6 +179,23 @@ def FormatDurationForJson(duration):
   return num + 's'
 
 
+def FormatDurationListForJson(duration_list):
+  """Returns a list of string representations of the durations, ending in 's'.
+
+  It will use FormatDurationForJson to process each duration object in the list.
+
+  Args:
+    duration_list: A list of iso_duration.Duration objects to be formatted.
+
+  Raises:
+    DurationValueError: A Duration numeric constant exceeded its range.
+
+  Returns:
+    A list of strings representation of the duration.
+  """
+  return [FormatDurationForJson(duration) for duration in duration_list]
+
+
 def ParseDuration(string, calendar=False, default_suffix=None):
   """Parses a duration string and returns a Duration object.
 
@@ -372,6 +389,26 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
 
   # Combine the parts.
   return ''.join(parts)
+
+
+def FormatDateTimeList(dt_list, fmt=None, tzinfo=None):
+  """Returns a list of strings of datetime objects formatted by FormatDateTime.
+
+  It will use FormatDateTime to process each datetime object in the list.
+
+  Args:
+    dt_list: A list of datetime objects to be formatted.
+    fmt: The strftime(3) format string, None for the RFC 3339 format in the dt
+      timezone ('%Y-%m-%dT%H:%M:%S.%3f%Ez').
+    tzinfo: Format dt relative to this timezone.
+
+  Raises:
+    DateTimeValueError: A DateTime numeric constant exceeded its range.
+
+  Returns:
+    A list of strings of a datetime objects formatted by an extended strftime().
+  """
+  return [FormatDateTime(dt, fmt, tzinfo) for dt in dt_list]
 
 
 class _TzInfoOrOffsetGetter(object):

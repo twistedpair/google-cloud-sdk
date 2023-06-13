@@ -2705,6 +2705,384 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class StorageDatabasecenterPartnerapiV1mainAvailabilityConfiguration(_messages.Message):
+  r"""Configuration for availability of database instance
+
+  Enums:
+    AvailabilityTypeValueValuesEnum: Availability type. Potential values: *
+      `ZONAL`: The instance serves data from only one zone. Outages in that
+      zone affect data accessibility. * `REGIONAL`: The instance can serve
+      data from more than one zone in a region (it is highly available).
+
+  Fields:
+    availabilityType: Availability type. Potential values: * `ZONAL`: The
+      instance serves data from only one zone. Outages in that zone affect
+      data accessibility. * `REGIONAL`: The instance can serve data from more
+      than one zone in a region (it is highly available).
+    externalReplicaConfigured: A boolean attribute.
+    promotableReplicaConfigured: A boolean attribute.
+  """
+
+  class AvailabilityTypeValueValuesEnum(_messages.Enum):
+    r"""Availability type. Potential values: * `ZONAL`: The instance serves
+    data from only one zone. Outages in that zone affect data accessibility. *
+    `REGIONAL`: The instance can serve data from more than one zone in a
+    region (it is highly available).
+
+    Values:
+      AVAILABILITY_TYPE_UNSPECIFIED: <no description>
+      ZONAL: Zonal available instance.
+      REGIONAL: Regional available instance.
+      AVAILABILITY_TYPE_OTHER: For rest of the other category
+    """
+    AVAILABILITY_TYPE_UNSPECIFIED = 0
+    ZONAL = 1
+    REGIONAL = 2
+    AVAILABILITY_TYPE_OTHER = 3
+
+  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 1)
+  externalReplicaConfigured = _messages.BooleanField(2)
+  promotableReplicaConfigured = _messages.BooleanField(3)
+
+
+class StorageDatabasecenterPartnerapiV1mainBackupConfiguration(_messages.Message):
+  r"""Configuration for automatic backups
+
+  Fields:
+    automatedBackupEnabled: Whether customer visible automated backups are
+      enabled on the instance.
+    backupRetentionSettings: Backup retention settings.
+  """
+
+  automatedBackupEnabled = _messages.BooleanField(1)
+  backupRetentionSettings = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainRetentionSettings', 2)
+
+
+class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Message):
+  r"""DatabaseResourceFeed is the top level proto to be used to ingest
+  different database resource level events into Condor platform.
+
+  Enums:
+    FeedTypeValueValuesEnum: Required. Type feed to be ingested into condor
+
+  Fields:
+    feedTimestamp: Required. Timestamp when feed is generated.
+    feedType: Required. Type feed to be ingested into condor
+    resourceId: Required. Primary key associated with the Resource
+    resourceMetadata: More feed data would be added in subsequent CLs
+  """
+
+  class FeedTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type feed to be ingested into condor
+
+    Values:
+      FEEDTYPE_UNSPECIFIED: <no description>
+      RESOURCE_METADATA: Database resource metadata feed from control plane
+      OBSERVABILITY_DATA: Database resource monitoring data
+      COMPLIANCE_DATA: Database resource compliance feed
+      FEEDTYPE_OTHER: For the rest of other category
+    """
+    FEEDTYPE_UNSPECIFIED = 0
+    RESOURCE_METADATA = 1
+    OBSERVABILITY_DATA = 2
+    COMPLIANCE_DATA = 3
+    FEEDTYPE_OTHER = 4
+
+  feedTimestamp = _messages.StringField(1)
+  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 2)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 3)
+  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 4)
+
+
+class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message):
+  r"""DatabaseResourceId will server as primary key for any resource ingestion
+  event.
+
+  Enums:
+    ProviderValueValuesEnum: Required. Cloud provider name. Ex:
+      GCP/AWS/Azure/OnPrem/SelfManaged
+
+  Fields:
+    provider: Required. Cloud provider name. Ex:
+      GCP/AWS/Azure/OnPrem/SelfManaged
+    resourceName: Required. Different from unique_id, a resource name can be
+      reused over time. That is after a resource named "ABC" is deleted, the
+      name "ABC" can be used to to create a new resource within the same
+      source.
+    resourceType: Required. The type of resource this ID is identifying. Ex
+      sqladmin.googleapis.com/Instance, alloydb.googleapis.com/cluster
+    uniqueId: Required. A service-local token that distinguishes this resource
+      from other resources within the same service.
+  """
+
+  class ProviderValueValuesEnum(_messages.Enum):
+    r"""Required. Cloud provider name. Ex: GCP/AWS/Azure/OnPrem/SelfManaged
+
+    Values:
+      PROVIDER_UNSPECIFIED: <no description>
+      GCP: Google cloud platform provider
+      AWS: Amazon web service
+      AZURE: Azure web service
+      ONPREM: On-prem database provider
+      SELFMANAGED: Self-managed database provider
+      PROVIDER_OTHER: For rest of the other category
+    """
+    PROVIDER_UNSPECIFIED = 0
+    GCP = 1
+    AWS = 2
+    AZURE = 3
+    ONPREM = 4
+    SELFMANAGED = 5
+    PROVIDER_OTHER = 6
+
+  provider = _messages.EnumField('ProviderValueValuesEnum', 1)
+  resourceName = _messages.StringField(2)
+  resourceType = _messages.StringField(3)
+  uniqueId = _messages.StringField(4)
+
+
+class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Message):
+  r"""Common model for database resource instance metadata.
+
+  Enums:
+    CurrentStateValueValuesEnum: Current state of the instance.
+    ExpectedStateValueValuesEnum: The actual instance state.
+    InstanceTypeValueValuesEnum: The type of the instance. Specified at
+      creation time.
+
+  Messages:
+    AdditionalMetadataValue: A AdditionalMetadataValue object.
+    UserLabelsValue: User-provided labels, represented as a dictionary where
+      each label is a single key value pair.
+
+  Fields:
+    additionalMetadata: A AdditionalMetadataValue attribute.
+    availabilityConfiguration: Availability configuration for this instance
+    backupConfiguration: Backup configuration for this instance
+    createTime: Required. Timestamp when resource was created
+    currentState: Current state of the instance.
+    expectedState: The actual instance state.
+    id: Required. Unique identifier for a Database resource
+    instanceType: The type of the instance. Specified at creation time.
+    parentResourceId: Unique identifier for this resource's immediate parent
+      resource. This parent resource id would be used to build resource
+      hierarchy in condor platform.
+    product: The product this resource represents.
+    resourceContainer: Closest parent Cloud Resource Manager container of this
+      resource. It must either be resource name of a Cloud Resource Manager
+      project, folder, or org, with the format of "/", such as
+      "organizations/123", "folders/123", or "projects/123".
+    updateTime: Required. Timestamp when resource was last updated
+    userLabels: User-provided labels, represented as a dictionary where each
+      label is a single key value pair.
+  """
+
+  class CurrentStateValueValuesEnum(_messages.Enum):
+    r"""Current state of the instance.
+
+    Values:
+      STATE_UNSPECIFIED: <no description>
+      HEALTHY: The instance is running.
+      UNHEALTHY: Instance being created, updated, deleted or under maintenance
+      STATE_OTHER: For rest of the other category
+    """
+    STATE_UNSPECIFIED = 0
+    HEALTHY = 1
+    UNHEALTHY = 2
+    STATE_OTHER = 3
+
+  class ExpectedStateValueValuesEnum(_messages.Enum):
+    r"""The actual instance state.
+
+    Values:
+      STATE_UNSPECIFIED: <no description>
+      HEALTHY: The instance is running.
+      UNHEALTHY: Instance being created, updated, deleted or under maintenance
+      STATE_OTHER: For rest of the other category
+    """
+    STATE_UNSPECIFIED = 0
+    HEALTHY = 1
+    UNHEALTHY = 2
+    STATE_OTHER = 3
+
+  class InstanceTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the instance. Specified at creation time.
+
+    Values:
+      INSTANCE_TYPE_UNSPECIFIED: <no description>
+      PRIMARY: A regular primary database instance
+      READ_REPLICA: An instance acting as a read-replica.
+      INSTANCE_TYPE_OTHER: For rest of the other category
+    """
+    INSTANCE_TYPE_UNSPECIFIED = 0
+    PRIMARY = 1
+    READ_REPLICA = 2
+    INSTANCE_TYPE_OTHER = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AdditionalMetadataValue(_messages.Message):
+    r"""A AdditionalMetadataValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a AdditionalMetadataValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AdditionalMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UserLabelsValue(_messages.Message):
+    r"""User-provided labels, represented as a dictionary where each label is
+    a single key value pair.
+
+    Messages:
+      AdditionalProperty: An additional property for a UserLabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type UserLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UserLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  additionalMetadata = _messages.MessageField('AdditionalMetadataValue', 1)
+  availabilityConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainAvailabilityConfiguration', 2)
+  backupConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupConfiguration', 3)
+  createTime = _messages.StringField(4)
+  currentState = _messages.EnumField('CurrentStateValueValuesEnum', 5)
+  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 6)
+  id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 7)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 8)
+  parentResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 9)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 10)
+  resourceContainer = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  userLabels = _messages.MessageField('UserLabelsValue', 13)
+
+
+class StorageDatabasecenterPartnerapiV1mainRetentionSettings(_messages.Message):
+  r"""A StorageDatabasecenterPartnerapiV1mainRetentionSettings object.
+
+  Enums:
+    RetentionUnitValueValuesEnum: The unit that 'retained_backups' represents.
+
+  Fields:
+    quantityBasedRetention: A integer attribute.
+    retentionUnit: The unit that 'retained_backups' represents.
+    timeBasedRetention: A string attribute.
+  """
+
+  class RetentionUnitValueValuesEnum(_messages.Enum):
+    r"""The unit that 'retained_backups' represents.
+
+    Values:
+      RETENTION_UNIT_UNSPECIFIED: Backup retention unit is unspecified, will
+        be treated as COUNT.
+      COUNT: Retention will be by count, eg. "retain the most recent 7
+        backups".
+      TIME: Retention will be by Time, eg. "retain the last 7 days backups".
+      RETENTION_UNIT_OTHER: For rest of the other category
+    """
+    RETENTION_UNIT_UNSPECIFIED = 0
+    COUNT = 1
+    TIME = 2
+    RETENTION_UNIT_OTHER = 3
+
+  quantityBasedRetention = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 2)
+  timeBasedRetention = _messages.StringField(3)
+
+
+class StorageDatabasecenterProtoCommonProduct(_messages.Message):
+  r"""Product specification for Condor resources.
+
+  Enums:
+    EngineValueValuesEnum: The specific engine that the underlying database is
+      running.
+    TypeValueValuesEnum: Type of specific database product. It could be
+      CloudSQL, AlloyDB etc..
+
+  Fields:
+    engine: The specific engine that the underlying database is running.
+    type: Type of specific database product. It could be CloudSQL, AlloyDB
+      etc..
+    version: Version of the underlying database engine. Example values: For
+      MySQL, it could be "MySQL_8.0", "MySQL_5.7" etc.. For PostGres, it could
+      be "Postgres_14", "Postgres_15" etc..
+  """
+
+  class EngineValueValuesEnum(_messages.Enum):
+    r"""The specific engine that the underlying database is running.
+
+    Values:
+      ENGINE_UNSPECIFIED: UNSPECIFIED means engine type is not known or
+        available.
+      MYSQL: MySQL binary running as engine in database instance.
+      POSTGRES: Postgres binary running as engine in database instance.
+      SQL_SERVER: SQLServer binary running as engine in database instance.
+      NATIVE: Native database binary running as engine in instance.
+      SPANGRES: Cloud Spanner with Postgres dialect.
+      ENGINE_OTHER: Other refers to rest of other database engine. This is to
+        be when engine is known, but it is not present in this enum.
+    """
+    ENGINE_UNSPECIFIED = 0
+    MYSQL = 1
+    POSTGRES = 2
+    SQL_SERVER = 3
+    NATIVE = 4
+    SPANGRES = 5
+    ENGINE_OTHER = 6
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of specific database product. It could be CloudSQL, AlloyDB etc..
+
+    Values:
+      PRODUCT_TYPE_UNSPECIFIED: UNSPECIFIED means product type is not known or
+        available.
+      CLOUD_SQL: Cloud SQL product area in GCP
+      ALLOYDB: AlloyDB product area in GCP
+      SPANNER: Spanner product area in GCP
+      ON_PREM: On premises database product.
+      PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
+        to be when product type is known, but it is not present in this enum.
+    """
+    PRODUCT_TYPE_UNSPECIFIED = 0
+    CLOUD_SQL = 1
+    ALLOYDB = 2
+    SPANNER = 3
+    ON_PREM = 4
+    PRODUCT_TYPE_OTHER = 5
+
+  engine = _messages.EnumField('EngineValueValuesEnum', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  version = _messages.StringField(3)
+
+
 class StringRestrictions(_messages.Message):
   r"""Restrictions on STRING type values
 

@@ -1683,7 +1683,7 @@ class ClouddeployProjectsLocationsTargetsDeleteRequest(_messages.Message):
 
   Fields:
     allowMissing: Optional. If set to true, then deleting an already deleted
-      or non-existing DeliveryPipeline will succeed.
+      or non-existing `Target` will succeed.
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
@@ -4466,11 +4466,16 @@ class ServiceNetworking(_messages.Message):
   Fields:
     deployment: Required. Name of the Kubernetes Deployment whose traffic is
       managed by the specified Service.
+    disablePodOverprovisioning: Optional. Whether to disable Pod
+      overprovisioning. If Pod overprovisioning is disabled then Cloud Deploy
+      will limit the number of total Pods used for the deployment strategy to
+      the number of Pods the Deployment has on the cluster.
     service: Required. Name of the Kubernetes Service.
   """
 
   deployment = _messages.StringField(1)
-  service = _messages.StringField(2)
+  disablePodOverprovisioning = _messages.BooleanField(2)
+  service = _messages.StringField(3)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -475,8 +475,8 @@ def add_recovery_point_objective_flag(parser):
             ' dual-region buckets. If unspecified when the bucket is created,'
             ' it defaults to `DEFAULT` for dual-region and multi-region'
             ' buckets. For more information, see'
-            ' [Turbo Replication](https://cloud.google.com/storage/docs'
-            '/turbo-replication).'))
+            ' [replication in Cloud Storage](https://cloud.google.com/storage'
+            '/docs/availability-durability#cross-region-redundancy).'))
 
 
 def check_if_use_gsutil_style(args):

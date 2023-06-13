@@ -154,6 +154,22 @@ def _GetPrimaryResource(resource_params, resource_collection):
   return primary_resources[0]
 
 
+def _DoesDupResourceArgHaveSameAttributes(resource, resource_params):
+  """Verify if there is a duplicated resource argument with the same attributes.
+
+  Args:
+    resource: yaml_arg_schema.Argument, resource to be verified.
+    resource_params: [yaml_arg_schema.Argument], list to check duplicate.
+
+  Returns:
+    True if there is a duplicate resource arg in the list with same attributes.
+  """
+  for res_arg in resource_params:
+    if res_arg != resource and res_arg.name == resource.name:
+      return res_arg.attribute_names == resource.attribute_names
+  return False
+
+
 def _GetSharedAttributes(resource_params):
   """Retrieves shared attributes between resource args.
 
@@ -167,26 +183,35 @@ def _GetSharedAttributes(resource_params):
   attributes = {}
   for arg in resource_params:
     if arg.name in resource_names:
-      raise util.InvalidSchemaError(
-          'More than one resource argument has the name [{}]. Remove one '
-          'of the duplicate resource declarations.'.format(arg.name))
+      # If we found a duplicate resource arg, make sure it has same attributes.
+      if (
+          arg.name in resource_names
+          and not _DoesDupResourceArgHaveSameAttributes(arg, resource_params)
+      ):
+        raise util.InvalidSchemaError(
+            'More than one resource argument has the name [{}] with different '
+            'attributes. Remove the duplicate resource declarations.'.format(
+                arg.name
+            )
+        )
     else:
       resource_names.add(arg.name)
 
-    for attribute_name in arg.attribute_names:
-      if (attribute_name not in arg.removed_flags and
-          not concepts.IGNORED_FIELDS.get(attribute_name)):
-        attributes[attribute_name] = attributes.get(attribute_name, set())
+    # iterate thorugh attributes, but last one (anchor attribute. i.e, &name).
+    for attribute_name in arg.attribute_names[:-1]:
+      if (
+          attribute_name not in arg.removed_flags
+          and not concepts.IGNORED_FIELDS.get(attribute_name)
+      ):
+        attributes[attribute_name] = attributes.get(attribute_name, [])
+        attributes[attribute_name].append(arg.name)
 
-        if arg.name in attributes[attribute_name]:
-          raise util.InvalidSchemaError(
-              'Attribute {} listed more than once in resource {}. '
-              'Remove one of the duplicate attribute declarations.'.format(
-                  attribute_name, arg.name))
-
-        attributes[attribute_name].add(arg.name)
-
-  return attributes
+  # Shared attributes: attribute entries with more than 1 resource args.
+  return {
+      attribute: resource_args
+      for attribute, resource_args in attributes.items()
+      if len(resource_args) > 1
+  }
 
 
 class DeclarativeArgumentGenerator(object):
@@ -224,28 +249,25 @@ class DeclarativeArgumentGenerator(object):
     if self.method:
       message = self.method.GetRequestType()
 
-    flag_map = _GetSharedAttributes(self.resource_args)
-    shared_resource_flags = []
-    for attribute, resource_args in flag_map.items():
-      if len(resource_args) > 1:
-        shared_resource_flags.append(attribute)
+    shared_atttribute_resource_dict = _GetSharedAttributes(self.resource_args)
+    shared_resource_attributes_list = list(shared_atttribute_resource_dict)
 
-    args = [arg.Generate(self.method, message, shared_resource_flags)
+    args = [arg.Generate(self.method, message, shared_resource_attributes_list)
             for arg in self.arg_info]
 
     primary = self.primary_resource_arg and self.primary_resource_arg.name
 
-    for arg in shared_resource_flags:
-      resource_names = list(flag_map.get(arg))
+    for attribute, resource_args in shared_atttribute_resource_dict.items():
+      resource_names = list(set(resource_args))
       resource_names.sort(
           key=lambda name: '' if primary and name == primary else name)
 
       args.append(base.Argument(
-          '--' + arg,
+          '--' + attribute,
           help='For resources [{}], provides fallback value for resource '
                '{attr} attribute. When the resource\'s full URI path is not '
                'provided, {attr} will fallback to this flag value.'.format(
-                   ', '.join(resource_names), attr=arg)))
+                   ', '.join(resource_names), attr=attribute)))
 
     return args
 

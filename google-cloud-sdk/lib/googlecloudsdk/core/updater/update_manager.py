@@ -19,12 +19,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import contextlib
 import hashlib
+import itertools
 import os
+import pathlib
 import shutil
 import subprocess
 import sys
 import textwrap
+
+import certifi
 
 from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import config
@@ -114,6 +119,19 @@ def _HaltIfBundledPythonUnix():
 def _ContainsBundledPython(components):
   """Return true if components list contains 'bundled python' component(s)."""
   return len(list(set(BUNDLED_PYTHON_COMPONENTS) & set(components))) >= 1
+
+
+@contextlib.contextmanager
+def _EnsureCaCertsRestoredIfDeleted(ca_certs_path):
+  """Restores CA certs to their original location if deleted during update."""
+  original_contents = file_utils.ReadBinaryFileContents(ca_certs_path)
+  try:
+    yield
+  finally:
+    # Recreate the file at its original location if it got deleted.
+    if not os.path.exists(ca_certs_path):
+      file_utils.WriteBinaryFileContents(
+          ca_certs_path, original_contents, create_path=True)
 
 
 def _GetVersionString(component, installed_components):
@@ -1069,14 +1087,27 @@ version [{1}].  To clear your fixed version setting, run:
     if disable_backup:
       with execution_utils.UninterruptibleSection(stream=log.status):
         self.__Write(log.status, 'Performing in place update...\n')
-        self._UpdateWithProgressBar(components_to_remove, 'Uninstalling',
-                                    install_state.Uninstall,
-                                    first=True,
-                                    last=not components_to_install)
-        self._UpdateWithProgressBar(components_to_install, 'Installing',
-                                    self._InstallFunction(install_state, diff),
-                                    first=not components_to_remove,
-                                    last=True)
+        # For the in-place update, we're free to delete any Python files as long
+        # as the ones we need have already been imported and loaded into memory.
+        # However, we have to be careful to save the CA certs file in the
+        # gcloud-deps component if it gets removed during the uninstall, since
+        # it's needed to make HTTP requests during the subsequent install. We do
+        # this by restoring the path prior to Install if it was deleted during
+        # Uninstall, then cleaning it up after Install if it's no longer needed
+        # (which could happen if e.g. certifi changes the path in the future).
+        with self._EnsureCaCertsCleanedUpIfObsoleted() as ca_certs_path:
+          with _EnsureCaCertsRestoredIfDeleted(ca_certs_path):
+            self._UpdateWithProgressBar(components_to_remove, 'Uninstalling',
+                                        install_state.Uninstall,
+                                        first=True,
+                                        last=not components_to_install)
+          # CA certs are now restored to their original path (they may get
+          # overwritten during the install).
+          self._UpdateWithProgressBar(components_to_install, 'Installing',
+                                      self._InstallFunction(
+                                          install_state, diff),
+                                      first=not components_to_remove,
+                                      last=True)
     else:
       with console_io.ProgressBar(
           label='Creating update staging area', stream=log.status,
@@ -1146,6 +1177,62 @@ To revert your CLI to the previously installed version, you may run:
   """.format('\n  '.join(duplicate_commands)))
 
     return True
+
+  @contextlib.contextmanager
+  def _EnsureCaCertsCleanedUpIfObsoleted(self):
+    """Context manager that cleans up CA certs file upon exit if it's obsolete.
+
+    When performing an in-place update, we restore the CA certs file to its
+    original location if the component containing it needed to be removed. It's
+    possible, however, that a newer version of gcloud gets the CA certs file
+    from a different path (e.g. if there's a change to certifi or gcloud's
+    directory structure at some point in the future). In that case, we want to
+    ensure we clean up the old path once it's no longer needed to make requests
+    (i.e. just after installing the new components), rather than have it lying
+    around forever in the install dir. This context manager takes care of that.
+
+    Yields:
+      str, Path to the existing CA certs file.
+    """
+    ca_certs_path = (
+        properties.VALUES.core.custom_ca_certs_file.Get() or certifi.where())
+    # We compare the installed paths before/after the update to determine if the
+    # original CA certs path was removed from the manifests. Technically we need
+    # only look at the final state manifests, but doing it this way provides a
+    # greater assurance that we're dealing with the right path since we'll know
+    # it was present initially and then absent subsequently, vs. just looking at
+    # the final state and mistakenly removing the file if it appears absent due
+    # to some faulty relative path comparison or whatever (this would result in
+    # bricked installs and would be very bad, so we're more defensive here).
+    initial_state = self._GetInstallState()
+    initial_components = initial_state.InstalledComponents()
+    initial_paths = set(
+        itertools.chain.from_iterable(
+            manifest.InstalledPaths()
+            for manifest in initial_components.values()))
+    try:
+      yield ca_certs_path
+    finally:
+      current_state = self._GetInstallState()
+      current_components = current_state.InstalledComponents()
+      current_paths = set(
+          itertools.chain.from_iterable(
+              manifest.InstalledPaths()
+              for manifest in current_components.values()))
+      removed_paths = initial_paths - current_paths
+      # We want to compare this to the paths stored in the manifests, which are
+      # relative to the install dir and use Posix representations.
+      relative_ca_certs_path = pathlib.PurePath(
+          os.path.relpath(ca_certs_path, self.__sdk_root)).as_posix()
+      if relative_ca_certs_path in removed_paths:
+        os.remove(ca_certs_path)
+        # Also clean up any parent folders that we might have created when
+        # restoring the CA certs file if they're now empty.
+        dir_path = os.path.dirname(os.path.normpath(relative_ca_certs_path))
+        while dir_path and not os.listdir(
+            os.path.join(self.__sdk_root, dir_path)):
+          os.rmdir(os.path.join(self.__sdk_root, dir_path))
+          dir_path = os.path.dirname(dir_path)
 
   def _HandleBadComponentInstallState(self, update_seed, to_install):
     """Deal with bad install state of kubectl component on darwin-arm machines.

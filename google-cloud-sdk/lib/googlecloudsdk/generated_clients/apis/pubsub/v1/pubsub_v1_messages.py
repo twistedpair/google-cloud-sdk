@@ -38,6 +38,66 @@ class AvroConfig(_messages.Message):
   writeMetadata = _messages.BooleanField(1)
 
 
+class AwsKinesis(_messages.Message):
+  r"""Ingestion settings for Amazon Kinesis Data Streams.
+
+  Enums:
+    StateValueValuesEnum: Output only. An output-only field that indicates the
+      state of the Kinesis ingestion source.
+
+  Fields:
+    awsRoleArn: Required. AWS role ARN to be used for Federated Identity
+      authentication with Kinesis. Check the Pub/Sub docs for how to set up
+      this role and the required permissions that need to be attached to it.
+    consumerArn: Required. The Kinesis consumer ARN to used for ingestion in
+      Enhanced Fan-Out mode. The consumer must be already created and ready to
+      be used.
+    gcpServiceAccount: Required. The GCP service account to be used Federated
+      Identity authentication with Kinesis (via a `AssumeRoleWithWebIdentity`
+      call for the provided role using the gcp_service_account for this
+      project). The `aws_role_arn` must be set up with
+      `accounts.google.com:sub` equals to this account number.
+    state: Output only. An output-only field that indicates the state of the
+      Kinesis ingestion source.
+    streamArn: Required. The Kinesis stream ARN to ingest data from.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. An output-only field that indicates the state of the
+    Kinesis ingestion source.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: Ingestion is active.
+      KINESIS_PERMISSION_DENIED: Permission denied encountered while consuming
+        data from Kinesis. This can happen if: - The provided `aws_role_arn`
+        does not exist or does not have the appropriate permissions attached.
+        - The provided `aws_role_arn` is not set up properly for Identity
+        Federation using `gcp_service_account`. - The Pub/Sub SA is not
+        granted the `iam.serviceAccounts.getOpenIdToken` permission on
+        `gcp_service_account`.
+      PUBLISH_PERMISSION_DENIED: Permission denied encountered while
+        publishing to the topic. This can happen due to Pub/Sub SA has not
+        been granted the [appropriate publish
+        permissions](https://cloud.google.com/pubsub/docs/access-
+        control#pubsub.publisher)
+      STREAM_NOT_FOUND: The Kinesis stream does not exist.
+      CONSUMER_NOT_FOUND: The Kinesis consumer does not exist.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    KINESIS_PERMISSION_DENIED = 2
+    PUBLISH_PERMISSION_DENIED = 3
+    STREAM_NOT_FOUND = 4
+    CONSUMER_NOT_FOUND = 5
+
+  awsRoleArn = _messages.StringField(1)
+  consumerArn = _messages.StringField(2)
+  gcpServiceAccount = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  streamArn = _messages.StringField(5)
+
+
 class BigQueryConfig(_messages.Message):
   r"""Configuration for a BigQuery subscription.
 
@@ -366,6 +426,16 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class IngestionDataSourceSettings(_messages.Message):
+  r"""Settings for an ingestion data source on a topic.
+
+  Fields:
+    awsKinesis: Amazon Kinesis Data Streams.
+  """
+
+  awsKinesis = _messages.MessageField('AwsKinesis', 1)
 
 
 class ListSchemaRevisionsResponse(_messages.Message):
@@ -2157,11 +2227,17 @@ class TextConfig(_messages.Message):
 class Topic(_messages.Message):
   r"""A topic resource.
 
+  Enums:
+    StateValueValuesEnum: Output only. An output-only field indicating the
+      state of the topic.
+
   Messages:
     LabelsValue: See [Creating and managing labels]
       (https://cloud.google.com/pubsub/docs/labels).
 
   Fields:
+    ingestionDataSourceSettings: Settings for managed ingestion from a data
+      source into this topic.
     kmsKeyName: The resource name of the Cloud KMS CryptoKey to be used to
       protect access to messages published on this topic. The expected format
       is `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
@@ -2190,7 +2266,23 @@ class Topic(_messages.Message):
       from the server; it is ignored if it is set in any requests.
     schemaSettings: Settings for validating messages published against a
       schema.
+    state: Output only. An output-only field indicating the state of the
+      topic.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. An output-only field indicating the state of the topic.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: The topic does not have any persistent errors.
+      INGESTION_RESOURCE_ERROR: Ingestion from the data source has encountered
+        a permanent error. See the more detailed error state in the
+        corresponding ingestion source configuration.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    INGESTION_RESOURCE_ERROR = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2217,13 +2309,15 @@ class Topic(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  kmsKeyName = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  messageRetentionDuration = _messages.StringField(3)
-  messageStoragePolicy = _messages.MessageField('MessageStoragePolicy', 4)
-  name = _messages.StringField(5)
-  satisfiesPzs = _messages.BooleanField(6)
-  schemaSettings = _messages.MessageField('SchemaSettings', 7)
+  ingestionDataSourceSettings = _messages.MessageField('IngestionDataSourceSettings', 1)
+  kmsKeyName = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  messageRetentionDuration = _messages.StringField(4)
+  messageStoragePolicy = _messages.MessageField('MessageStoragePolicy', 5)
+  name = _messages.StringField(6)
+  satisfiesPzs = _messages.BooleanField(7)
+  schemaSettings = _messages.MessageField('SchemaSettings', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
 class UpdateSnapshotRequest(_messages.Message):

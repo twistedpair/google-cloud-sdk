@@ -55,7 +55,8 @@ class PersistentResourcesClient(object):
              resource_pools,
              display_name=None,
              kms_key_name=None,
-             labels=None):
+             labels=None,
+             network=None):
     """Constructs a request and sends it to the endpoint to create a persistent resource.
 
     Args:
@@ -68,6 +69,7 @@ class PersistentResourcesClient(object):
       resource.
       labels: LabelValues, map-like user-defined metadata to organize the
       resource.
+      network: Network to peer with the PersistentResource
 
     Returns:
       A PersistentResource message instance created.
@@ -82,6 +84,9 @@ class PersistentResourcesClient(object):
     if labels:
       persistent_resource.labels = labels
 
+    if network:
+      persistent_resource.network = network
+
     if self._version == constants.ALPHA_VERSION:
       raise errors.ArgumentError('Persistent Resource is unsupported in Alpha.')
     elif self._version == constants.BETA_VERSION:
@@ -95,27 +100,52 @@ class PersistentResourcesClient(object):
       raise errors.ArgumentError('Persistent Resource is unsupported in GA.')
 
   def List(self, limit=None, region=None):
-    return list_pager.YieldFromList(
-        self._service,
-        self._messages.AiplatformProjectsLocationsCustomJobsListRequest(
-            parent=region
-        ),
-        field='customJobs',
-        batch_size_attribute='pageSize',
-        limit=limit,
-    )
+    """Constructs a list request and sends it to the Persistent Resources endpoint.
+
+    Args:
+      limit: How many items to return in the list
+      region: Which region to list resources from
+
+    Returns:
+      A Persistent Resource list response message.
+
+    """
+    if self._version == constants.ALPHA_VERSION:
+      raise errors.ArgumentError('Persistent Resource is unsupported in Alpha.')
+    elif self._version == constants.BETA_VERSION:
+      return list_pager.YieldFromList(
+          self._service,
+          self._messages.AiplatformProjectsLocationsPersistentResourcesListRequest(
+              parent=region
+          ),
+          field='persistentResources',
+          batch_size_attribute='pageSize',
+          limit=limit,
+      )
+    else:
+      raise errors.ArgumentError('Persistent Resource is unsupported in GA.')
 
   def Get(self, name):
-    request = self._messages.AiplatformProjectsLocationsCustomJobsGetRequest(
-        name=name
-    )
-    return self._service.Get(request)
+    if self._version == constants.ALPHA_VERSION:
+      raise errors.ArgumentError('Persistent Resource is unsupported in Alpha.')
+    elif self._version == constants.BETA_VERSION:
+      request = self._messages.AiplatformProjectsLocationsPersistentResourcesGetRequest(
+          name=name
+      )
+      return self._service.Get(request)
+    else:
+      raise errors.ArgumentError('Persistent Resource is unsupported in GA.')
 
-  def Cancel(self, name):
-    request = self._messages.AiplatformProjectsLocationsCustomJobsCancelRequest(
-        name=name
-    )
-    return self._service.Cancel(request)
+  def Delete(self, name):
+    if self._version == constants.ALPHA_VERSION:
+      raise errors.ArgumentError('Persistent Resource is unsupported in Alpha.')
+    elif self._version == constants.BETA_VERSION:
+      request = self._messages.AiplatformProjectsLocationsPersistentResourcesDeleteRequest(
+          name=name
+      )
+      return self._service.Delete(request)
+    else:
+      raise errors.ArgumentError('Persistent Resource is unsupported in GA.')
 
   def ImportResourceMessage(self, yaml_file, message_name):
     """Import a messages class instance typed by name from a YAML file."""

@@ -829,3 +829,36 @@ class FleetClient(object):
         name=name)
     return self.client.projects_locations_memberships_rbacrolebindings.Delete(
         req)
+
+  def GenerateMembershipRbacRoleBindingYaml(self, name, role, user, group):
+    """Gets YAML containing RBAC policies for a membership RBAC role binding.
+
+    Args:
+      name: the full Membership RBAC Role Binding resource name.
+      role: the role for the RBAC policies.
+      user: the user to apply the RBAC policies for.
+      group: the group to apply the RBAC policies for.
+
+    Returns:
+      YAML text containing RBAC policies for a membership RBAC rolebinding.
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error.
+    """
+    rolebinding = self.messages.RBACRoleBinding(
+        name=name,
+        role=self.messages.Role(
+            predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
+                role.upper())),
+        user=user,
+        group=group)
+    resource = resources.REGISTRY.ParseRelativeName(
+        name,
+        'gkehub.projects.locations.memberships.rbacrolebindings',
+        api_version='v1alpha')
+    req = self.messages.GkehubProjectsLocationsMembershipsRbacrolebindingsGenerateMembershipRBACRoleBindingYAMLRequest(
+        rBACRoleBinding=rolebinding,
+        rbacrolebindingId=resource.Name(),
+        parent=resource.Parent().RelativeName())
+    return self.client.projects_locations_memberships_rbacrolebindings.GenerateMembershipRBACRoleBindingYAML(
+        req)

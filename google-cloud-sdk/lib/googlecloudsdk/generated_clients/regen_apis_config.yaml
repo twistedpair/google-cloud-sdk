@@ -231,6 +231,9 @@ apis:
   config:
     v1alpha1:
       discovery_doc: config_v1alpha1.json
+      default: false
+    v1alpha2:
+      discovery_doc: config_v1alpha2.json
       default: true
   certificatemanager:
     v1:
@@ -1013,6 +1016,10 @@ apis:
       default: true
     v1beta1:
       discovery_doc: notebooks_v1beta1.json
+  orglifecycle:
+    v1:
+      discovery_doc: orglifecycle_v1.json
+      default: true
   orgpolicy:
     v2:
       discovery_doc: orgpolicy_v2.json
@@ -1453,6 +1460,8 @@ apis:
   workstations:
     v1beta:
       discovery_doc: workstations_v1beta.json
+    v1:
+      discovery_doc: workstations_v1.json
       default: true
   securesourcemanager:
     v1:
@@ -1620,6 +1629,9 @@ canonical_surfaces:
       'Overrides API endpoint for `gcloud compute` command group. '
       'For Private Service Connect usage, see '
       'https://cloud.google.com/vpc/docs/configure-private-service-connect-apis#using-endpoints'
+  configmanager:
+    name: config
+    command: config-manager
   container:
     name: container
     command: container
@@ -1791,6 +1803,10 @@ canonical_surfaces:
     command: notebooks
   ondemandscanning:
     name: ondemandscanning
+    hidden: true
+  orglifecycle:
+    name: orglifecycle
+    command: orglifecycle
     hidden: true
   orgpolicy:
     name: orgpolicy

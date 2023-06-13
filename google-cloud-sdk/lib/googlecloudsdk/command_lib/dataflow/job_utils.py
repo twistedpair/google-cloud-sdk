@@ -32,12 +32,12 @@ def ArgsForJobRef(parser):
   Args:
     parser: The argparse.ArgParser to configure with job-filtering arguments.
   """
-  parser.add_argument('job', metavar='JOB_ID', help='The job ID to operate on.')
+  parser.add_argument('job', metavar='JOB_ID', help='Job ID to operate on.')
   # TODO(b/139889563): Mark as required when default region is removed
   parser.add_argument(
       '--region',
       metavar='REGION_ID',
-      help=('The region ID of the job\'s regional endpoint. ' +
+      help=('Region ID of the job\'s regional endpoint. ' +
             dataflow_util.DEFAULT_REGION_MESSAGE))
 
 
@@ -49,12 +49,12 @@ def ArgsForJobRefs(parser, **kwargs):
     **kwargs: Extra arguments to pass to the add_argument call.
   """
   parser.add_argument(
-      'jobs', metavar='JOB_ID', help='The job IDs to operate on.', **kwargs)
+      'jobs', metavar='JOB_ID', help='Job IDs to operate on.', **kwargs)
   # TODO(b/139889563): Mark as required when default region is removed
   parser.add_argument(
       '--region',
       metavar='REGION_ID',
-      help=('The region ID of the jobs\' regional endpoint. ' +
+      help=('Region ID of the jobs\' regional endpoint. ' +
             dataflow_util.DEFAULT_REGION_MESSAGE))
 
 

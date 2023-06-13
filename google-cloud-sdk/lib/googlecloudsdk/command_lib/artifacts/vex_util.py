@@ -239,7 +239,10 @@ def _GetRemediations(vuln, product, msgs):
     remediations proto
   """
   remediations = []
-  for remediation in vuln['remediations']:
+  vuln_remediations = vuln.get('remediations')
+  if vuln_remediations is None:
+    return remediations
+  for remediation in vuln_remediations:
     remediation_type = remediation['category']
     remediation_detail = remediation['details']
     remediation_enum = (

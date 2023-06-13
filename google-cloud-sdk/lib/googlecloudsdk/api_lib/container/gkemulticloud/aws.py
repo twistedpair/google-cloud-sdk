@@ -54,22 +54,33 @@ class _AwsClientBase(client.ClientBase):
         'management': self._NodeManagement(args),
         'name': node_pool_ref.awsNodePoolsId,
         'subnetId': flags.GetSubnetID(args),
-        'version': flags.GetNodeVersion(args)
+        'version': flags.GetNodeVersion(args),
     }
-    return self._messages.GoogleCloudGkemulticloudV1AwsNodePool(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AwsNodePool(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _ClusterNetworking(self, args):
     kwargs = {
         'podAddressCidrBlocks': flags.GetPodAddressCidrBlocks(args),
         'serviceAddressCidrBlocks': flags.GetServiceAddressCidrBlocks(args),
         'vpcId': aws_flags.GetVpcId(args),
+        'perNodePoolSgRulesDisabled': aws_flags.GetPerNodePoolSGRulesDisabled(
+            args
+        ),
     }
-    return self._messages.GoogleCloudGkemulticloudV1AwsClusterNetworking(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AwsClusterNetworking(**kwargs)
+        if any(x is not None for x in kwargs.values())
+        else None
+    )
 
   def _ControlPlane(self, args):
-    control_plane_type = self._messages.GoogleCloudGkemulticloudV1AwsControlPlane
+    control_plane_type = (
+        self._messages.GoogleCloudGkemulticloudV1AwsControlPlane
+    )
     kwargs = {
         'awsServicesAuthentication': self._ServicesAuthentication(args),
         'configEncryption': self._ConfigEncryption(args),
@@ -125,11 +136,13 @@ class _AwsClientBase(client.ClientBase):
       kwargs['kmsKeyArn'] = aws_flags.GetMainVolumeKmsKeyArn(args)
       kwargs['sizeGib'] = flags.GetMainVolumeSize(args)
       kwargs['volumeType'] = aws_flags.GetMainVolumeType(args)
+      kwargs['throughput'] = aws_flags.GetMainVolumeThroughput(args)
     elif kind == 'root':
       kwargs['iops'] = aws_flags.GetRootVolumeIops(args)
       kwargs['kmsKeyArn'] = aws_flags.GetRootVolumeKmsKeyArn(args)
       kwargs['sizeGib'] = flags.GetRootVolumeSize(args)
       kwargs['volumeType'] = aws_flags.GetRootVolumeType(args)
+      kwargs['throughput'] = aws_flags.GetRootVolumeThroughput(args)
     return self._messages.GoogleCloudGkemulticloudV1AwsVolumeTemplate(
         **kwargs) if any(kwargs.values()) else None
 

@@ -81,16 +81,13 @@ class MpsClient(object):
     self._client = apis.GetClientInstance('marketplacesolutions', api_version)
     self._messages = apis.GetMessagesModule('marketplacesolutions', api_version)
 
-    self.converge_instances_service = (
-        self._client.projects_locations_convergeInstances)
-    self.converge_volumes_service = (
-        self._client.projects_locations_convergeVolumes)
-    self.converge_images_service = (
-        self._client.projects_locations_convergeImages)
-    self.converge_networks_service = (
-        self._client.projects_locations_convergeNetworks)
-    self.converge_sshkeys_service = (
-        self._client.projects_locations_convergeSshKeys)
+    self.power_instances_service = (
+        self._client.projects_locations_powerInstances
+    )
+    self.power_volumes_service = self._client.projects_locations_powerVolumes
+    self.power_images_service = self._client.projects_locations_powerImages
+    self.power_networks_service = self._client.projects_locations_powerNetworks
+    self.power_sshkeys_service = self._client.projects_locations_powerSshKeys
 
     self.locations_service = self._client.projects_locations
 
@@ -198,14 +195,14 @@ class MpsClient(object):
     _ValidateProduct(product)
     try:
       if product == _PFORG:
-        converge_resource = 'convergeInstances'
+        power_resource = 'powerInstances'
         return self.AggregateYieldFromList(
-            self.converge_instances_service,
+            self.power_instances_service,
             project_resource,
-            self.messages.
-            MarketplacesolutionsProjectsLocationsConvergeInstancesListRequest,
-            converge_resource,
-            limit=limit)
+            self.messages.MarketplacesolutionsProjectsLocationsPowerInstancesListRequest,
+            power_resource,
+            limit=limit,
+        )
     except exceptions.Error as e:
       return e
 
@@ -215,9 +212,10 @@ class MpsClient(object):
     resource = resource.RelativeName()
     try:
       if product == _PFORG:
-        converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeInstancesGetRequest(
-            name=resource)
-        return self.converge_instances_service.Get(converge_request)
+        power_request = self.messages.MarketplacesolutionsProjectsLocationsPowerInstancesGetRequest(
+            name=resource
+        )
+        return self.power_instances_service.Get(power_request)
     except exceptions.Error as e:
       return e
 
@@ -227,10 +225,10 @@ class MpsClient(object):
     location = location_resource.RelativeName()
     try:
       if product == _PFORG:
-        converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeInstancesListRequest(
-            parent=location)
-        return self.converge_instances_service.List(
-            converge_request).convergeInstances
+        power_request = self.messages.MarketplacesolutionsProjectsLocationsPowerInstancesListRequest(
+            parent=location
+        )
+        return self.power_instances_service.List(power_request).powerInstances
     except exceptions.Error as e:
       return e
 
@@ -239,14 +237,14 @@ class MpsClient(object):
     _ValidateProduct(product)
     try:
       if product == _PFORG:
-        converge_resource = 'convergeVolumes'
+        power_resource = 'powerVolumes'
         return self.AggregateYieldFromList(
-            self.converge_volumes_service,
+            self.power_volumes_service,
             project_resource,
-            self.messages.
-            MarketplacesolutionsProjectsLocationsConvergeVolumesListRequest,
-            converge_resource,
-            limit=limit)
+            self.messages.MarketplacesolutionsProjectsLocationsPowerVolumesListRequest,
+            power_resource,
+            limit=limit,
+        )
     except exceptions.Error as e:
       return e
 
@@ -256,9 +254,10 @@ class MpsClient(object):
     resource = resource.RelativeName()
     try:
       if product == _PFORG:
-        converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeVolumesGetRequest(
-            name=resource)
-        return self.converge_volumes_service.Get(converge_request)
+        power_request = self.messages.MarketplacesolutionsProjectsLocationsPowerVolumesGetRequest(
+            name=resource
+        )
+        return self.power_volumes_service.Get(power_request)
     except exceptions.Error as e:
       return e
 
@@ -268,10 +267,10 @@ class MpsClient(object):
     location = location_resource.RelativeName()
     try:
       if product == _PFORG:
-        converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeVolumesListRequest(
-            parent=location)
-        return self.converge_volumes_service.List(
-            converge_request).convergeVolumes
+        power_request = self.messages.MarketplacesolutionsProjectsLocationsPowerVolumesListRequest(
+            parent=location
+        )
+        return self.power_volumes_service.List(power_request).powerVolumes
     except exceptions.Error as e:
       return e
 
@@ -280,14 +279,14 @@ class MpsClient(object):
     _ValidateProduct(product)
     try:
       if product == _PFORG:
-        converge_resource = 'convergeImages'
+        power_resource = 'powerImages'
         return self.AggregateYieldFromList(
-            self.converge_images_service,
+            self.power_images_service,
             project_resource,
-            self.messages.
-            MarketplacesolutionsProjectsLocationsConvergeImagesListRequest,
-            converge_resource,
-            limit=limit)
+            self.messages.MarketplacesolutionsProjectsLocationsPowerImagesListRequest,
+            power_resource,
+            limit=limit,
+        )
     except exceptions.Error as e:
       return e
 
@@ -297,9 +296,10 @@ class MpsClient(object):
     resource = resource.RelativeName()
     try:
       if product == _PFORG:
-        converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeImagesGetRequest(
-            name=resource)
-        return self.converge_images_service.Get(converge_request)
+        power_request = self.messages.MarketplacesolutionsProjectsLocationsPowerImagesGetRequest(
+            name=resource
+        )
+        return self.power_images_service.Get(power_request)
     except exceptions.Error as e:
       return e
 
@@ -309,10 +309,10 @@ class MpsClient(object):
     location = location_resource.RelativeName()
     try:
       if product == _PFORG:
-        converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeImagesListRequest(
-            parent=location)
-        return self.converge_images_service.List(
-            converge_request).convergeImages
+        power_request = self.messages.MarketplacesolutionsProjectsLocationsPowerImagesListRequest(
+            parent=location
+        )
+        return self.power_images_service.List(power_request).powerImages
     except exceptions.Error as e:
       return e
 
@@ -321,14 +321,14 @@ class MpsClient(object):
     _ValidateProduct(product)
     try:
       if product == _PFORG:
-        converge_resource = 'convergeNetworks'
+        power_resource = 'powerNetworks'
         return self.AggregateYieldFromList(
-            self.converge_networks_service,
+            self.power_networks_service,
             project_resource,
-            self.messages.
-            MarketplacesolutionsProjectsLocationsConvergeNetworksListRequest,
-            converge_resource,
-            limit=limit)
+            self.messages.MarketplacesolutionsProjectsLocationsPowerNetworksListRequest,
+            power_resource,
+            limit=limit,
+        )
     except exceptions.Error as e:
       return e
 
@@ -338,9 +338,10 @@ class MpsClient(object):
     resource = resource.RelativeName()
     try:
       if product == _PFORG:
-        converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeNetworksGetRequest(
-            name=resource)
-        return self.converge_networks_service.Get(converge_request)
+        power_request = self.messages.MarketplacesolutionsProjectsLocationsPowerNetworksGetRequest(
+            name=resource
+        )
+        return self.power_networks_service.Get(power_request)
     except exceptions.Error as e:
       return e
 
@@ -350,10 +351,10 @@ class MpsClient(object):
     location = location_resource.RelativeName()
     try:
       if product == _PFORG:
-        converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeNetworksListRequest(
-            parent=location)
-        return self.converge_networks_service.List(
-            converge_request).convergeNetworks
+        power_request = self.messages.MarketplacesolutionsProjectsLocationsPowerNetworksListRequest(
+            parent=location
+        )
+        return self.power_networks_service.List(power_request).powerNetworks
     except exceptions.Error as e:
       return e
 
@@ -362,14 +363,14 @@ class MpsClient(object):
     _ValidateProduct(product)
     try:
       if product == _PFORG:
-        converge_resource = 'convergeSshKeys'
+        power_resource = 'powerSshKeys'
         return self.AggregateYieldFromList(
-            self.converge_sshkeys_service,
+            self.power_sshkeys_service,
             project_resource,
-            self.messages.
-            MarketplacesolutionsProjectsLocationsConvergeSshKeysListRequest,
-            converge_resource,
-            limit=limit)
+            self.messages.MarketplacesolutionsProjectsLocationsPowerSshKeysListRequest,
+            power_resource,
+            limit=limit,
+        )
     except exceptions.Error as e:
       return e
 
@@ -379,9 +380,10 @@ class MpsClient(object):
     try:
       resource = resource.RelativeName()
       if product == _PFORG:
-        converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeSshKeysGetRequest(
-            name=resource)
-        return self.converge_sshkeys_service.Get(converge_request)
+        power_request = self.messages.MarketplacesolutionsProjectsLocationsPowerSshKeysGetRequest(
+            name=resource
+        )
+        return self.power_sshkeys_service.Get(power_request)
     except exceptions.Error as e:
       return e
 
@@ -391,10 +393,9 @@ class MpsClient(object):
     location = location_resource.RelativeName()
     try:
       if product == _PFORG:
-        converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeSshKeysListRequest(
-            parent=location)
-        return self.converge_sshkeys_service.List(
-            converge_request).convergeSshKeys
+        power_request = self.messages.MarketplacesolutionsProjectsLocationsPowerSshKeysListRequest(
+            parent=location
+        )
+        return self.power_sshkeys_service.List(power_request).powerSshKeys
     except exceptions.Error as e:
       return e
-

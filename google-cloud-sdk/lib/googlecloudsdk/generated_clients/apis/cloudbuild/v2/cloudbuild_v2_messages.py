@@ -877,56 +877,6 @@ class CloudbuildProjectsLocationsWorkflowsWebhookRequest(_messages.Message):
   workflow = _messages.StringField(2, required=True)
 
 
-class Condition(_messages.Message):
-  r"""Conditions defines a readiness condition for a Knative resource.
-
-  Enums:
-    SeverityValueValuesEnum: Severity with which to treat failures of this
-      type of condition.
-    StatusValueValuesEnum: Status of the condition.
-
-  Fields:
-    lastTransitionTime: LastTransitionTime is the last time the condition
-      transitioned from one status to another.
-    message: A human readable message indicating details about the transition.
-    reason: The reason for the condition's last transition.
-    severity: Severity with which to treat failures of this type of condition.
-    status: Status of the condition.
-    type: Type of condition.
-  """
-
-  class SeverityValueValuesEnum(_messages.Enum):
-    r"""Severity with which to treat failures of this type of condition.
-
-    Values:
-      SEVERITY_UNSPECIFIED: Default enum type; should not be used.
-      WARNING: Severity is warning.
-      INFO: Severity is informational only.
-    """
-    SEVERITY_UNSPECIFIED = 0
-    WARNING = 1
-    INFO = 2
-
-  class StatusValueValuesEnum(_messages.Enum):
-    r"""Status of the condition.
-
-    Values:
-      UNKNOWN: Default enum type indicating execution is still ongoing.
-      TRUE: Success
-      FALSE: Failure
-    """
-    UNKNOWN = 0
-    TRUE = 1
-    FALSE = 2
-
-  lastTransitionTime = _messages.StringField(1)
-  message = _messages.StringField(2)
-  reason = _messages.StringField(3)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
-  status = _messages.EnumField('StatusValueValuesEnum', 5)
-  type = _messages.StringField(6)
-
-
 class Connection(_messages.Message):
   r"""A connection to a SCM like GitHub, GitHub Enterprise, Bitbucket Server
   or GitLab.
@@ -1266,6 +1216,56 @@ class GitRef(_messages.Message):
 
   inverse = _messages.BooleanField(1)
   nameRegex = _messages.StringField(2)
+
+
+class GoogleDevtoolsCloudbuildV2Condition(_messages.Message):
+  r"""Conditions defines a readiness condition for a Knative resource.
+
+  Enums:
+    SeverityValueValuesEnum: Severity with which to treat failures of this
+      type of condition.
+    StatusValueValuesEnum: Status of the condition.
+
+  Fields:
+    lastTransitionTime: LastTransitionTime is the last time the condition
+      transitioned from one status to another.
+    message: A human readable message indicating details about the transition.
+    reason: The reason for the condition's last transition.
+    severity: Severity with which to treat failures of this type of condition.
+    status: Status of the condition.
+    type: Type of condition.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Severity with which to treat failures of this type of condition.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Default enum type; should not be used.
+      WARNING: Severity is warning.
+      INFO: Severity is informational only.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    WARNING = 1
+    INFO = 2
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Status of the condition.
+
+    Values:
+      UNKNOWN: Default enum type indicating execution is still ongoing.
+      TRUE: Success
+      FALSE: Failure
+    """
+    UNKNOWN = 0
+    TRUE = 1
+    FALSE = 2
+
+  lastTransitionTime = _messages.StringField(1)
+  message = _messages.StringField(2)
+  reason = _messages.StringField(3)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
+  status = _messages.EnumField('StatusValueValuesEnum', 5)
+  type = _messages.StringField(6)
 
 
 class GoogleDevtoolsCloudbuildV2GitHubEnterpriseConfig(_messages.Message):
@@ -2051,7 +2051,7 @@ class PipelineRun(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   childReferences = _messages.MessageField('ChildStatusReference', 2, repeated=True)
   completionTime = _messages.StringField(3)
-  conditions = _messages.MessageField('Condition', 4, repeated=True)
+  conditions = _messages.MessageField('GoogleDevtoolsCloudbuildV2Condition', 4, repeated=True)
   createTime = _messages.StringField(5)
   etag = _messages.StringField(6)
   name = _messages.StringField(7)
@@ -2235,6 +2235,29 @@ class ProcessWorkflowTriggerWebhookRequest(_messages.Message):
 
 class ProcessWorkflowTriggerWebhookResponse(_messages.Message):
   r"""message for processing webhooks posted to WorkflowTrigger."""
+
+
+class PropertySpec(_messages.Message):
+  r"""PropertySpec holds information about a property in an object.
+
+  Enums:
+    TypeValueValuesEnum: A type for the object.
+
+  Fields:
+    type: A type for the object.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""A type for the object.
+
+    Values:
+      TYPE_UNSPECIFIED: Default enum type; should not be used.
+      STRING: Default
+    """
+    TYPE_UNSPECIFIED = 0
+    STRING = 1
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class PullRequest(_messages.Message):
@@ -2428,6 +2451,47 @@ class Result(_messages.Message):
   recordSummaries = _messages.MessageField('RecordSummary', 3, repeated=True)
   uid = _messages.StringField(4)
   updateTime = _messages.StringField(5)
+
+
+class ResultValue(_messages.Message):
+  r"""ResultValue holds different types of data for a single result.
+
+  Messages:
+    ObjectValValue: Value of the result if type is object.
+
+  Fields:
+    arrayVal: Value of the result if type is array.
+    objectVal: Value of the result if type is object.
+    stringVal: Value of the result if type is string.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ObjectValValue(_messages.Message):
+    r"""Value of the result if type is object.
+
+    Messages:
+      AdditionalProperty: An additional property for a ObjectValValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ObjectValValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ObjectValValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  arrayVal = _messages.StringField(1, repeated=True)
+  objectVal = _messages.MessageField('ObjectValValue', 2)
+  stringVal = _messages.StringField(3)
 
 
 class RunWorkflowCustomOperationMetadata(_messages.Message):
@@ -2770,15 +2834,66 @@ class TaskRef(_messages.Message):
 
 
 class TaskResult(_messages.Message):
-  r"""TaskResult used to describe the results of a task.
+  r"""TaskResult is used to describe the results of a task.
+
+  Enums:
+    TypeValueValuesEnum: The type of data that the result holds.
+
+  Messages:
+    PropertiesValue: When type is OBJECT, this map holds the names of fields
+      inside that object along with the type of data each field holds.
 
   Fields:
     description: Description of the result.
     name: Name of the result.
+    properties: When type is OBJECT, this map holds the names of fields inside
+      that object along with the type of data each field holds.
+    type: The type of data that the result holds.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of data that the result holds.
+
+    Values:
+      TYPE_UNSPECIFIED: Default enum type; should not be used.
+      STRING: Default
+      ARRAY: Array type
+      OBJECT: Object type
+    """
+    TYPE_UNSPECIFIED = 0
+    STRING = 1
+    ARRAY = 2
+    OBJECT = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""When type is OBJECT, this map holds the names of fields inside that
+    object along with the type of data each field holds.
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PropertySpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PropertySpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   description = _messages.StringField(1)
   name = _messages.StringField(2)
+  properties = _messages.MessageField('PropertiesValue', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class TaskRun(_messages.Message):
@@ -2862,7 +2977,7 @@ class TaskRun(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   completionTime = _messages.StringField(2)
-  conditions = _messages.MessageField('Condition', 3, repeated=True)
+  conditions = _messages.MessageField('GoogleDevtoolsCloudbuildV2Condition', 3, repeated=True)
   createTime = _messages.StringField(4)
   etag = _messages.StringField(5)
   name = _messages.StringField(6)
@@ -2886,13 +3001,34 @@ class TaskRun(_messages.Message):
 class TaskRunResult(_messages.Message):
   r"""TaskRunResult used to describe the results of a task
 
+  Enums:
+    TypeValueValuesEnum: The type of data that the result holds.
+
   Fields:
     name: Name of the TaskRun
-    value: Value of the result
+    resultValue: Value of the result.
+    type: The type of data that the result holds.
+    value: Value of the result. Deprecated; please use result_value instead.
   """
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of data that the result holds.
+
+    Values:
+      TYPE_UNSPECIFIED: Default enum type; should not be used.
+      STRING: Default
+      ARRAY: Array type
+      OBJECT: Object type
+    """
+    TYPE_UNSPECIFIED = 0
+    STRING = 1
+    ARRAY = 2
+    OBJECT = 3
+
   name = _messages.StringField(1)
-  value = _messages.StringField(2)
+  resultValue = _messages.MessageField('ResultValue', 2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  value = _messages.StringField(4)
 
 
 class TaskSpec(_messages.Message):
@@ -3110,7 +3246,7 @@ class Workflow(_messages.Message):
     createTime: Output only. Server assigned timestamp for when the workflow
       was created.
     deleteTime: Output only. Server assigned timestamp for when the workflow
-      was deleted.
+      was deleted. Deprecated; will be removed soon.
     etag: Needed for declarative-friendly resources.
     name: Output only. Format:
       `projects/{project}/locations/{location}/workflows/{workflow}`

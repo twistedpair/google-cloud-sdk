@@ -39,334 +39,14 @@ class MarketplacesolutionsV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_locations_convergeImages = self.ProjectsLocationsConvergeImagesService(self)
-    self.projects_locations_convergeInstances = self.ProjectsLocationsConvergeInstancesService(self)
-    self.projects_locations_convergeNetworks = self.ProjectsLocationsConvergeNetworksService(self)
-    self.projects_locations_convergeSshKeys = self.ProjectsLocationsConvergeSshKeysService(self)
-    self.projects_locations_convergeVolumes = self.ProjectsLocationsConvergeVolumesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_powerImages = self.ProjectsLocationsPowerImagesService(self)
+    self.projects_locations_powerInstances = self.ProjectsLocationsPowerInstancesService(self)
+    self.projects_locations_powerNetworks = self.ProjectsLocationsPowerNetworksService(self)
+    self.projects_locations_powerSshKeys = self.ProjectsLocationsPowerSshKeysService(self)
+    self.projects_locations_powerVolumes = self.ProjectsLocationsPowerVolumesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class ProjectsLocationsConvergeImagesService(base_api.BaseApiService):
-    """Service class for the projects_locations_convergeImages resource."""
-
-    _NAME = 'projects_locations_convergeImages'
-
-    def __init__(self, client):
-      super(MarketplacesolutionsV1alpha1.ProjectsLocationsConvergeImagesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Get details about a single image from Converge.
-
-      Args:
-        request: (MarketplacesolutionsProjectsLocationsConvergeImagesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ConvergeImage) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeImages/{convergeImagesId}',
-        http_method='GET',
-        method_id='marketplacesolutions.projects.locations.convergeImages.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='MarketplacesolutionsProjectsLocationsConvergeImagesGetRequest',
-        response_type_name='ConvergeImage',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""List Images in a given project and location from Converge.
-
-      Args:
-        request: (MarketplacesolutionsProjectsLocationsConvergeImagesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListConvergeImagesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeImages',
-        http_method='GET',
-        method_id='marketplacesolutions.projects.locations.convergeImages.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/convergeImages',
-        request_field='',
-        request_type_name='MarketplacesolutionsProjectsLocationsConvergeImagesListRequest',
-        response_type_name='ListConvergeImagesResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsConvergeInstancesService(base_api.BaseApiService):
-    """Service class for the projects_locations_convergeInstances resource."""
-
-    _NAME = 'projects_locations_convergeInstances'
-
-    def __init__(self, client):
-      super(MarketplacesolutionsV1alpha1.ProjectsLocationsConvergeInstancesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Get details about a single server from Converge.
-
-      Args:
-        request: (MarketplacesolutionsProjectsLocationsConvergeInstancesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ConvergeInstance) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeInstances/{convergeInstancesId}',
-        http_method='GET',
-        method_id='marketplacesolutions.projects.locations.convergeInstances.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='MarketplacesolutionsProjectsLocationsConvergeInstancesGetRequest',
-        response_type_name='ConvergeInstance',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""List servers in a given project and location from Converge.
-
-      Args:
-        request: (MarketplacesolutionsProjectsLocationsConvergeInstancesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListConvergeInstancesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeInstances',
-        http_method='GET',
-        method_id='marketplacesolutions.projects.locations.convergeInstances.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/convergeInstances',
-        request_field='',
-        request_type_name='MarketplacesolutionsProjectsLocationsConvergeInstancesListRequest',
-        response_type_name='ListConvergeInstancesResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsConvergeNetworksService(base_api.BaseApiService):
-    """Service class for the projects_locations_convergeNetworks resource."""
-
-    _NAME = 'projects_locations_convergeNetworks'
-
-    def __init__(self, client):
-      super(MarketplacesolutionsV1alpha1.ProjectsLocationsConvergeNetworksService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Get details about a single network from Converge.
-
-      Args:
-        request: (MarketplacesolutionsProjectsLocationsConvergeNetworksGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ConvergeNetwork) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeNetworks/{convergeNetworksId}',
-        http_method='GET',
-        method_id='marketplacesolutions.projects.locations.convergeNetworks.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='MarketplacesolutionsProjectsLocationsConvergeNetworksGetRequest',
-        response_type_name='ConvergeNetwork',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""List networks in a given project and location from Converge.
-
-      Args:
-        request: (MarketplacesolutionsProjectsLocationsConvergeNetworksListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListConvergeNetworksResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeNetworks',
-        http_method='GET',
-        method_id='marketplacesolutions.projects.locations.convergeNetworks.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/convergeNetworks',
-        request_field='',
-        request_type_name='MarketplacesolutionsProjectsLocationsConvergeNetworksListRequest',
-        response_type_name='ListConvergeNetworksResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsConvergeSshKeysService(base_api.BaseApiService):
-    """Service class for the projects_locations_convergeSshKeys resource."""
-
-    _NAME = 'projects_locations_convergeSshKeys'
-
-    def __init__(self, client):
-      super(MarketplacesolutionsV1alpha1.ProjectsLocationsConvergeSshKeysService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Get details about a single Converge SSH Key.
-
-      Args:
-        request: (MarketplacesolutionsProjectsLocationsConvergeSshKeysGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ConvergeSSHKey) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeSshKeys/{convergeSshKeysId}',
-        http_method='GET',
-        method_id='marketplacesolutions.projects.locations.convergeSshKeys.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='MarketplacesolutionsProjectsLocationsConvergeSshKeysGetRequest',
-        response_type_name='ConvergeSSHKey',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""List SSH Keys in a given project and location from Converge.
-
-      Args:
-        request: (MarketplacesolutionsProjectsLocationsConvergeSshKeysListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListConvergeSSHKeysResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeSshKeys',
-        http_method='GET',
-        method_id='marketplacesolutions.projects.locations.convergeSshKeys.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/convergeSshKeys',
-        request_field='',
-        request_type_name='MarketplacesolutionsProjectsLocationsConvergeSshKeysListRequest',
-        response_type_name='ListConvergeSSHKeysResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsConvergeVolumesService(base_api.BaseApiService):
-    """Service class for the projects_locations_convergeVolumes resource."""
-
-    _NAME = 'projects_locations_convergeVolumes'
-
-    def __init__(self, client):
-      super(MarketplacesolutionsV1alpha1.ProjectsLocationsConvergeVolumesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Get details about a single volume from Converge.
-
-      Args:
-        request: (MarketplacesolutionsProjectsLocationsConvergeVolumesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ConvergeVolume) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeVolumes/{convergeVolumesId}',
-        http_method='GET',
-        method_id='marketplacesolutions.projects.locations.convergeVolumes.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='MarketplacesolutionsProjectsLocationsConvergeVolumesGetRequest',
-        response_type_name='ConvergeVolume',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""List servers in a given project and location from Converge.
-
-      Args:
-        request: (MarketplacesolutionsProjectsLocationsConvergeVolumesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListConvergeVolumesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeVolumes',
-        http_method='GET',
-        method_id='marketplacesolutions.projects.locations.convergeVolumes.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/convergeVolumes',
-        request_field='',
-        request_type_name='MarketplacesolutionsProjectsLocationsConvergeVolumesListRequest',
-        response_type_name='ListConvergeVolumesResponse',
-        supports_download=False,
-    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
@@ -483,6 +163,326 @@ class MarketplacesolutionsV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='MarketplacesolutionsProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPowerImagesService(base_api.BaseApiService):
+    """Service class for the projects_locations_powerImages resource."""
+
+    _NAME = 'projects_locations_powerImages'
+
+    def __init__(self, client):
+      super(MarketplacesolutionsV1alpha1.ProjectsLocationsPowerImagesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get details about a single image from Power.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerImagesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PowerImage) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerImages/{powerImagesId}',
+        http_method='GET',
+        method_id='marketplacesolutions.projects.locations.powerImages.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerImagesGetRequest',
+        response_type_name='PowerImage',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List Images in a given project and location from Power.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerImagesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPowerImagesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerImages',
+        http_method='GET',
+        method_id='marketplacesolutions.projects.locations.powerImages.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/powerImages',
+        request_field='',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerImagesListRequest',
+        response_type_name='ListPowerImagesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPowerInstancesService(base_api.BaseApiService):
+    """Service class for the projects_locations_powerInstances resource."""
+
+    _NAME = 'projects_locations_powerInstances'
+
+    def __init__(self, client):
+      super(MarketplacesolutionsV1alpha1.ProjectsLocationsPowerInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get details about a single server from Power.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerInstancesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PowerInstance) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerInstances/{powerInstancesId}',
+        http_method='GET',
+        method_id='marketplacesolutions.projects.locations.powerInstances.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerInstancesGetRequest',
+        response_type_name='PowerInstance',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List servers in a given project and location from Power.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerInstancesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPowerInstancesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerInstances',
+        http_method='GET',
+        method_id='marketplacesolutions.projects.locations.powerInstances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/powerInstances',
+        request_field='',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerInstancesListRequest',
+        response_type_name='ListPowerInstancesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPowerNetworksService(base_api.BaseApiService):
+    """Service class for the projects_locations_powerNetworks resource."""
+
+    _NAME = 'projects_locations_powerNetworks'
+
+    def __init__(self, client):
+      super(MarketplacesolutionsV1alpha1.ProjectsLocationsPowerNetworksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get details about a single network from Power.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerNetworksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PowerNetwork) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerNetworks/{powerNetworksId}',
+        http_method='GET',
+        method_id='marketplacesolutions.projects.locations.powerNetworks.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerNetworksGetRequest',
+        response_type_name='PowerNetwork',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List networks in a given project and location from Power.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerNetworksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPowerNetworksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerNetworks',
+        http_method='GET',
+        method_id='marketplacesolutions.projects.locations.powerNetworks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/powerNetworks',
+        request_field='',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerNetworksListRequest',
+        response_type_name='ListPowerNetworksResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPowerSshKeysService(base_api.BaseApiService):
+    """Service class for the projects_locations_powerSshKeys resource."""
+
+    _NAME = 'projects_locations_powerSshKeys'
+
+    def __init__(self, client):
+      super(MarketplacesolutionsV1alpha1.ProjectsLocationsPowerSshKeysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get details about a single Power SSH Key.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerSshKeysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PowerSSHKey) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerSshKeys/{powerSshKeysId}',
+        http_method='GET',
+        method_id='marketplacesolutions.projects.locations.powerSshKeys.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerSshKeysGetRequest',
+        response_type_name='PowerSSHKey',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List SSH Keys in a given project and location from Power.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerSshKeysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPowerSSHKeysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerSshKeys',
+        http_method='GET',
+        method_id='marketplacesolutions.projects.locations.powerSshKeys.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/powerSshKeys',
+        request_field='',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerSshKeysListRequest',
+        response_type_name='ListPowerSSHKeysResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPowerVolumesService(base_api.BaseApiService):
+    """Service class for the projects_locations_powerVolumes resource."""
+
+    _NAME = 'projects_locations_powerVolumes'
+
+    def __init__(self, client):
+      super(MarketplacesolutionsV1alpha1.ProjectsLocationsPowerVolumesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get details about a single volume from Power.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerVolumesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PowerVolume) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerVolumes/{powerVolumesId}',
+        http_method='GET',
+        method_id='marketplacesolutions.projects.locations.powerVolumes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerVolumesGetRequest',
+        response_type_name='PowerVolume',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List servers in a given project and location from Power.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerVolumesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPowerVolumesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerVolumes',
+        http_method='GET',
+        method_id='marketplacesolutions.projects.locations.powerVolumes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/powerVolumes',
+        request_field='',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerVolumesListRequest',
+        response_type_name='ListPowerVolumesResponse',
         supports_download=False,
     )
 

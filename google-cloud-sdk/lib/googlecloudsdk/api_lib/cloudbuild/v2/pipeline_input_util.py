@@ -142,6 +142,8 @@ def _PipelineSpecTransform(spec):
 def _TaskSpecTransform(spec):
   for param_spec in spec.get("params", []):
     input_util.ParamSpecTransform(param_spec)
+  for task_result in spec.get("results", []):
+    input_util.TaskResultTransform(task_result)
 
 
 def _TaskTransform(task):

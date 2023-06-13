@@ -1371,6 +1371,10 @@ class ExternalDataConfiguration(_messages.Message):
       is the same as ["NUMERIC", "BIGNUMERIC"] and NUMERIC always takes
       precedence over BIGNUMERIC. Defaults to ["NUMERIC", "STRING"] for ORC
       and ["NUMERIC"] for the other file formats.
+    fileSetSpecType: [Optional] Specifies how source URIs are interpreted for
+      constructing the file set to load. By default source URIs are expanded
+      against the underlying storage. Other options include specifying
+      manifest files. Only applicable to object storage systems.
     googleSheetsOptions: [Optional] Additional options if sourceFormat is set
       to GOOGLE_SHEETS.
     hivePartitioningOptions: [Optional] Options to configure hive partitioning
@@ -1427,18 +1431,19 @@ class ExternalDataConfiguration(_messages.Message):
   connectionId = _messages.StringField(5)
   csvOptions = _messages.MessageField('CsvOptions', 6)
   decimalTargetTypes = _messages.StringField(7, repeated=True)
-  googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 8)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 9)
-  ignoreUnknownValues = _messages.BooleanField(10)
-  jsonOptions = _messages.MessageField('JsonOptions', 11)
-  maxBadRecords = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  metadataCacheMode = _messages.StringField(13)
-  objectMetadata = _messages.StringField(14)
-  parquetOptions = _messages.MessageField('ParquetOptions', 15)
-  referenceFileSchemaUri = _messages.StringField(16)
-  schema = _messages.MessageField('TableSchema', 17)
-  sourceFormat = _messages.StringField(18)
-  sourceUris = _messages.StringField(19, repeated=True)
+  fileSetSpecType = _messages.StringField(8)
+  googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 9)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 10)
+  ignoreUnknownValues = _messages.BooleanField(11)
+  jsonOptions = _messages.MessageField('JsonOptions', 12)
+  maxBadRecords = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  metadataCacheMode = _messages.StringField(14)
+  objectMetadata = _messages.StringField(15)
+  parquetOptions = _messages.MessageField('ParquetOptions', 16)
+  referenceFileSchemaUri = _messages.StringField(17)
+  schema = _messages.MessageField('TableSchema', 18)
+  sourceFormat = _messages.StringField(19)
+  sourceUris = _messages.StringField(20, repeated=True)
 
 
 class GetQueryResultsResponse(_messages.Message):
@@ -1826,6 +1831,10 @@ class JobConfigurationLoad(_messages.Message):
       first byte of the encoded string to split the data in its raw, binary
       state. BigQuery also supports the escape sequence "\t" to specify a tab
       separator. The default value is a comma (',').
+    fileSetSpecType: [Optional] Specifies how source URIs are interpreted for
+      constructing the file set to load. By default source URIs are expanded
+      against the underlying storage. Other options include specifying
+      manifest files. Only applicable to object storage systems.
     hivePartitioningOptions: [Optional] Options to configure hive partitioning
       support.
     ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
@@ -1940,27 +1949,28 @@ class JobConfigurationLoad(_messages.Message):
   destinationTableProperties = _messages.MessageField('DestinationTableProperties', 11)
   encoding = _messages.StringField(12)
   fieldDelimiter = _messages.StringField(13)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 14)
-  ignoreUnknownValues = _messages.BooleanField(15)
-  jsonExtension = _messages.StringField(16)
-  maxBadRecords = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  nullMarker = _messages.StringField(18)
-  parquetOptions = _messages.MessageField('ParquetOptions', 19)
-  preserveAsciiControlCharacters = _messages.BooleanField(20)
-  projectionFields = _messages.StringField(21, repeated=True)
-  quote = _messages.StringField(22, default='"')
-  rangePartitioning = _messages.MessageField('RangePartitioning', 23)
-  referenceFileSchemaUri = _messages.StringField(24)
-  schema = _messages.MessageField('TableSchema', 25)
-  schemaInline = _messages.StringField(26)
-  schemaInlineFormat = _messages.StringField(27)
-  schemaUpdateOptions = _messages.StringField(28, repeated=True)
-  skipLeadingRows = _messages.IntegerField(29, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(30)
-  sourceUris = _messages.StringField(31, repeated=True)
-  timePartitioning = _messages.MessageField('TimePartitioning', 32)
-  useAvroLogicalTypes = _messages.BooleanField(33)
-  writeDisposition = _messages.StringField(34)
+  fileSetSpecType = _messages.StringField(14)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 15)
+  ignoreUnknownValues = _messages.BooleanField(16)
+  jsonExtension = _messages.StringField(17)
+  maxBadRecords = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  nullMarker = _messages.StringField(19)
+  parquetOptions = _messages.MessageField('ParquetOptions', 20)
+  preserveAsciiControlCharacters = _messages.BooleanField(21)
+  projectionFields = _messages.StringField(22, repeated=True)
+  quote = _messages.StringField(23, default='"')
+  rangePartitioning = _messages.MessageField('RangePartitioning', 24)
+  referenceFileSchemaUri = _messages.StringField(25)
+  schema = _messages.MessageField('TableSchema', 26)
+  schemaInline = _messages.StringField(27)
+  schemaInlineFormat = _messages.StringField(28)
+  schemaUpdateOptions = _messages.StringField(29, repeated=True)
+  skipLeadingRows = _messages.IntegerField(30, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(31)
+  sourceUris = _messages.StringField(32, repeated=True)
+  timePartitioning = _messages.MessageField('TimePartitioning', 33)
+  useAvroLogicalTypes = _messages.BooleanField(34)
+  writeDisposition = _messages.StringField(35)
 
 
 class JobConfigurationQuery(_messages.Message):

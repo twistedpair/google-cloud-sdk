@@ -54,7 +54,7 @@ def AddInstanceNameToRequest(ref, args, req):
   project = properties.VALUES.core.project.Get(required=True)
 
   api_version = util.GetApiVersionFromArgs(args)
-  if api_version == ALPHA_API_VERSION or api_version == V1_API_VERSION:
+  if api_version == ALPHA_API_VERSION:
     req.backup.sourceInstance = INSTANCE_NAME_TEMPLATE.format(
         project, args.instance_zone, args.instance)
     return req

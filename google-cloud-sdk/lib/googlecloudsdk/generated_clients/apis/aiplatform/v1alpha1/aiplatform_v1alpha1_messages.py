@@ -6899,6 +6899,8 @@ class GoogleCloudAiplatformInternalImportFeatureValuesOperationMetadata(_message
   r"""Details of operations that perform import Feature values.
 
   Fields:
+    blockingOperationIds: List of ImportFeatureValues operations running under
+      a single EntityType that are blocking this operation.
     genericMetadata: Operation metadata for Featurestore import Feature
       values.
     importedEntityCount: Number of entities that have been imported by the
@@ -6914,12 +6916,13 @@ class GoogleCloudAiplatformInternalImportFeatureValuesOperationMetadata(_message
       due to having timestamps outside the retention boundary.
   """
 
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
-  importedEntityCount = _messages.IntegerField(2)
-  importedFeatureValueCount = _messages.IntegerField(3)
-  invalidRowCount = _messages.IntegerField(4)
-  sourceUris = _messages.StringField(5, repeated=True)
-  timestampOutsideRetentionRowsCount = _messages.IntegerField(6)
+  blockingOperationIds = _messages.IntegerField(1, repeated=True)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 2)
+  importedEntityCount = _messages.IntegerField(3)
+  importedFeatureValueCount = _messages.IntegerField(4)
+  invalidRowCount = _messages.IntegerField(5)
+  sourceUris = _messages.StringField(6, repeated=True)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(7)
 
 
 class GoogleCloudAiplatformInternalImportFeatureValuesResponse(_messages.Message):
@@ -9224,6 +9227,35 @@ class GoogleCloudAiplatformUiExportDataResponse(_messages.Message):
   exportedFiles = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudAiplatformUiExportEndpointOperationMetadata(_messages.Message):
+  r"""Details of EndpointService.ExportEndpoint operation.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+    outputInfo: Output only. Information further describing the output of this
+      Endpoint export.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
+  outputInfo = _messages.MessageField('GoogleCloudAiplatformUiExportEndpointOperationMetadataOutputInfo', 2)
+
+
+class GoogleCloudAiplatformUiExportEndpointOperationMetadataOutputInfo(_messages.Message):
+  r"""Further describes the output of the ExportEndpoint. Supplements
+  OutputConfig.
+
+  Fields:
+    bigQueryModelOutputUri: Output only. If the Endpoint is being exported to
+      BigQuery this is the full path of the BigQuery ML model created.
+  """
+
+  bigQueryModelOutputUri = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformUiExportEndpointResponse(_messages.Message):
+  r"""Response message of EndpointService.ExportEndpoint operation."""
+
+
 class GoogleCloudAiplatformUiExportEvaluatedDataItemsOperationMetadata(_messages.Message):
   r"""Details of ModelService.ExportEvaluatedDataItems operation.
 
@@ -9870,6 +9902,8 @@ class GoogleCloudAiplatformUiImportFeatureValuesOperationMetadata(_messages.Mess
   r"""Details of operations that perform import Feature values.
 
   Fields:
+    blockingOperationIds: List of ImportFeatureValues operations running under
+      a single EntityType that are blocking this operation.
     genericMetadata: Operation metadata for Featurestore import Feature
       values.
     importedEntityCount: Number of entities that have been imported by the
@@ -9886,13 +9920,14 @@ class GoogleCloudAiplatformUiImportFeatureValuesOperationMetadata(_messages.Mess
     workerCount: The number of workers used to run the import operation.
   """
 
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
-  importedEntityCount = _messages.IntegerField(2)
-  importedFeatureValueCount = _messages.IntegerField(3)
-  invalidRowCount = _messages.IntegerField(4)
-  sourceUris = _messages.StringField(5, repeated=True)
-  timestampOutsideRetentionRowsCount = _messages.IntegerField(6)
-  workerCount = _messages.IntegerField(7)
+  blockingOperationIds = _messages.IntegerField(1, repeated=True)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 2)
+  importedEntityCount = _messages.IntegerField(3)
+  importedFeatureValueCount = _messages.IntegerField(4)
+  invalidRowCount = _messages.IntegerField(5)
+  sourceUris = _messages.StringField(6, repeated=True)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(7)
+  workerCount = _messages.IntegerField(8)
 
 
 class GoogleCloudAiplatformUiImportFeatureValuesResponse(_messages.Message):
@@ -11871,6 +11906,7 @@ class GoogleCloudAiplatformUiPublisherModelCallToAction(_messages.Message):
     openNotebook: Optional. Open notebook of the PublisherModel.
     openPromptTuningPipeline: Optional. Open prompt-tuning pipeline of the
       PublisherModel.
+    requestAccess: Optional. Request for access.
     viewRestApi: Optional. To view Rest API docs.
   """
 
@@ -11881,7 +11917,8 @@ class GoogleCloudAiplatformUiPublisherModelCallToAction(_messages.Message):
   openGenie = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 5)
   openNotebook = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 6)
   openPromptTuningPipeline = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 7)
-  viewRestApi = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionViewRestApi', 8)
+  requestAccess = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 8)
+  viewRestApi = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionViewRestApi', 9)
 
 
 class GoogleCloudAiplatformUiPublisherModelCallToActionDeploy(_messages.Message):
@@ -17447,6 +17484,8 @@ class GoogleCloudAiplatformV1ImportFeatureValuesOperationMetadata(_messages.Mess
   r"""Details of operations that perform import Feature values.
 
   Fields:
+    blockingOperationIds: List of ImportFeatureValues operations running under
+      a single EntityType that are blocking this operation.
     genericMetadata: Operation metadata for Featurestore import Feature
       values.
     importedEntityCount: Number of entities that have been imported by the
@@ -17462,12 +17501,13 @@ class GoogleCloudAiplatformV1ImportFeatureValuesOperationMetadata(_messages.Mess
       due to having timestamps outside the retention boundary.
   """
 
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
-  importedEntityCount = _messages.IntegerField(2)
-  importedFeatureValueCount = _messages.IntegerField(3)
-  invalidRowCount = _messages.IntegerField(4)
-  sourceUris = _messages.StringField(5, repeated=True)
-  timestampOutsideRetentionRowsCount = _messages.IntegerField(6)
+  blockingOperationIds = _messages.IntegerField(1, repeated=True)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 2)
+  importedEntityCount = _messages.IntegerField(3)
+  importedFeatureValueCount = _messages.IntegerField(4)
+  invalidRowCount = _messages.IntegerField(5)
+  sourceUris = _messages.StringField(6, repeated=True)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(7)
 
 
 class GoogleCloudAiplatformV1ImportFeatureValuesResponse(_messages.Message):
@@ -22868,10 +22908,6 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
       pricing](https://cloud.google.com/logging/pricing). User can disable
       container logging by setting this flag to true.
     displayName: Required. The user-defined name of this BatchPredictionJob.
-    enableVisionVertexPipeline: Indicate if vision batch prediction should
-      launch the vertex migrated pipeline. This flag for internal test only,
-      and will be removed once vision batch prediction is fully migrated to
-      vertex.
     encryptionSpec: Customer-managed encryption key options for a
       BatchPredictionJob. If this is set, then all resources created by the
       BatchPredictionJob will be encrypted with the provided encryption key.
@@ -23020,30 +23056,29 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
   dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchDedicatedResources', 3)
   disableContainerLogging = _messages.BooleanField(4)
   displayName = _messages.StringField(5)
-  enableVisionVertexPipeline = _messages.BooleanField(6)
-  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1EncryptionSpec', 7)
-  endTime = _messages.StringField(8)
-  error = _messages.MessageField('GoogleRpcStatus', 9)
-  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExplanationSpec', 10)
-  generateExplanation = _messages.BooleanField(11)
-  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobInputConfig', 12)
-  instanceConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobInstanceConfig', 13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1alpha1ManualBatchTuningParameters', 15)
-  model = _messages.StringField(16)
-  modelMonitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringConfig', 17)
-  modelMonitoringStatsAnomalies = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringStatsAnomalies', 18, repeated=True)
-  modelMonitoringStatus = _messages.MessageField('GoogleRpcStatus', 19)
-  modelParameters = _messages.MessageField('extra_types.JsonValue', 20)
-  name = _messages.StringField(21)
-  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputConfig', 22)
-  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputInfo', 23)
-  partialFailures = _messages.MessageField('GoogleRpcStatus', 24, repeated=True)
-  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1alpha1ResourcesConsumed', 25)
-  startTime = _messages.StringField(26)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  unmanagedContainerModel = _messages.MessageField('GoogleCloudAiplatformV1alpha1UnmanagedContainerModel', 28)
-  updateTime = _messages.StringField(29)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1EncryptionSpec', 6)
+  endTime = _messages.StringField(7)
+  error = _messages.MessageField('GoogleRpcStatus', 8)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExplanationSpec', 9)
+  generateExplanation = _messages.BooleanField(10)
+  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobInputConfig', 11)
+  instanceConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobInstanceConfig', 12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1alpha1ManualBatchTuningParameters', 14)
+  model = _messages.StringField(15)
+  modelMonitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringConfig', 16)
+  modelMonitoringStatsAnomalies = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringStatsAnomalies', 17, repeated=True)
+  modelMonitoringStatus = _messages.MessageField('GoogleRpcStatus', 18)
+  modelParameters = _messages.MessageField('extra_types.JsonValue', 19)
+  name = _messages.StringField(20)
+  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputConfig', 21)
+  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputInfo', 22)
+  partialFailures = _messages.MessageField('GoogleRpcStatus', 23, repeated=True)
+  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1alpha1ResourcesConsumed', 24)
+  startTime = _messages.StringField(25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  unmanagedContainerModel = _messages.MessageField('GoogleCloudAiplatformV1alpha1UnmanagedContainerModel', 27)
+  updateTime = _messages.StringField(28)
 
 
 class GoogleCloudAiplatformV1alpha1BatchPredictionJobInputConfig(_messages.Message):
@@ -30727,9 +30762,9 @@ class GoogleCloudAiplatformV1alpha1TensorboardExperiment(_messages.Message):
 
   Messages:
     LabelsValue: The labels with user-defined metadata to organize your
-      Datasets. Label keys and values cannot be longer than 64 characters
-      (Unicode codepoints), can only contain lowercase letters, numeric
-      characters, underscores and dashes. International characters are
+      TensorboardExperiment. Label keys and values cannot be longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
       allowed. No more than 64 user labels can be associated with one Dataset
       (System labels are excluded). See https://goo.gl/xmQnxf for more
       information and examples of labels. System reserved label keys are
@@ -30745,15 +30780,15 @@ class GoogleCloudAiplatformV1alpha1TensorboardExperiment(_messages.Message):
     displayName: User provided name of this TensorboardExperiment.
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
-    labels: The labels with user-defined metadata to organize your Datasets.
-      Label keys and values cannot be longer than 64 characters (Unicode
-      codepoints), can only contain lowercase letters, numeric characters,
-      underscores and dashes. International characters are allowed. No more
-      than 64 user labels can be associated with one Dataset (System labels
-      are excluded). See https://goo.gl/xmQnxf for more information and
-      examples of labels. System reserved label keys are prefixed with
-      `aiplatform.googleapis.com/` and are immutable. The following system
-      labels exist for each Dataset: *
+    labels: The labels with user-defined metadata to organize your
+      TensorboardExperiment. Label keys and values cannot be longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. No more than 64 user labels can be associated with one Dataset
+      (System labels are excluded). See https://goo.gl/xmQnxf for more
+      information and examples of labels. System reserved label keys are
+      prefixed with `aiplatform.googleapis.com/` and are immutable. The
+      following system labels exist for each Dataset: *
       `aiplatform.googleapis.com/dataset_metadata_schema`: output only. Its
       value is the metadata_schema's title.
     name: Output only. Name of the TensorboardExperiment. Format: `projects/{p
@@ -30767,14 +30802,15 @@ class GoogleCloudAiplatformV1alpha1TensorboardExperiment(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""The labels with user-defined metadata to organize your Datasets. Label
-    keys and values cannot be longer than 64 characters (Unicode codepoints),
-    can only contain lowercase letters, numeric characters, underscores and
-    dashes. International characters are allowed. No more than 64 user labels
-    can be associated with one Dataset (System labels are excluded). See
-    https://goo.gl/xmQnxf for more information and examples of labels. System
-    reserved label keys are prefixed with `aiplatform.googleapis.com/` and are
-    immutable. The following system labels exist for each Dataset: *
+    r"""The labels with user-defined metadata to organize your
+    TensorboardExperiment. Label keys and values cannot be longer than 64
+    characters (Unicode codepoints), can only contain lowercase letters,
+    numeric characters, underscores and dashes. International characters are
+    allowed. No more than 64 user labels can be associated with one Dataset
+    (System labels are excluded). See https://goo.gl/xmQnxf for more
+    information and examples of labels. System reserved label keys are
+    prefixed with `aiplatform.googleapis.com/` and are immutable. The
+    following system labels exist for each Dataset: *
     `aiplatform.googleapis.com/dataset_metadata_schema`: output only. Its
     value is the metadata_schema's title.
 
@@ -32003,6 +32039,16 @@ class GoogleCloudAiplatformV1beta1CreatePersistentResourceOperationMetadata(_mes
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1beta1CreateSolverOperationMetadata(_messages.Message):
+  r"""Runtime operation information for SolverService.CreateSolver.
+
+  Fields:
+    genericMetadata: The generic operation information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1beta1CreateSpecialistPoolOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   SpecialistPoolService.CreateSpecialistPool.
@@ -32269,6 +32315,16 @@ class GoogleCloudAiplatformV1beta1DeployModelResponse(_messages.Message):
   """
 
   deployedModel = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedModel', 1)
+
+
+class GoogleCloudAiplatformV1beta1DeploySolverOperationMetadata(_messages.Message):
+  r"""Runtime operation information for SolverService.DeploySolver.
+
+  Fields:
+    genericMetadata: The generic operation information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
 class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
@@ -33044,6 +33100,35 @@ class GoogleCloudAiplatformV1beta1ExportDataResponse(_messages.Message):
   exportedFiles = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1ExportEndpointOperationMetadata(_messages.Message):
+  r"""Details of EndpointService.ExportEndpoint operation.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+    outputInfo: Output only. Information further describing the output of this
+      Endpoint export.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ExportEndpointOperationMetadataOutputInfo', 2)
+
+
+class GoogleCloudAiplatformV1beta1ExportEndpointOperationMetadataOutputInfo(_messages.Message):
+  r"""Further describes the output of the ExportEndpoint. Supplements
+  OutputConfig.
+
+  Fields:
+    bigQueryModelOutputUri: Output only. If the Endpoint is being exported to
+      BigQuery this is the full path of the BigQuery ML model created.
+  """
+
+  bigQueryModelOutputUri = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1ExportEndpointResponse(_messages.Message):
+  r"""Response message of EndpointService.ExportEndpoint operation."""
+
+
 class GoogleCloudAiplatformV1beta1ExportFeatureValuesOperationMetadata(_messages.Message):
   r"""Details of operations that exports Features values.
 
@@ -33537,6 +33622,8 @@ class GoogleCloudAiplatformV1beta1ImportFeatureValuesOperationMetadata(_messages
   r"""Details of operations that perform import Feature values.
 
   Fields:
+    blockingOperationIds: List of ImportFeatureValues operations running under
+      a single EntityType that are blocking this operation.
     genericMetadata: Operation metadata for Featurestore import Feature
       values.
     importedEntityCount: Number of entities that have been imported by the
@@ -33552,12 +33639,13 @@ class GoogleCloudAiplatformV1beta1ImportFeatureValuesOperationMetadata(_messages
       due to having timestamps outside the retention boundary.
   """
 
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
-  importedEntityCount = _messages.IntegerField(2)
-  importedFeatureValueCount = _messages.IntegerField(3)
-  invalidRowCount = _messages.IntegerField(4)
-  sourceUris = _messages.StringField(5, repeated=True)
-  timestampOutsideRetentionRowsCount = _messages.IntegerField(6)
+  blockingOperationIds = _messages.IntegerField(1, repeated=True)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 2)
+  importedEntityCount = _messages.IntegerField(3)
+  importedFeatureValueCount = _messages.IntegerField(4)
+  invalidRowCount = _messages.IntegerField(5)
+  sourceUris = _messages.StringField(6, repeated=True)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(7)
 
 
 class GoogleCloudAiplatformV1beta1ImportFeatureValuesResponse(_messages.Message):
@@ -38214,6 +38302,16 @@ class GoogleCloudAiplatformV1beta1UndeployModelOperationMetadata(_messages.Messa
 
 class GoogleCloudAiplatformV1beta1UndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
+
+
+class GoogleCloudAiplatformV1beta1UndeploySolverOperationMetadata(_messages.Message):
+  r"""Runtime operation information for SolverService.UndeploySolver.
+
+  Fields:
+    genericMetadata: The generic operation information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
 class GoogleCloudAiplatformV1beta1UpdateDeploymentResourcePoolOperationMetadata(_messages.Message):

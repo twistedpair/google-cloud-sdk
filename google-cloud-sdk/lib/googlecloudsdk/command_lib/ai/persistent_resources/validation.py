@@ -98,7 +98,7 @@ def _ValidateHardwareInResourcePoolSpecArgs(resource_pool_specs, version):
             '--resource-pool-spec',
             'Key [replica-count] required in dict arg but not provided.')
 
-      if ('accelerator-count' in spec) != ('accelerator-type' not in spec):
+      if ('accelerator-count' in spec) != ('accelerator-type' in spec):
         raise exceptions.InvalidArgumentException(
             '--resource-pool-spec',
             'Key [accelerator-type] and [accelerator-count] are required to ' +

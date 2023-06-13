@@ -723,7 +723,7 @@ class GoogleCloudDocumentaiUiv1beta3DocumentId(_messages.Message):
   r"""Document Identifier.
 
   Fields:
-    gcsManagedDocId: A document id within user managed Cloud Storage.
+    gcsManagedDocId: A document id within user-managed Cloud Storage.
     revisionRef: Points to a specific revision of the document if set.
     unmanagedDocId: A document id within unmanaged dataset.
   """
@@ -734,12 +734,12 @@ class GoogleCloudDocumentaiUiv1beta3DocumentId(_messages.Message):
 
 
 class GoogleCloudDocumentaiUiv1beta3DocumentIdGCSManagedDocumentId(_messages.Message):
-  r"""Identifies a document uniquely within the scope of a dataset in user
-  managed Cloud Storage option.
+  r"""Identifies a document uniquely within the scope of a dataset in the
+  user-managed Cloud Storage option.
 
   Fields:
     cwDocId: Id of the document (indexed) managed by Content Warehouse.
-    gcsUri: Required. The Cloud Storage uri where the actual document is
+    gcsUri: Required. The Cloud Storage URI where the actual document is
       stored.
   """
 
@@ -1321,8 +1321,8 @@ class GoogleCloudDocumentaiV1BatchProcessRequest(_messages.Message):
     documentOutputConfig: The output configuration for the
       BatchProcessDocuments method.
     inputDocuments: The input documents for the BatchProcessDocuments method.
-    skipHumanReview: Whether Human Review feature should be skipped for this
-      request. Default to false.
+    skipHumanReview: Whether human review should be skipped for this request.
+      Default to `false`.
   """
 
   documentOutputConfig = _messages.MessageField('GoogleCloudDocumentaiV1DocumentOutputConfig', 1)
@@ -1461,9 +1461,8 @@ class GoogleCloudDocumentaiV1Document(_messages.Message):
       shards, entities in this list may cross shard boundaries.
     entityRelations: Placeholder. Relationship among Document.entities.
     error: Any error that occurred while processing this document.
-    mimeType: An IANA published MIME type (also referred to as media type).
-      For more information, see https://www.iana.org/assignments/media-
-      types/media-types.xhtml.
+    mimeType: An IANA published [media type (MIME
+      type)](https://www.iana.org/assignments/media-types/media-types.xhtml).
     pages: Visual page layout for the Document.
     revisions: Placeholder. Revision history of this document.
     shardInfo: Information about the sharding if this document is sharded part
@@ -1642,7 +1641,7 @@ class GoogleCloudDocumentaiV1DocumentPage(_messages.Message):
     image: Rendered image for this page. This image is preprocessed to remove
       any skew, rotation, and distortions such that the annotation bounding
       boxes can be upright and axis-aligned.
-    imageQualityScores: Image Quality Scores.
+    imageQualityScores: Image quality scores.
     layout: Layout for the page.
     lines: A list of visually detected text lines on the page. A collection of
       tokens that a human would perceive as a line.
@@ -1774,9 +1773,9 @@ class GoogleCloudDocumentaiV1DocumentPageDetectedLanguage(_messages.Message):
 
   Fields:
     confidence: Confidence of detected language. Range `[0, 1]`.
-    languageCode: The BCP-47 language code, such as `en-US` or `sr-Latn`. For
-      more information, see
-      https://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+    languageCode: The [BCP-47 language
+      code](https://www.unicode.org/reports/tr35/#Unicode_locale_identifier),
+      such as `en-US` or `sr-Latn`.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -1836,7 +1835,9 @@ class GoogleCloudDocumentaiV1DocumentPageImage(_messages.Message):
   Fields:
     content: Raw byte content of the image.
     height: Height of the image in pixels.
-    mimeType: Encoding mime type for the image.
+    mimeType: Encoding [media type (MIME
+      type)](https://www.iana.org/assignments/media-types/media-types.xhtml)
+      for the image.
     width: Width of the image in pixels.
   """
 
@@ -1847,12 +1848,12 @@ class GoogleCloudDocumentaiV1DocumentPageImage(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1DocumentPageImageQualityScores(_messages.Message):
-  r"""Image Quality Scores for the page image
+  r"""Image quality scores for the page image.
 
   Fields:
     detectedDefects: A list of detected defects.
-    qualityScore: The overall quality score. Range `[0, 1]` where 1 is perfect
-      quality.
+    qualityScore: The overall quality score. Range `[0, 1]` where `1` is
+      perfect quality.
   """
 
   detectedDefects = _messages.MessageField('GoogleCloudDocumentaiV1DocumentPageImageQualityScoresDetectedDefect', 1, repeated=True)
@@ -1863,8 +1864,8 @@ class GoogleCloudDocumentaiV1DocumentPageImageQualityScoresDetectedDefect(_messa
   r"""Image Quality Defects
 
   Fields:
-    confidence: Confidence of detected defect. Range `[0, 1]` where 1
-      indicates strong confidence of that the defect exists.
+    confidence: Confidence of detected defect. Range `[0, 1]` where `1`
+      indicates strong confidence that the defect exists.
     type: Name of the defect type. Supported values are: -
       `quality/defect_blurry` - `quality/defect_noisy` - `quality/defect_dark`
       - `quality/defect_faint` - `quality/defect_text_too_small` -
@@ -2266,11 +2267,11 @@ class GoogleCloudDocumentaiV1DocumentSchemaEntityType(_messages.Message):
       `EntityType.value_ontology` field and specify a list of all possible
       values in a value ontology file.
     name: Name of the type. It must be unique within the schema file and
-      cannot be a 'Common Type'. Besides that we use the following naming
-      conventions: - *use `snake_casing`* - name matching is case-sensitive -
-      Maximum 64 characters. - Must start with a letter. - Allowed characters:
-      ASCII letters `[a-z0-9_-]`. (For backward compatibility internal
-      infrastructure and tooling can handle any ascii character) - The `/` is
+      cannot be a "Common Type". The following naming conventions are used: -
+      Use `snake_casing`. - Name matching is case-sensitive. - Maximum 64
+      characters. - Must start with a letter. - Allowed characters: ASCII
+      letters `[a-z0-9_-]`. (For backward compatibility internal
+      infrastructure and tooling can handle any ascii character.) - The `/` is
       sometimes used to denote a property of a type. For example
       `line_item/amount`. This convention is deprecated, but will still be
       honored for backward compatibility.
@@ -2341,8 +2342,8 @@ class GoogleCloudDocumentaiV1DocumentSchemaMetadata(_messages.Message):
     documentAllowMultipleLabels: If true, on a given page, there can be
       multiple `document` annotations covering it.
     documentSplitter: If true, a `document` entity type can be applied to
-      subdocument ( splitting). Otherwise, it can only be applied to the
-      entire document (classification).
+      subdocument (splitting). Otherwise, it can only be applied to the entire
+      document (classification).
     prefixedNamingOnProperties: If set, all the nested entities must be
       prefixed with the parents.
     skipNamingValidation: If set, we will skip the naming format validation in
@@ -2383,13 +2384,15 @@ class GoogleCloudDocumentaiV1DocumentStyle(_messages.Message):
     fontFamily: Font family such as `Arial`, `Times New Roman`.
       https://www.w3schools.com/cssref/pr_font_font-family.asp
     fontSize: Font size.
-    fontWeight: Font weight. Possible values are normal, bold, bolder, and
-      lighter. https://www.w3schools.com/cssref/pr_font_weight.asp
+    fontWeight: [Font
+      weight](https://www.w3schools.com/cssref/pr_font_weight.asp). Possible
+      values are `normal`, `bold`, `bolder`, and `lighter`.
     textAnchor: Text anchor indexing into the Document.text.
-    textDecoration: Text decoration. Follows CSS standard.
-      https://www.w3schools.com/cssref/pr_text_text-decoration.asp
-    textStyle: Text style. Possible values are normal, italic, and oblique.
-      https://www.w3schools.com/cssref/pr_font_font-style.asp
+    textDecoration: [Text
+      decoration](https://www.w3schools.com/cssref/pr_text_text-
+      decoration.asp). Follows CSS standard.
+    textStyle: [Text style](https://www.w3schools.com/cssref/pr_font_font-
+      style.asp). Possible values are `normal`, `italic`, and `oblique`.
   """
 
   backgroundColor = _messages.MessageField('GoogleTypeColor', 1)
@@ -2407,7 +2410,8 @@ class GoogleCloudDocumentaiV1DocumentStyleFontSize(_messages.Message):
 
   Fields:
     size: Font size for the text.
-    unit: Unit for the font size. Follows CSS naming (in, px, pt, etc.).
+    unit: Unit for the font size. Follows CSS naming (such as `in`, `px`, and
+      `pt`).
   """
 
   size = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -2856,8 +2860,8 @@ class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):
       `pages.{page_field_name}`.
     inlineDocument: An inline document proto.
     rawDocument: A raw document content (bytes).
-    skipHumanReview: Whether Human Review feature should be skipped for this
-      request. Default to false.
+    skipHumanReview: Whether human review should be skipped for this request.
+      Default to `false`.
   """
 
   fieldMask = _messages.StringField(1)
@@ -2890,8 +2894,8 @@ class GoogleCloudDocumentaiV1Processor(_messages.Message):
     createTime: The time the processor was created.
     defaultProcessorVersion: The default processor version.
     displayName: The display name of the processor.
-    kmsKeyName: The KMS key used for encryption/decryption in CMEK scenarios.
-      See https://cloud.google.com/security-key-management.
+    kmsKeyName: The [KMS key](https://cloud.google.com/security-key-
+      management) used for encryption and decryption in CMEK scenarios.
     name: Output only. Immutable. The resource name of the processor. Format:
       `projects/{project}/locations/{location}/processors/{processor}`
     processEndpoint: Output only. Immutable. The http endpoint that can be
@@ -3021,7 +3025,8 @@ class GoogleCloudDocumentaiV1ProcessorTypeLocationInfo(_messages.Message):
   r"""The location information about where the processor is available.
 
   Fields:
-    locationId: The location id, currently must be one of [us, eu].
+    locationId: The location ID. For supported locations, refer to [regional
+      and multi-regional support](/document-ai/docs/regions).
   """
 
   locationId = _messages.StringField(1)
@@ -3029,10 +3034,9 @@ class GoogleCloudDocumentaiV1ProcessorTypeLocationInfo(_messages.Message):
 
 class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
   r"""A processor version is an implementation of a processor. Each processor
-  can have multiple versions, pre-trained by Google internally or up-trained
-  by the customer. At a time, a processor can only have one default version
-  version. So the processor's behavior (when processing documents) is defined
-  by a default version
+  can have multiple versions, pretrained by Google internally or uptrained by
+  the customer. A processor can only have one default version at a time. Its
+  document-processing behavior is defined by that version.
 
   Enums:
     StateValueValuesEnum: The state of the processor version.
@@ -3043,7 +3047,7 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
       this version.
     displayName: The display name of the processor version.
     documentSchema: The schema of the processor version. Describes the output.
-    googleManaged: Denotes that this ProcessorVersion is managed by google.
+    googleManaged: Denotes that this `ProcessorVersion` is managed by Google.
     kmsKeyName: The KMS key name used for encryption.
     kmsKeyVersionName: The KMS key version with which data is encrypted.
     latestEvaluation: The most recently invoked evaluation for the processor
@@ -3395,9 +3399,8 @@ class GoogleCloudDocumentaiV1beta1Document(_messages.Message):
       shards, entities in this list may cross shard boundaries.
     entityRelations: Placeholder. Relationship among Document.entities.
     error: Any error that occurred while processing this document.
-    mimeType: An IANA published MIME type (also referred to as media type).
-      For more information, see https://www.iana.org/assignments/media-
-      types/media-types.xhtml.
+    mimeType: An IANA published [media type (MIME
+      type)](https://www.iana.org/assignments/media-types/media-types.xhtml).
     pages: Visual page layout for the Document.
     revisions: Placeholder. Revision history of this document.
     shardInfo: Information about the sharding if this document is sharded part
@@ -3537,7 +3540,7 @@ class GoogleCloudDocumentaiV1beta1DocumentPage(_messages.Message):
     image: Rendered image for this page. This image is preprocessed to remove
       any skew, rotation, and distortions such that the annotation bounding
       boxes can be upright and axis-aligned.
-    imageQualityScores: Image Quality Scores.
+    imageQualityScores: Image quality scores.
     layout: Layout for the page.
     lines: A list of visually detected text lines on the page. A collection of
       tokens that a human would perceive as a line.
@@ -3669,9 +3672,9 @@ class GoogleCloudDocumentaiV1beta1DocumentPageDetectedLanguage(_messages.Message
 
   Fields:
     confidence: Confidence of detected language. Range `[0, 1]`.
-    languageCode: The BCP-47 language code, such as `en-US` or `sr-Latn`. For
-      more information, see
-      https://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+    languageCode: The [BCP-47 language
+      code](https://www.unicode.org/reports/tr35/#Unicode_locale_identifier),
+      such as `en-US` or `sr-Latn`.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -3731,7 +3734,9 @@ class GoogleCloudDocumentaiV1beta1DocumentPageImage(_messages.Message):
   Fields:
     content: Raw byte content of the image.
     height: Height of the image in pixels.
-    mimeType: Encoding mime type for the image.
+    mimeType: Encoding [media type (MIME
+      type)](https://www.iana.org/assignments/media-types/media-types.xhtml)
+      for the image.
     width: Width of the image in pixels.
   """
 
@@ -3742,12 +3747,12 @@ class GoogleCloudDocumentaiV1beta1DocumentPageImage(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1beta1DocumentPageImageQualityScores(_messages.Message):
-  r"""Image Quality Scores for the page image
+  r"""Image quality scores for the page image.
 
   Fields:
     detectedDefects: A list of detected defects.
-    qualityScore: The overall quality score. Range `[0, 1]` where 1 is perfect
-      quality.
+    qualityScore: The overall quality score. Range `[0, 1]` where `1` is
+      perfect quality.
   """
 
   detectedDefects = _messages.MessageField('GoogleCloudDocumentaiV1beta1DocumentPageImageQualityScoresDetectedDefect', 1, repeated=True)
@@ -3758,8 +3763,8 @@ class GoogleCloudDocumentaiV1beta1DocumentPageImageQualityScoresDetectedDefect(_
   r"""Image Quality Defects
 
   Fields:
-    confidence: Confidence of detected defect. Range `[0, 1]` where 1
-      indicates strong confidence of that the defect exists.
+    confidence: Confidence of detected defect. Range `[0, 1]` where `1`
+      indicates strong confidence that the defect exists.
     type: Name of the defect type. Supported values are: -
       `quality/defect_blurry` - `quality/defect_noisy` - `quality/defect_dark`
       - `quality/defect_faint` - `quality/defect_text_too_small` -
@@ -4157,13 +4162,15 @@ class GoogleCloudDocumentaiV1beta1DocumentStyle(_messages.Message):
     fontFamily: Font family such as `Arial`, `Times New Roman`.
       https://www.w3schools.com/cssref/pr_font_font-family.asp
     fontSize: Font size.
-    fontWeight: Font weight. Possible values are normal, bold, bolder, and
-      lighter. https://www.w3schools.com/cssref/pr_font_weight.asp
+    fontWeight: [Font
+      weight](https://www.w3schools.com/cssref/pr_font_weight.asp). Possible
+      values are `normal`, `bold`, `bolder`, and `lighter`.
     textAnchor: Text anchor indexing into the Document.text.
-    textDecoration: Text decoration. Follows CSS standard.
-      https://www.w3schools.com/cssref/pr_text_text-decoration.asp
-    textStyle: Text style. Possible values are normal, italic, and oblique.
-      https://www.w3schools.com/cssref/pr_font_font-style.asp
+    textDecoration: [Text
+      decoration](https://www.w3schools.com/cssref/pr_text_text-
+      decoration.asp). Follows CSS standard.
+    textStyle: [Text style](https://www.w3schools.com/cssref/pr_font_font-
+      style.asp). Possible values are `normal`, `italic`, and `oblique`.
   """
 
   backgroundColor = _messages.MessageField('GoogleTypeColor', 1)
@@ -4181,7 +4188,8 @@ class GoogleCloudDocumentaiV1beta1DocumentStyleFontSize(_messages.Message):
 
   Fields:
     size: Font size for the text.
-    unit: Unit for the font size. Follows CSS naming (in, px, pt, etc.).
+    unit: Unit for the font size. Follows CSS naming (such as `in`, `px`, and
+      `pt`).
   """
 
   size = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -4440,9 +4448,8 @@ class GoogleCloudDocumentaiV1beta2Document(_messages.Message):
     entityRelations: Placeholder. Relationship among Document.entities.
     error: Any error that occurred while processing this document.
     labels: Labels for this document.
-    mimeType: An IANA published MIME type (also referred to as media type).
-      For more information, see https://www.iana.org/assignments/media-
-      types/media-types.xhtml.
+    mimeType: An IANA published [media type (MIME
+      type)](https://www.iana.org/assignments/media-types/media-types.xhtml).
     pages: Visual page layout for the Document.
     revisions: Placeholder. Revision history of this document.
     shardInfo: Information about the sharding if this document is sharded part
@@ -4603,7 +4610,7 @@ class GoogleCloudDocumentaiV1beta2DocumentPage(_messages.Message):
     image: Rendered image for this page. This image is preprocessed to remove
       any skew, rotation, and distortions such that the annotation bounding
       boxes can be upright and axis-aligned.
-    imageQualityScores: Image Quality Scores.
+    imageQualityScores: Image quality scores.
     layout: Layout for the page.
     lines: A list of visually detected text lines on the page. A collection of
       tokens that a human would perceive as a line.
@@ -4735,9 +4742,9 @@ class GoogleCloudDocumentaiV1beta2DocumentPageDetectedLanguage(_messages.Message
 
   Fields:
     confidence: Confidence of detected language. Range `[0, 1]`.
-    languageCode: The BCP-47 language code, such as `en-US` or `sr-Latn`. For
-      more information, see
-      https://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+    languageCode: The [BCP-47 language
+      code](https://www.unicode.org/reports/tr35/#Unicode_locale_identifier),
+      such as `en-US` or `sr-Latn`.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -4797,7 +4804,9 @@ class GoogleCloudDocumentaiV1beta2DocumentPageImage(_messages.Message):
   Fields:
     content: Raw byte content of the image.
     height: Height of the image in pixels.
-    mimeType: Encoding mime type for the image.
+    mimeType: Encoding [media type (MIME
+      type)](https://www.iana.org/assignments/media-types/media-types.xhtml)
+      for the image.
     width: Width of the image in pixels.
   """
 
@@ -4808,12 +4817,12 @@ class GoogleCloudDocumentaiV1beta2DocumentPageImage(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1beta2DocumentPageImageQualityScores(_messages.Message):
-  r"""Image Quality Scores for the page image
+  r"""Image quality scores for the page image.
 
   Fields:
     detectedDefects: A list of detected defects.
-    qualityScore: The overall quality score. Range `[0, 1]` where 1 is perfect
-      quality.
+    qualityScore: The overall quality score. Range `[0, 1]` where `1` is
+      perfect quality.
   """
 
   detectedDefects = _messages.MessageField('GoogleCloudDocumentaiV1beta2DocumentPageImageQualityScoresDetectedDefect', 1, repeated=True)
@@ -4824,8 +4833,8 @@ class GoogleCloudDocumentaiV1beta2DocumentPageImageQualityScoresDetectedDefect(_
   r"""Image Quality Defects
 
   Fields:
-    confidence: Confidence of detected defect. Range `[0, 1]` where 1
-      indicates strong confidence of that the defect exists.
+    confidence: Confidence of detected defect. Range `[0, 1]` where `1`
+      indicates strong confidence that the defect exists.
     type: Name of the defect type. Supported values are: -
       `quality/defect_blurry` - `quality/defect_noisy` - `quality/defect_dark`
       - `quality/defect_faint` - `quality/defect_text_too_small` -
@@ -5223,13 +5232,15 @@ class GoogleCloudDocumentaiV1beta2DocumentStyle(_messages.Message):
     fontFamily: Font family such as `Arial`, `Times New Roman`.
       https://www.w3schools.com/cssref/pr_font_font-family.asp
     fontSize: Font size.
-    fontWeight: Font weight. Possible values are normal, bold, bolder, and
-      lighter. https://www.w3schools.com/cssref/pr_font_weight.asp
+    fontWeight: [Font
+      weight](https://www.w3schools.com/cssref/pr_font_weight.asp). Possible
+      values are `normal`, `bold`, `bolder`, and `lighter`.
     textAnchor: Text anchor indexing into the Document.text.
-    textDecoration: Text decoration. Follows CSS standard.
-      https://www.w3schools.com/cssref/pr_text_text-decoration.asp
-    textStyle: Text style. Possible values are normal, italic, and oblique.
-      https://www.w3schools.com/cssref/pr_font_font-style.asp
+    textDecoration: [Text
+      decoration](https://www.w3schools.com/cssref/pr_text_text-
+      decoration.asp). Follows CSS standard.
+    textStyle: [Text style](https://www.w3schools.com/cssref/pr_font_font-
+      style.asp). Possible values are `normal`, `italic`, and `oblique`.
   """
 
   backgroundColor = _messages.MessageField('GoogleTypeColor', 1)
@@ -5247,7 +5258,8 @@ class GoogleCloudDocumentaiV1beta2DocumentStyleFontSize(_messages.Message):
 
   Fields:
     size: Font size for the text.
-    unit: Unit for the font size. Follows CSS naming (in, px, pt, etc.).
+    unit: Unit for the font size. Follows CSS naming (such as `in`, `px`, and
+      `pt`).
   """
 
   size = _messages.FloatField(1, variant=_messages.Variant.FLOAT)

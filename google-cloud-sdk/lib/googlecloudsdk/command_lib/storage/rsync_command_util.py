@@ -51,10 +51,9 @@ _NO_MATCHES_MESSAGE = 'Did not find existing container at: {}'
 
 
 def get_existing_or_placeholder_destination_resource(path):
-  """Returns container or UnknownResource if found nothing. Errors otherwise."""
-  path_with_wildcard_trailing_delimiter = (
-      storage_url.storage_url_from_string(path).join('').versionless_url_string
-  )
+  """Returns existing valid container or UnknownResource or raises."""
+  url = storage_url.storage_url_from_string(path)
+  path_with_wildcard_trailing_delimiter = url.join('').versionless_url_string
   resource_iterator = wildcard_iterator.get_wildcard_iterator(
       path_with_wildcard_trailing_delimiter,
       fields_scope=cloud_api.FieldsScope.SHORT,
@@ -70,9 +69,7 @@ def get_existing_or_placeholder_destination_resource(path):
           'Wildcard pattern matched nothing. '
           + _NO_MATCHES_MESSAGE.format(path)
       )
-    return resource_reference.UnknownResource(
-        storage_url.storage_url_from_string(path)
-    )
+    return resource_reference.UnknownResource(url)
 
   if plurality_checkable_resource_iterator.is_plural():
     raise errors.InvalidUrlError(
@@ -171,7 +168,7 @@ def get_csv_line_from_resource(resource):
     atime, custom_metadata_mtime, uid, gid, mode = (
         posix_util.get_posix_attributes_from_cloud_resource(resource)
     )
-    if custom_metadata_mtime:
+    if custom_metadata_mtime is not None:
       mtime = custom_metadata_mtime
     else:
       # Use cloud object creation time as modification time. Since cloud objects
@@ -355,15 +352,13 @@ def _compare_metadata_and_return_copy_needed(
     source_mtime,
     destination_mtime,
     compare_only_hashes=False,
+    is_cloud_source_and_destination=False,
 ):
   """Compares metadata and returns if source should be copied to destination."""
   # Two cloud objects should have pre-generated hashes that are more reliable
   # than mtime for seeing file differences. This ignores the unusual case where
   # cloud hashes are missing, but we still skip mtime for gsutil parity.
-  skip_mtime_comparison = compare_only_hashes or (
-      isinstance(source_resource, resource_reference.ObjectResource)
-      and isinstance(destination_resource, resource_reference.ObjectResource)
-  )
+  skip_mtime_comparison = compare_only_hashes or is_cloud_source_and_destination
   if (
       not skip_mtime_comparison
       and source_mtime is not None
@@ -481,7 +476,6 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
   destination_posix = posix_util.get_posix_attributes_from_resource(
       destination_object
   )
-
   if (
       skip_if_destination_has_later_modification_time
       and posix_to_set.mtime is not None
@@ -492,12 +486,16 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
     # `_compare_metadata_and_return_copy_needed`.
     return (None, _IterateResource.SOURCE)
 
+  is_cloud_source_and_destination = isinstance(
+      source_object, resource_reference.ObjectResource
+  ) and isinstance(destination_object, resource_reference.ObjectResource)
   if _compare_metadata_and_return_copy_needed(
       source_object,
       destination_object,
       posix_to_set.mtime,
       destination_posix.mtime,
-      compare_only_hashes,
+      compare_only_hashes=compare_only_hashes,
+      is_cloud_source_and_destination=is_cloud_source_and_destination,
   ):
     # Possible performance improvement would be adding infra to pass the known
     # POSIX info to upload tasks to avoid an `os.stat` call.
@@ -517,8 +515,12 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
   need_full_posix_update = (
       user_request_args.preserve_posix and posix_to_set != destination_posix
   )
+
+  # Since cloud-to-cloud uses hash comparisons instead of mtime, little reason
+  # to waste an API call performing an mtime patch.
   need_mtime_update = (
-      posix_to_set.mtime is not None
+      not is_cloud_source_and_destination
+      and posix_to_set.mtime is not None
       and posix_to_set.mtime != destination_posix.mtime
   )
   if not (need_full_posix_update or need_mtime_update):

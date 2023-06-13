@@ -27,19 +27,30 @@ from googlecloudsdk.core.resource import flattened_printer as fp
 SBOM_PRINTER_FORMAT = "sbom"
 
 
+# pylint: disable=line-too-long
+def _GenerateSignedBy(signatures):
+  sig = (", ").join(sig.keyid for sig in signatures)
+  if sig == "projects/goog-analysis/locations/global/keyRings/sbomAttestor/cryptoKeys/generatedByArtifactAnalysis/cryptoKeyVersions/1":
+    return "Artifact Analysis"
+  if sig == "projects/goog-analysis-dev/locations/global/keyRings/sbomAttestor/cryptoKeys/generatedByArtifactAnalysis/cryptoKeyVersions/1":
+    return "Artifact Analysis Dev"
+  return sig
+
+
 class SbomPrinter(cp.CustomPrinterBase):
   """Prints SBOM reference fields with customized labels in customized order."""
 
   def Transform(self, sbom_ref):
     printer = fp.FlattenedPrinter()
-    printer.AddRecord(
-        {"resource_uri": sbom_ref.occ.resourceUri}, delimit=False
-    )
+    printer.AddRecord({"resource_uri": sbom_ref.occ.resourceUri}, delimit=False)
     printer.AddRecord(
         {"location": sbom_ref.occ.sbomReference.payload.predicate.location},
         delimit=False,
     )
     printer.AddRecord({"reference": sbom_ref.occ.name}, delimit=False)
+    sig = _GenerateSignedBy(sbom_ref.occ.sbomReference.signatures)
+    if sig:
+      printer.AddRecord({"signed_by": sig}, delimit=False)
     if "exists" in sbom_ref.file_info:
       printer.AddRecord({"file_exists": True}, delimit=False)
     if "err_msg" in sbom_ref.file_info:

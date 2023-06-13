@@ -2212,7 +2212,7 @@ class Bucket(proto.Message):
             enables turbo replication, valid for dual-region buckets
             only. If rpo is not specified when the bucket is created, it
             defaults to "DEFAULT". For more information, see
-            https://cloud.google.com/storage/docs/turbo-replication.
+            https://cloud.google.com/storage/docs/availability-durability#turbo-replication.
         acl (Sequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BucketAccessControl]):
             Access controls on the bucket. If
             iam_config.uniform_bucket_level_access is enabled on this

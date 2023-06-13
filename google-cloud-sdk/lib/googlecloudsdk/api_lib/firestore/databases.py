@@ -45,7 +45,12 @@ def GetDatabase(project, database):
 
 
 def CreateDatabase(
-    project, location, database, database_type, delete_protection_state
+    project,
+    location,
+    database,
+    database_type,
+    delete_protection_state,
+    pitr_state,
 ):
   """Performs a Firestore Admin v1 Database Creation.
 
@@ -55,6 +60,7 @@ def CreateDatabase(
     database: the database id to create, a string.
     database_type: the database type, an Enum.
     delete_protection_state: the value for deleteProtectionState, an Enum.
+    pitr_state: the value for PitrState, an Enum.
 
   Returns:
     an Operation.
@@ -68,6 +74,7 @@ def CreateDatabase(
               type=database_type,
               locationId=location,
               deleteProtectionState=delete_protection_state,
+              pointInTimeRecoveryEnablement=pitr_state,
           ),
       )
   )

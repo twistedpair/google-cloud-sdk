@@ -168,6 +168,10 @@ def AddStoragePoolCreateArgs(parser, release_track):
   labels_util.AddCreateLabelsFlags(parser)
   messages = netapp_client.GetMessagesModule(release_track=release_track)
   AddStoragePoolServiceLevelArg(parser, messages=messages, required=True)
+  AddStoragePoolNetworkArg(parser)
+  AddStoragePoolActiveDirectoryArg(parser)
+  AddStoragePoolKmsConfigArg(parser)
+  AddStoragePoolEnableLdapArg(parser)
 
 
 def AddStoragePoolDeleteArgs(parser):
@@ -187,3 +191,4 @@ def AddStoragePoolUpdateArgs(parser):
   flags.AddResourceAsyncFlag(parser)
   flags.AddResourceCapacityArg(parser, 'Storage Pool', required=False)
   labels_util.AddUpdateLabelsFlags(parser)
+  AddStoragePoolActiveDirectoryArg(parser)

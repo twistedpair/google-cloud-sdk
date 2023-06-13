@@ -2112,7 +2112,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def Explain(self, request, global_params=None):
-      r"""Perform an online explanation. If deployed_model_id is specified, the corresponding DeployModel must have explanation_spec populated. If deployed_model_id is not specified, all DeployedModels must have explanation_spec populated. Only deployed AutoML tabular Models have explanation_spec.
+      r"""Perform an online explanation. If deployed_model_id is specified, the corresponding DeployModel must have explanation_spec populated. If deployed_model_id is not specified, all DeployedModels must have explanation_spec populated.
 
       Args:
         request: (AiplatformProjectsLocationsEndpointsExplainRequest) input message

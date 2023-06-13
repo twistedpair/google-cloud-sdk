@@ -59,6 +59,7 @@ class SupportedFeatures:
       support_max_count_per_zone,
       support_performance_monitoring_unit,
       support_custom_hostnames,
+      support_storage_pool,
   ):
     self.support_rsa_encrypted = support_rsa_encrypted
     self.support_secure_tags = support_secure_tags
@@ -89,6 +90,7 @@ class SupportedFeatures:
         support_performance_monitoring_unit
     )
     self.support_custom_hostnames = support_custom_hostnames
+    self.support_storage_pool = support_storage_pool
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -346,7 +348,8 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
         support_image_csek=supported_features.support_image_csek,
         support_create_disk_snapshots=supported_features
         .support_create_disk_snapshots,
-        use_disk_type_uri=False)
+        use_disk_type_uri=False,
+        support_storage_pool=supported_features.support_storage_pool)
 
   machine_type_name = None
   if instance_utils.CheckSpecifiedMachineTypeArgs(args, skip_defaults):

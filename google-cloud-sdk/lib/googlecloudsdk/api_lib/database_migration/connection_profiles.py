@@ -306,6 +306,16 @@ class ConnectionProfilesClient(object):
         availability_type
     )
 
+  def _GetEdition(self, args):
+    if args.IsKnownAndSpecified('edition'):
+      return (
+          self.messages.CloudSqlSettings.EditionValueValuesEnum.lookup_by_name(
+              args.edition.replace('-', '_').upper()
+          )
+      )
+    else:
+      return None
+
   def _GetCloudSqlSettings(self, args):
     """Creates a Cloud SQL connection profile according to the given args.
 
@@ -347,6 +357,7 @@ class ConnectionProfilesClient(object):
           cp_type, args.availability_type
       )
       cloud_sql_settings.secondaryZone = args.secondary_zone
+      cloud_sql_settings.edition = self._GetEdition(args)
     if (
         self._release_track == base.ReleaseTrack.GA
         and args.CONCEPTS.cmek_key.Parse() is not None

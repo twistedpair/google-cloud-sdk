@@ -1094,6 +1094,7 @@ class BareMetalNodePool(_messages.Message):
     uid: Output only. The unique identifier of the bare metal node pool.
     updateTime: Output only. The time at which this bare metal node pool was
       last updated.
+    upgradePolicy: The worker node pool upgrade policy.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1166,6 +1167,7 @@ class BareMetalNodePool(_messages.Message):
   status = _messages.MessageField('ResourceStatus', 10)
   uid = _messages.StringField(11)
   updateTime = _messages.StringField(12)
+  upgradePolicy = _messages.MessageField('BareMetalNodePoolUpgradePolicy', 13)
 
 
 class BareMetalNodePoolConfig(_messages.Message):
@@ -1236,6 +1238,22 @@ class BareMetalNodePoolConfig(_messages.Message):
   taints = _messages.MessageField('NodeTaint', 5, repeated=True)
 
 
+class BareMetalNodePoolUpgradePolicy(_messages.Message):
+  r"""BareMetalNodePoolUpgradePolicy defines the node pool upgrade policy.
+
+  Fields:
+    independent: Specify the intent to upgrade the node pool with or without
+      the control plane upgrade. Defaults to false i.e. upgrade the node pool
+      with control plane upgrade. Set this to true to upgrade or downgrade the
+      node pool independently from the control plane.
+    parallelUpgradeConfig: The parallel upgrade settings for worker node
+      pools.
+  """
+
+  independent = _messages.BooleanField(1)
+  parallelUpgradeConfig = _messages.MessageField('BareMetalParallelUpgradeConfig', 2)
+
+
 class BareMetalOsEnvironmentConfig(_messages.Message):
   r"""Specifies operating system settings for cluster provisioning.
 
@@ -1245,6 +1263,22 @@ class BareMetalOsEnvironmentConfig(_messages.Message):
   """
 
   packageRepoExcluded = _messages.BooleanField(1)
+
+
+class BareMetalParallelUpgradeConfig(_messages.Message):
+  r"""BareMetalParallelUpgradeConfig defines the parallel upgrade settings for
+  worker node pools.
+
+  Fields:
+    concurrentNodes: Required. The maximum number of nodes that can be
+      upgraded at once. Defaults to 1.
+    minimumAvailableNodes: The minimum number of nodes that should be healthy
+      and available during an upgrade. If set to the default value of 0, it is
+      possible that none of the nodes will be available during an upgrade.
+  """
+
+  concurrentNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minimumAvailableNodes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class BareMetalPortConfig(_messages.Message):

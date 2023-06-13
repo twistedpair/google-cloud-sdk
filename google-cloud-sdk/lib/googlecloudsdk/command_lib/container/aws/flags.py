@@ -215,6 +215,46 @@ def AddSecurityGroupFlagsForUpdate(parser, noun):
   AddClearSecurityGroupIds(group, noun)
 
 
+def AddPerNodePoolSGRules(parser):
+  """Adds --disable-per-node-pool-sg-rules flag to parser.
+  """
+
+  parser.add_argument(
+      '--disable-per-node-pool-sg-rules',
+      action='store_true',
+      default=None,
+      dest='per_node_pool_sg_rules_disabled',
+      help=(
+          'Disable the default per node pool subnet security group rules on '
+          'the control plane security group. When disabled, at least one '
+          'security group that allows node pools to send traffic to '
+          'the control plane on ports TCP/443 and TCP/8132 must be provided.'
+          ),
+      )
+
+
+def GetPerNodePoolSGRulesDisabled(parser):
+  return getattr(parser, 'per_node_pool_sg_rules_disabled', None)
+
+
+def AddPerNodePoolSGRulesForUpdate(parser):
+  """Adds --disable-per-node-pool-sg-rules and --enable-per-node-pool-sg-rules flags to parser.
+  """
+
+  group = parser.add_group('Default per node pool security group rules', mutex=True)
+  AddPerNodePoolSGRules(group)
+  group.add_argument(
+      '--enable-per-node-pool-sg-rules',
+      action='store_false',
+      default=None,
+      dest='per_node_pool_sg_rules_disabled',
+      help=(
+          'Enable the default per node pool subnet security group rules on '
+          'the control plane security group.'
+          ),
+      )
+
+
 def _VolumeTypeEnumMapper(prefix):
   return arg_utils.ChoiceEnumMapper(
       '--{}-volume-type'.format(prefix),
@@ -267,6 +307,33 @@ def AddMainVolumeIops(parser):
 
 def GetMainVolumeIops(args):
   return getattr(args, 'main_volume_iops', None)
+
+
+def _AddVolumeThroughput(parser, prefix):
+  parser.add_argument(
+      '--{}-volume-throughput'.format(prefix),
+      type=int,
+      help=(
+          'Throughput to provision for the {} volume, '
+          'in MiB/s. Only valid if the volume type is GP3.'.format(prefix)
+      ),
+  )
+
+
+def AddRootVolumeThroughput(parser):
+  _AddVolumeThroughput(parser, 'root')
+
+
+def GetRootVolumeThroughput(args):
+  return getattr(args, 'root_volume_throughput', None)
+
+
+def AddMainVolumeThroughput(parser):
+  _AddVolumeThroughput(parser, 'main')
+
+
+def GetMainVolumeThroughput(args):
+  return getattr(args, 'main_volume_throughput', None)
 
 
 def _AddKmsKeyArn(parser, prefix, target, required=False):

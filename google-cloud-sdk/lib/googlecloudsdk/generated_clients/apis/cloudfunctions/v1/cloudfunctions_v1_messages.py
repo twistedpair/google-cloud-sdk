@@ -939,8 +939,8 @@ class GoogleCloudFunctionsV2OperationMetadata(_messages.Message):
     apiVersion: API version used to start the operation.
     cancelRequested: Identifies whether the user has requested cancellation of
       the operation. Operations that have successfully been cancelled have
-      Operation.error value with a google.rpc.Status.code of 1, corresponding
-      to `Code.CANCELLED`.
+      google.longrunning.Operation.error value with a google.rpc.Status.code
+      of 1, corresponding to `Code.CANCELLED`.
     createTime: The time the operation was created.
     endTime: The time the operation finished running.
     requestResource: The original request that started the operation.
@@ -1113,8 +1113,8 @@ class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
     apiVersion: API version used to start the operation.
     cancelRequested: Identifies whether the user has requested cancellation of
       the operation. Operations that have successfully been cancelled have
-      Operation.error value with a google.rpc.Status.code of 1, corresponding
-      to `Code.CANCELLED`.
+      google.longrunning.Operation.error value with a google.rpc.Status.code
+      of 1, corresponding to `Code.CANCELLED`.
     createTime: The time the operation was created.
     endTime: The time the operation finished running.
     requestResource: The original request that started the operation.
@@ -1287,8 +1287,8 @@ class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
     apiVersion: API version used to start the operation.
     cancelRequested: Identifies whether the user has requested cancellation of
       the operation. Operations that have successfully been cancelled have
-      Operation.error value with a google.rpc.Status.code of 1, corresponding
-      to `Code.CANCELLED`.
+      google.longrunning.Operation.error value with a google.rpc.Status.code
+      of 1, corresponding to `Code.CANCELLED`.
     createTime: The time the operation was created.
     endTime: The time the operation finished running.
     requestResource: The original request that started the operation.

@@ -643,17 +643,6 @@ class Date(_messages.Message):
   year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
-class DnsZone(_messages.Message):
-  r"""Information about DNS zone for DNS peering.
-
-  Fields:
-    dnsZone: Optional. DNS Zone resource name in format
-      projects/{project}/managedZone/{managedZone}.
-  """
-
-  dnsZone = _messages.StringField(1)
-
-
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1223,11 +1212,6 @@ class NodeConfig(_messages.Message):
       is 30GB. If unspecified, defaults to 100GB. Cannot be updated. This
       field is supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*.
-    dnsPeeringZones: Optional. The list of DNS Zones that are peered to the
-      Cloud Composer environment, enabling requests to endpoints using custom
-      domains. Can only be used if customer network connectivity is enabled.
-      This field is supported for Cloud Composer environments in versions
-      composer-2.5.*-airflow-*.*.*.
     enableIpMasqAgent: Optional. Deploys 'ip-masq-agent' daemon set in the GKE
       cluster and defines nonMasqueradeCIDRs equals to pod IP range so IP
       masquerading is used for all destination addresses, except between pods
@@ -1310,17 +1294,16 @@ class NodeConfig(_messages.Message):
   composerInternalIpv4CidrBlock = _messages.StringField(1)
   composerNetworkAttachment = _messages.StringField(2)
   diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  dnsPeeringZones = _messages.MessageField('DnsZone', 4, repeated=True)
-  enableIpMasqAgent = _messages.BooleanField(5)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 6)
-  location = _messages.StringField(7)
-  machineType = _messages.StringField(8)
-  maxPodsPerNode = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  network = _messages.StringField(10)
-  oauthScopes = _messages.StringField(11, repeated=True)
-  serviceAccount = _messages.StringField(12)
-  subnetwork = _messages.StringField(13)
-  tags = _messages.StringField(14, repeated=True)
+  enableIpMasqAgent = _messages.BooleanField(4)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 5)
+  location = _messages.StringField(6)
+  machineType = _messages.StringField(7)
+  maxPodsPerNode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  network = _messages.StringField(9)
+  oauthScopes = _messages.StringField(10, repeated=True)
+  serviceAccount = _messages.StringField(11)
+  subnetwork = _messages.StringField(12)
+  tags = _messages.StringField(13, repeated=True)
 
 
 class Operation(_messages.Message):

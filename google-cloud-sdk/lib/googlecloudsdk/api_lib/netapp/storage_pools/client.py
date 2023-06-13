@@ -19,11 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.netapp.constants import OPERATIONS_COLLECTION
-from googlecloudsdk.api_lib.netapp.constants import STORAGE_POOL_RESOURCE
-from googlecloudsdk.api_lib.netapp.util import GetClientInstance
-from googlecloudsdk.api_lib.netapp.util import GetMessagesModule
-from googlecloudsdk.api_lib.netapp.util import VERSION_MAP
+from googlecloudsdk.api_lib.netapp import constants
+from googlecloudsdk.api_lib.netapp import util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
@@ -42,7 +39,7 @@ class StoragePoolsClient(object):
       self._adapter = BetaStoragePoolsAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
-          VERSION_MAP[release_track]))
+          util.VERSION_MAP[release_track]))
 
   @property
   def client(self):
@@ -79,7 +76,7 @@ class StoragePoolsClient(object):
     if async_:
       return create_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        create_op.name, collection=OPERATIONS_COLLECTION)
+        create_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
   def ParseStoragePoolConfig(self,
@@ -93,26 +90,17 @@ class StoragePoolsClient(object):
                              description=None,
                              labels=None):
     """Parses the command line arguments for Create Storage Pool into a config."""
-    if self.release_track == base.ReleaseTrack.BETA:
-      return self._adapter.ParseStoragePoolConfigBeta(
-          name=name,
-          service_level=service_level,
-          network=network,
-          kms_config=kms_config,
-          active_directory=active_directory,
-          enable_ldap=enable_ldap,
-          capacity=capacity,
-          description=description,
-          labels=labels
-      )
-    elif self.release_track == base.ReleaseTrack.ALPHA:
-      return self._adapter.ParseStoragePoolConfigAlpha(
-          name=name,
-          service_level=service_level,
-          capacity=capacity,
-          description=description,
-          labels=labels
-      )
+    return self._adapter.ParseStoragePoolConfig(
+        name=name,
+        service_level=service_level,
+        network=network,
+        kms_config=kms_config,
+        active_directory=active_directory,
+        enable_ldap=enable_ldap,
+        capacity=capacity,
+        description=description,
+        labels=labels
+    )
 
   def ListStoragePools(self, location_ref, limit=None):
     """Make API calls to List active Cloud NetApp Storage Pools.
@@ -134,7 +122,7 @@ class StoragePoolsClient(object):
     return list_pager.YieldFromList(
         self.client.projects_locations_storagePools,
         request,
-        field=STORAGE_POOL_RESOURCE,
+        field=constants.STORAGE_POOL_RESOURCE,
         limit=limit,
         batch_size_attribute='pageSize')
 
@@ -155,7 +143,7 @@ class StoragePoolsClient(object):
     if async_:
       return delete_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        delete_op.name, collection=OPERATIONS_COLLECTION)
+        delete_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
   def ParseUpdatedStoragePoolConfig(self,
@@ -176,21 +164,13 @@ class StoragePoolsClient(object):
     Returns:
       The storage pool message.
     """
-    if self.release_track == base.ReleaseTrack.BETA:
-      storage_pool = self._adapter.ParseUpdatedStoragePoolConfigBeta(
-          storagepool_config,
-          capacity=capacity,
-          active_directory=active_directory,
-          description=description,
-          labels=labels
-      )
-    elif self.release_track == base.ReleaseTrack.ALPHA:
-      storage_pool = self._adapter.ParseUpdatedStoragePoolConfigAlpha(
-          storagepool_config,
-          capacity=capacity,
-          description=description,
-          labels=labels,
-      )
+    storage_pool = self._adapter.ParseUpdatedStoragePoolConfig(
+        storagepool_config,
+        capacity=capacity,
+        active_directory=active_directory,
+        description=description,
+        labels=labels
+    )
     return storage_pool
 
   def UpdateStoragePool(
@@ -212,7 +192,7 @@ class StoragePoolsClient(object):
     if async_:
       return update_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        update_op.name, collection=OPERATIONS_COLLECTION)
+        update_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
 
@@ -221,11 +201,10 @@ class BetaStoragePoolsAdapter(object):
 
   def __init__(self):
     self.release_track = base.ReleaseTrack.BETA
-    self.client = GetClientInstance(release_track=self.release_track)
-    self.messages = GetMessagesModule(release_track=self.release_track)
+    self.client = util.GetClientInstance(release_track=self.release_track)
+    self.messages = util.GetMessagesModule(release_track=self.release_track)
 
-  @base.ReleaseTracks(base.ReleaseTrack.BETA)
-  def ParseStoragePoolConfigBeta(
+  def ParseStoragePoolConfig(
       self,
       name,
       service_level,
@@ -268,8 +247,7 @@ class BetaStoragePoolsAdapter(object):
     storage_pool.labels = labels
     return storage_pool
 
-  @base.ReleaseTracks(base.ReleaseTrack.BETA)
-  def ParseUpdatedStoragePoolConfigBeta(
+  def ParseUpdatedStoragePoolConfig(
       self,
       storagepool_config,
       description=None,
@@ -309,43 +287,6 @@ class AlphaStoragePoolsAdapter(BetaStoragePoolsAdapter):
   def __init__(self):
     super(AlphaStoragePoolsAdapter, self).__init__()
     self.release_track = base.ReleaseTrack.ALPHA
-    self.client = GetClientInstance(release_track=self.release_track)
-    self.messages = GetMessagesModule(release_track=self.release_track)
+    self.client = util.GetClientInstance(release_track=self.release_track)
+    self.messages = util.GetMessagesModule(release_track=self.release_track)
 
-  @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
-  def ParseStoragePoolConfigAlpha(
-      self, name, service_level, capacity, description, labels
-  ):
-    """Parses the command line arguments for Create Storage Pool into a config.
-
-    Args:
-      name: the name of the Storage Pool
-      service_level: the service level of the Storage Pool
-      capacity: the storage capacity of the Storage Pool
-      description: the description of the Storage Pool
-      labels: the parsed labels value
-
-    Returns:
-      The configuration that will be used as the request body for creating a
-      Cloud NetApp Storage Pool.
-    """
-    storage_pool = self.messages.StoragePool()
-    storage_pool.name = name
-    storage_pool.serviceLevel = service_level
-    storage_pool.capacityGib = capacity
-    storage_pool.description = description
-    storage_pool.labels = labels
-    return storage_pool
-
-  @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
-  def ParseUpdatedStoragePoolConfigAlpha(
-      self, storagepool_config, description=None, labels=None, capacity=None
-  ):
-    """Parse update information into an updated Storage Pool message."""
-    if capacity is not None:
-      storagepool_config.capacityGib = capacity
-    if description is not None:
-      storagepool_config.description = description
-    if labels is not None:
-      storagepool_config.labels = labels
-    return storagepool_config

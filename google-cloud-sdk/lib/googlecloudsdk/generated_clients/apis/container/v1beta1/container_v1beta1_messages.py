@@ -78,11 +78,14 @@ class AdditionalPodRangesConfig(_messages.Message):
   secondary ranges supporting the ClusterUpdate message.
 
   Fields:
+    podRangeInfo: Output only. [Output only] Information for additional pod
+      range.
     podRangeNames: Name for pod secondary ipv4 range which has the actual
       range defined ahead.
   """
 
-  podRangeNames = _messages.StringField(1, repeated=True)
+  podRangeInfo = _messages.MessageField('RangeInfo', 1, repeated=True)
+  podRangeNames = _messages.StringField(2, repeated=True)
 
 
 class AddonsConfig(_messages.Message):
@@ -374,6 +377,13 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
   upgradeSettings = _messages.MessageField('UpgradeSettings', 11)
 
 
+class AutoscaledRolloutPolicy(_messages.Message):
+  r"""Autoscaled rollout policy uses cluster autoscaler during blue-green
+  upgrades to scale both the green and blue pools.
+  """
+
+
+
 class AvailableVersion(_messages.Message):
   r"""Deprecated.
 
@@ -421,7 +431,6 @@ class BinaryAuthorization(_messages.Message):
       evaluation. If unspecified, defaults to DISABLED.
 
   Fields:
-    boundPolicies: Binauthz policies that apply to this cluster.
     enabled: This field is deprecated. Leave this unset and instead configure
       BinaryAuthorization using evaluation_mode. If evaluation_mode is set to
       anything other than EVALUATION_MODE_UNSPECIFIED, this field is ignored.
@@ -432,6 +441,7 @@ class BinaryAuthorization(_messages.Message):
       format: `projects/{project_number}/platforms/gke/policies/{policy_id}`.
       If absent, this defaults to a Google managed policy with pre-configured
       safeguards.
+    policyBindings: Binauthz policies that apply to this cluster.
   """
 
   class EvaluationModeValueValuesEnum(_messages.Enum):
@@ -450,10 +460,10 @@ class BinaryAuthorization(_messages.Message):
         Authorization in monitoring mode with the policy specified in
         binary_authorization.policy and enforce admission with the project's
         singleton policy.
-      BOUND_POLICIES: Use Binary Authorization with the policies specified in
-        bound_policies.
-      BOUND_POLICIES_AND_PROJECT_SINGLETON_POLICY_ENFORCE: Use Binary
-        Authorization with both the policies specified in bound_policies and
+      POLICY_BINDINGS: Use Binary Authorization with the policies specified in
+        policy_bindings.
+      POLICY_BINDINGS_AND_PROJECT_SINGLETON_POLICY_ENFORCE: Use Binary
+        Authorization with both the policies specified in policy_bindings and
         the project's singleton policy.
     """
     EVALUATION_MODE_UNSPECIFIED = 0
@@ -461,13 +471,13 @@ class BinaryAuthorization(_messages.Message):
     PROJECT_SINGLETON_POLICY_ENFORCE = 2
     MONITORING = 3
     MONITORING_AND_PROJECT_SINGLETON_POLICY_ENFORCE = 4
-    BOUND_POLICIES = 5
-    BOUND_POLICIES_AND_PROJECT_SINGLETON_POLICY_ENFORCE = 6
+    POLICY_BINDINGS = 5
+    POLICY_BINDINGS_AND_PROJECT_SINGLETON_POLICY_ENFORCE = 6
 
-  boundPolicies = _messages.MessageField('Policy', 1, repeated=True)
-  enabled = _messages.BooleanField(2)
-  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 3)
-  policy = _messages.StringField(4)
+  enabled = _messages.BooleanField(1)
+  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 2)
+  policy = _messages.StringField(3)
+  policyBindings = _messages.MessageField('PolicyBinding', 4, repeated=True)
 
 
 class BlueGreenInfo(_messages.Message):
@@ -523,13 +533,16 @@ class BlueGreenSettings(_messages.Message):
   r"""Settings for blue-green upgrade.
 
   Fields:
+    autoscaledRolloutPolicy: Autoscaled policy for cluster autoscaler enabled
+      blue-green upgrade.
     nodePoolSoakDuration: Time needed after draining entire blue pool. After
       this period, blue pool will be cleaned up.
     standardRolloutPolicy: Standard policy for the blue-green upgrade.
   """
 
-  nodePoolSoakDuration = _messages.StringField(1)
-  standardRolloutPolicy = _messages.MessageField('StandardRolloutPolicy', 2)
+  autoscaledRolloutPolicy = _messages.MessageField('AutoscaledRolloutPolicy', 1)
+  nodePoolSoakDuration = _messages.StringField(2)
+  standardRolloutPolicy = _messages.MessageField('StandardRolloutPolicy', 3)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -2190,10 +2203,12 @@ class DNSConfig(_messages.Message):
       PLATFORM_DEFAULT: Use GKE default DNS provider(kube-dns) for DNS
         resolution.
       CLOUD_DNS: Use CloudDNS for DNS resolution.
+      KUBE_DNS: Use KubeDNS for DNS resolution
     """
     PROVIDER_UNSPECIFIED = 0
     PLATFORM_DEFAULT = 1
     CLOUD_DNS = 2
+    KUBE_DNS = 3
 
   clusterDns = _messages.EnumField('ClusterDnsValueValuesEnum', 1)
   clusterDnsDomain = _messages.StringField(2)
@@ -2731,6 +2746,10 @@ class IPAllocationPolicy(_messages.Message):
     createSubnetwork: Whether a new subnetwork will be created automatically
       for the cluster. This field is only applicable when `use_ip_aliases` is
       true.
+    defaultPodIpv4RangeUtilization: Output only. [Output only] The utilization
+      of the cluster default IPv4 range for pod. The ratio is Usage/[Total
+      number of IPs in the secondary range],
+      Usage=numNodes*numZones*podIPsPerNode.
     ipv6AccessType: The ipv6 access type (internal or external) when
       create_subnetwork is true
     nodeIpv4Cidr: This field is deprecated, use node_ipv4_cidr_block.
@@ -2849,23 +2868,24 @@ class IPAllocationPolicy(_messages.Message):
   clusterIpv4CidrBlock = _messages.StringField(4)
   clusterSecondaryRangeName = _messages.StringField(5)
   createSubnetwork = _messages.BooleanField(6)
-  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 7)
-  nodeIpv4Cidr = _messages.StringField(8)
-  nodeIpv4CidrBlock = _messages.StringField(9)
-  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 10)
-  servicesIpv4Cidr = _messages.StringField(11)
-  servicesIpv4CidrBlock = _messages.StringField(12)
-  servicesIpv6CidrBlock = _messages.StringField(13)
-  servicesSecondaryRangeName = _messages.StringField(14)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 15)
-  subnetIpv6CidrBlock = _messages.StringField(16)
-  subnetworkName = _messages.StringField(17)
-  targetNodeIpv4Range = _messages.StringField(18)
-  targetPodIpv4Range = _messages.StringField(19)
-  targetServiceIpv4Range = _messages.StringField(20)
-  tpuIpv4CidrBlock = _messages.StringField(21)
-  useIpAliases = _messages.BooleanField(22)
-  useRoutes = _messages.BooleanField(23)
+  defaultPodIpv4RangeUtilization = _messages.FloatField(7)
+  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 8)
+  nodeIpv4Cidr = _messages.StringField(9)
+  nodeIpv4CidrBlock = _messages.StringField(10)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 11)
+  servicesIpv4Cidr = _messages.StringField(12)
+  servicesIpv4CidrBlock = _messages.StringField(13)
+  servicesIpv6CidrBlock = _messages.StringField(14)
+  servicesSecondaryRangeName = _messages.StringField(15)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 16)
+  subnetIpv6CidrBlock = _messages.StringField(17)
+  subnetworkName = _messages.StringField(18)
+  targetNodeIpv4Range = _messages.StringField(19)
+  targetPodIpv4Range = _messages.StringField(20)
+  targetServiceIpv4Range = _messages.StringField(21)
+  tpuIpv4CidrBlock = _messages.StringField(22)
+  useIpAliases = _messages.BooleanField(23)
+  useRoutes = _messages.BooleanField(24)
 
 
 class IdentityServiceConfig(_messages.Message):
@@ -3974,7 +3994,7 @@ class NodeConfig(_messages.Message):
       added.
     preemptible: Whether the nodes are created as preemptible VM instances.
       See: https://cloud.google.com/compute/docs/instances/preemptible for
-      more inforamtion about preemptible VM instances.
+      more information about preemptible VM instances.
     reservationAffinity: The optional reservation affinity. Setting this field
       will apply the specified [Zonal Compute
       Reservation](https://cloud.google.com/compute/docs/instances/reserving-
@@ -4288,6 +4308,9 @@ class NodeNetworkConfig(_messages.Message):
       notation (e.g. `10.96.0.0/14`) to pick a specific range to use. Only
       applicable if `ip_allocation_policy.use_ip_aliases` is true. This field
       cannot be changed after the node pool has been created.
+    podIpv4RangeUtilization: Output only. [Output only] The utilization of the
+      IPv4 range for pod. The ratio is Usage/[Total number of IPs in the
+      secondary range], Usage=numNodes*numZones*podIPsPerNode.
     podRange: The ID of the secondary range for pod IPs. If `create_pod_range`
       is true, this ID is used for the new range. If `create_pod_range` is
       false, uses an existing secondary range with this ID. Only applicable if
@@ -4310,8 +4333,9 @@ class NodeNetworkConfig(_messages.Message):
   networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 6)
   podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 7)
   podIpv4CidrBlock = _messages.StringField(8)
-  podRange = _messages.StringField(9)
-  targetPodIpv4Range = _messages.StringField(10)
+  podIpv4RangeUtilization = _messages.FloatField(9)
+  podRange = _messages.StringField(10)
+  targetPodIpv4Range = _messages.StringField(11)
 
 
 class NodeNetworkPolicy(_messages.Message):
@@ -4821,6 +4845,10 @@ class PlacementPolicy(_messages.Message):
     TypeValueValuesEnum: The type of placement.
 
   Fields:
+    policyName: If set, refers to the name of a custom resource policy
+      supplied by the user. The resource policy must be in the same project
+      and region as the node pool. If not found, InvalidArgument error will be
+      returned.
     tpuTopology: TPU placement topology for pod slice node pool.
       https://cloud.google.com/tpu/docs/types-topologies#tpu_topologies
     type: The type of placement.
@@ -4838,8 +4866,9 @@ class PlacementPolicy(_messages.Message):
     TYPE_UNSPECIFIED = 0
     COMPACT = 1
 
-  tpuTopology = _messages.StringField(1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  policyName = _messages.StringField(1)
+  tpuTopology = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class PodAutoscaling(_messages.Message):
@@ -4876,7 +4905,7 @@ class PodSecurityPolicyConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
-class Policy(_messages.Message):
+class PolicyBinding(_messages.Message):
   r"""Binauthz policy that applies to this cluster.
 
   Fields:
@@ -5002,6 +5031,19 @@ class QueuedProvisioning(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class RangeInfo(_messages.Message):
+  r"""RangeInfo contains the range name and the range utilization by this
+  cluster.
+
+  Fields:
+    rangeName: Output only. [Output only] Name of a range.
+    utilization: Output only. [Output only] The utilization of the range.
+  """
+
+  rangeName = _messages.StringField(1)
+  utilization = _messages.FloatField(2)
 
 
 class RecurringTimeWindow(_messages.Message):
@@ -5385,10 +5427,13 @@ class SecurityPostureConfig(_messages.Message):
       MODE_UNSPECIFIED: Default value not specified.
       DISABLED: Disables Security Posture features on the cluster.
       BASIC: Applies Security Posture features on the cluster.
+      ENTERPRISE: Applies the Security Posture off cluster Enterprise level
+        features.
     """
     MODE_UNSPECIFIED = 0
     DISABLED = 1
     BASIC = 2
+    ENTERPRISE = 3
 
   class VulnerabilityModeValueValuesEnum(_messages.Enum):
     r"""Sets which mode to use for vulnerability scanning.
@@ -5398,10 +5443,13 @@ class SecurityPostureConfig(_messages.Message):
       VULNERABILITY_DISABLED: Disables vulnerability scanning on the cluster.
       VULNERABILITY_BASIC: Applies basic vulnerability scanning on the
         cluster.
+      VULNERABILITY_ENTERPRISE: Applies the Security Posture's vulnerability
+        on cluster Enterprise level features.
     """
     VULNERABILITY_MODE_UNSPECIFIED = 0
     VULNERABILITY_DISABLED = 1
     VULNERABILITY_BASIC = 2
+    VULNERABILITY_ENTERPRISE = 3
 
   mode = _messages.EnumField('ModeValueValuesEnum', 1)
   vulnerabilityMode = _messages.EnumField('VulnerabilityModeValueValuesEnum', 2)

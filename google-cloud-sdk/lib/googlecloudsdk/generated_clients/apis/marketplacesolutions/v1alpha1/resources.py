@@ -41,61 +41,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_CONVERGEIMAGES = (
-      'projects.locations.convergeImages',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/convergeImages/'
-              '{convergeImagesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_CONVERGEINSTANCES = (
-      'projects.locations.convergeInstances',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'convergeInstances/{convergeInstancesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_CONVERGENETWORKS = (
-      'projects.locations.convergeNetworks',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'convergeNetworks/{convergeNetworksId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_CONVERGESSHKEYS = (
-      'projects.locations.convergeSshKeys',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/convergeSshKeys/'
-              '{convergeSshKeysId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_CONVERGEVOLUMES = (
-      'projects.locations.convergeVolumes',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/convergeVolumes/'
-              '{convergeVolumesId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -103,6 +48,61 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_POWERIMAGES = (
+      'projects.locations.powerImages',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/powerImages/'
+              '{powerImagesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_POWERINSTANCES = (
+      'projects.locations.powerInstances',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/powerInstances/'
+              '{powerInstancesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_POWERNETWORKS = (
+      'projects.locations.powerNetworks',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/powerNetworks/'
+              '{powerNetworksId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_POWERSSHKEYS = (
+      'projects.locations.powerSshKeys',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/powerSshKeys/'
+              '{powerSshKeysId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_POWERVOLUMES = (
+      'projects.locations.powerVolumes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/powerVolumes/'
+              '{powerVolumesId}',
       },
       ['name'],
       True

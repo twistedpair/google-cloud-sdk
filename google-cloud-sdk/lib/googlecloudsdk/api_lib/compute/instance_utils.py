@@ -519,6 +519,16 @@ def ParseDiskType(resources, disk_type, project, location, scope):
   return disk_type_ref
 
 
+def ParseStoragePool(resources, storage_pool, project, location):
+  """Parses disk type reference based on location scope."""
+  collection = 'compute.storagePools'
+  params = {'project': project, 'zone': location}
+  storage_pool_ref = resources.Parse(
+      storage_pool, collection=collection, params=params
+  )
+  return storage_pool_ref
+
+
 def UseExistingBootDisk(disks):
   """Returns True if the user has specified an existing boot disk."""
   return any(disk.get('boot', False) for disk in disks)

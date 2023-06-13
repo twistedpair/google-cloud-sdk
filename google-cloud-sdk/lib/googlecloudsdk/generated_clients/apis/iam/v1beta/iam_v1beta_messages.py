@@ -419,8 +419,8 @@ class GoogleIamV1betaWorkloadIdentityPoolProviderOidc(_messages.Message):
       the .well-known path for the `issuer_uri`. Currently, RSA and EC
       asymmetric keys are supported. The JWK must use following format and
       include only the following fields: { "keys": [ { "kty": "RSA/EC", "alg":
-      "", "use": "sig", "kid": "", "n": "", "e": "" "x": "" "y": "" "crv": ""
-      } ] }
+      "", "use": "sig", "kid": "", "n": "", "e": "", "x": "", "y": "", "crv":
+      "" } ] }
   """
 
   allowedAudiences = _messages.StringField(1, repeated=True)

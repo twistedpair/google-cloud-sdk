@@ -1045,6 +1045,55 @@ class BigtableadminProjectsInstancesTablesUndeleteRequest(_messages.Message):
   undeleteTableRequest = _messages.MessageField('UndeleteTableRequest', 2)
 
 
+class BigtableadminProjectsInstancesTablesViewsGetIamPolicyRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesViewsGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class BigtableadminProjectsInstancesTablesViewsSetIamPolicyRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesViewsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class BigtableadminProjectsInstancesTablesViewsTestIamPermissionsRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesViewsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class BigtableadminProjectsInstancesTestIamPermissionsRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTestIamPermissionsRequest object.
 

@@ -31,6 +31,7 @@ NEVER_EXPIRATION_PERIOD_VALUE = 'never'
 CLEAR_DEAD_LETTER_VALUE = 'clear'
 CLEAR_RETRY_VALUE = 'clear'
 CLEAR_BIGQUERY_CONFIG_VALUE = 'clear'
+CLEAR_CLOUD_STORAGE_CONFIG_VALUE = 'clear'
 CLEAR_PUSH_NO_WRAPPER_CONFIG_VALUE = 'clear'
 
 
@@ -112,7 +113,14 @@ class SubscriptionsClient(object):
              bigquery_table=None,
              use_topic_schema=None,
              write_metadata=None,
-             drop_unknown_fields=None):
+             drop_unknown_fields=None,
+             cloud_storage_bucket=None,
+             cloud_storage_file_prefix=None,
+             cloud_storage_file_suffix=None,
+             cloud_storage_max_bytes=None,
+             cloud_storage_max_duration=None,
+             cloud_storage_output_format=None,
+             cloud_storage_write_metadata=None):
     """Creates a Subscription.
 
     Args:
@@ -148,6 +156,17 @@ class SubscriptionsClient(object):
         writing to BigQuery
       drop_unknown_fields (bool): Whether or not to drop fields that are only in
         the topic schema when writing to BigQuery
+      cloud_storage_bucket (str): The name for the Cloud Storage bucket.
+      cloud_storage_file_prefix (str): The prefix for Cloud Storage filename.
+      cloud_storage_file_suffix (str): The suffix for Cloud Storage filename.
+      cloud_storage_max_bytes (int): The maximum bytes that can be written to a
+        Cloud Storage file before a new file is created.
+      cloud_storage_max_duration (str): The maximum duration that can elapse
+        before a new Cloud Storage file is created.
+      cloud_storage_output_format (str): The output format for data written to
+        Cloud Storage.
+      cloud_storage_write_metadata (bool): Whether or not to write the
+        subscription name and other metadata in the output.
 
     Returns:
       Subscription: the created subscription
@@ -170,8 +189,12 @@ class SubscriptionsClient(object):
         enableExactlyOnceDelivery=enable_exactly_once_delivery,
         bigqueryConfig=self._BigQueryConfig(bigquery_table, use_topic_schema,
                                             write_metadata,
-                                            drop_unknown_fields))
-
+                                            drop_unknown_fields),
+        cloudStorageConfig=self._CloudStorageConfig(
+            cloud_storage_bucket, cloud_storage_file_prefix,
+            cloud_storage_file_suffix, cloud_storage_max_bytes,
+            cloud_storage_max_duration, cloud_storage_output_format,
+            cloud_storage_write_metadata))
     return self._service.Create(subscription)
 
   def Delete(self, subscription_ref):
@@ -349,6 +372,42 @@ class SubscriptionsClient(object):
           dropUnknownFields=drop_unknown_fields)
     return None
 
+  def _CloudStorageConfig(self, bucket, file_prefix, file_suffix, max_bytes,
+                          max_duration, output_format, write_metadata):
+    """Builds CloudStorageConfig message from argument values.
+
+    Args:
+      bucket (str): The name for the Cloud Storage bucket.
+      file_prefix (str): The prefix for Cloud Storage filename.
+      file_suffix (str): The suffix for Cloud Storage filename.
+      max_bytes (int): The maximum bytes that can be written to a Cloud Storage
+        file before a new file is created.
+      max_duration (str): The maximum duration that can elapse before a new
+        Cloud Storage file is created.
+      output_format (str): The output format for data written to Cloud Storage.
+      write_metadata (bool): Whether or not to write the subscription name and
+        other metadata in the output.
+
+    Returns:
+      CloudStorageConfig message or None
+    """
+    if bucket:
+      cloud_storage_config = self.messages.CloudStorageConfig(
+          bucket=bucket,
+          filenamePrefix=file_prefix,
+          filenameSuffix=file_suffix,
+          maxBytes=max_bytes,
+          maxDuration=max_duration,
+      )
+      if output_format == 'text':
+        cloud_storage_config.textConfig = self.messages.TextConfig()
+      elif output_format == 'avro':
+        cloud_storage_config.avroConfig = self.messages.AvroConfig(
+            writeMetadata=write_metadata if write_metadata else False
+        )
+      return cloud_storage_config
+    return None
+
   def _HandleMessageRetentionUpdate(self, update_setting):
     if update_setting.value == DEFAULT_MESSAGE_RETENTION_VALUE:
       update_setting.value = None
@@ -363,6 +422,10 @@ class SubscriptionsClient(object):
 
   def _HandleBigQueryConfigUpdate(self, update_setting):
     if update_setting.value == CLEAR_BIGQUERY_CONFIG_VALUE:
+      update_setting.value = None
+
+  def _HandleCloudStorageConfigUpdate(self, update_setting):
+    if update_setting.value == CLEAR_CLOUD_STORAGE_CONFIG_VALUE:
       update_setting.value = None
 
   def _HandlePushNoWrapperUpdate(self, update_setting):
@@ -390,6 +453,14 @@ class SubscriptionsClient(object):
             write_metadata=None,
             drop_unknown_fields=None,
             clear_bigquery_config=False,
+            cloud_storage_bucket=None,
+            cloud_storage_file_prefix=None,
+            cloud_storage_file_suffix=None,
+            cloud_storage_max_bytes=None,
+            cloud_storage_max_duration=None,
+            cloud_storage_output_format=None,
+            cloud_storage_write_metadata=None,
+            clear_cloud_storage_config=False,
             clear_push_no_wrapper_config=False):
     """Updates a Subscription.
 
@@ -427,13 +498,35 @@ class SubscriptionsClient(object):
         the topic schema when writing to BigQuery
       clear_bigquery_config (bool): If set, clear the BigQuery config from the
         subscription
+      cloud_storage_bucket (bool): The name for the Cloud Storage bucket.
+      cloud_storage_file_prefix (str): The prefix for Cloud Storage filename.
+      cloud_storage_file_suffix (str): The suffix for Cloud Storage filename.
+      cloud_storage_max_bytes (int): The maximum bytes that can be written to a
+        Cloud Storage file before a new file is created.
+      cloud_storage_max_duration (str): The maximum duration that can elapse
+      before a new Cloud Storage file is created.
+      cloud_storage_output_format (str): The output format for data written to
+        Cloud Storage.
+      cloud_storage_write_metadata (bool): Whether or not to write the
+        subscription name and other metadata in the output.
+      clear_cloud_storage_config (bool): If set, clear the Cloud Storage config
+        from the subscription.
       clear_push_no_wrapper_config(bool): If set, clear the Push No Wrapper
         config from the subscription
+
     Returns:
       Subscription: The updated subscription.
     Raises:
       NoFieldsSpecifiedError: if no fields were specified.
     """
+    if clear_cloud_storage_config:
+      cloud_storage_config_settings = CLEAR_CLOUD_STORAGE_CONFIG_VALUE
+    else:
+      cloud_storage_config_settings = self._CloudStorageConfig(
+          cloud_storage_bucket, cloud_storage_file_prefix,
+          cloud_storage_file_suffix, cloud_storage_max_bytes,
+          cloud_storage_max_duration, cloud_storage_output_format,
+          cloud_storage_write_metadata)
     update_settings = [
         _SubscriptionUpdateSetting('ackDeadlineSeconds', ack_deadline),
         _SubscriptionUpdateSetting('pushConfig', push_config),
@@ -461,6 +554,8 @@ class SubscriptionsClient(object):
             self._BigQueryConfig(bigquery_table, use_topic_schema,
                                  write_metadata, drop_unknown_fields)),
         _SubscriptionUpdateSetting(
+            'cloudStorageConfig', cloud_storage_config_settings),
+        _SubscriptionUpdateSetting(
             'pushConfig.noWrapper',
             CLEAR_PUSH_NO_WRAPPER_CONFIG_VALUE if clear_push_no_wrapper_config
             else None),
@@ -478,6 +573,8 @@ class SubscriptionsClient(object):
           self._HandleRetryPolicyUpdate(update_setting)
         if update_setting.field_name == 'bigqueryConfig':
           self._HandleBigQueryConfigUpdate(update_setting)
+        if update_setting.field_name == 'cloudStorageConfig':
+          self._HandleCloudStorageConfigUpdate(update_setting)
         if update_setting.field_name == 'pushConfig.noWrapper':
           self._HandlePushNoWrapperUpdate(update_setting)
           if push_config is None:

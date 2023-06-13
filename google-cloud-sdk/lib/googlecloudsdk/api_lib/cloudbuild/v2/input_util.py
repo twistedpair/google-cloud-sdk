@@ -18,6 +18,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import re
+from typing import MutableMapping
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_exceptions
 from googlecloudsdk.core import yaml
@@ -100,12 +101,32 @@ def WorkflowTriggerTransform(trigger, resources):
   ParamDictTransform(trigger.get("params", []))
 
 
+def _ConvertToUpperCase(input_map: MutableMapping[str, str], key: str):
+  if key in input_map:
+    input_map[key] = input_map[key].upper()
+
+
 def ParamSpecTransform(param_spec):
   if "default" in param_spec:
     param_spec["default"] = ParamValueTransform(param_spec["default"])
 
-  if "type" in param_spec:
-    param_spec["type"] = param_spec["type"].upper()
+  _ConvertToUpperCase(param_spec, "type")
+
+
+def TaskResultTransform(task_result):
+  _ConvertToUpperCase(task_result, "type")
+
+  for property_name in task_result.get("properties", []):
+    PropertySpecTransform(task_result["properties"][property_name])
+
+
+def PropertySpecTransform(property_spec):
+  """Mutates the given property spec from Tekton to GCB format.
+
+  Args:
+    property_spec: A Tekton-compliant property spec.
+  """
+  _ConvertToUpperCase(property_spec, "type")
 
 
 def ParamDictTransform(params):

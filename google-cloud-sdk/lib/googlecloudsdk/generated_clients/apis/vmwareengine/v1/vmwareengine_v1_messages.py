@@ -1018,34 +1018,61 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LocationMetadata(_messages.Message):
+  r"""VmwareEngine specific metadata for the given
+  google.cloud.location.Location. It is returned as a content of the
+  `google.cloud.location.Location.metadata` field.
+
+  Enums:
+    CapabilitiesValueListEntryValuesEnum:
+
+  Fields:
+    capabilities: Output only. Capabilities of this location.
+  """
+
+  class CapabilitiesValueListEntryValuesEnum(_messages.Enum):
+    r"""CapabilitiesValueListEntryValuesEnum enum type.
+
+    Values:
+      CAPABILITY_UNSPECIFIED: The default value. This value is used if the
+        capability is omitted or unknown.
+      STRETCHED_CLUSTERS: Stretch clusters are supported in this location.
+    """
+    CAPABILITY_UNSPECIFIED = 0
+    STRETCHED_CLUSTERS = 1
+
+  capabilities = _messages.EnumField('CapabilitiesValueListEntryValuesEnum', 1, repeated=True)
+
+
 class LoggingServer(_messages.Message):
   r"""Logging server to receive vCenter or ESXi logs.
 
   Enums:
-    ProtocolValueValuesEnum: Protocol used by vCenter to send logs to a
-      logging server.
-    SourceTypeValueValuesEnum: The type of component that produces logs that
-      will be forwarded to this logging server.
+    ProtocolValueValuesEnum: Required. Protocol used by vCenter to send logs
+      to a logging server.
+    SourceTypeValueValuesEnum: Required. The type of component that produces
+      logs that will be forwarded to this logging server.
 
   Fields:
     createTime: Output only. Creation time of this resource.
-    hostname: Fully-qualified domain name (FQDN) or IP Address of the logging
-      server.
+    hostname: Required. Fully-qualified domain name (FQDN) or IP Address of
+      the logging server.
     name: Output only. The resource name of this logging server. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/loggingServers/my-logging-server`
-    port: Port number at which the logging server receives logs.
-    protocol: Protocol used by vCenter to send logs to a logging server.
-    sourceType: The type of component that produces logs that will be
-      forwarded to this logging server.
+    port: Required. Port number at which the logging server receives logs.
+    protocol: Required. Protocol used by vCenter to send logs to a logging
+      server.
+    sourceType: Required. The type of component that produces logs that will
+      be forwarded to this logging server.
     uid: Output only. System-generated unique identifier for the resource.
     updateTime: Output only. Last update time of this resource.
   """
 
   class ProtocolValueValuesEnum(_messages.Enum):
-    r"""Protocol used by vCenter to send logs to a logging server.
+    r"""Required. Protocol used by vCenter to send logs to a logging server.
 
     Values:
       PROTOCOL_UNSPECIFIED: Unspecified communications protocol. This is the
@@ -1058,8 +1085,8 @@ class LoggingServer(_messages.Message):
     TCP = 2
 
   class SourceTypeValueValuesEnum(_messages.Enum):
-    r"""The type of component that produces logs that will be forwarded to
-    this logging server.
+    r"""Required. The type of component that produces logs that will be
+    forwarded to this logging server.
 
     Values:
       SOURCE_TYPE_UNSPECIFIED: The default value. This value should never be
@@ -1529,11 +1556,13 @@ class NodeType(_messages.Message):
   r"""Describes node type.
 
   Enums:
+    CapabilitiesValueListEntryValuesEnum:
     KindValueValuesEnum: Output only. The type of the resource.
 
   Fields:
     availableCustomCoreCounts: Output only. List of possible values of custom
       core count.
+    capabilities: Output only. Capabilities of this node type.
     diskSizeGb: Output only. The amount of storage available, defined in GB.
     displayName: Output only. The friendly name for this node type. For
       example: ve1-standard-72
@@ -1554,6 +1583,17 @@ class NodeType(_messages.Message):
       node.
   """
 
+  class CapabilitiesValueListEntryValuesEnum(_messages.Enum):
+    r"""CapabilitiesValueListEntryValuesEnum enum type.
+
+    Values:
+      CAPABILITY_UNSPECIFIED: The default value. This value is used if the
+        capability is omitted or unknown.
+      STRETCHED_CLUSTERS: This node type supports stretch clusters.
+    """
+    CAPABILITY_UNSPECIFIED = 0
+    STRETCHED_CLUSTERS = 1
+
   class KindValueValuesEnum(_messages.Enum):
     r"""Output only. The type of the resource.
 
@@ -1567,15 +1607,16 @@ class NodeType(_messages.Message):
     STORAGE_ONLY = 2
 
   availableCustomCoreCounts = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
-  diskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  displayName = _messages.StringField(3)
-  families = _messages.StringField(4, repeated=True)
-  kind = _messages.EnumField('KindValueValuesEnum', 5)
-  memoryGb = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  name = _messages.StringField(7)
-  nodeTypeId = _messages.StringField(8)
-  totalCoreCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  virtualCpuCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  capabilities = _messages.EnumField('CapabilitiesValueListEntryValuesEnum', 2, repeated=True)
+  diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  displayName = _messages.StringField(4)
+  families = _messages.StringField(5, repeated=True)
+  kind = _messages.EnumField('KindValueValuesEnum', 6)
+  memoryGb = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  name = _messages.StringField(8)
+  nodeTypeId = _messages.StringField(9)
+  totalCoreCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  virtualCpuCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
 
 
 class NodeTypeConfig(_messages.Message):
@@ -2199,9 +2240,16 @@ class ResetVcenterCredentialsRequest(_messages.Message):
       creating duplicate commitments. The request ID must be a valid UUID with
       the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
+    username: Optional. The username of the user to be to reset the
+      credentials. The default value of this field is CloudOwner@gve.local.
+      The provided value should be one of the following: solution-
+      user-01@gve.local, solution-user-02@gve.local, solution-
+      user-03@gve.local, solution-user-04@gve.local, solution-
+      user-05@gve.local, zertoadmin@gve.local.
   """
 
   requestId = _messages.StringField(1)
+  username = _messages.StringField(2)
 
 
 class RevokeDnsBindPermissionRequest(_messages.Message):
@@ -3993,17 +4041,18 @@ class VmwareengineProjectsLocationsPrivateCloudsLoggingServersCreateRequest(_mes
       conventions in https://cloud.google.com/apis/design/resource_names. For
       example: `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud`
-    requestId: A request ID to identify requests. Specify a unique request ID
-      so that if you must retry your request, the server will know to ignore
-      the request if it has already been completed. The server guarantees that
-      a request doesn't result in creation of duplicate commitments for at
-      least 60 minutes. For example, consider a situation where you make an
-      initial request and the request times out. If you make the request again
-      with the same request ID, the server can check if original operation
-      with the same request ID was received, and if so, will ignore the second
-      request. This prevents clients from accidentally creating duplicate
-      commitments. The request ID must be a valid UUID with the exception that
-      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   loggingServer = _messages.MessageField('LoggingServer', 1)
@@ -4026,7 +4075,7 @@ class VmwareengineProjectsLocationsPrivateCloudsLoggingServersDeleteRequest(_mes
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-central1-a/privateClouds/my-
-      cloud/loggingServer/my-logging-server`
+      cloud/loggingServers/my-logging-server`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server
@@ -4411,9 +4460,16 @@ class VmwareengineProjectsLocationsPrivateCloudsShowVcenterCredentialsRequest(_m
       the conventions in https://cloud.google.com/apis/design/resource_names.
       For example: `projects/my-project/locations/us-
       central1-a/privateClouds/my-cloud`
+    username: Optional. The username of the user to be queried for
+      credentials. The default value of this field is CloudOwner@gve.local.
+      The provided value must be one of the following: CloudOwner@gve.local,
+      solution-user-01@gve.local, solution-user-02@gve.local, solution-
+      user-03@gve.local, solution-user-04@gve.local, solution-
+      user-05@gve.local, zertoadmin@gve.local.
   """
 
   privateCloud = _messages.StringField(1, required=True)
+  username = _messages.StringField(2)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsSubnetsGetRequest(_messages.Message):

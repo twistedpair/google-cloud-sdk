@@ -126,6 +126,57 @@ class Jobs:
       raise exceptions.HttpException(error)
 
   @staticmethod
+  def UpdateOptions(
+      job_id,
+      project_id=None,
+      region_id=None,
+      min_num_workers=None,
+      max_num_workers=None,
+  ):
+    """Update pipeline options on a running job.
+
+    You should specify at-least one (or both) of min_num_workers and
+    max_num_workers.
+
+    Args:
+      job_id: ID of job to update
+      project_id: Project of the job
+      region_id: Region the job is in
+      min_num_workers: Lower-bound for worker autoscaling
+      max_num_workers: Upper-bound for worker autoscaling
+
+    Returns:
+      The updated Job
+    """
+
+    project_id = project_id or GetProject()
+    region_id = region_id or DATAFLOW_API_DEFAULT_REGION
+    job = GetMessagesModule().Job(
+        runtimeUpdatableParams=GetMessagesModule().RuntimeUpdatableParams(
+            minNumWorkers=min_num_workers, maxNumWorkers=max_num_workers
+        )
+    )
+
+    update_mask_pieces = []
+    if min_num_workers is not None:
+      update_mask_pieces.append('runtime_updatable_params.min_num_workers')
+    if max_num_workers is not None:
+      update_mask_pieces.append('runtime_updatable_params.max_num_workers')
+    update_mask = ','.join(update_mask_pieces)
+
+    request = GetMessagesModule().DataflowProjectsLocationsJobsUpdateRequest(
+        jobId=job_id,
+        location=region_id,
+        projectId=project_id,
+        job=job,
+        updateMask=update_mask,
+    )
+    try:
+      return Jobs.GetService().Update(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
+
+  @staticmethod
   def Drain(job_id, project_id=None, region_id=None):
     """Drains a job by calling the Jobs.Update method.
 

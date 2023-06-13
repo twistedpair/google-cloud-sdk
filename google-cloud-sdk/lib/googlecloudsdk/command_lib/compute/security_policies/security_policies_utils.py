@@ -166,6 +166,20 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
         match.expr = messages.Expr(
             expression=rule['match']['expr']['expression']
         )
+      if 'exprOptions' in rule['match']:
+        expr_options = messages.SecurityPolicyRuleMatcherExprOptions()
+        if 'recaptchaOptions' in rule['match']['exprOptions']:
+          expr_options.recaptchaOptions = (
+              messages.SecurityPolicyRuleMatcherExprOptionsRecaptchaOptions(
+                  actionTokenSiteKeys=rule['match']['exprOptions'][
+                      'recaptchaOptions'
+                  ].get('actionTokenSiteKeys', []),
+                  sessionTokenSiteKeys=rule['match']['exprOptions'][
+                      'recaptchaOptions'
+                  ].get('sessionTokenSiteKeys', []),
+              )
+          )
+        match.exprOptions = expr_options
       if 'config' in rule['match']:
         if 'srcIpRanges' in rule['match']['config']:
           match.config = messages.SecurityPolicyRuleMatcherConfig(
@@ -661,6 +675,28 @@ def _ConvertRedirectType(redirect_type):
       'google-recaptcha': 'GOOGLE_RECAPTCHA',
       'external-302': 'EXTERNAL_302'
   }.get(redirect_type, redirect_type)
+
+
+def CreateExpressionOptions(client, args):
+  """Returns a SecurityPolicyRuleMatcherExprOptions message."""
+  if not args.IsSpecified(
+      'recaptcha_action_site_keys'
+  ) and not args.IsSpecified('recaptcha_session_site_keys'):
+    return None
+
+  messages = client.messages
+  recaptcha_options = (
+      messages.SecurityPolicyRuleMatcherExprOptionsRecaptchaOptions()
+  )
+
+  if args.IsSpecified('recaptcha_action_site_keys'):
+    recaptcha_options.actionTokenSiteKeys = args.recaptcha_action_site_keys
+  if args.IsSpecified('recaptcha_session_site_keys'):
+    recaptcha_options.sessionTokenSiteKeys = args.recaptcha_session_site_keys
+
+  return messages.SecurityPolicyRuleMatcherExprOptions(
+      recaptchaOptions=recaptcha_options
+  )
 
 
 def CreateNetworkMatcher(client, args):

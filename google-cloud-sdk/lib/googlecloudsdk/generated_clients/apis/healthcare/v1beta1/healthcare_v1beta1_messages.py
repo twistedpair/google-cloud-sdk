@@ -1361,7 +1361,7 @@ class DicomStore(_messages.Message):
       id}`.
     notificationConfig: Notification destination for new DICOM instances.
       Supplied by the client.
-    streamConfigs: A list of streaming configs used to configure the
+    streamConfigs: Optional. A list of streaming configs used to configure the
       destination of streaming exports for every DICOM instance insertion in
       this DICOM store. After a new config is added to `stream_configs`, DICOM
       instance insertions are streamed to the new destination. When a config

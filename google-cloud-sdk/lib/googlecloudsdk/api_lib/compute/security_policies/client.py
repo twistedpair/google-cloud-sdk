@@ -203,6 +203,7 @@ class SecurityPolicyRule(object):
       self,
       src_ip_ranges,
       expression,
+      expression_options,
       network_matcher,
       action,
       description,
@@ -216,6 +217,8 @@ class SecurityPolicyRule(object):
     Args:
       src_ip_ranges: The list of IP ranges to match.
       expression: The CEVAL expression to match.
+      expression_options: The configuration options when specifying a CEVAL
+        expression.
       network_matcher: Net LB fields to match.
       action: The action to enforce on match.
       description: The description of the rule.
@@ -238,6 +241,9 @@ class SecurityPolicyRule(object):
     elif expression:
       matcher = self._messages.SecurityPolicyRuleMatcher(
           expr=self._messages.Expr(expression=expression))
+
+    if expression_options:
+      matcher.exprOptions = expression_options
 
     if network_matcher:
       security_policy_rule = self._messages.SecurityPolicyRule(
@@ -281,6 +287,7 @@ class SecurityPolicyRule(object):
       self,
       src_ip_ranges,
       expression,
+      expression_options,
       network_matcher,
       action,
       description,
@@ -296,6 +303,8 @@ class SecurityPolicyRule(object):
     Args:
       src_ip_ranges: The list of IP ranges to match.
       expression: The CEVAL expression to match.
+      expression_options: The configuration options when specifying a CEVAL
+        expression.
       network_matcher: Net LB fields to match.
       action: The action to enforce on match.
       description: The description of the rule.
@@ -322,6 +331,9 @@ class SecurityPolicyRule(object):
     elif expression:
       matcher = self._messages.SecurityPolicyRuleMatcher(
           expr=self._messages.Expr(expression=expression))
+
+    if expression_options:
+      matcher.exprOptions = expression_options
 
     if network_matcher:
       security_policy_rule = self._messages.SecurityPolicyRule(
@@ -413,6 +425,7 @@ class SecurityPolicyRule(object):
       self,
       src_ip_ranges=None,
       expression=None,
+      expression_options=None,
       network_matcher=None,
       action=None,
       description=None,
@@ -427,6 +440,7 @@ class SecurityPolicyRule(object):
         self._MakeCreateRequestTuple(
             src_ip_ranges,
             expression,
+            expression_options,
             network_matcher,
             action,
             description,
@@ -444,6 +458,7 @@ class SecurityPolicyRule(object):
       self,
       src_ip_ranges=None,
       expression=None,
+      expression_options=None,
       network_matcher=None,
       action=None,
       description=None,
@@ -460,6 +475,7 @@ class SecurityPolicyRule(object):
         self._MakePatchRequestTuple(
             src_ip_ranges,
             expression,
+            expression_options,
             network_matcher,
             action,
             description,

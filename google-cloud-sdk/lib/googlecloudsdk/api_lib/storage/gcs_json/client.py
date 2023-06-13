@@ -89,7 +89,10 @@ def _get_download_link(object_resource):
       base,
       properties.VALUES.storage.json_api_version.Get(),
       object_resource.bucket,
-      urllib.parse.quote(object_resource.name.encode('utf-8')),
+      # We need to change the default `safe` so that `/` is escaped.
+      # Copying GCS client library that treats `~` as safe without explanation.
+      # https://github.com/googleapis/python-storage/commit/47f59ce9bf5bab6b5afbe26efde3449a6abfd90b
+      urllib.parse.quote(object_resource.name.encode('utf-8'), safe=b'~'),
   )
   if object_resource.generation:
     return url_string + '&generation={}'.format(object_resource.generation)

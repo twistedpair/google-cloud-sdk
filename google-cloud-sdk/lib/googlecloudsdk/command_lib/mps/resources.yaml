@@ -20,62 +20,62 @@ region:
     help: Region of the resource.
   disable_auto_completers: false
 
-converge_instance:
-  name: converge_instance
-  collection: marketplacesolutions.projects.locations.convergeInstances
+power_instance:
+  name: power_instance
+  collection: marketplacesolutions.projects.locations.powerInstances
   attributes:
   - *project
   - *region
-  - &converge_instance
-    parameter_name: convergeInstancesId
-    attribute_name: converge_instance
-    help: Marketplace Solutions Converge instance.
+  - &power_instance
+    parameter_name: powerInstancesId
+    attribute_name: power_instance
+    help: Marketplace Solutions Power instance.
   disable_auto_completers: false
 
-converge_image:
-  name: converge_image
-  collection: marketplacesolutions.projects.locations.convergeImages
+power_image:
+  name: power_image
+  collection: marketplacesolutions.projects.locations.powerImages
   attributes:
   - *project
   - *region
-  - &converge_image
-    parameter_name: convergeImagesId
-    attribute_name: converge_image
-    help: Marketplace Solutions Converge image.
+  - &power_image
+    parameter_name: powerImagesId
+    attribute_name: power_image
+    help: Marketplace Solutions Power image.
   disable_auto_completers: false
 
-converge_network:
-  name: converge_network
-  collection: marketplacesolutions.projects.locations.convergeNetworks
+power_network:
+  name: power_network
+  collection: marketplacesolutions.projects.locations.powerNetworks
   attributes:
   - *project
   - *region
-  - &converge_network
-    parameter_name: convergeNetworksId
-    attribute_name: converge_network
-    help: Marketplace Solutions Converge network.
+  - &power_network
+    parameter_name: powerNetworksId
+    attribute_name: power_network
+    help: Marketplace Solutions Power network.
   disable_auto_completers: false
 
-converge_volume:
-  name: converge_volume
-  collection: marketplacesolutions.projects.locations.convergeVolumes
+power_volume:
+  name: power_volume
+  collection: marketplacesolutions.projects.locations.powerVolumes
   attributes:
   - *project
   - *region
-  - &converge_volume
-    parameter_name: convergeVolumesId
-    attribute_name: converge_volume
-    help: Marketplace Solutions Converge volume.
+  - &power_volume
+    parameter_name: powerVolumesId
+    attribute_name: power_volume
+    help: Marketplace Solutions Power volume.
   disable_auto_completers: false
 
-converge_ssh_key:
-  name: converge_ssh_key
-  collection: marketplacesolutions.projects.locations.convergeSshKeys
+power_ssh_key:
+  name: power_ssh_key
+  collection: marketplacesolutions.projects.locations.powerSshKeys
   attributes:
   - *project
   - *region
-  - &converge_ssh_key
-    parameter_name: convergeSshKeysId
-    attribute_name: converge_ssh_key
-    help: Marketplace Solutions Converge ssh key.
+  - &power_ssh_key
+    parameter_name: powerSshKeysId
+    attribute_name: power_ssh_key
+    help: Marketplace Solutions Power ssh key.
   disable_auto_completers: false

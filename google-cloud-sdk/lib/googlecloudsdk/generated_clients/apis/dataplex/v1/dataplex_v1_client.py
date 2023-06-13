@@ -61,6 +61,7 @@ class DataplexV1(base_api.BaseApiClient):
     self.projects_locations_lakes_zones_entities = self.ProjectsLocationsLakesZonesEntitiesService(self)
     self.projects_locations_lakes_zones = self.ProjectsLocationsLakesZonesService(self)
     self.projects_locations_lakes = self.ProjectsLocationsLakesService(self)
+    self.projects_locations_managedEntries = self.ProjectsLocationsManagedEntriesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -438,7 +439,7 @@ class DataplexV1(base_api.BaseApiClient):
         method_id='dataplex.projects.locations.dataScans.jobs.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/jobs',
         request_field='',
         request_type_name='DataplexProjectsLocationsDataScansJobsListRequest',
@@ -3441,6 +3442,70 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='DataplexProjectsLocationsLakesTestIamPermissionsRequest',
         response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsManagedEntriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_managedEntries resource."""
+
+    _NAME = 'projects_locations_managedEntries'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsManagedEntriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a managed entry by the resource ID.
+
+      Args:
+        request: (DataplexProjectsLocationsManagedEntriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ManagedEntry) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/managedEntries/{managedEntriesId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.managedEntries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsManagedEntriesGetRequest',
+        response_type_name='GoogleCloudDataplexV1ManagedEntry',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a managed entry.
+
+      Args:
+        request: (DataplexProjectsLocationsManagedEntriesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ManagedEntry) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/managedEntries/{managedEntriesId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.managedEntries.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1ManagedEntry',
+        request_type_name='DataplexProjectsLocationsManagedEntriesPatchRequest',
+        response_type_name='GoogleCloudDataplexV1ManagedEntry',
         supports_download=False,
     )
 

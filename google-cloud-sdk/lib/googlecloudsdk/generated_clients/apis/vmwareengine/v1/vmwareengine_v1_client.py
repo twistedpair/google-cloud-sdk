@@ -2130,7 +2130,7 @@ class VmwareengineV1(base_api.BaseApiClient):
         method_id='vmwareengine.projects.locations.privateClouds.showVcenterCredentials',
         ordered_params=['privateCloud'],
         path_params=['privateCloud'],
-        query_params=[],
+        query_params=['username'],
         relative_path='v1/{+privateCloud}:showVcenterCredentials',
         request_field='',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsShowVcenterCredentialsRequest',

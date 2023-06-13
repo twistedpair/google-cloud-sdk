@@ -735,6 +735,7 @@ class Function(_messages.Message):
     stateMessages: Output only. State Messages for this Cloud Function.
     updateTime: Output only. The last update timestamp of a Cloud Function.
     upgradeInfo: Output only. UpgradeInfo for this Cloud Function
+    url: Output only. The deployed url for the function.
   """
 
   class EnvironmentValueValuesEnum(_messages.Enum):
@@ -806,6 +807,7 @@ class Function(_messages.Message):
   stateMessages = _messages.MessageField('GoogleCloudFunctionsV2StateMessage', 11, repeated=True)
   updateTime = _messages.StringField(12)
   upgradeInfo = _messages.MessageField('UpgradeInfo', 13)
+  url = _messages.StringField(14)
 
 
 class GenerateDownloadUrlRequest(_messages.Message):
@@ -898,8 +900,8 @@ class GoogleCloudFunctionsV2OperationMetadata(_messages.Message):
     apiVersion: API version used to start the operation.
     cancelRequested: Identifies whether the user has requested cancellation of
       the operation. Operations that have successfully been cancelled have
-      Operation.error value with a google.rpc.Status.code of 1, corresponding
-      to `Code.CANCELLED`.
+      google.longrunning.Operation.error value with a google.rpc.Status.code
+      of 1, corresponding to `Code.CANCELLED`.
     createTime: The time the operation was created.
     endTime: The time the operation finished running.
     requestResource: The original request that started the operation.
@@ -1072,8 +1074,8 @@ class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
     apiVersion: API version used to start the operation.
     cancelRequested: Identifies whether the user has requested cancellation of
       the operation. Operations that have successfully been cancelled have
-      Operation.error value with a google.rpc.Status.code of 1, corresponding
-      to `Code.CANCELLED`.
+      google.longrunning.Operation.error value with a google.rpc.Status.code
+      of 1, corresponding to `Code.CANCELLED`.
     createTime: The time the operation was created.
     endTime: The time the operation finished running.
     requestResource: The original request that started the operation.
@@ -1246,8 +1248,8 @@ class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
     apiVersion: API version used to start the operation.
     cancelRequested: Identifies whether the user has requested cancellation of
       the operation. Operations that have successfully been cancelled have
-      Operation.error value with a google.rpc.Status.code of 1, corresponding
-      to `Code.CANCELLED`.
+      google.longrunning.Operation.error value with a google.rpc.Status.code
+      of 1, corresponding to `Code.CANCELLED`.
     createTime: The time the operation was created.
     endTime: The time the operation finished running.
     requestResource: The original request that started the operation.
@@ -2141,14 +2143,18 @@ class Source(_messages.Message):
   r"""The location of the function source code.
 
   Fields:
+    gitUri: If provided, get the source from GitHub repository. This option is
+      valid only for GCF 1st Gen function. Example:
+      https://github.com///blob//
     repoSource: If provided, get the source from this location in a Cloud
       Source Repository.
     storageSource: If provided, get the source from this location in Google
       Cloud Storage.
   """
 
-  repoSource = _messages.MessageField('RepoSource', 1)
-  storageSource = _messages.MessageField('StorageSource', 2)
+  gitUri = _messages.StringField(1)
+  repoSource = _messages.MessageField('RepoSource', 2)
+  storageSource = _messages.MessageField('StorageSource', 3)
 
 
 class SourceProvenance(_messages.Message):
@@ -2156,14 +2162,17 @@ class SourceProvenance(_messages.Message):
   that some source was used for this build.
 
   Fields:
+    gitUri: A copy of the build's `source.git_uri`, if exists, with any
+      commits resolved.
     resolvedRepoSource: A copy of the build's `source.repo_source`, if exists,
       with any revisions resolved.
     resolvedStorageSource: A copy of the build's `source.storage_source`, if
       exists, with any generations resolved.
   """
 
-  resolvedRepoSource = _messages.MessageField('RepoSource', 1)
-  resolvedStorageSource = _messages.MessageField('StorageSource', 2)
+  gitUri = _messages.StringField(1)
+  resolvedRepoSource = _messages.MessageField('RepoSource', 2)
+  resolvedStorageSource = _messages.MessageField('StorageSource', 3)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -77,20 +77,22 @@ class Insight(base.ClientBase):
         name=name)
     return self._service.Get(request)
 
-  def List(self, parent_name, page_size, limit):
+  def List(self, parent_name, page_size, limit, request_filter=None):
     """List Insights.
 
     Args:
       parent_name: str, the name of the parent.
       page_size: int, The number of items to retrieve per request.
       limit: int, The maximum number of records to yield.
+      request_filter: str, Optional request filter
 
     Returns:
       The Insight messages.
     """
     # Using Project message is ok for all entities if the name is correct.
     request = self._messages.RecommenderProjectsLocationsInsightTypesInsightsListRequest(
-        parent=parent_name)
+        parent=parent_name, filter=request_filter
+    )
     return list_pager.YieldFromList(
         self._service,
         request,

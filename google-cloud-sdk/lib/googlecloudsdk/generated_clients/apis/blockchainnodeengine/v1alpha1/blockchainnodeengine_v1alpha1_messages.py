@@ -441,13 +441,16 @@ class EthereumEndpoints(_messages.Message):
     beaconApiEndpoint: Output only. The assigned URL for the node's Beacon API
       endpoint.
     beaconPrometheusMetricsApiEndpoint: Output only. The assigned URL for the
-      node's Beacon Prometheus Metrics endpoint. See [Prometheus
+      node's Beacon Prometheus metrics endpoint. See [Prometheus
       Metrics](https://lighthouse-book.sigmaprime.io/advanced_metrics.html)
       for more details.
+    executionClientPrometheusMetricsApiEndpoint: Output only. The assigned URL
+      for the node's execution client's Prometheus metrics endpoint.
   """
 
   beaconApiEndpoint = _messages.StringField(1)
   beaconPrometheusMetricsApiEndpoint = _messages.StringField(2)
+  executionClientPrometheusMetricsApiEndpoint = _messages.StringField(3)
 
 
 class GethDetails(_messages.Message):

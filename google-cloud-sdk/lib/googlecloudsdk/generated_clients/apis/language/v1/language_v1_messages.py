@@ -281,6 +281,8 @@ class AnnotateTextResponse(_messages.Message):
     language: The language of the text, which will be the same as the language
       specified in the request or, if not specified, the automatically-
       detected language. See Document.language field for more details.
+    moderationCategories: Harmful and sensitive categories identified in the
+      input document.
     sentences: Sentences in the input document. Populated if the user enables
       AnnotateTextRequest.Features.extract_syntax.
     tokens: Tokens, along with their syntactic information, in the input
@@ -292,8 +294,9 @@ class AnnotateTextResponse(_messages.Message):
   documentSentiment = _messages.MessageField('Sentiment', 2)
   entities = _messages.MessageField('Entity', 3, repeated=True)
   language = _messages.StringField(4)
-  sentences = _messages.MessageField('Sentence', 5, repeated=True)
-  tokens = _messages.MessageField('Token', 6, repeated=True)
+  moderationCategories = _messages.MessageField('ClassificationCategory', 5, repeated=True)
+  sentences = _messages.MessageField('Sentence', 6, repeated=True)
+  tokens = _messages.MessageField('Token', 7, repeated=True)
 
 
 class ClassificationCategory(_messages.Message):
@@ -748,6 +751,7 @@ class Features(_messages.Message):
     extractEntities: Extract entities.
     extractEntitySentiment: Extract entities and their associated sentiment.
     extractSyntax: Extract syntax information.
+    moderateText: Moderate the document for harmful and sensitive categories.
   """
 
   classificationModelOptions = _messages.MessageField('ClassificationModelOptions', 1)
@@ -756,6 +760,28 @@ class Features(_messages.Message):
   extractEntities = _messages.BooleanField(4)
   extractEntitySentiment = _messages.BooleanField(5)
   extractSyntax = _messages.BooleanField(6)
+  moderateText = _messages.BooleanField(7)
+
+
+class ModerateTextRequest(_messages.Message):
+  r"""The document moderation request message.
+
+  Fields:
+    document: Required. Input document.
+  """
+
+  document = _messages.MessageField('Document', 1)
+
+
+class ModerateTextResponse(_messages.Message):
+  r"""The document moderation response message.
+
+  Fields:
+    moderationCategories: Harmful and sensitive categories representing the
+      input document.
+  """
+
+  moderationCategories = _messages.MessageField('ClassificationCategory', 1, repeated=True)
 
 
 class PartOfSpeech(_messages.Message):

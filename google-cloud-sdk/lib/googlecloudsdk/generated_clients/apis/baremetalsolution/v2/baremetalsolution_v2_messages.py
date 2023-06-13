@@ -152,18 +152,6 @@ class BaremetalsolutionProjectsLocationsInstancesAttachVolumeRequest(_messages.M
   instance = _messages.StringField(2, required=True)
 
 
-class BaremetalsolutionProjectsLocationsInstancesCreateRequest(_messages.Message):
-  r"""A BaremetalsolutionProjectsLocationsInstancesCreateRequest object.
-
-  Fields:
-    instance: A Instance resource to be passed as the request body.
-    parent: Required. The parent project and location.
-  """
-
-  instance = _messages.MessageField('Instance', 1)
-  parent = _messages.StringField(2, required=True)
-
-
 class BaremetalsolutionProjectsLocationsInstancesDetachLunRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsInstancesDetachLunRequest object.
 

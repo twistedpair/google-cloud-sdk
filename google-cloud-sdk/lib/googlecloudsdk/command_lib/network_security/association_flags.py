@@ -142,6 +142,19 @@ def AddMaxWait(
   )
 
 
+def AddTLSInspectionPolicy(
+    parser,
+    help_text="Path to TLS Inspection Policy configuration to use for intercepting TLS-encrypted traffic in this network.",
+):
+  """Adds --tls-inspection-policy flag."""
+  parser.add_argument(
+      "--tls-inspection-policy",
+      dest="tls_inspection_policy",
+      required=False,
+      help=help_text,
+  )
+
+
 def MakeGetUriFunc(release_track):
   return (
       lambda x: activation_api.GetEffectiveApiEndpoint(release_track) + x.name

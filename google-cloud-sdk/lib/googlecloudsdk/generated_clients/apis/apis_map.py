@@ -1229,6 +1229,16 @@ MAP = {
                     client_classpath='config_v1alpha1_client.ConfigV1alpha1',
                     base_url='https://config.googleapis.com/',
                     messages_modulepath='config_v1alpha1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1alpha2':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.config.v1alpha2',
+                    client_classpath='config_v1alpha2_client.ConfigV1alpha2',
+                    base_url='https://config.googleapis.com/',
+                    messages_modulepath='config_v1alpha2_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -2577,6 +2587,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'orglifecycle': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.orglifecycle.v1',
+                    client_classpath='orglifecycle_v1_client.OrglifecycleV1',
+                    base_url='https://orglifecycle.googleapis.com/',
+                    messages_modulepath='orglifecycle_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'orgpolicy': {
         'v2':
             APIDef(
@@ -3633,6 +3655,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'workstations': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.workstations.v1',
+                    client_classpath='workstations_v1_client.WorkstationsV1',
+                    base_url='https://workstations.googleapis.com/',
+                    messages_modulepath='workstations_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3640,7 +3672,7 @@ MAP = {
                     client_classpath='workstations_v1beta_client.WorkstationsV1beta',
                     base_url='https://workstations.googleapis.com/',
                     messages_modulepath='workstations_v1beta_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

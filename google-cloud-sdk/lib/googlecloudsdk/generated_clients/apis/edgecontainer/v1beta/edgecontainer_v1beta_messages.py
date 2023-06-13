@@ -72,6 +72,9 @@ class Cluster(_messages.Message):
     endpoint: Output only. The IP address of the Kubernetes API server.
     fleet: Required. Fleet configuration.
     labels: Labels associated with this resource.
+    maintenanceEvents: Output only. All the maintenance events scheduled for
+      the cluster, including the ones ongoing, planned for the future and done
+      in the past (up to 90 days).
     maintenancePolicy: Optional. Cluster-wide maintenance policy
       configuration.
     name: Required. The resource name of the cluster.
@@ -116,12 +119,13 @@ class Cluster(_messages.Message):
   endpoint = _messages.StringField(7)
   fleet = _messages.MessageField('Fleet', 8)
   labels = _messages.MessageField('LabelsValue', 9)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 10)
-  name = _messages.StringField(11)
-  networking = _messages.MessageField('ClusterNetworking', 12)
-  nodeVersion = _messages.StringField(13)
-  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(15)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 10, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 11)
+  name = _messages.StringField(12)
+  networking = _messages.MessageField('ClusterNetworking', 13)
+  nodeVersion = _messages.StringField(14)
+  port = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(16)
 
 
 class ClusterNetworking(_messages.Message):
@@ -421,6 +425,19 @@ class EdgecontainerProjectsLocationsClustersPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class EdgecontainerProjectsLocationsClustersUpgradeRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsClustersUpgradeRequest object.
+
+  Fields:
+    name: Required. The resource name of the cluster.
+    upgradeClusterRequest: A UpgradeClusterRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  upgradeClusterRequest = _messages.MessageField('UpgradeClusterRequest', 2)
 
 
 class EdgecontainerProjectsLocationsGetRequest(_messages.Message):
@@ -946,6 +963,85 @@ class Machine(_messages.Message):
   zone = _messages.StringField(8)
 
 
+class MaintenanceEvent(_messages.Message):
+  r"""A Maintenance Event is an operation that could cause temporary
+  disruptions to the cluster workloads, including Google-driven or user-
+  initiated cluster upgrades, user-initiated cluster configuration changes
+  that require restarting nodes, etc.
+
+  Enums:
+    ScheduleValueValuesEnum: Output only. The schedule of the maintenance
+      event.
+    StateValueValuesEnum: Output only. The state of the maintenance event.
+    TypeValueValuesEnum: Output only. The type of the maintenance event.
+
+  Fields:
+    createTime: Output only. The time when the maintenance event request was
+      created.
+    endTime: Output only. The time when the maintenance event ended, either
+      successfully or not. If the maintenance event is split into multiple
+      maintenance windows, end_time is only updated when the whole flow ends.
+    operation: Output only. The operation for running the maintenance event.
+      Specified in the format projects/*/locations/*/operations/*. If the
+      maintenance event is split into multiple operations (e.g. due to
+      maintenance windows), the latest one is recorded.
+    schedule: Output only. The schedule of the maintenance event.
+    startTime: Output only. The time when the maintenance event started.
+    state: Output only. The state of the maintenance event.
+    targetVersion: Output only. The target version of the cluster.
+    type: Output only. The type of the maintenance event.
+    updateTime: Output only. The time when the maintenance event message was
+      updated.
+    uuid: Output only. UUID of the maintenance event.
+  """
+
+  class ScheduleValueValuesEnum(_messages.Enum):
+    r"""Output only. The schedule of the maintenance event.
+
+    Values:
+      SCHEDULE_UNSPECIFIED: Unspecified.
+      IMMEDIATELY: Immediately after receiving the request.
+    """
+    SCHEDULE_UNSPECIFIED = 0
+    IMMEDIATELY = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the maintenance event.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      RECONCILING: The maintenance event is ongoing. The cluster might be
+        unusable.
+      SUCCEEDED: The maintenance event succeeded.
+      FAILED: The maintenance event failed.
+    """
+    STATE_UNSPECIFIED = 0
+    RECONCILING = 1
+    SUCCEEDED = 2
+    FAILED = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the maintenance event.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified.
+      USER_INITIATED_UPGRADE: Upgrade initiated by users.
+    """
+    TYPE_UNSPECIFIED = 0
+    USER_INITIATED_UPGRADE = 1
+
+  createTime = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  operation = _messages.StringField(3)
+  schedule = _messages.EnumField('ScheduleValueValuesEnum', 4)
+  startTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  targetVersion = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+  uuid = _messages.StringField(10)
+
+
 class MaintenancePolicy(_messages.Message):
   r"""Maintenance policy configuration.
 
@@ -1357,6 +1453,38 @@ class TimeWindow(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class UpgradeClusterRequest(_messages.Message):
+  r"""Upgrades a cluster.
+
+  Enums:
+    ScheduleValueValuesEnum: The schedule for the upgrade.
+
+  Fields:
+    requestId: A unique identifier for this request. Restricted to 36 ASCII
+      characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
+    schedule: The schedule for the upgrade.
+    targetVersion: Required. The version the cluster is going to be upgraded
+      to.
+  """
+
+  class ScheduleValueValuesEnum(_messages.Enum):
+    r"""The schedule for the upgrade.
+
+    Values:
+      SCHEDULE_UNSPECIFIED: Unspecified. The default is to upgrade the cluster
+        immediately which is the only option today.
+      IMMEDIATELY: The cluster is going to be upgraded immediately after
+        receiving the request.
+    """
+    SCHEDULE_UNSPECIFIED = 0
+    IMMEDIATELY = 1
+
+  requestId = _messages.StringField(1)
+  schedule = _messages.EnumField('ScheduleValueValuesEnum', 2)
+  targetVersion = _messages.StringField(3)
 
 
 class VpcProject(_messages.Message):

@@ -358,6 +358,15 @@ class DataplexProjectsLocationsDataScansJobsListRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataScansJobsListRequest object.
 
   Fields:
+    filter: Optional. An expression for filtering the results of the
+      ListDataScanJobs request.If unspecified, all datascan jobs will be
+      returned. Multiple filters can be applied (with AND, OR logical
+      operators). Filters are case-sensitive.Allowed fields are: start_time
+      end_timestart_time and end_time expect RFC-3339 formatted strings (e.g.
+      2018-10-08T18:30:00-07:00).For instance, 'start_time >
+      2018-10-08T00:00:00.123456789Z AND end_time <
+      2018-10-09T00:00:00.123456789Z' limits results to DataScanJobs between
+      specified start and end times.
     pageSize: Optional. Maximum number of DataScanJobs to return. The service
       may return fewer than this value. If unspecified, at most 10
       DataScanJobs will be returned. The maximum value is 1000; values above
@@ -372,9 +381,10 @@ class DataplexProjectsLocationsDataScansJobsListRequest(_messages.Message):
       refers to a GCP region.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DataplexProjectsLocationsDataScansListRequest(_messages.Message):
@@ -2351,6 +2361,39 @@ class DataplexProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class DataplexProjectsLocationsManagedEntriesGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsManagedEntriesGetRequest object.
+
+  Fields:
+    name: Required. The entry name: projects/{project_number}/locations/{locat
+      ion_id}/managedEntries/{resource_name}. The resource name follows the
+      standard Google Cloud full resource name pattern. - Google Cloud Storage
+      bucket: //storage.googleapis.com/projects//buckets/.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsManagedEntriesPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsManagedEntriesPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1ManagedEntry: A GoogleCloudDataplexV1ManagedEntry
+      resource to be passed as the request body.
+    name: Output only. Name of the resource to which the config is applied. pr
+      ojects/{project_number}/locations/{location_id}/managedEntries/{resource
+      _name}.
+    updateMask: Required. Mask of fields to update.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1ManagedEntry = _messages.MessageField('GoogleCloudDataplexV1ManagedEntry', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
 class DataplexProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A DataplexProjectsLocationsOperationsCancelRequest object.
 
@@ -3429,6 +3472,12 @@ class GoogleCloudDataplexV1DataProfileSpec(_messages.Message):
   r"""DataProfileScan related setting.
 
   Fields:
+    excludeFields: Optional. The fields to exclude from data profile.If
+      specified, the fields will be excluded from data profile, regardless of
+      include_fields value.
+    includeFields: Optional. The fields to include in data profile.If not
+      specified, all fields at the time of profile scan job execution are
+      included, except for ones listed in exclude_fields.
     rowFilter: Optional. A filter applied to all rows in a single DataScan
       job. The filter needs to be a valid SQL expression for a WHERE clause in
       BigQuery standard SQL syntax. Example: col1 >= 0 AND col2 < 10
@@ -3438,8 +3487,24 @@ class GoogleCloudDataplexV1DataProfileSpec(_messages.Message):
       sampling_percent is not specified, 0 or 100.
   """
 
-  rowFilter = _messages.StringField(1)
-  samplingPercent = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  excludeFields = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpecSelectedFields', 1)
+  includeFields = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpecSelectedFields', 2)
+  rowFilter = _messages.StringField(3)
+  samplingPercent = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudDataplexV1DataProfileSpecSelectedFields(_messages.Message):
+  r"""The specification for fields to include or exclude in data profile scan.
+
+  Fields:
+    fieldNames: Optional. Expected input is a list of fully qualified names of
+      fields as in the schema.Only top-level field names for nested fields are
+      supported. For instance, if 'x' is of nested field type, listing 'x' is
+      supported but 'x.y.z' is not supported. Here 'y' and 'y.z' are nested
+      fields of 'x'.
+  """
+
+  fieldNames = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudDataplexV1DataQualityDimensionResult(_messages.Message):
@@ -4458,7 +4523,7 @@ class GoogleCloudDataplexV1EntityCompatibilityStatusCompatibility(_messages.Mess
 
 class GoogleCloudDataplexV1Environment(_messages.Message):
   r"""Environment represents a user-visible compute infrastructure for
-  analytics within a lake.
+  analytics within a lake. LINT.IfChange
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the environment.
@@ -4785,12 +4850,14 @@ class GoogleCloudDataplexV1JobEvent(_messages.Message):
   jobs that have run within a Lake.
 
   Enums:
+    ExecutionTriggerValueValuesEnum: Job execution trigger.
     ServiceValueValuesEnum: The service used to execute the job.
     StateValueValuesEnum: The job state on completion.
     TypeValueValuesEnum: The type of the job.
 
   Fields:
     endTime: The time when the job ended running.
+    executionTrigger: Job execution trigger.
     jobId: The unique id identifying the job.
     message: The log message.
     retries: The number of retries.
@@ -4800,6 +4867,19 @@ class GoogleCloudDataplexV1JobEvent(_messages.Message):
     state: The job state on completion.
     type: The type of the job.
   """
+
+  class ExecutionTriggerValueValuesEnum(_messages.Enum):
+    r"""Job execution trigger.
+
+    Values:
+      EXECUTION_TRIGGER_UNSPECIFIED: The job execution trigger is unspecified.
+      TASK_CONFIG: The job was triggered by Dataplex based on trigger spec
+        from task definition.
+      RUN_REQUEST: The job was triggered by the explicit call of Task API.
+    """
+    EXECUTION_TRIGGER_UNSPECIFIED = 0
+    TASK_CONFIG = 1
+    RUN_REQUEST = 2
 
   class ServiceValueValuesEnum(_messages.Enum):
     r"""The service used to execute the job.
@@ -4840,14 +4920,15 @@ class GoogleCloudDataplexV1JobEvent(_messages.Message):
     NOTEBOOK = 2
 
   endTime = _messages.StringField(1)
-  jobId = _messages.StringField(2)
-  message = _messages.StringField(3)
-  retries = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  service = _messages.EnumField('ServiceValueValuesEnum', 5)
-  serviceJob = _messages.StringField(6)
-  startTime = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  executionTrigger = _messages.EnumField('ExecutionTriggerValueValuesEnum', 2)
+  jobId = _messages.StringField(3)
+  message = _messages.StringField(4)
+  retries = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  service = _messages.EnumField('ServiceValueValuesEnum', 6)
+  serviceJob = _messages.StringField(7)
+  startTime = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
 
 
 class GoogleCloudDataplexV1Lake(_messages.Message):
@@ -5210,6 +5291,21 @@ class GoogleCloudDataplexV1ListZonesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   zones = _messages.MessageField('GoogleCloudDataplexV1Zone', 2, repeated=True)
+
+
+class GoogleCloudDataplexV1ManagedEntry(_messages.Message):
+  r"""Resource config defines the properties of a variety of other resources.
+
+  Fields:
+    bucket: Google Cloud Storage bucket ID will be used as the key to access
+      the config. The bucket must be exist.
+    name: Output only. Name of the resource to which the config is applied. pr
+      ojects/{project_number}/locations/{location_id}/managedEntries/{resource
+      _name}.
+  """
+
+  bucket = _messages.MessageField('GoogleCloudDataplexV1StorageBucket', 1)
+  name = _messages.StringField(2)
 
 
 class GoogleCloudDataplexV1OperationMetadata(_messages.Message):
@@ -5762,6 +5858,53 @@ class GoogleCloudDataplexV1StorageAccess(_messages.Message):
     MANAGED = 2
 
   read = _messages.EnumField('ReadValueValuesEnum', 1)
+
+
+class GoogleCloudDataplexV1StorageBucket(_messages.Message):
+  r"""Resource config defines properties of a resource used by Dataplex.
+
+  Enums:
+    AccessModeValueValuesEnum: Optional. The access mode of the bucket.
+      Default to DIRECT. When set to MANAGED_READ, dataplex will create a
+      dataset to hold BigLake tables and a BigQuery connection.
+
+  Fields:
+    accessMode: Optional. The access mode of the bucket. Default to DIRECT.
+      When set to MANAGED_READ, dataplex will create a dataset to hold BigLake
+      tables and a BigQuery connection.
+    connection: Output only. The BigQuery connection created by Dataplex. Only
+      valid when the AccessMode is set to MANAGED_READ. The connection ID is
+      default to dataplex-connection. If that exists, Dataplex adds the
+      smallest natual number suffix to the it to make a unique and valid
+      connection ID
+    dataset: Output only. The resource name of the dataset in the format of
+      `projects/project_id/datasets/dataset_idThe dataset is created by
+      Dataplex to hold BigLake tables. If the dataset already exists, Dataplex
+      will append the smallest natual number suffix to the bucket ID to make a
+      unique and valid dataset ID.Only valid if access mode is DIRECT.
+    etag: Optional. The etag associated with the managed entry, which can be
+      retrieved with a GetManagedEntry request. Required for update requests.
+  """
+
+  class AccessModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The access mode of the bucket. Default to DIRECT. When set
+    to MANAGED_READ, dataplex will create a dataset to hold BigLake tables and
+    a BigQuery connection.
+
+    Values:
+      ACCESS_MODE_UNSPECIFIED: Access mode unspecified.
+      DIRECT: The resource data is accessible via Gloud Storage or BigQuery
+        vanilla external table. DIRECT is the default value for any bucket.
+      MANAGED_READ: The resource data is only readable via BigLake table.
+    """
+    ACCESS_MODE_UNSPECIFIED = 0
+    DIRECT = 1
+    MANAGED_READ = 2
+
+  accessMode = _messages.EnumField('AccessModeValueValuesEnum', 1)
+  connection = _messages.StringField(2)
+  dataset = _messages.StringField(3)
+  etag = _messages.StringField(4)
 
 
 class GoogleCloudDataplexV1StorageFormat(_messages.Message):

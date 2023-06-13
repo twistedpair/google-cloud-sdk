@@ -96,7 +96,7 @@ def GenerateTargetLocationConfigs(release_track, add_region_configs,
 
   # Merge current location configs with the diff.
   for location_config in location_configs_diff.additionalProperties:
-    if location_config.value.capacity == 0:
+    if remove_regions and location_config.value.capacity == 0:
       # Remove a location.
       location_configs.pop(location_config.key, None)
     else:

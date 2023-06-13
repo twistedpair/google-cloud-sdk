@@ -643,7 +643,8 @@ class Disk(_messages.Message):
       customized image in short names. The following image values are
       supported for a boot disk: * "batch-debian": use Batch Debian images. *
       "batch-centos": use Batch CentOS images. * "batch-cos": use Batch
-      Container-Optimized images.
+      Container-Optimized images. * "batch-hpc-centos": use Batch HPC CentOS
+      images.
     sizeGb: Disk size in GB. For persistent disk, this field is ignored if
       `data_source` is `image` or `snapshot`. For local SSD, size_gb should be
       a multiple of 375GB, otherwise, the final size will be the next greater

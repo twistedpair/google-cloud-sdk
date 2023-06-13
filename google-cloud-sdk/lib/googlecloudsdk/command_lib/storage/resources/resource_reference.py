@@ -250,8 +250,8 @@ class ObjectResource(CloudResource):
     bucket (str): Bucket that contains the object.
     name (str): Name of object.
     generation (str|None): Generation (or "version") of the underlying object.
-    acl (dict|str|None): ACLs dict or predefined-ACL string for the objects.
-      If the API call to fetch the data failed, this can be an error string.
+    acl (dict|str|None): ACLs dict or predefined-ACL string for the objects. If
+      the API call to fetch the data failed, this can be an error string.
     cache_control (str|None): Describes the object's cache settings.
     component_count (int|None): Number of components, if any.
     content_disposition (str|None): Whether the object should be displayed or
@@ -259,14 +259,14 @@ class ObjectResource(CloudResource):
     content_encoding (str|None): Encodings that have been applied to the object.
     content_language (str|None): Language used in the object's content.
     content_type (str|None): A MIME type describing the object's content.
-    custom_time (str|None): A timestamp in RFC 3339 format specified by the
-      user for an object. Currently, GCS-only, but not in provider-specific
-      class because generic daisy chain logic uses the field.
+    custom_time (str|None): A timestamp in RFC 3339 format specified by the user
+      for an object. Currently, GCS-only, but not in provider-specific class
+      because generic daisy chain logic uses the field.
     crc32c_hash (str|None): Base64-encoded digest of crc32c hash.
     creation_time (datetime|None): Time the object was created.
     custom_fields (dict|None): Custom key-value pairs set by users.
     decryption_key_hash_sha256 (str|None): Digest of a customer-supplied
-      encryption key
+      encryption key.
     encryption_algorithm (str|None): Encryption algorithm used for encrypting
       the object if CSEK is used.
     etag (str|None): HTTP version identifier.

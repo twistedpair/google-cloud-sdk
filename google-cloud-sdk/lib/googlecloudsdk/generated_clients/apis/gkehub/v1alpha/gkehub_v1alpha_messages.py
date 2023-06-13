@@ -880,6 +880,130 @@ class Condition(_messages.Message):
   values = _messages.StringField(5, repeated=True)
 
 
+class ConfigDeliveryArgoCDCondition(_messages.Message):
+  r"""Condition contains details for one aspect of the current state of the
+  reconciliation object.
+
+  Enums:
+    StatusValueValuesEnum: status of the condition, one of True, False,
+      Unknown.
+    TypeValueValuesEnum: type of condition in CamelCase.
+
+  Fields:
+    code: code contains a programmatic identifier indicating the reason for
+      the condition's last transition.
+    lastTransitionTime: lastTransitionTime is the last time the condition
+      transitioned from one status to another
+    message: message is a human readable message indicating details about the
+      transition. This may be an empty string.
+    status: status of the condition, one of True, False, Unknown.
+    type: type of condition in CamelCase.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""status of the condition, one of True, False, Unknown.
+
+    Values:
+      CONDITION_STATUS_UNSPECIFIED: CONDITION_STATUS_UNSPECIFIED is the
+        default unspecified conditionStatus.
+      TRUE: TRUE means the ConditionType=Ready is true. We use enums rather
+        than boolean to make it align with k8s `.status.condition.type: ready`
+        `.status.condition.status: true" form.
+      FALSE: TRUE means the ConditionType is not READY.
+    """
+    CONDITION_STATUS_UNSPECIFIED = 0
+    TRUE = 1
+    FALSE = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""type of condition in CamelCase.
+
+    Values:
+      CONDITION_TYPE_UNSPECIFIED: CONDITION_TYPE_UNSPECIFIED is the default
+        unspecified conditionType.
+      READY: READY indicates the type of the configdeliveryargocd' status
+        condtion is "READY". This is a normally used term in k8s which used as
+        a specific "conditionType". The "conditionStatus" tells the value of
+        "READY" (e.g. conditionStatus=true means not ready).
+    """
+    CONDITION_TYPE_UNSPECIFIED = 0
+    READY = 1
+
+  code = _messages.StringField(1)
+  lastTransitionTime = _messages.StringField(2)
+  message = _messages.StringField(3)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
+class ConfigDeliveryArgoCDDeclarativeState(_messages.Message):
+  r"""DeclarativeState summaries the state of all the deployable manifests.
+
+  Fields:
+    conditions: conditions provides a standard mechanism for higher-level
+      status reporting from the moss reconciler.
+    healthy: healthy tells whether the current state is healthy or not.
+    version: version is the current in-use ArgoCD version. Users can only
+      specify the channel and the margo/populas operator will decide which
+      version is actually being used.
+  """
+
+  conditions = _messages.MessageField('ConfigDeliveryArgoCDCondition', 1, repeated=True)
+  healthy = _messages.BooleanField(2)
+  version = _messages.StringField(3)
+
+
+class ConfigDeliveryArgoCDMembershipSpec(_messages.Message):
+  r"""MembershipSpec defines the ConfigDeliveryArgoCD Feature specification.
+
+  Enums:
+    ChannelValueValuesEnum: Channel specifies a channel that can be used to
+      resolve a specific addon. Margo will use the same release channel as the
+      current cluster.
+
+  Fields:
+    channel: Channel specifies a channel that can be used to resolve a
+      specific addon. Margo will use the same release channel as the current
+      cluster.
+  """
+
+  class ChannelValueValuesEnum(_messages.Enum):
+    r"""Channel specifies a channel that can be used to resolve a specific
+    addon. Margo will use the same release channel as the current cluster.
+
+    Values:
+      CHANNEL_UNSPECIFIED: CHANNEL_UNSPECIFIED is the default unspecified
+        channel field.
+      REGULAR: REGULAR refers to access the ConfigDeliveryArgoCD feature
+        reasonably soon after they debut, but on a version that has been
+        qualified over a longer period of time.
+      RAPID: RAPID refers to get the latest ConfigDeliveryArgoCD release as
+        early as possible, and be able to use new features the moment they go
+        GA.
+      STABLE: STABLE refers to prioritize stability over new functionality.
+    """
+    CHANNEL_UNSPECIFIED = 0
+    REGULAR = 1
+    RAPID = 2
+    STABLE = 3
+
+  channel = _messages.EnumField('ChannelValueValuesEnum', 1)
+
+
+class ConfigDeliveryArgoCDMembershipState(_messages.Message):
+  r"""MembershipState defines the state of the Margo reconciliation objects.
+
+  Fields:
+    cluster: The user-defined name for the cluster used by ClusterSelectors to
+      group clusters together. This should match Membership's membership_name,
+    margoState: This state describes the state of all the deployable ArgoCD
+      manifests.
+  """
+
+  cluster = _messages.StringField(1)
+  margoState = _messages.MessageField('ConfigDeliveryArgoCDDeclarativeState', 2)
+
+
 class ConfigManagementBinauthzConfig(_messages.Message):
   r"""Configuration for Binauthz
 
@@ -937,12 +1061,21 @@ class ConfigManagementConfigSync(_messages.Message):
       false which disallows vertical scaling. This field is deprecated.
     enabled: Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
-      will be applied if exist. If set to false, all other ConfigSync fields
-      will be ignored, ConfigSync resources will be deleted. If omitted,
-      ConfigSync resources will be managed depends on the presence of git
-      field.
+      will be applied if exist. If set to false and Managed Config Sync is
+      disabled, all other ConfigSync fields will be ignored, ConfigSync
+      resources will be deleted. Setting this field to false while enabling
+      Managed Config Sync is invalid. If omitted, ConfigSync resources will be
+      managed if: * the git or oci field is present; or * Managed Config Sync
+      is enabled (i.e., managed.enabled is true).
     git: Git repo configuration for the cluster.
     managed: Configuration for Managed Config Sync.
+    metricsGcpServiceAccountEmail: The Email of the GCP Service Account (GSA)
+      used for exporting Config Sync metrics to Cloud Monitoring and Cloud
+      Monarch when Workload Identity is enabled. The GSA should have the
+      Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role. The
+      Kubernetes ServiceAccount `default` in the namespace `config-management-
+      monitoring` should be binded to the GSA. This field is required when
+      Managed Config Sync is enabled.
     oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. If set to `false`, disables the Config Sync admission
@@ -955,9 +1088,10 @@ class ConfigManagementConfigSync(_messages.Message):
   enabled = _messages.BooleanField(2)
   git = _messages.MessageField('ConfigManagementGitConfig', 3)
   managed = _messages.MessageField('ConfigManagementManaged', 4)
-  oci = _messages.MessageField('ConfigManagementOciConfig', 5)
-  preventDrift = _messages.BooleanField(6)
-  sourceFormat = _messages.StringField(7)
+  metricsGcpServiceAccountEmail = _messages.StringField(5)
+  oci = _messages.MessageField('ConfigManagementOciConfig', 6)
+  preventDrift = _messages.BooleanField(7)
+  sourceFormat = _messages.StringField(8)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -1090,19 +1224,31 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
   syncer = _messages.EnumField('SyncerValueValuesEnum', 7)
 
 
+class ConfigManagementConfigSyncError(_messages.Message):
+  r"""Errors pertaining to the installation of Config Sync
+
+  Fields:
+    errorMessage: A string representing the user facing error message
+  """
+
+  errorMessage = _messages.StringField(1)
+
+
 class ConfigManagementConfigSyncState(_messages.Message):
   r"""State information for ConfigSync
 
   Fields:
     deploymentState: Information about the deployment of ConfigSync, including
       the version of the various Pods deployed
+    errors: Errors pertaining to the installation of Config Sync.
     syncState: The state of ConfigSync's process to sync configs to a cluster
     version: The version of ConfigSync deployed
   """
 
   deploymentState = _messages.MessageField('ConfigManagementConfigSyncDeploymentState', 1)
-  syncState = _messages.MessageField('ConfigManagementSyncState', 2)
-  version = _messages.MessageField('ConfigManagementConfigSyncVersion', 3)
+  errors = _messages.MessageField('ConfigManagementConfigSyncError', 2, repeated=True)
+  syncState = _messages.MessageField('ConfigManagementSyncState', 3)
+  version = _messages.MessageField('ConfigManagementConfigSyncVersion', 4)
 
 
 class ConfigManagementConfigSyncVersion(_messages.Message):
@@ -1354,10 +1500,15 @@ class ConfigManagementManaged(_messages.Message):
 
   Fields:
     enabled: Set to true to enable Managed Config Sync. Defaults to false
-      which disables Managed Config Sync.
+      which disables Managed Config Sync. Setting this field to true when
+      configSync.enabled is false is invalid.
+    stopSyncing: Set to true to stop syncing configs for a single cluster.
+      Default to false. If set to true, Managed Config Sync will not upgrade
+      Config Sync.
   """
 
   enabled = _messages.BooleanField(1)
+  stopSyncing = _messages.BooleanField(2)
 
 
 class ConfigManagementMembershipSpec(_messages.Message):
@@ -1366,6 +1517,13 @@ class ConfigManagementMembershipSpec(_messages.Message):
 
   Fields:
     binauthz: Binauthz conifguration for the cluster.
+    cluster: The user-specified cluster name used by Config Sync cluster-name-
+      selector annotation or ClusterSelector, for applying configs to only a
+      subset of clusters. Omit this field if the cluster's fleet membership
+      name is used by Config Sync cluster-name-selector annotation or
+      ClusterSelector. Set this field if a name different from the cluster's
+      fleet membership name is used by Config Sync cluster-name-selector
+      annotation or ClusterSelector.
     configSync: Config Sync configuration for the cluster.
     hierarchyController: Hierarchy Controller configuration for the cluster.
     policyController: Policy Controller configuration for the cluster.
@@ -1373,10 +1531,11 @@ class ConfigManagementMembershipSpec(_messages.Message):
   """
 
   binauthz = _messages.MessageField('ConfigManagementBinauthzConfig', 1)
-  configSync = _messages.MessageField('ConfigManagementConfigSync', 2)
-  hierarchyController = _messages.MessageField('ConfigManagementHierarchyControllerConfig', 3)
-  policyController = _messages.MessageField('ConfigManagementPolicyController', 4)
-  version = _messages.StringField(5)
+  cluster = _messages.StringField(2)
+  configSync = _messages.MessageField('ConfigManagementConfigSync', 3)
+  hierarchyController = _messages.MessageField('ConfigManagementHierarchyControllerConfig', 4)
+  policyController = _messages.MessageField('ConfigManagementPolicyController', 5)
+  version = _messages.StringField(6)
 
 
 class ConfigManagementMembershipState(_messages.Message):
@@ -1384,11 +1543,9 @@ class ConfigManagementMembershipState(_messages.Message):
 
   Fields:
     binauthzState: Binauthz status
-    clusterName: The user-defined name for the cluster used by
-      ClusterSelectors to group clusters together. This should match
-      Membership's membership_name, unless the user installed ACM on the
-      cluster manually prior to enabling the ACM hub feature. Unique within a
-      Anthos Config Management installation.
+    clusterName: This field is set to the `cluster_name` field of the
+      Membership Spec if it is not empty. Otherwise, it is set to the
+      cluster's fleet membership name.
     configSyncState: Current sync status
     hierarchyControllerState: Hierarchy Controller status
     membershipSpec: Membership configuration in the cluster. This represents
@@ -2151,10 +2308,18 @@ class FeatureSpec(_messages.Message):
       GOOGLE_CA_PROVISIONING_UNSPECIFIED: Disable default Google managed CA.
       DISABLED: Disable default Google managed CA.
       ENABLED: Use default Google managed CA.
+      ENABLED_WITH_MANAGED_CA: Workload certificate feature is enabled, and
+        the entire certificate provisioning process is managed by Google with
+        managed CAS which is more secure than the default CA.
+      ENABLED_WITH_DEFAULT_CA: Workload certificate feature is enabled, and
+        the entire certificate provisioning process is using the default CA
+        which is free.
     """
     GOOGLE_CA_PROVISIONING_UNSPECIFIED = 0
     DISABLED = 1
     ENABLED = 2
+    ENABLED_WITH_MANAGED_CA = 3
+    ENABLED_WITH_DEFAULT_CA = 4
 
   defaultConfig = _messages.MessageField('MembershipSpec', 1)
   provisionGoogleCa = _messages.EnumField('ProvisionGoogleCaValueValuesEnum', 2)
@@ -4795,11 +4960,12 @@ class MembershipEndpoint(_messages.Message):
 
 class MembershipFeatureSpec(_messages.Message):
   r"""MembershipFeatureSpec contains configuration information for a single
-  Membership.
+  Membership. NOTE: Please use snake case in your feature name.
 
   Fields:
     anthosobservability: Anthos Observability-specific spec
     cloudbuild: Cloud Build-specific spec
+    configDeliveryArgoCd: ConfigDeliveryArgoCD specific spec.
     configmanagement: Config Management-specific spec.
     fleetInherited: True if value of `feature_spec` was inherited from a
       fleet-level default.
@@ -4815,16 +4981,17 @@ class MembershipFeatureSpec(_messages.Message):
 
   anthosobservability = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
   cloudbuild = _messages.MessageField('CloudBuildMembershipSpec', 2)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 3)
-  fleetInherited = _messages.BooleanField(4)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 5)
-  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 6)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 7)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 8)
-  namespaceactuation = _messages.MessageField('NamespaceActuationMembershipSpec', 9)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 10)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 11)
-  workloadcertificate = _messages.MessageField('MembershipSpec', 12)
+  configDeliveryArgoCd = _messages.MessageField('ConfigDeliveryArgoCDMembershipSpec', 3)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 4)
+  fleetInherited = _messages.BooleanField(5)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 6)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 7)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 8)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 9)
+  namespaceactuation = _messages.MessageField('NamespaceActuationMembershipSpec', 10)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 11)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 12)
+  workloadcertificate = _messages.MessageField('MembershipSpec', 13)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -4834,6 +5001,7 @@ class MembershipFeatureState(_messages.Message):
   Fields:
     appdevexperience: Appdevexperience specific state.
     clusterupgrade: ClusterUpgrade state.
+    configDeliveryArgoCd: ConfigDeliveryArgoCD specific state.
     configmanagement: Config Management-specific state.
     fleetobservability: Fleet observability membership state.
     helloworld: Hello World-specific state.
@@ -4848,16 +5016,17 @@ class MembershipFeatureState(_messages.Message):
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
   clusterupgrade = _messages.MessageField('ClusterUpgradeMembershipState', 2)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 3)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 4)
-  helloworld = _messages.MessageField('HelloWorldMembershipState', 5)
-  identityservice = _messages.MessageField('IdentityServiceMembershipState', 6)
-  metering = _messages.MessageField('MeteringMembershipState', 7)
-  namespaceactuation = _messages.MessageField('NamespaceActuationMembershipState', 8)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 9)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipState', 10)
-  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 11)
-  state = _messages.MessageField('FeatureState', 12)
+  configDeliveryArgoCd = _messages.MessageField('ConfigDeliveryArgoCDMembershipState', 3)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 4)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 5)
+  helloworld = _messages.MessageField('HelloWorldMembershipState', 6)
+  identityservice = _messages.MessageField('IdentityServiceMembershipState', 7)
+  metering = _messages.MessageField('MeteringMembershipState', 8)
+  namespaceactuation = _messages.MessageField('NamespaceActuationMembershipState', 9)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 10)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipState', 11)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 12)
+  state = _messages.MessageField('FeatureState', 13)
 
 
 class MembershipSpec(_messages.Message):
@@ -6043,9 +6212,7 @@ class Reference(_messages.Message):
   Fields:
     createTime: Output only. The creation time.
     details: Details of the reference type with no implied semantics.
-      Cumulative size of the field must not be more than 1KiB. Note: For the
-      Arcus Reference API, you must add the proto you store in this field to
-      http://cs/symbol:cloud.cluster.reference.ReferencePayload
+      Cumulative size of the field must not be more than 1KiB.
     name: Output only. Relative resource name of the reference. Includes
       target resource as a parent and reference uid
       `{target_resource}/references/{reference_id}`. For example,

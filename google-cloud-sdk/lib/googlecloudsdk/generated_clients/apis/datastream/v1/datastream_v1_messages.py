@@ -37,19 +37,19 @@ class BackfillJob(_messages.Message):
   r"""Represents a backfill job on a specific stream object.
 
   Enums:
-    StateValueValuesEnum: Backfill job state.
+    StateValueValuesEnum: Output only. Backfill job state.
     TriggerValueValuesEnum: Backfill job's triggering reason.
 
   Fields:
     errors: Output only. Errors which caused the backfill job to fail.
     lastEndTime: Output only. Backfill job's end time.
     lastStartTime: Output only. Backfill job's start time.
-    state: Backfill job state.
+    state: Output only. Backfill job state.
     trigger: Backfill job's triggering reason.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Backfill job state.
+    r"""Output only. Backfill job state.
 
     Values:
       STATE_UNSPECIFIED: Default value.
@@ -2235,17 +2235,17 @@ class Validation(_messages.Message):
   r"""A validation to perform on a stream.
 
   Enums:
-    StateValueValuesEnum: Validation execution status.
+    StateValueValuesEnum: Output only. Validation execution status.
 
   Fields:
     code: A custom code identifying this validation.
     description: A short description of the validation.
     message: Messages reflecting the validation results.
-    state: Validation execution status.
+    state: Output only. Validation execution status.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Validation execution status.
+    r"""Output only. Validation execution status.
 
     Values:
       STATE_UNSPECIFIED: Unspecified state.

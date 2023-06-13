@@ -51,6 +51,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GLOBAL_HUBS_GROUPS = (
+      'projects.locations.global.hubs.groups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/hubs/{hubsId}/groups/'
+              '{groupsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GLOBAL_HUBS_ROUTETABLES = (
       'projects.locations.global.hubs.routeTables',
       '{+name}',

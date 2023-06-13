@@ -917,7 +917,7 @@ class DataflowProjectsJobsAggregatedRequest(_messages.Message):
     location: The [regional endpoint]
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains this job.
-    name: Optional. The job name. Optional.
+    name: Optional. The job name.
     pageSize: If there are many jobs, limit response to at most this many. The
       actual number of jobs returned will be the lesser of max_responses and
       an unspecified server-defined limit.
@@ -1135,7 +1135,7 @@ class DataflowProjectsJobsListRequest(_messages.Message):
     location: The [regional endpoint]
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains this job.
-    name: Optional. The job name. Optional.
+    name: Optional. The job name.
     pageSize: If there are many jobs, limit response to at most this many. The
       actual number of jobs returned will be the lesser of max_responses and
       an unspecified server-defined limit.
@@ -1707,7 +1707,7 @@ class DataflowProjectsLocationsJobsListRequest(_messages.Message):
     location: The [regional endpoint]
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains this job.
-    name: Optional. The job name. Optional.
+    name: Optional. The job name.
     pageSize: If there are many jobs, limit response to at most this many. The
       actual number of jobs returned will be the lesser of max_responses and
       an unspecified server-defined limit.

@@ -1629,6 +1629,8 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
       this database.
     DeleteProtectionStateValueValuesEnum: State of delete protection for the
       database.
+    PointInTimeRecoveryEnablementValueValuesEnum: Whether to enable the PITR
+      feature on this database.
     TypeValueValuesEnum: The type of the database. See
       https://cloud.google.com/datastore/docs/firestore-or-datastore for
       information about how to choose.
@@ -1640,6 +1642,13 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     createTime: Output only. The timestamp at which this database was created.
       Databases created before 2016 do not populate create_time.
     deleteProtectionState: State of delete protection for the database.
+    earliestVersionTime: Output only. The earliest timestamp at which older
+      versions of the data can be read from the database. See
+      [version_retention_period] above; this field is populated with `now -
+      version_retention_period`. This value is continuously updated, and
+      becomes stale the moment it is queried. If you are using this value to
+      recover data, make sure to account for the time from the moment when the
+      value is queried to the moment when you initiate the recovery.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
@@ -1653,6 +1662,8 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
       at https://cloud.google.com/firestore/docs/locations.
     name: The resource name of the Database. Format:
       `projects/{project}/databases/{database}`
+    pointInTimeRecoveryEnablement: Whether to enable the PITR feature on this
+      database.
     type: The type of the database. See
       https://cloud.google.com/datastore/docs/firestore-or-datastore for
       information about how to choose.
@@ -1660,6 +1671,11 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     updateTime: Output only. The timestamp at which this database was most
       recently updated. Note this only includes updates to the database
       resource and not data contained by the database.
+    versionRetentionPeriod: Output only. The period during which past versions
+      of data are retained in the database. Any read or query can specify a
+      `read_time` within this window, and will read the state of the database
+      at that time. If the PITR feature is enabled, the retention period is 7
+      days. Otherwise, the retention period is 1 hour.
   """
 
   class AppEngineIntegrationModeValueValuesEnum(_messages.Enum):
@@ -1712,6 +1728,24 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     DELETE_PROTECTION_DISABLED = 1
     DELETE_PROTECTION_ENABLED = 2
 
+  class PointInTimeRecoveryEnablementValueValuesEnum(_messages.Enum):
+    r"""Whether to enable the PITR feature on this database.
+
+    Values:
+      POINT_IN_TIME_RECOVERY_ENABLEMENT_UNSPECIFIED: Not used.
+      POINT_IN_TIME_RECOVERY_ENABLED: Reads are supported on selected versions
+        of the data from within the past 7 days: * Reads against any timestamp
+        within the past hour * Reads against 1-minute snapshots beyond 1 hour
+        and within 7 days `version_retention_period` and
+        `earliest_version_time` can be used to determine the supported
+        versions.
+      POINT_IN_TIME_RECOVERY_DISABLED: Reads are supported on any version of
+        the data from within the past 1 hour.
+    """
+    POINT_IN_TIME_RECOVERY_ENABLEMENT_UNSPECIFIED = 0
+    POINT_IN_TIME_RECOVERY_ENABLED = 1
+    POINT_IN_TIME_RECOVERY_DISABLED = 2
+
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the database. See
     https://cloud.google.com/datastore/docs/firestore-or-datastore for
@@ -1731,13 +1765,16 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
   concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 2)
   createTime = _messages.StringField(3)
   deleteProtectionState = _messages.EnumField('DeleteProtectionStateValueValuesEnum', 4)
-  etag = _messages.StringField(5)
-  keyPrefix = _messages.StringField(6)
-  locationId = _messages.StringField(7)
-  name = _messages.StringField(8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  earliestVersionTime = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  keyPrefix = _messages.StringField(7)
+  locationId = _messages.StringField(8)
+  name = _messages.StringField(9)
+  pointInTimeRecoveryEnablement = _messages.EnumField('PointInTimeRecoveryEnablementValueValuesEnum', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+  versionRetentionPeriod = _messages.StringField(14)
 
 
 class GoogleFirestoreAdminV1ExportDocumentsMetadata(_messages.Message):

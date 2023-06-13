@@ -876,12 +876,21 @@ class ConfigManagementConfigSync(_messages.Message):
       false which disallows vertical scaling. This field is deprecated.
     enabled: Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
-      will be applied if exist. If set to false, all other ConfigSync fields
-      will be ignored, ConfigSync resources will be deleted. If omitted,
-      ConfigSync resources will be managed depends on the presence of git
-      field.
+      will be applied if exist. If set to false and Managed Config Sync is
+      disabled, all other ConfigSync fields will be ignored, ConfigSync
+      resources will be deleted. Setting this field to false while enabling
+      Managed Config Sync is invalid. If omitted, ConfigSync resources will be
+      managed if: * the git or oci field is present; or * Managed Config Sync
+      is enabled (i.e., managed.enabled is true).
     git: Git repo configuration for the cluster.
     managed: Configuration for Managed Config Sync.
+    metricsGcpServiceAccountEmail: The Email of the GCP Service Account (GSA)
+      used for exporting Config Sync metrics to Cloud Monitoring and Cloud
+      Monarch when Workload Identity is enabled. The GSA should have the
+      Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role. The
+      Kubernetes ServiceAccount `default` in the namespace `config-management-
+      monitoring` should be binded to the GSA. This field is required when
+      Managed Config Sync is enabled.
     oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. If set to `false`, disables the Config Sync admission
@@ -894,9 +903,10 @@ class ConfigManagementConfigSync(_messages.Message):
   enabled = _messages.BooleanField(2)
   git = _messages.MessageField('ConfigManagementGitConfig', 3)
   managed = _messages.MessageField('ConfigManagementManaged', 4)
-  oci = _messages.MessageField('ConfigManagementOciConfig', 5)
-  preventDrift = _messages.BooleanField(6)
-  sourceFormat = _messages.StringField(7)
+  metricsGcpServiceAccountEmail = _messages.StringField(5)
+  oci = _messages.MessageField('ConfigManagementOciConfig', 6)
+  preventDrift = _messages.BooleanField(7)
+  sourceFormat = _messages.StringField(8)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -1029,19 +1039,31 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
   syncer = _messages.EnumField('SyncerValueValuesEnum', 7)
 
 
+class ConfigManagementConfigSyncError(_messages.Message):
+  r"""Errors pertaining to the installation of Config Sync
+
+  Fields:
+    errorMessage: A string representing the user facing error message
+  """
+
+  errorMessage = _messages.StringField(1)
+
+
 class ConfigManagementConfigSyncState(_messages.Message):
   r"""State information for ConfigSync
 
   Fields:
     deploymentState: Information about the deployment of ConfigSync, including
       the version of the various Pods deployed
+    errors: Errors pertaining to the installation of Config Sync.
     syncState: The state of ConfigSync's process to sync configs to a cluster
     version: The version of ConfigSync deployed
   """
 
   deploymentState = _messages.MessageField('ConfigManagementConfigSyncDeploymentState', 1)
-  syncState = _messages.MessageField('ConfigManagementSyncState', 2)
-  version = _messages.MessageField('ConfigManagementConfigSyncVersion', 3)
+  errors = _messages.MessageField('ConfigManagementConfigSyncError', 2, repeated=True)
+  syncState = _messages.MessageField('ConfigManagementSyncState', 3)
+  version = _messages.MessageField('ConfigManagementConfigSyncVersion', 4)
 
 
 class ConfigManagementConfigSyncVersion(_messages.Message):
@@ -1293,10 +1315,15 @@ class ConfigManagementManaged(_messages.Message):
 
   Fields:
     enabled: Set to true to enable Managed Config Sync. Defaults to false
-      which disables Managed Config Sync.
+      which disables Managed Config Sync. Setting this field to true when
+      configSync.enabled is false is invalid.
+    stopSyncing: Set to true to stop syncing configs for a single cluster.
+      Default to false. If set to true, Managed Config Sync will not upgrade
+      Config Sync.
   """
 
   enabled = _messages.BooleanField(1)
+  stopSyncing = _messages.BooleanField(2)
 
 
 class ConfigManagementMembershipSpec(_messages.Message):
@@ -1305,6 +1332,13 @@ class ConfigManagementMembershipSpec(_messages.Message):
 
   Fields:
     binauthz: Binauthz conifguration for the cluster.
+    cluster: The user-specified cluster name used by Config Sync cluster-name-
+      selector annotation or ClusterSelector, for applying configs to only a
+      subset of clusters. Omit this field if the cluster's fleet membership
+      name is used by Config Sync cluster-name-selector annotation or
+      ClusterSelector. Set this field if a name different from the cluster's
+      fleet membership name is used by Config Sync cluster-name-selector
+      annotation or ClusterSelector.
     configSync: Config Sync configuration for the cluster.
     hierarchyController: Hierarchy Controller configuration for the cluster.
     policyController: Policy Controller configuration for the cluster.
@@ -1312,10 +1346,11 @@ class ConfigManagementMembershipSpec(_messages.Message):
   """
 
   binauthz = _messages.MessageField('ConfigManagementBinauthzConfig', 1)
-  configSync = _messages.MessageField('ConfigManagementConfigSync', 2)
-  hierarchyController = _messages.MessageField('ConfigManagementHierarchyControllerConfig', 3)
-  policyController = _messages.MessageField('ConfigManagementPolicyController', 4)
-  version = _messages.StringField(5)
+  cluster = _messages.StringField(2)
+  configSync = _messages.MessageField('ConfigManagementConfigSync', 3)
+  hierarchyController = _messages.MessageField('ConfigManagementHierarchyControllerConfig', 4)
+  policyController = _messages.MessageField('ConfigManagementPolicyController', 5)
+  version = _messages.StringField(6)
 
 
 class ConfigManagementMembershipState(_messages.Message):
@@ -1323,11 +1358,9 @@ class ConfigManagementMembershipState(_messages.Message):
 
   Fields:
     binauthzState: Binauthz status
-    clusterName: The user-defined name for the cluster used by
-      ClusterSelectors to group clusters together. This should match
-      Membership's membership_name, unless the user installed ACM on the
-      cluster manually prior to enabling the ACM hub feature. Unique within a
-      Anthos Config Management installation.
+    clusterName: This field is set to the `cluster_name` field of the
+      Membership Spec if it is not empty. Otherwise, it is set to the
+      cluster's fleet membership name.
     configSyncState: Current sync status
     hierarchyControllerState: Hierarchy Controller status
     membershipSpec: Membership configuration in the cluster. This represents
@@ -4513,7 +4546,7 @@ class MembershipEndpoint(_messages.Message):
 
 class MembershipFeatureSpec(_messages.Message):
   r"""MembershipFeatureSpec contains configuration information for a single
-  Membership.
+  Membership. NOTE: Please use snake case in your feature name.
 
   Fields:
     anthosobservability: Anthos Observability-specific spec
@@ -5671,9 +5704,7 @@ class Reference(_messages.Message):
   Fields:
     createTime: Output only. The creation time.
     details: Details of the reference type with no implied semantics.
-      Cumulative size of the field must not be more than 1KiB. Note: For the
-      Arcus Reference API, you must add the proto you store in this field to
-      http://cs/symbol:cloud.cluster.reference.ReferencePayload
+      Cumulative size of the field must not be more than 1KiB.
     name: Output only. Relative resource name of the reference. Includes
       target resource as a parent and reference uid
       `{target_resource}/references/{reference_id}`. For example,

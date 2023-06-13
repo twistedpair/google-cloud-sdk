@@ -124,3 +124,18 @@ automation_run:
     help: |
       The name of the Cloud Deploy automation run.
   disable_auto_completers: false
+
+automation:
+  name: automation
+  collection: clouddeploy.projects.locations.deliveryPipelines.automations
+  request_id_field: automationId
+  attributes:
+  - *project
+  - *location
+  - *delivery_pipeline
+  - &automation
+    parameter_name: automationsId
+    attribute_name: automation
+    help: |
+      The name of the Cloud Deploy automation.
+  disable_auto_completers: false

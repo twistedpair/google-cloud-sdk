@@ -114,6 +114,10 @@ def _create_or_modify_transfer_options(transfer_spec, args, messages):
         metadata_options.temporaryHold = (
             messages.MetadataOptions.TemporaryHoldValueValuesEnum
             .TEMPORARY_HOLD_PRESERVE)
+      elif field_key == jobs_flag_util.PreserveMetadataField.TIME_CREATED:
+        metadata_options.timeCreated = (
+            messages.MetadataOptions.TimeCreatedValueValuesEnum.TIME_CREATED_PRESERVE_AS_CUSTOM_TIME
+        )
   if getattr(args, 'custom_storage_class', None):
     metadata_options.storageClass = getattr(
         messages.MetadataOptions.StorageClassValueValuesEnum,

@@ -6,6 +6,99 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 435.0.0 (2023-06-13)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Modified quota exceeded errors to show future limit and rollout status information to user in addition to original error message.
+
+
+### Anthos Multi-Cloud
+
+* Modified `gcloud container aws clusters describe` and `gcloud container azure clusters describe` to fetch server configurations and to give a warning when the cluster is running an end-of-life version.
+*   Added `--root-volume-throughput` flag to `gcloud container aws clusters` and `gcloud container aws node-pools` to support customizable EBS root volume throughput.
+*   Added `--main-volume-throughput` flag to `gcloud container aws clusters create` to support customizable EBS main volume throughput.
+*   Added `--disable-per-node-pool-sg-rules` flag to `gcloud container aws clusters create` and `gcloud container aws clusters update` to disable the default security group rules provisioned for each node pool.
+*   Added `--enable-per-node-pool-sg-rules` flag to `gcloud container aws container clusters update` to re-enable the default security group rules provisioned for each node pool.
+
+### Cloud Bigtable
+
+* Add ability to count rows for a prefix.
+
+### Cloud Filestore
+
+*   Added `--kms-key` flag to `gcloud  filestore backups create`, which allows an Enterprise or High Scale backup to be created that is encrypted with a CMEK key." => "which creates a backup with an associated customer-managed encryption key (CMEK). Only available for Enterprise or High Scale tier instances.
+*   Added `--instance-location` flag to `gcloud filestore backups create`, which
+    accepts either a zone or region and allows clients to restore Basic HDD, Basic SSD, and Enterprise tier backups.
+
+### Cloud Functions
+
+* Promoted `--docker-repository`, `--kms-key`, `clear-docker-repository`, and
+  `--clear-kms-key` flags of `gcloud functions deploy --gen2` to GA, which bring
+  CMEK support for Cloud Functions 2nd Gen.
+
+### Cloud NetApp
+
+*   Added `gcloud beta netapp` group which includes `gcloud beta netapp storage-pools`, `gcloud beta netapp volumes`, `gcloud beta netapp active-directories`, `gcloud beta netapp kms-configs`, `gcloud beta netapp locations`, `gcloud beta netapp operations`, `gcloud beta netapp volumes snapshots`, and `gcloud beta netapp volumes replications`.
+
+### Cloud Run
+
+* Promoted `gcloud run services proxy` to GA. This command allows you to proxy
+ a service or a revision to localhost. Requests will be authenticated as the
+ current SDK account, or with a provided token.
+
+### Cloud TPU
+
+* Fixed bug so that `gcloud compute tpus tpu-vm ssh` respects instance
+  preference of setting enable-oslogin to false.
+
+### Compute Engine
+
+* Promoted `source-instant-snapshot` flag of `gcloud compute disks create` to beta.
+* Promoted `--source-instant-snapshot`, `--source-instant-snapshot-zone` and `--source-instant-snapshot-region` flags of `gcloud compute snapshots create` to beta.
+* Promoted `gcloud compute instant-snapshots create` to beta.
+* Promoted `gcloud compute instant-snapshots delete` to beta.
+* Promoted `gcloud compute instant-snapshots describe` to beta.
+* Promoted `gcloud compute instant-snapshots list` to beta.
+* Promoted `gcloud compute instant-snapshots add-labels` to beta.
+* Fixed bug in handling quota exceeded error with `gcloud compute commitments create` command.
+* Added force-attach support to `gcloud compute instances create`.
+* Added `--recaptcha-action-site-keys` and `--recaptcha-session-site-keys` to `gcloud beta compute security-policies rules create|update`.
+* Added `--network-user-defined-fields`, `--network-src-ip-ranges`, `--network-dest-ip-ranges`, `--network-ip-protocols`, `--network-src-ports`, `--network-dest-ports`, `--network-src-region-codes`, and `--network-src-asns` to `gcloud beta compute security-policies rules create|update`.
+* Added `gcloud beta compute security-policies add-user-defined-fields` and `gcloud beta compute security-policies remove-user-defined-fields` commands.
+* Added `--security-policy` and `--security-policy-region` to `gcloud beta compute instances network-interfaces update`.
+* Added `gcloud beta compute target-pools update` and `gcloud beta compute target-instances update` commands.
+
+### Kpt
+
+* Updated kpt in Google Cloud CLI from 1.0.0-beta.34 to 1.0.0-beta.35.
+
+### Kubernetes Engine
+
+* Undeprecated and unhid `--logging` and `--monitoring` flags from
+  `gcloud container clusters create-auto`.
+
+* Added a new command `gcloud container clusters check-autopilot-compatibility`
+which returns a list of autopilot compatibility issues of the given cluster.
+
+### Vmware Engine
+
+* Added commands for managing resources:
+  * Private connections:
+    * Added commands to perform CRUD
+    * Retrieving exchanged routes
+
+  * Subnets:
+    * Added commands to describe and update a subnet
+
+  * Private clouds:
+    * Added ability to create a time limited PC
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
 ## 434.0.0 (2023-06-06)
 
 ### AlloyDB

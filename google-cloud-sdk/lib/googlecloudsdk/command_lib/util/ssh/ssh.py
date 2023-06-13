@@ -770,20 +770,20 @@ def MetadataHasEnable(metadata, key_name):
 
 
 def FeatureEnabledInMetadata(
-    instance, project, key_name, instance_override=False):
+    instance, project, key_name, instance_override=None):
   """Return True if the feature associated with the supplied key is enabled.
 
   If the key is set to 'true' in instance metadata, will return True.
   If the key is set to 'false' in instance metadata, will return False.
   If key is not set in instance metadata, will return the value in project
-  metadata unless instance_override is True.
+  metadata unless instance_override is not None (set to True or False).
 
   Args:
     instance: The current instance object.
     project: The current project object.
     key_name: The name of metadata key to check. e.g. 'oslogin-enable'.
     instance_override: The value of the instance metadata key. Used if the
-      instance object cannot be passed in.
+      instance object cannot be passed in. None if not set.
 
   Returns:
     bool, True if the feature associated with the supplied key is enabled
@@ -792,7 +792,7 @@ def FeatureEnabledInMetadata(
   feature_enabled = None
   if instance is not None:
     feature_enabled = MetadataHasEnable(instance.metadata, key_name)
-  elif instance_override:
+  elif instance_override is not None:
     feature_enabled = instance_override
   if feature_enabled is None:
     project_metadata = project.commonInstanceMetadata
@@ -921,9 +921,9 @@ def GetOsloginState(instance,
                     expiration_time,
                     release_track,
                     username_requested=False,
-                    instance_enable_oslogin=False,
-                    instance_enable_2fa=False,
-                    instance_enable_security_keys=False,
+                    instance_enable_oslogin=None,
+                    instance_enable_2fa=None,
+                    instance_enable_security_keys=None,
                     messages=None):
   """Check instance/project metadata for oslogin and return updated username.
 
@@ -943,15 +943,16 @@ def GetOsloginState(instance,
     release_track: release_track, The object representing the release track.
     username_requested: bool, True if the user has passed a specific username in
       the args.
-    instance_enable_oslogin: bool, True if the instance's metadata indicates
-      that OS Login is enabled. Used when the instance cannot be passed through
-      the instance argument.
-    instance_enable_2fa: bool, True if the instance's metadata indicates
-      that OS Login 2FA is enabled. Used when the instance cannot be passed
-      through the instance argument.
-    instance_enable_security_keys: bool, True if the instance's metadata
-      indicates that OS Login security keys are enabled. Used when the instance
-      cannot be passed through the instance argument.
+    instance_enable_oslogin: True if the instance's metadata indicates that
+      OS Login is enabled, and False if not enabled. Used when the instance
+      cannot be passed through the instance argument. None if not specified.
+    instance_enable_2fa: True if the instance's metadata indicates that
+      OS Login 2FA is enabled, and False if not enabled. Used when the instance
+      cannot be passed through the instance argument. None if not specified.
+    instance_enable_security_keys: True if the instance's metadata indicates
+      that OS Login security keys are enabled, and False if not enabled. Used
+      when the instance cannot be passed through the instance argument. None if
+      not specified.
     messages: API messages class, The compute API messages.
 
   Returns:

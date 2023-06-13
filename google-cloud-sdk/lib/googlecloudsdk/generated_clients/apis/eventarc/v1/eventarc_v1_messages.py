@@ -275,6 +275,7 @@ class Destination(_messages.Message):
       resource should be in the same project as the trigger.
     gke: A GKE service capable of receiving events. The service should be
       running in the same project as the trigger.
+    httpEndpoint: An HTTP endpoint destination described by an URI.
     workflow: The resource name of the Workflow whose Executions are triggered
       by the events. The Workflow resource should be deployed in the same
       project as the trigger. Format:
@@ -284,7 +285,8 @@ class Destination(_messages.Message):
   cloudFunction = _messages.StringField(1)
   cloudRun = _messages.MessageField('CloudRun', 2)
   gke = _messages.MessageField('GKE', 3)
-  workflow = _messages.StringField(4)
+  httpEndpoint = _messages.MessageField('HttpEndpoint', 4)
+  workflow = _messages.StringField(5)
 
 
 class Empty(_messages.Message):
@@ -1171,6 +1173,29 @@ class GoogleRpcStatus(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class HttpEndpoint(_messages.Message):
+  r"""Represents a HTTP endpoint destination.
+
+  Fields:
+    forwardDnsRequests: Optional. Forwards DNS requests to the VPC specified
+      by network config to resolve the HTTP endpoint. Default to false. If set
+      to true, Eventarc will create a peering zone to the consumer VPC and
+      forward DNS requests. See:
+      https://cloud.google.com/dns/docs/zones/zones-overview#peering_zones
+      Enable this if the URI uses an internal DNS name or a private Cloud DNS
+      zone.
+    uri: Required. The URI of the HTTP enpdoint. The value must be a RFC2396
+      URI string. Examples: `http://10.10.10.8:80/route`, `http://svc.us-
+      central1.p.local:8080/`. Only HTTP and HTTPS protocols are supported.
+      The host can be either a static IP addressable from the VPC specified by
+      the network config, or an internal DNS hostname of the service
+      resolvable via Cloud DNS.
+  """
+
+  forwardDnsRequests = _messages.BooleanField(1)
+  uri = _messages.StringField(2)
 
 
 class ListChannelConnectionsResponse(_messages.Message):

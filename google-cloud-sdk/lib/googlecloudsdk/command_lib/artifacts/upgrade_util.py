@@ -41,6 +41,14 @@ _READER = "roles/artifactregistry.reader"
 # In order of most to least privilege, so we can grant the most privileged role.
 _AR_ROLES = (_REPO_ADMIN, _WRITER, _READER)
 
+# Set of GCS permissions for GCR that are relevant to AR.
+_PERMISSIONS = (
+    "storage.objects.get",
+    "storage.objects.list",
+    "storage.objects.create",
+    "storage.objects.delete",
+)
+
 # Maps a GCS permission for GCR to an equivalent AR role.
 _PERMISSION_TO_ROLE = frozendict.frozendict({
     "storage.objects.get": _READER,
@@ -83,9 +91,7 @@ def iam_policy(domain, project):
   """
   bucket = bucket_resource_name(domain, project)
   root = get_root(project)
-  analysis = analyze_iam_policy(
-      tuple(_PERMISSION_TO_ROLE), bucket, root
-  )
+  analysis = analyze_iam_policy(_PERMISSIONS, bucket, root)
 
   # If we see any false fullyExplored, that indicates that AnalyzeIamPolicy is
   # returning incomplete information, so the generated policy might be wrong,

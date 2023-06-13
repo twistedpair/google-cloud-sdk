@@ -19,11 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.netapp.constants import OPERATIONS_COLLECTION
-from googlecloudsdk.api_lib.netapp.constants import VOLUME_RESOURCE
-from googlecloudsdk.api_lib.netapp.util import GetClientInstance
-from googlecloudsdk.api_lib.netapp.util import GetMessagesModule
-from googlecloudsdk.api_lib.netapp.util import VERSION_MAP
+from googlecloudsdk.api_lib.netapp import constants
+from googlecloudsdk.api_lib.netapp import util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
@@ -42,7 +39,7 @@ class VolumesClient(object):
       self._adapter = BetaVolumesAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
-          VERSION_MAP[release_track]))
+          util.VERSION_MAP[release_track]))
 
   @property
   def client(self):
@@ -89,7 +86,7 @@ class VolumesClient(object):
     return list_pager.YieldFromList(
         self.client.projects_locations_volumes,
         request,
-        field=VOLUME_RESOURCE,
+        field=constants.VOLUME_RESOURCE,
         limit=limit,
         batch_size_attribute='pageSize')
 
@@ -103,7 +100,7 @@ class VolumesClient(object):
     if async_:
       return create_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        create_op.name, collection=OPERATIONS_COLLECTION)
+        create_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
   def ParseVolumeConfig(self,
@@ -111,7 +108,6 @@ class VolumesClient(object):
                         capacity=None,
                         description=None,
                         storage_pool=None,
-                        network=None,
                         protocols=None,
                         share_name=None,
                         export_policy=None,
@@ -122,51 +118,28 @@ class VolumesClient(object):
                         snapshot_directory=None,
                         security_style=None,
                         enable_kerberos=None,
-                        enable_ldap=None,
                         snapshot=None,
                         labels=None):
 
     """Parses the command line arguments for Create Volume into a config."""
-    if self.release_track == base.ReleaseTrack.BETA:
-      return self._adapter.ParseVolumeConfigBeta(
-          name=name,
-          capacity=capacity,
-          description=description,
-          storage_pool=storage_pool,
-          protocols=protocols,
-          share_name=share_name,
-          export_policy=export_policy,
-          unix_permissions=unix_permissions,
-          smb_settings=smb_settings,
-          snapshot_policy=snapshot_policy,
-          snap_reserve=snap_reserve,
-          snapshot_directory=snapshot_directory,
-          security_style=security_style,
-          enable_kerberos=enable_kerberos,
-          snapshot=snapshot,
-          labels=labels,
-      )
-    elif self.release_track == base.ReleaseTrack.ALPHA:
-      return self._adapter.ParseVolumeConfigAlpha(
-          name=name,
-          capacity=capacity,
-          description=description,
-          storage_pool=storage_pool,
-          network=network,
-          protocols=protocols,
-          share_name=share_name,
-          export_policy=export_policy,
-          unix_permissions=unix_permissions,
-          smb_settings=smb_settings,
-          snapshot_policy=snapshot_policy,
-          snap_reserve=snap_reserve,
-          snapshot_directory=snapshot_directory,
-          security_style=security_style,
-          enable_kerberos=enable_kerberos,
-          enable_ldap=enable_ldap,
-          snapshot=snapshot,
-          labels=labels,
-      )
+    return self._adapter.ParseVolumeConfig(
+        name=name,
+        capacity=capacity,
+        description=description,
+        storage_pool=storage_pool,
+        protocols=protocols,
+        share_name=share_name,
+        export_policy=export_policy,
+        unix_permissions=unix_permissions,
+        smb_settings=smb_settings,
+        snapshot_policy=snapshot_policy,
+        snap_reserve=snap_reserve,
+        snapshot_directory=snapshot_directory,
+        security_style=security_style,
+        enable_kerberos=enable_kerberos,
+        snapshot=snapshot,
+        labels=labels,
+    )
 
   def GetVolume(self, volume_ref):
     """Get Cloud NetApp Volume information."""
@@ -185,7 +158,7 @@ class VolumesClient(object):
     if async_:
       return delete_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        delete_op.name, collection=OPERATIONS_COLLECTION)
+        delete_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
   def RevertVolume(self, volume_ref, snapshot_id, async_):
@@ -198,7 +171,7 @@ class VolumesClient(object):
     if async_:
       return revert_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        revert_op.name, collection=OPERATIONS_COLLECTION
+        revert_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 
@@ -220,42 +193,23 @@ class VolumesClient(object):
                                enable_kerberos=None,
                                snapshot=None):
     """Parses updates into a volume config."""
-    if self.release_track == base.ReleaseTrack.BETA:
-      return self._adapter.ParseUpdatedVolumeConfigBeta(
-          volume_config,
-          description=description,
-          labels=labels,
-          storage_pool=storage_pool,
-          protocols=protocols,
-          share_name=share_name,
-          export_policy=export_policy,
-          capacity=capacity,
-          unix_permissions=unix_permissions,
-          smb_settings=smb_settings,
-          snapshot_policy=snapshot_policy,
-          snap_reserve=snap_reserve,
-          snapshot_directory=snapshot_directory,
-          security_style=security_style,
-          enable_kerberos=enable_kerberos,
-          snapshot=snapshot)
-    elif self.release_track == base.ReleaseTrack.ALPHA:
-      return self._adapter.ParseUpdatedVolumeConfigAlpha(
-          volume_config,
-          description=description,
-          labels=labels,
-          storage_pool=storage_pool,
-          protocols=protocols,
-          share_name=share_name,
-          export_policy=export_policy,
-          capacity=capacity,
-          unix_permissions=unix_permissions,
-          smb_settings=smb_settings,
-          snapshot_policy=snapshot_policy,
-          snap_reserve=snap_reserve,
-          snapshot_directory=snapshot_directory,
-          security_style=security_style,
-          enable_kerberos=enable_kerberos,
-          snapshot=snapshot)
+    return self._adapter.ParseUpdatedVolumeConfig(
+        volume_config,
+        description=description,
+        labels=labels,
+        storage_pool=storage_pool,
+        protocols=protocols,
+        share_name=share_name,
+        export_policy=export_policy,
+        capacity=capacity,
+        unix_permissions=unix_permissions,
+        smb_settings=smb_settings,
+        snapshot_policy=snapshot_policy,
+        snap_reserve=snap_reserve,
+        snapshot_directory=snapshot_directory,
+        security_style=security_style,
+        enable_kerberos=enable_kerberos,
+        snapshot=snapshot)
 
   def UpdateVolume(self, volume_ref, volume_config, update_mask, async_):
     """Updates a Cloud NetApp Volume.
@@ -274,7 +228,7 @@ class VolumesClient(object):
     if async_:
       return update_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        update_op.name, collection=OPERATIONS_COLLECTION)
+        update_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
 
@@ -283,8 +237,8 @@ class BetaVolumesAdapter(object):
 
   def __init__(self):
     self.release_track = base.ReleaseTrack.BETA
-    self.client = GetClientInstance(release_track=self.release_track)
-    self.messages = GetMessagesModule(release_track=self.release_track)
+    self.client = util.GetClientInstance(release_track=self.release_track)
+    self.messages = util.GetMessagesModule(release_track=self.release_track)
 
   def ParseExportPolicy(self, volume, export_policy):
     """Parses Export Policy for Volume into a config.
@@ -397,8 +351,7 @@ class BetaVolumesAdapter(object):
     update_op = self.client.projects_locations_volumes.Patch(update_request)
     return update_op
 
-  @base.ReleaseTracks(base.ReleaseTrack.BETA)
-  def ParseVolumeConfigBeta(
+  def ParseVolumeConfig(
       self,
       name=None,
       capacity=None,
@@ -464,8 +417,7 @@ class BetaVolumesAdapter(object):
     )
     return volume
 
-  @base.ReleaseTracks(base.ReleaseTrack.BETA)
-  def ParseUpdatedVolumeConfigBeta(
+  def ParseUpdatedVolumeConfig(
       self,
       volume_config,
       description=None,
@@ -529,139 +481,6 @@ class AlphaVolumesAdapter(BetaVolumesAdapter):
   def __init__(self):
     super(BetaVolumesAdapter, self).__init__()
     self.release_track = base.ReleaseTrack.ALPHA
-    self.client = GetClientInstance(release_track=self.release_track)
-    self.messages = GetMessagesModule(release_track=self.release_track)
-
-  @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
-  def ParseVolumeConfigAlpha(
-      self,
-      name=None,
-      capacity=None,
-      description=None,
-      storage_pool=None,
-      network=None,
-      protocols=None,
-      share_name=None,
-      export_policy=None,
-      unix_permissions=None,
-      smb_settings=None,
-      snapshot_policy=None,
-      snap_reserve=None,
-      snapshot_directory=None,
-      security_style=None,
-      enable_kerberos=None,
-      enable_ldap=None,
-      snapshot=None,
-      labels=None,
-  ):
-    """Parses the command line arguments for Create Volume into a config.
-
-    Args:
-      name: the name of the Volume
-      capacity: the storage capacity of the Volume.
-      description: the description of the Volume.
-      storage_pool: the Storage Pool the Volume is attached to.
-      network: the VPC network for the Volume.
-      protocols: the type of fileshare protocol of the Volume.
-      share_name: the share name or mount point of the Volume.
-      export_policy: the export policy of the Volume if NFS.
-      unix_permissions: the Unix permissions for the Volume.
-      smb_settings: the SMB settings for the Volume.
-      snapshot_policy: the Snapshot Policy for the Volume
-      snap_reserve: the snap reserve (double) for the Volume
-      snapshot_directory: Bool on whether to use snapshot directory for Volume
-      security_style: the security style of the Volume
-      enable_kerberos: Bool on whether to use kerberos for Volume
-      enable_ldap: Bool on whether to enable LDAP for Volume
-      snapshot: the snapshot name to create Volume from
-      labels: the parsed labels value.
-
-    Returns:
-      the configuration that will be used as the request body for creating a
-      Cloud NetApp Files Volume.
-    """
-    volume = self.messages.Volume()
-    volume.name = name
-    volume.capacityGib = capacity
-    volume.description = description
-    volume.labels = labels
-    volume.storagePool = storage_pool
-    volume.shareName = share_name
-    self.ParseExportPolicy(volume, export_policy)
-    self.ParseProtocols(volume, protocols)
-    volume.unixPermissions = unix_permissions
-    volume.network = network.get('name')
-    if 'psa-range' in network:
-      volume.psaRange = network.get('psa-range')
-    volume.smbSettings = smb_settings
-    self.ParseSnapshotPolicy(volume, snapshot_policy)
-    volume.snapReserve = snap_reserve
-    volume.snapshotDirectory = snapshot_directory
-    volume.securityStyle = security_style
-    volume.kerberosEnabled = enable_kerberos
-    volume.ldapEnabled = enable_ldap
-    volume.restoreParameters = (
-        self.messages.RestoreParameters(sourceSnapshot=snapshot)
-        if snapshot
-        else None
-    )
-    return volume
-
-  @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
-  def ParseUpdatedVolumeConfigAlpha(
-      self,
-      volume_config,
-      description=None,
-      labels=None,
-      storage_pool=None,
-      protocols=None,
-      share_name=None,
-      export_policy=None,
-      capacity=None,
-      unix_permissions=None,
-      smb_settings=None,
-      snapshot_policy=None,
-      snap_reserve=None,
-      snapshot_directory=None,
-      security_style=None,
-      enable_kerberos=None,
-      active_directory=None,
-      snapshot=None,
-  ):
-    """Parse update information into an updated Volume message."""
-    if description is not None:
-      volume_config.description = description
-    if labels is not None:
-      volume_config.labels = labels
-    if capacity is not None:
-      volume_config.capacityGib = capacity
-    if storage_pool is not None:
-      volume_config.storagePool = storage_pool
-    if protocols is not None:
-      self.ParseProtocols(volume_config, protocols)
-    if share_name is not None:
-      volume_config.shareName = share_name
-    if export_policy is not None:
-      self.ParseExportPolicy(volume_config, export_policy)
-    if unix_permissions is not None:
-      volume_config.unixPermissions = unix_permissions
-    if smb_settings is not None:
-      volume_config.smbSettings = smb_settings
-    if snapshot_policy is not None:
-      self.ParseSnapshotPolicy(volume_config, snapshot_policy)
-    if snap_reserve is not None:
-      volume_config.snapReserve = snap_reserve
-    if snapshot_directory is not None:
-      volume_config.snapshotDirectory = snapshot_directory
-    if security_style is not None:
-      volume_config.securityStyle = security_style
-    if enable_kerberos is not None:
-      volume_config.kerberosEnabled = enable_kerberos
-    if active_directory is not None:
-      volume_config.activeDirectory = active_directory
-    if snapshot is not None:
-      volume_config.restoreParameters = self.messages.RestoreParameters(
-          sourceSnapshot=snapshot
-      )
-    return volume_config
+    self.client = util.GetClientInstance(release_track=self.release_track)
+    self.messages = util.GetMessagesModule(release_track=self.release_track)
 

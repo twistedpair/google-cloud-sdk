@@ -323,6 +323,104 @@ def AddBigQueryConfigFlags(parser, is_update):
   )
 
 
+def AddCloudStorageConfigFlags(parser, is_update):
+  """Adds Cloud Storage config flags to parser."""
+  current_group = parser
+  if is_update:
+    mutual_exclusive_group = current_group.add_mutually_exclusive_group(
+        hidden=True)
+    mutual_exclusive_group.add_argument(
+        '--clear-cloud-storage-config',
+        action='store_true',
+        default=None,
+        hidden=True,
+        help="""If set, clear the Cloud Storage config from the subscription.""",
+    )
+    current_group = mutual_exclusive_group
+  cloud_storage_config_group = current_group.add_argument_group(
+      hidden=True,
+      help="""Cloud Storage Config Options. The Cloud Pub/Sub service account
+        associated with the enclosing subscription's parent project (i.e.,
+        service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
+        must have permission to write to this Cloud Storage bucket and to read
+        this bucket's metadata."""
+  )
+  cloud_storage_config_group.add_argument(
+      '--cloud-storage-bucket',
+      required=True,
+      hidden=True,
+      help=(
+          'A Cloud Storage bucket to which to write messages for this'
+          ' subscription.'
+      ),
+  )
+  cloud_storage_config_group.add_argument(
+      '--cloud-storage-file-prefix',
+      default=None,
+      hidden=True,
+      help='The prefix for Cloud Storage filename.',
+  )
+  cloud_storage_config_group.add_argument(
+      '--cloud-storage-file-suffix',
+      default=None,
+      hidden=True,
+      help='The suffix for Cloud Storage filename.',
+  )
+  cloud_storage_config_group.add_argument(
+      '--cloud-storage-max-bytes',
+      type=arg_parsers.BinarySize(lower_bound='1KB', upper_bound='10GB',
+                                  default_unit='KB',
+                                  suggested_binary_size_scales=['KB', 'KiB',
+                                                                'MB', 'MiB',
+                                                                'GB', 'GiB']),
+      default=None,
+      hidden=True,
+      help=(
+          ' The maximum bytes that can be written to a Cloud Storage file'
+          ' before a new file is created. The value must be between 1KB to'
+          ' 10GB. If the unit is omitted, KB is assumed.'
+      ),
+  )
+  cloud_storage_config_group.add_argument(
+      '--cloud-storage-max-duration',
+      type=arg_parsers.Duration(lower_bound='1m', upper_bound='10m',
+                                default_unit='s'),
+      hidden=True,
+      help="""The maximum duration that can elapse before a new Cloud Storage
+          file is created. The value must be between 1m and 10m.
+          {}""".format(DURATION_HELP_STR),
+  )
+  cloud_storage_config_group.add_argument(
+      '--cloud-storage-output-format',
+      type=arg_parsers.ArgList(
+          element_type=lambda x: str(x).lower(),
+          min_length=1,
+          max_length=1,
+          choices=['text', 'avro'],
+      ),
+      default='text',
+      hidden=True,
+      metavar='OUTPUT_FORMAT',
+      help=(
+          'The output format for data written to Cloud Storage. Values: text'
+          ' (messages will be written as raw text, separated by a newline) or'
+          ' avro (messages will be written as an Avro binary).'
+      ),
+  )
+  cloud_storage_config_group.add_argument(
+      '--cloud-storage-write-metadata',
+      action='store_true',
+      default=None,
+      hidden=True,
+      help=(
+          'Whether or not to write the subscription name, message_id,'
+          ' publish_time, attributes, and ordering_key as additional fields in'
+          ' the output. This has an effect only for subscriptions with'
+          ' --cloud-storage-output-format=avro.'
+      ),
+  )
+
+
 def ParseSubscriptionRetentionDurationWithDefault(value):
   if value == subscriptions.DEFAULT_MESSAGE_RETENTION_VALUE:
     return value
@@ -336,7 +434,8 @@ def ParseExpirationPeriodWithNeverSentinel(value):
 
 
 def AddSubscriptionSettingsFlags(
-    parser, is_update=False, enable_no_wrapper_support=False
+    parser, is_update=False, enable_no_wrapper_support=False,
+    enable_push_to_gcs=False,
 ):
   """Adds the flags for creating or updating a subscription.
 
@@ -344,6 +443,7 @@ def AddSubscriptionSettingsFlags(
     parser: The argparse parser.
     is_update: Whether or not this is for the update operation (vs. create).
     enable_no_wrapper_support: whether or not to add no wrapper flag support.
+    enable_push_to_gcs: whether or not to enable GCS config flags support.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(
@@ -351,7 +451,11 @@ def AddSubscriptionSettingsFlags(
       is_update=is_update,
       enable_no_wrapper_support=enable_no_wrapper_support,
   )
-  AddBigQueryConfigFlags(parser, is_update)
+
+  mutex_group = parser.add_mutually_exclusive_group()
+  AddBigQueryConfigFlags(mutex_group, is_update)
+  if enable_push_to_gcs:
+    AddCloudStorageConfigFlags(mutex_group, is_update)
   AddSubscriptionMessageRetentionFlags(parser, is_update)
   if not is_update:
     parser.add_argument(

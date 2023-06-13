@@ -26,7 +26,7 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import flags as shared_flags
 from googlecloudsdk.command_lib.ai import region_util
-from googlecloudsdk.command_lib.ai.persistent_resource import persistent_resource_util
+from googlecloudsdk.command_lib.ai.persistent_resources import persistent_resource_util
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
@@ -75,9 +75,17 @@ _RESOURCE_POOL_SPEC = base.Argument(
         see https://cloud.google.com/vertex-ai/docs/training/configure-compute#machine-types
         for supported types. This field corresponds to the `machineSpec.machineType`
         field in `ResourcePool` API message.
-      *replica-count*::: (Required) The number of replicas to use when creating
-        this resource pool. This field corresponds to the `replicaCount` field
-        in `ResourcePool` API message.
+      *replica-count*::: (Required if autoscaling not enabled) The number of
+        replicas to use when creating this resource pool. This field
+        corresponds to the replicaCount field in 'ResourcePool' API message.
+      *min-replica-count*::: (Optional) The minimum number of replicas that
+        autoscaling will down-size to for this resource pool. Both
+        min-replica-count and max-replica-count are required to enable
+        autoscaling on this resource pool.
+      *max-replica-count*::: (Optional) The maximum number of replicas that
+        autoscaling will create for this resource pool. Both min-replica-count
+        and max-replica-count are required to enable autoscaling on this
+        resource pool.
       *accelerator-type*::: The type of GPU to attach to the machines.
         see https://cloud.google.com/vertex-ai/docs/training/configure-compute#specifying_gpus
         for more requirements. This field corresponds to the `machineSpec.acceleratorType`
@@ -106,13 +114,15 @@ def AddCreatePersistentResourceFlags(parser):
       'to create a Persistent Resource',
       prompt_func=region_util.GetPromptForRegionFunc(
           constants.SUPPORTED_TRAINING_REGIONS))
-  shared_flags.TRAINING_SERVICE_ACCOUNT.AddToParser(parser)
   shared_flags.NETWORK.AddToParser(parser)
-  shared_flags.AddKmsKeyResourceArg(parser, 'persistent resource')
+  # TODO(b/262780738): Unimplemented
+  # shared_flags.TRAINING_SERVICE_ACCOUNT.AddToParser(parser)
+  # shared_flags.AddKmsKeyResourceArg(parser, 'persistent resource')
 
   labels_util.AddCreateLabelsFlags(parser)
 
-  shared_flags.GetDisplayNameArg('Persistent Resource').AddToParser(parser)
+  shared_flags.GetDisplayNameArg('Persistent Resource',
+                                 required=False).AddToParser(parser)
 
   resource_pool_spec_group = base.ArgumentGroup(
       help='resource pool specification.', required=True

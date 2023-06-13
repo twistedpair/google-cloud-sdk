@@ -339,20 +339,17 @@ class AlloydbV1(base_api.BaseApiClient):
     )
 
     def InjectFault(self, request, global_params=None):
-      r"""Injects fault in an instance.
-
-      Imperative only.
+      r"""Injects fault in an instance. Imperative only.
 
       Args:
-        request: (AlloydbProjectsLocationsClustersInstancesInjectFaultRequest)
-          input message
+        request: (AlloydbProjectsLocationsClustersInstancesInjectFaultRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (Operation) The response message.
       """
       config = self.GetMethodConfig('InjectFault')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     InjectFault.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances/{instancesId}:injectFault',

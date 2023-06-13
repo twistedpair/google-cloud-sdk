@@ -206,3 +206,29 @@ class LanguageV1(base_api.BaseApiClient):
         response_type_name='ClassifyTextResponse',
         supports_download=False,
     )
+
+    def ModerateText(self, request, global_params=None):
+      r"""Moderates a document for harmful and sensitive categories.
+
+      Args:
+        request: (ModerateTextRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ModerateTextResponse) The response message.
+      """
+      config = self.GetMethodConfig('ModerateText')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ModerateText.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='language.documents.moderateText',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1/documents:moderateText',
+        request_field='<request>',
+        request_type_name='ModerateTextRequest',
+        response_type_name='ModerateTextResponse',
+        supports_download=False,
+    )

@@ -51,7 +51,7 @@ def ArgsForSqlQuery(parser):
       '--region',
       type=arg_parsers.RegexpValidator(r'\w+-\w+\d',
                                        'must provide a valid region'),
-      help=('The region ID of the job\'s regional endpoint. '
+      help=('Region ID of the job\'s regional endpoint. '
             + dataflow_util.DEFAULT_REGION_MESSAGE),
       required=True)
 

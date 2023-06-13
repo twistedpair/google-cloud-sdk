@@ -30,7 +30,7 @@ def AddInstanceArgToParser(parser, positional=False):
     name = 'instance'
   else:
     name = '--instance'
-  instance_data = yaml_data.ResourceYAMLData.FromPath('mps.converge_instance')
+  instance_data = yaml_data.ResourceYAMLData.FromPath('mps.power_instance')
   resource_spec = concepts.ResourceSpec.FromYaml(instance_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
@@ -46,7 +46,7 @@ def AddImageArgToParser(parser, positional=False):
     name = 'image'
   else:
     name = '--image'
-  image_data = yaml_data.ResourceYAMLData.FromPath('mps.converge_image')
+  image_data = yaml_data.ResourceYAMLData.FromPath('mps.power_image')
   resource_spec = concepts.ResourceSpec.FromYaml(image_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
@@ -62,7 +62,7 @@ def AddNetworkArgToParser(parser, positional=False):
     name = 'network'
   else:
     name = '--network'
-  network_data = yaml_data.ResourceYAMLData.FromPath('mps.converge_network')
+  network_data = yaml_data.ResourceYAMLData.FromPath('mps.power_network')
   resource_spec = concepts.ResourceSpec.FromYaml(network_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
@@ -78,7 +78,7 @@ def AddVolumeArgToParser(parser, positional=False):
     name = 'volume'
   else:
     name = '--volume'
-  volume_data = yaml_data.ResourceYAMLData.FromPath('mps.converge_volume')
+  volume_data = yaml_data.ResourceYAMLData.FromPath('mps.power_volume')
   resource_spec = concepts.ResourceSpec.FromYaml(volume_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
@@ -94,7 +94,7 @@ def AddSSHKeyArgToParser(parser, positional=False):
     name = 'ssh_key'
   else:
     name = '--ssh_key'
-  ssh_key_data = yaml_data.ResourceYAMLData.FromPath('mps.converge_ssh_key')
+  ssh_key_data = yaml_data.ResourceYAMLData.FromPath('mps.power_ssh_key')
   resource_spec = concepts.ResourceSpec.FromYaml(ssh_key_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,

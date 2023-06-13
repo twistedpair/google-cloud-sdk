@@ -27,7 +27,11 @@ def _GetDatabaseService():
 
 
 def GetExportDocumentsRequest(
-    database, output_uri_prefix, namespace_ids=None, collection_ids=None
+    database,
+    output_uri_prefix,
+    namespace_ids=None,
+    collection_ids=None,
+    snapshot_time=None,
 ):
   """Returns a request for a Firestore Admin Export.
 
@@ -36,20 +40,19 @@ def GetExportDocumentsRequest(
     output_uri_prefix: the output GCS path prefix, a string.
     namespace_ids: a string list of namespace ids to export.
     collection_ids: a string list of collection ids to export.
+    snapshot_time: the version of the database to export, as string in
+      google-datetime format.
 
   Returns:
     an ExportDocumentsRequest message.
   """
   messages = api_utils.GetMessages()
-  request_class = messages.GoogleFirestoreAdminV1ExportDocumentsRequest
-  kwargs = {'outputUriPrefix': output_uri_prefix}
-  if collection_ids:
-    kwargs['collectionIds'] = collection_ids
-
-  if namespace_ids is not None:
-    kwargs['namespaceIds'] = namespace_ids
-
-  export_request = request_class(**kwargs)
+  export_request = messages.GoogleFirestoreAdminV1ExportDocumentsRequest(
+      outputUriPrefix=output_uri_prefix,
+      namespaceIds=namespace_ids if namespace_ids else [],
+      collectionIds=collection_ids if collection_ids else [],
+      snapshotTime=snapshot_time,
+  )
 
   request = messages.FirestoreProjectsDatabasesExportDocumentsRequest(
       name=database, googleFirestoreAdminV1ExportDocumentsRequest=export_request
@@ -88,7 +91,14 @@ def GetImportDocumentsRequest(
   )
 
 
-def Export(project, database, output_uri_prefix, namespace_ids, collection_ids):
+def Export(
+    project,
+    database,
+    output_uri_prefix,
+    namespace_ids,
+    collection_ids,
+    snapshot_time,
+):
   """Performs a Firestore Admin Export.
 
   Args:
@@ -97,6 +107,8 @@ def Export(project, database, output_uri_prefix, namespace_ids, collection_ids):
     output_uri_prefix: the output GCS path prefix, a string.
     namespace_ids: a string list of namespace ids to import.
     collection_ids: a string list of collections to export.
+    snapshot_time: the version of the database to export, as string in
+      google-datetime format.
 
   Returns:
     an Operation.
@@ -108,6 +120,7 @@ def Export(project, database, output_uri_prefix, namespace_ids, collection_ids):
           output_uri_prefix=output_uri_prefix,
           namespace_ids=namespace_ids,
           collection_ids=collection_ids,
+          snapshot_time=snapshot_time,
       )
   )
 

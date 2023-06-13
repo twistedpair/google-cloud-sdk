@@ -301,6 +301,7 @@ def get_object_resource_from_xml_response(scheme,
       content_encoding=object_dict.get('ContentEncoding'),
       content_language=object_dict.get('ContentLanguage'),
       content_type=object_dict.get('ContentType'),
+      creation_time=object_dict.get('LastModified'),
       custom_fields=object_dict.get('Metadata'),
       encryption_algorithm=encryption_algorithm,
       etag=etag,
@@ -309,7 +310,8 @@ def get_object_resource_from_xml_response(scheme,
       metadata=object_dict,
       size=size,
       storage_class=object_dict.get('StorageClass'),
-      update_time=object_dict.get('LastModified'))
+      update_time=object_dict.get('LastModified'),
+  )
   # The CRC32C is added if available only for GCS.
   if scheme == storage_url.ProviderPrefix.GCS:
     object_resource.crc32c_hash = _get_crc32c_hash_from_object_dict(object_dict)

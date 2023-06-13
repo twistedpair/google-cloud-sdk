@@ -1431,6 +1431,31 @@ def AddServiceAccountNameArg(parser, action='to act on'):
             'my-iam-account@somedomain.com.'.format(action)))
 
 
+def AddServiceAccountRecommendArg(parser, action):
+  """Adds optional recommend argument to the parser.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object to which we add the args.
+    action: Action to display in the help message. Should be something like
+      'deletion' or a noun that describes the action being performed.
+
+  Raises:
+    ArgumentError if the argument is already defined in the parser.
+  """
+  parser.add_argument(
+      '--recommend',
+      metavar='RECOMMEND',
+      type=arg_parsers.ArgBoolean(),
+      default=False,
+      hidden=True,
+      required=False,
+      help=(
+          'Shows warning if service account {} is HIGH-RISK based on'
+          'Active Assist recommendations. Disabled by default.'
+      ).format(action),
+  )
+
+
 def LogSetIamPolicy(name, kind):
   log.status.Print('Updated IAM policy for {} [{}].'.format(kind, name))
 

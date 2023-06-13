@@ -516,11 +516,8 @@ def AddEntryPointFlag(parser):
       '--entry-point',
       help="""\
       Name of a Google Cloud Function (as defined in source code) that will
-      be executed. Defaults to the resource name suffix, if not specified. For
-      backward compatibility, if function with given name is not found, then
-      the system will try to use function named "function". For Node.js this
-      is name of a function exported by the module specified in
-      `source_location`.
+      be executed. Defaults to the resource name suffix (ID of the function), if
+       not specified.
 """,
   )
 
@@ -686,7 +683,7 @@ class LocationsCompleter(completers.ListCommandCompleter):
     super(LocationsCompleter, self).__init__(
         collection=LOCATIONS_COLLECTION,
         list_command='alpha functions regions list --uri',
-        **kwargs
+        **kwargs,
     )
 
 

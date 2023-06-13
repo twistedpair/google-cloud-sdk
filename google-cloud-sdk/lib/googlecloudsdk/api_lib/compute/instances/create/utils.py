@@ -92,7 +92,8 @@ def CreateDiskMessages(args,
                        support_persistent_attached_disks=True,
                        support_replica_zones=False,
                        use_disk_type_uri=True,
-                       support_multi_writer=False):
+                       support_multi_writer=False,
+                       support_storage_pool=False):
   """Creates disk messages for a single instance."""
 
   container_mount_disk = []
@@ -130,7 +131,8 @@ def CreateDiskMessages(args,
           enable_image_csek=support_image_csek,
           support_replica_zones=support_replica_zones,
           use_disk_type_uri=use_disk_type_uri,
-          support_multi_writer=support_multi_writer))
+          support_multi_writer=support_multi_writer,
+          support_storage_pool=support_storage_pool))
 
   local_nvdimms = []
   if support_nvdimm:
@@ -212,7 +214,7 @@ def CreatePersistentAttachedDiskMessages(resources,
       scope = compute_scopes.ScopeEnum.ZONE
     disk_ref = instance_utils.ParseDiskResource(resources, name, project,
                                                 location, scope)
-
+    force_attach = disk.get('force-attach')
     # TODO(b/36051031) drop test after CSEK goes GA
     if csek_keys:
       disk_key_or_none = csek_utils.MaybeLookupKeyMessage(
@@ -234,6 +236,7 @@ def CreatePersistentAttachedDiskMessages(resources,
         mode=mode,
         source=source,
         type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
+        forceAttach=force_attach,
         **kwargs)
 
     # The boot disk must end up at index 0.
@@ -261,7 +264,8 @@ def CreatePersistentCreateDiskMessages(compute_client,
                                        support_replica_zones=False,
                                        use_disk_type_uri=True,
                                        support_multi_writer=False,
-                                       support_image_family_scope=False):
+                                       support_image_family_scope=False,
+                                       support_storage_pool=False):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
   Args:
@@ -294,6 +298,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
     use_disk_type_uri: True to use disk type URI, False if naked type.
     support_multi_writer: True if we allow multiple instances to write to disk.
     support_image_family_scope: True if the zonal image views are supported.
+    support_storage_pool: True if storage pool is supported.
 
   Returns:
     list of API messages for attached disks
@@ -408,10 +413,22 @@ def CreatePersistentCreateDiskMessages(compute_client,
     if provisioned_throughput:
       initialize_params.provisionedThroughput = provisioned_throughput
 
+    if support_storage_pool:
+      storage_pool = disk.get('storage-pool')
+      if storage_pool:
+        storage_pool_ref = instance_utils.ParseStoragePool(
+            resources, storage_pool, project, location
+        )
+        storage_pool_uri = storage_pool_ref.SelfLink()
+        initialize_params.storagePool = storage_pool_uri
+
     disk_architecture = disk.get('architecture')
     if disk_architecture:
-      initialize_params.architecture = messages.AttachedDiskInitializeParams.ArchitectureValueValuesEnum(
-          disk_architecture)
+      initialize_params.architecture = (
+          messages.AttachedDiskInitializeParams.ArchitectureValueValuesEnum(
+              disk_architecture
+          )
+      )
 
     device_name = instance_utils.GetDiskDeviceName(disk, name,
                                                    container_mount_disk)

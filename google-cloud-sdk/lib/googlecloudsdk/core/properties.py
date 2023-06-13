@@ -1254,6 +1254,8 @@ class _SectionApiEndpointOverrides(_Section):
         'networkservices', command='gcloud network-services')
     self.notebooks = self._Add('notebooks', command='gcloud notebooks')
     self.ondemandscanning = self._Add('ondemandscanning', hidden=True)
+    self.orglifecycle = self._Add(
+        'orglifecycle', command='gcloud orglifecycle', hidden=True)
     self.orgpolicy = self._Add('orgpolicy', command='gcloud org-policies')
     self.osconfig = self._Add('osconfig', hidden=True)
     self.oslogin = self._Add('oslogin', hidden=True)
@@ -1583,7 +1585,6 @@ class _SectionAuth(_Section):
             _BooleanValidator, 'service_account_use_self_signed_jwt'
         ),
         choices=('true', 'false'),
-        is_feature_flag=True,
     )
     self.service_account_disable_id_token_refresh = self._AddBool(
         'service_account_disable_id_token_refresh',
@@ -2526,7 +2527,8 @@ class _SectionExperimental(_Section):
   def __init__(self):
     super(_SectionExperimental, self).__init__('experimental', hidden=True)
     self.fast_component_update = self._AddBool(
-        'fast_component_update', default=False)
+        'fast_component_update',
+        callbacks=[config.INSTALLATION_CONFIG.IsAlternateReleaseChannel])
 
 
 class _SectionFilestore(_Section):

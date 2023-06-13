@@ -2104,8 +2104,11 @@ class GoogleAppsCloudidentityDevicesV1AndroidAttributes(_messages.Message):
     OwnershipPrivilegeValueValuesEnum: Ownership privileges on device.
 
   Fields:
+    ctsProfileMatch: Whether the device passes Android CTS compliance.
     enabledUnknownSources: Whether applications from unknown sources can be
       installed on device.
+    hasPotentiallyHarmfulApps: Whether any potentially harmful apps were
+      detected on the device.
     ownerProfileAccount: Whether this account is on an owner/primary profile.
       For phones, only true for owner profiles. Android 4+ devices can have
       secondary or restricted user profiles.
@@ -2113,6 +2116,8 @@ class GoogleAppsCloudidentityDevicesV1AndroidAttributes(_messages.Message):
     supportsWorkProfile: Whether device supports Android work profiles. If
       false, this service will not block access to corp data even if an
       administrator turns on the "Enforce Work Profile" policy.
+    verifiedBoot: Whether Android verified boot status is GREEN.
+    verifyAppsEnabled: Whether Google Play Protect Verify Apps is enabled.
   """
 
   class OwnershipPrivilegeValueValuesEnum(_messages.Enum):
@@ -2131,10 +2136,14 @@ class GoogleAppsCloudidentityDevicesV1AndroidAttributes(_messages.Message):
     PROFILE_OWNER = 2
     DEVICE_OWNER = 3
 
-  enabledUnknownSources = _messages.BooleanField(1)
-  ownerProfileAccount = _messages.BooleanField(2)
-  ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 3)
-  supportsWorkProfile = _messages.BooleanField(4)
+  ctsProfileMatch = _messages.BooleanField(1)
+  enabledUnknownSources = _messages.BooleanField(2)
+  hasPotentiallyHarmfulApps = _messages.BooleanField(3)
+  ownerProfileAccount = _messages.BooleanField(4)
+  ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 5)
+  supportsWorkProfile = _messages.BooleanField(6)
+  verifiedBoot = _messages.BooleanField(7)
+  verifyAppsEnabled = _messages.BooleanField(8)
 
 
 class GoogleAppsCloudidentityDevicesV1ApproveDeviceUserMetadata(_messages.Message):

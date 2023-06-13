@@ -89,6 +89,7 @@ class PreserveMetadataField(enum.Enum):
   STORAGE_CLASS = 'storage-class'
   SYMLINK = 'symlink'
   TEMPORARY_HOLD = 'temporary-hold'
+  TIME_CREATED = 'time-created'
   UID = 'uid'
 
 

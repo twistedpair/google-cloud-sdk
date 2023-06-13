@@ -19,6 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
+from googlecloudsdk.core import properties
+
+
 GB = 2**30
 
 
@@ -35,3 +38,9 @@ def convert_to_gb(size_bytes: int) -> int:
   # computationally not cheap, though it is fine for invoking it once
   # for an argument.
   return size_bytes // GB
+
+
+def format_pool_type(pool_type: str) -> str:
+  return "projects/{}/zones/{}/storagePoolTypes/{}".format(
+      properties.VALUES.core.project.Get(),
+      properties.VALUES.compute.zone.Get(), pool_type.lower())

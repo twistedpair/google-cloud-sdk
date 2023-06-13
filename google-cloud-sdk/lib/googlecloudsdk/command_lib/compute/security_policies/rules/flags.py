@@ -626,3 +626,28 @@ def AddRequestUri(parser, is_add):
       action='append',
       help=_WAF_EXCLUSION_REQUEST_URI_HELP_TEXT_FOR_ADD
       if is_add else _WAF_EXCLUSION_REQUEST_URI_HELP_TEXT_FOR_REMOVE)
+
+
+def AddRecaptchaOptions(parser):
+  """Adds reCAPTCHA token evaluation related arguments to the argparse."""
+  parser.add_argument(
+      '--recaptcha-action-site-keys',
+      type=arg_parsers.ArgList(),
+      metavar='SITE_KEY',
+      help="""\
+      A comma-separated list of site keys to be used during the validation of
+      reCAPTCHA action-tokens. The provided site keys need to be created from
+      the reCAPTCHA API under the same project where the security policy is created.
+      """,
+  )
+
+  parser.add_argument(
+      '--recaptcha-session-site-keys',
+      type=arg_parsers.ArgList(),
+      metavar='SITE_KEY',
+      help="""\
+      A comma-separated list of site keys to be used during the validation of
+      reCAPTCHA session-tokens. The provided site keys need to be created from
+      the reCAPTCHA API under the same project where the security policy is created.
+      """,
+  )

@@ -16,28 +16,6 @@ from apitools.base.py import extra_types
 package = 'iam'
 
 
-class AddWorkloadSourceRequest(_messages.Message):
-  r"""Request message for AddWorkloadSource
-
-  Fields:
-    condition: Required. A single CEL expression used to match workloads from
-      the workload source. If using a GCP workload source, only the following
-      are supported: * `attribute.gcp.resource_name`: Canonical name of the
-      resource, prefixed by the service hosting it. *
-      `attribute.gcp.attached_service_account.email`: The email address of the
-      service account attached to the workload, if applicable. The aggregate
-      size of all conditions per workload source is restricted to a maximum of
-      4096 characters. The request will be rejected if, after adding, the
-      length exceeds this number.
-    container: Required. Matches workloads running in a GCP project. Available
-      containers include: * `projects/`: Matches workloads running in a GCP
-      project.
-  """
-
-  condition = _messages.StringField(1)
-  container = _messages.StringField(2)
-
-
 class AdminAuditData(_messages.Message):
   r"""Audit log information specific to Cloud IAM admin APIs. This message is
   serialized as an `Any` type in the `ServiceData` message of an `AuditLog`
@@ -49,28 +27,6 @@ class AdminAuditData(_messages.Message):
   """
 
   permissionDelta = _messages.MessageField('PermissionDelta', 1)
-
-
-class AttestationPolicy(_messages.Message):
-  r"""Represents a policy of a WorkloadIdentityPoolNamespace or a
-  WorkloadIdentityPoolManagedIdentity which is used to determine whether a
-  workload can attest an identity based on the attributes. An example
-  attestation policy would look like: ``` { workload_sources: [ { container:
-  "projects/123" conditions: [ "attribute.gcp.resource_name='//foo.googleapis.
-  com/projects/123/locations/global/foos/foo1'", "attribute.gcp.resource_name=
-  '//foo.googleapis.com/projects/123/locations/global/foos/foo2'", ] }, {
-  container: "projects/456" conditions: ["true"] }, ] } } ``` which implies
-  that * For workloads in project 123, allow attestation if the resource name
-  is one of the two resource_names. * For workloads in project 456, allow all
-  attestations.
-
-  Fields:
-    workloadSources: The set of conditions under which a workload is matched
-      by this policy. The workload is considered to match the policy if at
-      least one condition matches the workload.
-  """
-
-  workloadSources = _messages.MessageField('WorkloadSource', 1, repeated=True)
 
 
 class AttributeTranslatorCEL(_messages.Message):
@@ -492,6 +448,35 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class GcpCondition(_messages.Message):
+  r"""Defines the attribute-value pair that will be used as a matching
+  condition for a GCP source name.
+
+  Fields:
+    attribute: Required. The attribute key that will be matched. Supported
+      attributes are `resource_name` and `service_account`.
+    value: Required. The value that should exactly match the attribute of the
+      workload. Supported values are: * Arbitrary string * "ALL", used when
+      any value is accepted for the attribute
+  """
+
+  attribute = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class GcpConditionSet(_messages.Message):
+  r"""A set of GcpConditions used to match the container workload source. The
+  workload is considered to match the policy if at least one condition matches
+  the workload. The maximum number of conditions is restricted to 100
+  GcpConditions.
+
+  Fields:
+    gcpConditions: A list of GcpConditions.
+  """
+
+  gcpConditions = _messages.MessageField('GcpCondition', 1, repeated=True)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -1342,23 +1327,6 @@ class IamProjectsLocationsWorkloadIdentityPoolsListRequest(_messages.Message):
   showDeleted = _messages.BooleanField(4)
 
 
-class IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddWorkloadSourceRequest(_messages.Message):
-  r"""A
-  IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddWorkloadSourceRequest
-  object.
-
-  Fields:
-    addWorkloadSourceRequest: A AddWorkloadSourceRequest resource to be passed
-      as the request body.
-    name: Required. The name of the resource to which the workload source will
-      be added. This must be either a namespace resource or a managed identity
-      resource.
-  """
-
-  addWorkloadSourceRequest = _messages.MessageField('AddWorkloadSourceRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesCreateRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesCreateRequest
   object.
@@ -1422,22 +1390,6 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesListRequest(_messages.M
   showDeleted = _messages.BooleanField(4)
 
 
-class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAddWorkloadSourceRequest(_messages.Message):
-  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAd
-  dWorkloadSourceRequest object.
-
-  Fields:
-    addWorkloadSourceRequest: A AddWorkloadSourceRequest resource to be passed
-      as the request body.
-    name: Required. The name of the resource to which the workload source will
-      be added. This must be either a namespace resource or a managed identity
-      resource.
-  """
-
-  addWorkloadSourceRequest = _messages.MessageField('AddWorkloadSourceRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesCreateRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesCr
   eateRequest object.
@@ -1494,7 +1446,7 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesListRe
       `ListWorkloadIdentityPoolManagedIdentities` call. Provide this to
       retrieve the subsequent page.
     parent: Required. The parent resource to list managed identities for.
-    showDeleted: Whether to return soft-deleted namespaces.
+    showDeleted: Whether to return soft-deleted managed identities.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1519,22 +1471,6 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPatchR
   workloadIdentityPoolManagedIdentity = _messages.MessageField('WorkloadIdentityPoolManagedIdentity', 3)
 
 
-class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRemoveWorkloadSourceRequest(_messages.Message):
-  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRe
-  moveWorkloadSourceRequest object.
-
-  Fields:
-    name: Required. The name of the resource from which the workload source
-      will be removed. This must be either a namespace resource or a managed
-      identity resource.
-    removeWorkloadSourceRequest: A RemoveWorkloadSourceRequest resource to be
-      passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  removeWorkloadSourceRequest = _messages.MessageField('RemoveWorkloadSourceRequest', 2)
-
-
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesUndeleteRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesUn
   deleteRequest object.
@@ -1548,6 +1484,84 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesUndele
 
   name = _messages.StringField(1, required=True)
   undeleteWorkloadIdentityPoolManagedIdentityRequest = _messages.MessageField('UndeleteWorkloadIdentityPoolManagedIdentityRequest', 2)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesCreateRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWo
+  rkloadSourcesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource to create the workload source in.
+    workloadSource: A WorkloadSource resource to be passed as the request
+      body.
+    workloadSourceId: Required. The ID to use for the workload source, which
+      becomes the final component of the resource name. This should be in the
+      format of `projects/`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  workloadSource = _messages.MessageField('WorkloadSource', 2)
+  workloadSourceId = _messages.StringField(3)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesDeleteRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWo
+  rkloadSourcesDeleteRequest object.
+
+  Fields:
+    etag: The etag for this workload source. If provided, it must match the
+      server's etag.
+    name: Required. The name of the workload source to delete.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesGetRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWo
+  rkloadSourcesGetRequest object.
+
+  Fields:
+    name: Required. The name of the workload source to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesListRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWo
+  rkloadSourcesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of workload sources to return. If
+      unspecified, at most 50 workload sources are returned. The maximum value
+      is 1000; values above are 1000 truncated to 1000.
+    pageToken: A page token, received from a previous `ListWorkloadSources`
+      call. Provide this to retrieve the subsequent page.
+    parent: Required. The parent resource to list workload sources for.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesPatchRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWo
+  rkloadSourcesPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the workload source. The format
+      should be one of: * /workloadSources/ * /workloadSources/
+    updateMask: Required. The list of fields to update.
+    workloadSource: A WorkloadSource resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  workloadSource = _messages.MessageField('WorkloadSource', 3)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesPatchRequest(_messages.Message):
@@ -1566,22 +1580,6 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesPatchRequest(_messages.
   workloadIdentityPoolNamespace = _messages.MessageField('WorkloadIdentityPoolNamespace', 3)
 
 
-class IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveWorkloadSourceRequest(_messages.Message):
-  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveWorkloadSourc
-  eRequest object.
-
-  Fields:
-    name: Required. The name of the resource from which the workload source
-      will be removed. This must be either a namespace resource or a managed
-      identity resource.
-    removeWorkloadSourceRequest: A RemoveWorkloadSourceRequest resource to be
-      passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  removeWorkloadSourceRequest = _messages.MessageField('RemoveWorkloadSourceRequest', 2)
-
-
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesUndeleteRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesUndeleteRequest
   object.
@@ -1595,6 +1593,85 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesUndeleteRequest(_messag
 
   name = _messages.StringField(1, required=True)
   undeleteWorkloadIdentityPoolNamespaceRequest = _messages.MessageField('UndeleteWorkloadIdentityPoolNamespaceRequest', 2)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesCreateRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesCrea
+  teRequest object.
+
+  Fields:
+    parent: Required. The parent resource to create the workload source in.
+    workloadSource: A WorkloadSource resource to be passed as the request
+      body.
+    workloadSourceId: Required. The ID to use for the workload source, which
+      becomes the final component of the resource name. This should be in the
+      format of `projects/`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  workloadSource = _messages.MessageField('WorkloadSource', 2)
+  workloadSourceId = _messages.StringField(3)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesDeleteRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesDele
+  teRequest object.
+
+  Fields:
+    etag: The etag for this workload source. If provided, it must match the
+      server's etag.
+    name: Required. The name of the workload source to delete.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesGetRequest(_messages.Message):
+  r"""A
+  IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the workload source to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesListRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesList
+  Request object.
+
+  Fields:
+    pageSize: The maximum number of workload sources to return. If
+      unspecified, at most 50 workload sources are returned. The maximum value
+      is 1000; values above are 1000 truncated to 1000.
+    pageToken: A page token, received from a previous `ListWorkloadSources`
+      call. Provide this to retrieve the subsequent page.
+    parent: Required. The parent resource to list workload sources for.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesPatchRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesPatc
+  hRequest object.
+
+  Fields:
+    name: Output only. The resource name of the workload source. The format
+      should be one of: * /workloadSources/ * /workloadSources/
+    updateMask: Required. The list of fields to update.
+    workloadSource: A WorkloadSource resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  workloadSource = _messages.MessageField('WorkloadSource', 3)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsOperationsGetRequest(_messages.Message):
@@ -2972,7 +3049,7 @@ class ListWorkloadIdentityPoolManagedIdentitiesResponse(_messages.Message):
   Fields:
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    workloadIdentityPoolManagedIdentities: A list of namespaces.
+    workloadIdentityPoolManagedIdentities: A list of managed identities.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -3030,6 +3107,19 @@ class ListWorkloadIdentityPoolsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   workloadIdentityPools = _messages.MessageField('WorkloadIdentityPool', 2, repeated=True)
+
+
+class ListWorkloadSourcesResponse(_messages.Message):
+  r"""Response message for ListWorkloadSources.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    workloadSources: A list of workload sources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workloadSources = _messages.MessageField('WorkloadSource', 2, repeated=True)
 
 
 class Oidc(_messages.Message):
@@ -3449,25 +3539,6 @@ class QueryTestablePermissionsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   permissions = _messages.MessageField('Permission', 2, repeated=True)
-
-
-class RemoveWorkloadSourceRequest(_messages.Message):
-  r"""Request message for RemoveWorkloadSource
-
-  Fields:
-    condition: Required. A single CEL expression used to match workloads from
-      the workload source. If using a GCP workload source, only the following
-      are supported: * `attribute.gcp.resource_name`: Canonical name of the
-      resource, prefixed by the service hosting it. *
-      `attribute.gcp.attached_service_account.email`: The email address of the
-      service account attached to the workload, if applicable.
-    container: Required. Matches workloads running in a GCP project. Available
-      containers include: * `projects/`: Matches workloads running in a GCP
-      project.
-  """
-
-  condition = _messages.StringField(1)
-  container = _messages.StringField(2)
 
 
 class Role(_messages.Message):
@@ -4433,9 +4504,6 @@ class WorkloadIdentityPoolManagedIdentity(_messages.Message):
     StateValueValuesEnum: Output only. The state of the managed identity.
 
   Fields:
-    attestationPolicy: Defines a set of conditions and workload sources which
-      are used to determine whether a workload can assume this managed
-      identity.
     description: A description of the managed identity. Cannot exceed 256
       characters.
     disabled: Whether the managed identity is disabled. If disabled,
@@ -4465,12 +4533,11 @@ class WorkloadIdentityPoolManagedIdentity(_messages.Message):
     ACTIVE = 1
     DELETED = 2
 
-  attestationPolicy = _messages.MessageField('AttestationPolicy', 1)
-  description = _messages.StringField(2)
-  disabled = _messages.BooleanField(3)
-  expireTime = _messages.StringField(4)
-  name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  description = _messages.StringField(1)
+  disabled = _messages.BooleanField(2)
+  expireTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class WorkloadIdentityPoolNamespace(_messages.Message):
@@ -4480,9 +4547,6 @@ class WorkloadIdentityPoolNamespace(_messages.Message):
     StateValueValuesEnum: Output only. The state of the namespace.
 
   Fields:
-    attestationPolicy: Defines a set of conditions and workload sources which
-      are used to determine whether a workload can self-attest an identity
-      within this namespace.
     description: A description of the namespace. Cannot exceed 256 characters.
     disabled: Whether the namespace is disabled. If disabled, credentials may
       no longer be issued for identities within this namespace (including
@@ -4511,12 +4575,11 @@ class WorkloadIdentityPoolNamespace(_messages.Message):
     ACTIVE = 1
     DELETED = 2
 
-  attestationPolicy = _messages.MessageField('AttestationPolicy', 1)
-  description = _messages.StringField(2)
-  disabled = _messages.BooleanField(3)
-  expireTime = _messages.StringField(4)
-  name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  description = _messages.StringField(1)
+  disabled = _messages.BooleanField(2)
+  expireTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class WorkloadIdentityPoolOperationMetadata(_messages.Message):
@@ -4788,27 +4851,26 @@ class WorkloadIdentityPoolProviderKey(_messages.Message):
 
 
 class WorkloadSource(_messages.Message):
-  r"""Defines the conditions under which workloads from a given source are
-  matched by this policy.
+  r"""Represents a workload source for a namespace or a managed identity. A
+  workload source is used to determine whether a workload can attest an
+  identity based on the conditions.
 
   Fields:
-    conditions: A list of CEL expressions used to match workloads from the
-      workload source. The workload is considered to match the policy if at
-      least one condition matches the workload. If using a GCP workload
-      source, only the following are supported: *
-      `attribute.gcp.resource_name`: Canonical name of the resource, prefixed
-      by the service hosting it. *
-      `attribute.gcp.attached_service_account.email`: The email address of the
-      service account attached to the workload, if applicable. The aggregate
-      size of all conditions per workload source is restricted to a maximum of
-      4096 characters. //
-    container: Required. Matches workloads running in the specified container.
-      Available containers include: * `projects/`: Matches workloads running
-      in a GCP project.
+    etag: The etag for this workload source. If this is provided on update, it
+      must match the server's etag.
+    gcpConditionSet: Required. A set of allowlisted attribute values.
+      Applicable if you are using a GCP workload source, such as projects/.
+    name: Output only. The resource name of the workload source. The format
+      should be one of: * /workloadSources/ * /workloadSources/
+    workloadSourceId: Output only. The id of the workload source. Matches
+      workloads running in the specified source id. Available ids include: *
+      `projects/`: Matches workloads running in a GCP project.
   """
 
-  conditions = _messages.StringField(1, repeated=True)
-  container = _messages.StringField(2)
+  etag = _messages.StringField(1)
+  gcpConditionSet = _messages.MessageField('GcpConditionSet', 2)
+  name = _messages.StringField(3)
+  workloadSourceId = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

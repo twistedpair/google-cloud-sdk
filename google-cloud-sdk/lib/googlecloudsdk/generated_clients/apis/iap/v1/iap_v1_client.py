@@ -602,3 +602,30 @@ class IapV1(base_api.BaseApiClient):
         response_type_name='IapSettings',
         supports_download=False,
     )
+
+    def ValidateAttributeExpression(self, request, global_params=None):
+      r"""Validates a given CEL expression conforms to IAP restrictions.
+
+      Args:
+        request: (IapValidateAttributeExpressionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateIapAttributeExpressionResponse) The response message.
+      """
+      config = self.GetMethodConfig('ValidateAttributeExpression')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ValidateAttributeExpression.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}:validateAttributeExpression',
+        http_method='POST',
+        method_id='iap.validateAttributeExpression',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['expression'],
+        relative_path='v1/{+name}:validateAttributeExpression',
+        request_field='',
+        request_type_name='IapValidateAttributeExpressionRequest',
+        response_type_name='ValidateIapAttributeExpressionResponse',
+        supports_download=False,
+    )

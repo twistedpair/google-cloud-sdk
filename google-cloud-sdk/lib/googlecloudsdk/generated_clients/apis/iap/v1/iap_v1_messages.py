@@ -632,6 +632,20 @@ class IapUpdateIapSettingsRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class IapValidateAttributeExpressionRequest(_messages.Message):
+  r"""A IapValidateAttributeExpressionRequest object.
+
+  Fields:
+    expression: Required. User input string expression. Should be of the form
+      'attributes.saml_attributes.filter(attribute, attribute.name in
+      ['{attribute_name}', '{attribute_name}'])'
+    name: Required. The resource name of the IAP protected resource.
+  """
+
+  expression = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
 class IdentityAwareProxyClient(_messages.Message):
   r"""Contains the data that describes an Identity Aware Proxy owned client.
 
@@ -1089,6 +1103,14 @@ class TunnelDestGroup(_messages.Message):
   cidrs = _messages.StringField(1, repeated=True)
   fqdns = _messages.StringField(2, repeated=True)
   name = _messages.StringField(3)
+
+
+class ValidateIapAttributeExpressionResponse(_messages.Message):
+  r"""API requires a return message, but currently all response strings will
+  fit in the status and public message. In the future, this response can hold
+  AST validation info.
+  """
+
 
 
 encoding.AddCustomJsonFieldMapping(

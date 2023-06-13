@@ -210,6 +210,31 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesCreateR
   requestId = _messages.StringField(3)
 
 
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesDeleteRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesDel
+  eteRequest object.
+
+  Fields:
+    name: Required. The resource name of the BrowserDlpRule using the form: `o
+      rganizations/{organization_id}/locations/global/partnerTenants/{partner_
+      tenant_id}/browserDlpRules/{browser_dlp_rule_id}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGetIamPolicyRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGet
   IamPolicyRequest object.
@@ -248,6 +273,34 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGetRequ
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesPatchRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesPat
+  chRequest object.
+
+  Fields:
+    googleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule: A
+      GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule resource to be
+      passed as the request body.
+    name: Output only. Unique resource name. The name is ignored when creating
+      BrowserDlpRule.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  googleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesSetIamPolicyRequest(_messages.Message):
@@ -472,6 +525,29 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsCreateRequ
   requestId = _messages.StringField(3)
 
 
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsDeleteRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsDelete
+  Request object.
+
+  Fields:
+    name: Required. Name of the resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetIamPolicyRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetIam
   PolicyRequest object.
@@ -511,6 +587,37 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetRequest
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsPatchRequest(_messages.Message):
+  r"""A
+  BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsPatchRequest
+  object.
+
+  Fields:
+    googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig: A
+      GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig resource to be
+      passed as the request body.
+    name: Output only. ProxyConfig resource name.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Mutable fields include: display_name, proxy_uri,
+      routing_info, transport_info, encryption_info.
+  """
+
+  googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsSetIamPolicyRequest(_messages.Message):

@@ -219,12 +219,12 @@ def AddActivationPolicy(parser):
   base.ChoiceArgument(
       '--activation-policy',
       required=False,
-      choices=['always', 'never', 'on-demand'],
+      choices=['always', 'never'],
       default=None,
       help_str=(
           'Activation policy for this instance. This specifies when '
           'the instance should be activated and is applicable only when '
-          'the instance state is `RUNNABLE`. The default is `on-demand`. '
+          'the instance state is `RUNNABLE`. The default is `always`. '
           'More information on activation policies can be found here: '
           'https://cloud.google.com/sql/docs/mysql/start-stop-restart-instance#activation_policy'
       ),
@@ -1692,6 +1692,23 @@ INSTANCES_FORMAT_COLUMNS = [
     'state:label=STATUS',
 ]
 
+INSTANCES_FORMAT_COLUMNS_EDITION = [
+    'name',
+    'databaseVersion',
+    'firstof(gceZone,region):label=LOCATION',
+    'settings.tier',
+    'settings.edition',
+    (
+        'ip_addresses.filter("type:PRIMARY").*extract(ip_address).flatten()'
+        '.yesno(no="-"):label=PRIMARY_ADDRESS'
+    ),
+    (
+        'ip_addresses.filter("type:PRIVATE").*extract(ip_address).flatten()'
+        '.yesno(no="-"):label=PRIVATE_ADDRESS'
+    ),
+    'state:label=STATUS',
+]
+
 INSTANCES_FORMAT_COLUMNS_WITH_NETWORK_ARCHITECTURE = [
     'name',
     'databaseVersion',
@@ -1724,6 +1741,14 @@ def GetInstanceListFormat():
   """Returns the table format for listing instances."""
   table_format = '{} table({})'.format(
       INSTANCES_USERLABELS_FORMAT, ','.join(INSTANCES_FORMAT_COLUMNS)
+  )
+  return table_format
+
+
+def GetInstanceListFormatEdition():
+  """Returns the table format for listing instances."""
+  table_format = '{} table({})'.format(
+      INSTANCES_USERLABELS_FORMAT, ','.join(INSTANCES_FORMAT_COLUMNS_EDITION)
   )
   return table_format
 
@@ -1773,6 +1798,28 @@ TIERS_FORMAT = """
     DiskQuota.size():label=DISK
   )
 """
+
+TIERS_FORMAT_EDITION = """
+  table(
+    tier,
+    edition,
+    region.list():label=AVAILABLE_REGIONS,
+    RAM.size(),
+    DiskQuota.size():label=DISK
+  )
+"""
+
+
+def AddShowEdition(parser):
+  """Show the instance or tier edition."""
+  kwargs = _GetKwargsForBoolFlag(False)
+  parser.add_argument(
+      '--show-edition',
+      hidden=True,
+      required=False,
+      help='Show the edition field.',
+      **kwargs
+  )
 
 
 def AddActiveDirectoryDomain(parser):

@@ -372,7 +372,6 @@ def InProdRegionalAllowlist(project, track=None):
       'hub-regionalisation-test-2',  # For Cloud Console UI testing.
       'a4vm-ui-tests-3',  # For Cloud Console UI testing.
       'm4a-ui-playground-1',  # For Cloud Console UI testing.
-      'pikalov-tb',
       'anthos-cl-e2e-tests',
       'a4vm-ui-playground',
       'm4a-ui-playground-1',

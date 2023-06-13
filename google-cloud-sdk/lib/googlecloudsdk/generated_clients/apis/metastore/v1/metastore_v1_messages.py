@@ -233,10 +233,12 @@ class BackendMetastore(_messages.Message):
 
     Values:
       METASTORE_TYPE_UNSPECIFIED: The metastore type is not set.
+      BIGQUERY: The backend metastore is BigQuery.
       DATAPROC_METASTORE: The backend metastore is Dataproc Metastore.
     """
     METASTORE_TYPE_UNSPECIFIED = 0
-    DATAPROC_METASTORE = 1
+    BIGQUERY = 1
+    DATAPROC_METASTORE = 2
 
   metastoreType = _messages.EnumField('MetastoreTypeValueValuesEnum', 1)
   name = _messages.StringField(2)
@@ -690,6 +692,10 @@ class HiveMetastoreConfig(_messages.Message):
   r"""Specifies configuration information specific to running Hive metastore
   software as the metastore service.
 
+  Enums:
+    EndpointProtocolValueValuesEnum: The protocol to use for the metastore
+      service endpoint. If unspecified, defaults to THRIFT.
+
   Messages:
     AuxiliaryVersionsValue: A mapping of Hive metastore version to the
       auxiliary version configuration. When specified, a secondary Hive
@@ -719,6 +725,8 @@ class HiveMetastoreConfig(_messages.Message):
       mappings override system defaults (some keys cannot be overridden).
       These overrides are also applied to auxiliary versions and can be
       further customized in the auxiliary version's AuxiliaryVersionConfig.
+    endpointProtocol: The protocol to use for the metastore service endpoint.
+      If unspecified, defaults to THRIFT.
     kerberosConfig: Information used to configure the Hive metastore service
       as a service principal in a Kerberos realm. To disable Kerberos, use the
       UpdateService method and specify this field's path
@@ -726,6 +734,21 @@ class HiveMetastoreConfig(_messages.Message):
       while omitting this field from the request's service.
     version: Immutable. The Hive metastore schema version.
   """
+
+  class EndpointProtocolValueValuesEnum(_messages.Enum):
+    r"""The protocol to use for the metastore service endpoint. If
+    unspecified, defaults to THRIFT.
+
+    Values:
+      ENDPOINT_PROTOCOL_UNSPECIFIED: The protocol is not set.
+      THRIFT: Use the legacy Apache Thrift protocol for the metastore service
+        endpoint.
+      GRPC: Use the modernized gRPC protocol for the metastore service
+        endpoint.
+    """
+    ENDPOINT_PROTOCOL_UNSPECIFIED = 0
+    THRIFT = 1
+    GRPC = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AuxiliaryVersionsValue(_messages.Message):
@@ -791,8 +814,9 @@ class HiveMetastoreConfig(_messages.Message):
 
   auxiliaryVersions = _messages.MessageField('AuxiliaryVersionsValue', 1)
   configOverrides = _messages.MessageField('ConfigOverridesValue', 2)
-  kerberosConfig = _messages.MessageField('KerberosConfig', 3)
-  version = _messages.StringField(4)
+  endpointProtocol = _messages.EnumField('EndpointProtocolValueValuesEnum', 3)
+  kerberosConfig = _messages.MessageField('KerberosConfig', 4)
+  version = _messages.StringField(5)
 
 
 class HiveMetastoreVersion(_messages.Message):
