@@ -6,6 +6,17 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 435.0.1 (2023-06-14)
+
+### Cloud Firestore
+
+* Removed the `--enable-pitr` flag from `gcloud firestore databases <create|update>` which was causing firestore database creation failures.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
 ## 435.0.0 (2023-06-13)
 
 ### Breaking Changes
