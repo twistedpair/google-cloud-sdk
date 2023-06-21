@@ -124,9 +124,9 @@ class CloudApi(object):
 
     Raises:
       CloudApiError: API returned an error.
+      Error: Invalid fields_scope.
       NotImplementedError: This function was not implemented by a class using
         this interface.
-      ValueError: Invalid fields_scope.
 
     Returns:
       resource_reference.BucketResource representing new bucket.
@@ -161,9 +161,9 @@ class CloudApi(object):
 
     Raises:
       CloudApiError: API returned an error.
+      Error: Invalid fields_scope.
       NotImplementedError: This function was not implemented by a class using
         this interface.
-      ValueError: Invalid fields_scope.
     """
     raise NotImplementedError('get_bucket must be overridden.')
 
@@ -196,9 +196,9 @@ class CloudApi(object):
       Iterator over resource_reference.BucketResource objects
 
     Raises:
+      Error: Invalid fields_scope.
       NotImplementedError: This function was not implemented by a class using
         this interface.
-      ValueError: Invalid fields_scope.
     """
     raise NotImplementedError('list_buckets must be overridden.')
 
@@ -235,9 +235,9 @@ class CloudApi(object):
 
     Raises:
       CloudApiError: API returned an error.
+      Error: Invalid fields_scope.
       NotImplementedError: This function was not implemented by a class using
           this interface.
-      ValueError: Invalid fields_scope.
     """
     raise NotImplementedError('patch_bucket must be overridden.')
 
@@ -345,8 +345,8 @@ class CloudApi(object):
 
     Returns:
       gcs_resource_reference.GcsHmacKeyResource. Provider-specific data type
-      is used for now because we currently support this feature only for the
-      JSON API.
+        is used for now because we currently support this feature only for the
+        JSON API.
 
     Raises:
       CloudApiError: API returned an error.
@@ -529,10 +529,10 @@ class CloudApi(object):
 
     Raises:
       CloudApiError: API returned an error.
-      NotFoundError: Raised if object does not exist.
+      Error: Invalid fields_scope.
       NotImplementedError: This function was not implemented by a class using
         this interface.
-      ValueError: Invalid fields_scope.
+      NotFoundError: Raised if object does not exist.
     """
     raise NotImplementedError('get_object_metadata must be overridden.')
 
@@ -556,9 +556,9 @@ class CloudApi(object):
       Iterator over resource_reference.ObjectResource objects.
 
     Raises:
+      Error: Invalid fields_scope.
       NotImplementedError: This function was not implemented by a class using
         this interface.
-      ValueError: Invalid fields_scope.
     """
     raise NotImplementedError('list_objects must be overridden.')
 
@@ -592,9 +592,9 @@ class CloudApi(object):
 
     Raises:
       CloudApiError: API returned an error.
+      Error: Invalid fields_scope.
       NotImplementedError: This function was not implemented by a class using
         this interface.
-      ValueError: Invalid fields_scope.
     """
     raise NotImplementedError('patch_object_metadata must be overridden.')
 
@@ -707,9 +707,9 @@ class CloudApi(object):
 
     Raises:
       CloudApiError: API returned an error.
+      InvalidUrlError: Received a non-bucket URL.
       NotImplementedError: This function was not implemented by a class using
         this interface.
-      ValueError: Received a non-bucket URL.
 
     Returns:
       Apitools Notification object for the new notification configuration.
@@ -726,9 +726,9 @@ class CloudApi(object):
 
     Raises:
       CloudApiError: API returned an error.
+      InvalidUrlError: Received a non-bucket URL.
       NotImplementedError: This function was not implemented by a class using
         this interface.
-      ValueError: Received a non-bucket URL.
     """
     raise NotImplementedError(
         'delete_notification_configuration must be overridden.')
@@ -742,9 +742,9 @@ class CloudApi(object):
 
     Raises:
       CloudApiError: API returned an error.
+      InvalidUrlError: Received a non-bucket URL.
       NotImplementedError: This function was not implemented by a class using
         this interface.
-      ValueError: Received a non-bucket URL.
     """
     raise NotImplementedError(
         'get_notification_configuration must be overridden.')
@@ -757,9 +757,9 @@ class CloudApi(object):
 
     Raises:
       CloudApiError: API returned an error.
+      InvalidUrlError: Received a non-bucket URL.
       NotImplementedError: This function was not implemented by a class using
         this interface.
-      ValueError: Received a non-bucket URL.
 
     Yields:
       List of  apitools Notification objects.

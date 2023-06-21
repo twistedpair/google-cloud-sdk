@@ -179,7 +179,7 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
 
   def handle(self, source_stream):
     if self._stream is None:
-      raise ValueError('Stream was not found.')
+      raise command_errors.Error('Stream was not found.')
 
     # For example, can happen if piping to a command that only reads one line.
     destination_pipe_is_broken = False
@@ -320,13 +320,13 @@ class JsonClient(cloud_api.CloudApi):
           should be returned.
 
     Raises:
-      ValueError: The fields_scope isn't recognized.
+      Error: The fields_scope isn't recognized.
     """
     try:
       if fields_scope not in cloud_api.FieldsScope:
-        raise ValueError('Invalid fields_scope.')
+        raise command_errors.Error('Invalid fields_scope.')
     except TypeError:
-      raise ValueError('Invalid fields_scope.')
+      raise command_errors.Error('Invalid fields_scope.')
     projection_enum = message_class.ProjectionValueValuesEnum
 
     if fields_scope == cloud_api.FieldsScope.FULL:
@@ -888,7 +888,7 @@ class JsonClient(cloud_api.CloudApi):
     elif fields_scope == cloud_api.FieldsScope.RSYNC:
       global_params = self.messages.StandardQueryParameters(
           fields=(
-              'prefixes,items/name,items/size,items/generation,'
+              'prefixes,items/name,items/etag,items/size,items/generation,'
               'items/storageClass,items/timeCreated,items/metadata/{},'
               'items/metadata/{},items/metadata/{},items/metadata/{},'
               'items/metadata/{},items/crc32c,items/md5Hash,nextPageToken'
@@ -1111,7 +1111,7 @@ class JsonClient(cloud_api.CloudApi):
       payload_format=cloud_api.NotificationPayloadFormat.JSON):
     """See CloudApi class for doc strings."""
     if not url.is_bucket():
-      raise ValueError(
+      raise command_errors.InvalidUrlError(
           'Create notification configuration endpoint accepts only bucket URLs.'
       )
     notification_configuration = self.messages.Notification(
@@ -1144,7 +1144,7 @@ class JsonClient(cloud_api.CloudApi):
   def delete_notification_configuration(self, url, notification_id):
     """See CloudApi class for doc strings."""
     if not url.is_bucket():
-      raise ValueError(
+      raise command_errors.InvalidUrlError(
           'Delete notification configuration endpoint accepts only bucket URLs.'
       )
     self.client.notifications.Delete(
@@ -1157,8 +1157,9 @@ class JsonClient(cloud_api.CloudApi):
   def get_notification_configuration(self, url, notification_id):
     """See CloudApi class for doc strings."""
     if not url.is_bucket():
-      raise ValueError(
-          'Get notification configuration endpoint accepts only bucket URLs.')
+      raise command_errors.InvalidUrlError(
+          'Get notification configuration endpoint accepts only bucket URLs.'
+      )
     return self.client.notifications.Get(
         self.messages.StorageNotificationsGetRequest(
             bucket=url.bucket_name,
@@ -1169,8 +1170,9 @@ class JsonClient(cloud_api.CloudApi):
   def list_notification_configurations(self, url):
     """See CloudApi class for function doc strings."""
     if not url.is_bucket():
-      raise ValueError(
-          'List notification configurations endpoint accepts only bucket URLs.')
+      raise command_errors.InvalidUrlError(
+          'List notification configurations endpoint accepts only bucket URLs.'
+      )
 
     response = self.client.notifications.List(
         self.messages.StorageNotificationsListRequest(

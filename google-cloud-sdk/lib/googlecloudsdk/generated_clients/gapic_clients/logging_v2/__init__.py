@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from googlecloudsdk.generated_clients.gapic_clients.logging_v2 import gapic_version as package_version
+
+__version__ = package_version.__version__
+
 
 from .services.config_service_v2 import ConfigServiceV2Client
 from .services.config_service_v2 import ConfigServiceV2AsyncClient

@@ -48,8 +48,8 @@ class Interconnect(object):
     Args:
       description: String that represents the description of the Cloud
       Interconnect resource.
-      location: String that represents the URL of the location resource for
-      Cloud Interconnect that Cloud Interconnect should be connected to.
+      location: String that represents the URL of the location resource for
+      Cloud Interconnect that Cloud Interconnect should be connected to.
       interconnect_type: InterconnectTypeValueValuesEnum that represents the
       type of Cloud Interconnect.
       requested_link_count: Number of the requested links.
@@ -79,6 +79,58 @@ class Interconnect(object):
                     adminEnabled=admin_enabled,
                     customerName=customer_name,
                     remoteLocation=remote_location)))
+
+  def _MakeCreateRequestTupleAlpha(
+      self,
+      description,
+      location,
+      interconnect_type,
+      requested_link_count,
+      link_type,
+      admin_enabled,
+      noc_contact_email,
+      customer_name,
+      remote_location,
+      requested_features,
+  ):
+    """Make a tuple for interconnect insert request.
+
+    Args:
+      description: String that represents the description of the Cloud
+      Interconnect resource.
+      location: String that represents the URL of the location resource for
+      Cloud Interconnect that Cloud Interconnect should be connected to.
+      interconnect_type: InterconnectTypeValueValuesEnum that represents the
+      type of Cloud Interconnect.
+      requested_link_count: Number of the requested links.
+      link_type: LinkTypeValueValuesEnum that represents Cloud Interconnect
+      link type.
+      admin_enabled: Boolean that represents administrative status of
+      Cloud Interconnect.
+      noc_contact_email: String that represents the customer's email address.
+      customer_name: String that represents the customer's name.
+      remote_location: String that represents the Cloud Interconnect remote
+      location URL that should be connected to Cloud Interconnect.
+      requested_features: List of features requested for this interconnect.
+
+    Returns:
+    Insert interconnect tuple that can be used in a request.
+    """
+    return (self._client.interconnects, 'Insert',
+            self._messages.ComputeInterconnectsInsertRequest(
+                project=self.ref.project,
+                interconnect=self._messages.Interconnect(
+                    name=self.ref.Name(),
+                    description=description,
+                    interconnectType=interconnect_type,
+                    linkType=link_type,
+                    nocContactEmail=noc_contact_email,
+                    requestedLinkCount=requested_link_count,
+                    location=location,
+                    adminEnabled=admin_enabled,
+                    customerName=customer_name,
+                    remoteLocation=remote_location,
+                    requestedFeatures=requested_features)))
 
   def _MakePatchRequestTuple(self, description, location, interconnect_type,
                              requested_link_count, link_type, admin_enabled,
@@ -180,6 +232,40 @@ class Interconnect(object):
             noc_contact_email,
             customer_name,
             remote_location,
+        )
+    ]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
+    return requests
+
+  def CreateAlpha(
+      self,
+      description='',
+      location=None,
+      interconnect_type=None,
+      requested_link_count=None,
+      link_type=None,
+      admin_enabled=False,
+      noc_contact_email=None,
+      customer_name=None,
+      only_generate_request=False,
+      remote_location=None,
+      requested_features=None,
+  ):
+    """Create an interconnect."""
+    requests = [
+        self._MakeCreateRequestTupleAlpha(
+            description,
+            location,
+            interconnect_type,
+            requested_link_count,
+            link_type,
+            admin_enabled,
+            noc_contact_email,
+            customer_name,
+            remote_location,
+            requested_features or [],
         )
     ]
     if not only_generate_request:

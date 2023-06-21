@@ -30,7 +30,7 @@ from cloudsdk.google.protobuf import json_format
 from requests import __version__ as requests_version
 import dataclasses
 import re
-from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 import warnings
 
 try:
@@ -69,196 +69,221 @@ class StorageRestInterceptor:
 
     .. code-block:: python
         class MyCustomStorageInterceptor(StorageRestInterceptor):
-            def pre_cancel_resumable_write(request, metadata):
+            def pre_cancel_resumable_write(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_cancel_resumable_write(response):
+            def post_cancel_resumable_write(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_compose_object(request, metadata):
+            def pre_compose_object(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_compose_object(response):
+            def post_compose_object(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_create_bucket(request, metadata):
+            def pre_create_bucket(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_create_bucket(response):
+            def post_create_bucket(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_create_hmac_key(request, metadata):
+            def pre_create_hmac_key(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_create_hmac_key(response):
+            def post_create_hmac_key(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_create_notification_config(request, metadata):
+            def pre_create_notification_config(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_create_notification_config(response):
+            def post_create_notification_config(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_delete_bucket(request, metadata):
+            def pre_delete_bucket(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def pre_delete_hmac_key(request, metadata):
+            def pre_delete_hmac_key(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def pre_delete_notification_config(request, metadata):
+            def pre_delete_notification_config(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def pre_delete_object(request, metadata):
+            def pre_delete_object(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def pre_get_bucket(request, metadata):
+            def pre_get_bucket(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_get_bucket(response):
+            def post_get_bucket(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_get_hmac_key(request, metadata):
+            def pre_get_hmac_key(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_get_hmac_key(response):
+            def post_get_hmac_key(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_get_iam_policy(request, metadata):
+            def pre_get_iam_policy(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_get_iam_policy(response):
+            def post_get_iam_policy(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_get_notification_config(request, metadata):
+            def pre_get_notification_config(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_get_notification_config(response):
+            def post_get_notification_config(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_get_object(request, metadata):
+            def pre_get_object(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_get_object(response):
+            def post_get_object(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_get_service_account(request, metadata):
+            def pre_get_service_account(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_get_service_account(response):
+            def post_get_service_account(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_list_buckets(request, metadata):
+            def pre_list_buckets(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_list_buckets(response):
+            def post_list_buckets(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_list_hmac_keys(request, metadata):
+            def pre_list_hmac_keys(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_list_hmac_keys(response):
+            def post_list_hmac_keys(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_list_notification_configs(request, metadata):
+            def pre_list_notification_configs(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_list_notification_configs(response):
+            def post_list_notification_configs(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_list_objects(request, metadata):
+            def pre_list_objects(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_list_objects(response):
+            def post_list_objects(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_lock_bucket_retention_policy(request, metadata):
+            def pre_lock_bucket_retention_policy(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_lock_bucket_retention_policy(response):
+            def post_lock_bucket_retention_policy(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_query_write_status(request, metadata):
+            def pre_query_write_status(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_query_write_status(response):
+            def post_query_write_status(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_read_object(request, metadata):
+            def pre_read_object(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_read_object(response):
+            def post_read_object(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_rewrite_object(request, metadata):
+            def pre_rewrite_object(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_rewrite_object(response):
+            def post_rewrite_object(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_set_iam_policy(request, metadata):
+            def pre_set_iam_policy(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_set_iam_policy(response):
+            def post_set_iam_policy(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_start_resumable_write(request, metadata):
+            def pre_start_resumable_write(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_start_resumable_write(response):
+            def post_start_resumable_write(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_test_iam_permissions(request, metadata):
+            def pre_test_iam_permissions(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_test_iam_permissions(response):
+            def post_test_iam_permissions(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_update_bucket(request, metadata):
+            def pre_update_bucket(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_update_bucket(response):
+            def post_update_bucket(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_update_hmac_key(request, metadata):
+            def pre_update_hmac_key(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_update_hmac_key(response):
+            def post_update_hmac_key(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_update_object(request, metadata):
+            def pre_update_object(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_update_object(response):
+            def post_update_object(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
         transport = StorageRestTransport(interceptor=MyCustomStorageInterceptor())
         client = StorageClient(transport=transport)
@@ -317,15 +342,15 @@ class StorageRestTransport(StorageTransport):
 
     def __init__(self, *,
             host: str = 'storage.googleapis.com',
-            credentials: ga_credentials.Credentials=None,
-            credentials_file: str=None,
-            scopes: Sequence[str]=None,
-            client_cert_source_for_mtls: Callable[[
-                ], Tuple[bytes, bytes]]=None,
-            quota_project_id: Optional[str]=None,
-            client_info: gapic_v1.client_info.ClientInfo=DEFAULT_CLIENT_INFO,
-            always_use_jwt_access: Optional[bool]=False,
-            url_scheme: str='https',
+            credentials: Optional[ga_credentials.Credentials] = None,
+            credentials_file: Optional[str] = None,
+            scopes: Optional[Sequence[str]] = None,
+            client_cert_source_for_mtls: Optional[Callable[[
+                ], Tuple[bytes, bytes]]] = None,
+            quota_project_id: Optional[str] = None,
+            client_info: gapic_v1.client_info.ClientInfo = DEFAULT_CLIENT_INFO,
+            always_use_jwt_access: Optional[bool] = False,
+            url_scheme: str = 'https',
             interceptor: Optional[StorageRestInterceptor] = None,
             api_audience: Optional[str] = None,
             ) -> None:
@@ -395,7 +420,7 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("CancelResumableWrite")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -405,17 +430,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.CancelResumableWriteRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.CancelResumableWriteResponse:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method CancelResumableWrite is not available over REST transport"
+            )
     class _ComposeObject(StorageRestStub):
         def __hash__(self):
             return hash("ComposeObject")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -425,17 +450,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.ComposeObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.Object:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method ComposeObject is not available over REST transport"
+            )
     class _CreateBucket(StorageRestStub):
         def __hash__(self):
             return hash("CreateBucket")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -445,17 +470,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.CreateBucketRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.Bucket:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method CreateBucket is not available over REST transport"
+            )
     class _CreateHmacKey(StorageRestStub):
         def __hash__(self):
             return hash("CreateHmacKey")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -465,17 +490,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.CreateHmacKeyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.CreateHmacKeyResponse:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method CreateHmacKey is not available over REST transport"
+            )
     class _CreateNotificationConfig(StorageRestStub):
         def __hash__(self):
             return hash("CreateNotificationConfig")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -485,17 +510,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.CreateNotificationConfigRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.NotificationConfig:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method CreateNotificationConfig is not available over REST transport"
+            )
     class _DeleteBucket(StorageRestStub):
         def __hash__(self):
             return hash("DeleteBucket")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -505,17 +530,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.DeleteBucketRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ):
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method DeleteBucket is not available over REST transport"
+            )
     class _DeleteHmacKey(StorageRestStub):
         def __hash__(self):
             return hash("DeleteHmacKey")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -525,17 +550,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.DeleteHmacKeyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ):
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method DeleteHmacKey is not available over REST transport"
+            )
     class _DeleteNotificationConfig(StorageRestStub):
         def __hash__(self):
             return hash("DeleteNotificationConfig")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -545,17 +570,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.DeleteNotificationConfigRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ):
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method DeleteNotificationConfig is not available over REST transport"
+            )
     class _DeleteObject(StorageRestStub):
         def __hash__(self):
             return hash("DeleteObject")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -565,17 +590,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.DeleteObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ):
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method DeleteObject is not available over REST transport"
+            )
     class _GetBucket(StorageRestStub):
         def __hash__(self):
             return hash("GetBucket")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -585,17 +610,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.GetBucketRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.Bucket:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method GetBucket is not available over REST transport"
+            )
     class _GetHmacKey(StorageRestStub):
         def __hash__(self):
             return hash("GetHmacKey")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -605,17 +630,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.GetHmacKeyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.HmacKeyMetadata:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method GetHmacKey is not available over REST transport"
+            )
     class _GetIamPolicy(StorageRestStub):
         def __hash__(self):
             return hash("GetIamPolicy")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -625,17 +650,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: iam_policy_pb2.GetIamPolicyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> policy_pb2.Policy:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method GetIamPolicy is not available over REST transport"
+            )
     class _GetNotificationConfig(StorageRestStub):
         def __hash__(self):
             return hash("GetNotificationConfig")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -645,17 +670,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.GetNotificationConfigRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.NotificationConfig:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method GetNotificationConfig is not available over REST transport"
+            )
     class _GetObject(StorageRestStub):
         def __hash__(self):
             return hash("GetObject")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -665,17 +690,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.GetObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.Object:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method GetObject is not available over REST transport"
+            )
     class _GetServiceAccount(StorageRestStub):
         def __hash__(self):
             return hash("GetServiceAccount")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -685,17 +710,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.GetServiceAccountRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.ServiceAccount:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method GetServiceAccount is not available over REST transport"
+            )
     class _ListBuckets(StorageRestStub):
         def __hash__(self):
             return hash("ListBuckets")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -705,17 +730,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.ListBucketsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.ListBucketsResponse:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method ListBuckets is not available over REST transport"
+            )
     class _ListHmacKeys(StorageRestStub):
         def __hash__(self):
             return hash("ListHmacKeys")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -725,17 +750,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.ListHmacKeysRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.ListHmacKeysResponse:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method ListHmacKeys is not available over REST transport"
+            )
     class _ListNotificationConfigs(StorageRestStub):
         def __hash__(self):
             return hash("ListNotificationConfigs")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -745,17 +770,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.ListNotificationConfigsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.ListNotificationConfigsResponse:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method ListNotificationConfigs is not available over REST transport"
+            )
     class _ListObjects(StorageRestStub):
         def __hash__(self):
             return hash("ListObjects")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -765,17 +790,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.ListObjectsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.ListObjectsResponse:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method ListObjects is not available over REST transport"
+            )
     class _LockBucketRetentionPolicy(StorageRestStub):
         def __hash__(self):
             return hash("LockBucketRetentionPolicy")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -785,17 +810,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.LockBucketRetentionPolicyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.Bucket:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method LockBucketRetentionPolicy is not available over REST transport"
+            )
     class _QueryWriteStatus(StorageRestStub):
         def __hash__(self):
             return hash("QueryWriteStatus")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -805,17 +830,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.QueryWriteStatusRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.QueryWriteStatusResponse:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method QueryWriteStatus is not available over REST transport"
+            )
     class _ReadObject(StorageRestStub):
         def __hash__(self):
             return hash("ReadObject")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -825,17 +850,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.ReadObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> rest_streaming.ResponseIterator:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method ReadObject is not available over REST transport"
+            )
     class _RewriteObject(StorageRestStub):
         def __hash__(self):
             return hash("RewriteObject")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -845,17 +870,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.RewriteObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.RewriteResponse:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method RewriteObject is not available over REST transport"
+            )
     class _SetIamPolicy(StorageRestStub):
         def __hash__(self):
             return hash("SetIamPolicy")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -865,17 +890,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: iam_policy_pb2.SetIamPolicyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> policy_pb2.Policy:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method SetIamPolicy is not available over REST transport"
+            )
     class _StartResumableWrite(StorageRestStub):
         def __hash__(self):
             return hash("StartResumableWrite")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -885,17 +910,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.StartResumableWriteRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.StartResumableWriteResponse:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method StartResumableWrite is not available over REST transport"
+            )
     class _TestIamPermissions(StorageRestStub):
         def __hash__(self):
             return hash("TestIamPermissions")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -905,17 +930,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: iam_policy_pb2.TestIamPermissionsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> iam_policy_pb2.TestIamPermissionsResponse:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method TestIamPermissions is not available over REST transport"
+            )
     class _UpdateBucket(StorageRestStub):
         def __hash__(self):
             return hash("UpdateBucket")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -925,17 +950,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.UpdateBucketRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.Bucket:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method UpdateBucket is not available over REST transport"
+            )
     class _UpdateHmacKey(StorageRestStub):
         def __hash__(self):
             return hash("UpdateHmacKey")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -945,17 +970,17 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.UpdateHmacKeyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.HmacKeyMetadata:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method UpdateHmacKey is not available over REST transport"
+            )
     class _UpdateObject(StorageRestStub):
         def __hash__(self):
             return hash("UpdateObject")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -965,12 +990,12 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.UpdateObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.Object:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
-
+            raise NotImplementedError(
+                "Method UpdateObject is not available over REST transport"
+            )
     class _WriteObject(StorageRestStub):
         def __hash__(self):
             return hash("WriteObject")
@@ -978,11 +1003,12 @@ class StorageRestTransport(StorageTransport):
         def __call__(self,
                 request: storage.WriteObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> storage.WriteObjectResponse:
-            raise RuntimeError(
-                "Cannot define a method without a valid 'google.api.http' annotation.")
+            raise NotImplementedError(
+                "Method WriteObject is not available over REST transport"
+            )
 
     @property
     def cancel_resumable_write(self) -> Callable[

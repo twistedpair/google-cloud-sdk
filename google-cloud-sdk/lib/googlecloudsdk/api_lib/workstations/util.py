@@ -24,10 +24,11 @@ from googlecloudsdk.calliope import base
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1beta',
     base.ReleaseTrack.BETA: 'v1beta',
+    base.ReleaseTrack.GA: 'v1',
 }
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.BETA):
+def GetClientInstance(release_track=base.ReleaseTrack.GA):
   """Returns the messages module for Cloud Workstations.
 
   Args:
@@ -41,7 +42,7 @@ def GetClientInstance(release_track=base.ReleaseTrack.BETA):
   return apis.GetClientInstance('workstations', api_version)
 
 
-def GetMessagesModule(release_track=base.ReleaseTrack.BETA):
+def GetMessagesModule(release_track=base.ReleaseTrack.GA):
   """Returns the messages module for Cloud Workstations.
 
   Args:

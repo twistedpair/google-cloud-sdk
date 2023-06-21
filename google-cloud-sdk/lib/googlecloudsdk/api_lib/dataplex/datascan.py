@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.dataplex import util as dataplex_api
+from googlecloudsdk.api_lib.util import messages as messages_util
 
 
 def GenerateData(args):
@@ -42,9 +43,30 @@ def GenerateDataQualitySpec(args):
 
   if args.IsSpecified('data_quality_spec_file'):
     dataqualityspec = dataplex_api.ReadObject(args.data_quality_spec_file)
+    if dataqualityspec is not None:
+      dataqualityspec = messages_util.DictToMessageWithErrorCheck(
+          dataqualityspec,
+          module.GoogleCloudDataplexV1DataQualitySpec,
+      )
   else:
     dataqualityspec = module.GoogleCloudDataplexV1DataQualitySpec()
   return dataqualityspec
+
+
+def GenerateDataProfileSpec(args):
+  """Generate DataProfileSpec From Arguments."""
+  module = dataplex_api.GetMessageModule()
+
+  if args.IsSpecified('data_profile_spec_file'):
+    dataprofilespec = dataplex_api.ReadObject(args.data_profile_spec_file)
+    if dataprofilespec is not None:
+      dataprofilespec = messages_util.DictToMessageWithErrorCheck(
+          dataprofilespec,
+          module.GoogleCloudDataplexV1DataProfileSpec,
+      )
+  else:
+    dataprofilespec = module.GoogleCloudDataplexV1DataProfileSpec()
+  return dataprofilespec
 
 
 def GenerateSchedule(args):
@@ -69,7 +91,8 @@ def GenerateExecutionSpec(args):
   """Generate ExecutionSpec From Arguments."""
   module = dataplex_api.GetMessageModule()
   executionspec = module.GoogleCloudDataplexV1DataScanExecutionSpec(
-      field=args.field, trigger=GenerateTrigger(args)
+      field=args.field if hasattr(args, 'field') else args.incremental_field,
+      trigger=GenerateTrigger(args),
   )
   return executionspec
 
@@ -91,6 +114,8 @@ def GenerateDatascanForCreateRequest(args):
       raise ValueError(
           'Data Quality Spec file specified for Data Profile Scan.'
       )
+    elif args.IsSpecified('data_profile_spec_file'):
+      request.dataProfileSpec = GenerateDataProfileSpec(args)
     else:
       request.dataProfileSpec = module.GoogleCloudDataplexV1DataProfileSpec()
   elif args.scan_type == 'QUALITY':

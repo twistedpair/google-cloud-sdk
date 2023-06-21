@@ -147,5 +147,6 @@ def reset_digesters(digesters):
     elif hash_algorithm is HashAlgorithm.CRC32C:
       digesters[hash_algorithm] = fast_crc32c_util.get_crc32c()
     else:
-      raise ValueError('Unknown hash algorithm found in digesters: {}'.format(
-          hash_algorithm))
+      raise errors.Error(
+          'Unknown hash algorithm found in digesters: {}'.format(hash_algorithm)
+      )

@@ -22,6 +22,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import threading
+
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.core import log
 
 
@@ -49,7 +51,7 @@ class TaskWrapper:
     self.is_submitted = False
 
 
-class InvalidDependencyError(Exception):
+class InvalidDependencyError(errors.Error):
   """Raised on attempts to create an invalid dependency.
 
   Invalid dependencies are self-dependencies and those that involve nodes that
@@ -116,7 +118,8 @@ class TaskGraph:
       InvalidDependencyError if any id in dependent_task_ids is not in the
       graph, or if a the add operation would have created a self-dependency.
     """
-    if dependent_task_ids is None:
+    is_top_level_task = dependent_task_ids is None
+    if is_top_level_task:
       self._top_level_task_semaphore.acquire()
 
     with self._lock:
@@ -137,6 +140,8 @@ class TaskGraph:
               'caused it to be submitted for execution more than once.'.format(
                   task.__class__.__name__))
 
+        if is_top_level_task:
+          self._top_level_task_semaphore.release()
         return
 
       task_wrapper = TaskWrapper(identifier, task, dependent_task_ids)

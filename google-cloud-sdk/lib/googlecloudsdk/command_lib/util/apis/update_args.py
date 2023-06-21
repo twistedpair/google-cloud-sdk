@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 import abc
 import enum
 
-from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
@@ -63,10 +62,9 @@ class UpdateArgumentGenerator(six.with_metaclass(abc.ABCMeta, object)):
     flag_type, action = arg_utils.GenerateFlagType(field, arg_data)
 
     is_repeated = field.repeated
-    is_message = field.variant == messages.Variant.MESSAGE
-    is_map = is_repeated and is_message and field.name == 'additionalProperties'
+    field_type = arg_utils.GetFieldType(field)
 
-    if is_map:
+    if field_type == arg_utils.FieldType.MAP:
       gen_cls = UpdateMapArgumentGenerator
     elif is_repeated:
       gen_cls = UpdateListArgumentGenerator
@@ -375,6 +373,10 @@ class UpdateMapArgumentGenerator(UpdateArgumentGenerator):
   """Update flag generator for key-value pairs ie proto map fields."""
 
   @property
+  def _is_list_field(self):
+    return self.field.name == arg_utils.ADDITIONAL_PROPS
+
+  @property
   def _help_text(self):
     return {
         FlagType.SET: self.help_text,
@@ -399,7 +401,13 @@ class UpdateMapArgumentGenerator(UpdateArgumentGenerator):
 
   @property
   def remove_arg(self):
-    key_field = arg_utils.GetFieldFromMessage(self.field.type, 'key')
+    if self._is_list_field:
+      field = self.field
+    else:
+      field = arg_utils.GetFieldFromMessage(
+          self.field.type, arg_utils.ADDITIONAL_PROPS)
+
+    key_field = arg_utils.GetFieldFromMessage(field.type, 'key')
     key_type = key_field.type or arg_utils.TYPES.get(key_field.variant)
     key_list = arg_parsers.ArgList(element_type=key_type)
 
@@ -409,19 +417,56 @@ class UpdateMapArgumentGenerator(UpdateArgumentGenerator):
         action='store',
         help=self._GetHelpText(FlagType.REMOVE))
 
+  def _WrapOutput(self, output_list):
+    """Wraps field AdditionalProperties in apitools message if needed.
+
+    Args:
+      output_list: list of apitools AdditionalProperties messages.
+
+    Returns:
+      apitools message instance.
+    """
+    if self._is_list_field:
+      return output_list
+    message = self.field.type()
+    arg_utils.SetFieldInMessage(
+        message, arg_utils.ADDITIONAL_PROPS, output_list)
+    return message
+
+  def _GetPropsFieldValue(self, field):
+    """Retrieves AdditionalProperties field value.
+
+    Args:
+      field: apitools instance that contains AdditionalProperties field
+
+    Returns:
+      list of apitools AdditionalProperties messages.
+    """
+    if not field:
+      return []
+    if self._is_list_field:
+      return field
+    return arg_utils.GetFieldValueFromMessage(
+        field, arg_utils.ADDITIONAL_PROPS)
+
   def _ApplyClearFlag(self, output, clear_flag):
     if clear_flag:
-      return []
+      return self._WrapOutput([])
     return output
 
   def _ApplyUpdateFlag(self, output, update_val):
     if update_val:
-      update_key_set = set([x.key for x in update_val])
-      return [x for x in output if x.key not in update_key_set] + update_val
+      output_list = self._GetPropsFieldValue(output)
+      update_val_list = self._GetPropsFieldValue(update_val)
+      update_key_set = set([x.key for x in update_val_list])
+      deduped_list = [x for x in output_list if x.key not in update_key_set]
+      return self._WrapOutput(deduped_list + update_val_list)
     return output
 
   def _ApplyRemoveFlag(self, output, remove_val):
     if remove_val:
+      output_list = self._GetPropsFieldValue(output)
       remove_val_set = set(remove_val)
-      return [x for x in output if x.key not in remove_val_set]
+      return self._WrapOutput(
+          [x for x in output_list if x.key not in remove_val_set])
     return output

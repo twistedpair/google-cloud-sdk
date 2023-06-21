@@ -18,6 +18,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
+from googlecloudsdk.api_lib.network_actions import wasm_plugin_api
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 
@@ -68,3 +69,10 @@ def _ConvertToCamelCase(name):
   """Converts kebab-case name to camelCase."""
   part = name.split('-')
   return part[0] + ''.join(x.title() for x in part[1:])
+
+
+def GetApiVersion(track):
+  if track in wasm_plugin_api.API_VERSION_FOR_TRACK:
+    return wasm_plugin_api.API_VERSION_FOR_TRACK[track]
+  else:
+    raise ValueError('Unsupported Release Track: {}'.format(track))

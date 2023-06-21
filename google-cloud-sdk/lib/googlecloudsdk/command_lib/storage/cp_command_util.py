@@ -27,6 +27,7 @@ import os
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.storage import encryption_util
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import flags
 from googlecloudsdk.command_lib.storage import name_expansion
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
@@ -314,19 +315,20 @@ def add_recursion_flag(parser):
 def _validate_args(args, raw_destination_url):
   """Raises errors if invalid flags are passed."""
   if args.no_clobber and args.if_generation_match:
-    raise ValueError(
-        'Cannot specify both generation precondition and no-clobber.')
+    raise errors.Error(
+        'Cannot specify both generation precondition and no-clobber.'
+    )
 
   if args.preserve_symlinks and platforms.OperatingSystem.IsWindows():
-    raise ValueError(
-        'Symlink preservation is not supported for Windows.'
-    )
+    raise errors.Error('Symlink preservation is not supported for Windows.')
 
   if (isinstance(raw_destination_url, storage_url.FileUrl) and
       args.storage_class):
-    raise ValueError(
+    raise errors.Error(
         'Cannot specify storage class for a non-cloud destination: {}'.format(
-            raw_destination_url))
+            raw_destination_url
+        )
+    )
 
 
 @contextlib.contextmanager

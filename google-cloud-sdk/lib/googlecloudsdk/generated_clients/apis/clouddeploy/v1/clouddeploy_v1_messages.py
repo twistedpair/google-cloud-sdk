@@ -2221,20 +2221,6 @@ class DeployJobRunMetadata(_messages.Message):
   cloudRun = _messages.MessageField('CloudRunMetadata', 1)
 
 
-class DeployParameterMapping(_messages.Message):
-  r"""A deploy parameter's key - value - targets mapping.
-
-  Fields:
-    key: Key of this deploy parameter.
-    targets: Target IDs of the targets this deploy parameter applies to.
-    value: Value of this deploy parameter.
-  """
-
-  key = _messages.StringField(1)
-  targets = _messages.StringField(2, repeated=True)
-  value = _messages.StringField(3)
-
-
 class DeployParameters(_messages.Message):
   r"""DeployParameters contains deploy parameters information.
 
@@ -3761,9 +3747,6 @@ class Release(_messages.Message):
       taken at release creation time.
     deployParameters: Optional. The deploy parameters to use for all targets
       in this release.
-    deployParametersMapping: Output only. The output only table for this
-      release's deploy parameters. It is the mapping of deploy parameter's key
-      - value - applied targets.
     description: Description of the `Release`. Max length is 255 characters.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
@@ -3959,21 +3942,20 @@ class Release(_messages.Message):
   createTime = _messages.StringField(5)
   deliveryPipelineSnapshot = _messages.MessageField('DeliveryPipeline', 6)
   deployParameters = _messages.MessageField('DeployParametersValue', 7)
-  deployParametersMapping = _messages.MessageField('DeployParameterMapping', 8, repeated=True)
-  description = _messages.StringField(9)
-  etag = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  name = _messages.StringField(12)
-  renderEndTime = _messages.StringField(13)
-  renderStartTime = _messages.StringField(14)
-  renderState = _messages.EnumField('RenderStateValueValuesEnum', 15)
-  skaffoldConfigPath = _messages.StringField(16)
-  skaffoldConfigUri = _messages.StringField(17)
-  skaffoldVersion = _messages.StringField(18)
-  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 19)
-  targetRenders = _messages.MessageField('TargetRendersValue', 20)
-  targetSnapshots = _messages.MessageField('Target', 21, repeated=True)
-  uid = _messages.StringField(22)
+  description = _messages.StringField(8)
+  etag = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  renderEndTime = _messages.StringField(12)
+  renderStartTime = _messages.StringField(13)
+  renderState = _messages.EnumField('RenderStateValueValuesEnum', 14)
+  skaffoldConfigPath = _messages.StringField(15)
+  skaffoldConfigUri = _messages.StringField(16)
+  skaffoldVersion = _messages.StringField(17)
+  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 18)
+  targetRenders = _messages.MessageField('TargetRendersValue', 19)
+  targetSnapshots = _messages.MessageField('Target', 20, repeated=True)
+  uid = _messages.StringField(21)
 
 
 class ReleaseCondition(_messages.Message):

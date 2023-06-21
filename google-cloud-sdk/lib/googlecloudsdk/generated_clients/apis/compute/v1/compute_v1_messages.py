@@ -691,8 +691,7 @@ class Address(_messages.Message):
     AddressTypeValueValuesEnum: The type of address to reserve, either
       INTERNAL or EXTERNAL. If unspecified, defaults to EXTERNAL.
     IpVersionValueValuesEnum: The IP version that will be used by this
-      address. Valid options are IPV4 or IPV6. This can only be specified for
-      a global address.
+      address. Valid options are IPV4 or IPV6.
     Ipv6EndpointTypeValueValuesEnum: The endpoint type of this address, which
       should be VM or NETLB. This is used for deciding which type of endpoint
       this address can be used after the external IPv6 address reservation.
@@ -740,7 +739,7 @@ class Address(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     ipVersion: The IP version that will be used by this address. Valid options
-      are IPV4 or IPV6. This can only be specified for a global address.
+      are IPV4 or IPV6.
     ipv6EndpointType: The endpoint type of this address, which should be VM or
       NETLB. This is used for deciding which type of endpoint this address can
       be used after the external IPv6 address reservation.
@@ -823,7 +822,7 @@ class Address(_messages.Message):
 
   class IpVersionValueValuesEnum(_messages.Enum):
     r"""The IP version that will be used by this address. Valid options are
-    IPV4 or IPV6. This can only be specified for a global address.
+    IPV4 or IPV6.
 
     Values:
       IPV4: <no description>
@@ -29648,7 +29647,10 @@ class CustomerEncryptionKey(_messages.Message):
     kmsKeyName: The name of the encryption key that is stored in Google Cloud
       KMS. For example: "kmsKeyName":
       "projects/kms_project_id/locations/region/keyRings/
-      key_region/cryptoKeys/key
+      key_region/cryptoKeys/key The fully-qualifed key name may be returned
+      for resource GET requests. For example: "kmsKeyName":
+      "projects/kms_project_id/locations/region/keyRings/
+      key_region/cryptoKeys/key /cryptoKeyVersions/1
     kmsKeyServiceAccount: The service account being used for the encryption
       request for the given KMS key. If absent, the Compute Engine default
       service account is used. For example: "kmsKeyServiceAccount":
@@ -37276,6 +37278,13 @@ class Instance(_messages.Message):
       using zonal DNS.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    instanceEncryptionKey: Encrypts suspended data for an instance with a
+      customer-managed encryption key. If you are creating a new instance,
+      this field will encrypt the local SSD and in-memory contents of the
+      instance during the suspend operation. If you do not provide an
+      encryption key when creating the instance, then the local SSD and in-
+      memory contents will be encrypted using an automatically generated key
+      during the suspend operation.
     keyRevocationActionType: KeyRevocationActionType of the instance.
       Supported options are "STOP" and "NONE". The default value is "NONE" if
       it is not specified.
@@ -37472,37 +37481,38 @@ class Instance(_messages.Message):
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 11, repeated=True)
   hostname = _messages.StringField(12)
   id = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
-  keyRevocationActionType = _messages.EnumField('KeyRevocationActionTypeValueValuesEnum', 14)
-  kind = _messages.StringField(15, default='compute#instance')
-  labelFingerprint = _messages.BytesField(16)
-  labels = _messages.MessageField('LabelsValue', 17)
-  lastStartTimestamp = _messages.StringField(18)
-  lastStopTimestamp = _messages.StringField(19)
-  lastSuspendedTimestamp = _messages.StringField(20)
-  machineType = _messages.StringField(21)
-  metadata = _messages.MessageField('Metadata', 22)
-  minCpuPlatform = _messages.StringField(23)
-  name = _messages.StringField(24)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 25, repeated=True)
-  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 26)
-  params = _messages.MessageField('InstanceParams', 27)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 28)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 29)
-  resourcePolicies = _messages.StringField(30, repeated=True)
-  resourceStatus = _messages.MessageField('ResourceStatus', 31)
-  satisfiesPzs = _messages.BooleanField(32)
-  scheduling = _messages.MessageField('Scheduling', 33)
-  selfLink = _messages.StringField(34)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 35, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 36)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 37)
-  sourceMachineImage = _messages.StringField(38)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 39)
-  startRestricted = _messages.BooleanField(40)
-  status = _messages.EnumField('StatusValueValuesEnum', 41)
-  statusMessage = _messages.StringField(42)
-  tags = _messages.MessageField('Tags', 43)
-  zone = _messages.StringField(44)
+  instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
+  keyRevocationActionType = _messages.EnumField('KeyRevocationActionTypeValueValuesEnum', 15)
+  kind = _messages.StringField(16, default='compute#instance')
+  labelFingerprint = _messages.BytesField(17)
+  labels = _messages.MessageField('LabelsValue', 18)
+  lastStartTimestamp = _messages.StringField(19)
+  lastStopTimestamp = _messages.StringField(20)
+  lastSuspendedTimestamp = _messages.StringField(21)
+  machineType = _messages.StringField(22)
+  metadata = _messages.MessageField('Metadata', 23)
+  minCpuPlatform = _messages.StringField(24)
+  name = _messages.StringField(25)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 26, repeated=True)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 27)
+  params = _messages.MessageField('InstanceParams', 28)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 29)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 30)
+  resourcePolicies = _messages.StringField(31, repeated=True)
+  resourceStatus = _messages.MessageField('ResourceStatus', 32)
+  satisfiesPzs = _messages.BooleanField(33)
+  scheduling = _messages.MessageField('Scheduling', 34)
+  selfLink = _messages.StringField(35)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 36, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 37)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 38)
+  sourceMachineImage = _messages.StringField(39)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 40)
+  startRestricted = _messages.BooleanField(41)
+  status = _messages.EnumField('StatusValueValuesEnum', 42)
+  statusMessage = _messages.StringField(43)
+  tags = _messages.MessageField('Tags', 44)
+  zone = _messages.StringField(45)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -38786,12 +38796,12 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       up metadata changes.
     MostDisruptiveAllowedActionValueValuesEnum: Most disruptive action that is
       allowed to be taken on an instance. You can specify either NONE to
-      forbid any actions, REFRESH to allow actions that do not need instance
-      restart, RESTART to allow actions that can be applied without instance
-      replacing or REPLACE to allow all possible actions. If the Updater
-      determines that the minimal update action needed is more disruptive than
-      most disruptive allowed action you specify it will not perform the
-      update at all.
+      forbid any actions, REFRESH to avoid restarting the VM and to limit
+      disruption as much as possible. RESTART to allow actions that can be
+      applied without instance replacing or REPLACE to allow all possible
+      actions. If the Updater determines that the minimal update action needed
+      is more disruptive than most disruptive allowed action you specify it
+      will not perform the update at all.
     ReplacementMethodValueValuesEnum: What action should be used to replace
       instances. See minimal_action.REPLACE
     TypeValueValuesEnum: The type of update process. You can specify either
@@ -38840,11 +38850,12 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       set the minimal action to RESTART in order to pick up metadata changes.
     mostDisruptiveAllowedAction: Most disruptive action that is allowed to be
       taken on an instance. You can specify either NONE to forbid any actions,
-      REFRESH to allow actions that do not need instance restart, RESTART to
-      allow actions that can be applied without instance replacing or REPLACE
-      to allow all possible actions. If the Updater determines that the
-      minimal update action needed is more disruptive than most disruptive
-      allowed action you specify it will not perform the update at all.
+      REFRESH to avoid restarting the VM and to limit disruption as much as
+      possible. RESTART to allow actions that can be applied without instance
+      replacing or REPLACE to allow all possible actions. If the Updater
+      determines that the minimal update action needed is more disruptive than
+      most disruptive allowed action you specify it will not perform the
+      update at all.
     replacementMethod: What action should be used to replace instances. See
       minimal_action.REPLACE
     type: The type of update process. You can specify either PROACTIVE so that
@@ -38883,10 +38894,10 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
 
     Values:
       NONE: Do not perform any action.
-      REFRESH: Updates applied in runtime, instances will not be disrupted.
-      REPLACE: Old instances will be deleted. New instances will be created
-        from the target template.
-      RESTART: Every instance will be restarted.
+      REFRESH: Do not stop the instance.
+      REPLACE: (Default.) Replace the instance according to the replacement
+        method option.
+      RESTART: Stop the instance and start it again.
     """
     NONE = 0
     REFRESH = 1
@@ -38895,19 +38906,19 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
 
   class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
     r"""Most disruptive action that is allowed to be taken on an instance. You
-    can specify either NONE to forbid any actions, REFRESH to allow actions
-    that do not need instance restart, RESTART to allow actions that can be
-    applied without instance replacing or REPLACE to allow all possible
-    actions. If the Updater determines that the minimal update action needed
-    is more disruptive than most disruptive allowed action you specify it will
-    not perform the update at all.
+    can specify either NONE to forbid any actions, REFRESH to avoid restarting
+    the VM and to limit disruption as much as possible. RESTART to allow
+    actions that can be applied without instance replacing or REPLACE to allow
+    all possible actions. If the Updater determines that the minimal update
+    action needed is more disruptive than most disruptive allowed action you
+    specify it will not perform the update at all.
 
     Values:
       NONE: Do not perform any action.
-      REFRESH: Updates applied in runtime, instances will not be disrupted.
-      REPLACE: Old instances will be deleted. New instances will be created
-        from the target template.
-      RESTART: Every instance will be restarted.
+      REFRESH: Do not stop the instance.
+      REPLACE: (Default.) Replace the instance according to the replacement
+        method option.
+      RESTART: Stop the instance and start it again.
     """
     NONE = 0
     REFRESH = 1
@@ -39003,17 +39014,19 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     MinimalActionValueValuesEnum: The minimal action that you want to perform
       on each instance during the update: - REPLACE: At minimum, delete the
       instance and create it again. - RESTART: Stop the instance and start it
-      again. - REFRESH: Do not stop the instance. - NONE: Do not disrupt the
-      instance at all. By default, the minimum action is NONE. If your update
-      requires a more disruptive action than you set with this flag, the
-      necessary action is performed to execute the update.
+      again. - REFRESH: Do not stop the instance and limit disruption as much
+      as possible. - NONE: Do not disrupt the instance at all. By default, the
+      minimum action is NONE. If your update requires a more disruptive action
+      than you set with this flag, the necessary action is performed to
+      execute the update.
     MostDisruptiveAllowedActionValueValuesEnum: The most disruptive action
       that you want to perform on each instance during the update: - REPLACE:
       Delete the instance and create it again. - RESTART: Stop the instance
-      and start it again. - REFRESH: Do not stop the instance. - NONE: Do not
-      disrupt the instance at all. By default, the most disruptive allowed
-      action is REPLACE. If your update requires a more disruptive action than
-      you set with this flag, the update request will fail.
+      and start it again. - REFRESH: Do not stop the instance and limit
+      disruption as much as possible. - NONE: Do not disrupt the instance at
+      all. By default, the most disruptive allowed action is REPLACE. If your
+      update requires a more disruptive action than you set with this flag,
+      the update request will fail.
 
   Fields:
     allInstances: Flag to update all instances instead of specified list of
@@ -39025,34 +39038,36 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     minimalAction: The minimal action that you want to perform on each
       instance during the update: - REPLACE: At minimum, delete the instance
       and create it again. - RESTART: Stop the instance and start it again. -
-      REFRESH: Do not stop the instance. - NONE: Do not disrupt the instance
-      at all. By default, the minimum action is NONE. If your update requires
-      a more disruptive action than you set with this flag, the necessary
-      action is performed to execute the update.
+      REFRESH: Do not stop the instance and limit disruption as much as
+      possible. - NONE: Do not disrupt the instance at all. By default, the
+      minimum action is NONE. If your update requires a more disruptive action
+      than you set with this flag, the necessary action is performed to
+      execute the update.
     mostDisruptiveAllowedAction: The most disruptive action that you want to
       perform on each instance during the update: - REPLACE: Delete the
       instance and create it again. - RESTART: Stop the instance and start it
-      again. - REFRESH: Do not stop the instance. - NONE: Do not disrupt the
-      instance at all. By default, the most disruptive allowed action is
-      REPLACE. If your update requires a more disruptive action than you set
-      with this flag, the update request will fail.
+      again. - REFRESH: Do not stop the instance and limit disruption as much
+      as possible. - NONE: Do not disrupt the instance at all. By default, the
+      most disruptive allowed action is REPLACE. If your update requires a
+      more disruptive action than you set with this flag, the update request
+      will fail.
   """
 
   class MinimalActionValueValuesEnum(_messages.Enum):
     r"""The minimal action that you want to perform on each instance during
     the update: - REPLACE: At minimum, delete the instance and create it
     again. - RESTART: Stop the instance and start it again. - REFRESH: Do not
-    stop the instance. - NONE: Do not disrupt the instance at all. By default,
-    the minimum action is NONE. If your update requires a more disruptive
-    action than you set with this flag, the necessary action is performed to
-    execute the update.
+    stop the instance and limit disruption as much as possible. - NONE: Do not
+    disrupt the instance at all. By default, the minimum action is NONE. If
+    your update requires a more disruptive action than you set with this flag,
+    the necessary action is performed to execute the update.
 
     Values:
       NONE: Do not perform any action.
-      REFRESH: Updates applied in runtime, instances will not be disrupted.
-      REPLACE: Old instances will be deleted. New instances will be created
-        from the target template.
-      RESTART: Every instance will be restarted.
+      REFRESH: Do not stop the instance.
+      REPLACE: (Default.) Replace the instance according to the replacement
+        method option.
+      RESTART: Stop the instance and start it again.
     """
     NONE = 0
     REFRESH = 1
@@ -39063,17 +39078,17 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     r"""The most disruptive action that you want to perform on each instance
     during the update: - REPLACE: Delete the instance and create it again. -
     RESTART: Stop the instance and start it again. - REFRESH: Do not stop the
-    instance. - NONE: Do not disrupt the instance at all. By default, the most
-    disruptive allowed action is REPLACE. If your update requires a more
-    disruptive action than you set with this flag, the update request will
-    fail.
+    instance and limit disruption as much as possible. - NONE: Do not disrupt
+    the instance at all. By default, the most disruptive allowed action is
+    REPLACE. If your update requires a more disruptive action than you set
+    with this flag, the update request will fail.
 
     Values:
       NONE: Do not perform any action.
-      REFRESH: Updates applied in runtime, instances will not be disrupted.
-      REPLACE: Old instances will be deleted. New instances will be created
-        from the target template.
-      RESTART: Every instance will be restarted.
+      REFRESH: Do not stop the instance.
+      REPLACE: (Default.) Replace the instance according to the replacement
+        method option.
+      RESTART: Stop the instance and start it again.
     """
     NONE = 0
     REFRESH = 1
@@ -53347,8 +53362,7 @@ class PublicAdvertisedPrefix(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    dnsVerificationIp: The IPv4 address to be used for reverse DNS
-      verification.
+    dnsVerificationIp: The address to be used for reverse DNS verification.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a new PublicAdvertisedPrefix. An up-to-
@@ -53358,8 +53372,8 @@ class PublicAdvertisedPrefix(_messages.Message):
       retrieve a PublicAdvertisedPrefix.
     id: [Output Only] The unique identifier for the resource type. The server
       generates this identifier.
-    ipCidrRange: The IPv4 address range, in CIDR format, represented by this
-      public advertised prefix.
+    ipCidrRange: The address range, in CIDR format, represented by this public
+      advertised prefix.
     kind: [Output Only] Type of the resource. Always
       compute#publicAdvertisedPrefix for public advertised prefixes.
     name: Name of the resource. Provided by the client when the resource is
@@ -55459,17 +55473,19 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     MinimalActionValueValuesEnum: The minimal action that you want to perform
       on each instance during the update: - REPLACE: At minimum, delete the
       instance and create it again. - RESTART: Stop the instance and start it
-      again. - REFRESH: Do not stop the instance. - NONE: Do not disrupt the
-      instance at all. By default, the minimum action is NONE. If your update
-      requires a more disruptive action than you set with this flag, the
-      necessary action is performed to execute the update.
+      again. - REFRESH: Do not stop the instance and limit disruption as much
+      as possible. - NONE: Do not disrupt the instance at all. By default, the
+      minimum action is NONE. If your update requires a more disruptive action
+      than you set with this flag, the necessary action is performed to
+      execute the update.
     MostDisruptiveAllowedActionValueValuesEnum: The most disruptive action
       that you want to perform on each instance during the update: - REPLACE:
       Delete the instance and create it again. - RESTART: Stop the instance
-      and start it again. - REFRESH: Do not stop the instance. - NONE: Do not
-      disrupt the instance at all. By default, the most disruptive allowed
-      action is REPLACE. If your update requires a more disruptive action than
-      you set with this flag, the update request will fail.
+      and start it again. - REFRESH: Do not stop the instance and limit
+      disruption as much as possible. - NONE: Do not disrupt the instance at
+      all. By default, the most disruptive allowed action is REPLACE. If your
+      update requires a more disruptive action than you set with this flag,
+      the update request will fail.
 
   Fields:
     allInstances: Flag to update all instances instead of specified list of
@@ -55481,34 +55497,36 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     minimalAction: The minimal action that you want to perform on each
       instance during the update: - REPLACE: At minimum, delete the instance
       and create it again. - RESTART: Stop the instance and start it again. -
-      REFRESH: Do not stop the instance. - NONE: Do not disrupt the instance
-      at all. By default, the minimum action is NONE. If your update requires
-      a more disruptive action than you set with this flag, the necessary
-      action is performed to execute the update.
+      REFRESH: Do not stop the instance and limit disruption as much as
+      possible. - NONE: Do not disrupt the instance at all. By default, the
+      minimum action is NONE. If your update requires a more disruptive action
+      than you set with this flag, the necessary action is performed to
+      execute the update.
     mostDisruptiveAllowedAction: The most disruptive action that you want to
       perform on each instance during the update: - REPLACE: Delete the
       instance and create it again. - RESTART: Stop the instance and start it
-      again. - REFRESH: Do not stop the instance. - NONE: Do not disrupt the
-      instance at all. By default, the most disruptive allowed action is
-      REPLACE. If your update requires a more disruptive action than you set
-      with this flag, the update request will fail.
+      again. - REFRESH: Do not stop the instance and limit disruption as much
+      as possible. - NONE: Do not disrupt the instance at all. By default, the
+      most disruptive allowed action is REPLACE. If your update requires a
+      more disruptive action than you set with this flag, the update request
+      will fail.
   """
 
   class MinimalActionValueValuesEnum(_messages.Enum):
     r"""The minimal action that you want to perform on each instance during
     the update: - REPLACE: At minimum, delete the instance and create it
     again. - RESTART: Stop the instance and start it again. - REFRESH: Do not
-    stop the instance. - NONE: Do not disrupt the instance at all. By default,
-    the minimum action is NONE. If your update requires a more disruptive
-    action than you set with this flag, the necessary action is performed to
-    execute the update.
+    stop the instance and limit disruption as much as possible. - NONE: Do not
+    disrupt the instance at all. By default, the minimum action is NONE. If
+    your update requires a more disruptive action than you set with this flag,
+    the necessary action is performed to execute the update.
 
     Values:
       NONE: Do not perform any action.
-      REFRESH: Updates applied in runtime, instances will not be disrupted.
-      REPLACE: Old instances will be deleted. New instances will be created
-        from the target template.
-      RESTART: Every instance will be restarted.
+      REFRESH: Do not stop the instance.
+      REPLACE: (Default.) Replace the instance according to the replacement
+        method option.
+      RESTART: Stop the instance and start it again.
     """
     NONE = 0
     REFRESH = 1
@@ -55519,17 +55537,17 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     r"""The most disruptive action that you want to perform on each instance
     during the update: - REPLACE: Delete the instance and create it again. -
     RESTART: Stop the instance and start it again. - REFRESH: Do not stop the
-    instance. - NONE: Do not disrupt the instance at all. By default, the most
-    disruptive allowed action is REPLACE. If your update requires a more
-    disruptive action than you set with this flag, the update request will
-    fail.
+    instance and limit disruption as much as possible. - NONE: Do not disrupt
+    the instance at all. By default, the most disruptive allowed action is
+    REPLACE. If your update requires a more disruptive action than you set
+    with this flag, the update request will fail.
 
     Values:
       NONE: Do not perform any action.
-      REFRESH: Updates applied in runtime, instances will not be disrupted.
-      REPLACE: Old instances will be deleted. New instances will be created
-        from the target template.
-      RESTART: Every instance will be restarted.
+      REFRESH: Do not stop the instance.
+      REPLACE: (Default.) Replace the instance according to the replacement
+        method option.
+      RESTART: Stop the instance and start it again.
     """
     NONE = 0
     REFRESH = 1
@@ -58782,6 +58800,13 @@ class RouterBgpPeer(_messages.Message):
       peer. Where there is more than one matching route of maximum length, the
       routes with the lowest priority value win.
     bfd: BFD configuration for the BGP peering.
+    customLearnedIpRanges: A list of user-defined custom learned route IP
+      address ranges for a BGP session.
+    customLearnedRoutePriority: The user-defined custom learned route priority
+      for a BGP session. This value is applied to all custom learned route
+      ranges for the session. You can choose a value from `0` to `65335`. If
+      you don't provide a value, Google Cloud assigns a priority of `100` to
+      the ranges.
     enable: The status of the BGP peer connection. If set to FALSE, any active
       session with the peer is terminated and all associated routing
       information is removed. If set to TRUE, the peer connection can be
@@ -58882,18 +58907,20 @@ class RouterBgpPeer(_messages.Message):
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
   bfd = _messages.MessageField('RouterBgpPeerBfd', 5)
-  enable = _messages.EnumField('EnableValueValuesEnum', 6)
-  enableIpv6 = _messages.BooleanField(7)
-  interfaceName = _messages.StringField(8)
-  ipAddress = _messages.StringField(9)
-  ipv6NexthopAddress = _messages.StringField(10)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 11)
-  md5AuthenticationKeyName = _messages.StringField(12)
-  name = _messages.StringField(13)
-  peerAsn = _messages.IntegerField(14, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(15)
-  peerIpv6NexthopAddress = _messages.StringField(16)
-  routerApplianceInstance = _messages.StringField(17)
+  customLearnedIpRanges = _messages.MessageField('RouterBgpPeerCustomLearnedIpRange', 6, repeated=True)
+  customLearnedRoutePriority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  enable = _messages.EnumField('EnableValueValuesEnum', 8)
+  enableIpv6 = _messages.BooleanField(9)
+  interfaceName = _messages.StringField(10)
+  ipAddress = _messages.StringField(11)
+  ipv6NexthopAddress = _messages.StringField(12)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 13)
+  md5AuthenticationKeyName = _messages.StringField(14)
+  name = _messages.StringField(15)
+  peerAsn = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(17)
+  peerIpv6NexthopAddress = _messages.StringField(18)
+  routerApplianceInstance = _messages.StringField(19)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -58949,6 +58976,19 @@ class RouterBgpPeerBfd(_messages.Message):
   minTransmitInterval = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
   multiplier = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
   sessionInitializationMode = _messages.EnumField('SessionInitializationModeValueValuesEnum', 4)
+
+
+class RouterBgpPeerCustomLearnedIpRange(_messages.Message):
+  r"""A RouterBgpPeerCustomLearnedIpRange object.
+
+  Fields:
+    range: The custom learned route IP address range. Must be a valid CIDR-
+      formatted prefix. If an IP address is provided without a subnet mask, it
+      is interpreted as, for IPv4, a `/32` singular IP address range, and, for
+      IPv6, `/128`.
+  """
+
+  range = _messages.StringField(1)
 
 
 class RouterInterface(_messages.Message):

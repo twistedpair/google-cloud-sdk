@@ -262,19 +262,19 @@ class ReplicationsClient(object):
     )
     return self.WaitForOperation(operation_ref)
 
-  def StopReplication(
-      self, replication_ref, async_
-  ):
+  def StopReplication(self, replication_ref, async_, force):
     """Stop a Cloud NetApp Volume Replication.
 
     Args:
       replication_ref: the reference to the Replication.
       async_: bool, if False, wait for the operation to complete.
+      force: bool, if True, call stop Replication with force parameter set to
+        True.
 
     Returns:
       an Operation or Volume message.
     """
-    stop_op = self._adapter.StopReplication(replication_ref)
+    stop_op = self._adapter.StopReplication(replication_ref, force)
     if async_:
       return stop_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
@@ -369,13 +369,16 @@ class BetaReplicationsAdapter(object):
         reverse_request
     )
 
-  def StopReplication(self, replication_ref):
+  def StopReplication(self, replication_ref, force):
     """Send a stop request for the Cloud NetApp Volume Replication."""
     stop_request = (
         self.messages.NetappProjectsLocationsVolumesReplicationsStopRequest(
-            name=replication_ref.RelativeName())
+            name=replication_ref.RelativeName(),
+            stopReplicationRequest=self.messages.StopReplicationRequest(
+                force=force
+            ),
+        )
     )
     return self.client.projects_locations_volumes_replications.Stop(
         stop_request
     )
-

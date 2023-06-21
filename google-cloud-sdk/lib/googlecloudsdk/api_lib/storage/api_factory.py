@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.storage.gcs_grpc import client as gcs_grpc_client
 from googlecloudsdk.api_lib.storage.gcs_json import client as gcs_json_client
 from googlecloudsdk.api_lib.storage.gcs_xml import client as gcs_xml_client
 from googlecloudsdk.api_lib.storage.s3_xml import client as s3_xml_client
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -48,7 +49,7 @@ def _get_api_class(provider):
     An appropriate CloudApi subclass.
 
   Raises:
-    ValueError: If provider is not a cloud scheme in storage_url.ProviderPrefix.
+    Error: If provider is not a cloud scheme in storage_url.ProviderPrefix.
   """
   if provider == storage_url.ProviderPrefix.GCS:
     if (
@@ -67,7 +68,7 @@ def _get_api_class(provider):
     # TODO(b/275749579): Change this after the refactor is done.
     return s3_xml_client.S3XmlClient
   else:
-    raise ValueError(_INVALID_PROVIDER_PREFIX_MESSAGE)
+    raise errors.Error(_INVALID_PROVIDER_PREFIX_MESSAGE)
 
 
 def get_api(provider):
@@ -83,7 +84,7 @@ def get_api(provider):
     CloudApi client object for provider argument.
 
   Raises:
-    ValueError: If provider is not a cloud scheme in storage_url.ProviderPrefix.
+    Error: If provider is not a cloud scheme in storage_url.ProviderPrefix.
   """
   global _cloud_api_thread_local_storage
   if properties.VALUES.storage.use_threading_local.GetBool():
@@ -113,7 +114,7 @@ def get_capabilities(provider):
     The CloudApi.capabilities attribute for the requested provider.
 
   Raises:
-    ValueError: If provider is not a cloud scheme in storage_url.ProviderPrefix.
+    Error: If provider is not a cloud scheme in storage_url.ProviderPrefix.
   """
   api_class = _get_api_class(provider)
   return api_class.capabilities

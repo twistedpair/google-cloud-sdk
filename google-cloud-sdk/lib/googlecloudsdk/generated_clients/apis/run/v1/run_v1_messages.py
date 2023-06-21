@@ -91,9 +91,10 @@ class AuditLogConfig(_messages.Message):
 
 
 class AuthorizedDomain(_messages.Message):
-  r"""A domain that a user has been authorized to administer. To authorize use
-  of a domain, verify ownership via [Webmaster
-  Central](https://www.google.com/webmasters/verification/home).
+  r"""A domain that a user has been authorized to administer.
+
+  To authorize use of a domain, verify ownership via [Search
+  Console](https://search.google.com/search-console/welcome).
 
   Fields:
     id: Relative name of the domain authorized for use. Example:
@@ -388,16 +389,19 @@ class ContainerOverride(_messages.Message):
   r"""Per container override specification.
 
   Fields:
-    args: Arguments to the entrypoint. Will replace existing args for
-      override.
+    args: Arguments to the entrypoint. Will replace existing args for override
+      if present. Must be empty if `clear_args` is set to true.
+    clearArgs: Optional. True if the intention is to clear out existing args
+      list.
     env: List of environment variables to set in the container. Will be merged
       with existing env for override.
     name: The name of the container specified as a DNS_LABEL.
   """
 
   args = _messages.StringField(1, repeated=True)
-  env = _messages.MessageField('EnvVar', 2, repeated=True)
-  name = _messages.StringField(3)
+  clearArgs = _messages.BooleanField(2)
+  env = _messages.MessageField('EnvVar', 3, repeated=True)
+  name = _messages.StringField(4)
 
 
 class ContainerPort(_messages.Message):
@@ -498,6 +502,7 @@ class DomainMappingStatus(_messages.Message):
 
 class EmptyDirVolumeSource(_messages.Message):
   r"""Ephemeral storage which can be backed by real disks (HD, SSD), network
+
   storage or memory (i.e. tmpfs). For now only in memory (tmpfs) is supported.
   It is ephemeral in the sense that when the sandbox is taken down, the data
   is destroyed with it (it does not persist across sandbox runs).
@@ -514,8 +519,8 @@ class EmptyDirVolumeSource(_messages.Message):
       This field's values are of the 'Quantity' k8s type:
       https://kubernetes.io/docs/reference/kubernetes-api/common-
       definitions/quantity/. The default is nil which means that the limit is
-      undefined. More info: http://kubernetes.io/docs/user-
-      guide/volumes#emptydir +optional
+      undefined. More info:
+      https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
   """
 
   medium = _messages.StringField(1)
@@ -1602,6 +1607,7 @@ class Policy(_messages.Message):
 
 class Probe(_messages.Message):
   r"""Probe describes a health check to be performed against a container to
+
   determine whether it is alive or ready to receive traffic.
 
   Fields:
@@ -1614,11 +1620,11 @@ class Probe(_messages.Message):
     initialDelaySeconds: Number of seconds after the container has started
       before the probe is initiated. Defaults to 0 seconds. Minimum value is
       0. Maximum value for liveness probe is 3600. Maximum value for startup
-      probe is 240. .
+      probe is 240.
     periodSeconds: How often (in seconds) to perform the probe. Default to 10
       seconds. Minimum value is 1. Maximum value for liveness probe is 3600.
       Maximum value for startup probe is 240. Must be greater or equal than
-      timeout_seconds. .
+      timeout_seconds.
     successThreshold: Minimum consecutive successes for the probe to be
       considered successful after having failed. Must be 1 if set.
     tcpSocket: TCPSocket specifies an action involving a TCP port.
@@ -2029,9 +2035,10 @@ class RunJobRequest(_messages.Message):
   r"""Request message for creating a new execution of a job.
 
   Fields:
-    overrides: Optional. Overrides specification for a given execution of a
-      job. If provided, overrides will be applied to update the execution or
-      task spec.
+    overrides: Optional. Private preview feature. Currently only available by
+      invitation. Overrides specification for a given execution of a job. If
+      provided, overrides will be applied to update the execution or task
+      spec.
   """
 
   overrides = _messages.MessageField('Overrides', 1)

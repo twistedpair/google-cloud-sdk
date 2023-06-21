@@ -124,6 +124,9 @@ def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
   if args.audit_interval_seconds:
     poco_hub_config.auditIntervalSeconds = args.audit_interval_seconds
 
+  if args.constraint_violation_limit is not None:
+    poco_hub_config.constraintViolationLimit = args.constraint_violation_limit
+
   if args.exemptable_namespaces:
     exemptable_namespaces = args.exemptable_namespaces.split(',')
     poco_hub_config.exemptableNamespaces = exemptable_namespaces
@@ -140,8 +143,6 @@ def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
     poco_hub_config.referentialRulesEnabled = args.referential_rules_enabled
 
   # Default the library to on if it is unspecified, otherwise interpret the arg.
-  # NOTE: AFAICT the args library prevents the flag from ever being None.
-  # Leaving the none-check in place since the other boolean flags have them.
   install_library = True
   if args.template_library_installed is not None:
     install_library = args.template_library_installed
@@ -155,9 +156,6 @@ def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
   if args.no_monitoring:
     poco_hub_config.monitoring = build_poco_monitoring_config([], messages)
 
-  # pylint: disable=line-too-long
-  # TODO(b/275747711): Get rid of the pylint exemption and format all of this
-  # automagically.
   if hasattr(args, 'suspend') and args.suspend is not None:
     if args.suspend:
       poco_hub_config.installSpec = (

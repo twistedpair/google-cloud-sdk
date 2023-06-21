@@ -159,49 +159,6 @@ class GcsBucketResource(resource_reference.BucketResource):
     return (self.retention_policy and
             self.retention_policy.get('isLocked', False))
 
-  def get_displayable_bucket_data(self):
-    """Returns the DisplaybleBucketData instance."""
-    # TODO(b/240444753): Make better use of ObjectResource attributes.
-    if self.metadata.labels is not None:
-      labels = encoding.MessageToDict(self.metadata.labels)
-    else:
-      labels = None
-
-    iam_configuration = self.metadata.iamConfiguration
-
-    return resource_reference.DisplayableBucketData(
-        name=self.name,
-        url_string=self.storage_url.url_string,
-        acl=_message_to_dict(self.metadata.acl),
-        bucket_policy_only=_message_to_dict(
-            getattr(iam_configuration, 'bucketPolicyOnly', None)),
-        cors_config=_message_to_dict(self.metadata.cors),
-        creation_time=self.metadata.timeCreated,
-        default_acl=_message_to_dict(self.metadata.defaultObjectAcl),
-        default_event_based_hold=self.metadata.defaultEventBasedHold,
-        default_kms_key=getattr(self.metadata.encryption, 'defaultKmsKeyName',
-                                None),
-        etag=self.metadata.etag,
-        labels=labels,
-        lifecycle_config=_message_to_dict(self.metadata.lifecycle),
-        location=self.metadata.location,
-        location_type=self.metadata.locationType,
-        logging_config=_message_to_dict(self.metadata.logging),
-        metageneration=self.metadata.metageneration,
-        project_number=self.metadata.projectNumber,
-        public_access_prevention=getattr(iam_configuration,
-                                         'publicAccessPrevention', None),
-        requester_pays=(self.metadata.billing and
-                        self.metadata.billing.requesterPays),
-        retention_policy=_message_to_dict(self.metadata.retentionPolicy),
-        rpo=self.metadata.rpo,
-        satisfies_pzs=self.metadata.satisfiesPZS,
-        storage_class=self.metadata.storageClass,
-        update_time=self.metadata.updated,
-        versioning_enabled=(self.metadata.versioning and
-                            self.metadata.versioning.enabled),
-        website_config=_message_to_dict(self.metadata.website))
-
   def __eq__(self, other):
     return (
         super(GcsBucketResource, self).__eq__(other) and
@@ -305,47 +262,6 @@ class GcsObjectResource(resource_reference.ObjectResource):
         update_time,
     )
     self.storage_class_update_time = storage_class_update_time
-
-  def get_displayable_object_data(self):
-    """Returns the DisplaybleObjectData instance."""
-    if getattr(self.metadata.metadata, 'additionalProperties', None):
-      additional_properties = _message_to_dict(
-          self.metadata.metadata.additionalProperties)
-    else:
-      additional_properties = None
-
-    return resource_reference.DisplayableObjectData(
-        name=self.name,
-        bucket=self.bucket,
-        url_string=self.storage_url.url_string,
-        acl=_message_to_dict(self.metadata.acl),
-        additional_properties=additional_properties,
-        cache_control=self.metadata.cacheControl,
-        component_count=self.metadata.componentCount,
-        content_disposition=self.metadata.contentDisposition,
-        content_encoding=self.metadata.contentEncoding,
-        content_language=self.metadata.contentLanguage,
-        content_length=self.size,
-        content_type=self.metadata.contentType,
-        crc32c_hash=self.metadata.crc32c,
-        creation_time=self.creation_time,
-        custom_time=self.metadata.customTime,
-        encryption_algorithm=getattr(self.metadata.customerEncryption,
-                                     'encryptionAlgorithm', None),
-        encryption_key_sha256=getattr(self.metadata.customerEncryption,
-                                      'keySha256', None),
-        etag=self.etag,
-        event_based_hold=True if self.metadata.eventBasedHold else None,
-        generation=self.generation,
-        kms_key=self.metadata.kmsKeyName,
-        md5_hash=self.metadata.md5Hash,
-        metageneration=self.metageneration,
-        noncurrent_time=self.metadata.timeDeleted,
-        retention_expiration=self.metadata.retentionExpirationTime,
-        storage_class=self.metadata.storageClass,
-        storage_class_update_time=self.metadata.timeStorageClassUpdated,
-        temporary_hold=True if self.metadata.temporaryHold else None,
-        update_time=self.metadata.updated)
 
   def __eq__(self, other):
     return (super(GcsObjectResource, self).__eq__(other) and

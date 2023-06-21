@@ -648,6 +648,139 @@ class FleetClient(object):
         field='rbacrolebindings',
         batch_size_attribute=None)
 
+  def GetScopeRBACRoleBinding(self, name):
+    """Gets an ScopeRBACRoleBinding resource from the GKEHub API.
+
+    Args:
+      name: the full rolebinding resource name.
+
+    Returns:
+      An ScopeRBACRoleBinding resource
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsScopesRbacrolebindingsGetRequest(
+        name=name
+    )
+    return self.client.projects_locations_scopes_rbacrolebindings.Get(req)
+
+  def CreateScopeRBACRoleBinding(self, name, role, user, group):
+    """Creates an ScopeRBACRoleBinding resource from the GKEHub API.
+
+    Args:
+      name: the full Scoperbacrolebinding resource name.
+      role: the role.
+      user: the user.
+      group: the group.
+
+    Returns:
+      An ScopeRBACRoleBinding resource
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+      calliope_exceptions.RequiredArgumentException: if a required field is
+        missing
+    """
+    rolebinding = self.messages.RBACRoleBinding(
+        name=name,
+        role=self.messages.Role(
+            predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
+                role.upper()
+            )
+        ),
+        user=user,
+        group=group,
+    )
+    resource = resources.REGISTRY.ParseRelativeName(
+        name,
+        'gkehub.projects.locations.scopes.rbacrolebindings',
+        api_version='v1alpha',
+    )
+    req = self.messages.GkehubProjectsLocationsScopesRbacrolebindingsCreateRequest(
+        rBACRoleBinding=rolebinding,
+        rbacrolebindingId=resource.Name(),
+        parent=resource.Parent().RelativeName(),
+    )
+    return self.client.projects_locations_scopes_rbacrolebindings.Create(req)
+
+  def DeleteScopeRBACRoleBinding(self, name):
+    """Deletes an ScopeRBACRoleBinding resource from the fleet.
+
+    Args:
+      name: the resource name of the rolebinding.
+
+    Returns:
+      An operation
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsScopesRbacrolebindingsDeleteRequest(
+        name=name
+    )
+    return self.client.projects_locations_scopes_rbacrolebindings.Delete(req)
+
+  def UpdateScopeRBACRoleBinding(self, name, user, group, role, mask):
+    """Updates an ScopeRBACRoleBinding resource in the fleet.
+
+    Args:
+      name: the rolebinding name.
+      user: the user.
+      group: the group.
+      role: the role.
+      mask: a mask of the fields to update.
+
+    Returns:
+      An operation
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    # RoleBinding containing fields with updated value(s)
+    rolebinding = self.messages.RBACRoleBinding(
+        name=name,
+        user=user,
+        group=group,
+        role=self.messages.Role(
+            predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
+                role.upper()
+            )
+        ),
+    )
+    req = (
+        self.messages.GkehubProjectsLocationsScopesRbacrolebindingsPatchRequest(
+            rBACRoleBinding=rolebinding, name=rolebinding.name, updateMask=mask
+        )
+    )
+    return self.client.projects_locations_scopes_rbacrolebindings.Patch(req)
+
+  def ListScopeRBACRoleBindings(self, project, scope):
+    """Lists rolebindings in a scope.
+
+    Args:
+      project: the project containing the scope to list rolebindings from.
+      scope: the scope to list rolebindings from.
+
+    Returns:
+      A ListscopeResponse (list of rolebindings and next page token)
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    req = (
+        self.messages.GkehubProjectsLocationsScopesRbacrolebindingsListRequest(
+            pageToken='',
+            parent=util.ScopeRBACRoleBindingParentName(project, scope),
+        )
+    )
+    return list_pager.YieldFromList(
+        self.client.projects_locations_scopes_rbacrolebindings,
+        req,
+        field='rbacrolebindings',
+        batch_size_attribute=None,
+    )
+
   def GetMembershipBinding(self, name):
     """Gets a Membership-Binding resource from the GKEHub API.
 

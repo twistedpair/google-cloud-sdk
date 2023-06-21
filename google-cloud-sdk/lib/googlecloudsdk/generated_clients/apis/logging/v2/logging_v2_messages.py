@@ -869,11 +869,14 @@ class ListLogEntriesRequest(_messages.Message):
   r"""The parameters to ListLogEntries.
 
   Fields:
-    filter: Optional. Only log entries that match the filter are returned. An
-      empty filter matches all log entries in the resources listed in
-      resource_names. Referencing a parent resource that is not listed in
-      resource_names will cause the filter to return no results. The maximum
-      length of a filter is 20,000 characters.
+    filter: Optional. A filter that chooses which log entries to return. For
+      more information, see Logging query language
+      (https://cloud.google.com/logging/docs/view/logging-query-language).Only
+      log entries that match the filter are returned. An empty filter matches
+      all log entries in the resources listed in resource_names. Referencing a
+      parent resource that is not listed in resource_names will cause the
+      filter to return no results. The maximum length of a filter is 20,000
+      characters.
     orderBy: Optional. How the results should be sorted. Presently, the only
       permitted values are "timestamp asc" (default) and "timestamp desc". The
       first option returns entries in order of increasing values of
@@ -1214,7 +1217,8 @@ class LogBucket(_messages.Message):
         SUPPORTED_BUCKET_REGION.
       DEFAULT_RETENTION_DURATION: The requirement that buckets other than the
         "_Required" bucket must have the default retention duration of 30 days
-        set.
+        set. This requirement is deprecated as buckets with custom retention
+        can now upgrade to Log Analytics.
       REQUIRED_RETENTION_DURATION: The requirement that the "_Required" bucket
         must have its default retention of 400 days set.
       FIELD_LEVEL_ACCESS_CONTROLS_UNSET: The requirement that no field level
@@ -1860,10 +1864,11 @@ class LogSink(_messages.Message):
     destination: Required. The export destination:
       "storage.googleapis.com/[GCS_BUCKET]"
       "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
-      "pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]" The
-      sink's writer_identity, set when the sink is created, must have
-      permission to write to the destination or else the log entries are not
-      exported. For more information, see Exporting Logs with Sinks
+      "pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]"
+      "logging.googleapis.com/projects/[PROJECT_ID]" The sink's
+      writer_identity, set when the sink is created, must have permission to
+      write to the destination or else the log entries are not exported. For
+      more information, see Exporting Logs with Sinks
       (https://cloud.google.com/logging/docs/api/tasks/exporting-logs).
     disabled: Optional. If set to true, then this sink is disabled and it does
       not export any log entries.
@@ -2592,10 +2597,10 @@ class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -3456,10 +3461,10 @@ class LoggingFoldersSinksCreateRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -4747,10 +4752,10 @@ class LoggingOrganizationsSinksCreateRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -5640,10 +5645,10 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -5814,10 +5819,10 @@ class LoggingSinksCreateRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"

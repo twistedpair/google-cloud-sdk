@@ -30,7 +30,7 @@ from cloudsdk.google.protobuf import json_format
 from requests import __version__ as requests_version
 import dataclasses
 import re
-from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 import warnings
 
 try:
@@ -67,37 +67,41 @@ class LoggingServiceV2RestInterceptor:
 
     .. code-block:: python
         class MyCustomLoggingServiceV2Interceptor(LoggingServiceV2RestInterceptor):
-            def pre_delete_log(request, metadata):
+            def pre_delete_log(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def pre_list_log_entries(request, metadata):
+            def pre_list_log_entries(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_list_log_entries(response):
+            def post_list_log_entries(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_list_logs(request, metadata):
+            def pre_list_logs(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_list_logs(response):
+            def post_list_logs(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_list_monitored_resource_descriptors(request, metadata):
+            def pre_list_monitored_resource_descriptors(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_list_monitored_resource_descriptors(response):
+            def post_list_monitored_resource_descriptors(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_write_log_entries(request, metadata):
+            def pre_write_log_entries(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_write_log_entries(response):
+            def post_write_log_entries(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
         transport = LoggingServiceV2RestTransport(interceptor=MyCustomLoggingServiceV2Interceptor())
         client = LoggingServiceV2Client(transport=transport)
@@ -203,15 +207,15 @@ class LoggingServiceV2RestTransport(LoggingServiceV2Transport):
 
     def __init__(self, *,
             host: str = 'logging.googleapis.com',
-            credentials: ga_credentials.Credentials=None,
-            credentials_file: str=None,
-            scopes: Sequence[str]=None,
-            client_cert_source_for_mtls: Callable[[
-                ], Tuple[bytes, bytes]]=None,
-            quota_project_id: Optional[str]=None,
-            client_info: gapic_v1.client_info.ClientInfo=DEFAULT_CLIENT_INFO,
-            always_use_jwt_access: Optional[bool]=False,
-            url_scheme: str='https',
+            credentials: Optional[ga_credentials.Credentials] = None,
+            credentials_file: Optional[str] = None,
+            scopes: Optional[Sequence[str]] = None,
+            client_cert_source_for_mtls: Optional[Callable[[
+                ], Tuple[bytes, bytes]]] = None,
+            quota_project_id: Optional[str] = None,
+            client_info: gapic_v1.client_info.ClientInfo = DEFAULT_CLIENT_INFO,
+            always_use_jwt_access: Optional[bool] = False,
+            url_scheme: str = 'https',
             interceptor: Optional[LoggingServiceV2RestInterceptor] = None,
             api_audience: Optional[str] = None,
             ) -> None:
@@ -281,7 +285,7 @@ class LoggingServiceV2RestTransport(LoggingServiceV2Transport):
         def __hash__(self):
             return hash("DeleteLog")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -291,7 +295,7 @@ class LoggingServiceV2RestTransport(LoggingServiceV2Transport):
         def __call__(self,
                 request: logging.DeleteLogRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ):
             r"""Call the delete log method over HTTP.
@@ -361,7 +365,7 @@ class LoggingServiceV2RestTransport(LoggingServiceV2Transport):
         def __hash__(self):
             return hash("ListLogEntries")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -371,7 +375,7 @@ class LoggingServiceV2RestTransport(LoggingServiceV2Transport):
         def __call__(self,
                 request: logging.ListLogEntriesRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> logging.ListLogEntriesResponse:
             r"""Call the list log entries method over HTTP.
@@ -451,7 +455,7 @@ class LoggingServiceV2RestTransport(LoggingServiceV2Transport):
         def __hash__(self):
             return hash("ListLogs")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -461,7 +465,7 @@ class LoggingServiceV2RestTransport(LoggingServiceV2Transport):
         def __call__(self,
                 request: logging.ListLogsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> logging.ListLogsResponse:
             r"""Call the list logs method over HTTP.
@@ -562,7 +566,7 @@ class LoggingServiceV2RestTransport(LoggingServiceV2Transport):
         def __call__(self,
                 request: logging.ListMonitoredResourceDescriptorsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> logging.ListMonitoredResourceDescriptorsResponse:
             r"""Call the list monitored resource
@@ -572,7 +576,6 @@ class LoggingServiceV2RestTransport(LoggingServiceV2Transport):
                 request (~.logging.ListMonitoredResourceDescriptorsRequest):
                     The request object. The parameters to
                 ListMonitoredResourceDescriptors
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -635,17 +638,17 @@ class LoggingServiceV2RestTransport(LoggingServiceV2Transport):
         def __call__(self,
                 request: logging.TailLogEntriesRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> rest_streaming.ResponseIterator:
             raise NotImplementedError(
-                "Client streaming over REST is not yet defined for python client")
-
+                "Method TailLogEntries is not available over REST transport"
+            )
     class _WriteLogEntries(LoggingServiceV2RestStub):
         def __hash__(self):
             return hash("WriteLogEntries")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -655,7 +658,7 @@ class LoggingServiceV2RestTransport(LoggingServiceV2Transport):
         def __call__(self,
                 request: logging.WriteLogEntriesRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> logging.WriteLogEntriesResponse:
             r"""Call the write log entries method over HTTP.

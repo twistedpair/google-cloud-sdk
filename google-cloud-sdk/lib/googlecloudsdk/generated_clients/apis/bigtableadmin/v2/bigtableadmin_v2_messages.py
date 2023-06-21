@@ -2305,6 +2305,9 @@ class MultiClusterRoutingUseAny(_messages.Message):
       over to us-east1-c (since us-east1-d is not in the set of cluster IDs
       specified and europe-west1-b is in a different region). Requests that
       are first routed to europe-west1-b will not fail over at all.
+    rowAffinity: Row affinity sticky routing based on the row key of the
+      request. Requests that span multiple rows are routed non-
+      deterministically.
   """
 
   class FailoverRadiusValueValuesEnum(_messages.Enum):
@@ -2335,6 +2338,7 @@ class MultiClusterRoutingUseAny(_messages.Message):
 
   clusterIds = _messages.StringField(1, repeated=True)
   failoverRadius = _messages.EnumField('FailoverRadiusValueValuesEnum', 2)
+  rowAffinity = _messages.MessageField('RowAffinity', 3)
 
 
 class Operation(_messages.Message):
@@ -2675,6 +2679,16 @@ class RestoreTableRequest(_messages.Message):
 
   backup = _messages.StringField(1)
   tableId = _messages.StringField(2)
+
+
+class RowAffinity(_messages.Message):
+  r"""If enabled, the AFE will route the request based on the row key of the
+  request, rather than randomly. Instead, each row key will be assigned to a
+  cluster, and will stick to that cluster. If clusters are added or removed,
+  then this may affect which row keys stick to which clusters. To avoid this,
+  users can specify a group cluster.
+  """
+
 
 
 class SetIamPolicyRequest(_messages.Message):

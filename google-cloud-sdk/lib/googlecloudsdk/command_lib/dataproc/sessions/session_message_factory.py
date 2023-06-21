@@ -21,6 +21,8 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.dataproc.sessions import (
     jupyter_config_factory as jcf)
+from googlecloudsdk.command_lib.dataproc.sessions import (
+    session_template_config_factory as scf)
 from googlecloudsdk.command_lib.dataproc.shared_messages import (
     environment_config_factory as ecf)
 from googlecloudsdk.command_lib.dataproc.shared_messages import (
@@ -40,7 +42,8 @@ class SessionMessageFactory(object):
 
   def __init__(self, dataproc, runtime_config_factory_override=None,
                environment_config_factory_override=None,
-               jupyter_config_factory_override=None):
+               jupyter_config_factory_override=None,
+               session_template_config_factory_override=None):
     """Builder class for Session message.
 
     Session message factory. Only the flags added in AddArguments are handled.
@@ -55,6 +58,8 @@ class SessionMessageFactory(object):
       EnvironmentConfigFactory instance.
       jupyter_config_factory_override: Override the default
       JupyterConfigFactory instance.
+      session_template_config_factory_override: Override the default
+      SessionTemplateConfigFactory instance.
     """
     self.dataproc = dataproc
 
@@ -73,6 +78,10 @@ class SessionMessageFactory(object):
     self.jupyter_config_factory = (
         jupyter_config_factory_override or
         jcf.JupyterConfigFactory(self.dataproc))
+
+    self.session_template_config_factory = (
+        session_template_config_factory_override or
+        scf.SessionTemplateConfigFactory(self.dataproc))
 
   def GetMessage(self, args):
     """Creates a Session message from given args.
@@ -113,6 +122,9 @@ class SessionMessageFactory(object):
     if args.user:
       kwargs['user'] = args.user
 
+    kwargs['sessionTemplateConfig'] = (
+        self.session_template_config_factory.GetMessage(args))
+
     if not kwargs:
       return None
 
@@ -143,3 +155,4 @@ def _AddDependency(parser):
   rcf.AddArguments(parser, use_config_property=True)
   ecf.AddArguments(parser)
   jcf.AddArguments(parser)
+  scf.AddArguments(parser)

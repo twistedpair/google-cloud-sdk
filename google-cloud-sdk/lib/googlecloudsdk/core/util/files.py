@@ -395,6 +395,8 @@ def SearchForExecutableOnPath(executable, path=None):
   """
   if not path:
     path = _GetSystemPath()
+    if not path:
+      return []
   paths = path.split(os.pathsep)
 
   matching = []
@@ -480,6 +482,8 @@ def FindExecutableOnPath(executable, path=None, pathext=None,
 
   if path is None:
     effective_path = _GetSystemPath()
+    if effective_path is None:
+      return None
   else:
     effective_path = path
   effective_pathext = (pathext if pathext is not None

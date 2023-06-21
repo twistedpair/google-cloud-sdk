@@ -6,6 +6,101 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 436.0.0 (2023-06-21)
+
+### AlloyDB
+
+* Promoted AlloyDB Inject Fault commands to GA track. Modified commands include: alloydb instances inject-fault.
+
+### Anthos Multi-Cloud
+
+*   Modified `gcloud container aws node-pools describe` and `gcloud container azure node-pools describe` to fetch server configurations and to give a warning when the nodepool is running an end-of-life version.
+*   Modified `gcloud container aws clusters list` and `gcloud container azure clusters list` to fetch server configurations and to give a warning when any of the clusters are running an end-of-life version.
+
+### Batch
+
+* Promoted Batch submit job optional prefix feature to beta and GA.
+
+### Cloud Deploy
+
+*   Added new `--deploy-parameters` to `gcloud deploy releases create` command.
+    When used, deploy parameters will be set for the release.
+*   Added `gcloud deploy rollouts advance`, `gcloud deploy rollouts cancel`,
+    `gcloud deploy rollouts ignore-job`, and `gcloud deploy job-runs terminate`
+    commands for the Deployment Strategies GA launch.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.18.1
+  * Added a new emulator configuration to start with experimental mode.
+
+### Cloud Functions
+
+* Fixed issue where `gcloud functions deploy` could fail in certain cases if
+  the caller was missing permissions to get the project IAM policy.
+
+### Cloud IAM
+
+* Added flags `--folder` and `--organization` to `gcloud beta services identity create`.
+  * Support folder and organization level service agents creation, in addition to project level service agents.
+
+### Cloud NetApp
+
+*   Added `--force` parameter to `gcloud beta netapp volumes replications stop` to force stop a replication during a data transfer.
+
+### Cloud SQL
+
+* Added `--preferred-zone` flag to `gcloud sql instances clone --point-in-time` to support point in time recovery to a specified zone for PostgreSQL.
+* Added `gcloud sql instances get-latest-recovery-time` command to get the latest recovery time for a PostgreSQL instance.
+
+### Cloud Spanner
+
+*   Promoted `spanner databases update` command to beta and GA tracks.
+
+### Cloud Storage
+
+* Fixed issue where certain `gcloud storage` commands would fail to load when
+  the `PATH` environment variable was not set.
+
+### Cloud Workstations
+
+* Promoting `workstations`, `workstations configs`, and `workstations clusters`
+commands to GA.
+
+### Compute Engine
+
+* Promoted `--instance-kms-key` flag of `gcloud compute instance create` to beta.
+* Promoted `--max-count-per-zone` flag of `gcloud compute instances bulk create` to v1. Flag defines maximum number of instances that can be created per zone for regional bulk insert.
+* Promoted `disk-consistency-group` argument of
+  `gcloud compute resource-policies create` to GA.
+* Promoted `--primary-disk`, `--primary-disk-project`, `--primary-disk-region`,
+  and `--primary-disk-zone` of `gcloud compute disks create` to GA.
+* Promoted `gcloud compute disks start-async-replication` to GA.
+* Promoted `gcloud compute disks stop-async-replication` to GA.
+* Promoted `gcloud compute disks stop-group-async-replication` to GA.
+* Promoted `gcloud compute disks bulk create` to GA.
+* Added `deny` as a choice for `--action` and`--exceed-action` of `gcloud compute security-policies rules create|update`.
+
+### Kubernetes Engine
+
+* Added `--sole-tenant-node-affinity-file` flag to `gcloud container node-pools create`
+  for creating node pools backed by sole tenant node groups. For more information
+  see <https://cloud.google.com/kubernetes-engine/docs/how-to/sole-tenancy>.
+* Added `--security-posture` and `--workload-vulnerability-scanning` flags to
+    `gcloud container clusters create`, `gcloud container clusters create-auto`,
+    and `gcloud container clusters update` for controlling
+    GKE Security Posture features.
+
+* Added `--workload-policies` flag to `gcloud container clusters create-auto`
+  and `gcloud container clusters update` for enabling NET_ADMIN privilege. Added
+  `--remove-workload-policies` flag to `gcloud container clusters update` for
+  disabling NET_ADMIN privilege.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
 ## 435.0.1 (2023-06-14)
 
 ### Cloud Firestore

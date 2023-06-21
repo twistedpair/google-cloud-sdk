@@ -89,46 +89,6 @@ def _get_error_string_or_value(value):
 class S3BucketResource(resource_reference.BucketResource):
   """API-specific subclass for handling metadata."""
 
-  def get_displayable_bucket_data(self):
-    # Handle versioning.
-    versioning = self.metadata.get('Versioning', {})
-    if isinstance(versioning, errors.XmlApiError):
-      versioning_enabled = str(versioning)
-    else:
-      versioning_status = versioning.get('Status')
-      if versioning_status == 'Enabled':
-        versioning_enabled = True
-      elif versioning_status == 'Suspended':
-        versioning_enabled = False
-      else:
-        versioning_enabled = None
-
-    # Handle requester pays.
-    payer = self.metadata.get('Payer')
-    if isinstance(payer, errors.XmlApiError):
-      requester_pays = str(payer)
-    elif payer == 'Requester':
-      requester_pays = True
-    elif payer == 'BucketOwner':
-      requester_pays = False
-    else:
-      requester_pays = None
-
-    return resource_reference.DisplayableBucketData(
-        name=self.name,
-        url_string=self.storage_url.url_string,
-        acl=_get_error_string_or_value(self.metadata.get('ACL')),
-        cors_config=_get_error_string_or_value(self.metadata.get('CORSRules')),
-        location=_get_error_string_or_value(
-            self.metadata.get('LocationConstraint')),
-        logging_config=_get_error_string_or_value(
-            self.metadata.get('LoggingEnabled')),
-        lifecycle_config=_get_error_string_or_value(
-            self.metadata.get('LifecycleConfiguration')),
-        requester_pays=requester_pays,
-        versioning_enabled=versioning_enabled,
-        website_config=_get_error_string_or_value(self.metadata.get('Website')))
-
   def get_json_dump(self):
     return _get_json_dump(self)
 
@@ -199,32 +159,6 @@ class S3ObjectResource(resource_reference.ObjectResource):
     )
 
   # pylint:enable=useless-super-delegation
-
-  def get_displayable_object_data(self):
-    # TODO(b/240444753): Make better use of ObjectResource attributes.
-    return resource_reference.DisplayableObjectData(
-        name=self.name,
-        bucket=self.bucket,
-        url_string=self.storage_url.url_string,
-        acl=_get_error_string_or_value(self.metadata.get('ACL')),
-        cache_control=self.metadata.get('CacheControl'),
-        component_count=self.metadata.get('PartsCount'),
-        content_disposition=self.metadata.get('ContentDisposition'),
-        content_encoding=self.metadata.get('ContentEncoding'),
-        content_language=self.metadata.get('ContentLanguage'),
-        content_length=self.size,
-        content_type=self.metadata.get('ContentType'),
-        # Setting crc32c_hash as NOT_SUPPORTED_DO_NOT_DISPLAY so that it can
-        # be ignored as expected by ls -L formatters. Setting it None will
-        # make the list/describe commands to ignore it, but ls -L might still
-        # display it if encryption_algorithm is present.
-        crc32c_hash=resource_reference.NOT_SUPPORTED_DO_NOT_DISPLAY,
-        encryption_algorithm=self.metadata.get('SSECustomerAlgorithm'),
-        etag=self.etag,
-        generation=self.generation,
-        md5_hash=self.md5_hash,
-        storage_class=self.metadata.get('StorageClass'),
-        update_time=self.metadata.get('LastModified'))
 
   def get_json_dump(self):
     return _get_json_dump(self)

@@ -16,8 +16,9 @@
 from collections import OrderedDict
 import os
 import re
-from typing import Dict, Mapping, Optional, Sequence, Tuple, Type, Union
-import pkg_resources
+from typing import Dict, Mapping, MutableMapping, MutableSequence, Optional, Sequence, Tuple, Type, Union, cast
+
+from googlecloudsdk.generated_clients.gapic_clients.logging_v2 import gapic_version as package_version
 
 from google.api_core import client_options as client_options_lib
 from google.api_core import exceptions as core_exceptions
@@ -60,7 +61,7 @@ class ConfigServiceV2ClientMeta(type):
     _transport_registry["rest"] = ConfigServiceV2RestTransport
 
     def get_transport_class(cls,
-            label: str = None,
+            label: Optional[str] = None,
         ) -> Type[ConfigServiceV2Transport]:
         """Returns an appropriate transport class.
 
@@ -312,7 +313,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         The API endpoint is determined in the following order:
         (1) if `client_options.api_endpoint` if provided, use the provided one.
         (2) if `GOOGLE_API_USE_CLIENT_CERTIFICATE` environment variable is "always", use the
-        default mTLS endpoint; if the environment variabel is "never", use the default API
+        default mTLS endpoint; if the environment variable is "never", use the default API
         endpoint; otherwise if client cert source exists, use the default mTLS endpoint, otherwise
         use the default API endpoint.
 
@@ -359,8 +360,8 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
     def __init__(self, *,
             credentials: Optional[ga_credentials.Credentials] = None,
-            transport: Union[str, ConfigServiceV2Transport, None] = None,
-            client_options: Optional[client_options_lib.ClientOptions] = None,
+            transport: Optional[Union[str, ConfigServiceV2Transport]] = None,
+            client_options: Optional[Union[client_options_lib.ClientOptions, dict]] = None,
             client_info: gapic_v1.client_info.ClientInfo = DEFAULT_CLIENT_INFO,
             ) -> None:
         """Instantiates the config service v2 client.
@@ -377,7 +378,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
                 NOTE: "rest" transport functionality is currently in a
                 beta state (preview). We welcome your feedback via an
                 issue in this library's source repository.
-            client_options (google.api_core.client_options.ClientOptions): Custom options for the
+            client_options (Optional[Union[google.api_core.client_options.ClientOptions, dict]]): Custom options for the
                 client. It won't take effect if a ``transport`` instance is provided.
                 (1) The ``api_endpoint`` property can be used to override the
                 default endpoint provided by the client. GOOGLE_API_USE_MTLS_ENDPOINT
@@ -407,6 +408,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
             client_options = client_options_lib.from_dict(client_options)
         if client_options is None:
             client_options = client_options_lib.ClientOptions()
+        client_options = cast(client_options_lib.ClientOptions, client_options)
 
         api_endpoint, client_cert_source_func = self.get_mtls_endpoint_and_cert_source(client_options)
 
@@ -448,11 +450,11 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
             )
 
     def list_buckets(self,
-            request: Union[logging_config.ListBucketsRequest, dict] = None,
+            request: Optional[Union[logging_config.ListBucketsRequest, dict]] = None,
             *,
-            parent: str = None,
+            parent: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListBucketsPager:
         r"""Lists log buckets.
@@ -486,7 +488,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListBucketsRequest, dict]):
-                The request object. The parameters to `ListBuckets`.
+                The request object. The parameters to ``ListBuckets``.
             parent (str):
                 Required. The parent resource whose buckets are to be
                 listed:
@@ -571,10 +573,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def get_bucket(self,
-            request: Union[logging_config.GetBucketRequest, dict] = None,
+            request: Optional[Union[logging_config.GetBucketRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogBucket:
         r"""Gets a log bucket.
@@ -607,7 +609,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.GetBucketRequest, dict]):
-                The request object. The parameters to `GetBucket`.
+                The request object. The parameters to ``GetBucket``.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -652,10 +654,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def create_bucket_async(self,
-            request: Union[logging_config.CreateBucketRequest, dict] = None,
+            request: Optional[Union[logging_config.CreateBucketRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> operation.Operation:
         r"""Creates a log bucket asynchronously that can be used
@@ -696,7 +698,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CreateBucketRequest, dict]):
-                The request object. The parameters to `CreateBucket`.
+                The request object. The parameters to ``CreateBucket``.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -752,10 +754,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def update_bucket_async(self,
-            request: Union[logging_config.UpdateBucketRequest, dict] = None,
+            request: Optional[Union[logging_config.UpdateBucketRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> operation.Operation:
         r"""Updates a log bucket asynchronously.
@@ -798,7 +800,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UpdateBucketRequest, dict]):
-                The request object. The parameters to `UpdateBucket`.
+                The request object. The parameters to ``UpdateBucket``.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -854,10 +856,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def create_bucket(self,
-            request: Union[logging_config.CreateBucketRequest, dict] = None,
+            request: Optional[Union[logging_config.CreateBucketRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogBucket:
         r"""Creates a log bucket that can be used to store log
@@ -893,7 +895,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CreateBucketRequest, dict]):
-                The request object. The parameters to `CreateBucket`.
+                The request object. The parameters to ``CreateBucket``.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -938,10 +940,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def update_bucket(self,
-            request: Union[logging_config.UpdateBucketRequest, dict] = None,
+            request: Optional[Union[logging_config.UpdateBucketRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogBucket:
         r"""Updates a log bucket.
@@ -980,7 +982,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UpdateBucketRequest, dict]):
-                The request object. The parameters to `UpdateBucket`.
+                The request object. The parameters to ``UpdateBucket``.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -1025,10 +1027,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def delete_bucket(self,
-            request: Union[logging_config.DeleteBucketRequest, dict] = None,
+            request: Optional[Union[logging_config.DeleteBucketRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
         r"""Deletes a log bucket.
@@ -1063,7 +1065,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.DeleteBucketRequest, dict]):
-                The request object. The parameters to `DeleteBucket`.
+                The request object. The parameters to ``DeleteBucket``.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -1099,10 +1101,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         )
 
     def undelete_bucket(self,
-            request: Union[logging_config.UndeleteBucketRequest, dict] = None,
+            request: Optional[Union[logging_config.UndeleteBucketRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
         r"""Undeletes a log bucket. A bucket that has been
@@ -1134,7 +1136,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UndeleteBucketRequest, dict]):
-                The request object. The parameters to `UndeleteBucket`.
+                The request object. The parameters to ``UndeleteBucket``.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -1170,11 +1172,11 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         )
 
     def list_views(self,
-            request: Union[logging_config.ListViewsRequest, dict] = None,
+            request: Optional[Union[logging_config.ListViewsRequest, dict]] = None,
             *,
-            parent: str = None,
+            parent: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListViewsPager:
         r"""Lists views on a log bucket.
@@ -1208,7 +1210,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListViewsRequest, dict]):
-                The request object. The parameters to `ListViews`.
+                The request object. The parameters to ``ListViews``.
             parent (str):
                 Required. The bucket whose views are to be listed:
 
@@ -1285,10 +1287,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def get_view(self,
-            request: Union[logging_config.GetViewRequest, dict] = None,
+            request: Optional[Union[logging_config.GetViewRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogView:
         r"""Gets a view on a log bucket..
@@ -1321,7 +1323,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.GetViewRequest, dict]):
-                The request object. The parameters to `GetView`.
+                The request object. The parameters to ``GetView``.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -1366,10 +1368,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def create_view(self,
-            request: Union[logging_config.CreateViewRequest, dict] = None,
+            request: Optional[Union[logging_config.CreateViewRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogView:
         r"""Creates a view over log entries in a log bucket. A
@@ -1404,7 +1406,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CreateViewRequest, dict]):
-                The request object. The parameters to `CreateView`.
+                The request object. The parameters to ``CreateView``.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -1449,10 +1451,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def update_view(self,
-            request: Union[logging_config.UpdateViewRequest, dict] = None,
+            request: Optional[Union[logging_config.UpdateViewRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogView:
         r"""Updates a view on a log bucket. This method replaces the
@@ -1489,7 +1491,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UpdateViewRequest, dict]):
-                The request object. The parameters to `UpdateView`.
+                The request object. The parameters to ``UpdateView``.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -1534,10 +1536,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def delete_view(self,
-            request: Union[logging_config.DeleteViewRequest, dict] = None,
+            request: Optional[Union[logging_config.DeleteViewRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
         r"""Deletes a view on a log bucket. If an ``UNAVAILABLE`` error is
@@ -1570,7 +1572,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.DeleteViewRequest, dict]):
-                The request object. The parameters to `DeleteView`.
+                The request object. The parameters to ``DeleteView``.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -1606,11 +1608,11 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         )
 
     def list_sinks(self,
-            request: Union[logging_config.ListSinksRequest, dict] = None,
+            request: Optional[Union[logging_config.ListSinksRequest, dict]] = None,
             *,
-            parent: str = None,
+            parent: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListSinksPager:
         r"""Lists sinks.
@@ -1644,7 +1646,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListSinksRequest, dict]):
-                The request object. The parameters to `ListSinks`.
+                The request object. The parameters to ``ListSinks``.
             parent (str):
                 Required. The parent resource whose sinks are to be
                 listed:
@@ -1725,11 +1727,11 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def get_sink(self,
-            request: Union[logging_config.GetSinkRequest, dict] = None,
+            request: Optional[Union[logging_config.GetSinkRequest, dict]] = None,
             *,
-            sink_name: str = None,
+            sink_name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogSink:
         r"""Gets a sink.
@@ -1762,7 +1764,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.GetSinkRequest, dict]):
-                The request object. The parameters to `GetSink`.
+                The request object. The parameters to ``GetSink``.
             sink_name (str):
                 Required. The resource name of the sink:
 
@@ -1842,12 +1844,12 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def create_sink(self,
-            request: Union[logging_config.CreateSinkRequest, dict] = None,
+            request: Optional[Union[logging_config.CreateSinkRequest, dict]] = None,
             *,
-            parent: str = None,
-            sink: logging_config.LogSink = None,
+            parent: Optional[str] = None,
+            sink: Optional[logging_config.LogSink] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogSink:
         r"""Creates a sink that exports specified log entries to a
@@ -1889,7 +1891,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CreateSinkRequest, dict]):
-                The request object. The parameters to `CreateSink`.
+                The request object. The parameters to ``CreateSink``.
             parent (str):
                 Required. The resource in which to create the sink:
 
@@ -1978,13 +1980,13 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def update_sink(self,
-            request: Union[logging_config.UpdateSinkRequest, dict] = None,
+            request: Optional[Union[logging_config.UpdateSinkRequest, dict]] = None,
             *,
-            sink_name: str = None,
-            sink: logging_config.LogSink = None,
-            update_mask: field_mask_pb2.FieldMask = None,
+            sink_name: Optional[str] = None,
+            sink: Optional[logging_config.LogSink] = None,
+            update_mask: Optional[field_mask_pb2.FieldMask] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogSink:
         r"""Updates a sink. This method replaces the following fields in the
@@ -2027,7 +2029,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UpdateSinkRequest, dict]):
-                The request object. The parameters to `UpdateSink`.
+                The request object. The parameters to ``UpdateSink``.
             sink_name (str):
                 Required. The full resource name of the sink to update,
                 including the parent resource and the sink identifier:
@@ -2141,11 +2143,11 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def delete_sink(self,
-            request: Union[logging_config.DeleteSinkRequest, dict] = None,
+            request: Optional[Union[logging_config.DeleteSinkRequest, dict]] = None,
             *,
-            sink_name: str = None,
+            sink_name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
         r"""Deletes a sink. If the sink has a unique ``writer_identity``,
@@ -2176,7 +2178,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.DeleteSinkRequest, dict]):
-                The request object. The parameters to `DeleteSink`.
+                The request object. The parameters to ``DeleteSink``.
             sink_name (str):
                 Required. The full resource name of the sink to delete,
                 including the parent resource and the sink identifier:
@@ -2241,13 +2243,13 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         )
 
     def create_link(self,
-            request: Union[logging_config.CreateLinkRequest, dict] = None,
+            request: Optional[Union[logging_config.CreateLinkRequest, dict]] = None,
             *,
-            parent: str = None,
-            link: logging_config.Link = None,
-            link_id: str = None,
+            parent: Optional[str] = None,
+            link: Optional[logging_config.Link] = None,
+            link_id: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> operation.Operation:
         r"""Asynchronously creates a linked dataset in BigQuery
@@ -2387,11 +2389,11 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def delete_link(self,
-            request: Union[logging_config.DeleteLinkRequest, dict] = None,
+            request: Optional[Union[logging_config.DeleteLinkRequest, dict]] = None,
             *,
-            name: str = None,
+            name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> operation.Operation:
         r"""Deletes a link. This will also delete the
@@ -2514,11 +2516,11 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def list_links(self,
-            request: Union[logging_config.ListLinksRequest, dict] = None,
+            request: Optional[Union[logging_config.ListLinksRequest, dict]] = None,
             *,
-            parent: str = None,
+            parent: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListLinksPager:
         r"""Lists links.
@@ -2631,11 +2633,11 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def get_link(self,
-            request: Union[logging_config.GetLinkRequest, dict] = None,
+            request: Optional[Union[logging_config.GetLinkRequest, dict]] = None,
             *,
-            name: str = None,
+            name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.Link:
         r"""Gets a link.
@@ -2735,11 +2737,11 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def list_exclusions(self,
-            request: Union[logging_config.ListExclusionsRequest, dict] = None,
+            request: Optional[Union[logging_config.ListExclusionsRequest, dict]] = None,
             *,
-            parent: str = None,
+            parent: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListExclusionsPager:
         r"""Lists all the exclusions on the \_Default sink in a parent
@@ -2774,7 +2776,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListExclusionsRequest, dict]):
-                The request object. The parameters to `ListExclusions`.
+                The request object. The parameters to ``ListExclusions``.
             parent (str):
                 Required. The parent resource whose exclusions are to be
                 listed.
@@ -2855,11 +2857,11 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def get_exclusion(self,
-            request: Union[logging_config.GetExclusionRequest, dict] = None,
+            request: Optional[Union[logging_config.GetExclusionRequest, dict]] = None,
             *,
-            name: str = None,
+            name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogExclusion:
         r"""Gets the description of an exclusion in the \_Default sink.
@@ -2892,7 +2894,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.GetExclusionRequest, dict]):
-                The request object. The parameters to `GetExclusion`.
+                The request object. The parameters to ``GetExclusion``.
             name (str):
                 Required. The resource name of an existing exclusion:
 
@@ -2970,12 +2972,12 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def create_exclusion(self,
-            request: Union[logging_config.CreateExclusionRequest, dict] = None,
+            request: Optional[Union[logging_config.CreateExclusionRequest, dict]] = None,
             *,
-            parent: str = None,
-            exclusion: logging_config.LogExclusion = None,
+            parent: Optional[str] = None,
+            exclusion: Optional[logging_config.LogExclusion] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogExclusion:
         r"""Creates a new exclusion in the \_Default sink in a specified
@@ -3015,7 +3017,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CreateExclusionRequest, dict]):
-                The request object. The parameters to `CreateExclusion`.
+                The request object. The parameters to ``CreateExclusion``.
             parent (str):
                 Required. The parent resource in which to create the
                 exclusion:
@@ -3105,13 +3107,13 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def update_exclusion(self,
-            request: Union[logging_config.UpdateExclusionRequest, dict] = None,
+            request: Optional[Union[logging_config.UpdateExclusionRequest, dict]] = None,
             *,
-            name: str = None,
-            exclusion: logging_config.LogExclusion = None,
-            update_mask: field_mask_pb2.FieldMask = None,
+            name: Optional[str] = None,
+            exclusion: Optional[logging_config.LogExclusion] = None,
+            update_mask: Optional[field_mask_pb2.FieldMask] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogExclusion:
         r"""Changes one or more properties of an existing exclusion in the
@@ -3150,7 +3152,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UpdateExclusionRequest, dict]):
-                The request object. The parameters to `UpdateExclusion`.
+                The request object. The parameters to ``UpdateExclusion``.
             name (str):
                 Required. The resource name of the exclusion to update:
 
@@ -3254,11 +3256,11 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def delete_exclusion(self,
-            request: Union[logging_config.DeleteExclusionRequest, dict] = None,
+            request: Optional[Union[logging_config.DeleteExclusionRequest, dict]] = None,
             *,
-            name: str = None,
+            name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
         r"""Deletes an exclusion in the \_Default sink.
@@ -3288,7 +3290,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Args:
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.DeleteExclusionRequest, dict]):
-                The request object. The parameters to `DeleteExclusion`.
+                The request object. The parameters to ``DeleteExclusion``.
             name (str):
                 Required. The resource name of an existing exclusion to
                 delete:
@@ -3353,10 +3355,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         )
 
     def get_cmek_settings(self,
-            request: Union[logging_config.GetCmekSettingsRequest, dict] = None,
+            request: Optional[Union[logging_config.GetCmekSettingsRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.CmekSettings:
         r"""Gets the Logging CMEK settings for the given resource.
@@ -3400,8 +3402,9 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.GetCmekSettingsRequest, dict]):
                 The request object. The parameters to
                 [GetCmekSettings][google.logging.v2.ConfigServiceV2.GetCmekSettings].
-                See [Enabling CMEK for Log
-                Router](https://cloud.google.com/logging/docs/routing/managed-encryption)
+
+                See `Enabling CMEK for Log
+                Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
                 for more information.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -3457,10 +3460,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def update_cmek_settings(self,
-            request: Union[logging_config.UpdateCmekSettingsRequest, dict] = None,
+            request: Optional[Union[logging_config.UpdateCmekSettingsRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.CmekSettings:
         r"""Updates the Log Router CMEK settings for the given resource.
@@ -3509,8 +3512,9 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UpdateCmekSettingsRequest, dict]):
                 The request object. The parameters to
                 [UpdateCmekSettings][google.logging.v2.ConfigServiceV2.UpdateCmekSettings].
-                See [Enabling CMEK for Log
-                Router](https://cloud.google.com/logging/docs/routing/managed-encryption)
+
+                See `Enabling CMEK for Log
+                Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
                 for more information.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -3566,11 +3570,11 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def get_settings(self,
-            request: Union[logging_config.GetSettingsRequest, dict] = None,
+            request: Optional[Union[logging_config.GetSettingsRequest, dict]] = None,
             *,
-            name: str = None,
+            name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.Settings:
         r"""Gets the Log Router settings for the given resource.
@@ -3615,8 +3619,9 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.GetSettingsRequest, dict]):
                 The request object. The parameters to
                 [GetSettings][google.logging.v2.ConfigServiceV2.GetSettings].
-                See [Enabling CMEK for Log
-                Router](https://cloud.google.com/logging/docs/routing/managed-encryption)
+
+                See `Enabling CMEK for Log
+                Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
                 for more information.
             name (str):
                 Required. The resource for which to retrieve settings.
@@ -3698,12 +3703,12 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def update_settings(self,
-            request: Union[logging_config.UpdateSettingsRequest, dict] = None,
+            request: Optional[Union[logging_config.UpdateSettingsRequest, dict]] = None,
             *,
-            settings: logging_config.Settings = None,
-            update_mask: field_mask_pb2.FieldMask = None,
+            settings: Optional[logging_config.Settings] = None,
+            update_mask: Optional[field_mask_pb2.FieldMask] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.Settings:
         r"""Updates the Log Router settings for the given resource.
@@ -3755,8 +3760,9 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UpdateSettingsRequest, dict]):
                 The request object. The parameters to
                 [UpdateSettings][google.logging.v2.ConfigServiceV2.UpdateSettings].
-                See [Enabling CMEK for Log
-                Router](https://cloud.google.com/logging/docs/routing/managed-encryption)
+
+                See `Enabling CMEK for Log
+                Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
                 for more information.
             settings (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Settings):
                 Required. The settings to update.
@@ -3840,10 +3846,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return response
 
     def copy_log_entries(self,
-            request: Union[logging_config.CopyLogEntriesRequest, dict] = None,
+            request: Optional[Union[logging_config.CopyLogEntriesRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> operation.Operation:
         r"""Copies a set of log entries from a log bucket to a
@@ -3930,7 +3936,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         # Done; return the response.
         return response
 
-    def __enter__(self):
+    def __enter__(self) -> "ConfigServiceV2Client":
         return self
 
     def __exit__(self, type, value, traceback):
@@ -3948,14 +3954,8 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
 
 
-try:
-    DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(
-        gapic_version=pkg_resources.get_distribution(
-            "googlecloudsdk-generated_clients-gapic_clients-logging",
-        ).version,
-    )
-except pkg_resources.DistributionNotFound:
-    DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo()
+
+DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(gapic_version=package_version.__version__)
 
 
 __all__ = (

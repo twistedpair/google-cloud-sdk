@@ -441,35 +441,6 @@ class ClusterUpgradeIgnoredMembership(_messages.Message):
   reason = _messages.StringField(2)
 
 
-class ClusterUpgradeMembershipGKEUpgradeState(_messages.Message):
-  r"""ScopeGKEUpgradeState is a GKEUpgrade and its state per-membership.
-
-  Fields:
-    status: Status of the upgrade.
-    upgrade: Which upgrade to track the state.
-  """
-
-  status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 1)
-  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 2)
-
-
-class ClusterUpgradeMembershipState(_messages.Message):
-  r"""Per-membership state for this feature.
-
-  Fields:
-    ignored: Whether this membership is ignored by the feature. For example,
-      manually upgraded clusters can be ignored if they are newer than the
-      default versions of its release channel.
-    scopes: Fully qualified scope names that this clusters is bound to which
-      also have rollout sequencing enabled.
-    upgrades: Actual upgrade state against desired.
-  """
-
-  ignored = _messages.MessageField('ClusterUpgradeIgnoredMembership', 1)
-  scopes = _messages.StringField(2, repeated=True)
-  upgrades = _messages.MessageField('ClusterUpgradeMembershipGKEUpgradeState', 3, repeated=True)
-
-
 class ClusterUpgradePostConditions(_messages.Message):
   r"""Post conditional checks after an upgrade has been applied on all
   eligible clusters.
@@ -521,84 +492,6 @@ class ClusterUpgradeScopeGKEUpgradeState(_messages.Message):
   stats = _messages.MessageField('StatsValue', 1)
   status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 2)
   upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 3)
-
-
-class ClusterUpgradeScopeSpec(_messages.Message):
-  r"""**ClusterUpgrade**: The configuration for the scope-level ClusterUpgrade
-  feature.
-
-  Fields:
-    gkeUpgradeOverrides: Allow users to override some properties of each GKE
-      upgrade.
-    postConditions: Required. Post conditions to evaluate to mark an upgrade
-      COMPLETE. Required.
-    upstreamScopes: This scope consumes upgrades that have COMPLETE status
-      code in the upstream scopes. See UpgradeStatus.Code for code
-      definitions. The scope name should be in the form:
-      `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
-      is a valid Scope in this project. {p} WILL match the Feature's project.
-      This is defined as repeated for future proof reasons. Initial
-      implementation will enforce at most one upstream scope.
-  """
-
-  gkeUpgradeOverrides = _messages.MessageField('ClusterUpgradeGKEUpgradeOverride', 1, repeated=True)
-  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 2)
-  upstreamScopes = _messages.StringField(3, repeated=True)
-
-
-class ClusterUpgradeScopeState(_messages.Message):
-  r"""**ClusterUpgrade**: The state for the scope-level ClusterUpgrade
-  feature.
-
-  Messages:
-    IgnoredValue: A list of memberships ignored by the feature. For example,
-      manually upgraded clusters can be ignored if they are newer than the
-      default versions of its release channel. The membership resource is in
-      the format: `projects/{p}/locations/{l}/membership/{m}`.
-
-  Fields:
-    downstreamScopes: This scopes whose upstream_scopes contain the current
-      scope. The scope name should be in the form:
-      `projects/{p}/locations/gloobal/scopes/{s}` Where {p} is the project,
-      {s} is a valid Scope in this project. {p} WILL match the Feature's
-      project.
-    gkeState: Feature state for GKE clusters.
-    ignored: A list of memberships ignored by the feature. For example,
-      manually upgraded clusters can be ignored if they are newer than the
-      default versions of its release channel. The membership resource is in
-      the format: `projects/{p}/locations/{l}/membership/{m}`.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class IgnoredValue(_messages.Message):
-    r"""A list of memberships ignored by the feature. For example, manually
-    upgraded clusters can be ignored if they are newer than the default
-    versions of its release channel. The membership resource is in the format:
-    `projects/{p}/locations/{l}/membership/{m}`.
-
-    Messages:
-      AdditionalProperty: An additional property for a IgnoredValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type IgnoredValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a IgnoredValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A ClusterUpgradeIgnoredMembership attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('ClusterUpgradeIgnoredMembership', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  downstreamScopes = _messages.StringField(1, repeated=True)
-  gkeState = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureState', 2)
-  ignored = _messages.MessageField('IgnoredValue', 3)
 
 
 class ClusterUpgradeUpgradeStatus(_messages.Message):
@@ -1453,6 +1346,7 @@ class ConfigManagementPolicyController(_messages.Message):
       evaluated.
     templateLibraryInstalled: Installs the default template library along with
       Policy Controller.
+    updateTime: Output only. Last time this membership spec was updated.
   """
 
   auditIntervalSeconds = _messages.IntegerField(1)
@@ -1463,6 +1357,7 @@ class ConfigManagementPolicyController(_messages.Message):
   mutationEnabled = _messages.BooleanField(6)
   referentialRulesEnabled = _messages.BooleanField(7)
   templateLibraryInstalled = _messages.BooleanField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ConfigManagementPolicyControllerMigration(_messages.Message):
@@ -1472,6 +1367,7 @@ class ConfigManagementPolicyControllerMigration(_messages.Message):
     StageValueValuesEnum: Stage of the migration.
 
   Fields:
+    copyTime: Last time this membership spec was copied to PoCo feature.
     stage: Stage of the migration.
   """
 
@@ -1489,7 +1385,8 @@ class ConfigManagementPolicyControllerMigration(_messages.Message):
     ACM_MANAGED = 1
     POCO_MANAGED = 2
 
-  stage = _messages.EnumField('StageValueValuesEnum', 1)
+  copyTime = _messages.StringField(1)
+  stage = _messages.EnumField('StageValueValuesEnum', 2)
 
 
 class ConfigManagementPolicyControllerMonitoring(_messages.Message):
@@ -2381,6 +2278,16 @@ class GenerateConnectManifestResponse(_messages.Message):
   manifest = _messages.MessageField('ConnectAgentResource', 1, repeated=True)
 
 
+class GenerateMembershipRBACRoleBindingYAMLResponse(_messages.Message):
+  r"""Response for GenerateRBACRoleBindingYAML.
+
+  Fields:
+    roleBindingsYaml: a yaml text blob including the RBAC policies.
+  """
+
+  roleBindingsYaml = _messages.StringField(1)
+
+
 class GetReferenceRequest(_messages.Message):
   r"""The GetReferenceRequest request.
 
@@ -2993,6 +2900,113 @@ class GkehubProjectsLocationsMembershipsPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent (project and location) where the
+      RBACRoleBinding will be created. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    rbacrolebindingId: Required. Client chosen ID for the RBACRoleBinding.
+      `rbacrolebinding_id` must be a valid RFC 1123 compliant DNS label: 1. At
+      most 63 characters in length 2. It must consist of lower case
+      alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  rbacrolebindingId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/memberships/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsGenerateMembershipRBACRoleBindingYAMLRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsGenerateMembershipRB
+  ACRoleBindingYAMLRequest object.
+
+  Fields:
+    parent: Required. The parent (project and location) where the
+      RBACRoleBinding will be created. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    rbacrolebindingId: Required. Client chosen ID for the RBACRoleBinding.
+      `rbacrolebinding_id` must be a valid RFC 1123 compliant DNS label: 1. At
+      most 63 characters in length 2. It must consist of lower case
+      alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  rbacrolebindingId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsGetRequest object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/memberships/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to
+      `ListMembershipRBACRoleBindings` which specifies the position in the
+      list from where to continue listing the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsPatchRequest object.
+
+  Fields:
+    name: The resource name for the rbacrolebinding `projects/{project}/locati
+      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
+      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
+      bacrolebindings/{rbacrolebinding}`
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  updateMask = _messages.StringField(3)
 
 
 class GkehubProjectsLocationsMembershipsSetIamPolicyRequest(_messages.Message):
@@ -4084,6 +4098,20 @@ class ListMembershipBindingsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMembershipRBACRoleBindingsResponse(_messages.Message):
+  r"""List of Membership RBACRoleBindings.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListMembershipRBACRoleBindings` method. The value of an empty string
+      means that there are no more resources to return.
+    rbacrolebindings: The list of Membership RBACRoleBindings.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  rbacrolebindings = _messages.MessageField('RBACRoleBinding', 2, repeated=True)
+
+
 class ListMembershipsResponse(_messages.Message):
   r"""Response message for the `GkeHub.ListMemberships` method.
 
@@ -4578,7 +4606,6 @@ class MembershipFeatureState(_messages.Message):
 
   Fields:
     appdevexperience: Appdevexperience specific state.
-    clusterupgrade: ClusterUpgrade state.
     configmanagement: Config Management-specific state.
     fleetobservability: Fleet observability membership state.
     helloworld: Hello World-specific state.
@@ -4590,15 +4617,14 @@ class MembershipFeatureState(_messages.Message):
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
-  clusterupgrade = _messages.MessageField('ClusterUpgradeMembershipState', 2)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 3)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 4)
-  helloworld = _messages.MessageField('HelloWorldMembershipState', 5)
-  identityservice = _messages.MessageField('IdentityServiceMembershipState', 6)
-  metering = _messages.MessageField('MeteringMembershipState', 7)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 8)
-  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 9)
-  state = _messages.MessageField('FeatureState', 10)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 2)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 3)
+  helloworld = _messages.MessageField('HelloWorldMembershipState', 4)
+  identityservice = _messages.MessageField('IdentityServiceMembershipState', 5)
+  metering = _messages.MessageField('MeteringMembershipState', 6)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 7)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 8)
+  state = _messages.MessageField('FeatureState', 9)
 
 
 class MembershipSpec(_messages.Message):
@@ -5509,6 +5535,10 @@ class PolicyControllerPolicyContentState(_messages.Message):
   Fields:
     bundleStates: The state of the any bundles included in the chosen version
       of the manifest
+    referentialSyncConfigState: The state of the referential data sync
+      configuration. This could represent the state of either the syncSet
+      object(s) or the config object, depending on the version of PoCo
+      configured by the user.
     templateLibraryState: The state of the template library
   """
 
@@ -5539,7 +5569,8 @@ class PolicyControllerPolicyContentState(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   bundleStates = _messages.MessageField('BundleStatesValue', 1)
-  templateLibraryState = _messages.MessageField('PolicyControllerOnClusterState', 2)
+  referentialSyncConfigState = _messages.MessageField('PolicyControllerOnClusterState', 2)
+  templateLibraryState = _messages.MessageField('PolicyControllerOnClusterState', 3)
 
 
 class PolicyControllerPolicyControllerDeploymentConfig(_messages.Message):
@@ -5970,26 +6001,22 @@ class ScopeFeatureSpec(_messages.Message):
   r"""ScopeFeatureSpec contains feature specs for a fleet scope.
 
   Fields:
-    clusterupgrade: Spec for the ClusterUpgrade feature at the scope level
     helloworld: Spec for the HelloWorld feature at the scope level
   """
 
-  clusterupgrade = _messages.MessageField('ClusterUpgradeScopeSpec', 1)
-  helloworld = _messages.MessageField('HelloWorldScopeSpec', 2)
+  helloworld = _messages.MessageField('HelloWorldScopeSpec', 1)
 
 
 class ScopeFeatureState(_messages.Message):
   r"""ScopeFeatureState contains Scope-wide Feature status information.
 
   Fields:
-    clusterupgrade: State for the ClusterUpgrade feature at the scope level
     helloworld: State for the HelloWorld feature at the scope level
     state: Output only. The "running state" of the Feature in this Scope.
   """
 
-  clusterupgrade = _messages.MessageField('ClusterUpgradeScopeState', 1)
-  helloworld = _messages.MessageField('HelloWorldScopeState', 2)
-  state = _messages.MessageField('FeatureState', 3)
+  helloworld = _messages.MessageField('HelloWorldScopeState', 1)
+  state = _messages.MessageField('FeatureState', 2)
 
 
 class ScopeLifecycleState(_messages.Message):

@@ -518,6 +518,30 @@ def AddScopeNamespaceResourceArg(
   ).AddToParser(parser)
 
 
+def AddScopeRBACResourceArg(parser, api_version='v1', rbacrb_help=''):
+  """Add resource arg for projects/{}/locations/{}/scopes/{}/rbacrolebindings/{}."""
+  # Flags without '--' prefix are automatically positional
+  flag_name = 'NAME'
+  spec = concepts.ResourceSpec(
+      'gkehub.projects.locations.scopes.rbacrolebindings',
+      api_version=api_version,
+      resource_name='rbacrolebinding',
+      plural_name='rbacrolebindings',
+      disable_auto_completers=True,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=_LocationAttributeConfig(),
+      scopesId=_BasicAttributeConfig('scope', ''),
+      rbacrolebindingsId=_BasicAttributeConfig('rbacrolebinding', rbacrb_help),
+  )
+  concept_parsers.ConceptParser.ForResource(
+      flag_name,
+      spec,
+      'The group of arguments defining an RBACRoleBinding.',
+      plural=False,
+      required=True,
+  ).AddToParser(parser)
+
+
 def AddRBACResourceArg(parser, api_version='v1', rbacrb_help=''):
   """Add resource arg for projects/{}/locations/{}/memberships/{}."""
   # Flags without '--' prefix are automatically positional
@@ -550,7 +574,8 @@ def RBACResourceName(args):
 
   Returns:
     The rbacRB resource name (e.g.
-    projects/x/locations/global/namespaces/y/rbacrolebindings/z)
+    projects/x/locations/global/namespaces/y/rbacrolebindings/z
+    projects/x/locations/global/scopes/y/rbacrolebindings/z)
   """
   return args.CONCEPTS.name.Parse().RelativeName()
 

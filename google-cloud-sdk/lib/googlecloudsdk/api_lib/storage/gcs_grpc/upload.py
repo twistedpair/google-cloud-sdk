@@ -26,29 +26,9 @@ from googlecloudsdk.api_lib.storage import retry_util as storage_retry_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import retry_util
 from googlecloudsdk.command_lib.storage import hash_util
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.core import log
 import six
-
-
-def _get_write_object_spec(client, object_resource, size=None):
-  """Returns the WriteObjectSpec instance.
-
-  Args:
-    client (StorageClient): The GAPIC client.
-    object_resource (resource_reference.ObjectResource|UnknownResource): Object
-      metadata.
-    size (int|None): Expected object size in bytes.
-  Returns:
-    (gapic_clients.storage_v2.types.WriteObjectSpec) The WriteObjectSpec
-    instance.
-  """
-  destination_object = client.types.Object(
-      name=object_resource.storage_url.object_name,
-      bucket=grpc_util.get_full_bucket_name(
-          object_resource.storage_url.bucket_name),
-      size=size)
-  return client.types.WriteObjectSpec(
-      resource=destination_object, object_size=size)
 
 
 class _Upload(six.with_metaclass(abc.ABCMeta, object)):
@@ -155,6 +135,33 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
       if finish_write:
         break
 
+  def _get_write_object_spec(self, size=None):
+    """Returns the WriteObjectSpec instance.
+
+    Args:
+      size (int|None): Expected object size in bytes.
+
+    Returns:
+      (gapic_clients.storage_v2.types.WriteObjectSpec) The WriteObjectSpec
+      instance.
+    """
+
+    destination_object = self._client.types.Object(
+        name=self._destination_resource.storage_url.object_name,
+        bucket=grpc_util.get_full_bucket_name(
+            self._destination_resource.storage_url.bucket_name),
+        size=size)
+
+    return self._client.types.WriteObjectSpec(
+        resource=destination_object,
+        if_generation_match=copy_util.get_generation_match_value(
+            self._request_config
+        ),
+        if_metageneration_match=(
+            self._request_config.precondition_metageneration_match
+        ),
+        object_size=size)
+
   @abc.abstractmethod
   def run(self):
     """Performs an upload and returns and returns an Object message."""
@@ -172,11 +179,8 @@ class SimpleUpload(_Upload):
       (gapic_clients.storage_v2.types.WriteObjectResponse) A WriteObjectResponse
       instance.
     """
-    write_object_spec = _get_write_object_spec(
-        self._client,
-        self._destination_resource,
-        self._request_config.resource_args.size,
-    )
+    write_object_spec = self._get_write_object_spec(
+        self._request_config.resource_args.size)
     return self._client.storage.write_object(
         requests=self._upload_write_object_request_generator(
             first_message=write_object_spec
@@ -196,10 +200,7 @@ class RecoverableUpload(_Upload):
     """
 
     # TODO(b/267555253): Add size to the spec once the fix is in prod.
-    write_object_spec = _get_write_object_spec(
-        self._client,
-        self._destination_resource,
-    )
+    write_object_spec = self._get_write_object_spec()
 
     request = self._client.types.StartResumableWriteRequest(
         write_object_spec=write_object_spec

@@ -266,6 +266,10 @@ WORKLOAD_VULNERABILITY_SCANNING_MODE_NOT_SUPPORTED = """\
 Invalid mode '{mode}' for '--workload-vulnerability-scanning' (must be one of 'disabled', 'standard').
 """
 
+HOST_MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED = """\
+Provided host maintenance interval type '{type}' is not supported.
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
@@ -545,6 +549,7 @@ class CreateClusterOptions(object):
       preemptible=None,
       spot=None,
       placement_type=None,
+      placement_policy=None,
       enable_queued_provisioning=None,
       enable_autorepair=None,
       enable_autoupgrade=None,
@@ -687,6 +692,7 @@ class CreateClusterOptions(object):
       enable_dns_endpoint=None,
       workload_policies=None,
       enable_fqdn_network_policy=None,
+      host_maintenance_interval=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -737,6 +743,7 @@ class CreateClusterOptions(object):
     self.preemptible = preemptible
     self.spot = spot
     self.placement_type = placement_type
+    self.placement_policy = placement_policy
     self.enable_queued_provisioning = enable_queued_provisioning
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
@@ -884,6 +891,7 @@ class CreateClusterOptions(object):
     self.enable_dns_endpoint = enable_dns_endpoint
     self.workload_policies = workload_policies
     self.enable_fqdn_network_policy = enable_fqdn_network_policy
+    self.host_maintenance_interval = host_maintenance_interval
 
 
 class UpdateClusterOptions(object):
@@ -1017,6 +1025,7 @@ class UpdateClusterOptions(object):
       workload_policies=None,
       remove_workload_policies=None,
       enable_fqdn_network_policy=None,
+      host_maintenance_interval=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1149,6 +1158,7 @@ class UpdateClusterOptions(object):
     self.workload_policies = workload_policies
     self.remove_workload_policies = remove_workload_policies
     self.enable_fqdn_network_policy = enable_fqdn_network_policy
+    self.host_maintenance_interval = host_maintenance_interval
 
 
 class SetMasterAuthOptions(object):
@@ -1203,6 +1213,7 @@ class CreateNodePoolOptions(object):
                preemptible=None,
                spot=None,
                placement_type=None,
+               placement_policy=None,
                tpu_topology=None,
                enable_queued_provisioning=None,
                enable_autorepair=None,
@@ -1249,7 +1260,8 @@ class CreateNodePoolOptions(object):
                additional_node_network=None,
                additional_pod_network=None,
                enable_nested_virtualization=None,
-               sole_tenant_node_affinity_file=None):
+               sole_tenant_node_affinity_file=None,
+               host_maintenance_interval=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1279,6 +1291,7 @@ class CreateNodePoolOptions(object):
     self.preemptible = preemptible
     self.spot = spot
     self.placement_type = placement_type
+    self.placement_policy = placement_policy
     self.tpu_topology = tpu_topology
     self.enable_queued_provisioning = enable_queued_provisioning
     self.enable_autorepair = enable_autorepair
@@ -1326,6 +1339,7 @@ class CreateNodePoolOptions(object):
     self.additional_node_network = additional_node_network
     self.additional_pod_network = additional_pod_network
     self.sole_tenant_node_affinity_file = sole_tenant_node_affinity_file
+    self.host_maintenance_interval = host_maintenance_interval
 
 
 class UpdateNodePoolOptions(object):
@@ -2135,6 +2149,15 @@ class APIAdapter(object):
       cluster.enableK8sBetaApis = self.messages.K8sBetaAPIConfig()
       cluster.enableK8sBetaApis.enabledApis = options.enable_k8s_beta_apis
 
+    if options.host_maintenance_interval:
+      if cluster.nodePoolDefaults is None:
+        cluster.nodePoolDefaults = self.messages.NodePoolDefaults()
+      if cluster.nodePoolDefaults.nodeConfigDefaults is None:
+        cluster.nodePoolDefaults.nodeConfigDefaults = (
+            self.messages.NodeConfigDefaults())
+      cluster.nodePoolDefaults.nodeConfigDefaults.hostMaintenancePolicy = (
+          _GetHostMaintenancePolicy(options, self.messages))
+
     return cluster
 
   def _GetClusterNetworkPerformanceConfig(self, options):
@@ -2292,11 +2315,17 @@ class APIAdapter(object):
         pool.upgradeSettings = self.messages.UpgradeSettings()
         pool.upgradeSettings.maxSurge = options.max_surge_upgrade
         pool.upgradeSettings.maxUnavailable = options.max_unavailable_upgrade
-      if options.placement_type == 'COMPACT':
+      if (
+          options.placement_type == 'COMPACT'
+          or options.placement_policy is not None
+      ):
         pool.placementPolicy = self.messages.PlacementPolicy()
+      if options.placement_type == 'COMPACT':
         pool.placementPolicy.type = (
             self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
         )
+      if options.placement_policy is not None:
+        pool.placementPolicy.policyName = options.placement_policy
       if options.enable_queued_provisioning:
         pool.queuedProvisioning = self.messages.QueuedPolicy()
         pool.queuedProvisioning.enabled = True
@@ -3415,6 +3444,12 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredAutopilotWorkloadPolicyConfig=workload_policies
       )
+
+    if options.host_maintenance_interval is not None:
+      update = self.messages.ClusterUpdate(
+          desiredHostMaintenancePolicy=_GetHostMaintenancePolicy(
+              options, self.messages)
+      )
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -3875,6 +3910,10 @@ class APIAdapter(object):
                                               options.logging_variant))
       node_config.loggingConfig = logging_config
 
+    if options.host_maintenance_interval:
+      node_config.hostMaintenancePolicy = _GetHostMaintenancePolicy(
+          options, self.messages)
+
     self._AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
     _AddShieldedInstanceConfigToNodeConfig(node_config, options, self.messages)
@@ -3946,17 +3985,21 @@ class APIAdapter(object):
           self._GetNetworkPerformanceConfig(options)
       )
 
-    if options.placement_type == 'COMPACT':
+    if (
+        options.placement_type == 'COMPACT'
+        or options.placement_policy is not None
+    ):
       pool.placementPolicy = self.messages.PlacementPolicy()
+    if options.placement_type == 'COMPACT':
       pool.placementPolicy.type = (
           self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
       )
+    if options.placement_policy is not None:
+      pool.placementPolicy.policyName = options.placement_policy
 
     if options.tpu_topology:
-      if options.placement_type is None or options.placement_type != 'COMPACT':
-        raise util.Error(
-            'Please specify --placement-type=COMPACT for --tpu-topology'
-        )
+      if pool.placementPolicy is None:
+        pool.placementPolicy = self.messages.PlacementPolicy()
       pool.placementPolicy.tpuTopology = options.tpu_topology
 
     if options.enable_queued_provisioning:
@@ -5900,9 +5943,15 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         pool.upgradeSettings = self.messages.UpgradeSettings()
         pool.upgradeSettings.maxSurge = options.max_surge_upgrade
         pool.upgradeSettings.maxUnavailable = options.max_unavailable_upgrade
-      if options.placement_type == 'COMPACT':
+      if (
+          options.placement_type == 'COMPACT'
+          or options.placement_policy is not None
+      ):
         pool.placementPolicy = self.messages.PlacementPolicy()
+      if options.placement_type == 'COMPACT':
         pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
+      if options.placement_policy is not None:
+        pool.placementPolicy.policyName = options.placement_policy
       if options.enable_queued_provisioning:
         pool.queuedProvisioning = self.messages.QueuedPolicy()
         pool.queuedProvisioning.enabled = True
@@ -6262,6 +6311,33 @@ def _GetLoggingConfig(options, messages):
         .ADDON_MANAGER)
 
   return messages.LoggingConfig(componentConfig=config)
+
+
+def _GetHostMaintenancePolicy(options, messages):
+  """Get HostMaintenancePolicy from options."""
+  if options.host_maintenance_interval is not None:
+    maintenance_interval_types = {
+        'UNSPECIFIED':
+            messages.HostMaintenancePolicy.MaintenanceIntervalValueValuesEnum
+            .MAINTENANCE_INTERVAL_UNSPECIFIED,
+        'PERIODIC':
+            messages.HostMaintenancePolicy.MaintenanceIntervalValueValuesEnum
+            .PERIODIC,
+        'AS_NEEDED':
+            messages.HostMaintenancePolicy.MaintenanceIntervalValueValuesEnum
+            .AS_NEEDED,
+    }
+    if options.host_maintenance_interval not in maintenance_interval_types:
+      raise util.Error(
+          HOST_MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED.FORMAT(
+              type=options.host_maintenance_interval
+          )
+      )
+    return messages.HostMaintenancePolicy(
+        maintenanceInterval=maintenance_interval_types[
+            options.host_maintenance_interval
+        ]
+    )
 
 
 def _GetMonitoringConfig(options, messages):

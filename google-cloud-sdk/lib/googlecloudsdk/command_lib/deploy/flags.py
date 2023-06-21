@@ -500,8 +500,7 @@ def AddPhaseId(parser, required=True, hidden=False):
       required=required)
 
 
-def AddDeployParametersFlag(parser, hidden=True):
-  # TODO(b/281834910) Unhide --deploy-parameters flag
+def AddDeployParametersFlag(parser, hidden=False):
   """Add --deploy-parameters flag."""
   help_text = (
       textwrap.dedent(

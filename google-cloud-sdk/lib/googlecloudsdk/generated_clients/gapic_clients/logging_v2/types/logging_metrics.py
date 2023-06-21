@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from __future__ import annotations
+
+from typing import MutableMapping, MutableSequence
+
 import proto  # type: ignore
 
 from google.api import distribution_pb2  # type: ignore
@@ -139,7 +143,7 @@ class LogMetric(proto.Message):
 
             Example:
             ``REGEXP_EXTRACT(jsonPayload.request, ".*quantity=(\d+).*")``
-        label_extractors (Mapping[str, str]):
+        label_extractors (MutableMapping[str, str]):
             Optional. A map from a label key string to an extractor
             expression which is used to extract data from a log entry
             field and assign as the label value. Each label key
@@ -176,60 +180,67 @@ class LogMetric(proto.Message):
             default and cannot be changed.
     """
     class ApiVersion(proto.Enum):
-        r"""Logging API version."""
+        r"""Logging API version.
+
+        Values:
+            V2 (0):
+                Logging API v2.
+            V1 (1):
+                Logging API v1.
+        """
         V2 = 0
         V1 = 1
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    description = proto.Field(
+    description: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    filter = proto.Field(
+    filter: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    bucket_name = proto.Field(
+    bucket_name: str = proto.Field(
         proto.STRING,
         number=13,
     )
-    disabled = proto.Field(
+    disabled: bool = proto.Field(
         proto.BOOL,
         number=12,
     )
-    metric_descriptor = proto.Field(
+    metric_descriptor: metric_pb2.MetricDescriptor = proto.Field(
         proto.MESSAGE,
         number=5,
         message=metric_pb2.MetricDescriptor,
     )
-    value_extractor = proto.Field(
+    value_extractor: str = proto.Field(
         proto.STRING,
         number=6,
     )
-    label_extractors = proto.MapField(
+    label_extractors: MutableMapping[str, str] = proto.MapField(
         proto.STRING,
         proto.STRING,
         number=7,
     )
-    bucket_options = proto.Field(
+    bucket_options: distribution_pb2.Distribution.BucketOptions = proto.Field(
         proto.MESSAGE,
         number=8,
         message=distribution_pb2.Distribution.BucketOptions,
     )
-    create_time = proto.Field(
+    create_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=9,
         message=timestamp_pb2.Timestamp,
     )
-    update_time = proto.Field(
+    update_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=10,
         message=timestamp_pb2.Timestamp,
     )
-    version = proto.Field(
+    version: ApiVersion = proto.Field(
         proto.ENUM,
         number=4,
         enum=ApiVersion,
@@ -259,15 +270,15 @@ class ListLogMetricsRequest(proto.Message):
             results might be available.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    page_token = proto.Field(
+    page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    page_size = proto.Field(
+    page_size: int = proto.Field(
         proto.INT32,
         number=3,
     )
@@ -277,7 +288,7 @@ class ListLogMetricsResponse(proto.Message):
     r"""Result returned from ListLogMetrics.
 
     Attributes:
-        metrics (Sequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogMetric]):
+        metrics (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogMetric]):
             A list of logs-based metrics.
         next_page_token (str):
             If there might be more results than appear in this response,
@@ -290,12 +301,12 @@ class ListLogMetricsResponse(proto.Message):
     def raw_page(self):
         return self
 
-    metrics = proto.RepeatedField(
+    metrics: MutableSequence['LogMetric'] = proto.RepeatedField(
         proto.MESSAGE,
         number=1,
         message='LogMetric',
     )
-    next_page_token = proto.Field(
+    next_page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -313,7 +324,7 @@ class GetLogMetricRequest(proto.Message):
                 "projects/[PROJECT_ID]/metrics/[METRIC_ID]".
     """
 
-    metric_name = proto.Field(
+    metric_name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -337,11 +348,11 @@ class CreateLogMetricRequest(proto.Message):
             must not have an identifier that already exists.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    metric = proto.Field(
+    metric: 'LogMetric' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='LogMetric',
@@ -367,11 +378,11 @@ class UpdateLogMetricRequest(proto.Message):
             Required. The updated metric.
     """
 
-    metric_name = proto.Field(
+    metric_name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    metric = proto.Field(
+    metric: 'LogMetric' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='LogMetric',
@@ -390,7 +401,7 @@ class DeleteLogMetricRequest(proto.Message):
                 "projects/[PROJECT_ID]/metrics/[METRIC_ID]".
     """
 
-    metric_name = proto.Field(
+    metric_name: str = proto.Field(
         proto.STRING,
         number=1,
     )

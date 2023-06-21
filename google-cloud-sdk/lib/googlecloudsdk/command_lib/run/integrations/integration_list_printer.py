@@ -12,26 +12,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Printer for formatting the 'gcloud run intergrations list' command.
+"""Represents the rows of the the 'gcloud run integrations list' command.
 
-The integrations list command returns a dict with a single key.
-The value is a list of dicts where each entry will be formatted as a row in the
-resulting table that will be displayed to the user.
-
-input:
-  record: {
-    'output': [
-        {'name': 'integration1', 'type': 'redis', '
-        services': 'svc1,svc2', 'latestDeployment': FAILED},
-        {'name': 'integration2', 'type': 'redis', '
-        services': 'svc3,svc4', 'latestDeployment': SUCCESS},
-    ]
-  }
-
-output:
-    INTEGRATION     TYPE       SERVICE
-  X integration1    redis      svc1,svc2
-  ✔ integration2    redis      svc3,svc4
+The client.ListIntegrations output is formatted into the Row class listed below,
+which allows for formatted output to the console.  The list command registers
+a table that references the field names in the Row class.
 """
 
 from __future__ import absolute_import
@@ -41,10 +26,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.run.integrations import deployment_states
 from googlecloudsdk.command_lib.run.integrations.formatters import base_formatter
-from googlecloudsdk.core.resource import custom_printer_base as cp
-
-PRINTER_FORMAT = 'IntegrationsList'
-RECORD_KEY = 'OUTPUT'
 
 
 class Row(object):
@@ -61,6 +42,9 @@ class Row(object):
     self.services = services
     self.latest_deployment_status = latest_deployment_status
     self.region = region
+    self.formatted_latest_deployment_status = (
+        _GetSymbolFromDeploymentStatus(latest_deployment_status)
+    )
 
   def __eq__(self, other):
     return (self.integration_name == other.integration_name and
@@ -69,32 +53,6 @@ class Row(object):
             self.latest_deployment_status == other.latest_deployment_status and
             self.region == other.region
            )
-
-
-# TODO(b/217741829): Limit outputted services to 3.
-class IntegrationListPrinter(cp.CustomPrinterBase):
-  """Prints the integrations list output in a custom human readable format."""
-
-  def Transform(self, record):
-    """Transforms the given record into a structured table.
-
-    Args:
-      record: dict, has a single key. Values are list[dict] where each record
-        in the list will be a separate row in the output.
-
-    Returns:
-      Formatted table that is displayed on output to the console.
-    """
-    rows = record[RECORD_KEY]
-    rows = [(_GetSymbolFromDeploymentStatus(row.latest_deployment_status),
-             row.integration_name, row.integration_type, row.services,
-             row.region)
-            for row in rows
-           ]
-
-    # the empty column is for the latest deployment status.
-    cols = [('', 'INTEGRATION', 'TYPE', 'SERVICE', 'REGION')]
-    return cp.Table(cols + rows)
 
 
 def _GetSymbolFromDeploymentStatus(status):

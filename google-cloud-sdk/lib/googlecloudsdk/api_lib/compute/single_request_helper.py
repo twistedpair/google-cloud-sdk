@@ -66,7 +66,11 @@ def MakeSingleRequest(service, method, request_body):
   """
   responses, errors = [], []
   try:
+    # stop the default retry behavior of http_wrapper.MakeRequest
+    num_retries = service.client.num_retries
+    service.client.num_retries = 0
     response = getattr(service, method)(request=request_body)
+    service.client.num_retries = num_retries
     responses.append(response)
   # Catch all 403 forbidden errors and give a special
   # treatment to the "Compute API not enabled" error.
@@ -88,11 +92,14 @@ def MakeSingleRequest(service, method, request_body):
           pass
     error_message = _GenerateErrorMessage(exception)
     errors.append(error_message)
+    responses.append(None)
     return responses, errors
   except exceptions.HttpError as exception:
     # TODO(b/260144046): Add Enable Service Prompt and Retry.
     error_message = _GenerateErrorMessage(exception)
     errors.append(error_message)
+    # keep the same code behavior with batch_helper
+    responses.append(None)
   return responses, errors
 
 

@@ -93,8 +93,9 @@ def copy_object_metadata(source_metadata,
   else:
     if request_config.resource_args.preserve_acl:
       if not source_metadata.acl:
-        raise ValueError(
-            'Attempting to preserve ACLs but found no source ACLs.')
+        raise errors.Error(
+            'Attempting to preserve ACLs but found no source ACLs.'
+        )
       destination_metadata.acl = copy.deepcopy(source_metadata.acl)
     destination_metadata.cacheControl = source_metadata.cacheControl
     destination_metadata.contentDisposition = source_metadata.contentDisposition

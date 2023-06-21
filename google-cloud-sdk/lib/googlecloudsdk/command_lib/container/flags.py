@@ -513,7 +513,7 @@ def AddAcceleratorArgs(
       type=arg_parsers.ArgDict(
           spec=spec, required_keys=['type'], max_length=len(spec)
       ),
-      metavar='type=TYPE,[count=COUNT,gpu-partition-size=GPU_PARTITION_SIZE,gpu-sharing-strategy=GPU_SHARING_STRATEGY,max-shared-clients-per-gpu=MAX_SHARED_CLIENTS_PER_GPU]',
+      metavar='type=TYPE,[count=COUNT,gpu-driver-version=GPU_DRIVER_VERSION,gpu-partition-size=GPU_PARTITION_SIZE,gpu-sharing-strategy=GPU_SHARING_STRATEGY,max-shared-clients-per-gpu=MAX_SHARED_CLIENTS_PER_GPU]',
       help="""\
       Attaches accelerators (e.g. GPUs) to all nodes.
 
@@ -523,6 +523,18 @@ def AddAcceleratorArgs(
 
       *count*::: (Optional) The number of accelerators to attach to the
       instances. The default value is 1.
+
+      *gpu-driver-version*::: (Optional) The NVIDIA driver version to install. GPU_DRIVER_VERSION must be one of:
+
+        `default`: Install the default driver version. If you omit the flag `gpu-driver-version`,
+        this is the default option.
+
+        `latest`: Install the latest available driver version. Available only for
+        nodes that use Container-Optimized OS.
+
+        `disabled`: Skip automatic driver installation. You must [manually install a
+        driver](https://cloud.google.com/kubernetes-engine/docs/how-to/gpus#installing_drivers)
+        after you create the cluster.
 
       *gpu-partition-size*::: (Optional) The GPU partition size used when running multi-instance GPUs.
       For information about multi-instance GPUs,
@@ -1751,6 +1763,22 @@ def AddTPUTopologyFlag(parser, hidden=False):
       """)
 
   parser.add_argument('--tpu-topology', help=help_text, hidden=hidden)
+
+
+def AddPlacementPolicyFlag(parser, hidden=True):
+  """Adds a --placement-policy flag to parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+  help_text = textwrap.dedent("""\
+    This indicates the desired resource policy to use.
+
+    $ {command} node-pool-1 --cluster=example-cluster --placement-policy my-placement
+      """)
+
+  parser.add_argument('--placement-policy', help=help_text, hidden=hidden)
 
 
 def AddQueuedProvisioningFlag(parser, hidden=False):
@@ -3584,7 +3612,7 @@ def AddWorkloadVulnScanningEnumFlag(parser):
       '--workload-vulnerability-scanning',
       choices=['disabled', 'standard'],
       default=None,
-      hidden=True,
+      hidden=False,
       help=textwrap.dedent("""\
       Sets the mode of the Kubernetes security posture API's workload
       vulnerability scanning.
@@ -3604,7 +3632,7 @@ def AddSecurityPostureEnumFlag(parser):
       '--security-posture',
       choices=['disabled', 'standard'],
       default=None,
-      hidden=True,
+      hidden=False,
       help=textwrap.dedent("""\
       Sets the mode of the Kubernetes security posture API's off-cluster features.
 
@@ -4402,7 +4430,7 @@ def AddStandardRolloutPolicyFlag(parser, for_node_pool=False, hidden=False):
   standard_rollout_policy_help = """\
 Standard rollout policy options for blue-green upgrade.
 
-Batch sizes are specfied by one of, batch-node-count or batch-percent.
+Batch sizes are specified by one of, batch-node-count or batch-percent.
 The duration between batches is specified by batch-soak-duration.
 
 """
@@ -4981,6 +5009,37 @@ def AddNumaNodeCount(parser):
       help=help_text,
       default=None,
   )
+
+
+def AddHostMaintenanceIntervalFlag(parser, for_node_pool=False, hidden=True):
+  """Adds a --host-maintenance-interval flag to the given parser."""
+  type_validator = arg_parsers.RegexpValidator(
+      r'^(PERIODIC|AS_NEEDED)$', 'Type must be either"PERIODIC" or "AS_NEEDED"')
+  if for_node_pool:
+    help_text = """\
+Specify the frequency of planned host maintenance events in the new nodepool
+
+Examples:
+
+  $ {command} node-pool-1 example-cluster --host-maintenance-interval=PERIODIC
+
+The maintenance interval type must be either 'PERIODIC' or 'AS_NEEDED'
+"""
+  else:
+    help_text = """\
+Specify the frequency of planned maintenance events in the new cluster
+
+Examples:
+
+  $ {command} example-cluster --host-maintenance-interval=PERIODIC
+
+The maintenance interval type must be either 'PERIODIC' or 'AS_NEEDED'
+"""
+  parser.add_argument(
+      '--host-maintenance-interval',
+      type=type_validator,
+      hidden=hidden,
+      help=help_text)
 
 
 def AddEnableGcfsFlag(parser, for_node_pool=False, hidden=True):
@@ -5617,13 +5676,13 @@ def AddEnableDNSEndpoint(parser):
   )
 
 
-def AddWorkloadPoliciesFlag(parser, hidden=True):
+def AddWorkloadPoliciesFlag(parser, hidden=False):
   """Adds workload policies related flags to parser."""
   type_validator = arg_parsers.RegexpValidator(
       r'^allow-net-admin$', 'Workload policy only supports "allow-net-admin"'
   )
   help_text = """\
-Add autopilot workload policies to the cluster
+Add Autopilot workload policies to the cluster.
 
 Examples:
 
@@ -5637,13 +5696,13 @@ The only supported workload policy is 'allow-net-admin'.
   )
 
 
-def AddRemoveWorkloadPoliciesFlag(parser, hidden=True):
+def AddRemoveWorkloadPoliciesFlag(parser, hidden=False):
   """Adds Remove workload policies related flags to parser."""
   type_validator = arg_parsers.RegexpValidator(
       r'^allow-net-admin$', 'Workload policy only supports "allow-net-admin"'
   )
   help_text = """\
-Remove autopilot workload policies from the cluster
+Remove Autopilot workload policies from the cluster.
 
 Examples:
 
@@ -5691,7 +5750,7 @@ def AddSoleTenantNodeAffinityFileFlag(parser, hidden=False):
       type=arg_parsers.YAMLFileContents(),
       hidden=hidden,
       help="""\
-      The JSON/YAML file containing the configuration of desired sole tenant
+      JSON/YAML file containing the configuration of desired sole tenant
       nodes onto which this node pool could be backed by. These rules filter the
       nodes according to their node affinity labels. A node's affinity labels
       come from the node template of the group the node is in.

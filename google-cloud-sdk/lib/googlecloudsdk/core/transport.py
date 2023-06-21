@@ -30,9 +30,7 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
-
 from googlecloudsdk.core.util import platforms
-
 import six
 from six.moves import urllib
 from six.moves import zip  # pylint: disable=redefined-builtin
@@ -568,9 +566,11 @@ def GetAndCacheArchitecture(user_platform):
   Returns:
     client machine architecture
   """
-  arch = properties.VALUES.metrics.client_arch.Get()
-  if arch:
-    return arch
+
+  active_config_store = config.GetConfigStore()
+  config_client_arch = active_config_store.Get('client_arch')
+  if config_client_arch:
+    return config_client_arch
 
   # Determine if this is an M1 Mac Python using x86_64 emulation.
   if (user_platform.operating_system == platforms.OperatingSystem.MACOSX and
@@ -579,15 +579,9 @@ def GetAndCacheArchitecture(user_platform):
     arch = '{}_{}'.format(
         platforms.Architecture.x86_64, platforms.Architecture.arm)
   else:
-    arch = user_platform.architecture
+    arch = str(user_platform.architecture)
 
-  try:
-    properties.PersistProperty(properties.VALUES.metrics.client_arch, arch,
-                               scope=properties.Scope.INSTALLATION)
-  # pylint:disable=bare-except
-  except:
-    pass
-
+  active_config_store.Set('client_arch', arch)
   return arch
 
 

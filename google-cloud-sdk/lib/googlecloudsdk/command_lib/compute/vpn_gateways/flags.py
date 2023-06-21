@@ -136,25 +136,32 @@ def GetInterconnectAttachmentRef(resources, name, region, project):
       })
 
 
-def GetStackType():
+def GetStackType(ipv6_only_vpn_enabled=False):
   """Returns the flag for VPN gateway stack type.
+
+  Args:
+    ipv6_only_vpn_enabled: Whether to include IPV6_ONLY stack type.
 
   Return:
     An enum presents the stack type for the VPN gateway.
   """
+  choices = {
+      'IPV4_ONLY': 'Only IPv4 protocol is enabled on this VPN gateway.',
+      'IPV4_IPV6': (
+          'Both IPv4 and IPv6 protocols are enabled on this VPN gateway.'
+      ),
+  }
+  if ipv6_only_vpn_enabled:
+    choices['IPV6_ONLY'] = 'Only IPv6 protocol is enabled on this VPN gateway.'
   return base.Argument(
       '--stack-type',
-      choices={
-          'IPV4_ONLY':
-              'Only IPv4 protocol is enabled on this VPN gateway.',
-          'IPV4_IPV6':
-              'Both IPv4 and IPv6 protocols are enabled on this VPN gateway.',
-      },
+      choices=choices,
       type=arg_utils.ChoiceToEnumName,
       help="""\
       The stack type of the protocol(s) enabled on this VPN gateway.
       If not provided, `IPV4_ONLY` will be used.
-      """)
+      """,
+  )
 
 
 def GetGatewayIpVersion():

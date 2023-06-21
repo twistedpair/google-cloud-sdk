@@ -18,7 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+
 from googlecloudsdk.calliope import actions as calliope_actions
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -41,6 +44,15 @@ _INTERCONNECT_TYPE_CHOICES_BETA_AND_ALPHA = {
 _LINK_TYPE_CHOICES = {
     'LINK_TYPE_ETHERNET_10G_LR': '10Gbps Ethernet, LR Optics.',
     'LINK_TYPE_ETHERNET_100G_LR': '100Gbps Ethernet, LR Optics.'
+}
+
+_REQUESTED_FEATURES_CHOICES = {
+    'MACSEC':
+        'If specified then the interconnect will be created on MACsec capable '
+        'hardware ports. If not specified, the default value is false, which '
+        'will allocate non-MACsec capable ports first if available. This '
+        'parameter can only be provided during interconnect INSERT and cannot '
+        'be changed using interconnect PATCH.'
 }
 
 
@@ -108,6 +120,48 @@ def GetLinkType(messages, link_type_arg):
     return messages.Interconnect.LinkTypeValueValuesEnum(link_type_arg)
 
 
+def GetRequestedFeatures(messages, requested_features_arg):
+  """Converts the requested-features flag to a list of message enums.
+
+  Args:
+    messages: The API messages holder.
+    requested_features_arg: A list of the interconnect feature type flag values.
+
+  Returns:
+    A list of RequestedFeaturesValueListEntryValuesEnum values, or None if
+    absent.
+  """
+  if not requested_features_arg:
+    return []
+  features = list(
+      filter(
+          None,
+          [
+              GetRequestedFeature(messages, f)
+              for f in requested_features_arg
+          ],
+      )
+  )
+  return list(collections.OrderedDict.fromkeys(features))  # Remove duplicates.
+
+
+def GetRequestedFeature(messages, feature_arg):
+  """Converts interconnect feature type flag to a message enum.
+
+  Args:
+    messages: The API messages holder.
+    feature_arg: The feature type flag value.
+
+  Returns:
+    A RequestedFeaturesValueListEntryValuesEnum of the flag value.
+  """
+  if feature_arg == 'MACSEC':
+    return messages.Interconnect.RequestedFeaturesValueListEntryValuesEnum(
+        'IF_MACSEC'
+    )
+  return None
+
+
 def AddCreateCommonArgs(parser):
   """Adds shared flags for create command to the argparse.ArgumentParser."""
   AddAdminEnabled(parser)
@@ -128,6 +182,13 @@ def AddCreateBetaArgs(parser):
   """Adds beta flags for create command to the argparse.ArgumentParser."""
   AddCreateCommonArgs(parser)
   AddInterconnectTypeBetaAndAlpha(parser)
+
+
+def AddCreateAlphaArgs(parser):
+  """Adds alpha flags for create command to the argparse.ArgumentParser."""
+  AddCreateCommonArgs(parser)
+  AddInterconnectTypeBetaAndAlpha(parser)
+  AddRequestedFeatures(parser)
 
 
 def AddDescription(parser):
@@ -170,6 +231,18 @@ def AddInterconnectTypeBetaAndAlpha(parser):
       required=True,
       help="""\
       Type of the interconnect.
+      """)
+
+
+def AddRequestedFeatures(parser):
+  """Adds requested-features flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--requested-features',
+      type=arg_parsers.ArgList(choices=_REQUESTED_FEATURES_CHOICES),
+      metavar='FEATURES',
+      hidden=True,
+      help="""\
+      List of features requested for this interconnect.
       """)
 
 
@@ -288,7 +361,7 @@ def AddFailOpenForUpdate(parser):
       """)
 
 
-def AddMacsecPreSharedKeyNameForAddKey(parser):
+def AddMacsecPreSharedKeyNameForAddOrUpdateKey(parser):
   """Adds keyName flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--key-name',
@@ -300,7 +373,7 @@ def AddMacsecPreSharedKeyNameForAddKey(parser):
       """)
 
 
-def AddMacsecPreSharedKeyStartTimeForAddKey(parser):
+def AddMacsecPreSharedKeyStartTimeForAddOrUpdateKey(parser):
   """Adds keyName flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--start-time',

@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import enum
 import re
 
 from apitools.base.protorpclite import messages
@@ -184,6 +185,51 @@ def _GetField(message, field_name):
     return message.field_by_name(field_name)
   except KeyError:
     raise UnknownFieldError(field_name, message)
+
+
+class FieldType(enum.Enum):
+  MAP = 'map'
+  MESSAGE = 'message'
+  FIELD = 'field'
+
+
+ADDITIONAL_PROPS = 'additionalProperties'
+
+
+def _GetAdditionalPropsField(field):
+  if field.name == ADDITIONAL_PROPS:
+    return field
+  try:
+    return GetFieldFromMessage(field.type, ADDITIONAL_PROPS)
+  except UnknownFieldError:
+    return None
+
+
+def GetFieldType(field):
+  """Determines whether the apitools field is a map, message, or neither.
+
+  Args:
+    field: messages.Field, apitools field instance
+
+  Returns:
+    FieldType based on the apitools field type and the type of fields
+      it contains.
+  """
+  if not isinstance(field, messages.MessageField):
+    return FieldType.FIELD
+
+  # Apitools does not distinguish MapFields. Rather, apitools creates a
+  # message field with an additionalProperties field that contains a list
+  # of key, value fields
+  additional_props_field = _GetAdditionalPropsField(field)
+
+  is_map = (additional_props_field and
+            isinstance(additional_props_field, messages.MessageField) and
+            additional_props_field.repeated)
+
+  if is_map:
+    return FieldType.MAP
+  return FieldType.MESSAGE
 
 
 DEFAULT_PARAMS = {'project': properties.VALUES.core.project.Get,

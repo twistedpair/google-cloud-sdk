@@ -359,14 +359,22 @@ class CloudWildcardIterator(WildcardIterator):
             yield obj_resource
 
   def _decrypt_resource_if_necessary(self, resource):
-    if (self._fetch_encrypted_object_hashes and
-        cloud_api.Capability.ENCRYPTION in self._client.capabilities and
-        self._fields_scope != cloud_api.FieldsScope.SHORT and
-        isinstance(resource, resource_reference.ObjectResource)):
+    if (
+        self._fetch_encrypted_object_hashes
+        and cloud_api.Capability.ENCRYPTION in self._client.capabilities
+        and self._fields_scope != cloud_api.FieldsScope.SHORT
+        and isinstance(resource, resource_reference.ObjectResource)
+        and not (resource.crc32c_hash or resource.md5_hash)
+    ):
       # LIST won't return GCS hash fields. Need to GET.
       if resource.kms_key:
         # Backend will reject if user does not have KMS encryption permissions.
-        return self._client.get_object_metadata(resource.bucket, resource.name)
+        return self._client.get_object_metadata(
+            resource.bucket,
+            resource.name,
+            generation=self._url.generation,
+            fields_scope=self._fields_scope,
+        )
       if resource.decryption_key_hash_sha256:
         request_config = request_config_factory.get_request_config(
             resource.storage_url,
@@ -374,8 +382,13 @@ class CloudWildcardIterator(WildcardIterator):
             error_on_missing_key=self._error_on_missing_key)
         if getattr(request_config.resource_args, 'decryption_key', None):
           # Don't GET unless we have a key that will decrypt object.
-          return self._client.get_object_metadata(resource.bucket,
-                                                  resource.name, request_config)
+          return self._client.get_object_metadata(
+              resource.bucket,
+              resource.name,
+              request_config,
+              generation=self._url.generation,
+              fields_scope=self._fields_scope,
+          )
     # No decryption necessary or don't have proper key.
     return resource
 
@@ -387,8 +400,9 @@ class CloudWildcardIterator(WildcardIterator):
           self._url.object_name,
           # TODO(b/197754758): add user request args from surface.
           request_config_factory.get_request_config(self._url),
-          self._url.generation,
-          self._fields_scope)
+          generation=self._url.generation,
+          fields_scope=self._fields_scope,
+      )
 
       return self._decrypt_resource_if_necessary(resource)
     except api_errors.NotFoundError:

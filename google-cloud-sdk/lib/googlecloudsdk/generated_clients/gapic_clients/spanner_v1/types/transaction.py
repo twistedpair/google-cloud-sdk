@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from __future__ import annotations
+
+from typing import MutableMapping, MutableSequence
+
 import proto  # type: ignore
 
 from cloudsdk.google.protobuf import duration_pb2  # type: ignore
@@ -408,12 +412,27 @@ class TransactionOptions(proto.Message):
         class ReadLockMode(proto.Enum):
             r"""``ReadLockMode`` is used to set the read lock mode for read-write
             transactions.
+
+            Values:
+                READ_LOCK_MODE_UNSPECIFIED (0):
+                    Default value.
+                    If the value is not specified, the pessimistic
+                    read lock is used.
+                PESSIMISTIC (1):
+                    Pessimistic lock mode.
+                    Read locks are acquired immediately on read.
+                OPTIMISTIC (2):
+                    Optimistic lock mode.
+                    Locks for reads within the transaction are not
+                    acquired on read. Instead the locks are acquired
+                    on a commit to validate that read/queried data
+                    has not changed since the transaction started.
             """
             READ_LOCK_MODE_UNSPECIFIED = 0
             PESSIMISTIC = 1
             OPTIMISTIC = 2
 
-        read_lock_mode = proto.Field(
+        read_lock_mode: 'TransactionOptions.ReadWrite.ReadLockMode' = proto.Field(
             proto.ENUM,
             number=1,
             enum='TransactionOptions.ReadWrite.ReadLockMode',
@@ -507,53 +526,53 @@ class TransactionOptions(proto.Message):
                 message that describes the transaction.
         """
 
-        strong = proto.Field(
+        strong: bool = proto.Field(
             proto.BOOL,
             number=1,
             oneof='timestamp_bound',
         )
-        min_read_timestamp = proto.Field(
+        min_read_timestamp: timestamp_pb2.Timestamp = proto.Field(
             proto.MESSAGE,
             number=2,
             oneof='timestamp_bound',
             message=timestamp_pb2.Timestamp,
         )
-        max_staleness = proto.Field(
+        max_staleness: duration_pb2.Duration = proto.Field(
             proto.MESSAGE,
             number=3,
             oneof='timestamp_bound',
             message=duration_pb2.Duration,
         )
-        read_timestamp = proto.Field(
+        read_timestamp: timestamp_pb2.Timestamp = proto.Field(
             proto.MESSAGE,
             number=4,
             oneof='timestamp_bound',
             message=timestamp_pb2.Timestamp,
         )
-        exact_staleness = proto.Field(
+        exact_staleness: duration_pb2.Duration = proto.Field(
             proto.MESSAGE,
             number=5,
             oneof='timestamp_bound',
             message=duration_pb2.Duration,
         )
-        return_read_timestamp = proto.Field(
+        return_read_timestamp: bool = proto.Field(
             proto.BOOL,
             number=6,
         )
 
-    read_write = proto.Field(
+    read_write: ReadWrite = proto.Field(
         proto.MESSAGE,
         number=1,
         oneof='mode',
         message=ReadWrite,
     )
-    partitioned_dml = proto.Field(
+    partitioned_dml: PartitionedDml = proto.Field(
         proto.MESSAGE,
         number=3,
         oneof='mode',
         message=PartitionedDml,
     )
-    read_only = proto.Field(
+    read_only: ReadOnly = proto.Field(
         proto.MESSAGE,
         number=2,
         oneof='mode',
@@ -583,11 +602,11 @@ class Transaction(proto.Message):
             nanoseconds. Example: ``"2014-10-02T15:01:23.045123456Z"``.
     """
 
-    id = proto.Field(
+    id: bytes = proto.Field(
         proto.BYTES,
         number=1,
     )
-    read_timestamp = proto.Field(
+    read_timestamp: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=2,
         message=timestamp_pb2.Timestamp,
@@ -632,18 +651,18 @@ class TransactionSelector(proto.Message):
             This field is a member of `oneof`_ ``selector``.
     """
 
-    single_use = proto.Field(
+    single_use: 'TransactionOptions' = proto.Field(
         proto.MESSAGE,
         number=1,
         oneof='selector',
         message='TransactionOptions',
     )
-    id = proto.Field(
+    id: bytes = proto.Field(
         proto.BYTES,
         number=2,
         oneof='selector',
     )
-    begin = proto.Field(
+    begin: 'TransactionOptions' = proto.Field(
         proto.MESSAGE,
         number=3,
         oneof='selector',

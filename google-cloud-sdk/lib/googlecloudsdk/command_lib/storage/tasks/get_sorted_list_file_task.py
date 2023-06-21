@@ -44,6 +44,7 @@ class GetSortedContainerContentsTask(task.Task):
       container,
       output_path,
       exclude_pattern_strings=None,
+      ignore_symlinks=True,
       recurse=False,
   ):
     """Initializes task.
@@ -53,6 +54,7 @@ class GetSortedContainerContentsTask(task.Task):
       output_path (str): Where to write final sorted file list.
       exclude_pattern_strings (List[str]|None): Ignore resources whose paths
         matched these regex patterns.
+      ignore_symlinks (bool): Should FileWildcardIterator skip symlinks.
       recurse (bool): Gather nested items in container.
     """
     super(GetSortedContainerContentsTask, self).__init__()
@@ -78,6 +80,8 @@ class GetSortedContainerContentsTask(task.Task):
     else:
       self._exclude_patterns = None
 
+    self._ignore_symlinks = ignore_symlinks
+
     self._worker_id = 'process {} thread {}'.format(
         os.getpid(), threading.get_ident()
     )
@@ -91,6 +95,7 @@ class GetSortedContainerContentsTask(task.Task):
             fields_scope=cloud_api.FieldsScope.RSYNC,
             files_only=True,
             force_include_hidden_files=True,
+            ignore_symlinks=self._ignore_symlinks,
         )
     )
     chunk_count = file_count = 0

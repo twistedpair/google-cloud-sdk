@@ -33,6 +33,13 @@ VALID_REDIS_4_0_CONFIG_KEYS = ('activedefrag', 'lfu-decay-time',
                                'lfu-log-factor', 'maxmemory-gb')
 VALID_REDIS_5_0_CONFIG_KEYS = ('stream-node-max-bytes',
                                'stream-node-max-entries')
+VALID_REDIS_7_0_CONFIG_KEYS = (
+    'maxmemory-clients',
+    'lazyfree-lazy-eviction',
+    'lazyfree-lazy-expire',
+    'lazyfree-lazy-user-del',
+    'lazyfree-lazy-user-flush',
+)
 
 
 def GetClientForResource(resource_ref):
@@ -50,7 +57,7 @@ def GetMessagesForResource(resource_ref):
 def InstanceRedisConfigArgDictSpec():
   valid_redis_config_keys = (
       VALID_REDIS_3_2_CONFIG_KEYS + VALID_REDIS_4_0_CONFIG_KEYS +
-      VALID_REDIS_5_0_CONFIG_KEYS)
+      VALID_REDIS_5_0_CONFIG_KEYS + VALID_REDIS_7_0_CONFIG_KEYS)
   return {k: six.text_type for k in valid_redis_config_keys}
 
 
@@ -85,6 +92,7 @@ def InstanceUpdateRedisConfigFlag():
       metavar='KEY=VALUE',
       type=InstanceRedisConfigArgType,
       action=arg_parsers.UpdateAction,
+      # TODO(b/286342356): add help text for 7.0 config.
       help="""\
       A list of Redis config KEY=VALUE pairs to update according to
       http://cloud.google.com/memorystore/docs/reference/redis-configs. If a config parameter is already set,
@@ -93,9 +101,12 @@ def InstanceUpdateRedisConfigFlag():
       Redis version 3.2 and newer: {}.\n
       Redis version 4.0 and newer: {}.\n
       Redis version 5.0 and newer: {}.
-      """.format(', '.join(VALID_REDIS_3_2_CONFIG_KEYS),
-                 ', '.join(VALID_REDIS_4_0_CONFIG_KEYS),
-                 ', '.join(VALID_REDIS_5_0_CONFIG_KEYS)))
+      """.format(
+          ', '.join(VALID_REDIS_3_2_CONFIG_KEYS),
+          ', '.join(VALID_REDIS_4_0_CONFIG_KEYS),
+          ', '.join(VALID_REDIS_5_0_CONFIG_KEYS),
+      ),
+  )
 
 
 def InstanceRemoveRedisConfigFlag():

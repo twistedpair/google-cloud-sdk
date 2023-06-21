@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from __future__ import annotations
+
+from typing import MutableMapping, MutableSequence
+
 import proto  # type: ignore
 
 
@@ -35,6 +39,66 @@ class TypeCode(proto.Enum):
     value, using the encodings described below. All Cloud Spanner values
     can be ``null``, regardless of type; ``null``\ s are always encoded
     as a JSON ``null``.
+
+    Values:
+        TYPE_CODE_UNSPECIFIED (0):
+            Not specified.
+        BOOL (1):
+            Encoded as JSON ``true`` or ``false``.
+        INT64 (2):
+            Encoded as ``string``, in decimal format.
+        FLOAT64 (3):
+            Encoded as ``number``, or the strings ``"NaN"``,
+            ``"Infinity"``, or ``"-Infinity"``.
+        TIMESTAMP (4):
+            Encoded as ``string`` in RFC 3339 timestamp format. The time
+            zone must be present, and must be ``"Z"``.
+
+            If the schema has the column option
+            ``allow_commit_timestamp=true``, the placeholder string
+            ``"spanner.commit_timestamp()"`` can be used to instruct the
+            system to insert the commit timestamp associated with the
+            transaction commit.
+        DATE (5):
+            Encoded as ``string`` in RFC 3339 date format.
+        STRING (6):
+            Encoded as ``string``.
+        BYTES (7):
+            Encoded as a base64-encoded ``string``, as described in RFC
+            4648, section 4.
+        ARRAY (8):
+            Encoded as ``list``, where the list elements are represented
+            according to
+            [array_element_type][google.spanner.v1.Type.array_element_type].
+        STRUCT (9):
+            Encoded as ``list``, where list element ``i`` is represented
+            according to
+            [struct_type.fields[i]][google.spanner.v1.StructType.fields].
+        NUMERIC (10):
+            Encoded as ``string``, in decimal format or scientific
+            notation format. Decimal format: \ ``[+-]Digits[.[Digits]]``
+            or \ ``[+-][Digits].Digits``
+
+            Scientific notation:
+            \ ``[+-]Digits[.[Digits]][ExponentIndicator[+-]Digits]`` or
+            \ ``[+-][Digits].Digits[ExponentIndicator[+-]Digits]``
+            (ExponentIndicator is ``"e"`` or ``"E"``)
+        JSON (11):
+            Encoded as a JSON-formatted ``string`` as described in RFC
+            7159. The following rules are applied when parsing JSON
+            input:
+
+            -  Whitespace characters are not preserved.
+            -  If a JSON object has duplicate keys, only the first key
+               is preserved.
+            -  Members of a JSON object are not guaranteed to have their
+               order preserved.
+            -  JSON array elements will have their order preserved.
+        PROTO (13):
+            Encoded as a base64-encoded ``string``, as described in RFC
+            4648, section 4.
+        ENUM (14):
+            Encoded as ``string``, in decimal format.
     """
     TYPE_CODE_UNSPECIFIED = 0
     BOOL = 1
@@ -59,6 +123,27 @@ class TypeAnnotationCode(proto.Enum):
     because the same Cloud Spanner type can be mapped to different SQL
     types depending on SQL dialect. TypeAnnotationCode doesn't affect
     the way value is serialized.
+
+    Values:
+        TYPE_ANNOTATION_CODE_UNSPECIFIED (0):
+            Not specified.
+        PG_NUMERIC (2):
+            PostgreSQL compatible NUMERIC type. This annotation needs to
+            be applied to [Type][google.spanner.v1.Type] instances
+            having [NUMERIC][google.spanner.v1.TypeCode.NUMERIC] type
+            code to specify that values of this type should be treated
+            as PostgreSQL NUMERIC values. Currently this annotation is
+            always needed for
+            [NUMERIC][google.spanner.v1.TypeCode.NUMERIC] when a client
+            interacts with PostgreSQL-enabled Spanner databases.
+        PG_JSONB (3):
+            PostgreSQL compatible JSONB type. This annotation needs to
+            be applied to [Type][google.spanner.v1.Type] instances
+            having [JSON][google.spanner.v1.TypeCode.JSON] type code to
+            specify that values of this type should be treated as
+            PostgreSQL JSONB values. Currently this annotation is always
+            needed for [JSON][google.spanner.v1.TypeCode.JSON] when a
+            client interacts with PostgreSQL-enabled Spanner databases.
     """
     TYPE_ANNOTATION_CODE_UNSPECIFIED = 0
     PG_NUMERIC = 2
@@ -103,27 +188,27 @@ class Type(proto.Message):
             type representing the proto/enum definition.
     """
 
-    code = proto.Field(
+    code: 'TypeCode' = proto.Field(
         proto.ENUM,
         number=1,
         enum='TypeCode',
     )
-    array_element_type = proto.Field(
+    array_element_type: 'Type' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='Type',
     )
-    struct_type = proto.Field(
+    struct_type: 'StructType' = proto.Field(
         proto.MESSAGE,
         number=3,
         message='StructType',
     )
-    type_annotation = proto.Field(
+    type_annotation: 'TypeAnnotationCode' = proto.Field(
         proto.ENUM,
         number=4,
         enum='TypeAnnotationCode',
     )
-    proto_type_fqn = proto.Field(
+    proto_type_fqn: str = proto.Field(
         proto.STRING,
         number=5,
     )
@@ -134,7 +219,7 @@ class StructType(proto.Message):
     [STRUCT][google.spanner.v1.TypeCode.STRUCT] type.
 
     Attributes:
-        fields (Sequence[googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.StructType.Field]):
+        fields (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.StructType.Field]):
             The list of fields that make up this struct. Order is
             significant, because values of this struct type are
             represented as lists, where the order of field values
@@ -161,17 +246,17 @@ class StructType(proto.Message):
                 The type of the field.
         """
 
-        name = proto.Field(
+        name: str = proto.Field(
             proto.STRING,
             number=1,
         )
-        type_ = proto.Field(
+        type_: 'Type' = proto.Field(
             proto.MESSAGE,
             number=2,
             message='Type',
         )
 
-    fields = proto.RepeatedField(
+    fields: MutableSequence[Field] = proto.RepeatedField(
         proto.MESSAGE,
         number=1,
         message=Field,

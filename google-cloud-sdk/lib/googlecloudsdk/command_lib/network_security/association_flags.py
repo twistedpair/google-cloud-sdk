@@ -28,9 +28,17 @@ from googlecloudsdk.core import resources
 
 
 ASSOCIATION_RESOURCE_NAME = "FIREWALL_ENDPOINT_ASSOCIATION"
-ASSOCIATION_RESOURCE_COLLECTION = "networksecurity.projects.locations.firewallEndpointAssociations"
+ASSOCIATION_RESOURCE_COLLECTION = (
+    "networksecurity.projects.locations.firewallEndpointAssociations"
+)
 ENDPOINT_RESOURCE_NAME = "FIREWALL_ENDPOINT"
-ENDPOINT_RESOURCE_COLLECTION = "networksecurity.organizations.locations.firewallEndpoints"
+TLS_INSPECTION_POLICY_RESOURCE_NAME = "--tls-inspection-policy"
+ENDPOINT_RESOURCE_COLLECTION = (
+    "networksecurity.organizations.locations.firewallEndpoints"
+)
+TLS_INSPECTION_POLICY_RESOURCE_COLLECTION = (
+    "networksecurity.projects.locations.tlsInspectionPolicies"
+)
 
 
 def AddAssociationResource(release_track, parser):
@@ -144,15 +152,53 @@ def AddMaxWait(
 
 def AddTLSInspectionPolicy(
     parser,
+    release_track,
     help_text="Path to TLS Inspection Policy configuration to use for intercepting TLS-encrypted traffic in this network.",
 ):
-  """Adds --tls-inspection-policy flag."""
-  parser.add_argument(
-      "--tls-inspection-policy",
-      dest="tls_inspection_policy",
-      required=False,
-      help=help_text,
+  """Adds TLS Inspection Policy resource."""
+  api_version = activation_api.GetApiVersion(release_track)
+  collection_info = resources.REGISTRY.Clone().GetCollectionInfo(
+      ASSOCIATION_RESOURCE_COLLECTION, api_version
   )
+  resource_spec = concepts.ResourceSpec(
+      TLS_INSPECTION_POLICY_RESOURCE_COLLECTION,
+      "TLS Inspection Policy",
+      api_version=api_version,
+      projectsId=concepts.ResourceParameterAttributeConfig(
+          "tls-inspection-policy-project",
+          "Project of the {resource}.",
+          parameter_name="projectsId",
+          fallthroughs=[
+              deps.ArgFallthrough("--project"),
+              deps.FullySpecifiedAnchorFallthrough(
+                  deps.ArgFallthrough(ASSOCIATION_RESOURCE_NAME),
+                  collection_info,
+                  "projectsId",
+              ),
+          ],
+      ),
+      locationsId=concepts.ResourceParameterAttributeConfig(
+          "tls-inspection-policy-region",
+          """
+          Region of the {resource}.
+          NOTE: TLS Inspection Policy needs to be
+          in the same region as Firewall Plus endpoint resource.
+          """,
+          parameter_name="locationsId",
+      ),
+      tlsInspectionPoliciesId=concepts.ResourceParameterAttributeConfig(
+          "tls_inspection_policy",
+          "Name of the {resource}",
+          parameter_name="tlsInspectionPoliciesId",
+      ),
+  )
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=TLS_INSPECTION_POLICY_RESOURCE_NAME,
+      concept_spec=resource_spec,
+      required=False,
+      group_help=help_text,
+  )
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
 def MakeGetUriFunc(release_track):

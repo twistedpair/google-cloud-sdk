@@ -54,6 +54,18 @@ def AddSourceDiskCsekKey(parser):
       """)
 
 
+def AddSourceInstantSnapshotCsekKey(parser):
+  parser.add_argument(
+      '--source-instant-snapshot-key-file',
+      metavar='FILE',
+      help="""
+      Path to the customer-supplied encryption key of the source instant snapshot.
+      Required if the source instant snapshot is protected by a customer-supplied
+      encryption key.
+      """,
+  )
+
+
 def AddSnapshotType(parser):
   snapshot_type_choices = sorted(['STANDARD', 'ARCHIVE'])
   parser.add_argument(

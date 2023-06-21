@@ -107,7 +107,11 @@ class Configs:
         enableConfidentialCompute=args.enable_confidential_compute)
     config.host.gceInstance.bootDiskSizeGb = args.boot_disk_size
 
-    if args.accelerator_type and args.accelerator_count:
+    if (
+        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.accelerator_type
+        and args.accelerator_count
+    ):
       accelerators = [
           self.messages.Accelerator(
               type=args.accelerator_type,

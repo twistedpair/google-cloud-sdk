@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
@@ -31,9 +32,11 @@ from googlecloudsdk.core.credentials import transports
 
 _PROJECT_RESOURCE = 'projects/%s'
 _PROJECT_SERVICE_RESOURCE = 'projects/%s/services/%s'
+_FOLDER_SERVICE_RESOURCE = 'folders/%s/services/%s'
+_ORG_SERVICE_RESOURCE = 'organizations/%s/services/%s'
 _CONSUMER_SERVICE_RESOURCE = '%s/services/%s'
 _LIMIT_OVERRIDE_RESOURCE = '%s/consumerOverrides/%s'
-_VALID_CONSUMER_PREFIX = {'projects/', 'folders/', 'organizations/'}
+_VALID_CONSUMER_PREFIX = frozenset({'projects/', 'folders/', 'organizations/'})
 _V1_VERSION = 'v1'
 _V1BETA1_VERSION = 'v1beta1'
 _V1ALPHA_VERSION = 'v1alpha'
@@ -46,6 +49,12 @@ _PROTECTED_SERVICES = {
                               'also automatically disable any running '
                               'Anthos clusters.')
 }
+
+
+class ContainerType(enum.Enum):
+  PROJECT_SERVICE_RESOURCE = 1
+  FOLDER_SERVICE_RESOURCE = 2
+  ORG_SERVICE_RESOURCE = 3
 
 
 def GetProtectedServiceWarning(service_name):
@@ -258,12 +267,15 @@ def GetOperation(name):
     exceptions.ReraiseError(e, exceptions.OperationErrorException)
 
 
-def GenerateServiceIdentity(project, service):
+def GenerateServiceIdentity(
+    container, service, container_type=ContainerType.PROJECT_SERVICE_RESOURCE
+):
   """Generate a service identity.
 
   Args:
-    project: The project to generate a service identity for.
+    container: The container to generate a service identity for.
     service: The service to generate a service identity for.
+    container_type: The type of container, default to be project.
 
   Raises:
     exceptions.GenerateServiceIdentityPermissionDeniedException: when generating
@@ -278,8 +290,17 @@ def GenerateServiceIdentity(project, service):
   client = _GetClientInstance(version=_V1BETA1_VERSION)
   messages = client.MESSAGES_MODULE
 
+  if container_type == ContainerType.PROJECT_SERVICE_RESOURCE:
+    parent = _PROJECT_SERVICE_RESOURCE % (container, service)
+  elif container_type == ContainerType.FOLDER_SERVICE_RESOURCE:
+    parent = _FOLDER_SERVICE_RESOURCE % (container, service)
+  elif container_type == ContainerType.ORG_SERVICE_RESOURCE:
+    parent = _ORG_SERVICE_RESOURCE % (container, service)
+  else:
+    raise ValueError('Invalid container type specified.')
   request = messages.ServiceusageServicesGenerateServiceIdentityRequest(
-      parent=_PROJECT_SERVICE_RESOURCE % (project, service))
+      parent=parent
+  )
   try:
     op = client.services.GenerateServiceIdentity(request)
     response = encoding.MessageToDict(op.response)

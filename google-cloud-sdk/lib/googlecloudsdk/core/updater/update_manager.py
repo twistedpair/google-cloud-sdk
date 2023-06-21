@@ -1222,17 +1222,25 @@ To revert your CLI to the previously installed version, you may run:
       removed_paths = initial_paths - current_paths
       # We want to compare this to the paths stored in the manifests, which are
       # relative to the install dir and use Posix representations.
-      relative_ca_certs_path = pathlib.PurePath(
-          os.path.relpath(ca_certs_path, self.__sdk_root)).as_posix()
-      if relative_ca_certs_path in removed_paths:
-        os.remove(ca_certs_path)
-        # Also clean up any parent folders that we might have created when
-        # restoring the CA certs file if they're now empty.
-        dir_path = os.path.dirname(os.path.normpath(relative_ca_certs_path))
-        while dir_path and not os.listdir(
-            os.path.join(self.__sdk_root, dir_path)):
-          os.rmdir(os.path.join(self.__sdk_root, dir_path))
-          dir_path = os.path.dirname(dir_path)
+      try:
+        relative_ca_certs_path = (
+            pathlib.Path(ca_certs_path).resolve()
+            .relative_to(pathlib.Path(self.__sdk_root).resolve())
+            .as_posix())
+      except ValueError:
+        # CA certs are not relative to SDK root, no need to do anything further.
+        pass  # Pass instead of return to avoid swallowing 'with' exceptions.
+      else:
+        if relative_ca_certs_path in removed_paths:
+          os.remove(ca_certs_path)
+          # Also clean up any parent folders that we might have created when
+          # restoring the CA certs file if they're now empty.
+          dir_path = os.path.dirname(os.path.normpath(relative_ca_certs_path))
+          full_dir_path = os.path.join(self.__sdk_root, dir_path)
+          while dir_path and not os.listdir(full_dir_path):
+            os.rmdir(full_dir_path)
+            dir_path = os.path.dirname(dir_path)
+            full_dir_path = os.path.join(self.__sdk_root, dir_path)
 
   def _HandleBadComponentInstallState(self, update_seed, to_install):
     """Deal with bad install state of kubectl component on darwin-arm machines.

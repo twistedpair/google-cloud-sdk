@@ -214,6 +214,22 @@ def RBACRoleBindingParentName(project,
       api_version=VERSION_MAP[release_track]).RelativeName()
 
 
+def ScopeRBACRoleBindingParentName(
+    project, scope, release_track=base.ReleaseTrack.ALPHA
+):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Parse(
+      line=None,
+      params={
+          'projectsId': project,
+          'locationsId': 'global',
+          'scopesId': scope,
+      },
+      collection='gkehub.projects.locations.scopes',
+      api_version=VERSION_MAP[release_track],
+  ).RelativeName()
+
+
 def RBACRoleBindingResourceName(project,
                                 namespace,
                                 name,
@@ -229,6 +245,23 @@ def RBACRoleBindingResourceName(project,
       },
       collection='gkehub.projects.locations.namespaces.rbacrolebindings',
       api_version=VERSION_MAP[release_track]).RelativeName()
+
+
+def ScopeRBACRoleBindingResourceName(
+    project, scope, name, release_track=base.ReleaseTrack.ALPHA
+):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Parse(
+      line=None,
+      params={
+          'projectsId': project,
+          'locationsId': 'global',
+          'scopesId': scope,
+          'rbacrolebindingsId': name,
+      },
+      collection='gkehub.projects.locations.scopes.rbacrolebindings',
+      api_version=VERSION_MAP[release_track],
+  ).RelativeName()
 
 
 def MembershipRBACRoleBindingResourceName(

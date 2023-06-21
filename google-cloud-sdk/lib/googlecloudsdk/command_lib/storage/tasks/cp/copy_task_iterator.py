@@ -55,8 +55,8 @@ def _expand_destination_wildcards(destination_string):
     A resource_reference.Resource, or None if no matching resource is found.
 
   Raises:
-    ValueError if more than one resource is matched, or the source contained
-    an unescaped wildcard and no resources were matched.
+    InvalidUrlError if more than one resource is matched, or the source
+      contained an unescaped wildcard and no resources were matched.
   """
   destination_iterator = (
       plurality_checkable_iterator.PluralityCheckableIterator(
@@ -65,16 +65,22 @@ def _expand_destination_wildcards(destination_string):
               fields_scope=cloud_api.FieldsScope.SHORT)))
 
   if destination_iterator.is_plural():
-    raise ValueError('Destination ({}) must match exactly one URL.'.format(
-        destination_string))
+    raise errors.InvalidUrlError(
+        'Destination ({}) must match exactly one URL.'.format(
+            destination_string
+        )
+    )
 
   contains_unexpanded_wildcard = (
       destination_iterator.is_empty() and
       wildcard_iterator.contains_wildcard(destination_string))
 
   if contains_unexpanded_wildcard:
-    raise ValueError('Destination ({}) contains an unexpected wildcard.'.format(
-        destination_string))
+    raise errors.InvalidUrlError(
+        'Destination ({}) contains an unexpected wildcard.'.format(
+            destination_string
+        )
+    )
 
   if not destination_iterator.is_empty():
     return next(destination_iterator)
@@ -92,20 +98,22 @@ def _get_raw_destination(destination_string):
     FileDirectoryResource or UnknownResource.
 
   Raises:
-    ValueError if the destination url is a cloud provider or if it specifies
-    a version.
+    InvalidUrlError if the destination url is a cloud provider or if it
+    specifies
+      a version.
   """
   destination_url = storage_url.storage_url_from_string(destination_string)
 
   if isinstance(destination_url, storage_url.CloudUrl):
     if destination_url.is_provider():
-      raise ValueError(
-          'The cp command does not support provider-only destination URLs.')
+      raise errors.InvalidUrlError(
+          'The cp command does not support provider-only destination URLs.'
+      )
     elif destination_url.generation is not None:
-      raise ValueError(
+      raise errors.InvalidUrlError(
           'The destination argument of the cp command cannot be a '
-          'version-specific URL ({}).'
-          .format(destination_string))
+          'version-specific URL ({}).'.format(destination_string)
+      )
 
   raw_destination = _expand_destination_wildcards(destination_string)
   if raw_destination:
@@ -288,8 +296,10 @@ class CopyTaskIterator:
       self._raise_if_destination_is_file_url_and_not_a_directory_or_pipe()
 
     if self._multiple_sources and self._custom_md5_digest:
-      raise ValueError('Received multiple objects to upload, but only one'
-                       ' custom MD5 digest is allowed.')
+      raise errors.Error(
+          'Received multiple objects to upload, but only one'
+          ' custom MD5 digest is allowed.'
+      )
 
     self._already_completed_sources = manifest_util.parse_for_completed_sources(
         getattr(user_request_args, 'manifest_path', None))

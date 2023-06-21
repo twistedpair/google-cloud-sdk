@@ -28,6 +28,7 @@ import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import request_config_factory
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
@@ -46,6 +47,7 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
       source_resource,
       destination_resource,
       delete_source=False,
+      fetch_source_fields_scope=None,
       posix_to_set=None,
       print_created_message=False,
       print_source_version=False,
@@ -62,6 +64,9 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
         this location will be overwritten.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
+      fetch_source_fields_scope (FieldsScope|None): If present, refetch
+        source_resource, populated with metadata determined by this FieldsScope.
+        Useful for lazy or parallelized GET calls.
       posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
         metadata on target.
       print_created_message (bool): Print a message containing the versioned URL
@@ -84,10 +89,12 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
          != destination_resource.storage_url.scheme)
         or not isinstance(source_resource.storage_url,
                           storage_url.CloudUrl)):
-      raise ValueError('IntraCloudCopyTask takes two URLs from the same cloud'
-                       ' provider.')
+      raise errors.InvalidUrlError(
+          'IntraCloudCopyTask takes two URLs from the same cloud provider.'
+      )
 
     self._delete_source = delete_source
+    self._fetch_source_fields_scope = fetch_source_fields_scope
     self._print_created_message = print_created_message
 
     self.parallel_processing_key = (
@@ -119,13 +126,23 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
         thread_id=threading.get_ident(),
     )
 
+    if self._fetch_source_fields_scope:
+      copy_source = api_client.get_object_metadata(
+          self._source_resource.bucket,
+          self._source_resource.name,
+          generation=self._source_resource.generation,
+          fields_scope=self._fetch_source_fields_scope,
+      )
+    else:
+      copy_source = self._source_resource
+
     request_config = request_config_factory.get_request_config(
         self._destination_resource.storage_url,
         decryption_key_hash_sha256=(
             self._source_resource.decryption_key_hash_sha256),
         user_request_args=self._user_request_args)
     result_resource = api_client.copy_object(
-        self._source_resource,
+        copy_source,
         self._destination_resource,
         request_config,
         posix_to_set=self._posix_to_set,
@@ -155,6 +172,7 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
         self._source_resource == other._source_resource
         and self._destination_resource == other._destination_resource
         and self._delete_source == other._delete_source
+        and self._fetch_source_fields_scope == other._fetch_source_fields_scope
         and self._posix_to_set == other._posix_to_set
         and self._print_created_message == other._print_created_message
         and self._print_source_version == other._print_source_version

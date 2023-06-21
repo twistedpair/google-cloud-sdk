@@ -346,7 +346,7 @@ def hash_gcs_rewrite_parameters_for_tracker_file(source_object_resource,
     MD5 hex digest (string) of the input parameters.
 
   Raises:
-    ValueError if argument is missing required property.
+    Error if argument is missing required property.
   """
   mandatory_parameters = (source_object_resource.storage_url.bucket_name,
                           source_object_resource.storage_url.object_name,
@@ -354,7 +354,7 @@ def hash_gcs_rewrite_parameters_for_tracker_file(source_object_resource,
                           destination_object_resource.storage_url.bucket_name,
                           destination_object_resource.storage_url.object_name)
   if not all(mandatory_parameters):
-    raise ValueError('Missing required parameter values.')
+    raise errors.Error('Missing required parameter values.')
 
   source_encryption = (
       source_object_resource.decryption_key_hash_sha256 or
@@ -473,11 +473,12 @@ def write_tracker_file_with_component_data(tracker_file_path,
   }
   if slice_start_byte is not None:
     if total_components is not None:
-      raise ValueError(
+      raise errors.Error(
           'Cannot have a tracker file with slice_start_byte and'
           ' total_components. slice_start_byte signals a component within a'
           ' larger operation. total_components signals the parent tracker for'
-          ' a multi-component operation.')
+          ' a multi-component operation.'
+      )
     component_data['slice_start_byte'] = slice_start_byte
   if total_components is not None:
     component_data['total_components'] = total_components
@@ -567,10 +568,11 @@ def read_or_create_download_tracker_file(source_object_resource,
         'Source object resource is missing etag.')
   if total_components and (slice_start_byte is not None or
                            component_number is not None):
-    raise ValueError(
+    raise errors.Error(
         'total_components indicates this is the parent tracker file for a'
         ' multi-component operation. slice_start_byte and component_number'
-        ' cannot be present since this is not for an individual component.')
+        ' cannot be present since this is not for an individual component.'
+    )
 
   if component_number is not None:
     download_name_for_logger = '{} component {}'.format(

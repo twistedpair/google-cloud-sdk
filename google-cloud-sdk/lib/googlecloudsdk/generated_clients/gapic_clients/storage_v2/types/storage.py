@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from __future__ import annotations
+
+from typing import MutableMapping, MutableSequence
+
 import proto  # type: ignore
 
 from cloudsdk.google.protobuf import duration_pb2  # type: ignore
@@ -85,6 +89,8 @@ __protobuf__ = proto.module(
 class DeleteBucketRequest(proto.Message):
     r"""Request message for DeleteBucket.
 
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
     Attributes:
         name (str):
             Required. Name of a bucket to delete.
@@ -100,16 +106,16 @@ class DeleteBucketRequest(proto.Message):
             This field is a member of `oneof`_ ``_if_metageneration_not_match``.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    if_metageneration_match = proto.Field(
+    if_metageneration_match: int = proto.Field(
         proto.INT64,
         number=2,
         optional=True,
     )
-    if_metageneration_not_match = proto.Field(
+    if_metageneration_not_match: int = proto.Field(
         proto.INT64,
         number=3,
         optional=True,
@@ -118,6 +124,8 @@ class DeleteBucketRequest(proto.Message):
 
 class GetBucketRequest(proto.Message):
     r"""Request message for GetBucket.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         name (str):
@@ -142,21 +150,21 @@ class GetBucketRequest(proto.Message):
             This field is a member of `oneof`_ ``_read_mask``.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    if_metageneration_match = proto.Field(
+    if_metageneration_match: int = proto.Field(
         proto.INT64,
         number=2,
         optional=True,
     )
-    if_metageneration_not_match = proto.Field(
+    if_metageneration_not_match: int = proto.Field(
         proto.INT64,
         number=3,
         optional=True,
     )
-    read_mask = proto.Field(
+    read_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=5,
         optional=True,
@@ -199,24 +207,24 @@ class CreateBucketRequest(proto.Message):
             or "publicRead".
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    bucket = proto.Field(
+    bucket: 'Bucket' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='Bucket',
     )
-    bucket_id = proto.Field(
+    bucket_id: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    predefined_acl = proto.Field(
+    predefined_acl: str = proto.Field(
         proto.STRING,
         number=6,
     )
-    predefined_default_object_acl = proto.Field(
+    predefined_default_object_acl: str = proto.Field(
         proto.STRING,
         number=7,
     )
@@ -224,6 +232,8 @@ class CreateBucketRequest(proto.Message):
 
 class ListBucketsRequest(proto.Message):
     r"""Request message for ListBuckets.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         parent (str):
@@ -251,23 +261,23 @@ class ListBucketsRequest(proto.Message):
             This field is a member of `oneof`_ ``_read_mask``.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    page_size = proto.Field(
+    page_size: int = proto.Field(
         proto.INT32,
         number=2,
     )
-    page_token = proto.Field(
+    page_token: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    prefix = proto.Field(
+    prefix: str = proto.Field(
         proto.STRING,
         number=4,
     )
-    read_mask = proto.Field(
+    read_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=5,
         optional=True,
@@ -279,7 +289,7 @@ class ListBucketsResponse(proto.Message):
     r"""The result of a call to Buckets.ListBuckets
 
     Attributes:
-        buckets (Sequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket]):
+        buckets (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket]):
             The list of items.
         next_page_token (str):
             The continuation token, used to page through
@@ -292,12 +302,12 @@ class ListBucketsResponse(proto.Message):
     def raw_page(self):
         return self
 
-    buckets = proto.RepeatedField(
+    buckets: MutableSequence['Bucket'] = proto.RepeatedField(
         proto.MESSAGE,
         number=1,
         message='Bucket',
     )
-    next_page_token = proto.Field(
+    next_page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -315,11 +325,11 @@ class LockBucketRetentionPolicyRequest(proto.Message):
             the given value. Must be positive.
     """
 
-    bucket = proto.Field(
+    bucket: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    if_metageneration_match = proto.Field(
+    if_metageneration_match: int = proto.Field(
         proto.INT64,
         number=2,
     )
@@ -327,6 +337,8 @@ class LockBucketRetentionPolicyRequest(proto.Message):
 
 class UpdateBucketRequest(proto.Message):
     r"""Request for UpdateBucket method.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         bucket (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket):
@@ -366,30 +378,30 @@ class UpdateBucketRequest(proto.Message):
             Not specifying any fields is an error.
     """
 
-    bucket = proto.Field(
+    bucket: 'Bucket' = proto.Field(
         proto.MESSAGE,
         number=1,
         message='Bucket',
     )
-    if_metageneration_match = proto.Field(
+    if_metageneration_match: int = proto.Field(
         proto.INT64,
         number=2,
         optional=True,
     )
-    if_metageneration_not_match = proto.Field(
+    if_metageneration_not_match: int = proto.Field(
         proto.INT64,
         number=3,
         optional=True,
     )
-    predefined_acl = proto.Field(
+    predefined_acl: str = proto.Field(
         proto.STRING,
         number=8,
     )
-    predefined_default_object_acl = proto.Field(
+    predefined_default_object_acl: str = proto.Field(
         proto.STRING,
         number=9,
     )
-    update_mask = proto.Field(
+    update_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=6,
         message=field_mask_pb2.FieldMask,
@@ -405,7 +417,7 @@ class DeleteNotificationConfigRequest(proto.Message):
             NotificationConfig.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -421,7 +433,7 @@ class GetNotificationConfigRequest(proto.Message):
             ``projects/{project}/buckets/{bucket}/notificationConfigs/{notificationConfig}``
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -439,11 +451,11 @@ class CreateNotificationConfigRequest(proto.Message):
             NotificationConfig to be inserted.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    notification_config = proto.Field(
+    notification_config: 'NotificationConfig' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='NotificationConfig',
@@ -472,15 +484,15 @@ class ListNotificationConfigsRequest(proto.Message):
             provided the page token.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    page_size = proto.Field(
+    page_size: int = proto.Field(
         proto.INT32,
         number=2,
     )
-    page_token = proto.Field(
+    page_token: str = proto.Field(
         proto.STRING,
         number=3,
     )
@@ -490,7 +502,7 @@ class ListNotificationConfigsResponse(proto.Message):
     r"""The result of a call to ListNotificationConfigs
 
     Attributes:
-        notification_configs (Sequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig]):
+        notification_configs (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig]):
             The list of items.
         next_page_token (str):
             A token, which can be sent as ``page_token`` to retrieve the
@@ -502,12 +514,12 @@ class ListNotificationConfigsResponse(proto.Message):
     def raw_page(self):
         return self
 
-    notification_configs = proto.RepeatedField(
+    notification_configs: MutableSequence['NotificationConfig'] = proto.RepeatedField(
         proto.MESSAGE,
         number=1,
         message='NotificationConfig',
     )
-    next_page_token = proto.Field(
+    next_page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -516,10 +528,12 @@ class ListNotificationConfigsResponse(proto.Message):
 class ComposeObjectRequest(proto.Message):
     r"""Request message for ComposeObject.
 
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
     Attributes:
         destination (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object):
             Required. Properties of the resulting object.
-        source_objects (Sequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ComposeObjectRequest.SourceObject]):
+        source_objects (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ComposeObjectRequest.SourceObject]):
             The list of source objects that will be
             concatenated into a single object.
         destination_predefined_acl (str):
@@ -574,6 +588,8 @@ class ComposeObjectRequest(proto.Message):
         class ObjectPreconditions(proto.Message):
             r"""Preconditions for a source object of a composition request.
 
+            .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
             Attributes:
                 if_generation_match (int):
                     Only perform the composition if the
@@ -585,60 +601,60 @@ class ComposeObjectRequest(proto.Message):
                     This field is a member of `oneof`_ ``_if_generation_match``.
             """
 
-            if_generation_match = proto.Field(
+            if_generation_match: int = proto.Field(
                 proto.INT64,
                 number=1,
                 optional=True,
             )
 
-        name = proto.Field(
+        name: str = proto.Field(
             proto.STRING,
             number=1,
         )
-        generation = proto.Field(
+        generation: int = proto.Field(
             proto.INT64,
             number=2,
         )
-        object_preconditions = proto.Field(
+        object_preconditions: 'ComposeObjectRequest.SourceObject.ObjectPreconditions' = proto.Field(
             proto.MESSAGE,
             number=3,
             message='ComposeObjectRequest.SourceObject.ObjectPreconditions',
         )
 
-    destination = proto.Field(
+    destination: 'Object' = proto.Field(
         proto.MESSAGE,
         number=1,
         message='Object',
     )
-    source_objects = proto.RepeatedField(
+    source_objects: MutableSequence[SourceObject] = proto.RepeatedField(
         proto.MESSAGE,
         number=2,
         message=SourceObject,
     )
-    destination_predefined_acl = proto.Field(
+    destination_predefined_acl: str = proto.Field(
         proto.STRING,
         number=9,
     )
-    if_generation_match = proto.Field(
+    if_generation_match: int = proto.Field(
         proto.INT64,
         number=4,
         optional=True,
     )
-    if_metageneration_match = proto.Field(
+    if_metageneration_match: int = proto.Field(
         proto.INT64,
         number=5,
         optional=True,
     )
-    kms_key = proto.Field(
+    kms_key: str = proto.Field(
         proto.STRING,
         number=6,
     )
-    common_object_request_params = proto.Field(
+    common_object_request_params: 'CommonObjectRequestParams' = proto.Field(
         proto.MESSAGE,
         number=7,
         message='CommonObjectRequestParams',
     )
-    object_checksums = proto.Field(
+    object_checksums: 'ObjectChecksums' = proto.Field(
         proto.MESSAGE,
         number=10,
         message='ObjectChecksums',
@@ -648,6 +664,9 @@ class ComposeObjectRequest(proto.Message):
 class DeleteObjectRequest(proto.Message):
     r"""Message for deleting an object. ``bucket`` and ``object`` **must**
     be set.
+
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         bucket (str):
@@ -695,39 +714,39 @@ class DeleteObjectRequest(proto.Message):
             requests concerning an object.
     """
 
-    bucket = proto.Field(
+    bucket: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    object_ = proto.Field(
+    object_: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    generation = proto.Field(
+    generation: int = proto.Field(
         proto.INT64,
         number=4,
     )
-    if_generation_match = proto.Field(
+    if_generation_match: int = proto.Field(
         proto.INT64,
         number=5,
         optional=True,
     )
-    if_generation_not_match = proto.Field(
+    if_generation_not_match: int = proto.Field(
         proto.INT64,
         number=6,
         optional=True,
     )
-    if_metageneration_match = proto.Field(
+    if_metageneration_match: int = proto.Field(
         proto.INT64,
         number=7,
         optional=True,
     )
-    if_metageneration_not_match = proto.Field(
+    if_metageneration_not_match: int = proto.Field(
         proto.INT64,
         number=8,
         optional=True,
     )
-    common_object_request_params = proto.Field(
+    common_object_request_params: 'CommonObjectRequestParams' = proto.Field(
         proto.MESSAGE,
         number=10,
         message='CommonObjectRequestParams',
@@ -745,7 +764,7 @@ class CancelResumableWriteRequest(proto.Message):
             ``StartResumableWriteResponse``.
     """
 
-    upload_id = proto.Field(
+    upload_id: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -760,6 +779,8 @@ class CancelResumableWriteResponse(proto.Message):
 
 class ReadObjectRequest(proto.Message):
     r"""Request message for ReadObject.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         bucket (str):
@@ -835,52 +856,52 @@ class ReadObjectRequest(proto.Message):
             This field is a member of `oneof`_ ``_read_mask``.
     """
 
-    bucket = proto.Field(
+    bucket: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    object_ = proto.Field(
+    object_: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    generation = proto.Field(
+    generation: int = proto.Field(
         proto.INT64,
         number=3,
     )
-    read_offset = proto.Field(
+    read_offset: int = proto.Field(
         proto.INT64,
         number=4,
     )
-    read_limit = proto.Field(
+    read_limit: int = proto.Field(
         proto.INT64,
         number=5,
     )
-    if_generation_match = proto.Field(
+    if_generation_match: int = proto.Field(
         proto.INT64,
         number=6,
         optional=True,
     )
-    if_generation_not_match = proto.Field(
+    if_generation_not_match: int = proto.Field(
         proto.INT64,
         number=7,
         optional=True,
     )
-    if_metageneration_match = proto.Field(
+    if_metageneration_match: int = proto.Field(
         proto.INT64,
         number=8,
         optional=True,
     )
-    if_metageneration_not_match = proto.Field(
+    if_metageneration_not_match: int = proto.Field(
         proto.INT64,
         number=9,
         optional=True,
     )
-    common_object_request_params = proto.Field(
+    common_object_request_params: 'CommonObjectRequestParams' = proto.Field(
         proto.MESSAGE,
         number=10,
         message='CommonObjectRequestParams',
     )
-    read_mask = proto.Field(
+    read_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=12,
         optional=True,
@@ -890,6 +911,8 @@ class ReadObjectRequest(proto.Message):
 
 class GetObjectRequest(proto.Message):
     r"""Request message for GetObject.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         bucket (str):
@@ -943,44 +966,44 @@ class GetObjectRequest(proto.Message):
             This field is a member of `oneof`_ ``_read_mask``.
     """
 
-    bucket = proto.Field(
+    bucket: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    object_ = proto.Field(
+    object_: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    generation = proto.Field(
+    generation: int = proto.Field(
         proto.INT64,
         number=3,
     )
-    if_generation_match = proto.Field(
+    if_generation_match: int = proto.Field(
         proto.INT64,
         number=4,
         optional=True,
     )
-    if_generation_not_match = proto.Field(
+    if_generation_not_match: int = proto.Field(
         proto.INT64,
         number=5,
         optional=True,
     )
-    if_metageneration_match = proto.Field(
+    if_metageneration_match: int = proto.Field(
         proto.INT64,
         number=6,
         optional=True,
     )
-    if_metageneration_not_match = proto.Field(
+    if_metageneration_not_match: int = proto.Field(
         proto.INT64,
         number=7,
         optional=True,
     )
-    common_object_request_params = proto.Field(
+    common_object_request_params: 'CommonObjectRequestParams' = proto.Field(
         proto.MESSAGE,
         number=8,
         message='CommonObjectRequestParams',
     )
-    read_mask = proto.Field(
+    read_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=10,
         optional=True,
@@ -1014,22 +1037,22 @@ class ReadObjectResponse(proto.Message):
             in the stream.
     """
 
-    checksummed_data = proto.Field(
+    checksummed_data: 'ChecksummedData' = proto.Field(
         proto.MESSAGE,
         number=1,
         message='ChecksummedData',
     )
-    object_checksums = proto.Field(
+    object_checksums: 'ObjectChecksums' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='ObjectChecksums',
     )
-    content_range = proto.Field(
+    content_range: 'ContentRange' = proto.Field(
         proto.MESSAGE,
         number=3,
         message='ContentRange',
     )
-    metadata = proto.Field(
+    metadata: 'Object' = proto.Field(
         proto.MESSAGE,
         number=4,
         message='Object',
@@ -1039,6 +1062,9 @@ class ReadObjectResponse(proto.Message):
 class WriteObjectSpec(proto.Message):
     r"""Describes an attempt to insert an object, possibly over
     multiple requests.
+
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         resource (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object):
@@ -1091,36 +1117,36 @@ class WriteObjectSpec(proto.Message):
             This field is a member of `oneof`_ ``_object_size``.
     """
 
-    resource = proto.Field(
+    resource: 'Object' = proto.Field(
         proto.MESSAGE,
         number=1,
         message='Object',
     )
-    predefined_acl = proto.Field(
+    predefined_acl: str = proto.Field(
         proto.STRING,
         number=7,
     )
-    if_generation_match = proto.Field(
+    if_generation_match: int = proto.Field(
         proto.INT64,
         number=3,
         optional=True,
     )
-    if_generation_not_match = proto.Field(
+    if_generation_not_match: int = proto.Field(
         proto.INT64,
         number=4,
         optional=True,
     )
-    if_metageneration_match = proto.Field(
+    if_metageneration_match: int = proto.Field(
         proto.INT64,
         number=5,
         optional=True,
     )
-    if_metageneration_not_match = proto.Field(
+    if_metageneration_not_match: int = proto.Field(
         proto.INT64,
         number=6,
         optional=True,
     )
-    object_size = proto.Field(
+    object_size: int = proto.Field(
         proto.INT64,
         number=8,
         optional=True,
@@ -1187,37 +1213,37 @@ class WriteObjectRequest(proto.Message):
             requests concerning an object.
     """
 
-    upload_id = proto.Field(
+    upload_id: str = proto.Field(
         proto.STRING,
         number=1,
         oneof='first_message',
     )
-    write_object_spec = proto.Field(
+    write_object_spec: 'WriteObjectSpec' = proto.Field(
         proto.MESSAGE,
         number=2,
         oneof='first_message',
         message='WriteObjectSpec',
     )
-    write_offset = proto.Field(
+    write_offset: int = proto.Field(
         proto.INT64,
         number=3,
     )
-    checksummed_data = proto.Field(
+    checksummed_data: 'ChecksummedData' = proto.Field(
         proto.MESSAGE,
         number=4,
         oneof='data',
         message='ChecksummedData',
     )
-    object_checksums = proto.Field(
+    object_checksums: 'ObjectChecksums' = proto.Field(
         proto.MESSAGE,
         number=6,
         message='ObjectChecksums',
     )
-    finish_write = proto.Field(
+    finish_write: bool = proto.Field(
         proto.BOOL,
         number=7,
     )
-    common_object_request_params = proto.Field(
+    common_object_request_params: 'CommonObjectRequestParams' = proto.Field(
         proto.MESSAGE,
         number=8,
         message='CommonObjectRequestParams',
@@ -1249,12 +1275,12 @@ class WriteObjectResponse(proto.Message):
             This field is a member of `oneof`_ ``write_status``.
     """
 
-    persisted_size = proto.Field(
+    persisted_size: int = proto.Field(
         proto.INT64,
         number=1,
         oneof='write_status',
     )
-    resource = proto.Field(
+    resource: 'Object' = proto.Field(
         proto.MESSAGE,
         number=2,
         oneof='write_status',
@@ -1264,6 +1290,8 @@ class WriteObjectResponse(proto.Message):
 
 class ListObjectsRequest(proto.Message):
     r"""Request message for ListObjects.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         parent (str):
@@ -1318,45 +1346,45 @@ class ListObjectsRequest(proto.Message):
             lexicographic_end (exclusive).
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    page_size = proto.Field(
+    page_size: int = proto.Field(
         proto.INT32,
         number=2,
     )
-    page_token = proto.Field(
+    page_token: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    delimiter = proto.Field(
+    delimiter: str = proto.Field(
         proto.STRING,
         number=4,
     )
-    include_trailing_delimiter = proto.Field(
+    include_trailing_delimiter: bool = proto.Field(
         proto.BOOL,
         number=5,
     )
-    prefix = proto.Field(
+    prefix: str = proto.Field(
         proto.STRING,
         number=6,
     )
-    versions = proto.Field(
+    versions: bool = proto.Field(
         proto.BOOL,
         number=7,
     )
-    read_mask = proto.Field(
+    read_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=8,
         optional=True,
         message=field_mask_pb2.FieldMask,
     )
-    lexicographic_start = proto.Field(
+    lexicographic_start: str = proto.Field(
         proto.STRING,
         number=10,
     )
-    lexicographic_end = proto.Field(
+    lexicographic_end: str = proto.Field(
         proto.STRING,
         number=11,
     )
@@ -1375,11 +1403,11 @@ class QueryWriteStatusRequest(proto.Message):
             requests concerning an object.
     """
 
-    upload_id = proto.Field(
+    upload_id: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    common_object_request_params = proto.Field(
+    common_object_request_params: 'CommonObjectRequestParams' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='CommonObjectRequestParams',
@@ -1413,12 +1441,12 @@ class QueryWriteStatusResponse(proto.Message):
             This field is a member of `oneof`_ ``write_status``.
     """
 
-    persisted_size = proto.Field(
+    persisted_size: int = proto.Field(
         proto.INT64,
         number=1,
         oneof='write_status',
     )
-    resource = proto.Field(
+    resource: 'Object' = proto.Field(
         proto.MESSAGE,
         number=2,
         oneof='write_status',
@@ -1436,6 +1464,9 @@ class RewriteObjectRequest(proto.Message):
     in the encryption_algorithm, encryption_key_bytes, and
     encryption_key_sha256_bytes fields of the
     common_object_request_params.customer_encryption field.
+
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         destination_name (str):
@@ -1576,105 +1607,105 @@ class RewriteObjectRequest(proto.Message):
             after rewriting.
     """
 
-    destination_name = proto.Field(
+    destination_name: str = proto.Field(
         proto.STRING,
         number=24,
     )
-    destination_bucket = proto.Field(
+    destination_bucket: str = proto.Field(
         proto.STRING,
         number=25,
     )
-    destination_kms_key = proto.Field(
+    destination_kms_key: str = proto.Field(
         proto.STRING,
         number=27,
     )
-    destination = proto.Field(
+    destination: 'Object' = proto.Field(
         proto.MESSAGE,
         number=1,
         message='Object',
     )
-    source_bucket = proto.Field(
+    source_bucket: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    source_object = proto.Field(
+    source_object: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    source_generation = proto.Field(
+    source_generation: int = proto.Field(
         proto.INT64,
         number=4,
     )
-    rewrite_token = proto.Field(
+    rewrite_token: str = proto.Field(
         proto.STRING,
         number=5,
     )
-    destination_predefined_acl = proto.Field(
+    destination_predefined_acl: str = proto.Field(
         proto.STRING,
         number=28,
     )
-    if_generation_match = proto.Field(
+    if_generation_match: int = proto.Field(
         proto.INT64,
         number=7,
         optional=True,
     )
-    if_generation_not_match = proto.Field(
+    if_generation_not_match: int = proto.Field(
         proto.INT64,
         number=8,
         optional=True,
     )
-    if_metageneration_match = proto.Field(
+    if_metageneration_match: int = proto.Field(
         proto.INT64,
         number=9,
         optional=True,
     )
-    if_metageneration_not_match = proto.Field(
+    if_metageneration_not_match: int = proto.Field(
         proto.INT64,
         number=10,
         optional=True,
     )
-    if_source_generation_match = proto.Field(
+    if_source_generation_match: int = proto.Field(
         proto.INT64,
         number=11,
         optional=True,
     )
-    if_source_generation_not_match = proto.Field(
+    if_source_generation_not_match: int = proto.Field(
         proto.INT64,
         number=12,
         optional=True,
     )
-    if_source_metageneration_match = proto.Field(
+    if_source_metageneration_match: int = proto.Field(
         proto.INT64,
         number=13,
         optional=True,
     )
-    if_source_metageneration_not_match = proto.Field(
+    if_source_metageneration_not_match: int = proto.Field(
         proto.INT64,
         number=14,
         optional=True,
     )
-    max_bytes_rewritten_per_call = proto.Field(
+    max_bytes_rewritten_per_call: int = proto.Field(
         proto.INT64,
         number=15,
     )
-    copy_source_encryption_algorithm = proto.Field(
+    copy_source_encryption_algorithm: str = proto.Field(
         proto.STRING,
         number=16,
     )
-    copy_source_encryption_key_bytes = proto.Field(
+    copy_source_encryption_key_bytes: bytes = proto.Field(
         proto.BYTES,
         number=21,
     )
-    copy_source_encryption_key_sha256_bytes = proto.Field(
+    copy_source_encryption_key_sha256_bytes: bytes = proto.Field(
         proto.BYTES,
         number=22,
     )
-    common_object_request_params = proto.Field(
+    common_object_request_params: 'CommonObjectRequestParams' = proto.Field(
         proto.MESSAGE,
         number=19,
         message='CommonObjectRequestParams',
     )
-    object_checksums = proto.Field(
+    object_checksums: 'ObjectChecksums' = proto.Field(
         proto.MESSAGE,
         number=29,
         message='ObjectChecksums',
@@ -1709,23 +1740,23 @@ class RewriteResponse(proto.Message):
             the response only when copying completes.
     """
 
-    total_bytes_rewritten = proto.Field(
+    total_bytes_rewritten: int = proto.Field(
         proto.INT64,
         number=1,
     )
-    object_size = proto.Field(
+    object_size: int = proto.Field(
         proto.INT64,
         number=2,
     )
-    done = proto.Field(
+    done: bool = proto.Field(
         proto.BOOL,
         number=3,
     )
-    rewrite_token = proto.Field(
+    rewrite_token: str = proto.Field(
         proto.STRING,
         number=4,
     )
-    resource = proto.Field(
+    resource: 'Object' = proto.Field(
         proto.MESSAGE,
         number=5,
         message='Object',
@@ -1750,17 +1781,17 @@ class StartResumableWriteRequest(proto.Message):
             finish_write set to ``true``.
     """
 
-    write_object_spec = proto.Field(
+    write_object_spec: 'WriteObjectSpec' = proto.Field(
         proto.MESSAGE,
         number=1,
         message='WriteObjectSpec',
     )
-    common_object_request_params = proto.Field(
+    common_object_request_params: 'CommonObjectRequestParams' = proto.Field(
         proto.MESSAGE,
         number=3,
         message='CommonObjectRequestParams',
     )
-    object_checksums = proto.Field(
+    object_checksums: 'ObjectChecksums' = proto.Field(
         proto.MESSAGE,
         number=5,
         message='ObjectChecksums',
@@ -1777,7 +1808,7 @@ class StartResumableWriteResponse(proto.Message):
             ``WriteObjectRequest.upload_id`` field.
     """
 
-    upload_id = proto.Field(
+    upload_id: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -1785,6 +1816,8 @@ class StartResumableWriteResponse(proto.Message):
 
 class UpdateObjectRequest(proto.Message):
     r"""Request message for UpdateObject.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         object_ (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object):
@@ -1845,41 +1878,41 @@ class UpdateObjectRequest(proto.Message):
             requests concerning an object.
     """
 
-    object_ = proto.Field(
+    object_: 'Object' = proto.Field(
         proto.MESSAGE,
         number=1,
         message='Object',
     )
-    if_generation_match = proto.Field(
+    if_generation_match: int = proto.Field(
         proto.INT64,
         number=2,
         optional=True,
     )
-    if_generation_not_match = proto.Field(
+    if_generation_not_match: int = proto.Field(
         proto.INT64,
         number=3,
         optional=True,
     )
-    if_metageneration_match = proto.Field(
+    if_metageneration_match: int = proto.Field(
         proto.INT64,
         number=4,
         optional=True,
     )
-    if_metageneration_not_match = proto.Field(
+    if_metageneration_not_match: int = proto.Field(
         proto.INT64,
         number=5,
         optional=True,
     )
-    predefined_acl = proto.Field(
+    predefined_acl: str = proto.Field(
         proto.STRING,
         number=10,
     )
-    update_mask = proto.Field(
+    update_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=7,
         message=field_mask_pb2.FieldMask,
     )
-    common_object_request_params = proto.Field(
+    common_object_request_params: 'CommonObjectRequestParams' = proto.Field(
         proto.MESSAGE,
         number=8,
         message='CommonObjectRequestParams',
@@ -1897,7 +1930,7 @@ class GetServiceAccountRequest(proto.Message):
             project number.
     """
 
-    project = proto.Field(
+    project: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -1918,11 +1951,11 @@ class CreateHmacKeyRequest(proto.Message):
             HMAC for.
     """
 
-    project = proto.Field(
+    project: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    service_account_email = proto.Field(
+    service_account_email: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -1940,12 +1973,12 @@ class CreateHmacKeyResponse(proto.Message):
             In raw bytes format (not base64-encoded).
     """
 
-    metadata = proto.Field(
+    metadata: 'HmacKeyMetadata' = proto.Field(
         proto.MESSAGE,
         number=1,
         message='HmacKeyMetadata',
     )
-    secret_key_bytes = proto.Field(
+    secret_key_bytes: bytes = proto.Field(
         proto.BYTES,
         number=3,
     )
@@ -1965,11 +1998,11 @@ class DeleteHmacKeyRequest(proto.Message):
             project number.
     """
 
-    access_id = proto.Field(
+    access_id: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    project = proto.Field(
+    project: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -1989,11 +2022,11 @@ class GetHmacKeyRequest(proto.Message):
             project number.
     """
 
-    access_id = proto.Field(
+    access_id: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    project = proto.Field(
+    project: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -2021,23 +2054,23 @@ class ListHmacKeysRequest(proto.Message):
             been wiped out.
     """
 
-    project = proto.Field(
+    project: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    page_size = proto.Field(
+    page_size: int = proto.Field(
         proto.INT32,
         number=2,
     )
-    page_token = proto.Field(
+    page_token: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    service_account_email = proto.Field(
+    service_account_email: str = proto.Field(
         proto.STRING,
         number=4,
     )
-    show_deleted_keys = proto.Field(
+    show_deleted_keys: bool = proto.Field(
         proto.BOOL,
         number=5,
     )
@@ -2047,7 +2080,7 @@ class ListHmacKeysResponse(proto.Message):
     r"""Hmac key list response with next page information.
 
     Attributes:
-        hmac_keys (Sequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.HmacKeyMetadata]):
+        hmac_keys (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.HmacKeyMetadata]):
             The list of items.
         next_page_token (str):
             The continuation token, used to page through
@@ -2060,12 +2093,12 @@ class ListHmacKeysResponse(proto.Message):
     def raw_page(self):
         return self
 
-    hmac_keys = proto.RepeatedField(
+    hmac_keys: MutableSequence['HmacKeyMetadata'] = proto.RepeatedField(
         proto.MESSAGE,
         number=1,
         message='HmacKeyMetadata',
     )
-    next_page_token = proto.Field(
+    next_page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -2089,12 +2122,12 @@ class UpdateHmacKeyRequest(proto.Message):
             specified in ``hmac_key``.
     """
 
-    hmac_key = proto.Field(
+    hmac_key: 'HmacKeyMetadata' = proto.Field(
         proto.MESSAGE,
         number=1,
         message='HmacKeyMetadata',
     )
-    update_mask = proto.Field(
+    update_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=3,
         message=field_mask_pb2.FieldMask,
@@ -2117,15 +2150,15 @@ class CommonObjectRequestParams(proto.Message):
             Customer-Supplied Encryption Keys feature.
     """
 
-    encryption_algorithm = proto.Field(
+    encryption_algorithm: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    encryption_key_bytes = proto.Field(
+    encryption_key_bytes: bytes = proto.Field(
         proto.BYTES,
         number=4,
     )
-    encryption_key_sha256_bytes = proto.Field(
+    encryption_key_sha256_bytes: bytes = proto.Field(
         proto.BYTES,
         number=5,
     )
@@ -2137,6 +2170,67 @@ class ServiceConstants(proto.Message):
     class Values(proto.Enum):
         r"""A collection of constant values meaningful to the Storage
         API.
+
+        Values:
+            VALUES_UNSPECIFIED (0):
+                Unused. Proto3 requires first enum to be 0.
+            MAX_READ_CHUNK_BYTES (2097152):
+                The maximum size chunk that can will be
+                returned in a single ReadRequest.
+                2 MiB.
+            MAX_WRITE_CHUNK_BYTES (2097152):
+                The maximum size chunk that can be sent in a
+                single WriteObjectRequest. 2 MiB.
+            MAX_OBJECT_SIZE_MB (5242880):
+                The maximum size of an object in MB - whether
+                written in a single stream or composed from
+                multiple other objects. 5 TiB.
+            MAX_CUSTOM_METADATA_FIELD_NAME_BYTES (1024):
+                The maximum length field name that can be
+                sent in a single custom metadata field.
+                1 KiB.
+            MAX_CUSTOM_METADATA_FIELD_VALUE_BYTES (4096):
+                The maximum length field value that can be sent in a single
+                custom_metadata field. 4 KiB.
+            MAX_CUSTOM_METADATA_TOTAL_SIZE_BYTES (8192):
+                The maximum total bytes that can be populated into all field
+                names and values of the custom_metadata for one object. 8
+                KiB.
+            MAX_BUCKET_METADATA_TOTAL_SIZE_BYTES (20480):
+                The maximum total bytes that can be populated
+                into all bucket metadata fields.
+                20 KiB.
+            MAX_NOTIFICATION_CONFIGS_PER_BUCKET (100):
+                The maximum number of NotificationConfigs
+                that can be registered for a given bucket.
+            MAX_LIFECYCLE_RULES_PER_BUCKET (100):
+                The maximum number of LifecycleRules that can
+                be registered for a given bucket.
+            MAX_NOTIFICATION_CUSTOM_ATTRIBUTES (5):
+                The maximum number of custom attributes per
+                NotificationConfigs.
+            MAX_NOTIFICATION_CUSTOM_ATTRIBUTE_KEY_LENGTH (256):
+                The maximum length of a custom attribute key
+                included in NotificationConfig.
+            MAX_NOTIFICATION_CUSTOM_ATTRIBUTE_VALUE_LENGTH (1024):
+                The maximum length of a custom attribute
+                value included in a NotificationConfig.
+            MAX_LABELS_ENTRIES_COUNT (64):
+                The maximum number of key/value entries per
+                bucket label.
+            MAX_LABELS_KEY_VALUE_LENGTH (63):
+                The maximum character length of the key or
+                value in a bucket label map.
+            MAX_LABELS_KEY_VALUE_BYTES (128):
+                The maximum byte size of the key or value in
+                a bucket label map.
+            MAX_OBJECT_IDS_PER_DELETE_OBJECTS_REQUEST (1000):
+                The maximum number of object IDs that can be
+                included in a DeleteObjectsRequest.
+            SPLIT_TOKEN_MAX_VALID_DAYS (14):
+                The maximum number of days for which a token
+                returned by the GetListObjectsSplitPoints RPC is
+                valid.
         """
         _pb_options = {'allow_alias': True}
         VALUES_UNSPECIFIED = 0
@@ -2213,11 +2307,11 @@ class Bucket(proto.Message):
             only. If rpo is not specified when the bucket is created, it
             defaults to "DEFAULT". For more information, see
             https://cloud.google.com/storage/docs/availability-durability#turbo-replication.
-        acl (Sequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BucketAccessControl]):
+        acl (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BucketAccessControl]):
             Access controls on the bucket. If
             iam_config.uniform_bucket_level_access is enabled on this
             bucket, requests to set, read, or modify acl is an error.
-        default_object_acl (Sequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ObjectAccessControl]):
+        default_object_acl (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ObjectAccessControl]):
             Default access controls to apply to new objects when no ACL
             is provided. If iam_config.uniform_bucket_level_access is
             enabled on this bucket, requests to set, read, or modify acl
@@ -2230,7 +2324,7 @@ class Bucket(proto.Message):
             Output only. The creation time of the bucket. Attempting to
             set or update this field will result in a
             [FieldViolation][google.rpc.BadRequest.FieldViolation].
-        cors (Sequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.Cors]):
+        cors (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.Cors]):
             The bucket's [https://www.w3.org/TR/cors/][Cross-Origin
             Resource Sharing] (CORS) config.
         update_time (google.protobuf.timestamp_pb2.Timestamp):
@@ -2259,7 +2353,7 @@ class Bucket(proto.Message):
             true to false.  Objects under event-based hold
             cannot be deleted, overwritten or archived until
             the hold is removed.
-        labels (Mapping[str, str]):
+        labels (MutableMapping[str, str]):
             User-provided labels, in key/value pairs.
         website (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.Website):
             The bucket's website config, controlling how the service
@@ -2317,7 +2411,7 @@ class Bucket(proto.Message):
                 for this bucket.
         """
 
-        requester_pays = proto.Field(
+        requester_pays: bool = proto.Field(
             proto.BOOL,
             number=1,
         )
@@ -2329,16 +2423,16 @@ class Bucket(proto.Message):
         CORS in general, see https://tools.ietf.org/html/rfc6454.
 
         Attributes:
-            origin (Sequence[str]):
+            origin (MutableSequence[str]):
                 The list of Origins eligible to receive CORS response
                 headers. See [https://tools.ietf.org/html/rfc6454][RFC 6454]
                 for more on origins. Note: "*" is permitted in the list of
                 origins, and means "any Origin".
-            method (Sequence[str]):
+            method (MutableSequence[str]):
                 The list of HTTP methods on which to include CORS response
                 headers, (``GET``, ``OPTIONS``, ``POST``, etc) Note: "*" is
                 permitted in the list of methods, and means "any method".
-            response_header (Sequence[str]):
+            response_header (MutableSequence[str]):
                 The list of HTTP headers other than the
                 [https://www.w3.org/TR/cors/#simple-response-header][simple
                 response headers] to give permission for the user-agent to
@@ -2349,19 +2443,19 @@ class Bucket(proto.Message):
                 header] used in preflight responses.
         """
 
-        origin = proto.RepeatedField(
+        origin: MutableSequence[str] = proto.RepeatedField(
             proto.STRING,
             number=1,
         )
-        method = proto.RepeatedField(
+        method: MutableSequence[str] = proto.RepeatedField(
             proto.STRING,
             number=2,
         )
-        response_header = proto.RepeatedField(
+        response_header: MutableSequence[str] = proto.RepeatedField(
             proto.STRING,
             number=3,
         )
-        max_age_seconds = proto.Field(
+        max_age_seconds: int = proto.Field(
             proto.INT32,
             number=4,
         )
@@ -2376,7 +2470,7 @@ class Bucket(proto.Message):
                 bucket, if no encryption method is specified.
         """
 
-        default_kms_key = proto.Field(
+        default_kms_key: str = proto.Field(
             proto.STRING,
             number=1,
         )
@@ -2410,22 +2504,22 @@ class Bucket(proto.Message):
                     is reached, but not afterward.
             """
 
-            enabled = proto.Field(
+            enabled: bool = proto.Field(
                 proto.BOOL,
                 number=1,
             )
-            lock_time = proto.Field(
+            lock_time: timestamp_pb2.Timestamp = proto.Field(
                 proto.MESSAGE,
                 number=2,
                 message=timestamp_pb2.Timestamp,
             )
 
-        uniform_bucket_level_access = proto.Field(
+        uniform_bucket_level_access: 'Bucket.IamConfig.UniformBucketLevelAccess' = proto.Field(
             proto.MESSAGE,
             number=1,
             message='Bucket.IamConfig.UniformBucketLevelAccess',
         )
-        public_access_prevention = proto.Field(
+        public_access_prevention: str = proto.Field(
             proto.STRING,
             number=3,
         )
@@ -2436,7 +2530,7 @@ class Bucket(proto.Message):
         https://cloud.google.com/storage/docs/lifecycle.
 
         Attributes:
-            rule (Sequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.Lifecycle.Rule]):
+            rule (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.Lifecycle.Rule]):
                 A lifecycle management rule, which is made of
                 an action to take and the condition(s) under
                 which the action will be taken.
@@ -2467,17 +2561,19 @@ class Bucket(proto.Message):
                         of the action is SetStorageClass.
                 """
 
-                type_ = proto.Field(
+                type_: str = proto.Field(
                     proto.STRING,
                     number=1,
                 )
-                storage_class = proto.Field(
+                storage_class: str = proto.Field(
                     proto.STRING,
                     number=2,
                 )
 
             class Condition(proto.Message):
                 r"""A condition of an object which triggers some action.
+
+                .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
                 Attributes:
                     age_days (int):
@@ -2505,7 +2601,7 @@ class Bucket(proto.Message):
                         object.
 
                         This field is a member of `oneof`_ ``_num_newer_versions``.
-                    matches_storage_class (Sequence[str]):
+                    matches_storage_class (MutableSequence[str]):
                         Objects having any of the storage classes specified by this
                         condition will be matched. Values include
                         ``MULTI_REGIONAL``, ``REGIONAL``, ``NEARLINE``,
@@ -2538,81 +2634,81 @@ class Bucket(proto.Message):
                         objects. An object version satisfies this
                         condition only if it became noncurrent before
                         the specified date in UTC.
-                    matches_prefix (Sequence[str]):
+                    matches_prefix (MutableSequence[str]):
                         List of object name prefixes. If any prefix
                         exactly matches the beginning of the object
                         name, the condition evaluates to true.
-                    matches_suffix (Sequence[str]):
+                    matches_suffix (MutableSequence[str]):
                         List of object name suffixes. If any suffix
                         exactly matches the end of the object name, the
                         condition evaluates to true.
                 """
 
-                age_days = proto.Field(
+                age_days: int = proto.Field(
                     proto.INT32,
                     number=1,
                     optional=True,
                 )
-                created_before = proto.Field(
+                created_before: date_pb2.Date = proto.Field(
                     proto.MESSAGE,
                     number=2,
                     message=date_pb2.Date,
                 )
-                is_live = proto.Field(
+                is_live: bool = proto.Field(
                     proto.BOOL,
                     number=3,
                     optional=True,
                 )
-                num_newer_versions = proto.Field(
+                num_newer_versions: int = proto.Field(
                     proto.INT32,
                     number=4,
                     optional=True,
                 )
-                matches_storage_class = proto.RepeatedField(
+                matches_storage_class: MutableSequence[str] = proto.RepeatedField(
                     proto.STRING,
                     number=5,
                 )
-                days_since_custom_time = proto.Field(
+                days_since_custom_time: int = proto.Field(
                     proto.INT32,
                     number=7,
                     optional=True,
                 )
-                custom_time_before = proto.Field(
+                custom_time_before: date_pb2.Date = proto.Field(
                     proto.MESSAGE,
                     number=8,
                     message=date_pb2.Date,
                 )
-                days_since_noncurrent_time = proto.Field(
+                days_since_noncurrent_time: int = proto.Field(
                     proto.INT32,
                     number=9,
                     optional=True,
                 )
-                noncurrent_time_before = proto.Field(
+                noncurrent_time_before: date_pb2.Date = proto.Field(
                     proto.MESSAGE,
                     number=10,
                     message=date_pb2.Date,
                 )
-                matches_prefix = proto.RepeatedField(
+                matches_prefix: MutableSequence[str] = proto.RepeatedField(
                     proto.STRING,
                     number=11,
                 )
-                matches_suffix = proto.RepeatedField(
+                matches_suffix: MutableSequence[str] = proto.RepeatedField(
                     proto.STRING,
                     number=12,
                 )
 
-            action = proto.Field(
+            action: 'Bucket.Lifecycle.Rule.Action' = proto.Field(
                 proto.MESSAGE,
                 number=1,
                 message='Bucket.Lifecycle.Rule.Action',
             )
-            condition = proto.Field(
+            condition: 'Bucket.Lifecycle.Rule.Condition' = proto.Field(
                 proto.MESSAGE,
                 number=2,
                 message='Bucket.Lifecycle.Rule.Condition',
             )
 
-        rule = proto.RepeatedField(
+        rule: MutableSequence['Bucket.Lifecycle.Rule'] = proto.RepeatedField(
             proto.MESSAGE,
             number=1,
             message='Bucket.Lifecycle.Rule',
@@ -2630,11 +2726,11 @@ class Bucket(proto.Message):
                 A prefix for log object names.
         """
 
-        log_bucket = proto.Field(
+        log_bucket: str = proto.Field(
             proto.STRING,
             number=1,
         )
-        log_object_prefix = proto.Field(
+        log_object_prefix: str = proto.Field(
             proto.STRING,
             number=2,
         )
@@ -2659,16 +2755,16 @@ class Bucket(proto.Message):
                 rounded down to the nearest second.
         """
 
-        effective_time = proto.Field(
+        effective_time: timestamp_pb2.Timestamp = proto.Field(
             proto.MESSAGE,
             number=1,
             message=timestamp_pb2.Timestamp,
         )
-        is_locked = proto.Field(
+        is_locked: bool = proto.Field(
             proto.BOOL,
             number=2,
         )
-        retention_duration = proto.Field(
+        retention_duration: duration_pb2.Duration = proto.Field(
             proto.MESSAGE,
             number=4,
             message=duration_pb2.Duration,
@@ -2685,7 +2781,7 @@ class Bucket(proto.Message):
                 enabled for this bucket.
         """
 
-        enabled = proto.Field(
+        enabled: bool = proto.Field(
             proto.BOOL,
             number=1,
         )
@@ -2712,11 +2808,11 @@ class Bucket(proto.Message):
                 Found] result.
         """
 
-        main_page_suffix = proto.Field(
+        main_page_suffix: str = proto.Field(
             proto.STRING,
             number=1,
         )
-        not_found_page = proto.Field(
+        not_found_page: str = proto.Field(
             proto.STRING,
             number=2,
         )
@@ -2728,11 +2824,11 @@ class Bucket(proto.Message):
         [https://cloud.google.com/storage/docs/locations][here].
 
         Attributes:
-            data_locations (Sequence[str]):
+            data_locations (MutableSequence[str]):
                 List of locations to use for data placement.
         """
 
-        data_locations = proto.RepeatedField(
+        data_locations: MutableSequence[str] = proto.RepeatedField(
             proto.STRING,
             number=1,
         )
@@ -2751,141 +2847,141 @@ class Bucket(proto.Message):
                 creation time.
         """
 
-        enabled = proto.Field(
+        enabled: bool = proto.Field(
             proto.BOOL,
             number=1,
         )
-        toggle_time = proto.Field(
+        toggle_time: timestamp_pb2.Timestamp = proto.Field(
             proto.MESSAGE,
             number=2,
             message=timestamp_pb2.Timestamp,
         )
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    bucket_id = proto.Field(
+    bucket_id: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    etag = proto.Field(
+    etag: str = proto.Field(
         proto.STRING,
         number=29,
     )
-    project = proto.Field(
+    project: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    metageneration = proto.Field(
+    metageneration: int = proto.Field(
         proto.INT64,
         number=4,
     )
-    location = proto.Field(
+    location: str = proto.Field(
         proto.STRING,
         number=5,
     )
-    location_type = proto.Field(
+    location_type: str = proto.Field(
         proto.STRING,
         number=6,
     )
-    storage_class = proto.Field(
+    storage_class: str = proto.Field(
         proto.STRING,
         number=7,
     )
-    rpo = proto.Field(
+    rpo: str = proto.Field(
         proto.STRING,
         number=27,
     )
-    acl = proto.RepeatedField(
+    acl: MutableSequence['BucketAccessControl'] = proto.RepeatedField(
         proto.MESSAGE,
         number=8,
         message='BucketAccessControl',
     )
-    default_object_acl = proto.RepeatedField(
+    default_object_acl: MutableSequence['ObjectAccessControl'] = proto.RepeatedField(
         proto.MESSAGE,
         number=9,
         message='ObjectAccessControl',
     )
-    lifecycle = proto.Field(
+    lifecycle: Lifecycle = proto.Field(
         proto.MESSAGE,
         number=10,
         message=Lifecycle,
     )
-    create_time = proto.Field(
+    create_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=11,
         message=timestamp_pb2.Timestamp,
     )
-    cors = proto.RepeatedField(
+    cors: MutableSequence[Cors] = proto.RepeatedField(
         proto.MESSAGE,
         number=12,
         message=Cors,
     )
-    update_time = proto.Field(
+    update_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=13,
         message=timestamp_pb2.Timestamp,
     )
-    default_event_based_hold = proto.Field(
+    default_event_based_hold: bool = proto.Field(
         proto.BOOL,
         number=14,
     )
-    labels = proto.MapField(
+    labels: MutableMapping[str, str] = proto.MapField(
         proto.STRING,
         proto.STRING,
         number=15,
     )
-    website = proto.Field(
+    website: Website = proto.Field(
         proto.MESSAGE,
         number=16,
         message=Website,
     )
-    versioning = proto.Field(
+    versioning: Versioning = proto.Field(
         proto.MESSAGE,
         number=17,
         message=Versioning,
     )
-    logging = proto.Field(
+    logging: Logging = proto.Field(
         proto.MESSAGE,
         number=18,
         message=Logging,
     )
-    owner = proto.Field(
+    owner: 'Owner' = proto.Field(
         proto.MESSAGE,
         number=19,
         message='Owner',
     )
-    encryption = proto.Field(
+    encryption: Encryption = proto.Field(
         proto.MESSAGE,
         number=20,
         message=Encryption,
     )
-    billing = proto.Field(
+    billing: Billing = proto.Field(
         proto.MESSAGE,
         number=21,
         message=Billing,
     )
-    retention_policy = proto.Field(
+    retention_policy: RetentionPolicy = proto.Field(
         proto.MESSAGE,
         number=22,
         message=RetentionPolicy,
     )
-    iam_config = proto.Field(
+    iam_config: IamConfig = proto.Field(
         proto.MESSAGE,
         number=23,
         message=IamConfig,
     )
-    satisfies_pzs = proto.Field(
+    satisfies_pzs: bool = proto.Field(
         proto.BOOL,
         number=25,
     )
-    custom_placement_config = proto.Field(
+    custom_placement_config: CustomPlacementConfig = proto.Field(
         proto.MESSAGE,
         number=26,
         message=CustomPlacementConfig,
     )
-    autoclass = proto.Field(
+    autoclass: Autoclass = proto.Field(
         proto.MESSAGE,
         number=28,
         message=Autoclass,
@@ -2944,39 +3040,39 @@ class BucketAccessControl(proto.Message):
             if any.
     """
 
-    role = proto.Field(
+    role: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    id = proto.Field(
+    id: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    entity = proto.Field(
+    entity: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    entity_alt = proto.Field(
+    entity_alt: str = proto.Field(
         proto.STRING,
         number=9,
     )
-    entity_id = proto.Field(
+    entity_id: str = proto.Field(
         proto.STRING,
         number=4,
     )
-    etag = proto.Field(
+    etag: str = proto.Field(
         proto.STRING,
         number=8,
     )
-    email = proto.Field(
+    email: str = proto.Field(
         proto.STRING,
         number=5,
     )
-    domain = proto.Field(
+    domain: str = proto.Field(
         proto.STRING,
         number=6,
     )
-    project_team = proto.Field(
+    project_team: 'ProjectTeam' = proto.Field(
         proto.MESSAGE,
         number=7,
         message='ProjectTeam',
@@ -2986,6 +3082,9 @@ class BucketAccessControl(proto.Message):
 class ChecksummedData(proto.Message):
     r"""Message used to convey content being read or written, along
     with an optional checksum.
+
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         content (bytes):
@@ -2997,11 +3096,11 @@ class ChecksummedData(proto.Message):
             This field is a member of `oneof`_ ``_crc32c``.
     """
 
-    content = proto.Field(
+    content: bytes = proto.Field(
         proto.BYTES,
         number=1,
     )
-    crc32c = proto.Field(
+    crc32c: int = proto.Field(
         proto.FIXED32,
         number=2,
         optional=True,
@@ -3011,6 +3110,9 @@ class ChecksummedData(proto.Message):
 class ObjectChecksums(proto.Message):
     r"""Message used for storing full (not subrange) object
     checksums.
+
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         crc32c (int):
@@ -3031,12 +3133,12 @@ class ObjectChecksums(proto.Message):
             ``cat object.txt | openssl md5 -binary``
     """
 
-    crc32c = proto.Field(
+    crc32c: int = proto.Field(
         proto.FIXED32,
         number=1,
         optional=True,
     )
-    md5_hash = proto.Field(
+    md5_hash: bytes = proto.Field(
         proto.BYTES,
         number=2,
     )
@@ -3077,37 +3179,37 @@ class HmacKeyMetadata(proto.Message):
             The etag of the HMAC key.
     """
 
-    id = proto.Field(
+    id: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    access_id = proto.Field(
+    access_id: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    project = proto.Field(
+    project: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    service_account_email = proto.Field(
+    service_account_email: str = proto.Field(
         proto.STRING,
         number=4,
     )
-    state = proto.Field(
+    state: str = proto.Field(
         proto.STRING,
         number=5,
     )
-    create_time = proto.Field(
+    create_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=6,
         message=timestamp_pb2.Timestamp,
     )
-    update_time = proto.Field(
+    update_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=7,
         message=timestamp_pb2.Timestamp,
     )
-    etag = proto.Field(
+    etag: str = proto.Field(
         proto.STRING,
         number=8,
     )
@@ -3134,11 +3236,11 @@ class NotificationConfig(proto.Message):
             GetNotificationConfigRequest, the operation will
             only be performed if the etag matches that of
             the NotificationConfig.
-        event_types (Sequence[str]):
+        event_types (MutableSequence[str]):
             If present, only send notifications about
             listed event types. If empty, sent notifications
             for all event types.
-        custom_attributes (Mapping[str, str]):
+        custom_attributes (MutableMapping[str, str]):
             A list of additional attributes to attach to
             each Pub/Sub message published for this
             NotificationConfig.
@@ -3150,32 +3252,32 @@ class NotificationConfig(proto.Message):
             Required. The desired content of the Payload.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    topic = proto.Field(
+    topic: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    etag = proto.Field(
+    etag: str = proto.Field(
         proto.STRING,
         number=7,
     )
-    event_types = proto.RepeatedField(
+    event_types: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
         number=3,
     )
-    custom_attributes = proto.MapField(
+    custom_attributes: MutableMapping[str, str] = proto.MapField(
         proto.STRING,
         proto.STRING,
         number=4,
     )
-    object_name_prefix = proto.Field(
+    object_name_prefix: str = proto.Field(
         proto.STRING,
         number=5,
     )
-    payload_format = proto.Field(
+    payload_format: str = proto.Field(
         proto.STRING,
         number=6,
     )
@@ -3193,11 +3295,11 @@ class CustomerEncryption(proto.Message):
             In raw bytes format (not base64-encoded).
     """
 
-    encryption_algorithm = proto.Field(
+    encryption_algorithm: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    key_sha256_bytes = proto.Field(
+    key_sha256_bytes: bytes = proto.Field(
         proto.BYTES,
         number=3,
     )
@@ -3205,6 +3307,8 @@ class CustomerEncryption(proto.Message):
 
 class Object(proto.Message):
     r"""An object.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         name (str):
@@ -3258,7 +3362,7 @@ class Object(proto.Message):
             $5.2]. If omitted, and the object is accessible to all
             anonymous users, the default will be
             ``public, max-age=3600``.
-        acl (Sequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ObjectAccessControl]):
+        acl (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ObjectAccessControl]):
             Access controls on the object. If
             iam_config.uniform_bucket_level_access is enabled on the
             parent bucket, requests to set, read, or modify acl is an
@@ -3330,7 +3434,7 @@ class Object(proto.Message):
             even when temporary hold is set (so that the
             user can reason about policy without having to
             first unset the temporary hold).
-        metadata (Mapping[str, str]):
+        metadata (MutableMapping[str, str]):
             User-provided metadata, in key/value pairs.
         event_based_hold (bool):
             Whether an object is under event-based hold. An event-based
@@ -3360,122 +3464,122 @@ class Object(proto.Message):
             A user-specified timestamp set on an object.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    bucket = proto.Field(
+    bucket: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    etag = proto.Field(
+    etag: str = proto.Field(
         proto.STRING,
         number=27,
     )
-    generation = proto.Field(
+    generation: int = proto.Field(
         proto.INT64,
         number=3,
     )
-    metageneration = proto.Field(
+    metageneration: int = proto.Field(
         proto.INT64,
         number=4,
     )
-    storage_class = proto.Field(
+    storage_class: str = proto.Field(
         proto.STRING,
         number=5,
     )
-    size = proto.Field(
+    size: int = proto.Field(
         proto.INT64,
         number=6,
     )
-    content_encoding = proto.Field(
+    content_encoding: str = proto.Field(
         proto.STRING,
         number=7,
     )
-    content_disposition = proto.Field(
+    content_disposition: str = proto.Field(
         proto.STRING,
         number=8,
     )
-    cache_control = proto.Field(
+    cache_control: str = proto.Field(
         proto.STRING,
         number=9,
     )
-    acl = proto.RepeatedField(
+    acl: MutableSequence['ObjectAccessControl'] = proto.RepeatedField(
         proto.MESSAGE,
         number=10,
         message='ObjectAccessControl',
     )
-    content_language = proto.Field(
+    content_language: str = proto.Field(
         proto.STRING,
         number=11,
     )
-    delete_time = proto.Field(
+    delete_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=12,
         message=timestamp_pb2.Timestamp,
     )
-    content_type = proto.Field(
+    content_type: str = proto.Field(
         proto.STRING,
         number=13,
     )
-    create_time = proto.Field(
+    create_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=14,
         message=timestamp_pb2.Timestamp,
     )
-    component_count = proto.Field(
+    component_count: int = proto.Field(
         proto.INT32,
         number=15,
     )
-    checksums = proto.Field(
+    checksums: 'ObjectChecksums' = proto.Field(
         proto.MESSAGE,
         number=16,
         message='ObjectChecksums',
     )
-    update_time = proto.Field(
+    update_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=17,
         message=timestamp_pb2.Timestamp,
     )
-    kms_key = proto.Field(
+    kms_key: str = proto.Field(
         proto.STRING,
         number=18,
     )
-    update_storage_class_time = proto.Field(
+    update_storage_class_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=19,
         message=timestamp_pb2.Timestamp,
     )
-    temporary_hold = proto.Field(
+    temporary_hold: bool = proto.Field(
         proto.BOOL,
         number=20,
     )
-    retention_expire_time = proto.Field(
+    retention_expire_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=21,
         message=timestamp_pb2.Timestamp,
     )
-    metadata = proto.MapField(
+    metadata: MutableMapping[str, str] = proto.MapField(
         proto.STRING,
         proto.STRING,
         number=22,
     )
-    event_based_hold = proto.Field(
+    event_based_hold: bool = proto.Field(
         proto.BOOL,
         number=23,
         optional=True,
     )
-    owner = proto.Field(
+    owner: 'Owner' = proto.Field(
         proto.MESSAGE,
         number=24,
         message='Owner',
     )
-    customer_encryption = proto.Field(
+    customer_encryption: 'CustomerEncryption' = proto.Field(
         proto.MESSAGE,
         number=25,
         message='CustomerEncryption',
     )
-    custom_time = proto.Field(
+    custom_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=26,
         message=timestamp_pb2.Timestamp,
@@ -3534,39 +3638,39 @@ class ObjectAccessControl(proto.Message):
             if any.
     """
 
-    role = proto.Field(
+    role: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    id = proto.Field(
+    id: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    entity = proto.Field(
+    entity: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    entity_alt = proto.Field(
+    entity_alt: str = proto.Field(
         proto.STRING,
         number=9,
     )
-    entity_id = proto.Field(
+    entity_id: str = proto.Field(
         proto.STRING,
         number=4,
     )
-    etag = proto.Field(
+    etag: str = proto.Field(
         proto.STRING,
         number=8,
     )
-    email = proto.Field(
+    email: str = proto.Field(
         proto.STRING,
         number=5,
     )
-    domain = proto.Field(
+    domain: str = proto.Field(
         proto.STRING,
         number=6,
     )
-    project_team = proto.Field(
+    project_team: 'ProjectTeam' = proto.Field(
         proto.MESSAGE,
         number=7,
         message='ProjectTeam',
@@ -3577,9 +3681,9 @@ class ListObjectsResponse(proto.Message):
     r"""The result of a call to Objects.ListObjects
 
     Attributes:
-        objects (Sequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object]):
+        objects (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object]):
             The list of items.
-        prefixes (Sequence[str]):
+        prefixes (MutableSequence[str]):
             The list of prefixes of objects
             matching-but-not-listed up to and including the
             requested delimiter.
@@ -3594,16 +3698,16 @@ class ListObjectsResponse(proto.Message):
     def raw_page(self):
         return self
 
-    objects = proto.RepeatedField(
+    objects: MutableSequence['Object'] = proto.RepeatedField(
         proto.MESSAGE,
         number=1,
         message='Object',
     )
-    prefixes = proto.RepeatedField(
+    prefixes: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
         number=2,
     )
-    next_page_token = proto.Field(
+    next_page_token: str = proto.Field(
         proto.STRING,
         number=3,
     )
@@ -3620,11 +3724,11 @@ class ProjectTeam(proto.Message):
             The team.
     """
 
-    project_number = proto.Field(
+    project_number: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    team = proto.Field(
+    team: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -3640,7 +3744,7 @@ class ServiceAccount(proto.Message):
             The ID of the notification.
     """
 
-    email_address = proto.Field(
+    email_address: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -3656,11 +3760,11 @@ class Owner(proto.Message):
             The ID for the entity.
     """
 
-    entity = proto.Field(
+    entity: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    entity_id = proto.Field(
+    entity_id: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -3678,15 +3782,15 @@ class ContentRange(proto.Message):
             The complete length of the object data.
     """
 
-    start = proto.Field(
+    start: int = proto.Field(
         proto.INT64,
         number=1,
     )
-    end = proto.Field(
+    end: int = proto.Field(
         proto.INT64,
         number=2,
     )
-    complete_length = proto.Field(
+    complete_length: int = proto.Field(
         proto.INT64,
         number=3,
     )

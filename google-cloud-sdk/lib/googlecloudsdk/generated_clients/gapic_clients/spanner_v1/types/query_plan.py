@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from __future__ import annotations
+
+from typing import MutableMapping, MutableSequence
+
 import proto  # type: ignore
 
 from cloudsdk.google.protobuf import struct_pb2  # type: ignore
@@ -44,7 +48,7 @@ class PlanNode(proto.Message):
             directly embed a description of the node in its parent.
         display_name (str):
             The display name for the node.
-        child_links (Sequence[googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.PlanNode.ChildLink]):
+        child_links (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.PlanNode.ChildLink]):
             List of child node ``index``\ es and their relationship to
             this parent.
         short_representation (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.PlanNode.ShortRepresentation):
@@ -73,6 +77,21 @@ class PlanNode(proto.Message):
         r"""The kind of [PlanNode][google.spanner.v1.PlanNode]. Distinguishes
         between the two different kinds of nodes that can appear in a query
         plan.
+
+        Values:
+            KIND_UNSPECIFIED (0):
+                Not specified.
+            RELATIONAL (1):
+                Denotes a Relational operator node in the expression tree.
+                Relational operators represent iterative processing of rows
+                during query execution. For example, a ``TableScan``
+                operation that reads rows from a table.
+            SCALAR (2):
+                Denotes a Scalar node in the expression tree.
+                Scalar nodes represent non-iterable entities in
+                the query plan. For example, constants or
+                arithmetic operators appearing inside predicate
+                expressions or references to column names.
         """
         KIND_UNSPECIFIED = 0
         RELATIONAL = 1
@@ -104,15 +123,15 @@ class PlanNode(proto.Message):
                 to the variable names assigned to the columns.
         """
 
-        child_index = proto.Field(
+        child_index: int = proto.Field(
             proto.INT32,
             number=1,
         )
-        type_ = proto.Field(
+        type_: str = proto.Field(
             proto.STRING,
             number=2,
         )
-        variable = proto.Field(
+        variable: str = proto.Field(
             proto.STRING,
             number=3,
         )
@@ -125,7 +144,7 @@ class PlanNode(proto.Message):
             description (str):
                 A string representation of the expression
                 subtree rooted at this node.
-            subqueries (Mapping[str, int]):
+            subqueries (MutableMapping[str, int]):
                 A mapping of (subquery variable name) -> (subquery node id)
                 for cases where the ``description`` string of this node
                 references a ``SCALAR`` subquery contained in the expression
@@ -133,45 +152,45 @@ class PlanNode(proto.Message):
                 subquery may not necessarily be a direct child of this node.
         """
 
-        description = proto.Field(
+        description: str = proto.Field(
             proto.STRING,
             number=1,
         )
-        subqueries = proto.MapField(
+        subqueries: MutableMapping[str, int] = proto.MapField(
             proto.STRING,
             proto.INT32,
             number=2,
         )
 
-    index = proto.Field(
+    index: int = proto.Field(
         proto.INT32,
         number=1,
     )
-    kind = proto.Field(
+    kind: Kind = proto.Field(
         proto.ENUM,
         number=2,
         enum=Kind,
     )
-    display_name = proto.Field(
+    display_name: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    child_links = proto.RepeatedField(
+    child_links: MutableSequence[ChildLink] = proto.RepeatedField(
         proto.MESSAGE,
         number=4,
         message=ChildLink,
     )
-    short_representation = proto.Field(
+    short_representation: ShortRepresentation = proto.Field(
         proto.MESSAGE,
         number=5,
         message=ShortRepresentation,
     )
-    metadata = proto.Field(
+    metadata: struct_pb2.Struct = proto.Field(
         proto.MESSAGE,
         number=6,
         message=struct_pb2.Struct,
     )
-    execution_stats = proto.Field(
+    execution_stats: struct_pb2.Struct = proto.Field(
         proto.MESSAGE,
         number=7,
         message=struct_pb2.Struct,
@@ -183,14 +202,14 @@ class QueryPlan(proto.Message):
     plan.
 
     Attributes:
-        plan_nodes (Sequence[googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.PlanNode]):
+        plan_nodes (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.PlanNode]):
             The nodes in the query plan. Plan nodes are returned in
             pre-order starting with the plan root. Each
             [PlanNode][google.spanner.v1.PlanNode]'s ``id`` corresponds
             to its index in ``plan_nodes``.
     """
 
-    plan_nodes = proto.RepeatedField(
+    plan_nodes: MutableSequence['PlanNode'] = proto.RepeatedField(
         proto.MESSAGE,
         number=1,
         message='PlanNode',

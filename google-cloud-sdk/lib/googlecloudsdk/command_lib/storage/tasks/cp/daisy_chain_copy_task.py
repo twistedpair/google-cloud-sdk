@@ -248,32 +248,34 @@ class _ReadableStream:
       offset (int): Defines the position realative to the `whence` where the
         current position of the stream should be moved.
       whence (int): The reference relative to which offset is interpreted.
-          Values for whence are: os.SEEK_SET or 0 - start of the stream
-            (thedefault). os.SEEK_END or 2 - end of the stream. We do not
-            support other os.SEEK_* constants.
+        Values for whence are: os.SEEK_SET or 0 - start of the stream
+        (thedefault). os.SEEK_END or 2 - end of the stream. We do not support
+        other os.SEEK_* constants.
 
     Returns:
       (int) The current position.
 
     Raises:
-      ValueError:
+      Error:
         If seek is called with whence == os.SEEK_END for offset not
         equal to the last position.
         If seek is called with whence == os.SEEK_CUR.
-
     """
     if whence == os.SEEK_END:
       if offset:
-        raise ValueError('Non-zero offset from os.SEEK_END is not allowed.'
-                         'Offset: {}.'.format(offset))
+        raise errors.Error(
+            'Non-zero offset from os.SEEK_END is not allowed.'
+            'Offset: {}.'.format(offset)
+        )
     elif whence == os.SEEK_SET:
       # Relative to the start of the stream, the offset should be the size
       # of the stream
       if offset != self._position:
         self._restart_download(offset)
     else:
-      raise ValueError('Seek is only supported for os.SEEK_END and'
-                       ' os.SEEK_SET.')
+      raise errors.Error(
+          'Seek is only supported for os.SEEK_END and os.SEEK_SET.'
+      )
     return self._position
 
   def seekable(self):
@@ -467,8 +469,9 @@ class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
     if (not isinstance(source_resource.storage_url, storage_url.CloudUrl)
         or not isinstance(destination_resource.storage_url,
                           storage_url.CloudUrl)):
-      raise ValueError('DaisyChainCopyTask is for copies between cloud'
-                       ' providers.')
+      raise errors.Error(
+          'DaisyChainCopyTask is for copies between cloud providers.'
+      )
 
     self._delete_source = delete_source
     self._print_created_message = print_created_message

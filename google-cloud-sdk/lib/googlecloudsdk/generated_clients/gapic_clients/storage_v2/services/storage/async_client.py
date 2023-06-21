@@ -16,8 +16,9 @@
 from collections import OrderedDict
 import functools
 import re
-from typing import Dict, Mapping, Optional, AsyncIterable, Awaitable, AsyncIterator, Sequence, Tuple, Type, Union
-import pkg_resources
+from typing import Dict, Mapping, MutableMapping, MutableSequence, Optional, AsyncIterable, Awaitable, AsyncIterator, Sequence, Tuple, Type, Union
+
+from googlecloudsdk.generated_clients.gapic_clients.storage_v2 import gapic_version as package_version
 
 from google.api_core.client_options import ClientOptions
 from google.api_core import exceptions as core_exceptions
@@ -140,7 +141,7 @@ class StorageAsyncClient:
         The API endpoint is determined in the following order:
         (1) if `client_options.api_endpoint` if provided, use the provided one.
         (2) if `GOOGLE_API_USE_CLIENT_CERTIFICATE` environment variable is "always", use the
-        default mTLS endpoint; if the environment variabel is "never", use the default API
+        default mTLS endpoint; if the environment variable is "never", use the default API
         endpoint; otherwise if client cert source exists, use the default mTLS endpoint, otherwise
         use the default API endpoint.
 
@@ -172,9 +173,9 @@ class StorageAsyncClient:
     get_transport_class = functools.partial(type(StorageClient).get_transport_class, type(StorageClient))
 
     def __init__(self, *,
-            credentials: ga_credentials.Credentials = None,
+            credentials: Optional[ga_credentials.Credentials] = None,
             transport: Union[str, StorageTransport] = "grpc_asyncio",
-            client_options: ClientOptions = None,
+            client_options: Optional[ClientOptions] = None,
             client_info: gapic_v1.client_info.ClientInfo = DEFAULT_CLIENT_INFO,
             ) -> None:
         """Instantiates the storage client.
@@ -218,11 +219,11 @@ class StorageAsyncClient:
         )
 
     async def delete_bucket(self,
-            request: Union[storage.DeleteBucketRequest, dict] = None,
+            request: Optional[Union[storage.DeleteBucketRequest, dict]] = None,
             *,
-            name: str = None,
+            name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
         r"""Permanently deletes an empty bucket.
@@ -251,7 +252,7 @@ class StorageAsyncClient:
                 await client.delete_bucket(request=request)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteBucketRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteBucketRequest, dict]]):
                 The request object. Request message for DeleteBucket.
             name (:class:`str`):
                 Required. Name of a bucket to delete.
@@ -296,11 +297,11 @@ class StorageAsyncClient:
         )
 
     async def get_bucket(self,
-            request: Union[storage.GetBucketRequest, dict] = None,
+            request: Optional[Union[storage.GetBucketRequest, dict]] = None,
             *,
-            name: str = None,
+            name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.Bucket:
         r"""Returns metadata for the specified bucket.
@@ -332,7 +333,7 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetBucketRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetBucketRequest, dict]]):
                 The request object. Request message for GetBucket.
             name (:class:`str`):
                 Required. Name of a bucket.
@@ -384,13 +385,13 @@ class StorageAsyncClient:
         return response
 
     async def create_bucket(self,
-            request: Union[storage.CreateBucketRequest, dict] = None,
+            request: Optional[Union[storage.CreateBucketRequest, dict]] = None,
             *,
-            parent: str = None,
-            bucket: storage.Bucket = None,
-            bucket_id: str = None,
+            parent: Optional[str] = None,
+            bucket: Optional[storage.Bucket] = None,
+            bucket_id: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.Bucket:
         r"""Creates a new bucket.
@@ -423,7 +424,7 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CreateBucketRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CreateBucketRequest, dict]]):
                 The request object. Request message for CreateBucket.
             parent (:class:`str`):
                 Required. The project to which this
@@ -504,11 +505,11 @@ class StorageAsyncClient:
         return response
 
     async def list_buckets(self,
-            request: Union[storage.ListBucketsRequest, dict] = None,
+            request: Optional[Union[storage.ListBucketsRequest, dict]] = None,
             *,
-            parent: str = None,
+            parent: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListBucketsAsyncPager:
         r"""Retrieves a list of buckets for a given project.
@@ -541,7 +542,7 @@ class StorageAsyncClient:
                     print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListBucketsRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListBucketsRequest, dict]]):
                 The request object. Request message for ListBuckets.
             parent (:class:`str`):
                 Required. The project whose buckets
@@ -609,11 +610,11 @@ class StorageAsyncClient:
         return response
 
     async def lock_bucket_retention_policy(self,
-            request: Union[storage.LockBucketRetentionPolicyRequest, dict] = None,
+            request: Optional[Union[storage.LockBucketRetentionPolicyRequest, dict]] = None,
             *,
-            bucket: str = None,
+            bucket: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.Bucket:
         r"""Locks retention policy on a bucket.
@@ -646,7 +647,7 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.LockBucketRetentionPolicyRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.LockBucketRetentionPolicyRequest, dict]]):
                 The request object. Request message for
                 LockBucketRetentionPolicyRequest.
             bucket (:class:`str`):
@@ -699,11 +700,11 @@ class StorageAsyncClient:
         return response
 
     async def get_iam_policy(self,
-            request: Union[iam_policy_pb2.GetIamPolicyRequest, dict] = None,
+            request: Optional[Union[iam_policy_pb2.GetIamPolicyRequest, dict]] = None,
             *,
-            resource: str = None,
+            resource: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> policy_pb2.Policy:
         r"""Gets the IAM policy for a specified bucket or object. The
@@ -740,9 +741,8 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[google.iam.v1.iam_policy_pb2.GetIamPolicyRequest, dict]):
-                The request object. Request message for `GetIamPolicy`
-                method.
+            request (Optional[Union[google.iam.v1.iam_policy_pb2.GetIamPolicyRequest, dict]]):
+                The request object. Request message for ``GetIamPolicy`` method.
             resource (:class:`str`):
                 REQUIRED: The resource for which the
                 policy is being requested. See the
@@ -852,11 +852,11 @@ class StorageAsyncClient:
         return response
 
     async def set_iam_policy(self,
-            request: Union[iam_policy_pb2.SetIamPolicyRequest, dict] = None,
+            request: Optional[Union[iam_policy_pb2.SetIamPolicyRequest, dict]] = None,
             *,
-            resource: str = None,
+            resource: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> policy_pb2.Policy:
         r"""Updates an IAM policy for the specified bucket or object. The
@@ -893,9 +893,8 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[google.iam.v1.iam_policy_pb2.SetIamPolicyRequest, dict]):
-                The request object. Request message for `SetIamPolicy`
-                method.
+            request (Optional[Union[google.iam.v1.iam_policy_pb2.SetIamPolicyRequest, dict]]):
+                The request object. Request message for ``SetIamPolicy`` method.
             resource (:class:`str`):
                 REQUIRED: The resource for which the
                 policy is being specified. See the
@@ -1005,12 +1004,12 @@ class StorageAsyncClient:
         return response
 
     async def test_iam_permissions(self,
-            request: Union[iam_policy_pb2.TestIamPermissionsRequest, dict] = None,
+            request: Optional[Union[iam_policy_pb2.TestIamPermissionsRequest, dict]] = None,
             *,
-            resource: str = None,
-            permissions: Sequence[str] = None,
+            resource: Optional[str] = None,
+            permissions: Optional[MutableSequence[str]] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> iam_policy_pb2.TestIamPermissionsResponse:
         r"""Tests a set of permissions on the given bucket or object to see
@@ -1048,9 +1047,8 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[google.iam.v1.iam_policy_pb2.TestIamPermissionsRequest, dict]):
-                The request object. Request message for
-                `TestIamPermissions` method.
+            request (Optional[Union[google.iam.v1.iam_policy_pb2.TestIamPermissionsRequest, dict]]):
+                The request object. Request message for ``TestIamPermissions`` method.
             resource (:class:`str`):
                 REQUIRED: The resource for which the
                 policy detail is being requested. See
@@ -1060,7 +1058,7 @@ class StorageAsyncClient:
                 This corresponds to the ``resource`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            permissions (:class:`Sequence[str]`):
+            permissions (:class:`MutableSequence[str]`):
                 The set of permissions to check for the ``resource``.
                 Permissions with wildcards (such as '*' or 'storage.*')
                 are not allowed. For more information see `IAM
@@ -1114,12 +1112,12 @@ class StorageAsyncClient:
         return response
 
     async def update_bucket(self,
-            request: Union[storage.UpdateBucketRequest, dict] = None,
+            request: Optional[Union[storage.UpdateBucketRequest, dict]] = None,
             *,
-            bucket: storage.Bucket = None,
-            update_mask: field_mask_pb2.FieldMask = None,
+            bucket: Optional[storage.Bucket] = None,
+            update_mask: Optional[field_mask_pb2.FieldMask] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.Bucket:
         r"""Updates a bucket. Equivalent to JSON API's
@@ -1151,7 +1149,7 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.UpdateBucketRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.UpdateBucketRequest, dict]]):
                 The request object. Request for UpdateBucket method.
             bucket (:class:`googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket`):
                 Required. The bucket to update. The bucket's ``name``
@@ -1222,11 +1220,11 @@ class StorageAsyncClient:
         return response
 
     async def delete_notification_config(self,
-            request: Union[storage.DeleteNotificationConfigRequest, dict] = None,
+            request: Optional[Union[storage.DeleteNotificationConfigRequest, dict]] = None,
             *,
-            name: str = None,
+            name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
         r"""Permanently deletes a NotificationConfig.
@@ -1255,7 +1253,7 @@ class StorageAsyncClient:
                 await client.delete_notification_config(request=request)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteNotificationConfigRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteNotificationConfigRequest, dict]]):
                 The request object. Request message for
                 DeleteNotificationConfig.
             name (:class:`str`):
@@ -1303,11 +1301,11 @@ class StorageAsyncClient:
         )
 
     async def get_notification_config(self,
-            request: Union[storage.GetNotificationConfigRequest, dict] = None,
+            request: Optional[Union[storage.GetNotificationConfigRequest, dict]] = None,
             *,
-            name: str = None,
+            name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.NotificationConfig:
         r"""View a NotificationConfig.
@@ -1339,7 +1337,7 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetNotificationConfigRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetNotificationConfigRequest, dict]]):
                 The request object. Request message for
                 GetNotificationConfig.
             name (:class:`str`):
@@ -1397,12 +1395,12 @@ class StorageAsyncClient:
         return response
 
     async def create_notification_config(self,
-            request: Union[storage.CreateNotificationConfigRequest, dict] = None,
+            request: Optional[Union[storage.CreateNotificationConfigRequest, dict]] = None,
             *,
-            parent: str = None,
-            notification_config: storage.NotificationConfig = None,
+            parent: Optional[str] = None,
+            notification_config: Optional[storage.NotificationConfig] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.NotificationConfig:
         r"""Creates a NotificationConfig for a given bucket.
@@ -1443,7 +1441,7 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CreateNotificationConfigRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CreateNotificationConfigRequest, dict]]):
                 The request object. Request message for
                 CreateNotificationConfig.
             parent (:class:`str`):
@@ -1509,11 +1507,11 @@ class StorageAsyncClient:
         return response
 
     async def list_notification_configs(self,
-            request: Union[storage.ListNotificationConfigsRequest, dict] = None,
+            request: Optional[Union[storage.ListNotificationConfigsRequest, dict]] = None,
             *,
-            parent: str = None,
+            parent: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListNotificationConfigsAsyncPager:
         r"""Retrieves a list of NotificationConfigs for a given
@@ -1547,7 +1545,7 @@ class StorageAsyncClient:
                     print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListNotificationConfigsRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListNotificationConfigsRequest, dict]]):
                 The request object. Request message for
                 ListNotifications.
             parent (:class:`str`):
@@ -1616,10 +1614,10 @@ class StorageAsyncClient:
         return response
 
     async def compose_object(self,
-            request: Union[storage.ComposeObjectRequest, dict] = None,
+            request: Optional[Union[storage.ComposeObjectRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.Object:
         r"""Concatenates a list of existing objects into a new
@@ -1651,7 +1649,7 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ComposeObjectRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ComposeObjectRequest, dict]]):
                 The request object. Request message for ComposeObject.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -1686,13 +1684,13 @@ class StorageAsyncClient:
         return response
 
     async def delete_object(self,
-            request: Union[storage.DeleteObjectRequest, dict] = None,
+            request: Optional[Union[storage.DeleteObjectRequest, dict]] = None,
             *,
-            bucket: str = None,
-            object_: str = None,
-            generation: int = None,
+            bucket: Optional[str] = None,
+            object_: Optional[str] = None,
+            generation: Optional[int] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
         r"""Deletes an object and its metadata.
@@ -1727,9 +1725,9 @@ class StorageAsyncClient:
                 await client.delete_object(request=request)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteObjectRequest, dict]):
-                The request object. Message for deleting an object.
-                `bucket` and `object` **must** be set.
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteObjectRequest, dict]]):
+                The request object. Message for deleting an object. ``bucket`` and
+                ``object`` **must** be set.
             bucket (:class:`str`):
                 Required. Name of the bucket in which
                 the object resides.
@@ -1796,11 +1794,11 @@ class StorageAsyncClient:
         )
 
     async def cancel_resumable_write(self,
-            request: Union[storage.CancelResumableWriteRequest, dict] = None,
+            request: Optional[Union[storage.CancelResumableWriteRequest, dict]] = None,
             *,
-            upload_id: str = None,
+            upload_id: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.CancelResumableWriteResponse:
         r"""Cancels an in-progress resumable upload.
@@ -1839,9 +1837,9 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CancelResumableWriteRequest, dict]):
-                The request object. Message for canceling an in-progress
-                resumable upload. `upload_id` **must** be set.
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CancelResumableWriteRequest, dict]]):
+                The request object. Message for canceling an in-progress resumable upload.
+                ``upload_id`` **must** be set.
             upload_id (:class:`str`):
                 Required. The upload_id of the resumable upload to
                 cancel. This should be copied from the ``upload_id``
@@ -1898,13 +1896,13 @@ class StorageAsyncClient:
         return response
 
     async def get_object(self,
-            request: Union[storage.GetObjectRequest, dict] = None,
+            request: Optional[Union[storage.GetObjectRequest, dict]] = None,
             *,
-            bucket: str = None,
-            object_: str = None,
-            generation: int = None,
+            bucket: Optional[str] = None,
+            object_: Optional[str] = None,
+            generation: Optional[int] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.Object:
         r"""Retrieves an object's metadata.
@@ -1937,7 +1935,7 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetObjectRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetObjectRequest, dict]]):
                 The request object. Request message for GetObject.
             bucket (:class:`str`):
                 Required. Name of the bucket in which
@@ -2008,13 +2006,13 @@ class StorageAsyncClient:
         return response
 
     def read_object(self,
-            request: Union[storage.ReadObjectRequest, dict] = None,
+            request: Optional[Union[storage.ReadObjectRequest, dict]] = None,
             *,
-            bucket: str = None,
-            object_: str = None,
-            generation: int = None,
+            bucket: Optional[str] = None,
+            object_: Optional[str] = None,
+            generation: Optional[int] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> Awaitable[AsyncIterable[storage.ReadObjectResponse]]:
         r"""Reads an object's data.
@@ -2048,7 +2046,7 @@ class StorageAsyncClient:
                     print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ReadObjectRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ReadObjectRequest, dict]]):
                 The request object. Request message for ReadObject.
             bucket (:class:`str`):
                 Required. The name of the bucket
@@ -2121,12 +2119,12 @@ class StorageAsyncClient:
         return response
 
     async def update_object(self,
-            request: Union[storage.UpdateObjectRequest, dict] = None,
+            request: Optional[Union[storage.UpdateObjectRequest, dict]] = None,
             *,
-            object_: storage.Object = None,
-            update_mask: field_mask_pb2.FieldMask = None,
+            object_: Optional[storage.Object] = None,
+            update_mask: Optional[field_mask_pb2.FieldMask] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.Object:
         r"""Updates an object's metadata.
@@ -2158,7 +2156,7 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.UpdateObjectRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.UpdateObjectRequest, dict]]):
                 The request object. Request message for UpdateObject.
             object_ (:class:`googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object`):
                 Required. The object to update.
@@ -2235,10 +2233,10 @@ class StorageAsyncClient:
         return response
 
     async def write_object(self,
-            requests: AsyncIterator[storage.WriteObjectRequest] = None,
+            requests: Optional[AsyncIterator[storage.WriteObjectRequest]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.WriteObjectResponse:
         r"""Stores a new object and metadata.
@@ -2377,11 +2375,11 @@ class StorageAsyncClient:
         return response
 
     async def list_objects(self,
-            request: Union[storage.ListObjectsRequest, dict] = None,
+            request: Optional[Union[storage.ListObjectsRequest, dict]] = None,
             *,
-            parent: str = None,
+            parent: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListObjectsAsyncPager:
         r"""Retrieves a list of objects matching the criteria.
@@ -2414,7 +2412,7 @@ class StorageAsyncClient:
                     print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListObjectsRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListObjectsRequest, dict]]):
                 The request object. Request message for ListObjects.
             parent (:class:`str`):
                 Required. Name of the bucket in which
@@ -2482,10 +2480,10 @@ class StorageAsyncClient:
         return response
 
     async def rewrite_object(self,
-            request: Union[storage.RewriteObjectRequest, dict] = None,
+            request: Optional[Union[storage.RewriteObjectRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.RewriteResponse:
         r"""Rewrites a source object to a destination object.
@@ -2521,11 +2519,10 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.RewriteObjectRequest, dict]):
-                The request object. Request message for RewriteObject.
-                If the source object is encrypted using a
-                Customer-Supplied Encryption Key the key information
-                must be provided in the
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.RewriteObjectRequest, dict]]):
+                The request object. Request message for RewriteObject. If the source object
+                is encrypted using a Customer-Supplied Encryption Key
+                the key information must be provided in the
                 copy_source_encryption_algorithm,
                 copy_source_encryption_key_bytes, and
                 copy_source_encryption_key_sha256_bytes fields. If the
@@ -2567,10 +2564,10 @@ class StorageAsyncClient:
         return response
 
     async def start_resumable_write(self,
-            request: Union[storage.StartResumableWriteRequest, dict] = None,
+            request: Optional[Union[storage.StartResumableWriteRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.StartResumableWriteResponse:
         r"""Starts a resumable write. How long the write
@@ -2603,7 +2600,7 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.StartResumableWriteRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.StartResumableWriteRequest, dict]]):
                 The request object. Request message StartResumableWrite.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -2638,11 +2635,11 @@ class StorageAsyncClient:
         return response
 
     async def query_write_status(self,
-            request: Union[storage.QueryWriteStatusRequest, dict] = None,
+            request: Optional[Union[storage.QueryWriteStatusRequest, dict]] = None,
             *,
-            upload_id: str = None,
+            upload_id: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.QueryWriteStatusResponse:
         r"""Determines the ``persisted_size`` for an object that is being
@@ -2688,9 +2685,8 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.QueryWriteStatusRequest, dict]):
-                The request object. Request object for
-                `QueryWriteStatus`.
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.QueryWriteStatusRequest, dict]]):
+                The request object. Request object for ``QueryWriteStatus``.
             upload_id (:class:`str`):
                 Required. The name of the resume
                 token for the object whose write status
@@ -2744,11 +2740,11 @@ class StorageAsyncClient:
         return response
 
     async def get_service_account(self,
-            request: Union[storage.GetServiceAccountRequest, dict] = None,
+            request: Optional[Union[storage.GetServiceAccountRequest, dict]] = None,
             *,
-            project: str = None,
+            project: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.ServiceAccount:
         r"""Retrieves the name of a project's Google Cloud
@@ -2781,7 +2777,7 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetServiceAccountRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetServiceAccountRequest, dict]]):
                 The request object. Request message for
                 GetServiceAccount.
             project (:class:`str`):
@@ -2843,12 +2839,12 @@ class StorageAsyncClient:
         return response
 
     async def create_hmac_key(self,
-            request: Union[storage.CreateHmacKeyRequest, dict] = None,
+            request: Optional[Union[storage.CreateHmacKeyRequest, dict]] = None,
             *,
-            project: str = None,
-            service_account_email: str = None,
+            project: Optional[str] = None,
+            service_account_email: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.CreateHmacKeyResponse:
         r"""Creates a new HMAC key for the given service account.
@@ -2881,7 +2877,7 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CreateHmacKeyRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CreateHmacKeyRequest, dict]]):
                 The request object. Request message for CreateHmacKey.
             project (:class:`str`):
                 Required. The project that the
@@ -2950,12 +2946,12 @@ class StorageAsyncClient:
         return response
 
     async def delete_hmac_key(self,
-            request: Union[storage.DeleteHmacKeyRequest, dict] = None,
+            request: Optional[Union[storage.DeleteHmacKeyRequest, dict]] = None,
             *,
-            access_id: str = None,
-            project: str = None,
+            access_id: Optional[str] = None,
+            project: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
         r"""Deletes a given HMAC key.  Key must be in an INACTIVE
@@ -2986,9 +2982,9 @@ class StorageAsyncClient:
                 await client.delete_hmac_key(request=request)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteHmacKeyRequest, dict]):
-                The request object. Request object to delete a given
-                HMAC key.
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteHmacKeyRequest, dict]]):
+                The request object. Request object to delete a given HMAC
+                key.
             access_id (:class:`str`):
                 Required. The identifying key for the
                 HMAC to delete.
@@ -3046,12 +3042,12 @@ class StorageAsyncClient:
         )
 
     async def get_hmac_key(self,
-            request: Union[storage.GetHmacKeyRequest, dict] = None,
+            request: Optional[Union[storage.GetHmacKeyRequest, dict]] = None,
             *,
-            access_id: str = None,
-            project: str = None,
+            access_id: Optional[str] = None,
+            project: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.HmacKeyMetadata:
         r"""Gets an existing HMAC key metadata for the given id.
@@ -3084,7 +3080,7 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetHmacKeyRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetHmacKeyRequest, dict]]):
                 The request object. Request object to get metadata on a
                 given HMAC key.
             access_id (:class:`str`):
@@ -3153,11 +3149,11 @@ class StorageAsyncClient:
         return response
 
     async def list_hmac_keys(self,
-            request: Union[storage.ListHmacKeysRequest, dict] = None,
+            request: Optional[Union[storage.ListHmacKeysRequest, dict]] = None,
             *,
-            project: str = None,
+            project: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListHmacKeysAsyncPager:
         r"""Lists HMAC keys under a given project with the
@@ -3191,7 +3187,7 @@ class StorageAsyncClient:
                     print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListHmacKeysRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListHmacKeysRequest, dict]]):
                 The request object. Request to fetch a list of HMAC keys
                 under a given project.
             project (:class:`str`):
@@ -3263,12 +3259,12 @@ class StorageAsyncClient:
         return response
 
     async def update_hmac_key(self,
-            request: Union[storage.UpdateHmacKeyRequest, dict] = None,
+            request: Optional[Union[storage.UpdateHmacKeyRequest, dict]] = None,
             *,
-            hmac_key: storage.HmacKeyMetadata = None,
-            update_mask: field_mask_pb2.FieldMask = None,
+            hmac_key: Optional[storage.HmacKeyMetadata] = None,
+            update_mask: Optional[field_mask_pb2.FieldMask] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: float = None,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.HmacKeyMetadata:
         r"""Updates a given HMAC key state between ACTIVE and
@@ -3300,11 +3296,13 @@ class StorageAsyncClient:
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.UpdateHmacKeyRequest, dict]):
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.UpdateHmacKeyRequest, dict]]):
                 The request object. Request object to update an HMAC key
-                state. HmacKeyMetadata.state is required and the only
-                writable field in UpdateHmacKey operation. Specifying
-                fields other than state will result in an error.
+                state. HmacKeyMetadata.state is required
+                and the only writable field in
+                UpdateHmacKey operation. Specifying
+                fields other than state will result in
+                an error.
             hmac_key (:class:`googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.HmacKeyMetadata`):
                 Required. The HMAC key to update. If present, the
                 hmac_key's ``id`` field will be used to identify the
@@ -3376,14 +3374,7 @@ class StorageAsyncClient:
     async def __aexit__(self, exc_type, exc, tb):
         await self.transport.close()
 
-try:
-    DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(
-        gapic_version=pkg_resources.get_distribution(
-            "googlecloudsdk-generated_clients-gapic_clients-storage",
-        ).version,
-    )
-except pkg_resources.DistributionNotFound:
-    DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo()
+DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(gapic_version=package_version.__version__)
 
 
 __all__ = (

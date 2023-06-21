@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from __future__ import annotations
+
+from typing import MutableMapping, MutableSequence
+
 import proto  # type: ignore
 
 from cloudsdk.google.protobuf import field_mask_pb2  # type: ignore
@@ -86,6 +90,22 @@ class OperationState(proto.Enum):
     is created, the current state of the operation can be queried
     even before the operation is finished and the final result is
     available.
+
+    Values:
+        OPERATION_STATE_UNSPECIFIED (0):
+            Should not be used.
+        OPERATION_STATE_SCHEDULED (1):
+            The operation is scheduled.
+        OPERATION_STATE_WAITING_FOR_PERMISSIONS (2):
+            Waiting for necessary permissions.
+        OPERATION_STATE_RUNNING (3):
+            The operation is running.
+        OPERATION_STATE_SUCCEEDED (4):
+            The operation was completed successfully.
+        OPERATION_STATE_FAILED (5):
+            The operation failed.
+        OPERATION_STATE_CANCELLED (6):
+            The operation was cancelled by the user.
     """
     OPERATION_STATE_UNSPECIFIED = 0
     OPERATION_STATE_SCHEDULED = 1
@@ -97,7 +117,29 @@ class OperationState(proto.Enum):
 
 
 class LifecycleState(proto.Enum):
-    r"""LogBucket lifecycle states."""
+    r"""LogBucket lifecycle states.
+
+    Values:
+        LIFECYCLE_STATE_UNSPECIFIED (0):
+            Unspecified state. This is only used/useful
+            for distinguishing unset values.
+        ACTIVE (1):
+            The normal and active state.
+        DELETE_REQUESTED (2):
+            The resource has been marked for deletion by
+            the user. For some resources (e.g. buckets),
+            this can be reversed by an un-delete operation.
+        UPDATING (3):
+            The resource has been marked for an update by
+            the user. It will remain in this state until the
+            update is complete.
+        CREATING (4):
+            The resource has been marked for creation by
+            the user. It will remain in this state until the
+            creation is complete.
+        FAILED (5):
+            The resource is in an INTERNAL error state.
+    """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ACTIVE = 1
     DELETE_REQUESTED = 2
@@ -109,6 +151,14 @@ class LifecycleState(proto.Enum):
 class IndexType(proto.Enum):
     r"""IndexType is used for custom indexing. It describes the type
     of an indexed field.
+
+    Values:
+        INDEX_TYPE_UNSPECIFIED (0):
+            The index's type is unspecified.
+        INDEX_TYPE_STRING (1):
+            The index is a string-type index.
+        INDEX_TYPE_INTEGER (2):
+            The index is a integer-type index.
     """
     INDEX_TYPE_UNSPECIFIED = 0
     INDEX_TYPE_STRING = 1
@@ -137,16 +187,16 @@ class IndexConfig(proto.Message):
             be ignored if supplied during update.
     """
 
-    field_path = proto.Field(
+    field_path: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    type_ = proto.Field(
+    type_: 'IndexType' = proto.Field(
         proto.ENUM,
         number=2,
         enum='IndexType',
     )
-    create_time = proto.Field(
+    create_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=3,
         message=timestamp_pb2.Timestamp,
@@ -200,7 +250,7 @@ class LogBucket(proto.Message):
             bucket.
             Once enabled, log analytics features cannot be
             disabled.
-        restricted_fields (Sequence[str]):
+        restricted_fields (MutableSequence[str]):
             Log entry field paths that are denied access in this bucket.
 
             The following fields and their children are eligible:
@@ -210,7 +260,7 @@ class LogBucket(proto.Message):
             Restricting a repeated field will restrict all values.
             Adding a parent will block all child fields. (e.g.
             ``foo.bar`` will block ``foo.bar.baz``)
-        index_configs (Sequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.IndexConfig]):
+        index_configs (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.IndexConfig]):
             A list of indexed fields and related
             configuration data.
         cmek_settings (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CmekSettings):
@@ -223,51 +273,51 @@ class LogBucket(proto.Message):
             KMS key is allowed.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    description = proto.Field(
+    description: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    create_time = proto.Field(
+    create_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=4,
         message=timestamp_pb2.Timestamp,
     )
-    update_time = proto.Field(
+    update_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=5,
         message=timestamp_pb2.Timestamp,
     )
-    retention_days = proto.Field(
+    retention_days: int = proto.Field(
         proto.INT32,
         number=11,
     )
-    locked = proto.Field(
+    locked: bool = proto.Field(
         proto.BOOL,
         number=9,
     )
-    lifecycle_state = proto.Field(
+    lifecycle_state: 'LifecycleState' = proto.Field(
         proto.ENUM,
         number=12,
         enum='LifecycleState',
     )
-    analytics_enabled = proto.Field(
+    analytics_enabled: bool = proto.Field(
         proto.BOOL,
         number=14,
     )
-    restricted_fields = proto.RepeatedField(
+    restricted_fields: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
         number=15,
     )
-    index_configs = proto.RepeatedField(
+    index_configs: MutableSequence['IndexConfig'] = proto.RepeatedField(
         proto.MESSAGE,
         number=17,
         message='IndexConfig',
     )
-    cmek_settings = proto.Field(
+    cmek_settings: 'CmekSettings' = proto.Field(
         proto.MESSAGE,
         number=19,
         message='CmekSettings',
@@ -309,25 +359,25 @@ class LogView(proto.Message):
             "gce_instance" AND LOG_ID("stdout")
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    description = proto.Field(
+    description: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    create_time = proto.Field(
+    create_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=4,
         message=timestamp_pb2.Timestamp,
     )
-    update_time = proto.Field(
+    update_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=5,
         message=timestamp_pb2.Timestamp,
     )
-    filter = proto.Field(
+    filter: str = proto.Field(
         proto.STRING,
         number=7,
     )
@@ -362,6 +412,7 @@ class LogSink(proto.Message):
                 "storage.googleapis.com/[GCS_BUCKET]"
                 "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
                 "pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]"
+                "logging.googleapis.com/projects/[PROJECT_ID]"
 
             The sink's ``writer_identity``, set when the sink is
             created, must have permission to write to the destination or
@@ -384,7 +435,7 @@ class LogSink(proto.Message):
         disabled (bool):
             Optional. If set to true, then this sink is
             disabled and it does not export any log entries.
-        exclusions (Sequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion]):
+        exclusions (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion]):
             Optional. Log entries that match any of these exclusion
             filters will not be exported.
 
@@ -449,61 +500,71 @@ class LogSink(proto.Message):
             This field may not be present for older sinks.
     """
     class VersionFormat(proto.Enum):
-        r"""Deprecated. This is unused."""
+        r"""Deprecated. This is unused.
+
+        Values:
+            VERSION_FORMAT_UNSPECIFIED (0):
+                An unspecified format version that will
+                default to V2.
+            V2 (1):
+                ``LogEntry`` version 2 format.
+            V1 (2):
+                ``LogEntry`` version 1 format.
+        """
         VERSION_FORMAT_UNSPECIFIED = 0
         V2 = 1
         V1 = 2
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    destination = proto.Field(
+    destination: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    filter = proto.Field(
+    filter: str = proto.Field(
         proto.STRING,
         number=5,
     )
-    description = proto.Field(
+    description: str = proto.Field(
         proto.STRING,
         number=18,
     )
-    disabled = proto.Field(
+    disabled: bool = proto.Field(
         proto.BOOL,
         number=19,
     )
-    exclusions = proto.RepeatedField(
+    exclusions: MutableSequence['LogExclusion'] = proto.RepeatedField(
         proto.MESSAGE,
         number=16,
         message='LogExclusion',
     )
-    output_version_format = proto.Field(
+    output_version_format: VersionFormat = proto.Field(
         proto.ENUM,
         number=6,
         enum=VersionFormat,
     )
-    writer_identity = proto.Field(
+    writer_identity: str = proto.Field(
         proto.STRING,
         number=8,
     )
-    include_children = proto.Field(
+    include_children: bool = proto.Field(
         proto.BOOL,
         number=9,
     )
-    bigquery_options = proto.Field(
+    bigquery_options: 'BigQueryOptions' = proto.Field(
         proto.MESSAGE,
         number=12,
         oneof='options',
         message='BigQueryOptions',
     )
-    create_time = proto.Field(
+    create_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=13,
         message=timestamp_pb2.Timestamp,
     )
-    update_time = proto.Field(
+    update_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=14,
         message=timestamp_pb2.Timestamp,
@@ -524,7 +585,7 @@ class BigQueryDataset(proto.Message):
             "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET_ID]".
     """
 
-    dataset_id = proto.Field(
+    dataset_id: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -568,25 +629,25 @@ class Link(proto.Message):
             LogViews in the bucket.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    description = proto.Field(
+    description: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    create_time = proto.Field(
+    create_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=3,
         message=timestamp_pb2.Timestamp,
     )
-    lifecycle_state = proto.Field(
+    lifecycle_state: 'LifecycleState' = proto.Field(
         proto.ENUM,
         number=4,
         enum='LifecycleState',
     )
-    bigquery_dataset = proto.Field(
+    bigquery_dataset: 'BigQueryDataset' = proto.Field(
         proto.MESSAGE,
         number=5,
         message='BigQueryDataset',
@@ -620,11 +681,11 @@ class BigQueryOptions(proto.Message):
             will have this field set to false.
     """
 
-    use_partitioned_tables = proto.Field(
+    use_partitioned_tables: bool = proto.Field(
         proto.BOOL,
         number=1,
     )
-    uses_timestamp_column_partitioning = proto.Field(
+    uses_timestamp_column_partitioning: bool = proto.Field(
         proto.BOOL,
         number=3,
     )
@@ -661,15 +722,15 @@ class ListBucketsRequest(proto.Message):
             results might be available.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    page_token = proto.Field(
+    page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    page_size = proto.Field(
+    page_size: int = proto.Field(
         proto.INT32,
         number=3,
     )
@@ -679,7 +740,7 @@ class ListBucketsResponse(proto.Message):
     r"""The response from ListBuckets.
 
     Attributes:
-        buckets (Sequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogBucket]):
+        buckets (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogBucket]):
             A list of buckets.
         next_page_token (str):
             If there might be more results than appear in this response,
@@ -692,12 +753,12 @@ class ListBucketsResponse(proto.Message):
     def raw_page(self):
         return self
 
-    buckets = proto.RepeatedField(
+    buckets: MutableSequence['LogBucket'] = proto.RepeatedField(
         proto.MESSAGE,
         number=1,
         message='LogBucket',
     )
-    next_page_token = proto.Field(
+    next_page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -729,15 +790,15 @@ class CreateBucketRequest(proto.Message):
             name field in the bucket is ignored.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    bucket_id = proto.Field(
+    bucket_id: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    bucket = proto.Field(
+    bucket: 'LogBucket' = proto.Field(
         proto.MESSAGE,
         number=3,
         message='LogBucket',
@@ -775,16 +836,16 @@ class UpdateBucketRequest(proto.Message):
             For example: ``updateMask=retention_days``
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    bucket = proto.Field(
+    bucket: 'LogBucket' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='LogBucket',
     )
-    update_mask = proto.Field(
+    update_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=4,
         message=field_mask_pb2.FieldMask,
@@ -810,7 +871,7 @@ class GetBucketRequest(proto.Message):
             ``"projects/my-project/locations/global/buckets/my-bucket"``
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -835,7 +896,7 @@ class DeleteBucketRequest(proto.Message):
             ``"projects/my-project/locations/global/buckets/my-bucket"``
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -860,7 +921,7 @@ class UndeleteBucketRequest(proto.Message):
             ``"projects/my-project/locations/global/buckets/my-bucket"``
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -891,15 +952,15 @@ class ListViewsRequest(proto.Message):
             results might be available.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    page_token = proto.Field(
+    page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    page_size = proto.Field(
+    page_size: int = proto.Field(
         proto.INT32,
         number=3,
     )
@@ -909,7 +970,7 @@ class ListViewsResponse(proto.Message):
     r"""The response from ListViews.
 
     Attributes:
-        views (Sequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogView]):
+        views (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogView]):
             A list of views.
         next_page_token (str):
             If there might be more results than appear in this response,
@@ -922,12 +983,12 @@ class ListViewsResponse(proto.Message):
     def raw_page(self):
         return self
 
-    views = proto.RepeatedField(
+    views: MutableSequence['LogView'] = proto.RepeatedField(
         proto.MESSAGE,
         number=1,
         message='LogView',
     )
-    next_page_token = proto.Field(
+    next_page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -956,15 +1017,15 @@ class CreateViewRequest(proto.Message):
             Required. The new view.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    view_id = proto.Field(
+    view_id: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    view = proto.Field(
+    view: 'LogView' = proto.Field(
         proto.MESSAGE,
         number=3,
         message='LogView',
@@ -999,16 +1060,16 @@ class UpdateViewRequest(proto.Message):
             For example: ``updateMask=filter``
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    view = proto.Field(
+    view: 'LogView' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='LogView',
     )
-    update_mask = proto.Field(
+    update_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=4,
         message=field_mask_pb2.FieldMask,
@@ -1031,7 +1092,7 @@ class GetViewRequest(proto.Message):
             ``"projects/my-project/locations/global/buckets/my-bucket/views/my-view"``
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -1055,7 +1116,7 @@ class DeleteViewRequest(proto.Message):
                `"projects/my-project/locations/global/buckets/my-bucket/views/my-view"`
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -1087,15 +1148,15 @@ class ListSinksRequest(proto.Message):
             results might be available.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    page_token = proto.Field(
+    page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    page_size = proto.Field(
+    page_size: int = proto.Field(
         proto.INT32,
         number=3,
     )
@@ -1105,7 +1166,7 @@ class ListSinksResponse(proto.Message):
     r"""Result returned from ``ListSinks``.
 
     Attributes:
-        sinks (Sequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogSink]):
+        sinks (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogSink]):
             A list of sinks.
         next_page_token (str):
             If there might be more results than appear in this response,
@@ -1118,12 +1179,12 @@ class ListSinksResponse(proto.Message):
     def raw_page(self):
         return self
 
-    sinks = proto.RepeatedField(
+    sinks: MutableSequence['LogSink'] = proto.RepeatedField(
         proto.MESSAGE,
         number=1,
         message='LogSink',
     )
-    next_page_token = proto.Field(
+    next_page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -1148,7 +1209,7 @@ class GetSinkRequest(proto.Message):
             ``"projects/my-project/sinks/my-sink"``
     """
 
-    sink_name = proto.Field(
+    sink_name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -1190,20 +1251,31 @@ class CreateSinkRequest(proto.Message):
             only for exports from the new sink. For more information,
             see ``writer_identity`` in
             [LogSink][google.logging.v2.LogSink].
+        custom_writer_identity (str):
+            Optional. A service account provided by the caller that will
+            be used to write the log entries. The format must be
+            ``serviceAccount:some@email``. This field can only be
+            specified if you are routing logs to a destination outside
+            this sink's project. If not specified, a Logging service
+            account will automatically be generated.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    sink = proto.Field(
+    sink: 'LogSink' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='LogSink',
     )
-    unique_writer_identity = proto.Field(
+    unique_writer_identity: bool = proto.Field(
         proto.BOOL,
         number=3,
+    )
+    custom_writer_identity: str = proto.Field(
+        proto.STRING,
+        number=4,
     )
 
 
@@ -1244,6 +1316,13 @@ class UpdateSinkRequest(proto.Message):
                account.
             -  It is an error if the old value is true and the new value
                is set to false or defaulted to false.
+        custom_writer_identity (str):
+            Optional. A service account provided by the caller that will
+            be used to write the log entries. Must be of format
+            ``serviceAccount:some@email``. This can only be specified if
+            writing to a destination outside the sink's project. If not
+            specified, a p4 service account will automatically be
+            generated.
         update_mask (google.protobuf.field_mask_pb2.FieldMask):
             Optional. Field mask that specifies the fields in ``sink``
             that need an update. A sink field will be overwritten if,
@@ -1264,20 +1343,24 @@ class UpdateSinkRequest(proto.Message):
             For example: ``updateMask=filter``
     """
 
-    sink_name = proto.Field(
+    sink_name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    sink = proto.Field(
+    sink: 'LogSink' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='LogSink',
     )
-    unique_writer_identity = proto.Field(
+    unique_writer_identity: bool = proto.Field(
         proto.BOOL,
         number=3,
     )
-    update_mask = proto.Field(
+    custom_writer_identity: str = proto.Field(
+        proto.STRING,
+        number=5,
+    )
+    update_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=4,
         message=field_mask_pb2.FieldMask,
@@ -1304,7 +1387,7 @@ class DeleteSinkRequest(proto.Message):
             ``"projects/my-project/sinks/my-sink"``
     """
 
-    sink_name = proto.Field(
+    sink_name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -1332,16 +1415,16 @@ class CreateLinkRequest(proto.Message):
             alphanumeric characters and underscores within it.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    link = proto.Field(
+    link: 'Link' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='Link',
     )
-    link_id = proto.Field(
+    link_id: str = proto.Field(
         proto.STRING,
         number=3,
     )
@@ -1360,7 +1443,7 @@ class DeleteLinkRequest(proto.Message):
             "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]".
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -1387,15 +1470,15 @@ class ListLinksRequest(proto.Message):
             return from this request.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    page_token = proto.Field(
+    page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    page_size = proto.Field(
+    page_size: int = proto.Field(
         proto.INT32,
         number=3,
     )
@@ -1405,7 +1488,7 @@ class ListLinksResponse(proto.Message):
     r"""The response from ListLinks.
 
     Attributes:
-        links (Sequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Link]):
+        links (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Link]):
             A list of links.
         next_page_token (str):
             If there might be more results than those appearing in this
@@ -1418,12 +1501,12 @@ class ListLinksResponse(proto.Message):
     def raw_page(self):
         return self
 
-    links = proto.RepeatedField(
+    links: MutableSequence['Link'] = proto.RepeatedField(
         proto.MESSAGE,
         number=1,
         message='Link',
     )
-    next_page_token = proto.Field(
+    next_page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -1442,7 +1525,7 @@ class GetLinkRequest(proto.Message):
             "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -1494,28 +1577,28 @@ class LogExclusion(proto.Message):
             exclusions.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    description = proto.Field(
+    description: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    filter = proto.Field(
+    filter: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    disabled = proto.Field(
+    disabled: bool = proto.Field(
         proto.BOOL,
         number=4,
     )
-    create_time = proto.Field(
+    create_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=5,
         message=timestamp_pb2.Timestamp,
     )
-    update_time = proto.Field(
+    update_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=6,
         message=timestamp_pb2.Timestamp,
@@ -1549,15 +1632,15 @@ class ListExclusionsRequest(proto.Message):
             results might be available.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    page_token = proto.Field(
+    page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    page_size = proto.Field(
+    page_size: int = proto.Field(
         proto.INT32,
         number=3,
     )
@@ -1567,7 +1650,7 @@ class ListExclusionsResponse(proto.Message):
     r"""Result returned from ``ListExclusions``.
 
     Attributes:
-        exclusions (Sequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion]):
+        exclusions (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion]):
             A list of exclusions.
         next_page_token (str):
             If there might be more results than appear in this response,
@@ -1580,12 +1663,12 @@ class ListExclusionsResponse(proto.Message):
     def raw_page(self):
         return self
 
-    exclusions = proto.RepeatedField(
+    exclusions: MutableSequence['LogExclusion'] = proto.RepeatedField(
         proto.MESSAGE,
         number=1,
         message='LogExclusion',
     )
-    next_page_token = proto.Field(
+    next_page_token: str = proto.Field(
         proto.STRING,
         number=2,
     )
@@ -1610,7 +1693,7 @@ class GetExclusionRequest(proto.Message):
             ``"projects/my-project/exclusions/my-exclusion"``
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -1641,11 +1724,11 @@ class CreateExclusionRequest(proto.Message):
             resource.
     """
 
-    parent = proto.Field(
+    parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    exclusion = proto.Field(
+    exclusion: 'LogExclusion' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='LogExclusion',
@@ -1685,16 +1768,16 @@ class UpdateExclusionRequest(proto.Message):
             ``"filter,description"``.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    exclusion = proto.Field(
+    exclusion: 'LogExclusion' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='LogExclusion',
     )
-    update_mask = proto.Field(
+    update_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=3,
         message=field_mask_pb2.FieldMask,
@@ -1721,7 +1804,7 @@ class DeleteExclusionRequest(proto.Message):
             ``"projects/my-project/exclusions/my-exclusion"``
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -1756,7 +1839,7 @@ class GetCmekSettingsRequest(proto.Message):
             projects and folders in the Google Cloud organization.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -1807,16 +1890,16 @@ class UpdateCmekSettingsRequest(proto.Message):
             For example: ``"updateMask=kmsKeyName"``
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    cmek_settings = proto.Field(
+    cmek_settings: 'CmekSettings' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='CmekSettings',
     )
-    update_mask = proto.Field(
+    update_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=3,
         message=field_mask_pb2.FieldMask,
@@ -1910,19 +1993,19 @@ class CmekSettings(proto.Message):
             for more information.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    kms_key_name = proto.Field(
+    kms_key_name: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    kms_key_version_name = proto.Field(
+    kms_key_version_name: str = proto.Field(
         proto.STRING,
         number=4,
     )
-    service_account_id = proto.Field(
+    service_account_id: str = proto.Field(
         proto.STRING,
         number=3,
     )
@@ -1958,7 +2041,7 @@ class GetSettingsRequest(proto.Message):
             and folders in the Google Cloud organization.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -2006,16 +2089,16 @@ class UpdateSettingsRequest(proto.Message):
             For example: ``"updateMask=kmsKeyName"``
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    settings = proto.Field(
+    settings: 'Settings' = proto.Field(
         proto.MESSAGE,
         number=2,
         message='Settings',
     )
-    update_mask = proto.Field(
+    update_mask: field_mask_pb2.FieldMask = proto.Field(
         proto.MESSAGE,
         number=3,
         message=field_mask_pb2.FieldMask,
@@ -2096,27 +2179,27 @@ class Settings(proto.Message):
             if no custom service account is provided.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    kms_key_name = proto.Field(
+    kms_key_name: str = proto.Field(
         proto.STRING,
         number=2,
     )
-    kms_service_account_id = proto.Field(
+    kms_service_account_id: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    storage_location = proto.Field(
+    storage_location: str = proto.Field(
         proto.STRING,
         number=4,
     )
-    disable_default_sink = proto.Field(
+    disable_default_sink: bool = proto.Field(
         proto.BOOL,
         number=5,
     )
-    logging_service_account_id = proto.Field(
+    logging_service_account_id: str = proto.Field(
         proto.STRING,
         number=7,
     )
@@ -2142,15 +2225,15 @@ class CopyLogEntriesRequest(proto.Message):
             entries.
     """
 
-    name = proto.Field(
+    name: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    filter = proto.Field(
+    filter: str = proto.Field(
         proto.STRING,
         number=3,
     )
-    destination = proto.Field(
+    destination: str = proto.Field(
         proto.STRING,
         number=4,
     )
@@ -2184,35 +2267,35 @@ class CopyLogEntriesMetadata(proto.Message):
             For example: ``"serviceAccount:foo@bar.com"``
     """
 
-    start_time = proto.Field(
+    start_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=1,
         message=timestamp_pb2.Timestamp,
     )
-    end_time = proto.Field(
+    end_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=2,
         message=timestamp_pb2.Timestamp,
     )
-    state = proto.Field(
+    state: 'OperationState' = proto.Field(
         proto.ENUM,
         number=3,
         enum='OperationState',
     )
-    cancellation_requested = proto.Field(
+    cancellation_requested: bool = proto.Field(
         proto.BOOL,
         number=4,
     )
-    request = proto.Field(
+    request: 'CopyLogEntriesRequest' = proto.Field(
         proto.MESSAGE,
         number=5,
         message='CopyLogEntriesRequest',
     )
-    progress = proto.Field(
+    progress: int = proto.Field(
         proto.INT32,
         number=6,
     )
-    writer_identity = proto.Field(
+    writer_identity: str = proto.Field(
         proto.STRING,
         number=7,
     )
@@ -2226,7 +2309,7 @@ class CopyLogEntriesResponse(proto.Message):
             Number of log entries copied.
     """
 
-    log_entries_copied_count = proto.Field(
+    log_entries_copied_count: int = proto.Field(
         proto.INT64,
         number=1,
     )
@@ -2259,28 +2342,28 @@ class BucketMetadata(proto.Message):
             This field is a member of `oneof`_ ``request``.
     """
 
-    start_time = proto.Field(
+    start_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=1,
         message=timestamp_pb2.Timestamp,
     )
-    end_time = proto.Field(
+    end_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=2,
         message=timestamp_pb2.Timestamp,
     )
-    state = proto.Field(
+    state: 'OperationState' = proto.Field(
         proto.ENUM,
         number=3,
         enum='OperationState',
     )
-    create_bucket_request = proto.Field(
+    create_bucket_request: 'CreateBucketRequest' = proto.Field(
         proto.MESSAGE,
         number=4,
         oneof='request',
         message='CreateBucketRequest',
     )
-    update_bucket_request = proto.Field(
+    update_bucket_request: 'UpdateBucketRequest' = proto.Field(
         proto.MESSAGE,
         number=5,
         oneof='request',
@@ -2315,28 +2398,28 @@ class LinkMetadata(proto.Message):
             This field is a member of `oneof`_ ``request``.
     """
 
-    start_time = proto.Field(
+    start_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=1,
         message=timestamp_pb2.Timestamp,
     )
-    end_time = proto.Field(
+    end_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=2,
         message=timestamp_pb2.Timestamp,
     )
-    state = proto.Field(
+    state: 'OperationState' = proto.Field(
         proto.ENUM,
         number=3,
         enum='OperationState',
     )
-    create_link_request = proto.Field(
+    create_link_request: 'CreateLinkRequest' = proto.Field(
         proto.MESSAGE,
         number=4,
         oneof='request',
         message='CreateLinkRequest',
     )
-    delete_link_request = proto.Field(
+    delete_link_request: 'DeleteLinkRequest' = proto.Field(
         proto.MESSAGE,
         number=5,
         oneof='request',
@@ -2353,7 +2436,7 @@ class LocationMetadata(proto.Message):
             features are supported in the given location.
     """
 
-    log_analytics_enabled = proto.Field(
+    log_analytics_enabled: bool = proto.Field(
         proto.BOOL,
         number=1,
     )

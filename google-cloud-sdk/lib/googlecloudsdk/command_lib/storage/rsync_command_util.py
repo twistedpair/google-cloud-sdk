@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 import enum
 import os
 
-from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import fast_crc32c_util
@@ -46,18 +45,19 @@ from googlecloudsdk.core.util import files
 import six
 
 
-_CSV_COLUMNS_COUNT = 9
+_CSV_COLUMNS_COUNT = 10
 _NO_MATCHES_MESSAGE = 'Did not find existing container at: {}'
 
 
-def get_existing_or_placeholder_destination_resource(path):
+def get_existing_or_placeholder_destination_resource(
+    path, ignore_symlinks=True
+):
   """Returns existing valid container or UnknownResource or raises."""
-  url = storage_url.storage_url_from_string(path)
-  path_with_wildcard_trailing_delimiter = url.join('').versionless_url_string
   resource_iterator = wildcard_iterator.get_wildcard_iterator(
-      path_with_wildcard_trailing_delimiter,
+      path,
       fields_scope=cloud_api.FieldsScope.SHORT,
       get_bucket_metadata=True,
+      ignore_symlinks=ignore_symlinks,
   )
   plurality_checkable_resource_iterator = (
       plurality_checkable_iterator.PluralityCheckableIterator(resource_iterator)
@@ -69,7 +69,9 @@ def get_existing_or_placeholder_destination_resource(path):
           'Wildcard pattern matched nothing. '
           + _NO_MATCHES_MESSAGE.format(path)
       )
-    return resource_reference.UnknownResource(url)
+    return resource_reference.UnknownResource(
+        storage_url.storage_url_from_string(path)
+    )
 
   if plurality_checkable_resource_iterator.is_plural():
     raise errors.InvalidUrlError(
@@ -86,9 +88,11 @@ def get_existing_or_placeholder_destination_resource(path):
   )
 
 
-def get_existing_container_resource(path):
+def get_existing_container_resource(path, ignore_symlinks=True):
   """Gets existing container resource at path and errors otherwise."""
-  resource = get_existing_or_placeholder_destination_resource(path)
+  resource = get_existing_or_placeholder_destination_resource(
+      path, ignore_symlinks
+  )
   if isinstance(resource, resource_reference.UnknownResource):
     raise errors.InvalidUrlError(_NO_MATCHES_MESSAGE.format(path))
   return resource
@@ -146,13 +150,14 @@ def get_csv_line_from_resource(resource):
       FileObjectResource.
 
   Returns:
-    String formatted as "URL,size,atime,mtime,uid,gid,mode,crc32c,md5".
+    String formatted as "URL,etag,size,atime,mtime,uid,gid,mode,crc32c,md5".
       A missing field is represented as an empty string.
       "mtime" means "modification time", a Unix timestamp in UTC.
       "mode" is in base-eight (octal) form, e.g. "440".
   """
   url = resource.storage_url.url_string
   if isinstance(resource, resource_reference.FileObjectResource):
+    etag = None
     size = None
     storage_class = None
     atime = None
@@ -163,6 +168,7 @@ def get_csv_line_from_resource(resource):
     crc32c = None
     md5 = None
   else:
+    etag = resource.etag
     size = resource.size
     storage_class = resource.storage_class
     atime, custom_metadata_mtime, uid, gid, mode = (
@@ -182,6 +188,7 @@ def get_csv_line_from_resource(resource):
 
   line_values = [
       url,
+      etag,
       size,
       storage_class,
       atime,
@@ -210,6 +217,7 @@ def parse_csv_line_to_resource(line):
   # Capping splits prevents commas in URL from being caught.
   (
       url_string,
+      etag_string,
       size_string,
       storage_class_string,
       atime_string,
@@ -226,6 +234,7 @@ def parse_csv_line_to_resource(line):
     return resource_reference.FileObjectResource(url_object)
   cloud_object = resource_reference.ObjectResource(
       url_object,
+      etag=etag_string if etag_string else None,
       size=int(size_string) if size_string else None,
       storage_class=storage_class_string if storage_class_string else None,
       crc32c_hash=crc32c_string if crc32c_string else None,
@@ -439,20 +448,14 @@ def _get_copy_task(
       fields_scope = cloud_api.FieldsScope.FULL
     else:
       fields_scope = cloud_api.FieldsScope.RSYNC
-    copy_source = api_factory.get_api(
-        source_object.storage_url.scheme
-    ).get_object_metadata(
-        source_object.storage_url.bucket_name,
-        source_object.storage_url.object_name,
-        fields_scope=fields_scope,
-    )
   else:
-    copy_source = source_object
+    fields_scope = None
 
   return copy_task_factory.get_copy_task(
-      copy_source,
+      source_object,
       copy_destination,
       do_not_decompress=True,
+      fetch_source_fields_scope=fields_scope,
       posix_to_set=posix_to_set,
       user_request_args=user_request_args,
       verbose=True,

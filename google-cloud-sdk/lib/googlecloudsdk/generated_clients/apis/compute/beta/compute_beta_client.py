@@ -7425,32 +7425,6 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Export(self, request, global_params=None):
-      r"""Export the changed blocks between two instant snapshots to a customer's bucket in the user specified format.
-
-      Args:
-        request: (ComputeInstantSnapshotsExportRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Export')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Export.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.instantSnapshots.export',
-        ordered_params=['project', 'zone', 'instantSnapshot'],
-        path_params=['instantSnapshot', 'project', 'zone'],
-        query_params=['requestId'],
-        relative_path='projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}/export',
-        request_field='instantSnapshotsExportRequest',
-        request_type_name='ComputeInstantSnapshotsExportRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Returns the specified InstantSnapshot resource in the specified zone.
 
@@ -14489,32 +14463,6 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Export(self, request, global_params=None):
-      r"""Export the changed blocks between two instant snapshots to a customer's bucket in the user specified format.
-
-      Args:
-        request: (ComputeRegionInstantSnapshotsExportRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Export')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Export.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.regionInstantSnapshots.export',
-        ordered_params=['project', 'region', 'instantSnapshot'],
-        path_params=['instantSnapshot', 'project', 'region'],
-        query_params=['requestId'],
-        relative_path='projects/{project}/regions/{region}/instantSnapshots/{instantSnapshot}/export',
-        request_field='regionInstantSnapshotsExportRequest',
-        request_type_name='ComputeRegionInstantSnapshotsExportRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Returns the specified InstantSnapshot resource in the specified region.
 
@@ -15701,7 +15649,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.regionSecurityPolicies.patch',
         ordered_params=['project', 'region', 'securityPolicy'],
         path_params=['project', 'region', 'securityPolicy'],
-        query_params=['requestId'],
+        query_params=['requestId', 'updateMask'],
         relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}',
         request_field='securityPolicyResource',
         request_type_name='ComputeRegionSecurityPoliciesPatchRequest',
@@ -15727,7 +15675,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.regionSecurityPolicies.patchRule',
         ordered_params=['project', 'region', 'securityPolicy'],
         path_params=['project', 'region', 'securityPolicy'],
-        query_params=['priority', 'validateOnly'],
+        query_params=['priority', 'updateMask', 'validateOnly'],
         relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/patchRule',
         request_field='securityPolicyRule',
         request_type_name='ComputeRegionSecurityPoliciesPatchRuleRequest',
@@ -18109,7 +18057,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.securityPolicies.patch',
         ordered_params=['project', 'securityPolicy'],
         path_params=['project', 'securityPolicy'],
-        query_params=['requestId'],
+        query_params=['requestId', 'updateMask'],
         relative_path='projects/{project}/global/securityPolicies/{securityPolicy}',
         request_field='securityPolicyResource',
         request_type_name='ComputeSecurityPoliciesPatchRequest',

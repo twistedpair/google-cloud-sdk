@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks.cp import daisy_chain_copy_task
@@ -34,6 +35,7 @@ def get_copy_task(
     destination_resource,
     delete_source=False,
     do_not_decompress=False,
+    fetch_source_fields_scope=None,
     force_daisy_chain=False,
     posix_to_set=None,
     print_created_message=False,
@@ -52,6 +54,10 @@ def get_copy_task(
       object afterwards.
     do_not_decompress (bool): Prevents automatically decompressing downloaded
       gzips.
+    fetch_source_fields_scope (FieldsScope|None): If present, refetch
+      source_resource, populated with metadata determined by this FieldsScope.
+      Useful for lazy or parallelized GET calls. Currently only implemented for
+      intra-cloud copies.
     force_daisy_chain (bool): If True, yields daisy chain copy tasks in place of
       intra-cloud copy tasks.
     posix_to_set (PosixAttributes|None): Triggers setting POSIX on result of
@@ -69,14 +75,14 @@ def get_copy_task(
 
   Raises:
     NotImplementedError: Cross-cloud copy.
-    ValueError: Local filesystem copy.
+    Error: Local filesystem copy.
   """
   source_url = source_resource.storage_url
   destination_url = destination_resource.storage_url
 
   if (isinstance(source_url, storage_url.FileUrl)
       and isinstance(destination_url, storage_url.FileUrl)):
-    raise ValueError(
+    raise errors.Error(
         'Local copies not supported. Gcloud command-line tool is'
         ' meant for cloud operations. Received copy from {} to {}'.format(
             source_url, destination_url
@@ -145,8 +151,9 @@ def get_copy_task(
     if (different_providers and user_request_args and
         user_request_args.resource_args and
         user_request_args.resource_args.preserve_acl):
-      raise ValueError(
-          'Cannot preserve ACLs while copying between cloud providers.')
+      raise errors.Error(
+          'Cannot preserve ACLs while copying between cloud providers.'
+      )
     if different_providers or force_daisy_chain:
       return daisy_chain_copy_task.DaisyChainCopyTask(
           source_resource,
@@ -162,6 +169,7 @@ def get_copy_task(
         source_resource,
         destination_resource,
         delete_source=delete_source,
+        fetch_source_fields_scope=fetch_source_fields_scope,
         posix_to_set=posix_to_set,
         print_created_message=print_created_message,
         print_source_version=print_source_version,

@@ -196,8 +196,22 @@ _CUSTOM_JOB_ARGS = base.Argument(
     action=arg_parsers.UpdateAction,
     help='Comma-separated arguments passed to containers or python tasks.')
 
+_PERSISTENT_RESOURCE_ID = base.Argument(
+    '--persistent-resource-id',
+    metavar='PERSISTENT_RESOURCE_ID',
+    hidden=True,
+    help="""\
+    The name of the persistent resource from the same project and region on
+    which to run this custom job.
 
-def AddCreateCustomJobFlags(parser):
+    If this is specified, the job will be run on existing machines held by the
+    PersistentResource instead of on-demand short-live machines.
+    The network and CMEK configs on the job should be consistent with those on
+    the PersistentResource, otherwise, the job will be rejected.
+    """)
+
+
+def AddCreateCustomJobFlags(parser, version):
   """Adds flags related to create a custom job."""
   shared_flags.AddRegionResourceArg(
       parser,
@@ -216,6 +230,9 @@ def AddCreateCustomJobFlags(parser):
   _PYTHON_PACKAGE_URIS.AddToParser(parser)
   _CUSTOM_JOB_ARGS.AddToParser(parser)
   _CUSTOM_JOB_COMMAND.AddToParser(parser)
+
+  if version == constants.BETA_VERSION:
+    _PERSISTENT_RESOURCE_ID.AddToParser(parser)
 
   worker_pool_spec_group = base.ArgumentGroup(
       help='Worker pool specification.', required=True)

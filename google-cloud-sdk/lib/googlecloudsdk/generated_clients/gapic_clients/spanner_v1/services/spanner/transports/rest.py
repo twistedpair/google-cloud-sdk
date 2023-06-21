@@ -30,7 +30,7 @@ from cloudsdk.google.protobuf import json_format
 from requests import __version__ as requests_version
 import dataclasses
 import re
-from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 import warnings
 
 try:
@@ -70,104 +70,117 @@ class SpannerRestInterceptor:
 
     .. code-block:: python
         class MyCustomSpannerInterceptor(SpannerRestInterceptor):
-            def pre_batch_create_sessions(request, metadata):
+            def pre_batch_create_sessions(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_batch_create_sessions(response):
+            def post_batch_create_sessions(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_begin_transaction(request, metadata):
+            def pre_begin_transaction(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_begin_transaction(response):
+            def post_begin_transaction(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_commit(request, metadata):
+            def pre_commit(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_commit(response):
+            def post_commit(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_create_session(request, metadata):
+            def pre_create_session(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_create_session(response):
+            def post_create_session(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_delete_session(request, metadata):
+            def pre_delete_session(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def pre_execute_batch_dml(request, metadata):
+            def pre_execute_batch_dml(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_execute_batch_dml(response):
+            def post_execute_batch_dml(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_execute_sql(request, metadata):
+            def pre_execute_sql(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_execute_sql(response):
+            def post_execute_sql(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_execute_streaming_sql(request, metadata):
+            def pre_execute_streaming_sql(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_execute_streaming_sql(response):
+            def post_execute_streaming_sql(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_get_session(request, metadata):
+            def pre_get_session(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_get_session(response):
+            def post_get_session(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_list_sessions(request, metadata):
+            def pre_list_sessions(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_list_sessions(response):
+            def post_list_sessions(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_partition_query(request, metadata):
+            def pre_partition_query(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_partition_query(response):
+            def post_partition_query(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_partition_read(request, metadata):
+            def pre_partition_read(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_partition_read(response):
+            def post_partition_read(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_read(request, metadata):
+            def pre_read(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_read(response):
+            def post_read(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
-            def pre_rollback(request, metadata):
+            def pre_rollback(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def pre_streaming_read(request, metadata):
+            def pre_streaming_read(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_streaming_read(response):
+            def post_streaming_read(self, response):
                 logging.log(f"Received response: {response}")
+                return response
 
         transport = SpannerRestTransport(interceptor=MyCustomSpannerInterceptor())
         client = SpannerClient(transport=transport)
@@ -427,15 +440,15 @@ class SpannerRestTransport(SpannerTransport):
 
     def __init__(self, *,
             host: str = 'spanner.googleapis.com',
-            credentials: ga_credentials.Credentials=None,
-            credentials_file: str=None,
-            scopes: Sequence[str]=None,
-            client_cert_source_for_mtls: Callable[[
-                ], Tuple[bytes, bytes]]=None,
-            quota_project_id: Optional[str]=None,
-            client_info: gapic_v1.client_info.ClientInfo=DEFAULT_CLIENT_INFO,
-            always_use_jwt_access: Optional[bool]=False,
-            url_scheme: str='https',
+            credentials: Optional[ga_credentials.Credentials] = None,
+            credentials_file: Optional[str] = None,
+            scopes: Optional[Sequence[str]] = None,
+            client_cert_source_for_mtls: Optional[Callable[[
+                ], Tuple[bytes, bytes]]] = None,
+            quota_project_id: Optional[str] = None,
+            client_info: gapic_v1.client_info.ClientInfo = DEFAULT_CLIENT_INFO,
+            always_use_jwt_access: Optional[bool] = False,
+            url_scheme: str = 'https',
             interceptor: Optional[SpannerRestInterceptor] = None,
             api_audience: Optional[str] = None,
             ) -> None:
@@ -505,7 +518,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("BatchCreateSessions")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -515,7 +528,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.BatchCreateSessionsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> spanner.BatchCreateSessionsResponse:
             r"""Call the batch create sessions method over HTTP.
@@ -524,7 +537,6 @@ class SpannerRestTransport(SpannerTransport):
                 request (~.spanner.BatchCreateSessionsRequest):
                     The request object. The request for
                 [BatchCreateSessions][google.spanner.v1.Spanner.BatchCreateSessions].
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -594,7 +606,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("BeginTransaction")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -604,7 +616,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.BeginTransactionRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> transaction.Transaction:
             r"""Call the begin transaction method over HTTP.
@@ -613,7 +625,6 @@ class SpannerRestTransport(SpannerTransport):
                 request (~.spanner.BeginTransactionRequest):
                     The request object. The request for
                 [BeginTransaction][google.spanner.v1.Spanner.BeginTransaction].
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -681,7 +692,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("Commit")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -691,7 +702,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.CommitRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> commit_response.CommitResponse:
             r"""Call the commit method over HTTP.
@@ -700,7 +711,6 @@ class SpannerRestTransport(SpannerTransport):
                 request (~.spanner.CommitRequest):
                     The request object. The request for
                 [Commit][google.spanner.v1.Spanner.Commit].
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -770,7 +780,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("CreateSession")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -780,7 +790,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.CreateSessionRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> spanner.Session:
             r"""Call the create session method over HTTP.
@@ -789,7 +799,6 @@ class SpannerRestTransport(SpannerTransport):
                 request (~.spanner.CreateSessionRequest):
                     The request object. The request for
                 [CreateSession][google.spanner.v1.Spanner.CreateSession].
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -857,7 +866,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("DeleteSession")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -867,7 +876,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.DeleteSessionRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ):
             r"""Call the delete session method over HTTP.
@@ -876,7 +885,6 @@ class SpannerRestTransport(SpannerTransport):
                 request (~.spanner.DeleteSessionRequest):
                     The request object. The request for
                 [DeleteSession][google.spanner.v1.Spanner.DeleteSession].
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -923,7 +931,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("ExecuteBatchDml")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -933,7 +941,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.ExecuteBatchDmlRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> spanner.ExecuteBatchDmlResponse:
             r"""Call the execute batch dml method over HTTP.
@@ -942,7 +950,6 @@ class SpannerRestTransport(SpannerTransport):
                 request (~.spanner.ExecuteBatchDmlRequest):
                     The request object. The request for
                 [ExecuteBatchDml][google.spanner.v1.Spanner.ExecuteBatchDml].
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -1048,7 +1055,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("ExecuteSql")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -1058,7 +1065,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.ExecuteSqlRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> result_set.ResultSet:
             r"""Call the execute sql method over HTTP.
@@ -1068,7 +1075,6 @@ class SpannerRestTransport(SpannerTransport):
                     The request object. The request for
                 [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql] and
                 [ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql].
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -1138,7 +1144,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("ExecuteStreamingSql")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -1148,7 +1154,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.ExecuteSqlRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> rest_streaming.ResponseIterator:
             r"""Call the execute streaming sql method over HTTP.
@@ -1158,7 +1164,6 @@ class SpannerRestTransport(SpannerTransport):
                     The request object. The request for
                 [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql] and
                 [ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql].
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -1228,7 +1233,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("GetSession")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -1238,7 +1243,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.GetSessionRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> spanner.Session:
             r"""Call the get session method over HTTP.
@@ -1247,7 +1252,6 @@ class SpannerRestTransport(SpannerTransport):
                 request (~.spanner.GetSessionRequest):
                     The request object. The request for
                 [GetSession][google.spanner.v1.Spanner.GetSession].
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -1306,7 +1310,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("ListSessions")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -1316,7 +1320,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.ListSessionsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> spanner.ListSessionsResponse:
             r"""Call the list sessions method over HTTP.
@@ -1325,7 +1329,6 @@ class SpannerRestTransport(SpannerTransport):
                 request (~.spanner.ListSessionsRequest):
                     The request object. The request for
                 [ListSessions][google.spanner.v1.Spanner.ListSessions].
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -1386,7 +1389,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("PartitionQuery")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -1396,7 +1399,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.PartitionQueryRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> spanner.PartitionResponse:
             r"""Call the partition query method over HTTP.
@@ -1405,7 +1408,6 @@ class SpannerRestTransport(SpannerTransport):
                 request (~.spanner.PartitionQueryRequest):
                     The request object. The request for
                 [PartitionQuery][google.spanner.v1.Spanner.PartitionQuery]
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -1477,7 +1479,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("PartitionRead")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -1487,7 +1489,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.PartitionReadRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> spanner.PartitionResponse:
             r"""Call the partition read method over HTTP.
@@ -1496,7 +1498,6 @@ class SpannerRestTransport(SpannerTransport):
                 request (~.spanner.PartitionReadRequest):
                     The request object. The request for
                 [PartitionRead][google.spanner.v1.Spanner.PartitionRead]
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -1568,7 +1569,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("Read")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -1578,7 +1579,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.ReadRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> result_set.ResultSet:
             r"""Call the read method over HTTP.
@@ -1588,7 +1589,6 @@ class SpannerRestTransport(SpannerTransport):
                     The request object. The request for [Read][google.spanner.v1.Spanner.Read]
                 and
                 [StreamingRead][google.spanner.v1.Spanner.StreamingRead].
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -1658,7 +1658,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("Rollback")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -1668,7 +1668,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.RollbackRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ):
             r"""Call the rollback method over HTTP.
@@ -1677,7 +1677,6 @@ class SpannerRestTransport(SpannerTransport):
                 request (~.spanner.RollbackRequest):
                     The request object. The request for
                 [Rollback][google.spanner.v1.Spanner.Rollback].
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
@@ -1733,7 +1732,7 @@ class SpannerRestTransport(SpannerTransport):
         def __hash__(self):
             return hash("StreamingRead")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
         }
 
         @classmethod
@@ -1743,7 +1742,7 @@ class SpannerRestTransport(SpannerTransport):
         def __call__(self,
                 request: spanner.ReadRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
-                timeout: float=None,
+                timeout: Optional[float]=None,
                 metadata: Sequence[Tuple[str, str]]=(),
                 ) -> rest_streaming.ResponseIterator:
             r"""Call the streaming read method over HTTP.
@@ -1753,7 +1752,6 @@ class SpannerRestTransport(SpannerTransport):
                     The request object. The request for [Read][google.spanner.v1.Spanner.Read]
                 and
                 [StreamingRead][google.spanner.v1.Spanner.StreamingRead].
-
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.

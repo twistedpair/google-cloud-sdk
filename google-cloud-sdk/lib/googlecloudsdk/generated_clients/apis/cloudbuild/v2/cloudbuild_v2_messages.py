@@ -1327,11 +1327,8 @@ class GoogleDevtoolsCloudbuildV2GitLabConfig(_messages.Message):
       `api` scope access.
     hostUri: The URI of the GitLab Enterprise host this connection is for. If
       not specified, the default value is https://gitlab.com.
-    readAuthorizerCredential: A GitLab personal access token with `read_api`
-      scope access. Required if the GitLab Enterprise server verion is older
-      than 13.10. See at
-      https://docs.gitlab.com/ee/api/project_access_tokens.html#create-a-
-      project-access-token.
+    readAuthorizerCredential: Required. A GitLab personal access token with
+      the minimum `read_api` scope access.
     serverVersion: Output only. Version of the GitLab Enterprise server
       running on the `host_uri`.
     serviceDirectoryConfig: Configuration for using Service Directory to

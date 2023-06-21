@@ -189,6 +189,7 @@ def ConstructCustomJobSpec(
     worker_pool_specs=None,
     args=None,
     command=None,
+    persistent_resource_id=None,
     **kwargs):
   """Constructs the spec of a custom job to be used in job creation request.
 
@@ -209,6 +210,8 @@ def ConstructCustomJobSpec(
       supposedly derived from the gcloud command flags.
     command: A list of commands to be passed to containers, supposedly derived
       from the gcloud command flags.
+    persistent_resource_id: The name of the persistent resource from the same
+      project and region on which to run this custom job.
     **kwargs: The keyword args to pass to construct the worker pool specs.
 
   Returns:
@@ -239,6 +242,9 @@ def ConstructCustomJobSpec(
     for worker_pool_spec in job_spec.workerPoolSpecs:
       if worker_pool_spec.containerSpec:
         worker_pool_spec.containerSpec.command = command
+
+  if persistent_resource_id:
+    job_spec.persistentResourceId = persistent_resource_id
 
   return job_spec
 

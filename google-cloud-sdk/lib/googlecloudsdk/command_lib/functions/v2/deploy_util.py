@@ -33,16 +33,17 @@ def ensure_pubsub_sa_has_token_creator_role():
   pubsub_sa = 'service-{}@gcp-sa-pubsub.iam.gserviceaccount.com'.format(
       projects_util.GetProjectNumber(api_util.GetProject())
   )
-  if not api_util.HasRoleBinding(pubsub_sa, 'roles/pubsub.serviceAgent'):
-    api_util.PromptToBindRoleIfMissing(
-        pubsub_sa,
-        'roles/iam.serviceAccountTokenCreator',
-        reason=(
-            'Pub/Sub needs this role to create identity tokens. '
-            'For more details, please see '
-            'https://cloud.google.com/pubsub/docs/push#authentication'
-        ),
-    )
+
+  api_util.PromptToBindRoleIfMissing(
+      pubsub_sa,
+      'roles/iam.serviceAccountTokenCreator',
+      alt_roles=['roles/pubsub.serviceAgent'],
+      reason=(
+          'Pub/Sub needs this role to create identity tokens. '
+          'For more details, please see '
+          'https://cloud.google.com/pubsub/docs/push#authentication'
+      ),
+  )
 
 
 def ensure_data_access_logs_are_enabled(trigger_event_filters):

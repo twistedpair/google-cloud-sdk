@@ -759,6 +759,28 @@ class DatabaseRole(_messages.Message):
   name = _messages.StringField(1)
 
 
+class DdlStatementActionInfo(_messages.Message):
+  r"""Action information extracted from a DDL statement. This proto is used to
+  display the brief info of the DDL statement for the operation
+  UpdateDatabaseDdl.
+
+  Fields:
+    action: The action for the DDL statement, e.g. CREATE, ALTER, DROP, GRANT,
+      etc. This field is a non-empty string.
+    entityNames: The entity name(s) being operated on the DDL statement. E.g.
+      1. For statement "CREATE TABLE t1(...)", `entity_names` = ["t1"]. 2. For
+      statement "GRANT ROLE r1, r2 ...", `entity_names` = ["r1", "r2"]. 3. For
+      statement "ANALYZE", `entity_names` = [].
+    entityType: The entity type for the DDL statement, e.g. TABLE, INDEX,
+      VIEW, etc. This field can be empty string for some DDL statement, e.g.
+      for statement "ANALYZE", `entity_type` = "".
+  """
+
+  action = _messages.StringField(1)
+  entityNames = _messages.StringField(2, repeated=True)
+  entityType = _messages.StringField(3)
+
+
 class Delete(_messages.Message):
   r"""Arguments to delete operations.
 
@@ -5815,16 +5837,18 @@ class UpdateDatabaseDdlMetadata(_messages.Message):
   r"""Metadata type for the operation returned by UpdateDatabaseDdl.
 
   Fields:
+    actions: The brief action info for the DDL statements. `actions[i]` is the
+      brief info for `statements[i]`.
     commitTimestamps: Reports the commit timestamps of all statements that
       have succeeded so far, where `commit_timestamps[i]` is the commit
       timestamp for the statement `statements[i]`.
     database: The database being modified.
-    progress: The progress of the UpdateDatabaseDdl operations. Currently,
-      only index creation statements will have a continuously updating
-      progress. For non-index creation statements, `progress[i]` will have
-      start time and end time populated with commit timestamp of operation, as
-      well as a progress of 100% once the operation has completed.
-      `progress[i]` is the operation progress for `statements[i]`.
+    progress: The progress of the UpdateDatabaseDdl operations. All DDL
+      statements will have continuously updating progress, and `progress[i]`
+      is the operation progress for `statements[i]`. Also, `progress[i]` will
+      have start time and end time populated with commit timestamp of
+      operation, as well as a progress of 100% once the operation has
+      completed.
     statements: For an update this list contains all the statements. For an
       individual statement, this list contains only that statement.
     throttled: Output only. When true, indicates that the operation is
@@ -5832,11 +5856,12 @@ class UpdateDatabaseDdlMetadata(_messages.Message):
       available the operation will resume and this field will be false again.
   """
 
-  commitTimestamps = _messages.StringField(1, repeated=True)
-  database = _messages.StringField(2)
-  progress = _messages.MessageField('OperationProgress', 3, repeated=True)
-  statements = _messages.StringField(4, repeated=True)
-  throttled = _messages.BooleanField(5)
+  actions = _messages.MessageField('DdlStatementActionInfo', 1, repeated=True)
+  commitTimestamps = _messages.StringField(2, repeated=True)
+  database = _messages.StringField(3)
+  progress = _messages.MessageField('OperationProgress', 4, repeated=True)
+  statements = _messages.StringField(5, repeated=True)
+  throttled = _messages.BooleanField(6)
 
 
 class UpdateDatabaseDdlRequest(_messages.Message):

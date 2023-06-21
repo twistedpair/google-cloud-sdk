@@ -297,24 +297,30 @@ def AddAction(parser,
               required=True,
               support_redirect=False,
               support_rate_limit=False,
-              support_tcp_ssl=False,
               support_fairshare=False):
   """Adds the action argument to the argparse."""
   actions = {
       'allow': 'Allows the request from HTTP(S) Load Balancing.',
-      'deny-403':
+      'deny': (
+          'Denies the request from TCP/SSL Proxy and Network Load Balancing.'
+      ),
+      'deny-403': (
           'Denies the request from HTTP(S) Load Balancing, with an HTTP '
-          'response status code of 403.',
-      'deny-404':
+          'response status code of 403.'
+      ),
+      'deny-404': (
           'Denies the request from HTTP(S) Load Balancing, with an HTTP '
-          'response status code of 404.',
-      'deny-502':
+          'response status code of 404.'
+      ),
+      'deny-502': (
           'Denies the request from HTTP(S) Load Balancing, with an HTTP '
-          'response status code of 503.',
-      'redirect-to-recaptcha':
+          'response status code of 503.'
+      ),
+      'redirect-to-recaptcha': (
           '(DEPRECATED) Redirects the request from HTTP(S) Load Balancing, for'
           ' reCAPTCHA Enterprise assessment. This flag choice is deprecated. '
           'Use --action=redirect and --redirect-type=google-recaptcha instead.'
+      ),
   }
   if support_fairshare:
     actions.update({
@@ -338,9 +344,6 @@ def AddAction(parser,
             'Enforces throttle action from HTTP(S) Load Balancing, based on '
             'rate limit options.'
     })
-  if support_tcp_ssl:
-    actions.update(
-        {'deny': 'Denies the request from TCP/SSL Proxy Load Balancing.'})
   parser.add_argument(
       '--action',
       choices=actions,
@@ -387,7 +390,6 @@ def AddRedirectOptions(parser):
 
 def AddRateLimitOptions(
     parser,
-    support_tcp_ssl=False,
     support_exceed_redirect=True,
     support_fairshare=False,
     support_multiple_rate_limit_keys=False,
@@ -414,9 +416,7 @@ def AddRateLimitOptions(
             'requests are throttled, this is also the action for all requests '
             'which are not dropped.'))
 
-  exceed_actions = ['deny-403', 'deny-404', 'deny-429', 'deny-502']
-  if support_tcp_ssl:
-    exceed_actions.append('deny')
+  exceed_actions = ['deny-403', 'deny-404', 'deny-429', 'deny-502', 'deny']
   if support_exceed_redirect:
     exceed_actions.append('redirect')
   parser.add_argument(

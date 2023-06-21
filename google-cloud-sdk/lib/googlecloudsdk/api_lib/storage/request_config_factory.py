@@ -26,6 +26,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import encryption_util
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import debug_output
@@ -553,8 +554,9 @@ def _check_for_unsupported_s3_fields(user_request_args):
       _extract_unsupported_features_from_user_args(user_resource_args,
                                                    S3_RESOURCE_ERROR_FIELDS))
   if error_fields_present:
-    raise ValueError('Features disallowed for S3: {}'.format(
-        ', '.join(error_fields_present)))
+    raise errors.Error(
+        'Features disallowed for S3: {}'.format(', '.join(error_fields_present))
+    )
 
   warning_fields_present = _extract_unsupported_features_from_user_args(
       user_resource_args, S3_RESOURCE_WARNING_FIELDS)

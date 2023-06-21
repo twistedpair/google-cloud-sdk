@@ -24,29 +24,33 @@ from googlecloudsdk.command_lib.iam import iam_util
 
 def SetIamPolicy(task_ref, policy):
   """Set IAM Policy request."""
-  set_iam_policy_req = dataplex_api.GetMessageModule(
-  ).DataplexProjectsLocationsLakesTasksSetIamPolicyRequest(
+  set_iam_policy_req = dataplex_api.GetMessageModule().DataplexProjectsLocationsLakesTasksSetIamPolicyRequest(
       resource=task_ref.RelativeName(),
-      googleIamV1SetIamPolicyRequest=dataplex_api.GetMessageModule()
-      .GoogleIamV1SetIamPolicyRequest(policy=policy))
-  return dataplex_api.GetClientInstance(
-  ).projects_locations_lakes_tasks.SetIamPolicy(set_iam_policy_req)
+      googleIamV1SetIamPolicyRequest=dataplex_api.GetMessageModule().GoogleIamV1SetIamPolicyRequest(
+          policy=policy
+      ),
+  )
+  return dataplex_api.GetClientInstance().projects_locations_lakes_tasks.SetIamPolicy(
+      set_iam_policy_req
+  )
 
 
 def GetIamPolicy(task_ref):
   """Get IAM Policy request."""
-  get_iam_policy_req = dataplex_api.GetMessageModule(
-  ).DataplexProjectsLocationsLakesTasksGetIamPolicyRequest(
-      resource=task_ref.RelativeName())
-  return dataplex_api.GetClientInstance(
-  ).projects_locations_lakes_tasks.GetIamPolicy(get_iam_policy_req)
+  get_iam_policy_req = dataplex_api.GetMessageModule().DataplexProjectsLocationsLakesTasksGetIamPolicyRequest(
+      resource=task_ref.RelativeName()
+  )
+  return dataplex_api.GetClientInstance().projects_locations_lakes_tasks.GetIamPolicy(
+      get_iam_policy_req
+  )
 
 
 def AddIamPolicyBinding(task_ref, member, role):
   """Add IAM policy binding request."""
   policy = GetIamPolicy(task_ref)
   iam_util.AddBindingToIamPolicy(
-      dataplex_api.GetMessageModule().GoogleIamV1Binding, policy, member, role)
+      dataplex_api.GetMessageModule().GoogleIamV1Binding, policy, member, role
+  )
   return SetIamPolicy(task_ref, policy)
 
 
@@ -60,6 +64,45 @@ def RemoveIamPolicyBinding(task_ref, member, role):
 def SetIamPolicyFromFile(task_ref, policy_file):
   """Set IAM policy binding request from file."""
   policy = iam_util.ParsePolicyFile(
-      policy_file,
-      dataplex_api.GetMessageModule().GoogleIamV1Policy)
+      policy_file, dataplex_api.GetMessageModule().GoogleIamV1Policy
+  )
   return SetIamPolicy(task_ref, policy)
+
+
+def RunTask(task_ref, args):
+  """Runs dataplex task with input updates to execution spec args and labels."""
+  run_task_req = dataplex_api.GetMessageModule().DataplexProjectsLocationsLakesTasksRunRequest(
+      name=task_ref.RelativeName(),
+      googleCloudDataplexV1RunTaskRequest=dataplex_api.GetMessageModule().GoogleCloudDataplexV1RunTaskRequest(
+          labels=dataplex_api.CreateLabels(
+              dataplex_api.GetMessageModule().GoogleCloudDataplexV1RunTaskRequest,
+              args,
+          ),
+          args=CreateArgs(
+              dataplex_api.GetMessageModule().GoogleCloudDataplexV1RunTaskRequest,
+              args,
+          ),
+      ),
+  )
+  run_task_response = (
+      dataplex_api.GetClientInstance().projects_locations_lakes_tasks.Run(
+          run_task_req
+      )
+  )
+  return run_task_response
+
+
+def CreateArgs(run_task_request, args):
+  """Creates Args input compatible for creating a RunTaskRequest object."""
+  if getattr(args, "ARGS", None):
+    args_ref = dataplex_api.FetchExecutionSpecArgs(args.ARGS)
+    if len(args_ref) > 0:
+      return run_task_request.ArgsValue(
+          additionalProperties=[
+              run_task_request.ArgsValue.AdditionalProperty(
+                  key=key, value=value
+              )
+              for key, value in sorted(args_ref.items())
+          ]
+      )
+  return None

@@ -41,6 +41,18 @@ def AddReplicationVolumeArg(parser, reverse_op=False):
   ).AddToParser(parser)
 
 
+def AddReplicationForceArg(parser):
+  """Adds the --force arg to the arg parser."""
+  parser.add_argument(
+      '--force',
+      action='store_true',
+      help="""Indicates whether to stop replication forcefully while data transfer is in progress.
+      Warning! if force is true, this will abort any current transfers and can lead to data loss due to partial transfer.
+      If force is false, stop replication will fail while data transfer is in progress and you will need to retry later.
+      """
+  )
+
+
 def GetReplicationReplicationScheduleEnumFromArg(choice, messages):
   """Returns the Choice Enum for Replication Schedule.
 

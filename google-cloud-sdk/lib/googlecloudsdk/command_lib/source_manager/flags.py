@@ -36,12 +36,7 @@ def AddMaxWait(parser,
       type=arg_parsers.Duration())
 
 
-def AddAdminAccount(parser,
-                    help_text="The first user when the instance is created. "
-                    "Default to the current account."):
+def AddKmsKey(parser, help_text="KMS key used to encrypt instance optionally."):
   parser.add_argument(
-      "--admin-account",
-      dest="admin_account",
-      required=False,
-      help=help_text
+      "--kms-key", dest="kms_key", required=False, help=help_text
   )

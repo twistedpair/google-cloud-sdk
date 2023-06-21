@@ -720,8 +720,7 @@ class Address(_messages.Message):
     AddressTypeValueValuesEnum: The type of address to reserve, either
       INTERNAL or EXTERNAL. If unspecified, defaults to EXTERNAL.
     IpVersionValueValuesEnum: The IP version that will be used by this
-      address. Valid options are IPV4 or IPV6. This can only be specified for
-      a global address.
+      address. Valid options are IPV4 or IPV6.
     Ipv6EndpointTypeValueValuesEnum: The endpoint type of this address, which
       should be VM or NETLB. This is used for deciding which type of endpoint
       this address can be used after the external IPv6 address reservation.
@@ -769,7 +768,7 @@ class Address(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     ipVersion: The IP version that will be used by this address. Valid options
-      are IPV4 or IPV6. This can only be specified for a global address.
+      are IPV4 or IPV6.
     ipv6EndpointType: The endpoint type of this address, which should be VM or
       NETLB. This is used for deciding which type of endpoint this address can
       be used after the external IPv6 address reservation.
@@ -852,7 +851,7 @@ class Address(_messages.Message):
 
   class IpVersionValueValuesEnum(_messages.Enum):
     r"""The IP version that will be used by this address. Valid options are
-    IPV4 or IPV6. This can only be specified for a global address.
+    IPV4 or IPV6.
 
     Values:
       IPV4: <no description>
@@ -1989,6 +1988,13 @@ class AttachedDiskInitializeParams(_messages.Message):
       not store customer-supplied encryption keys, so you cannot create disks
       for instances in a managed instance group if the source images are
       encrypted with your own keys.
+    sourceInstantSnapshot: The source instant-snapshot to create this disk.
+      When creating a new instance, one of initializeParams.sourceSnapshot or
+      initializeParams.sourceInstantSnapshot initializeParams.sourceImage or
+      disks.source is required except for local SSD. To create a disk with a
+      snapshot that you created, specify the snapshot name in the following
+      format: us-central1-a/instantSnapshots/my-backup If the source instant-
+      snapshot is deleted later, this field will not be set.
     sourceSnapshot: The source snapshot to create this disk. When creating a
       new instance, one of initializeParams.sourceSnapshot or
       initializeParams.sourceImage or disks.source is required except for
@@ -2099,8 +2105,9 @@ class AttachedDiskInitializeParams(_messages.Message):
   resourcePolicies = _messages.StringField(15, repeated=True)
   sourceImage = _messages.StringField(16)
   sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceSnapshot = _messages.StringField(18)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
+  sourceInstantSnapshot = _messages.StringField(18)
+  sourceSnapshot = _messages.StringField(19)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
 
 
 class AuditConfig(_messages.Message):
@@ -5945,6 +5952,47 @@ class BulkInsertInstanceResourcePerInstanceProperties(_messages.Message):
 
   hostname = _messages.StringField(1)
   name = _messages.StringField(2)
+
+
+class BulkInsertOperationStatus(_messages.Message):
+  r"""A BulkInsertOperationStatus object.
+
+  Enums:
+    StatusValueValuesEnum: [Output Only] Creation status of BulkInsert
+      operation - information if the flow is rolling forward or rolling back.
+
+  Fields:
+    createdVmCount: [Output Only] Count of VMs successfully created so far.
+    deletedVmCount: [Output Only] Count of VMs that got deleted during
+      rollback.
+    failedToCreateVmCount: [Output Only] Count of VMs that started creating
+      but encountered an error.
+    status: [Output Only] Creation status of BulkInsert operation -
+      information if the flow is rolling forward or rolling back.
+    targetVmCount: [Output Only] Count of VMs originally planned to be
+      created.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Creation status of BulkInsert operation - information if
+    the flow is rolling forward or rolling back.
+
+    Values:
+      CREATING: Rolling forward - creating VMs.
+      DONE: Done
+      ROLLING_BACK: Rolling back - cleaning up after an error.
+      STATUS_UNSPECIFIED: <no description>
+    """
+    CREATING = 0
+    DONE = 1
+    ROLLING_BACK = 2
+    STATUS_UNSPECIFIED = 3
+
+  createdVmCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  deletedVmCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  failedToCreateVmCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
+  targetVmCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class BundledLocalSsds(_messages.Message):
@@ -14964,34 +15012,6 @@ class ComputeInstantSnapshotsDeleteRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
-class ComputeInstantSnapshotsExportRequest(_messages.Message):
-  r"""A ComputeInstantSnapshotsExportRequest object.
-
-  Fields:
-    instantSnapshot: Name of the instant snapshot to export.
-    instantSnapshotsExportRequest: A InstantSnapshotsExportRequest resource to
-      be passed as the request body.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-    zone: The name of the zone for this request.
-  """
-
-  instantSnapshot = _messages.StringField(1, required=True)
-  instantSnapshotsExportRequest = _messages.MessageField('InstantSnapshotsExportRequest', 2)
-  project = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  zone = _messages.StringField(5, required=True)
-
-
 class ComputeInstantSnapshotsGetIamPolicyRequest(_messages.Message):
   r"""A ComputeInstantSnapshotsGetIamPolicyRequest object.
 
@@ -23006,34 +23026,6 @@ class ComputeRegionInstantSnapshotsDeleteRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
-class ComputeRegionInstantSnapshotsExportRequest(_messages.Message):
-  r"""A ComputeRegionInstantSnapshotsExportRequest object.
-
-  Fields:
-    instantSnapshot: Name of the instant snapshot to export.
-    project: Project ID for this request.
-    region: The name of the zone for this request.
-    regionInstantSnapshotsExportRequest: A RegionInstantSnapshotsExportRequest
-      resource to be passed as the request body.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-  """
-
-  instantSnapshot = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  regionInstantSnapshotsExportRequest = _messages.MessageField('RegionInstantSnapshotsExportRequest', 4)
-  requestId = _messages.StringField(5)
-
-
 class ComputeRegionInstantSnapshotsGetIamPolicyRequest(_messages.Message):
   r"""A ComputeRegionInstantSnapshotsGetIamPolicyRequest object.
 
@@ -24252,6 +24244,7 @@ class ComputeRegionSecurityPoliciesPatchRequest(_messages.Message):
     securityPolicy: Name of the security policy to update.
     securityPolicyResource: A SecurityPolicy resource to be passed as the
       request body.
+    updateMask: Indicates fields to be cleared as part of this request.
   """
 
   project = _messages.StringField(1, required=True)
@@ -24259,6 +24252,7 @@ class ComputeRegionSecurityPoliciesPatchRequest(_messages.Message):
   requestId = _messages.StringField(3)
   securityPolicy = _messages.StringField(4, required=True)
   securityPolicyResource = _messages.MessageField('SecurityPolicy', 5)
+  updateMask = _messages.StringField(6)
 
 
 class ComputeRegionSecurityPoliciesPatchRuleRequest(_messages.Message):
@@ -24271,6 +24265,7 @@ class ComputeRegionSecurityPoliciesPatchRuleRequest(_messages.Message):
     securityPolicy: Name of the security policy to update.
     securityPolicyRule: A SecurityPolicyRule resource to be passed as the
       request body.
+    updateMask: Indicates fields to be cleared as part of this request.
     validateOnly: If true, the request will not be committed.
   """
 
@@ -24279,7 +24274,8 @@ class ComputeRegionSecurityPoliciesPatchRuleRequest(_messages.Message):
   region = _messages.StringField(3, required=True)
   securityPolicy = _messages.StringField(4, required=True)
   securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 5)
-  validateOnly = _messages.BooleanField(6)
+  updateMask = _messages.StringField(6)
+  validateOnly = _messages.BooleanField(7)
 
 
 class ComputeRegionSecurityPoliciesRemoveRuleRequest(_messages.Message):
@@ -26988,12 +26984,14 @@ class ComputeSecurityPoliciesPatchRequest(_messages.Message):
     securityPolicy: Name of the security policy to update.
     securityPolicyResource: A SecurityPolicy resource to be passed as the
       request body.
+    updateMask: Indicates fields to be cleared as part of this request.
   """
 
   project = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
   securityPolicy = _messages.StringField(3, required=True)
   securityPolicyResource = _messages.MessageField('SecurityPolicy', 4)
+  updateMask = _messages.StringField(5)
 
 
 class ComputeSecurityPoliciesPatchRuleRequest(_messages.Message):
@@ -32018,7 +32016,10 @@ class CustomerEncryptionKey(_messages.Message):
     kmsKeyName: The name of the encryption key that is stored in Google Cloud
       KMS. For example: "kmsKeyName":
       "projects/kms_project_id/locations/region/keyRings/
-      key_region/cryptoKeys/key
+      key_region/cryptoKeys/key The fully-qualifed key name may be returned
+      for resource GET requests. For example: "kmsKeyName":
+      "projects/kms_project_id/locations/region/keyRings/
+      key_region/cryptoKeys/key /cryptoKeyVersions/1
     kmsKeyServiceAccount: The service account being used for the encryption
       request for the given KMS key. If absent, the Compute Engine default
       service account is used. For example: "kmsKeyServiceAccount":
@@ -41251,6 +41252,12 @@ class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
   r"""A InstanceGroupManagerInstanceLifecyclePolicy object.
 
   Enums:
+    DefaultActionOnFailureValueValuesEnum: The action that a MIG performs on a
+      failed or an unhealthy VM. A VM is marked as unhealthy when the
+      application running on that VM fails a health check. Valid values are -
+      REPAIR (default): MIG automatically repairs a failed or an unhealthy VM
+      by recreating it. For more information, see About repairing VMs in a
+      MIG. - DO_NOTHING: MIG does not repair a failed or an unhealthy VM.
     ForceUpdateOnRepairValueValuesEnum: A bit indicating whether to forcefully
       apply the group's latest configuration when repairing a VM. Valid
       options are: - NO (default): If configuration updates are available,
@@ -41259,6 +41266,12 @@ class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
       configuration updates are available, they are applied during repair.
 
   Fields:
+    defaultActionOnFailure: The action that a MIG performs on a failed or an
+      unhealthy VM. A VM is marked as unhealthy when the application running
+      on that VM fails a health check. Valid values are - REPAIR (default):
+      MIG automatically repairs a failed or an unhealthy VM by recreating it.
+      For more information, see About repairing VMs in a MIG. - DO_NOTHING:
+      MIG does not repair a failed or an unhealthy VM.
     forceUpdateOnRepair: A bit indicating whether to forcefully apply the
       group's latest configuration when repairing a VM. Valid options are: -
       NO (default): If configuration updates are available, they are not
@@ -41266,6 +41279,23 @@ class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
       applied according to the group's update policy. - YES: If configuration
       updates are available, they are applied during repair.
   """
+
+  class DefaultActionOnFailureValueValuesEnum(_messages.Enum):
+    r"""The action that a MIG performs on a failed or an unhealthy VM. A VM is
+    marked as unhealthy when the application running on that VM fails a health
+    check. Valid values are - REPAIR (default): MIG automatically repairs a
+    failed or an unhealthy VM by recreating it. For more information, see
+    About repairing VMs in a MIG. - DO_NOTHING: MIG does not repair a failed
+    or an unhealthy VM.
+
+    Values:
+      DO_NOTHING: MIG does not repair a failed or an unhealthy VM.
+      REPAIR: (Default) MIG automatically repairs a failed or an unhealthy VM
+        by recreating it. For more information, see About repairing VMs in a
+        MIG.
+    """
+    DO_NOTHING = 0
+    REPAIR = 1
 
   class ForceUpdateOnRepairValueValuesEnum(_messages.Enum):
     r"""A bit indicating whether to forcefully apply the group's latest
@@ -41282,7 +41312,8 @@ class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
     NO = 0
     YES = 1
 
-  forceUpdateOnRepair = _messages.EnumField('ForceUpdateOnRepairValueValuesEnum', 1)
+  defaultActionOnFailure = _messages.EnumField('DefaultActionOnFailureValueValuesEnum', 1)
+  forceUpdateOnRepair = _messages.EnumField('ForceUpdateOnRepairValueValuesEnum', 2)
 
 
 class InstanceGroupManagerList(_messages.Message):
@@ -41563,12 +41594,12 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       up metadata changes.
     MostDisruptiveAllowedActionValueValuesEnum: Most disruptive action that is
       allowed to be taken on an instance. You can specify either NONE to
-      forbid any actions, REFRESH to allow actions that do not need instance
-      restart, RESTART to allow actions that can be applied without instance
-      replacing or REPLACE to allow all possible actions. If the Updater
-      determines that the minimal update action needed is more disruptive than
-      most disruptive allowed action you specify it will not perform the
-      update at all.
+      forbid any actions, REFRESH to avoid restarting the VM and to limit
+      disruption as much as possible. RESTART to allow actions that can be
+      applied without instance replacing or REPLACE to allow all possible
+      actions. If the Updater determines that the minimal update action needed
+      is more disruptive than most disruptive allowed action you specify it
+      will not perform the update at all.
     ReplacementMethodValueValuesEnum: What action should be used to replace
       instances. See minimal_action.REPLACE
     TypeValueValuesEnum: The type of update process. You can specify either
@@ -41619,11 +41650,12 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       set the minimal action to RESTART in order to pick up metadata changes.
     mostDisruptiveAllowedAction: Most disruptive action that is allowed to be
       taken on an instance. You can specify either NONE to forbid any actions,
-      REFRESH to allow actions that do not need instance restart, RESTART to
-      allow actions that can be applied without instance replacing or REPLACE
-      to allow all possible actions. If the Updater determines that the
-      minimal update action needed is more disruptive than most disruptive
-      allowed action you specify it will not perform the update at all.
+      REFRESH to avoid restarting the VM and to limit disruption as much as
+      possible. RESTART to allow actions that can be applied without instance
+      replacing or REPLACE to allow all possible actions. If the Updater
+      determines that the minimal update action needed is more disruptive than
+      most disruptive allowed action you specify it will not perform the
+      update at all.
     replacementMethod: What action should be used to replace instances. See
       minimal_action.REPLACE
     type: The type of update process. You can specify either PROACTIVE so that
@@ -41662,10 +41694,10 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
 
     Values:
       NONE: Do not perform any action.
-      REFRESH: Updates applied in runtime, instances will not be disrupted.
-      REPLACE: Old instances will be deleted. New instances will be created
-        from the target template.
-      RESTART: Every instance will be restarted.
+      REFRESH: Do not stop the instance.
+      REPLACE: (Default.) Replace the instance according to the replacement
+        method option.
+      RESTART: Stop the instance and start it again.
     """
     NONE = 0
     REFRESH = 1
@@ -41674,19 +41706,19 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
 
   class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
     r"""Most disruptive action that is allowed to be taken on an instance. You
-    can specify either NONE to forbid any actions, REFRESH to allow actions
-    that do not need instance restart, RESTART to allow actions that can be
-    applied without instance replacing or REPLACE to allow all possible
-    actions. If the Updater determines that the minimal update action needed
-    is more disruptive than most disruptive allowed action you specify it will
-    not perform the update at all.
+    can specify either NONE to forbid any actions, REFRESH to avoid restarting
+    the VM and to limit disruption as much as possible. RESTART to allow
+    actions that can be applied without instance replacing or REPLACE to allow
+    all possible actions. If the Updater determines that the minimal update
+    action needed is more disruptive than most disruptive allowed action you
+    specify it will not perform the update at all.
 
     Values:
       NONE: Do not perform any action.
-      REFRESH: Updates applied in runtime, instances will not be disrupted.
-      REPLACE: Old instances will be deleted. New instances will be created
-        from the target template.
-      RESTART: Every instance will be restarted.
+      REFRESH: Do not stop the instance.
+      REPLACE: (Default.) Replace the instance according to the replacement
+        method option.
+      RESTART: Stop the instance and start it again.
     """
     NONE = 0
     REFRESH = 1
@@ -41783,17 +41815,19 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     MinimalActionValueValuesEnum: The minimal action that you want to perform
       on each instance during the update: - REPLACE: At minimum, delete the
       instance and create it again. - RESTART: Stop the instance and start it
-      again. - REFRESH: Do not stop the instance. - NONE: Do not disrupt the
-      instance at all. By default, the minimum action is NONE. If your update
-      requires a more disruptive action than you set with this flag, the
-      necessary action is performed to execute the update.
+      again. - REFRESH: Do not stop the instance and limit disruption as much
+      as possible. - NONE: Do not disrupt the instance at all. By default, the
+      minimum action is NONE. If your update requires a more disruptive action
+      than you set with this flag, the necessary action is performed to
+      execute the update.
     MostDisruptiveAllowedActionValueValuesEnum: The most disruptive action
       that you want to perform on each instance during the update: - REPLACE:
       Delete the instance and create it again. - RESTART: Stop the instance
-      and start it again. - REFRESH: Do not stop the instance. - NONE: Do not
-      disrupt the instance at all. By default, the most disruptive allowed
-      action is REPLACE. If your update requires a more disruptive action than
-      you set with this flag, the update request will fail.
+      and start it again. - REFRESH: Do not stop the instance and limit
+      disruption as much as possible. - NONE: Do not disrupt the instance at
+      all. By default, the most disruptive allowed action is REPLACE. If your
+      update requires a more disruptive action than you set with this flag,
+      the update request will fail.
 
   Fields:
     allInstances: Flag to update all instances instead of specified list of
@@ -41805,34 +41839,36 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     minimalAction: The minimal action that you want to perform on each
       instance during the update: - REPLACE: At minimum, delete the instance
       and create it again. - RESTART: Stop the instance and start it again. -
-      REFRESH: Do not stop the instance. - NONE: Do not disrupt the instance
-      at all. By default, the minimum action is NONE. If your update requires
-      a more disruptive action than you set with this flag, the necessary
-      action is performed to execute the update.
+      REFRESH: Do not stop the instance and limit disruption as much as
+      possible. - NONE: Do not disrupt the instance at all. By default, the
+      minimum action is NONE. If your update requires a more disruptive action
+      than you set with this flag, the necessary action is performed to
+      execute the update.
     mostDisruptiveAllowedAction: The most disruptive action that you want to
       perform on each instance during the update: - REPLACE: Delete the
       instance and create it again. - RESTART: Stop the instance and start it
-      again. - REFRESH: Do not stop the instance. - NONE: Do not disrupt the
-      instance at all. By default, the most disruptive allowed action is
-      REPLACE. If your update requires a more disruptive action than you set
-      with this flag, the update request will fail.
+      again. - REFRESH: Do not stop the instance and limit disruption as much
+      as possible. - NONE: Do not disrupt the instance at all. By default, the
+      most disruptive allowed action is REPLACE. If your update requires a
+      more disruptive action than you set with this flag, the update request
+      will fail.
   """
 
   class MinimalActionValueValuesEnum(_messages.Enum):
     r"""The minimal action that you want to perform on each instance during
     the update: - REPLACE: At minimum, delete the instance and create it
     again. - RESTART: Stop the instance and start it again. - REFRESH: Do not
-    stop the instance. - NONE: Do not disrupt the instance at all. By default,
-    the minimum action is NONE. If your update requires a more disruptive
-    action than you set with this flag, the necessary action is performed to
-    execute the update.
+    stop the instance and limit disruption as much as possible. - NONE: Do not
+    disrupt the instance at all. By default, the minimum action is NONE. If
+    your update requires a more disruptive action than you set with this flag,
+    the necessary action is performed to execute the update.
 
     Values:
       NONE: Do not perform any action.
-      REFRESH: Updates applied in runtime, instances will not be disrupted.
-      REPLACE: Old instances will be deleted. New instances will be created
-        from the target template.
-      RESTART: Every instance will be restarted.
+      REFRESH: Do not stop the instance.
+      REPLACE: (Default.) Replace the instance according to the replacement
+        method option.
+      RESTART: Stop the instance and start it again.
     """
     NONE = 0
     REFRESH = 1
@@ -41843,17 +41879,17 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     r"""The most disruptive action that you want to perform on each instance
     during the update: - REPLACE: Delete the instance and create it again. -
     RESTART: Stop the instance and start it again. - REFRESH: Do not stop the
-    instance. - NONE: Do not disrupt the instance at all. By default, the most
-    disruptive allowed action is REPLACE. If your update requires a more
-    disruptive action than you set with this flag, the update request will
-    fail.
+    instance and limit disruption as much as possible. - NONE: Do not disrupt
+    the instance at all. By default, the most disruptive allowed action is
+    REPLACE. If your update requires a more disruptive action than you set
+    with this flag, the update request will fail.
 
     Values:
       NONE: Do not perform any action.
-      REFRESH: Updates applied in runtime, instances will not be disrupted.
-      REPLACE: Old instances will be deleted. New instances will be created
-        from the target template.
-      RESTART: Every instance will be restarted.
+      REFRESH: Do not stop the instance.
+      REPLACE: (Default.) Replace the instance according to the replacement
+        method option.
+      RESTART: Stop the instance and start it again.
     """
     NONE = 0
     REFRESH = 1
@@ -44152,6 +44188,48 @@ class InstancesAddResourcePoliciesRequest(_messages.Message):
   resourcePolicies = _messages.StringField(1, repeated=True)
 
 
+class InstancesBulkInsertOperationMetadata(_messages.Message):
+  r"""A InstancesBulkInsertOperationMetadata object.
+
+  Messages:
+    PerLocationStatusValue: Status information per location (location name is
+      key). Example key: zones/us-central1-a
+
+  Fields:
+    perLocationStatus: Status information per location (location name is key).
+      Example key: zones/us-central1-a
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PerLocationStatusValue(_messages.Message):
+    r"""Status information per location (location name is key). Example key:
+    zones/us-central1-a
+
+    Messages:
+      AdditionalProperty: An additional property for a PerLocationStatusValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        PerLocationStatusValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PerLocationStatusValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A BulkInsertOperationStatus attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('BulkInsertOperationStatus', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  perLocationStatus = _messages.MessageField('PerLocationStatusValue', 1)
+
+
 class InstancesGetEffectiveFirewallsResponse(_messages.Message):
   r"""A InstancesGetEffectiveFirewallsResponse object.
 
@@ -44869,47 +44947,6 @@ class InstantSnapshotAggregatedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 7)
 
 
-class InstantSnapshotExportParams(_messages.Message):
-  r"""A InstantSnapshotExportParams object.
-
-  Enums:
-    OutputTypeValueValuesEnum: The format of the output file.
-
-  Fields:
-    baseInstantSnapshot: An optional base instant snapshot that this resource
-      is compared against. If not specified, all blocks of this resource are
-      exported. The base instant snapshot and this resource must be created
-      from the same disk. The base instant snapshot must be created earlier in
-      time than this resource.
-    bucketName: The name of an existing bucket in Cloud Storage where the
-      changed blocks will be stored. The Google Service Account must have read
-      and write access to this bucket. The bucket has to be in the same region
-      as this resource.
-    encryptionKey: Encryption key used to encrypt the instant snapshot.
-    objectName: Name of the output Bigstore object storing the changed blocks.
-      Object name must be less than 1024 bytes in length.
-    outputType: The format of the output file.
-  """
-
-  class OutputTypeValueValuesEnum(_messages.Enum):
-    r"""The format of the output file.
-
-    Values:
-      INVALID: <no description>
-      METADATA_AND_DATA: <no description>
-      METADATA_ONLY: <no description>
-    """
-    INVALID = 0
-    METADATA_AND_DATA = 1
-    METADATA_ONLY = 2
-
-  baseInstantSnapshot = _messages.StringField(1)
-  bucketName = _messages.StringField(2)
-  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 3)
-  objectName = _messages.StringField(4)
-  outputType = _messages.EnumField('OutputTypeValueValuesEnum', 5)
-
-
 class InstantSnapshotList(_messages.Message):
   r"""Contains a list of InstantSnapshot resources.
 
@@ -45080,16 +45117,6 @@ class InstantSnapshotResourceStatus(_messages.Message):
   """
 
   storageSizeBytes = _messages.IntegerField(1)
-
-
-class InstantSnapshotsExportRequest(_messages.Message):
-  r"""A InstantSnapshotsExportRequest object.
-
-  Fields:
-    exportParams: Parameters to export the changed blocks.
-  """
-
-  exportParams = _messages.MessageField('InstantSnapshotExportParams', 1)
 
 
 class InstantSnapshotsScopedList(_messages.Message):
@@ -54929,6 +54956,8 @@ class Operation(_messages.Message):
       is defined by the server.
     insertTime: [Output Only] The time that this operation was requested. This
       value is in RFC3339 text format.
+    instancesBulkInsertOperationMetadata: A
+      InstancesBulkInsertOperationMetadata attribute.
     kind: [Output Only] Type of the resource. Always `compute#operation` for
       Operation resources.
     name: [Output Only] Name of the operation.
@@ -55172,21 +55201,22 @@ class Operation(_messages.Message):
   httpErrorStatusCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(9)
-  kind = _messages.StringField(10, default='compute#operation')
-  name = _messages.StringField(11)
-  operationGroupId = _messages.StringField(12)
-  operationType = _messages.StringField(13)
-  progress = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  startTime = _messages.StringField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  statusMessage = _messages.StringField(19)
-  targetId = _messages.IntegerField(20, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(21)
-  user = _messages.StringField(22)
-  warnings = _messages.MessageField('WarningsValueListEntry', 23, repeated=True)
-  zone = _messages.StringField(24)
+  instancesBulkInsertOperationMetadata = _messages.MessageField('InstancesBulkInsertOperationMetadata', 10)
+  kind = _messages.StringField(11, default='compute#operation')
+  name = _messages.StringField(12)
+  operationGroupId = _messages.StringField(13)
+  operationType = _messages.StringField(14)
+  progress = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  startTime = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  targetId = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(22)
+  user = _messages.StringField(23)
+  warnings = _messages.MessageField('WarningsValueListEntry', 24, repeated=True)
+  zone = _messages.StringField(25)
 
 
 class OperationAggregatedList(_messages.Message):
@@ -57292,8 +57322,7 @@ class PublicAdvertisedPrefix(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    dnsVerificationIp: The IPv4 address to be used for reverse DNS
-      verification.
+    dnsVerificationIp: The address to be used for reverse DNS verification.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a new PublicAdvertisedPrefix. An up-to-
@@ -57303,8 +57332,8 @@ class PublicAdvertisedPrefix(_messages.Message):
       retrieve a PublicAdvertisedPrefix.
     id: [Output Only] The unique identifier for the resource type. The server
       generates this identifier.
-    ipCidrRange: The IPv4 address range, in CIDR format, represented by this
-      public advertised prefix.
+    ipCidrRange: The address range, in CIDR format, represented by this public
+      advertised prefix.
     kind: [Output Only] Type of the resource. Always
       compute#publicAdvertisedPrefix for public advertised prefixes.
     name: Name of the resource. Provided by the client when the resource is
@@ -59417,17 +59446,19 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     MinimalActionValueValuesEnum: The minimal action that you want to perform
       on each instance during the update: - REPLACE: At minimum, delete the
       instance and create it again. - RESTART: Stop the instance and start it
-      again. - REFRESH: Do not stop the instance. - NONE: Do not disrupt the
-      instance at all. By default, the minimum action is NONE. If your update
-      requires a more disruptive action than you set with this flag, the
-      necessary action is performed to execute the update.
+      again. - REFRESH: Do not stop the instance and limit disruption as much
+      as possible. - NONE: Do not disrupt the instance at all. By default, the
+      minimum action is NONE. If your update requires a more disruptive action
+      than you set with this flag, the necessary action is performed to
+      execute the update.
     MostDisruptiveAllowedActionValueValuesEnum: The most disruptive action
       that you want to perform on each instance during the update: - REPLACE:
       Delete the instance and create it again. - RESTART: Stop the instance
-      and start it again. - REFRESH: Do not stop the instance. - NONE: Do not
-      disrupt the instance at all. By default, the most disruptive allowed
-      action is REPLACE. If your update requires a more disruptive action than
-      you set with this flag, the update request will fail.
+      and start it again. - REFRESH: Do not stop the instance and limit
+      disruption as much as possible. - NONE: Do not disrupt the instance at
+      all. By default, the most disruptive allowed action is REPLACE. If your
+      update requires a more disruptive action than you set with this flag,
+      the update request will fail.
 
   Fields:
     allInstances: Flag to update all instances instead of specified list of
@@ -59439,34 +59470,36 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     minimalAction: The minimal action that you want to perform on each
       instance during the update: - REPLACE: At minimum, delete the instance
       and create it again. - RESTART: Stop the instance and start it again. -
-      REFRESH: Do not stop the instance. - NONE: Do not disrupt the instance
-      at all. By default, the minimum action is NONE. If your update requires
-      a more disruptive action than you set with this flag, the necessary
-      action is performed to execute the update.
+      REFRESH: Do not stop the instance and limit disruption as much as
+      possible. - NONE: Do not disrupt the instance at all. By default, the
+      minimum action is NONE. If your update requires a more disruptive action
+      than you set with this flag, the necessary action is performed to
+      execute the update.
     mostDisruptiveAllowedAction: The most disruptive action that you want to
       perform on each instance during the update: - REPLACE: Delete the
       instance and create it again. - RESTART: Stop the instance and start it
-      again. - REFRESH: Do not stop the instance. - NONE: Do not disrupt the
-      instance at all. By default, the most disruptive allowed action is
-      REPLACE. If your update requires a more disruptive action than you set
-      with this flag, the update request will fail.
+      again. - REFRESH: Do not stop the instance and limit disruption as much
+      as possible. - NONE: Do not disrupt the instance at all. By default, the
+      most disruptive allowed action is REPLACE. If your update requires a
+      more disruptive action than you set with this flag, the update request
+      will fail.
   """
 
   class MinimalActionValueValuesEnum(_messages.Enum):
     r"""The minimal action that you want to perform on each instance during
     the update: - REPLACE: At minimum, delete the instance and create it
     again. - RESTART: Stop the instance and start it again. - REFRESH: Do not
-    stop the instance. - NONE: Do not disrupt the instance at all. By default,
-    the minimum action is NONE. If your update requires a more disruptive
-    action than you set with this flag, the necessary action is performed to
-    execute the update.
+    stop the instance and limit disruption as much as possible. - NONE: Do not
+    disrupt the instance at all. By default, the minimum action is NONE. If
+    your update requires a more disruptive action than you set with this flag,
+    the necessary action is performed to execute the update.
 
     Values:
       NONE: Do not perform any action.
-      REFRESH: Updates applied in runtime, instances will not be disrupted.
-      REPLACE: Old instances will be deleted. New instances will be created
-        from the target template.
-      RESTART: Every instance will be restarted.
+      REFRESH: Do not stop the instance.
+      REPLACE: (Default.) Replace the instance according to the replacement
+        method option.
+      RESTART: Stop the instance and start it again.
     """
     NONE = 0
     REFRESH = 1
@@ -59477,17 +59510,17 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     r"""The most disruptive action that you want to perform on each instance
     during the update: - REPLACE: Delete the instance and create it again. -
     RESTART: Stop the instance and start it again. - REFRESH: Do not stop the
-    instance. - NONE: Do not disrupt the instance at all. By default, the most
-    disruptive allowed action is REPLACE. If your update requires a more
-    disruptive action than you set with this flag, the update request will
-    fail.
+    instance and limit disruption as much as possible. - NONE: Do not disrupt
+    the instance at all. By default, the most disruptive allowed action is
+    REPLACE. If your update requires a more disruptive action than you set
+    with this flag, the update request will fail.
 
     Values:
       NONE: Do not perform any action.
-      REFRESH: Updates applied in runtime, instances will not be disrupted.
-      REPLACE: Old instances will be deleted. New instances will be created
-        from the target template.
-      RESTART: Every instance will be restarted.
+      REFRESH: Do not stop the instance.
+      REPLACE: (Default.) Replace the instance according to the replacement
+        method option.
+      RESTART: Stop the instance and start it again.
     """
     NONE = 0
     REFRESH = 1
@@ -60002,16 +60035,6 @@ class RegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
 
   fingerprint = _messages.BytesField(1)
   namedPorts = _messages.MessageField('NamedPort', 2, repeated=True)
-
-
-class RegionInstantSnapshotsExportRequest(_messages.Message):
-  r"""A RegionInstantSnapshotsExportRequest object.
-
-  Fields:
-    exportParams: Parameters to export the changed blocks.
-  """
-
-  exportParams = _messages.MessageField('InstantSnapshotExportParams', 1)
 
 
 class RegionList(_messages.Message):
@@ -62063,6 +62086,8 @@ class Route(_messages.Message):
     nextHopGateway: The URL to a gateway that should handle matching packets.
       You can only specify the internet gateway using a full or partial valid
       URL: projects/ project/global/gateways/default-internet-gateway
+    nextHopHub: [Output Only] The full resource name of the Network
+      Connectivity Center hub that will handle matching packets.
     nextHopIlb: The URL to a forwarding rule of type
       loadBalancingScheme=INTERNAL that should handle matching packets or the
       IP address of the forwarding Rule. For example, the following are all
@@ -62284,19 +62309,20 @@ class Route(_messages.Message):
   name = _messages.StringField(7)
   network = _messages.StringField(8)
   nextHopGateway = _messages.StringField(9)
-  nextHopIlb = _messages.StringField(10)
-  nextHopInstance = _messages.StringField(11)
-  nextHopInterconnectAttachment = _messages.StringField(12)
-  nextHopIp = _messages.StringField(13)
-  nextHopNetwork = _messages.StringField(14)
-  nextHopPeering = _messages.StringField(15)
-  nextHopVpnTunnel = _messages.StringField(16)
-  priority = _messages.IntegerField(17, variant=_messages.Variant.UINT32)
-  routeStatus = _messages.EnumField('RouteStatusValueValuesEnum', 18)
-  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 19)
-  selfLink = _messages.StringField(20)
-  tags = _messages.StringField(21, repeated=True)
-  warnings = _messages.MessageField('WarningsValueListEntry', 22, repeated=True)
+  nextHopHub = _messages.StringField(10)
+  nextHopIlb = _messages.StringField(11)
+  nextHopInstance = _messages.StringField(12)
+  nextHopInterconnectAttachment = _messages.StringField(13)
+  nextHopIp = _messages.StringField(14)
+  nextHopNetwork = _messages.StringField(15)
+  nextHopPeering = _messages.StringField(16)
+  nextHopVpnTunnel = _messages.StringField(17)
+  priority = _messages.IntegerField(18, variant=_messages.Variant.UINT32)
+  routeStatus = _messages.EnumField('RouteStatusValueValuesEnum', 19)
+  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 20)
+  selfLink = _messages.StringField(21)
+  tags = _messages.StringField(22, repeated=True)
+  warnings = _messages.MessageField('WarningsValueListEntry', 23, repeated=True)
 
 
 class RouteAsPath(_messages.Message):
@@ -67167,6 +67193,9 @@ class Snapshot(_messages.Message):
       snapshot to a disk.
     guestFlush: [Input Only] Whether to attempt an application consistent
       snapshot by informing the OS to prepare for the snapshot process.
+    guestOsFeatures: [Output Only] A list of features to enable on the guest
+      operating system. Applicable only for bootable images. Read Enabling
+      guest operating system features to see a list of available options.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#snapshot for
@@ -67222,6 +67251,8 @@ class Snapshot(_messages.Message):
       /instantSnapshots/instantSnapshot -
       projects/project/zones/zone/instantSnapshots/instantSnapshot -
       zones/zone/instantSnapshots/instantSnapshot
+    sourceInstantSnapshotEncryptionKey: Customer provided encryption key when
+      creating Snapshot from Instant Snapshot.
     sourceInstantSnapshotId: [Output Only] The unique ID of the instant
       snapshot used to create this snapshot. This value identifies the exact
       instant snapshot that was used to create this persistent disk. For
@@ -67337,30 +67368,32 @@ class Snapshot(_messages.Message):
   diskSizeGb = _messages.IntegerField(7)
   downloadBytes = _messages.IntegerField(8)
   guestFlush = _messages.BooleanField(9)
-  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(11, default='compute#snapshot')
-  labelFingerprint = _messages.BytesField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  licenseCodes = _messages.IntegerField(14, repeated=True)
-  licenses = _messages.StringField(15, repeated=True)
-  locationHint = _messages.StringField(16)
-  name = _messages.StringField(17)
-  satisfiesPzs = _messages.BooleanField(18)
-  selfLink = _messages.StringField(19)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
-  snapshotType = _messages.EnumField('SnapshotTypeValueValuesEnum', 21)
-  sourceDisk = _messages.StringField(22)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
-  sourceDiskId = _messages.StringField(24)
-  sourceInstantSnapshot = _messages.StringField(25)
-  sourceInstantSnapshotId = _messages.StringField(26)
-  sourceSnapshotSchedulePolicy = _messages.StringField(27)
-  sourceSnapshotSchedulePolicyId = _messages.StringField(28)
-  status = _messages.EnumField('StatusValueValuesEnum', 29)
-  storageBytes = _messages.IntegerField(30)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 31)
-  storageLocations = _messages.StringField(32, repeated=True)
-  userLicenses = _messages.StringField(33, repeated=True)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 10, repeated=True)
+  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(12, default='compute#snapshot')
+  labelFingerprint = _messages.BytesField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  licenseCodes = _messages.IntegerField(15, repeated=True)
+  licenses = _messages.StringField(16, repeated=True)
+  locationHint = _messages.StringField(17)
+  name = _messages.StringField(18)
+  satisfiesPzs = _messages.BooleanField(19)
+  selfLink = _messages.StringField(20)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  snapshotType = _messages.EnumField('SnapshotTypeValueValuesEnum', 22)
+  sourceDisk = _messages.StringField(23)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
+  sourceDiskId = _messages.StringField(25)
+  sourceInstantSnapshot = _messages.StringField(26)
+  sourceInstantSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
+  sourceInstantSnapshotId = _messages.StringField(28)
+  sourceSnapshotSchedulePolicy = _messages.StringField(29)
+  sourceSnapshotSchedulePolicyId = _messages.StringField(30)
+  status = _messages.EnumField('StatusValueValuesEnum', 31)
+  storageBytes = _messages.IntegerField(32)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 33)
+  storageLocations = _messages.StringField(34, repeated=True)
+  userLicenses = _messages.StringField(35, repeated=True)
 
 
 class SnapshotList(_messages.Message):

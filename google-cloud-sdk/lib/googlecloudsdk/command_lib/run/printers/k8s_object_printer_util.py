@@ -148,39 +148,53 @@ def GetExecutionEnvironment(record):
 
 
 def GetStartupProbe(record):
-  return _GetProbe(record.container.startupProbe)
+  return _GetProbe(
+      record.container.startupProbe,
+      record.labels.get('run.googleapis.com/startupProbeType', ''),
+  )
 
 
 def GetLivenessProbe(record):
   return _GetProbe(record.container.livenessProbe)
 
 
-def _GetProbe(probe):
+def _GetProbe(probe, probe_type=''):
   """Returns the information message for the given probe."""
   if not probe:
     return ''
-  probe_type = 'TCP'
+  probe_action = 'TCP'
   port = ''
   path = ''
   if probe.httpGet:
-    probe_type = 'HTTP'
+    probe_action = 'HTTP'
     path = probe.httpGet.path
   if probe.tcpSocket:
-    probe_type = 'TCP'
+    probe_action = 'TCP'
     port = probe.tcpSocket.port
   if probe.grpc:
-    probe_type = 'GRPC'
+    probe_action = 'GRPC'
     port = probe.grpc.port
   return cp.Lines([
-      '{probe_type} every {period}s'.format(
-          probe_type=probe_type, period=probe.periodSeconds),
+      '{probe_action} every {period}s'.format(
+          probe_action=probe_action, period=probe.periodSeconds
+      ),
       cp.Labeled([
           ('Path', path),
           ('Port', port),
-          ('Initial delay', '{initial_delay}s'.format(
-              initial_delay=probe.initialDelaySeconds or '0')),
-          ('Timeout', '{timeout}s'.format(timeout=probe.timeoutSeconds)),
-          ('Failure threshold',
-           '{failures}'.format(failures=probe.failureThreshold)),
-      ])
+          (
+              'Initial delay',
+              '{initial_delay}s'.format(
+                  initial_delay=probe.initialDelaySeconds or '0'
+              ),
+          ),
+          (
+              'Timeout',
+              '{timeout}s'.format(timeout=probe.timeoutSeconds),
+          ),
+          (
+              'Failure threshold',
+              '{failures}'.format(failures=probe.failureThreshold),
+          ),
+          ('Type', probe_type),
+      ]),
   ])

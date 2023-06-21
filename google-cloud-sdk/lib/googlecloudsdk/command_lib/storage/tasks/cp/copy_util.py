@@ -21,7 +21,8 @@ from __future__ import unicode_literals
 import datetime
 
 from googlecloudsdk.api_lib.storage import cloud_api
-from googlecloudsdk.api_lib.storage import errors
+from googlecloudsdk.api_lib.storage import errors as api_errors
+from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_util
@@ -95,9 +96,11 @@ class CopyTaskWithExitHandler(CopyTask):
     """Send copy result info to manifest if requested."""
     if error and self._send_manifest_messages:
       if not task_status_queue:
-        raise ValueError(
+        raise command_errors.Error(
             'Unable to send message to manifest for source: {}'.format(
-                self._source_resource))
+                self._source_resource
+            )
+        )
       manifest_util.send_error_message(task_status_queue, self._source_resource,
                                        self._destination_resource, error)
 
@@ -118,7 +121,7 @@ def check_for_cloud_clobber(user_request_args, api_client,
         destination_resource.storage_url.bucket_name,
         destination_resource.storage_url.object_name,
         fields_scope=cloud_api.FieldsScope.SHORT)
-  except errors.NotFoundError:
+  except api_errors.NotFoundError:
     return False
   return True
 

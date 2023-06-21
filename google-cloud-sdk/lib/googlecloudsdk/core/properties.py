@@ -1319,7 +1319,6 @@ class _SectionApiEndpointOverrides(_Section):
     self.workflowexecutions = self._Add(
         'workflowexecutions', command='gcloud workflows executions')
     self.workflows = self._Add('workflows', command='gcloud workflows')
-    self.workloadcertificate = self._Add('workloadcertificate', hidden=True)
     self.workstations = self._Add('workstations', hidden=True)
 
   def EndpointValidator(self, value):
@@ -2908,7 +2907,6 @@ class _SectionMetrics(_Section):
     self.environment = self._Add('environment', hidden=True)
     self.environment_version = self._Add('environment_version', hidden=True)
     self.command_name = self._Add('command_name', internal=True)
-    self.client_arch = self._Add('client_arch', internal=True)
 
 
 class _SectionMlEngine(_Section):

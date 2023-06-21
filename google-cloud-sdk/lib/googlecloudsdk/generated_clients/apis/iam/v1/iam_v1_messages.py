@@ -456,10 +456,13 @@ class GcpCondition(_messages.Message):
 
   Fields:
     attribute: Required. The attribute key that will be matched. Supported
-      attributes are `resource_name` and `service_account`.
+      attributes are `resource` and `attached_service_account`.
     value: Required. The value that should exactly match the attribute of the
-      workload. Supported values are: * Arbitrary string * "ALL", used when
-      any value is accepted for the attribute
+      workload. Supported values are: * Arbitrary string representing a
+      resource or a service account * "ALL" The value "ALL" can be used to
+      indicate that any workload source is allowed. However, it can only be
+      used when the attribute is "resource". For example, the following
+      condition would allow all workload sources: .
   """
 
   attribute = _messages.StringField(1)
@@ -1455,6 +1458,17 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesListRe
   showDeleted = _messages.BooleanField(4)
 
 
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesOperationsGetRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesOp
+  erationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPatchRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPa
   tchRequest object.
@@ -1547,6 +1561,17 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorklo
   parent = _messages.StringField(3, required=True)
 
 
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesOperationsGetRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWo
+  rkloadSourcesOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesPatchRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWo
   rkloadSourcesPatchRequest object.
@@ -1562,6 +1587,18 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorklo
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   workloadSource = _messages.MessageField('WorkloadSource', 3)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesOperationsGetRequest(_messages.Message):
+  r"""A
+  IamProjectsLocationsWorkloadIdentityPoolsNamespacesOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesPatchRequest(_messages.Message):
@@ -1655,6 +1692,17 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesListRequ
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesOperationsGetRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesOper
+  ationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesPatchRequest(_messages.Message):

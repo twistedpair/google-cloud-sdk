@@ -532,7 +532,7 @@ def get_posix_attributes_from_resource(resource, preserve_symlinks=False):
     return get_posix_attributes_from_file(
         resource.storage_url.object_name, preserve_symlinks
     )
-  raise errors.Error(
+  raise errors.InvalidUrlError(
       'Can only retrieve POSIX attributes from file or cloud'
       ' object, not: {}'.format(resource.TYPE_STRING)
   )
@@ -558,15 +558,19 @@ def raise_if_source_and_destination_not_valid_for_preserve_posix(
 ):
   """Logs errors and returns bool indicating if transfer is valid for POSIX."""
   if isinstance(source_url, storage_url.FileUrl) and source_url.is_stream:
-    raise ValueError(
-        'Cannot preserve POSIX data from pipe: {}'.format(source_url))
+    raise errors.InvalidUrlError(
+        'Cannot preserve POSIX data from pipe: {}'.format(source_url)
+    )
   if isinstance(destination_url,
                 storage_url.FileUrl) and destination_url.is_stream:
-    raise ValueError(
-        'Cannot write POSIX data to pipe: {}'.format(destination_url))
+    raise errors.InvalidUrlError(
+        'Cannot write POSIX data to pipe: {}'.format(destination_url)
+    )
   if isinstance(source_url, storage_url.CloudUrl) and isinstance(
       destination_url, storage_url.CloudUrl):
-    raise ValueError('Cannot preserve POSIX data for cloud-to-cloud copies')
+    raise errors.InvalidUrlError(
+        'Cannot preserve POSIX data for cloud-to-cloud copies'
+    )
 
 
 def run_if_setting_posix(

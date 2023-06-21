@@ -76,6 +76,8 @@ def get_signed_url(
   """
   from OpenSSL import crypto  # pylint: disable=g-import-not-at-top
 
+  encoded_path = urllib.parse.quote(path, safe='/~')
+
   signing_time = times.Now(tzinfo=times.UTC)
 
   _, _, host_without_scheme = host.rpartition('://')
@@ -90,7 +92,9 @@ def get_signed_url(
   canonical_signed_headers_string = ';'.join(sorted(headers_to_sign.keys()))
 
   canonical_scope = '{date}/{region}/storage/goog4_request'.format(
-      date=signing_time.strftime('%Y%m%d'), region=region
+      date=signing_time.strftime('%Y%m%d'),
+      # Lowercase does't seem to be necessary but is used for gsutil parity.
+      region=region.lower(),
   )
   canonical_time = signing_time.strftime('%Y%m%dT%H%M%SZ')
 
@@ -112,7 +116,7 @@ def get_signed_url(
   # https://cloud.google.com/storage/docs/authentication/canonical-requests
   canonical_request_string = '\n'.join([
       verb,
-      path,
+      encoded_path,
       canonical_query_string,
       canonical_headers_string,
       canonical_signed_headers_string,
@@ -137,12 +141,9 @@ def get_signed_url(
 
   raw_signature = crypto.sign(key, string_to_sign.encode('utf-8'), _DIGEST)
   signature = base64.b16encode(raw_signature).lower().decode('utf-8')
-
-  return (
-      '{host}{path}?x-goog-signature={signature}&{query_string}'
-  ).format(
+  return ('{host}{path}?x-goog-signature={signature}&{query_string}').format(
       host=host,
-      path=path,
+      path=encoded_path,
       signature=signature,
       query_string=canonical_query_string,
   )

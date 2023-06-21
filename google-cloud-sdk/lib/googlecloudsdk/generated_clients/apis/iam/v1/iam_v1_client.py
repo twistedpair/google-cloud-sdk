@@ -52,8 +52,12 @@ class IamV1(base_api.BaseApiClient):
     self.organizations_roles = self.OrganizationsRolesService(self)
     self.organizations = self.OrganizationsService(self)
     self.permissions = self.PermissionsService(self)
+    self.projects_locations_workloadIdentityPools_namespaces_managedIdentities_operations = self.ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesOperationsService(self)
+    self.projects_locations_workloadIdentityPools_namespaces_managedIdentities_workloadSources_operations = self.ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesOperationsService(self)
     self.projects_locations_workloadIdentityPools_namespaces_managedIdentities_workloadSources = self.ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesService(self)
     self.projects_locations_workloadIdentityPools_namespaces_managedIdentities = self.ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesService(self)
+    self.projects_locations_workloadIdentityPools_namespaces_operations = self.ProjectsLocationsWorkloadIdentityPoolsNamespacesOperationsService(self)
+    self.projects_locations_workloadIdentityPools_namespaces_workloadSources_operations = self.ProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesOperationsService(self)
     self.projects_locations_workloadIdentityPools_namespaces_workloadSources = self.ProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesService(self)
     self.projects_locations_workloadIdentityPools_namespaces = self.ProjectsLocationsWorkloadIdentityPoolsNamespacesService(self)
     self.projects_locations_workloadIdentityPools_operations = self.ProjectsLocationsWorkloadIdentityPoolsOperationsService(self)
@@ -1142,6 +1146,80 @@ class IamV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_workloadIdentityPools_namespaces_managedIdentities_operations resource."""
+
+    _NAME = 'projects_locations_workloadIdentityPools_namespaces_managedIdentities_operations'
+
+    def __init__(self, client):
+      super(IamV1.ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_workloadIdentityPools_namespaces_managedIdentities_workloadSources_operations resource."""
+
+    _NAME = 'projects_locations_workloadIdentityPools_namespaces_managedIdentities_workloadSources_operations'
+
+    def __init__(self, client):
+      super(IamV1.ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}/workloadSources/{workloadSourcesId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.workloadSources.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesService(base_api.BaseApiService):
     """Service class for the projects_locations_workloadIdentityPools_namespaces_managedIdentities_workloadSources resource."""
 
@@ -1455,6 +1533,80 @@ class IamV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:undelete',
         request_field='undeleteWorkloadIdentityPoolManagedIdentityRequest',
         request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesUndeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsWorkloadIdentityPoolsNamespacesOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_workloadIdentityPools_namespaces_operations resource."""
+
+    _NAME = 'projects_locations_workloadIdentityPools_namespaces_operations'
+
+    def __init__(self, client):
+      super(IamV1.ProjectsLocationsWorkloadIdentityPoolsNamespacesOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_workloadIdentityPools_namespaces_workloadSources_operations resource."""
+
+    _NAME = 'projects_locations_workloadIdentityPools_namespaces_workloadSources_operations'
+
+    def __init__(self, client):
+      super(IamV1.ProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/workloadSources/{workloadSourcesId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.workloadSources.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesOperationsGetRequest',
         response_type_name='Operation',
         supports_download=False,
     )

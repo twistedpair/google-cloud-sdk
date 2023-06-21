@@ -47,17 +47,20 @@ class InstancesClient(object):
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName('securesourcemanager', 'v1')
 
-  def Create(self, instance_ref):
+  def Create(self, instance_ref, kms_key):
     """Create a new Secure Source Manager instance.
 
     Args:
       instance_ref: a resource reference to
         securesourcemanager.projects.locations.instances.
+      kms_key: customer managed encrypted key to create instance.
 
     Returns:
       Created instance.
     """
-    instance = self.messages.Instance()
+    instance = self.messages.Instance(
+        kmsKey=kms_key
+    )
     create_req = self.messages.SecuresourcemanagerProjectsLocationsInstancesCreateRequest(
         instance=instance,
         instanceId=instance_ref.instancesId,

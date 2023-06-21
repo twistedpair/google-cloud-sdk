@@ -32,6 +32,7 @@ from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.util import common_args
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.artifacts import remote_repo_util
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
@@ -198,6 +199,10 @@ def AppendRepoDataToRequest(repo_ref, repo_args, request):
     ValidateGcrRepo(repo_name, repo_format, location, docker_format)
   elif not _IsValidRepoName(repo_ref.repositoriesId):
     raise ar_exceptions.InvalidInputValueError(_INVALID_REPO_NAME_ERROR)
+  if remote_repo_util.IsRemoteRepoRequest(repo_args):
+    request = remote_repo_util.AppendRemoteRepoConfigToRequest(
+        messages, repo_args, request
+    )
 
   request.repository.name = repo_ref.RelativeName()
   request.repositoryId = repo_ref.repositoriesId
@@ -211,14 +216,17 @@ def AppendUpstreamPoliciesToRequest(repo_ref, repo_args, request):
   if repo_args.upstream_policy_file:
     if isinstance(
         request,
-        messages.ArtifactregistryProjectsLocationsRepositoriesPatchRequest):
+        messages.ArtifactregistryProjectsLocationsRepositoriesPatchRequest,
+    ):
       # Clear the updateMask for update request, so AR will replace all old
       # policies with policies from the file.
       request.updateMask = None
     content = console_io.ReadFromFileOrStdin(
-        repo_args.upstream_policy_file, binary=False)
+        repo_args.upstream_policy_file, binary=False
+    )
     policies = json.loads(content)
-    request.repository.virtualRepositoryConfig = messages.VirtualRepositoryConfig(
+    request.repository.virtualRepositoryConfig = (
+        messages.VirtualRepositoryConfig()
     )
     request.repository.virtualRepositoryConfig.upstreamPolicies = []
     for policy in policies:
@@ -226,7 +234,8 @@ def AppendUpstreamPoliciesToRequest(repo_ref, repo_args, request):
         p = messages.UpstreamPolicy(
             id=policy["id"],
             priority=policy["priority"],
-            repository=policy["repository"])
+            repository=policy["repository"],
+        )
         request.repository.virtualRepositoryConfig.upstreamPolicies.append(p)
       else:
         raise ar_exceptions.InvalidInputValueError(_INVALID_UPSTREAM_POLICY)
@@ -235,8 +244,8 @@ def AppendUpstreamPoliciesToRequest(repo_ref, repo_args, request):
 
 
 def AddAdditionalArgs():
-  """Adds the repository-format and upstream-policy-file flags."""
-  return UpstreamsArgs() + RepoFormatArgs()
+  """Adds additional flags."""
+  return UpstreamsArgs() + RepoFormatArgs() + remote_repo_util.Args()
 
 
 def UpstreamsArgs():
