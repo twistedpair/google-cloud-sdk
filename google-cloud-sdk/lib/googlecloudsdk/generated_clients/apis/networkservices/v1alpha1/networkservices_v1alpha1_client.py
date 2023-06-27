@@ -50,7 +50,7 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
     self.projects_locations_grpcRoutes = self.ProjectsLocationsGrpcRoutesService(self)
     self.projects_locations_httpFilters = self.ProjectsLocationsHttpFiltersService(self)
     self.projects_locations_httpRoutes = self.ProjectsLocationsHttpRoutesService(self)
-    self.projects_locations_lbRouteExtensions = self.ProjectsLocationsLbRouteExtensionsService(self)
+    self.projects_locations_lbServiceSteeringExtensions = self.ProjectsLocationsLbServiceSteeringExtensionsService(self)
     self.projects_locations_lbTrafficExtensions = self.ProjectsLocationsLbTrafficExtensionsService(self)
     self.projects_locations_meshes = self.ProjectsLocationsMeshesService(self)
     self.projects_locations_observabilityPolicies = self.ProjectsLocationsObservabilityPoliciesService(self)
@@ -2146,21 +2146,21 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsLbRouteExtensionsService(base_api.BaseApiService):
-    """Service class for the projects_locations_lbRouteExtensions resource."""
+  class ProjectsLocationsLbServiceSteeringExtensionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_lbServiceSteeringExtensions resource."""
 
-    _NAME = 'projects_locations_lbRouteExtensions'
+    _NAME = 'projects_locations_lbServiceSteeringExtensions'
 
     def __init__(self, client):
-      super(NetworkservicesV1alpha1.ProjectsLocationsLbRouteExtensionsService, self).__init__(client)
+      super(NetworkservicesV1alpha1.ProjectsLocationsLbServiceSteeringExtensionsService, self).__init__(client)
       self._upload_configs = {
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new LbRouteExtension in a given project and location.
+      r"""Creates a new LbServiceSteeringExtension in a given project and location.
 
       Args:
-        request: (NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest) input message
+        request: (NetworkservicesProjectsLocationsLbServiceSteeringExtensionsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -2170,24 +2170,24 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbRouteExtensions',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbServiceSteeringExtensions',
         http_method='POST',
-        method_id='networkservices.projects.locations.lbRouteExtensions.create',
+        method_id='networkservices.projects.locations.lbServiceSteeringExtensions.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['lbRouteExtensionId', 'requestId'],
-        relative_path='v1alpha1/{+parent}/lbRouteExtensions',
-        request_field='lbRouteExtension',
-        request_type_name='NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest',
+        query_params=['lbServiceSteeringExtensionId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/lbServiceSteeringExtensions',
+        request_field='lbServiceSteeringExtension',
+        request_type_name='NetworkservicesProjectsLocationsLbServiceSteeringExtensionsCreateRequest',
         response_type_name='Operation',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single LbRouteExtension.
+      r"""Deletes a single LbServiceSteeringExtension.
 
       Args:
-        request: (NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest) input message
+        request: (NetworkservicesProjectsLocationsLbServiceSteeringExtensionsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -2197,78 +2197,78 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbRouteExtensions/{lbRouteExtensionsId}',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbServiceSteeringExtensions/{lbServiceSteeringExtensionsId}',
         http_method='DELETE',
-        method_id='networkservices.projects.locations.lbRouteExtensions.delete',
+        method_id='networkservices.projects.locations.lbServiceSteeringExtensions.delete',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['requestId'],
         relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name='NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest',
+        request_type_name='NetworkservicesProjectsLocationsLbServiceSteeringExtensionsDeleteRequest',
         response_type_name='Operation',
         supports_download=False,
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single LbRouteExtension.
+      r"""Gets details of a single LbServiceSteeringExtension.
 
       Args:
-        request: (NetworkservicesProjectsLocationsLbRouteExtensionsGetRequest) input message
+        request: (NetworkservicesProjectsLocationsLbServiceSteeringExtensionsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (LbRouteExtension) The response message.
+        (LbServiceSteeringExtension) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbRouteExtensions/{lbRouteExtensionsId}',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbServiceSteeringExtensions/{lbServiceSteeringExtensionsId}',
         http_method='GET',
-        method_id='networkservices.projects.locations.lbRouteExtensions.get',
+        method_id='networkservices.projects.locations.lbServiceSteeringExtensions.get',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name='NetworkservicesProjectsLocationsLbRouteExtensionsGetRequest',
-        response_type_name='LbRouteExtension',
+        request_type_name='NetworkservicesProjectsLocationsLbServiceSteeringExtensionsGetRequest',
+        response_type_name='LbServiceSteeringExtension',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      r"""Lists LbRouteExtensions in a given project and location.
+      r"""Lists LbServiceSteeringExtensions in a given project and location.
 
       Args:
-        request: (NetworkservicesProjectsLocationsLbRouteExtensionsListRequest) input message
+        request: (NetworkservicesProjectsLocationsLbServiceSteeringExtensionsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListLbRouteExtensionsResponse) The response message.
+        (ListLbServiceSteeringExtensionsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbRouteExtensions',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbServiceSteeringExtensions',
         http_method='GET',
-        method_id='networkservices.projects.locations.lbRouteExtensions.list',
+        method_id='networkservices.projects.locations.lbServiceSteeringExtensions.list',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/lbRouteExtensions',
+        relative_path='v1alpha1/{+parent}/lbServiceSteeringExtensions',
         request_field='',
-        request_type_name='NetworkservicesProjectsLocationsLbRouteExtensionsListRequest',
-        response_type_name='ListLbRouteExtensionsResponse',
+        request_type_name='NetworkservicesProjectsLocationsLbServiceSteeringExtensionsListRequest',
+        response_type_name='ListLbServiceSteeringExtensionsResponse',
         supports_download=False,
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single LbRouteExtension.
+      r"""Updates the parameters of a single LbServiceSteeringExtension.
 
       Args:
-        request: (NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest) input message
+        request: (NetworkservicesProjectsLocationsLbServiceSteeringExtensionsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -2278,15 +2278,15 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbRouteExtensions/{lbRouteExtensionsId}',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbServiceSteeringExtensions/{lbServiceSteeringExtensionsId}',
         http_method='PATCH',
-        method_id='networkservices.projects.locations.lbRouteExtensions.patch',
+        method_id='networkservices.projects.locations.lbServiceSteeringExtensions.patch',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['requestId', 'updateMask'],
         relative_path='v1alpha1/{+name}',
-        request_field='lbRouteExtension',
-        request_type_name='NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest',
+        request_field='lbServiceSteeringExtension',
+        request_type_name='NetworkservicesProjectsLocationsLbServiceSteeringExtensionsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

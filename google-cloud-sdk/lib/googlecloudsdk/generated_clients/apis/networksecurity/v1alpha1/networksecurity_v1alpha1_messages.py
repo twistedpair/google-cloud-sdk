@@ -366,28 +366,102 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class FirewallEndpoint(_messages.Message):
-  r"""Message describing Endpoint object
+class FirewallAttachment(_messages.Message):
+  r"""Message describing Attachment object
 
   Enums:
-    StateValueValuesEnum: Output only. [Output only] Current state of the
-      endpoint.
+    StateValueValuesEnum: Output only. Current state of the attachment.
 
   Messages:
     LabelsValue: Labels as key value pairs
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. Create time stamp
+    labels: Labels as key value pairs
+    name: Output only. name of resource
+    natSubnetwork: Name of the subnet that is used to NAT the IP addresses of
+      the intercepted traffic in the attachment's VPC:
+      'projects/{project_id}/{location}/subnetworks/{subnetwork_name}'
+    producerForwardingRule: Name of the regional load balancer which the
+      intercepted traffic should be forwarded to: 'projects/{project_id}/regio
+      ns/{region}/forwardingRules/{forwardingRule}'
+    reconciling: Output only. Whether reconciling is in progress, recommended
+      per https://google.aip.dev/128.
+    state: Output only. Current state of the attachment.
+    updateTime: Output only. Update time stamp
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the attachment.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      CREATING: Being created.
+      ACTIVE: Attachment is now active.
+      DELETING: Being deleted.
+      INACTIVE: Down or in an error state.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    INACTIVE = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  natSubnetwork = _messages.StringField(4)
+  producerForwardingRule = _messages.StringField(5)
+  reconciling = _messages.BooleanField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+
+
+class FirewallEndpoint(_messages.Message):
+  r"""Message describing Endpoint object
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the endpoint.
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. Create time stamp
     labels: Labels as key value pairs
     name: Output only. name of resource
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
-    state: Output only. [Output only] Current state of the endpoint.
-    updateTime: Output only. [Output only] Update time stamp
+    state: Output only. Current state of the endpoint.
+    updateTime: Output only. Update time stamp
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. [Output only] Current state of the endpoint.
+    r"""Output only. Current state of the endpoint.
 
     Values:
       STATE_UNSPECIFIED: Not set.
@@ -438,27 +512,28 @@ class FirewallEndpointAssociation(_messages.Message):
   r"""Message describing Association object
 
   Enums:
-    StateValueValuesEnum: Output only. [Output only] Current state of the
-      association.
+    StateValueValuesEnum: Output only. Current state of the association.
 
   Messages:
     LabelsValue: Labels as key value pairs
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. Create time stamp
     firewallEndpoint: Required. The URL of the FirewallEndpoint that is being
       associated.
     labels: Labels as key value pairs
     name: Output only. name of resource
     network: Required. The URL of the network that is being associated.
-    state: Output only. [Output only] Current state of the association.
+    reconciling: Output only. Whether reconciling is in progress, recommended
+      per https://google.aip.dev/128.
+    state: Output only. Current state of the association.
     tlsInspectionPolicy: Optional. The URL of the TlsInspectionPolicy that is
       being associated.
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. Update time stamp
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. [Output only] Current state of the association.
+    r"""Output only. Current state of the association.
 
     Values:
       STATE_UNSPECIFIED: Not set.
@@ -502,9 +577,10 @@ class FirewallEndpointAssociation(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   network = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  tlsInspectionPolicy = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  reconciling = _messages.BooleanField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  tlsInspectionPolicy = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class GatewaySecurityPolicy(_messages.Message):
@@ -950,6 +1026,21 @@ class ListClientTlsPoliciesResponse(_messages.Message):
 
   clientTlsPolicies = _messages.MessageField('ClientTlsPolicy', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListFirewallAttachmentsResponse(_messages.Message):
+  r"""Message for response to listing Attachments
+
+  Fields:
+    firewallAttachments: The list of Attachments
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  firewallAttachments = _messages.MessageField('FirewallAttachment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListFirewallEndpointAssociationsResponse(_messages.Message):
@@ -2325,6 +2416,88 @@ class NetworksecurityProjectsLocationsClientTlsPoliciesTestIamPermissionsRequest
   resource = _messages.StringField(2, required=True)
 
 
+class NetworksecurityProjectsLocationsFirewallAttachmentsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsFirewallAttachmentsCreateRequest
+  object.
+
+  Fields:
+    firewallAttachment: A FirewallAttachment resource to be passed as the
+      request body.
+    firewallAttachmentId: Required. Id of the requesting object. If auto-
+      generating Id server-side, remove this field and firewall_attachment_id
+      from the method_signature of Create RPC.
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallAttachment = _messages.MessageField('FirewallAttachment', 1)
+  firewallAttachmentId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsFirewallAttachmentsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsFirewallAttachmentsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsFirewallAttachmentsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsFirewallAttachmentsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsFirewallAttachmentsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsFirewallAttachmentsListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListAttachmentsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class NetworksecurityProjectsLocationsFirewallEndpointAssociationsCreateRequest(_messages.Message):
   r"""A
   NetworksecurityProjectsLocationsFirewallEndpointAssociationsCreateRequest
@@ -2411,6 +2584,39 @@ class NetworksecurityProjectsLocationsFirewallEndpointAssociationsListRequest(_m
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchRequest
+  object.
+
+  Fields:
+    firewallEndpointAssociation: A FirewallEndpointAssociation resource to be
+      passed as the request body.
+    name: Output only. name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Association resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  firewallEndpointAssociation = _messages.MessageField('FirewallEndpointAssociation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworksecurityProjectsLocationsGatewaySecurityPoliciesCreateRequest(_messages.Message):

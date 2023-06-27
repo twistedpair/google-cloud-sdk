@@ -36,8 +36,12 @@ _END_OF_LIFE_MESSAGE_DESCRIBE_NODE_POOL = """
 The current version of your node pool(s) is unsupported, please upgrade.
 """
 
-_UPGRADE_HINT = """
+_UPGRADE_CLUSTER_HINT = """
 * - This version of your cluster(s) is unsupported, please upgrade.
+"""
+
+_UPGRADE_NODE_POOL_HINT = """
+* - This version of your node pool(s) is unsupported, please upgrade.
 """
 
 _UPGRADE_COMMAND_CLUSTER = """
@@ -173,7 +177,7 @@ def upgrade_hint_node_pool(node_pool_ref, node_pool_info, platform):
   return upgrade_message
 
 
-def upgrade_hint_list(platform):
+def upgrade_hint_cluster_list(platform):
   """Generates a message that warns users if their cluster version can be upgraded.
 
   Args:
@@ -182,10 +186,9 @@ def upgrade_hint_list(platform):
   Returns:
     A message in how to upgrade a cluster if its end of life.
   """
-  upgrade_message = _UPGRADE_HINT
+  upgrade_message = _UPGRADE_CLUSTER_HINT
   upgrade_message += _UPGRADE_COMMAND_CLUSTER.format(
       USERS_PLATFORM=platform.lower(),
-      NAME="NAME",
       LOCATION="LOCATION",
       CLUSTER_VERSION="CLUSTER_VERSION",
       CLUSTER_NAME="CLUSTER_NAME",
@@ -196,7 +199,39 @@ def upgrade_hint_list(platform):
   return upgrade_message
 
 
-def generate_versions_table(cluster_ref, platform, items):
+def upgrade_hint_node_pool_list(platform, cluster_ref):
+  """Generates a message that warns users if their node pool version can be upgraded.
+
+  Args:
+    platform: A string, the platform the component is on {AWS,Azure}.
+    cluster_ref: A resource object, the cluster resource information.
+
+  Returns:
+    A message in how to upgrade a node pool if its end of life.
+  """
+  cluster_name = None
+  if platform == constants.AWS:
+    cluster_name = cluster_ref.awsClustersId
+  elif platform == constants.AZURE:
+    cluster_name = cluster_ref.azureClustersId
+
+  upgrade_message = _UPGRADE_NODE_POOL_HINT
+  upgrade_message += _UPGRADE_COMMAND_NODE_POOL.format(
+      USERS_PLATFORM=platform.lower(),
+      NODE_POOL_NAME="NODE_POOL_NAME",
+      LOCATION=cluster_ref.locationsId,
+      CLUSTER_NAME=cluster_name,
+      NODE_POOL_VERSION="NODE_POOL_VERSION",
+  )
+
+  upgrade_message += _SUPPORTED_COMMAND.format(
+      USERS_PLATFORM=platform.lower(), LOCATION="LOCATION"
+  )
+  return upgrade_message
+
+
+# TODO(b/288406825): Combine node pool and cluster version logic
+def generate_cluster_versions_table(cluster_ref, platform, items):
   """Generates a table of user's cluster versions and then adds a "*" to the version that can be upgraded.
 
   Args:
@@ -220,5 +255,33 @@ def generate_versions_table(cluster_ref, platform, items):
     cluster_info_table.append(x)
   return (
       iter(cluster_info_table),
+      end_of_life_flag,
+  )
+
+
+def generate_node_pool_versions_table(cluster_ref, platform, items):
+  """Generates a table of user's node pool(s) based on cluster and then adds a "*" to the version that can be upgraded.
+
+  Args:
+    cluster_ref: A resource object, the parent cluster resource information.
+    platform: A string, the platform the component is on {AWS,Azure}.
+    items: A generator, an iterator (generator), of cluster versions that need
+      to be looked at, to see if they are in end of life.
+
+  Returns:
+    A table with node pool information (with annotations on whether the node
+    pool can be upgraded), an end of life flag used to tell whether we need to
+    add any additional hints.
+  """
+  node_pool_info_table = []
+  end_of_life_flag = False
+  valid_versions = _load_valid_versions(platform, cluster_ref.Parent())
+  for x in items:
+    if _is_end_of_life(valid_versions, x.version):
+      x.version += " *"
+      end_of_life_flag = True
+    node_pool_info_table.append(x)
+  return (
+      iter(node_pool_info_table),
       end_of_life_flag,
   )

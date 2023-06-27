@@ -159,6 +159,8 @@ class ContainerAnalysisMetadata:
       view['compliance_summary'] = self.compliance
     if self.dsse_attestation.dsse_attestations:
       view['dsse_attestation_summary'] = self.dsse_attestation
+    if self.sbom_reference.sbom_references:
+      view['sbom_summary'] = self.sbom_reference
     return view
 
   def SLSABuildLevel(self):
@@ -166,6 +168,12 @@ class ContainerAnalysisMetadata:
     if self.provenance.provenance:
       return _ComputeSLSABuildLevel(self.provenance.provenance)
     return 'unknown'
+
+  def SbomLocations(self):
+    return [
+        sbom_ref.sbomReference.payload.predicate.location
+        for sbom_ref in self.sbom_reference.sbom_references
+    ]
 
 
 class PackageVulnerabilitySummary:
@@ -361,18 +369,19 @@ def GetContainerAnalysisMetadata(docker_version, args):
   return metadata
 
 
-def GetBuildOnlyMetadata(docker_version):
-  """Retrieves build metadata for a docker image.
+def GetImageSummaryMetadata(docker_version):
+  """Retrieves build and SBOM metadata for a docker image.
 
-  This function is used only for SLSA build level computation. If the
-  containeranalysis API is disabled for the project, no request will be
-  sent and it returns empty metadata resulting in 'unknown' SLSA level.
+  This function is used only for SLSA build level computation and retrieving
+  SBOM locations. If the containeranalysis API is disabled for the project, no
+  request will be sent and it returns empty metadata resulting in 'unknown' SLSA
+  level.
 
   Args:
     docker_version: docker info about image and project.
 
   Returns:
-    The build metadata for the given image.
+    The build and SBOM metadata for the given image.
   """
   metadata = ContainerAnalysisMetadata()
   ca_enabled = enable_api.IsServiceEnabled(
@@ -385,7 +394,7 @@ def GetBuildOnlyMetadata(docker_version):
       'https://{}'.format(docker_version.GetDockerString()),
       docker_version.GetDockerString(),
   ]
-  occ_filter = _CreateFilterForBuildOccurrences(docker_urls)
+  occ_filter = _CreateFilterForImageSummaryOccurrences(docker_urls)
   occurrences = ca_requests.ListOccurrences(docker_version.project, occ_filter)
   for occ in occurrences:
     metadata.AddOccurrence(occ, False)
@@ -462,11 +471,11 @@ def _CreateFilterForMaven(maven_resource):
   return occ_filter.GetFilter()
 
 
-def _CreateFilterForBuildOccurrences(images):
-  """Builds filters for containeranalysis APIs for build occurrences."""
+def _CreateFilterForImageSummaryOccurrences(images):
+  """Builds filters for containeranalysis APIs for build and SBOM occurrences."""
   occ_filter = filter_util.ContainerAnalysisFilter()
 
-  filter_kinds = ['BUILD']
+  filter_kinds = ['BUILD', 'SBOM_REFERENCE']
 
   occ_filter.WithKinds(filter_kinds)
   occ_filter.WithResources(images)
@@ -522,6 +531,8 @@ def _CreateFilterFromImagesDescribeArgs(images, args):
     if args.show_provenance:
       filter_kinds.append('DSSE_ATTESTATION')
       filter_kinds.append('BUILD')
+    if args.show_sbom_references:
+      filter_kinds.append('SBOM_REFERENCE')
 
     # args include none of the occurrence types, there's no need to call the
     # containeranalysis API.

@@ -54,6 +54,7 @@ import argparse
 import collections
 import copy
 import decimal
+import json
 import re
 
 from dateutil import tz
@@ -86,6 +87,10 @@ class ArgumentParsingError(Error, argparse.ArgumentError):
   argparse.ArgumentError takes both the action and a message as constructor
   parameters.
   """
+
+
+class InvalidTypeError(Error):
+  """Error for when contributor provides incorrect type arguments."""
 
 
 def _GenerateErrorMessage(error, user_input=None, error_idx=None):
@@ -828,21 +833,134 @@ def BoundedFloat(*args, **kwargs):
   return _BoundedType(float, 'a floating point number', *args, **kwargs)
 
 
-def _TokenizeQuotedList(arg_value, delim=','):
+def _SplitOnDelim(arg_value, delim):
+  if not arg_value:
+    return []
+  if not arg_value.endswith(delim):
+    arg_value += delim
+  return arg_value.split(delim)[:-1]
+
+
+def _ContainsValidJson(str_value):
+  """Checks whether the string contains balanced json."""
+  closing_brackets = {'}': '{', ']': '['}
+  opening_brackets = set(closing_brackets.values())
+  current_brackets = []
+
+  for i in range(len(str_value)):
+    # ignore if escaped value
+    if i > 0 and str_value[i - 1] == '\\':
+      continue
+
+    ch = str_value[i]
+    if ch in closing_brackets:
+      matching_brace = closing_brackets[ch]
+      if not current_brackets or current_brackets[-1] != matching_brace:
+        return False
+      current_brackets.pop()
+    elif ch in opening_brackets:
+      current_brackets.append(ch)
+
+  return not current_brackets
+
+
+def _RejoinJsonStrs(json_list, delim, arg_value):
+  """Rejoins json substrings that are part of the same json strings.
+
+  For example:
+      [
+          'key={"a":"b"',
+          '"c":"d"}'
+      ]
+
+  Is merged together into: ['key={"a":"b","c":"d"}']
+
+  Args:
+    json_list: [str], list of json snippets
+    delim: str, delim used to rejoin the json snippets
+    arg_value: str, original value used to make json_list
+
+  Returns:
+    list of strings containing balanced json
+  """
+  result = []
+  current_substr = None
+
+  for token in json_list:
+    if not current_substr:
+      current_substr = token
+    else:
+      current_substr += delim + token
+
+    if _ContainsValidJson(current_substr):
+      result.append(current_substr)
+      current_substr = None
+
+  if current_substr:
+    raise ValueError(
+        'Invalid entry "{}": missing opening brace ("{{" or "[") or closing '
+        'brace ("}}" or "]").'.format(arg_value))
+
+  return result
+
+
+def _TokenizeQuotedList(arg_value, delim=',', includes_json=False):
   """Tokenize an argument into a list.
+
+  Deliminators that are inside json will not be split. Even when the
+  json is nested, we will not split on the delimitor until we reach the
+  json's closing bracket. For example:
+
+    '{"a": [1, 2], "b": 3},{"c": 4}'
+
+  with default delim (',') will be split only on the `,` separating the 2
+  json strings i.e.
+
+    [
+        '{"a": [1, 2], "b": 3}',
+        '{"c": 4}'
+    ]
+
+  This also works for strings that contain dictionary pattern. For example:
+
+    'key1={"a": [1, 2], "b": 3},key2={"c": 4}'
+
+  with default delim (',') will be split on the delim (',') separating the
+  two strings into
+
+    [
+        'key1={"a": [1, 2], "b": 3}',
+        'key2={"c": 4}'
+    ]
+
 
   Args:
     arg_value: str, The raw argument.
     delim: str, The delimiter on which to split the argument string.
+    includes_json: str, determines whether to ignore delimiter inside json
 
   Returns:
     [str], The tokenized list.
   """
-  if arg_value:
-    if not arg_value.endswith(delim):
-      arg_value += delim
-    return arg_value.split(delim)[:-1]
-  return []
+  if not arg_value:
+    return []
+
+  str_list = _SplitOnDelim(arg_value, delim)
+  if not includes_json or delim != ',':
+    return str_list
+
+  return _RejoinJsonStrs(str_list, delim, arg_value)
+
+
+def _ConcatList(existing_values, new_values):
+  if existing_values is None:
+    existing_values = []
+  if isinstance(new_values, list):
+    for new_value in new_values:
+      _ConcatList(existing_values, new_value)
+  else:
+    existing_values.append(new_values)
+  return existing_values
 
 
 class ArgType(object):
@@ -903,7 +1021,8 @@ class ArgList(ArgType):
                max_length=None,
                choices=None,
                custom_delim_char=None,
-               visible_choices=None):
+               visible_choices=None,
+               includes_json=False):
     """Initialize an ArgList.
 
     Args:
@@ -915,6 +1034,7 @@ class ArgList(ArgType):
       custom_delim_char: char, A customized delimiter character.
       visible_choices: [element_type], a list of valid possibilities for
         elements to be shown to the user. If None, defaults to choices.
+      includes_json: bool, whether the list contains any json
 
     Returns:
       (str)->[str], A function to parse the list of values in the argument.
@@ -947,6 +1067,7 @@ class ArgList(ArgType):
     self.max_length = max_length
 
     self.custom_delim_char = custom_delim_char
+    self.includes_json = includes_json
 
   def __call__(self, arg_value):  # pylint:disable=missing-docstring
 
@@ -965,7 +1086,8 @@ class ArgList(ArgType):
               'Invalid delimeter. Please see `gcloud topic flags-file` or '
               '`gcloud topic escaping` for information on providing list or '
               'dictionary flag values with special characters.')
-      arg_list = _TokenizeQuotedList(arg_value, delim=delim)
+      arg_list = _TokenizeQuotedList(
+          arg_value, delim=delim, includes_json=self.includes_json)
 
     if len(arg_list) < self.min_length:
       raise ArgumentTypeError('not enough args')
@@ -1054,7 +1176,8 @@ class ArgDict(ArgList):
                max_length=None,
                allow_key_only=False,
                required_keys=None,
-               operators=None):
+               operators=None,
+               includes_json=False):
     """Initialize an ArgDict.
 
     Args:
@@ -1072,6 +1195,7 @@ class ArgDict(ArgList):
       operators: operator_char -> value_type, Define multiple single character
         operators, each with its own value_type converter. Use value_type==None
         for no conversion. The default value is {'=': value_type}
+      includes_json: bool, whether string parsed includes json
 
     Returns:
       (str)->{str:str}, A function to parse the dict in the argument.
@@ -1080,7 +1204,9 @@ class ArgDict(ArgList):
       ArgumentTypeError: If the list is malformed.
       ValueError: If both value_type and spec are provided.
     """
-    super(ArgDict, self).__init__(min_length=min_length, max_length=max_length)
+    super(ArgDict, self).__init__(
+        min_length=min_length, max_length=max_length,
+        includes_json=includes_json)
     if spec and value_type:
       raise ValueError('cannot have both spec and sub_type')
     self.key_type = key_type
@@ -1136,6 +1262,13 @@ class ArgDict(ArgList):
       value = self._ApplySpec(key, value)
     return key, value
 
+  def _CheckRequiredKeys(self, arg_dict):
+    for required_key in self.required_keys:
+      if required_key not in arg_dict:
+        raise ArgumentTypeError(
+            'Key [{0}] required in dict arg but not provided'.format(
+                required_key))
+
   def __call__(self, arg_value):  # pylint:disable=missing-docstring
 
     if isinstance(arg_value, dict):
@@ -1159,11 +1292,7 @@ class ArgDict(ArgList):
         key, value = self._ValidateKeyValue(key, value, op=op)
         arg_dict[key] = value
 
-    for required_key in self.required_keys:
-      if required_key not in arg_dict:
-        raise ArgumentTypeError(
-            'Key [{0}] required in dict arg but not provided'.format(
-                required_key))
+    self._CheckRequiredKeys(arg_dict)
 
     return arg_dict
 
@@ -1195,24 +1324,208 @@ class ArgDict(ArgList):
 
 
 # NOTE: ArgObject is still being implemented. Not available for public use yet
-class ArgObject(ArgType):
-  """Catch all arg type that will accept a file, json, or ArgDict."""
+class ArgObject(ArgDict):
+  """Catch all arg type that will accept a file, json, or ArgDict.
 
-  def __init__(self, field):
-    """Initializes ArgObject instance.
+  ArgObject is very similar to ArgDict with some extra functionality. ArgObject
+  will first try to parse a value as an arg_dict if string contains '='. The
+  type will then try to parse string as a file if string contains
+  .yaml or .json. Finally, parser will parse the string as json.
+
+  I. For example, with the following flag defintion:
+
+    parser.add_argument(
+        '--inputs',
+        type=arg_parsers.ArgObject(key_type=str, value_type=int))
+
+  a caller can retrieve {"foo": 100} by specifying any of the following
+  on the command line.
+
+    (1) --inputs=foo=100
+    (2) --inputs='{"foo": 100}'
+    (3) --inputs=path_to_json.(json|yaml)
+
+  II. If we need the type return a list of messages, use the repeated arg.
+  NOTE: when using repeated values, it is recommended to specify the
+  action as arg_parsers.FlattenAction()
+
+  For example, with the following flag defintion:
+
+    parser.add_argument(
+        '--inputs',
+        type=arg_parsers.ArgObject(key_type=str, value_type=int),
+        action=arg_parsers.FlattenAction()
+        repeated=True)
+
+  a caller can retrieve [{"foo": 1, "bar": 2}, {"bax": 3}] by specifying any
+  of the following on the command line.
+
+    (1) --inputs=foo=1,bar=2 --inputs=bax=3
+    (2) --inputs='[{"foo": 1, "bar": 2}, {"bax": 3}]'
+    (3) --inputs=path_to_json.(json|yaml)
+
+  III. If we need to parse non key-value pairs, do not provide key_type or spec.
+  For example, with the following flag defintion:
+
+    parser.add_argument(
+        '--inputs',
+        type=arg_parsers.ArgObject(value_type=int))
+
+  a caller can retrieve 100 by specifying the following
+  on the command line.
+
+    (1) --inputs=100
+    (2) --inputs=path_to_json.(json|yaml)
+
+  IV. If we need to create nested objects, set value_type to another ArgObject
+  type. ArgDict syntax is automatically disabled for the nested ArgObject type
+  with enable_arg_dict=False
+
+  For example, with the following flag defintion:
+
+    parser.add_argument(
+        '--inputs',
+        type=arg_parsers.ArgObject(
+            key_type=str,
+            value_type=arg_parsers.ArgObject(
+                key_type=str, value_type=int, enable_arg_dict=False)))
+
+  a caller can retrieve {"foo": {"bar": 1}} by specifying any
+  of the following on the command line.
+
+    (1) --inputs='foo={"bar": 1}'
+    (2) --inputs='{"foo": {"bar": 1}}'
+    (3) --inputs=path_to_json.(json|yaml)
+  """
+
+  def __init__(self, key_type=None, value_type=None, spec=None,
+               required_keys=None, repeated=False, enable_arg_dict=True):
+    # Disable arg_dict syntax for nested values
+    if isinstance(value_type, ArgObject) and value_type._enable_arg_dict:
+      value_type._enable_arg_dict = False
+
+    super(ArgObject, self).__init__(
+        key_type=key_type, value_type=value_type, spec=spec,
+        required_keys=required_keys, includes_json=True)
+    self.repeated = repeated
+    self._keyed_values = key_type is not None or spec is not None
+    self._enable_arg_dict = enable_arg_dict
+
+    if self.required_keys and not self._keyed_values:
+      raise InvalidTypeError(
+          'ArgObject type listed required keys as {}. Keys can only be '
+          'listed as required if `spec` or `key_type` arguments are '
+          'provided to the ArgObject type.'.format(self.required_keys))
+
+  @property
+  def enable_arg_dict(self):
+    return self._enable_arg_dict and self._keyed_values
+
+  def _Map(self, arg_value, callback):
+    """Applies callback for arg_value.
+
+    Arg_value can be a dictionary, list, or other value.
 
     Args:
-      field: apitools message or field instance
+      arg_value: can be a dictionary, list, or other value,
+      callback: (key, val) -> key, val, function that accepts key and value
+        and returns transformed values.
 
     Returns:
-      (str)->Any, A function that parses arg_value into the field's type
+      dictionary, list, or value with callback operation performed on it.
     """
-    self.field = field
+    if isinstance(arg_value, list) and self.repeated:
+      arg_list = []
+      for value in arg_value:
+        value = self._Map(value, callback)
+        arg_list.append(value)
+      return arg_list
+
+    if isinstance(arg_value, dict) and self._keyed_values:
+      arg_dict = collections.OrderedDict()
+      for key, value in arg_value.items():
+        key, value = callback(key, value)
+        arg_dict[key] = value
+      return arg_dict
+
+    _, value = callback(None, arg_value)
+    return value
+
+  def _StringifyValues(self, key, value):
+    """Returns string version of arguments."""
+    if key is None and self._keyed_values:
+      raise ArgumentTypeError(
+          'Expecting {} to be json or arg_dict format'.format(value))
+
+    if key and not isinstance(key, str):
+      key = str(key)
+    if value and not isinstance(value, str):
+      value = json.dumps(value)
+    return key, value
+
+  def _StringifyDictValues(self, arg_value):
+    # Convert the dictionary key-value pairs back into strings to simplify
+    # logic and keep type functions (key_type, value_type, spec, etc)
+    # consistent.
+    # TODO(b/286382512): improve performance so that we're not parsing and
+    # stringifying json at each level
+    return self._Map(arg_value, self._StringifyValues)
+
+  def _LooksLikeJson(self, arg_value):
+    list_pattern = r'^\s*\[.*\]\s*$'
+    json_pattern = r'^\s*\{.*\}\s*$'
+    return ((self.repeated and re.match(list_pattern, arg_value)) or
+            (self._keyed_values and re.match(json_pattern, arg_value)))
+
+  def _LoadJsonOrFile(self, arg_value):
+    """Loads json string or file into a dictionary.
+
+    Args:
+      arg_value: str, path to a json or yaml file or json string
+
+    Returns:
+      Dictionary [str: str] where the value is a json string or other String
+        value
+    """
+    file_path_pattern = r'^\S*\.(yaml|json)$'
+    if re.match(file_path_pattern, arg_value):
+      arg_value = FileContents()(arg_value)
+
+    if self._LooksLikeJson(arg_value):
+      json_value = yaml.load(arg_value)
+    else:
+      json_value = arg_value
+
+    return self._StringifyDictValues(json_value)
+
+  def _ParseAndValidateJson(self, arg_value):
+    result = self._Map(arg_value, self._ValidateKeyValue)
+
+    if self.required_keys:
+      self._CheckRequiredKeys(result)
+
+    return result
 
   def __call__(self, arg_value):
-    # TODO(b/278780718) implement parsing for files, json, and dictionaries
-    # for primitive, maps, and messges.
-    return None
+    if not isinstance(arg_value, str):
+      raise ValueError(
+          'ArgObject can only convert string values. Received {}.'.format(
+              arg_value))
+
+    ops = self.operators.keys()
+    arg_dict_pattern = '({})'.format('|'.join(ops))
+    if re.search(arg_dict_pattern, arg_value) and self.enable_arg_dict:
+      # parse as arg_dict
+      value = super(ArgObject, self).__call__(arg_value)
+    else:
+      # parse as json
+      json_dict = self._LoadJsonOrFile(arg_value)
+      value = self._ParseAndValidateJson(json_dict)
+
+    if self.repeated and not isinstance(value, list):
+      value = [value]
+
+    return value
 
 
 class UpdateAction(argparse.Action):
@@ -1479,34 +1792,74 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
     return namespace, remaining_args
 
 
+def FlattenAction(dedup=True):
+  """Creates an action that concats flag values.
+
+  Args:
+    dedup: bool, determines whether values in generated list should be unique
+
+  Returns:
+    A custom argparse action that flattens the values before adding
+    to namespace
+  """
+
+  class Action(argparse.Action):
+    """Create a single list from delimited flags.
+
+    For example, with the following flag defition:
+
+        parser.add_argument(
+            '--inputs',
+            type=arg_parsers.ArgObject(repeated=True),
+            action=FlattenAction(dedup=True))
+
+    a caller can specify on the command line flags such as:
+
+        --inputs '["v1", "v2"]' --inputs '["v3", "v4"]'
+
+    and the result will be one list of non-repeating values:
+
+        ["v1", "v2", "v3", "v4"]
+
+    Recommend using this action with ArgObject where `repeated` is set to True.
+    This allows users to set the list either with append action or with
+    one json list. For example, all below examples result
+    in ["v1", "v2", "v3", "v4"]
+
+        1) --inputs v1 --inputs v2 --inputs v3 --inputs v4
+        2) --inputs '["v1", "v2", "v3", "v4"]'
+    """
+
+    def __call__(self, parser, namespace, values, option_string=None):
+      existing_values = getattr(namespace, self.dest, None)
+      all_values = _ConcatList(existing_values, values)
+      if dedup:
+        # Cannot use a Set since apitools messages are not hashable
+        deduped_values = []
+        for value in all_values:
+          if value not in deduped_values:
+            deduped_values.append(value)
+        all_values = deduped_values
+      setattr(namespace, self.dest, all_values)
+
+  return Action
+
+
 class StoreOnceAction(argparse.Action):
-  r"""Create a single dict value from delimited flags.
+  r"""Action that disallows repeating a flag.
 
-  For example, with the following flag definition:
+  When using action='store' (the default), argparse allows multiple instances of
+  a flag to be specified with the last one determining the value and the rest
+  silently dropped. This is often undesirable if the command accepts only one
+  value but users try to repeat the flag (either accidentally, or when
+  mistakenly expecting the repeated values to be appended or merged somehow).
 
-      parser.add_argument(
-        '--inputs',
-        type=arg_parsers.ArgDict(),
-        action=StoreOnceAction)
+  In such cases, one can instead use StoreOnceAction which disallows specifying
+  the same flag multiple times. So for instance, providing:
 
-  a caller can specify on the command line flags such as:
+    --foo 123 --foo 456
 
-    --inputs k1=v1,k2=v2
-
-  and the result will be a list of one dict:
-
-    [{ 'k1': 'v1', 'k2': 'v2' }]
-
-  Specifying two separate command line flags such as:
-
-    --inputs k1=v1 \
-    --inputs k2=v2
-
-  will raise an exception.
-
-  Note that this class will raise an exception if a key value is specified
-  more than once. To allow for a key value to be specified multiple times,
-  use UpdateActionWithAppend.
+  will result in an error stating that --foo cannot be specified more than once.
   """
 
   def OnSecondArgumentRaiseError(self):

@@ -21,8 +21,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.firestore import api_utils
 
-import six
-
 
 def _GetBackupSchedulesService():
   """Returns the service to interact with the Firestore Backup Schedules."""
@@ -113,7 +111,9 @@ def UpdateBackupSchedule(project, database, backup_schedule, retention):
   messages = api_utils.GetMessages()
   backup_schedule_updates = messages.GoogleFirestoreAdminV1BackupSchedule()
   if retention:
-    backup_schedule_updates.retention = six.text_type(retention)
+    backup_schedule_updates.retention = api_utils.FormatDurationString(
+        retention
+    )
 
   return _GetBackupSchedulesService().Patch(
       messages.FirestoreProjectsDatabasesBackupSchedulesPatchRequest(
@@ -147,7 +147,7 @@ def CreateBackupSchedule(project, database, retention, recurrence):
   """
   messages = api_utils.GetMessages()
   backup_schedule = messages.GoogleFirestoreAdminV1BackupSchedule()
-  backup_schedule.retention = six.text_type(retention)
+  backup_schedule.retention = api_utils.FormatDurationString(retention)
   if recurrence == 'daily':
     backup_schedule.dailyRecurrence = (
         messages.GoogleFirestoreAdminV1DailyRecurrence()

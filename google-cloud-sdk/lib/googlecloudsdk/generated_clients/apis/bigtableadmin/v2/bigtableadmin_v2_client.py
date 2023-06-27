@@ -807,6 +807,33 @@ class BigtableadminV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a new View in a table.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesViewsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/views',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.views.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/views',
+        request_field='createViewRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesViewsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a Table resource. Returns an empty policy if the resource exists but does not have a policy set.
 
@@ -831,6 +858,33 @@ class BigtableadminV2(base_api.BaseApiClient):
         request_field='getIamPolicyRequest',
         request_type_name='BigtableadminProjectsInstancesTablesViewsGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a View in a table.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesViewsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/views/{viewsId}',
+        http_method='PATCH',
+        method_id='bigtableadmin.projects.instances.tables.views.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='view',
+        request_type_name='BigtableadminProjectsInstancesTablesViewsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

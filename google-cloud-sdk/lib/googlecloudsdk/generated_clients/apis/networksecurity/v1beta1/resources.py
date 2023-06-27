@@ -143,6 +143,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_FIREWALLATTACHMENTS = (
+      'projects.locations.firewallAttachments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'firewallAttachments/{firewallAttachmentsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_FIREWALLENDPOINTASSOCIATIONS = (
       'projects.locations.firewallEndpointAssociations',
       '{+name}',

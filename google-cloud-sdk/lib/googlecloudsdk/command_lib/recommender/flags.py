@@ -218,6 +218,12 @@ def GetInsightTypeName(args):
   return '{}/insightTypes/{}'.format(parent, args.insight_type)
 
 
+def GetFullInsightTypeName(args, insight_type):
+  """Returns the resource name up to the insight type."""
+  parent = GetLocationSegment(args)
+  return '{}/insightTypes/{}'.format(parent, insight_type)
+
+
 def GetInsightTypeConfigName(args):
   """Returns the resource name for the insight type config."""
   return GetInsightTypeName(args) + '/config'
@@ -232,6 +238,11 @@ def GetRecommenderName(args):
   """Returns the resource name up to the recommender."""
   parent = GetLocationSegment(args)
   return '{}/recommenders/{}'.format(parent, args.recommender)
+
+
+def GetFullRecommenderName(args, recommender):
+  """Returns the resource name up to the recommender."""
+  return '{}/recommenders/{}'.format(GetLocationSegment(args), recommender)
 
 
 def GetRecommenderConfigName(args):

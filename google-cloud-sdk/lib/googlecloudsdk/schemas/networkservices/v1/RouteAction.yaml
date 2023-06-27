@@ -39,3 +39,8 @@ properties:
     description: |-
       The URL rewrite configuration for requests that match this route.
     $ref: UrlRewrite.yaml
+  wasmAction:
+    description: |-
+      A WasmAction resource in the format:
+      `projects/{project}/locations/{location}/wasmActions/{wasm_action}`
+    type: string

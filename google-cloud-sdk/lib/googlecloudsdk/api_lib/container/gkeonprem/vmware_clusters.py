@@ -22,10 +22,12 @@ from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
-from googlecloudsdk.api_lib.container.vmware.version_util import Version
+from googlecloudsdk.api_lib.container.vmware import version_util
+from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.container.vmware import flags
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
+from googlecloudsdk.generated_clients.apis.gkeonprem.v1 import gkeonprem_v1_messages as messages
 
 
 class ClustersClient(client.ClientBase):
@@ -35,7 +37,7 @@ class ClustersClient(client.ClientBase):
     super(ClustersClient, self).__init__(**kwargs)
     self._service = self._client.projects_locations_vmwareClusters
 
-  def List(self, args):
+  def List(self, args: parser_extensions.Namespace):
     """Lists Clusters in the GKE On-Prem VMware API."""
     # If location is not specified, and container_vmware/location is not set,
     # list clusters of all locations within a project.
@@ -45,10 +47,8 @@ class ClustersClient(client.ClientBase):
     ):
       args.location = '-'
 
-    list_req = (
-        self._messages.GkeonpremProjectsLocationsVmwareClustersListRequest(
-            parent=self._location_name(args)
-        )
+    list_req = messages.GkeonpremProjectsLocationsVmwareClustersListRequest(
+        parent=self._location_name(args)
     )
 
     return list_pager.YieldFromList(
@@ -60,7 +60,7 @@ class ClustersClient(client.ClientBase):
         batch_size_attribute='pageSize',
     )
 
-  def Enroll(self, args):
+  def Enroll(self, args: parser_extensions.Namespace):
     """Enrolls a VMware cluster to Anthos."""
     kwargs = {
         'adminClusterMembership': self._admin_cluster_membership_name(args),
@@ -68,16 +68,16 @@ class ClustersClient(client.ClientBase):
         'localName': flags.Get(args, 'local_name'),
         'validateOnly': flags.Get(args, 'validate_only'),
     }
-    enroll_vmware_cluster_request = self._messages.EnrollVmwareClusterRequest(
+    enroll_vmware_cluster_request = messages.EnrollVmwareClusterRequest(
         **kwargs
     )
-    req = self._messages.GkeonpremProjectsLocationsVmwareClustersEnrollRequest(
+    req = messages.GkeonpremProjectsLocationsVmwareClustersEnrollRequest(
         parent=self._user_cluster_parent(args),
         enrollVmwareClusterRequest=enroll_vmware_cluster_request,
     )
     return self._service.Enroll(req)
 
-  def Unenroll(self, args):
+  def Unenroll(self, args: parser_extensions.Namespace):
     """Unenrolls an Anthos cluster on VMware."""
     kwargs = {
         'name': self._user_cluster_name(args),
@@ -85,14 +85,12 @@ class ClustersClient(client.ClientBase):
         'allowMissing': flags.Get(args, 'allow_missing'),
         'validateOnly': flags.Get(args, 'validate_only'),
     }
-    req = (
-        self._messages.GkeonpremProjectsLocationsVmwareClustersUnenrollRequest(
-            **kwargs
-        )
+    req = messages.GkeonpremProjectsLocationsVmwareClustersUnenrollRequest(
+        **kwargs
     )
     return self._service.Unenroll(req)
 
-  def Delete(self, args):
+  def Delete(self, args: parser_extensions.Namespace):
     """Deletes an Anthos cluster on VMware."""
     kwargs = {
         'name': self._user_cluster_name(args),
@@ -101,12 +99,12 @@ class ClustersClient(client.ClientBase):
         'force': flags.Get(args, 'force'),
         'ignoreErrors': flags.Get(args, 'ignore_errors'),
     }
-    req = self._messages.GkeonpremProjectsLocationsVmwareClustersDeleteRequest(
+    req = messages.GkeonpremProjectsLocationsVmwareClustersDeleteRequest(
         **kwargs
     )
     return self._service.Delete(req)
 
-  def Create(self, args):
+  def Create(self, args: parser_extensions.Namespace):
     """Creates an Anthos cluster on VMware."""
     kwargs = {
         'parent': self._user_cluster_parent(args),
@@ -114,12 +112,17 @@ class ClustersClient(client.ClientBase):
         'vmwareCluster': self._vmware_cluster(args),
         'vmwareClusterId': self._user_cluster_id(args),
     }
-    req = self._messages.GkeonpremProjectsLocationsVmwareClustersCreateRequest(
+    req = messages.GkeonpremProjectsLocationsVmwareClustersCreateRequest(
         **kwargs
     )
     return self._service.Create(req)
 
-  def CreateFromImport(self, args, vmware_cluster, vmware_cluster_ref):
+  def CreateFromImport(
+      self,
+      args: parser_extensions.Namespace,
+      vmware_cluster,
+      vmware_cluster_ref,
+  ):
     """Creates an Anthos cluster on VMware."""
     kwargs = {
         'parent': vmware_cluster_ref.Parent().RelativeName(),
@@ -127,12 +130,12 @@ class ClustersClient(client.ClientBase):
         'vmwareCluster': vmware_cluster,
         'vmwareClusterId': vmware_cluster_ref.Name(),
     }
-    req = self._messages.GkeonpremProjectsLocationsVmwareClustersCreateRequest(
+    req = messages.GkeonpremProjectsLocationsVmwareClustersCreateRequest(
         **kwargs
     )
     return self._service.Create(req)
 
-  def Update(self, args):
+  def Update(self, args: parser_extensions.Namespace):
     kwargs = {
         'name': self._user_cluster_name(args),
         'allowMissing': flags.Get(args, 'allow_missing'),
@@ -142,12 +145,12 @@ class ClustersClient(client.ClientBase):
         'validateOnly': flags.Get(args, 'validate_only'),
         'vmwareCluster': self._vmware_cluster(args),
     }
-    req = self._messages.GkeonpremProjectsLocationsVmwareClustersPatchRequest(
+    req = messages.GkeonpremProjectsLocationsVmwareClustersPatchRequest(
         **kwargs
     )
     return self._service.Patch(req)
 
-  def UpdateFromFile(self, args, vmware_cluster):
+  def UpdateFromFile(self, args: parser_extensions.Namespace, vmware_cluster):
     # explicitly list supported mutable fields
     # etag is excluded from the mutable fields, because it is derived.
     top_level_mutable_fields = [
@@ -170,12 +173,12 @@ class ClustersClient(client.ClientBase):
         'validateOnly': flags.Get(args, 'validate_only'),
         'vmwareCluster': vmware_cluster,
     }
-    req = self._messages.GkeonpremProjectsLocationsVmwareClustersPatchRequest(
+    req = messages.GkeonpremProjectsLocationsVmwareClustersPatchRequest(
         **kwargs
     )
     return self._service.Patch(req)
 
-  def query_version_config(self, args):
+  def query_version_config(self, args: parser_extensions.Namespace):
     kwargs = {
         'createConfig_adminClusterMembership': (
             self._admin_cluster_membership_name(args)
@@ -186,22 +189,22 @@ class ClustersClient(client.ClientBase):
 
     # This is a workaround for the limitation in apitools with nested messages.
     encoding.AddCustomJsonFieldMapping(
-        self._messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest,
+        messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest,
         'createConfig_adminClusterMembership',
         'createConfig.adminClusterMembership',
     )
     encoding.AddCustomJsonFieldMapping(
-        self._messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest,
+        messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest,
         'upgradeConfig_clusterName',
         'upgradeConfig.clusterName',
     )
 
-    req = self._messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest(
+    req = messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest(
         **kwargs
     )
     return self._service.QueryVersionConfig(req)
 
-  def _vmware_cluster(self, args):
+  def _vmware_cluster(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareCluster."""
     kwargs = {
         'name': self._user_cluster_name(args),
@@ -221,10 +224,10 @@ class ClustersClient(client.ClientBase):
         'enableControlPlaneV2': self._enable_control_plane_v2(args),
     }
     if any(kwargs.values()):
-      return self._messages.VmwareCluster(**kwargs)
+      return messages.VmwareCluster(**kwargs)
     return None
 
-  def _enable_control_plane_v2(self, args):
+  def _enable_control_plane_v2(self, args: parser_extensions.Namespace):
     """While creating a 1.15+ user cluster, default enable_control_plane_v2 to True if not set."""
     if 'enable_control_plane_v2' in args.GetSpecifiedArgsDict():
       return True
@@ -233,41 +236,41 @@ class ClustersClient(client.ClientBase):
       return False
 
     default_enable_control_plane_v2 = '1.15.0-gke.0'
-    if args.command_path[-1] == 'create' and Version(
+    if args.command_path[-1] == 'create' and version_util.Version(
         args.version
     ).feature_available(default_enable_control_plane_v2):
       return True
 
     return None
 
-  def _vm_tracking_enabled(self, args):
+  def _vm_tracking_enabled(self, args: parser_extensions.Namespace):
     if flags.Get(args, 'enable_vm_tracking'):
       return True
     return None
 
-  def auto_repair_enabled(self, args):
+  def auto_repair_enabled(self, args: parser_extensions.Namespace):
     if flags.Get(args, 'enable_auto_repair'):
       return True
     if flags.Get(args, 'disable_auto_repair'):
       return False
     return None
 
-  def _vmware_auto_repair_config(self, args):
+  def _vmware_auto_repair_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareAutoRepairConfig."""
     kwargs = {
         'enabled': self.auto_repair_enabled(args),
     }
     if flags.IsSet(kwargs):
-      return self._messages.VmwareAutoRepairConfig(**kwargs)
+      return messages.VmwareAutoRepairConfig(**kwargs)
     return None
 
-  def _cluster_users(self, args):
+  def _cluster_users(self, args: parser_extensions.Namespace):
     """Constructs repeated proto message ClusterUser."""
     cluster_user_messages = []
     admin_users = flags.Get(args, 'admin_users')
     if admin_users:
       for admin_user in admin_users:
-        cluster_user_message = self._messages.ClusterUser(username=admin_user)
+        cluster_user_message = messages.ClusterUser(username=admin_user)
         cluster_user_messages.append(cluster_user_message)
       return cluster_user_messages
 
@@ -278,7 +281,7 @@ class ClustersClient(client.ClientBase):
     # On create, client side default admin user to the current gcloud user.
     gcloud_config_core_account = properties.VALUES.core.account.Get()
     if gcloud_config_core_account:
-      default_admin_user_message = self._messages.ClusterUser(
+      default_admin_user_message = messages.ClusterUser(
           username=gcloud_config_core_account
       )
       cluster_user_messages.append(default_admin_user_message)
@@ -286,16 +289,16 @@ class ClustersClient(client.ClientBase):
 
     return None
 
-  def _authorization(self, args):
+  def _authorization(self, args: parser_extensions.Namespace):
     """Constructs proto message Authorization."""
     kwargs = {
         'adminUsers': self._cluster_users(args),
     }
     if flags.IsSet(kwargs):
-      return self._messages.Authorization(**kwargs)
+      return messages.Authorization(**kwargs)
     return None
 
-  def _dataplane_v2_enabled(self, args):
+  def _dataplane_v2_enabled(self, args: parser_extensions.Namespace):
     """Constructs proto field dataplane_v2_enabled."""
     if flags.Get(args, 'enable_dataplane_v2'):
       return True
@@ -303,7 +306,7 @@ class ClustersClient(client.ClientBase):
       return False
     return None
 
-  def _advanced_networking(self, args):
+  def _advanced_networking(self, args: parser_extensions.Namespace):
     """Constructs proto field advanced_networking."""
     if flags.Get(args, 'enable_advanced_networking'):
       return True
@@ -311,17 +314,17 @@ class ClustersClient(client.ClientBase):
       return False
     return None
 
-  def _vmware_dataplane_v2_config(self, args):
+  def _vmware_dataplane_v2_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareDataplaneV2Config."""
     kwargs = {
         'dataplaneV2Enabled': flags.Get(args, 'enable_dataplane_v2'),
         'advancedNetworking': flags.Get(args, 'enable_advanced_networking'),
     }
     if flags.IsSet(kwargs):
-      return self._messages.VmwareDataplaneV2Config(**kwargs)
+      return messages.VmwareDataplaneV2Config(**kwargs)
     return None
 
-  def _vsphere_csi_disabled(self, args):
+  def _vsphere_csi_disabled(self, args: parser_extensions.Namespace):
     """Constructs proto field vsphere_csi_disabled."""
     if flags.Get(args, 'disable_vsphere_csi'):
       return True
@@ -329,16 +332,16 @@ class ClustersClient(client.ClientBase):
       return False
     return None
 
-  def _vmware_storage_config(self, args):
+  def _vmware_storage_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareStorageConfig."""
     kwargs = {
         'vsphereCsiDisabled': self._vsphere_csi_disabled(args),
     }
     if flags.IsSet(kwargs):
-      return self._messages.VmwareStorageConfig(**kwargs)
+      return messages.VmwareStorageConfig(**kwargs)
     return None
 
-  def _aag_config_disabled(self, args):
+  def _aag_config_disabled(self, args: parser_extensions.Namespace):
     """Constructs proto field aag_config_disabled."""
     if flags.Get(args, 'disable_aag_config'):
       return True
@@ -346,16 +349,16 @@ class ClustersClient(client.ClientBase):
       return False
     return None
 
-  def _vmware_aag_config(self, args):
+  def _vmware_aag_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareAAGConfig."""
     kwargs = {
         'aagConfigDisabled': self._aag_config_disabled(args),
     }
     if flags.IsSet(kwargs):
-      return self._messages.VmwareAAGConfig(**kwargs)
+      return messages.VmwareAAGConfig(**kwargs)
     return None
 
-  def _auto_resize_enabled(self, args):
+  def _auto_resize_enabled(self, args: parser_extensions.Namespace):
     """Constructs proto field auto_resize_config.enabled."""
     if flags.Get(args, 'enable_auto_resize'):
       return True
@@ -363,16 +366,18 @@ class ClustersClient(client.ClientBase):
       return False
     return None
 
-  def _vmware_auto_resize_config(self, args):
+  def _vmware_auto_resize_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareAutoResizeConfig."""
     kwargs = {
         'enabled': self._auto_resize_enabled(args),
     }
     if flags.IsSet(kwargs):
-      return self._messages.VmwareAutoResizeConfig(**kwargs)
+      return messages.VmwareAutoResizeConfig(**kwargs)
     return None
 
-  def _vmware_control_plane_node_config(self, args):
+  def _vmware_control_plane_node_config(
+      self, args: parser_extensions.Namespace
+  ):
     """Constructs proto message VmwareControlPlaneNodeConfig."""
     kwargs = {
         'autoResizeConfig': self._vmware_auto_resize_config(args),
@@ -381,15 +386,15 @@ class ClustersClient(client.ClientBase):
         'replicas': flags.Get(args, 'replicas'),
     }
     if flags.IsSet(kwargs):
-      return self._messages.VmwareControlPlaneNodeConfig(**kwargs)
+      return messages.VmwareControlPlaneNodeConfig(**kwargs)
     return None
 
-  def _create_annotations(self, args):
+  def _create_annotations(self, args: parser_extensions.Namespace):
     """Constructs proto message AnnotationsValue for create command."""
     annotations = flags.Get(args, 'annotations')
     return self._dict_to_annotations_message(annotations)
 
-  def _update_annotations(self, args):
+  def _update_annotations(self, args: parser_extensions.Namespace):
     """Constructs proto message AnnotationsValue for update command."""
     annotation_flags = [
         'add_annotations',
@@ -415,7 +420,7 @@ class ClustersClient(client.ClientBase):
         curr_annotations[key] = value
       return self._dict_to_annotations_message(curr_annotations)
     elif 'clear_annotations' in args.GetSpecifiedArgsDict():
-      return self._messages.VmwareCluster.AnnotationsValue()
+      return messages.VmwareCluster.AnnotationsValue()
     elif 'remove_annotations' in args.GetSpecifiedArgsDict():
       updated_annotations = {
           key: value
@@ -435,17 +440,17 @@ class ClustersClient(client.ClientBase):
 
     for key, value in annotations.items():
       additional_property_messages.append(
-          self._messages.VmwareCluster.AnnotationsValue.AdditionalProperty(
+          messages.VmwareCluster.AnnotationsValue.AdditionalProperty(
               key=key, value=value
           )
       )
 
-    annotation_value_message = self._messages.VmwareCluster.AnnotationsValue(
+    annotation_value_message = messages.VmwareCluster.AnnotationsValue(
         additionalProperties=additional_property_messages
     )
     return annotation_value_message
 
-  def _annotations(self, args):
+  def _annotations(self, args: parser_extensions.Namespace):
     """Constructs proto message AnnotationsValue."""
     if args.command_path[-1] == 'create':
       return self._create_annotations(args)
@@ -468,7 +473,7 @@ class ClustersClient(client.ClientBase):
       )
 
     kwargs = {'hostname': hostname, 'ip': ip}
-    return self._messages.VmwareHostIp(**kwargs)
+    return messages.VmwareHostIp(**kwargs)
 
   def _vmware_ip_block(self, ip_block):
     """Constructs proto message VmwareIpBlock."""
@@ -496,10 +501,12 @@ class ClustersClient(client.ClientBase):
         'ips': [self._vmware_host_ip(host_ip) for host_ip in host_ips],
     }
     if flags.IsSet(kwargs):
-      return self._messages.VmwareIpBlock(**kwargs)
+      return messages.VmwareIpBlock(**kwargs)
     return None
 
-  def _vmware_static_ip_config_from_file(self, args):
+  def _vmware_static_ip_config_from_file(
+      self, args: parser_extensions.Namespace
+  ):
     file_content = args.static_ip_config_from_file
     static_ip_config = file_content.get('staticIPConfig', None)
     if not static_ip_config:
@@ -517,24 +524,26 @@ class ClustersClient(client.ClientBase):
         'ipBlocks': [self._vmware_ip_block(ip_block) for ip_block in ip_blocks],
     }
     if flags.IsSet(kwargs):
-      return self._messages.VmwareStaticIpConfig(**kwargs)
+      return messages.VmwareStaticIpConfig(**kwargs)
     return None
 
-  def _vmware_static_ip_config_ip_blocks(self, args):
-    vmware_static_ip_config_message = self._messages.VmwareStaticIpConfig()
+  def _vmware_static_ip_config_ip_blocks(
+      self, args: parser_extensions.Namespace
+  ):
+    vmware_static_ip_config_message = messages.VmwareStaticIpConfig()
     for ip_block in args.static_ip_config_ip_blocks:
-      vmware_ip_block_message = self._messages.VmwareIpBlock(
+      vmware_ip_block_message = messages.VmwareIpBlock(
           gateway=ip_block['gateway'],
           netmask=ip_block['netmask'],
           ips=[
-              self._messages.VmwareHostIp(ip=ip[0], hostname=ip[1])
+              messages.VmwareHostIp(ip=ip[0], hostname=ip[1])
               for ip in ip_block['ips']
           ],
       )
       vmware_static_ip_config_message.ipBlocks.append(vmware_ip_block_message)
     return vmware_static_ip_config_message
 
-  def _vmware_static_ip_config(self, args):
+  def _vmware_static_ip_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareStaticIpConfig."""
     if 'static_ip_config_from_file' in args.GetSpecifiedArgsDict():
       return self._vmware_static_ip_config_from_file(args)
@@ -544,16 +553,16 @@ class ClustersClient(client.ClientBase):
 
     return None
 
-  def _vmware_dhcp_ip_config(self, args):
+  def _vmware_dhcp_ip_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareDhcpIpConfig."""
     kwargs = {
         'enabled': flags.Get(args, 'enable_dhcp'),
     }
     if flags.IsSet(kwargs):
-      return self._messages.VmwareDhcpIpConfig(**kwargs)
+      return messages.VmwareDhcpIpConfig(**kwargs)
     return None
 
-  def _vmware_host_config(self, args):
+  def _vmware_host_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareHostConfig."""
     kwargs = {
         'dnsServers': flags.Get(args, 'dns_servers', []),
@@ -561,10 +570,10 @@ class ClustersClient(client.ClientBase):
         'dnsSearchDomains': flags.Get(args, 'dns_search_domains', []),
     }
     if flags.IsSet(kwargs):
-      return self._messages.VmwareHostConfig(**kwargs)
+      return messages.VmwareHostConfig(**kwargs)
     return None
 
-  def _control_plane_ip_block(self, args):
+  def _control_plane_ip_block(self, args: parser_extensions.Namespace):
     """Constructs proto message ControlPlaneIpBlock."""
     if 'control_plane_ip_block' not in args.GetSpecifiedArgsDict():
       return None
@@ -573,22 +582,22 @@ class ClustersClient(client.ClientBase):
         'gateway': args.control_plane_ip_block.get('gateway', None),
         'netmask': args.control_plane_ip_block.get('netmask', None),
         'ips': [
-            self._messages.VmwareHostIp(ip=ip[0], hostname=ip[1])
+            messages.VmwareHostIp(ip=ip[0], hostname=ip[1])
             for ip in args.control_plane_ip_block.get('ips', [])
         ],
     }
-    return self._messages.VmwareIpBlock(**kwargs)
+    return messages.VmwareIpBlock(**kwargs)
 
-  def _vmware_control_plane_v2_config(self, args):
+  def _vmware_control_plane_v2_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareControlPlaneV2Config."""
     kwargs = {
         'controlPlaneIpBlock': self._control_plane_ip_block(args),
     }
     if any(kwargs.values()):
-      return self._messages.VmwareControlPlaneV2Config(**kwargs)
+      return messages.VmwareControlPlaneV2Config(**kwargs)
     return None
 
-  def _vmware_network_config(self, args):
+  def _vmware_network_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareNetworkConfig."""
     kwargs = {
         'serviceAddressCidrBlocks': flags.Get(
@@ -601,10 +610,10 @@ class ClustersClient(client.ClientBase):
         'controlPlaneV2Config': self._vmware_control_plane_v2_config(args),
     }
     if any(kwargs.values()):
-      return self._messages.VmwareNetworkConfig(**kwargs)
+      return messages.VmwareNetworkConfig(**kwargs)
     return None
 
-  def _vmware_load_balancer_config(self, args):
+  def _vmware_load_balancer_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareLoadBalancerConfig."""
     kwargs = {
         'f5Config': self._vmware_f5_big_ip_config(args),
@@ -613,20 +622,20 @@ class ClustersClient(client.ClientBase):
         'vipConfig': self._vmware_vip_config(args),
     }
     if any(kwargs.values()):
-      return self._messages.VmwareLoadBalancerConfig(**kwargs)
+      return messages.VmwareLoadBalancerConfig(**kwargs)
     return None
 
-  def _vmware_vip_config(self, args):
+  def _vmware_vip_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareVipConfig."""
     kwargs = {
         'controlPlaneVip': flags.Get(args, 'control_plane_vip'),
         'ingressVip': flags.Get(args, 'ingress_vip'),
     }
     if any(kwargs.values()):
-      return self._messages.VmwareVipConfig(**kwargs)
+      return messages.VmwareVipConfig(**kwargs)
     return None
 
-  def _vmware_f5_big_ip_config(self, args):
+  def _vmware_f5_big_ip_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareF5BigIpConfig."""
     kwargs = {
         'address': flags.Get(args, 'f5_config_address'),
@@ -634,10 +643,12 @@ class ClustersClient(client.ClientBase):
         'snatPool': flags.Get(args, 'f5_config_snat_pool'),
     }
     if any(kwargs.values()):
-      return self._messages.VmwareF5BigIpConfig(**kwargs)
+      return messages.VmwareF5BigIpConfig(**kwargs)
     return None
 
-  def _vmware_metal_lb_config_from_file(self, args):
+  def _vmware_metal_lb_config_from_file(
+      self, args: parser_extensions.Namespace
+  ):
     file_content = args.metal_lb_config_from_file
     metal_lb_config = file_content.get('metalLBConfig', None)
     if not metal_lb_config:
@@ -654,12 +665,14 @@ class ClustersClient(client.ClientBase):
     kwargs = {
         'addressPools': self._address_pools(address_pools),
     }
-    return self._messages.VmwareMetalLbConfig(**kwargs)
+    return messages.VmwareMetalLbConfig(**kwargs)
 
-  def _vmware_metal_lb_config_from_flag(self, args):
-    vmware_metal_lb_config = self._messages.VmwareMetalLbConfig()
+  def _vmware_metal_lb_config_from_flag(
+      self, args: parser_extensions.Namespace
+  ):
+    vmware_metal_lb_config = messages.VmwareMetalLbConfig()
     for address_pool in args.metal_lb_config_address_pools:
-      address_pool_message = self._messages.VmwareAddressPool(
+      address_pool_message = messages.VmwareAddressPool(
           addresses=address_pool.get('addresses', []),
           avoidBuggyIps=address_pool.get('avoid-buggy-ips', None),
           manualAssign=address_pool.get('manual-assign', None),
@@ -668,7 +681,7 @@ class ClustersClient(client.ClientBase):
       vmware_metal_lb_config.addressPools.append(address_pool_message)
     return vmware_metal_lb_config
 
-  def _vmware_metal_lb_config(self, args):
+  def _vmware_metal_lb_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareMetalLbConfig."""
     if 'metal_lb_config_from_file' in args.GetSpecifiedArgsDict():
       return self._vmware_metal_lb_config_from_file(args)
@@ -677,7 +690,7 @@ class ClustersClient(client.ClientBase):
     else:
       return None
 
-  def _vmware_manual_lb_config(self, args):
+  def _vmware_manual_lb_config(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareManualLbConfig."""
     kwargs = {
         'controlPlaneNodePort': flags.Get(args, 'control_plane_node_port'),
@@ -688,7 +701,7 @@ class ClustersClient(client.ClientBase):
         ),
     }
     if flags.IsSet(kwargs):
-      return self._messages.VmwareManualLbConfig(**kwargs)
+      return messages.VmwareManualLbConfig(**kwargs)
     return None
 
   def _address_pools(self, address_pools):
@@ -721,7 +734,7 @@ class ClustersClient(client.ClientBase):
         'manualAssign': manual_assign,
         'pool': pool,
     }
-    return self._messages.VmwareAddressPool(**kwargs)
+    return messages.VmwareAddressPool(**kwargs)
 
 
 class InvalidConfigFile(exceptions.Error):

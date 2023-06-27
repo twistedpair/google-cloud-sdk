@@ -75,3 +75,16 @@ app_profile:
     parameter_name: appProfilesId
     attribute_name: app_profile
     help: Name of the Cloud Bigtable app profile.
+
+view:
+  name: view
+  collection: bigtableadmin.projects.instances.tables.views
+  attributes:
+  - *project
+  - *instance
+  - *table
+  - &view
+    parameter_name: viewsId
+    attribute_name: view
+    help: Name of the Cloud Bigtable view.
+  disable_auto_completers: false

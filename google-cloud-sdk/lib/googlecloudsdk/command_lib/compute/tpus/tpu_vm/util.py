@@ -77,6 +77,26 @@ def MergeMetadata(api_version='v2'):
   return Process
 
 
+def GetTagsUpdateFromArgs(args, tags):
+  """Generate the change to the tags on a resource based on the arguments.
+
+  Args:
+    args: The args for this method.
+    tags: The current list of tags.
+
+  Returns:
+    The change to the tags after all of the arguments are applied.
+  """
+  tags_update = tags
+  if args.IsSpecified('clear_tags'):
+    tags_update = []
+  if args.IsSpecified('add_tags'):
+    tags_update = sorted(set(tags_update + args.add_tags))
+  if args.IsSpecified('remove_tags'):
+    tags_update = sorted(set(tags_update) - set(args.remove_tags))
+  return tags_update
+
+
 def GenerateUpdateMask(api_version='v2'):
   """Request hook for constructing the updateMask for update requests."""
 
@@ -85,7 +105,7 @@ def GenerateUpdateMask(api_version='v2'):
 
     Args:
       unused_ref: ref to the service.
-      args:  The args for this method.
+      args: The args for this method.
       request: The request to be made.
 
     Returns:
@@ -109,9 +129,17 @@ def GenerateUpdateMask(api_version='v2'):
           request.node.labels = labels_update.labels
           update_mask.add('labels')
 
+    if (args.IsSpecified('add_tags') or
+        args.IsSpecified('remove_tags') or args.IsSpecified('clear_tags')):
+      tags_update = GetTagsUpdateFromArgs(args, request.node.tags)
+      if set(tags_update) != set(request.node.tags):
+        request.node.tags = tags_update
+        update_mask.add('tags')
+
     if not update_mask:
       raise NoFieldsSpecifiedError(
-          'Must specify at least one field to update.')
+          'No fields would change as a result of this update; must specify at '
+          'least one field to update.')
 
     request.updateMask = ','.join(update_mask)
     return request

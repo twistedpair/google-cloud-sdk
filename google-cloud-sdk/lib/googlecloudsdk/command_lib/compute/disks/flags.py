@@ -170,7 +170,7 @@ def AddMultiWriterFlag(parser):
 
 def AddEnableConfidentialComputeFlag(parser):
   return parser.add_argument(
-      '--enable-confidential-compute',
+      '--confidential-compute',
       action='store_true',
       help="""
       Create the disk in confidential compute mode, CMEK layer is required and only applicable to HyperDisk series.

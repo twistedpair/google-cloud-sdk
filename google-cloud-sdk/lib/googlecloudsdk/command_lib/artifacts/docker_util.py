@@ -728,10 +728,16 @@ def DescribeDockerImage(args):
       "repository": docker_version.image.docker_repo.repo,
   }
   if scanning_allowed:
-    build_metadata = ca_util.GetBuildOnlyMetadata(scanning_docker_version)
+    summary_metadata = ca_util.GetImageSummaryMetadata(scanning_docker_version)
     result["image_summary"][
         "slsa_build_level"
-    ] = build_metadata.SLSABuildLevel()
+    ] = summary_metadata.SLSABuildLevel()
+    # Get SBOM references, and if it's not empty, add SBOM file locations to
+    # "image_summary".
+    sbom_locations = summary_metadata.SbomLocations()
+    if sbom_locations:
+      result["image_summary"]["sbom_locations"] = sbom_locations
+
     metadata = ca_util.GetContainerAnalysisMetadata(
         scanning_docker_version, args
     )

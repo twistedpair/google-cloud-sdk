@@ -717,16 +717,6 @@ class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
   version = _messages.MessageField('Version', 3)
 
 
-class AppengineProjectsLocationsApplicationsGetRequest(_messages.Message):
-  r"""A AppengineProjectsLocationsApplicationsGetRequest object.
-
-  Fields:
-    name: Name of the Application resource to get. Example: apps/myapp.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class Application(_messages.Message):
   r"""An Application resource contains the top-level configuration of an App
   Engine application.
@@ -875,9 +865,10 @@ class AuthorizedCertificate(_messages.Message):
 
 
 class AuthorizedDomain(_messages.Message):
-  r"""A domain that a user has been authorized to administer. To authorize use
-  of a domain, verify ownership via Webmaster Central
-  (https://www.google.com/webmasters/verification/home).
+  r"""A domain that a user has been authorized to administer.
+
+  To authorize use of a domain, verify ownership via Search Console
+  (https://search.google.com/search-console/welcome).
 
   Fields:
     id: Fully qualified domain name of the domain authorized for use. Example:
@@ -1187,7 +1178,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class EndpointsApiService(_messages.Message):
@@ -1698,7 +1688,7 @@ class LivenessCheck(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

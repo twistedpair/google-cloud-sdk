@@ -652,6 +652,33 @@ class ContaineranalysisV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def ExportSBOM(self, request, global_params=None):
+      r"""Generates an SBOM and other dependency information for the given resource.
+
+      Args:
+        request: (ContaineranalysisProjectsResourcesExportSBOMRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExportSBOMResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExportSBOM')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportSBOM.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/resources/{resourcesId}:exportSBOM',
+        http_method='POST',
+        method_id='containeranalysis.projects.resources.exportSBOM',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:exportSBOM',
+        request_field='exportSBOMRequest',
+        request_type_name='ContaineranalysisProjectsResourcesExportSBOMRequest',
+        response_type_name='ExportSBOMResponse',
+        supports_download=False,
+    )
+
     def GeneratePackagesSummary(self, request, global_params=None):
       r"""Gets a summary of the packages within a given resource.
 

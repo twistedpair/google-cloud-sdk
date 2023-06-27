@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2021 Google LLC. All Rights Reserved.
+# Copyright 2023 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -145,3 +145,13 @@ class PipelineSuspendedError(exceptions.Error):
     error_msg = '{} DeliveryPipeline {} is suspended.'.format(
         failed_activity_msg, pipeline_name)
     super(PipelineSuspendedError, self).__init__(error_msg)
+
+
+class AutomationNameFormatError(exceptions.Error):
+  """Error when the name of the automation in the config file is not formatted correctly."""
+
+  def __init__(self, automation_name):
+    super(AutomationNameFormatError, self).__init__(
+        'Automation name {} in the configuration should be in the format'
+        'of pipeline_id/automation_id.'.format(automation_name)
+    )

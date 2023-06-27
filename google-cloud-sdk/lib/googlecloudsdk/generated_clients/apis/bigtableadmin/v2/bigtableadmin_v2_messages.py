@@ -1045,6 +1045,19 @@ class BigtableadminProjectsInstancesTablesUndeleteRequest(_messages.Message):
   undeleteTableRequest = _messages.MessageField('UndeleteTableRequest', 2)
 
 
+class BigtableadminProjectsInstancesTablesViewsCreateRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesViewsCreateRequest object.
+
+  Fields:
+    createViewRequest: A CreateViewRequest resource to be passed as the
+      request body.
+    parent: A string attribute.
+  """
+
+  createViewRequest = _messages.MessageField('CreateViewRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class BigtableadminProjectsInstancesTablesViewsGetIamPolicyRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesViewsGetIamPolicyRequest object.
 
@@ -1059,6 +1072,26 @@ class BigtableadminProjectsInstancesTablesViewsGetIamPolicyRequest(_messages.Mes
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class BigtableadminProjectsInstancesTablesViewsPatchRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesViewsPatchRequest object.
+
+  Fields:
+    name: The name of the view. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}/views/{view}`
+    updateMask: Required. The list of fields to update. A mask specifying
+      which fields in the View resource should be updated. This mask is
+      relative to the View resource, not to the request message. A field will
+      be overwritten if it is in the mask. If empty, all fields set in the
+      request will be overwritten. A special value `*` means to overwrite all
+      fields (including fields not set in the request).
+    view: A View resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  view = _messages.MessageField('View', 3)
 
 
 class BigtableadminProjectsInstancesTablesViewsSetIamPolicyRequest(_messages.Message):
@@ -1668,6 +1701,18 @@ class CreateTableRequest(_messages.Message):
   initialSplits = _messages.MessageField('Split', 1, repeated=True)
   table = _messages.MessageField('Table', 2)
   tableId = _messages.StringField(3)
+
+
+class CreateViewRequest(_messages.Message):
+  r"""The request for CreateView
+
+  Fields:
+    view: A View attribute.
+    viewId: A string attribute.
+  """
+
+  view = _messages.MessageField('View', 1)
+  viewId = _messages.StringField(2)
 
 
 class DropRowRangeRequest(_messages.Message):
@@ -3158,6 +3203,56 @@ class UpdateTableMetadata(_messages.Message):
   endTime = _messages.StringField(1)
   name = _messages.StringField(2)
   startTime = _messages.StringField(3)
+
+
+class UpdateViewMetadata(_messages.Message):
+  r"""Metadata for the google.longrunning.Operation returned by UpdateView.
+
+  Fields:
+    finishTime: The time at which the operation failed or was completed
+      successfully.
+    originalRequest: The request that prompted the initiation of this
+      UpdateView operation.
+    requestTime: The time at which the original request was received.
+  """
+
+  finishTime = _messages.StringField(1)
+  originalRequest = _messages.MessageField('UpdateViewRequest', 2)
+  requestTime = _messages.StringField(3)
+
+
+class UpdateViewRequest(_messages.Message):
+  r"""The request for UpdateView.
+
+  Fields:
+    updateMask: Required. The list of fields to update. A mask specifying
+      which fields in the View resource should be updated. This mask is
+      relative to the View resource, not to the request message. A field will
+      be overwritten if it is in the mask. If empty, all fields set in the
+      request will be overwritten. A special value `*` means to overwrite all
+      fields (including fields not set in the request).
+    view: Required. The view to update. The `name` in `view` is used to
+      identify the view. View name must in this format
+      projects//instances//tables//views/
+  """
+
+  updateMask = _messages.StringField(1)
+  view = _messages.MessageField('View', 2)
+
+
+class View(_messages.Message):
+  r"""Placeholder for admin API work while we work out the internals.
+
+  Fields:
+    deletionProtection: Set to true to make the view protected against
+      deletion. The parent Table and containing Instance cannot be deleted if
+      a View has this bit set.
+    name: The name of the view. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}/views/{view}`
+  """
+
+  deletionProtection = _messages.BooleanField(1)
+  name = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

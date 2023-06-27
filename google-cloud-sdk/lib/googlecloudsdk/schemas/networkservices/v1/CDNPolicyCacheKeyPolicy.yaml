@@ -27,11 +27,13 @@ properties:
       type: string
   excludeHost:
     description: |-
-      If `true`, requests to different hosts are cached separately.
-      **Important:** Enable this only if the hosts share the same origin and
-      content. Removing the host from the cache key might inadvertently result
-      in different objects being cached than intended, depending on which route
-      the first user matched.
+      If `true`, exclude a request's host from the cache key. Requests with
+      different hosts share content in the cache. If `false` (the default), a
+      request's host is included in the cache key. Requests with different hosts
+      are stored independently. **Important:** Enable this only if the hosts
+      share the same origin and content. Removing the host from the cache key
+      might inadvertently result in different objects being cached than
+      intended, depending on which route the first user matched.
     type: boolean
   excludeQueryString:
     description: |-

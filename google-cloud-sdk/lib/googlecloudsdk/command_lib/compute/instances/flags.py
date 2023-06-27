@@ -301,9 +301,12 @@ def AddSourceMachineImageEncryptionKey(parser):
       """.format(csek_help=csek_utils.CSEK_HELP_URL))
 
 
-def AddImageArgs(parser,
-                 enable_snapshots=False,
-                 support_image_family_scope=False):
+def AddImageArgs(
+    parser,
+    enable_snapshots=False,
+    support_image_family_scope=False,
+    enable_instant_snapshots=False,
+):
   """Adds arguments related to images for instances and instance-templates."""
 
   def AddImageHelp():
@@ -351,6 +354,17 @@ def AddImageArgs(parser,
           * https://compute.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
           * snapshot
         """)
+  if enable_instant_snapshots:
+    image_group.add_argument(
+        '--source-instant-snapshot',
+        help="""\
+        The name of the source disk instant snapshot that the instance boot disk
+        will be created from. You can provide this as a full URL
+        to the instant snapshot. For example, the following is a valid value:
+
+          * https://compute.googleapis.com/compute/v1/projects/myproject/zones/my-zone/instantSnapshots/instant-snapshot
+        """,
+    )
   if support_image_family_scope:
     image_utils.AddImageFamilyScopeFlag(image_parent_group)
 
@@ -673,17 +687,20 @@ def AddInstanceKmsArgs(parser):
       parser, 'instance', instance_prefix=True)
 
 
-def AddCreateDiskArgs(parser,
-                      enable_kms=False,
-                      enable_snapshots=False,
-                      container_mount_enabled=False,
-                      source_snapshot_csek=False,
-                      image_csek=False,
-                      include_name=True,
-                      support_boot=False,
-                      support_multi_writer=False,
-                      support_replica_zones=False,
-                      support_storage_pool=False):
+def AddCreateDiskArgs(
+    parser,
+    enable_kms=False,
+    enable_snapshots=False,
+    container_mount_enabled=False,
+    source_snapshot_csek=False,
+    image_csek=False,
+    include_name=True,
+    support_boot=False,
+    support_multi_writer=False,
+    support_replica_zones=False,
+    support_storage_pool=False,
+    enable_source_instant_snapshots=False,
+):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_device_name_help = GetDiskDeviceNameHelp(
@@ -881,6 +898,16 @@ def AddCreateDiskArgs(parser,
       """
     spec['source-snapshot-csek-key-file'] = str
 
+  if enable_source_instant_snapshots:
+    disk_help += """
+      *source-instant-snapshot*::: The source disk instant snapshot that will be used to
+      create the disk. You can provide this as a full URL
+      to the instant snapshot. For example, the following is a valid value:
+
+        * https://compute.googleapis.com/compute/v1/projects/myproject/zones/myzone/instantSnapshots/instantSnapshot
+      """
+    spec['source-instant-snapshot'] = str
+
   if image_csek:
     disk_help += """
       *image-csek-required*::: Specifies the name of the CSK protected image
@@ -1035,11 +1062,14 @@ def GetAddressRef(resources, address, region):
       })
 
 
-def ValidateDiskFlags(args,
-                      enable_kms=False,
-                      enable_snapshots=False,
-                      enable_source_snapshot_csek=False,
-                      enable_image_csek=False):
+def ValidateDiskFlags(
+    args,
+    enable_kms=False,
+    enable_snapshots=False,
+    enable_source_snapshot_csek=False,
+    enable_image_csek=False,
+    enable_source_instant_snapshot=False,
+):
   """Validates the values of all disk-related flags."""
   ValidateDiskCommonFlags(args)
   ValidateDiskAccessModeFlags(args)
@@ -1048,7 +1078,9 @@ def ValidateDiskFlags(args,
       args,
       enable_snapshots=enable_snapshots,
       enable_source_snapshot_csek=enable_source_snapshot_csek,
-      enable_image_csek=enable_image_csek)
+      enable_image_csek=enable_image_csek,
+      enable_source_instant_snapshot=enable_source_instant_snapshot,
+  )
 
 
 def ValidateDiskCommonFlags(args):
@@ -1195,11 +1227,14 @@ def ValidateDiskBootFlags(args, enable_kms=False):
             'One boot disk was specified through [--disk or --create-disk]')
 
 
-def ValidateCreateDiskFlags(args,
-                            enable_snapshots=False,
-                            enable_source_snapshot_csek=False,
-                            enable_image_csek=False,
-                            include_name=True):
+def ValidateCreateDiskFlags(
+    args,
+    enable_snapshots=False,
+    enable_source_snapshot_csek=False,
+    enable_image_csek=False,
+    include_name=True,
+    enable_source_instant_snapshot=False,
+):
   """Validates the values of create-disk related flags."""
   require_csek_key_create = getattr(args, 'require_csek_key_create', None)
   csek_key_file = getattr(args, 'csek_key_file', None)
@@ -1230,6 +1265,7 @@ def ValidateCreateDiskFlags(args,
     source_snapshot = disk.get('source-snapshot')
     image_csek_file = disk.get('image_csek')
     source_snapshot_csek_file = disk.get('source_snapshot_csek_file')
+    source_instant_snapshot = disk.get('source-instant-snapshot')
 
     disk_source = set()
     if image_value:
@@ -1242,6 +1278,8 @@ def ValidateCreateDiskFlags(args,
       disk_source.add(image_csek_file)
     if source_snapshot_csek_file:
       disk_source.add(source_snapshot_csek_file)
+    if source_instant_snapshot:
+      disk_source.add(source_instant_snapshot)
 
     mutex_attributes = ['[image]', '[image-family]']
     if enable_image_csek:
@@ -1250,6 +1288,8 @@ def ValidateCreateDiskFlags(args,
       mutex_attributes.append('[source-snapshot]')
     if enable_source_snapshot_csek:
       mutex_attributes.append('[source-snapshot-csek-required]')
+    if enable_source_instant_snapshot:
+      mutex_attributes.append('[source-instant-snapshot]')
     formatted_attributes = '{}, or {}'.format(', '.join(mutex_attributes[:-1]),
                                               mutex_attributes[-1])
     source_error_message = (

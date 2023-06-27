@@ -289,6 +289,40 @@ def AddFailover(parser, default):
       Not compatible with the --global flag""")
 
 
+def _GetPreference():
+  """Returns the --preference flag value choices name:description dict."""
+  preferences = {
+      'DEFAULT': textwrap.dedent("""
+          If preferred backends don't have enough capacity, backends in this
+          layer would be used and traffic would be assigned based on the load
+          balancing algorithm you use. This is the default.
+          """),
+      'PREFERRED': textwrap.dedent("""
+          Backends with this preference level will be filled up to their
+          capacity limits first, based on RTT.
+          """),
+  }
+  return preferences
+
+
+def AddPreference(parser):
+  """Adds preference argument to the argparse."""
+  help_text = """\
+  Defines whether this backend should be fully utilized before
+  sending traffic to backends with default preference.
+  """
+  incompatible_types = ['INTERNET_IP_PORT', 'INTERNET_FQDN_PORT', 'SERVERLESS']
+  help_text += """\
+  This cannot be used with regional managed instance groups and when the
+  endpoint type of an attached network endpoint group is {0}.
+  """.format(_JoinTypes(incompatible_types))
+  parser.add_argument(
+      '--preference',
+      choices=_GetPreference(),
+      type=lambda x: x.upper(),
+      help=help_text)
+
+
 def _JoinTypes(types):
   return ', or '.join([', '.join(types[:-1]), types[-1]
                       ]) if len(types) > 2 else ' or '.join(types)

@@ -187,6 +187,8 @@ apis:
       resources:
         projects:
           path: projects/{projectId}
+        projects.instances.tables.views:
+          path: projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/views/{viewsId}
   binaryauthorization:
     v1alpha2:
       default: true

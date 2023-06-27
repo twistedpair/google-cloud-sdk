@@ -21,9 +21,11 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.container.vmware import flags
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+from googlecloudsdk.generated_clients.apis.gkeonprem.v1 import gkeonprem_v1_messages as messages
 
 MAX_LRO_POLL_INTERVAL_MS = 10000  # 10 seconds
 
@@ -65,9 +67,9 @@ class OperationsClient(client.ClientBase):
         max_wait_ms=max_wait_ms,
     )
 
-  def List(self, args):
+  def List(self, args: parser_extensions.Namespace):
     """List operations."""
-    list_req = self._messages.GkeonpremProjectsLocationsOperationsListRequest(
+    list_req = messages.GkeonpremProjectsLocationsOperationsListRequest(
         name=self._location_name(args)
     )
     return list_pager.YieldFromList(

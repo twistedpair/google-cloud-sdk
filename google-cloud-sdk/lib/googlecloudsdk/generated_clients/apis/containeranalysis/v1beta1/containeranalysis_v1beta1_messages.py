@@ -347,6 +347,90 @@ class Build(_messages.Message):
   signature = _messages.MessageField('BuildSignature', 2)
 
 
+class BuildDefinition(_messages.Message):
+  r"""A BuildDefinition object.
+
+  Messages:
+    ExternalParametersValue: A ExternalParametersValue object.
+    InternalParametersValue: A InternalParametersValue object.
+
+  Fields:
+    buildType: A string attribute.
+    externalParameters: A ExternalParametersValue attribute.
+    internalParameters: A InternalParametersValue attribute.
+    resolvedDependencies: A ResourceDescriptor attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExternalParametersValue(_messages.Message):
+    r"""A ExternalParametersValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExternalParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExternalParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InternalParametersValue(_messages.Message):
+    r"""A InternalParametersValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a InternalParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InternalParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  buildType = _messages.StringField(1)
+  externalParameters = _messages.MessageField('ExternalParametersValue', 2)
+  internalParameters = _messages.MessageField('InternalParametersValue', 3)
+  resolvedDependencies = _messages.MessageField('ResourceDescriptor', 4, repeated=True)
+
+
+class BuildMetadata(_messages.Message):
+  r"""A BuildMetadata object.
+
+  Fields:
+    finishedOn: A string attribute.
+    invocationId: A string attribute.
+    startedOn: A string attribute.
+  """
+
+  finishedOn = _messages.StringField(1)
+  invocationId = _messages.StringField(2)
+  startedOn = _messages.StringField(3)
+
+
 class BuildProvenance(_messages.Message):
   r"""Provenance of a build. Contains all information needed to verify the
   full details about the build from source to completion.
@@ -2646,6 +2730,20 @@ class ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest(_messages.Me
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class ContaineranalysisProjectsResourcesExportSBOMRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsResourcesExportSBOMRequest object.
+
+  Fields:
+    exportSBOMRequest: A ExportSBOMRequest resource to be passed as the
+      request body.
+    name: Required. The name of the resource in the form of
+      `projects/[PROJECT_ID]/resources/[RESOURCE_URL]`.
+  """
+
+  exportSBOMRequest = _messages.MessageField('ExportSBOMRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ContaineranalysisProjectsResourcesGeneratePackagesSummaryRequest(_messages.Message):
   r"""A ContaineranalysisProjectsResourcesGeneratePackagesSummaryRequest
   object.
@@ -3095,6 +3193,21 @@ class Environment(_messages.Message):
   customValues = _messages.MessageField('CustomValuesValue', 1)
 
 
+class ExportSBOMRequest(_messages.Message):
+  r"""The request to a call of ExportSBOM"""
+
+
+class ExportSBOMResponse(_messages.Message):
+  r"""The response from a call to ExportSBOM
+
+  Fields:
+    discoveryOccurrenceId: The id of the discovery occurrence that can be used
+      to track the progression of the SBOM export.
+  """
+
+  discoveryOccurrenceId = _messages.StringField(1)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -3480,6 +3593,7 @@ class GrafeasV1beta1BuildDetails(_messages.Message):
   r"""Details of a build occurrence.
 
   Fields:
+    inTotoSlsaProvenanceV1: A InTotoSlsaProvenanceV1 attribute.
     provenance: Required. The actual provenance for the build.
     provenanceBytes: Serialized JSON representation of the provenance, used in
       generating the build signature in the corresponding build note. After
@@ -3492,8 +3606,9 @@ class GrafeasV1beta1BuildDetails(_messages.Message):
       to prevent incompatibilities with future changes.
   """
 
-  provenance = _messages.MessageField('BuildProvenance', 1)
-  provenanceBytes = _messages.StringField(2)
+  inTotoSlsaProvenanceV1 = _messages.MessageField('InTotoSlsaProvenanceV1', 1)
+  provenance = _messages.MessageField('BuildProvenance', 2)
+  provenanceBytes = _messages.StringField(3)
 
 
 class GrafeasV1beta1DeploymentDetails(_messages.Message):
@@ -3768,6 +3883,20 @@ class InToto(_messages.Message):
   signingKeys = _messages.MessageField('SigningKey', 4, repeated=True)
   stepName = _messages.StringField(5)
   threshold = _messages.IntegerField(6)
+
+
+class InTotoSlsaProvenanceV1(_messages.Message):
+  r"""Keep in sync with schema at https://github.com/slsa-
+  framework/slsa/blob/main/docs/provenance/schema/v1/provenance.proto Builder
+  renamed to ProvenanceBuilder because of Java conflicts.
+
+  Fields:
+    buildDefinition: A BuildDefinition attribute.
+    runDetails: A RunDetails attribute.
+  """
+
+  buildDefinition = _messages.MessageField('BuildDefinition', 1)
+  runDetails = _messages.MessageField('RunDetails', 2)
 
 
 class Installation(_messages.Message):
@@ -4652,6 +4781,47 @@ class ProjectRepoId(_messages.Message):
   repoName = _messages.StringField(2)
 
 
+class ProvenanceBuilder(_messages.Message):
+  r"""A ProvenanceBuilder object.
+
+  Messages:
+    VersionValue: A VersionValue object.
+
+  Fields:
+    builderDependencies: A ResourceDescriptor attribute.
+    id: A string attribute.
+    version: A VersionValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class VersionValue(_messages.Message):
+    r"""A VersionValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a VersionValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type VersionValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a VersionValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  builderDependencies = _messages.MessageField('ResourceDescriptor', 1, repeated=True)
+  id = _messages.StringField(2)
+  version = _messages.MessageField('VersionValue', 3)
+
+
 class Publisher(_messages.Message):
   r"""Publisher contains information about the publisher of this Note.
 
@@ -5043,6 +5213,95 @@ class Resource(_messages.Message):
   contentHash = _messages.MessageField('Hash', 1)
   name = _messages.StringField(2)
   uri = _messages.StringField(3)
+
+
+class ResourceDescriptor(_messages.Message):
+  r"""A ResourceDescriptor object.
+
+  Messages:
+    AnnotationsValue: A AnnotationsValue object.
+    DigestValue: A DigestValue object.
+
+  Fields:
+    annotations: A AnnotationsValue attribute.
+    content: A byte attribute.
+    digest: A DigestValue attribute.
+    downloadLocation: A string attribute.
+    mediaType: A string attribute.
+    name: A string attribute.
+    uri: A string attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""A AnnotationsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""A DigestValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  content = _messages.BytesField(2)
+  digest = _messages.MessageField('DigestValue', 3)
+  downloadLocation = _messages.StringField(4)
+  mediaType = _messages.StringField(5)
+  name = _messages.StringField(6)
+  uri = _messages.StringField(7)
+
+
+class RunDetails(_messages.Message):
+  r"""A RunDetails object.
+
+  Fields:
+    builder: A ProvenanceBuilder attribute.
+    byproducts: A ResourceDescriptor attribute.
+    metadata: A BuildMetadata attribute.
+  """
+
+  builder = _messages.MessageField('ProvenanceBuilder', 1)
+  byproducts = _messages.MessageField('ResourceDescriptor', 2, repeated=True)
+  metadata = _messages.MessageField('BuildMetadata', 3)
 
 
 class SBOMReferenceNote(_messages.Message):

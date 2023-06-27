@@ -40,6 +40,22 @@ enable_delete_protection:
   - arg_value: false
     enum_value: DELETE_PROTECTION_DISABLED
 
+enable_pitr:
+  api_field: googleFirestoreAdminV1Database.pointInTimeRecoveryEnablement
+  arg_name: enable-pitr
+  action: store_true
+  default: null
+  required: false
+  help_text: |
+    If set to true, the firestore database will be updated to enable Point In Time Recovery.
+    Customers will gradually gain the full read access to their data over the past 7 days and
+    they will be charged. You can disable the this feature via --no-enable-pitr.
+  choices:
+  - arg_value: true
+    enum_value: POINT_IN_TIME_RECOVERY_ENABLED
+  - arg_value: false
+    enum_value: POINT_IN_TIME_RECOVERY_DISABLED
+
 query_scope:
   api_field: googleFirestoreAdminV1Index.queryScope
   arg_name: query-scope

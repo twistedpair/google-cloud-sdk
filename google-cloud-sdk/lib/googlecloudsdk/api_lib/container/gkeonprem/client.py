@@ -18,8 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import parser_extensions
+from googlecloudsdk.generated_clients.apis.gkeonprem.v1 import gkeonprem_v1_messages as messages
 import six
 
 
@@ -29,14 +33,9 @@ class ClientBase(object):
 
   def __init__(self, service=None):
     self._client = apis.GetClientInstance('gkeonprem', 'v1')
-    self._messages = self._client.MESSAGES_MODULE
     self._service = service
 
-  def GetMessage(self):
-    """Returns the gkeonprem message module."""
-    return self._messages
-
-  def GetFlag(self, args, flag, default=None):
+  def GetFlag(self, args: parser_extensions.Namespace, flag, default=None):
     """Returns the flag value if it's set, otherwise returns None.
 
     Args:
@@ -81,106 +80,106 @@ class ClientBase(object):
     req = self._service.GetRequestType('Get')(name=resource_ref.RelativeName())
     return self._service.Get(req)
 
-  def _user_cluster_ref(self, args):
+  def _user_cluster_ref(self, args: parser_extensions.Namespace):
     """Parses user cluster resource argument and returns its reference."""
     if getattr(args.CONCEPTS, 'cluster', None):
       return args.CONCEPTS.cluster.Parse()
     return None
 
-  def _admin_cluster_ref(self, args):
+  def _admin_cluster_ref(self, args: parser_extensions.Namespace):
     """Parses admin cluster resource argument and returns its reference."""
     if getattr(args.CONCEPTS, 'admin_cluster', None):
       return args.CONCEPTS.admin_cluster.Parse()
     return None
 
-  def _location_ref(self, args):
+  def _location_ref(self, args: parser_extensions.Namespace):
     """Parses location resource argument and returns its reference."""
     if getattr(args.CONCEPTS, 'location', None):
       return args.CONCEPTS.location.Parse()
     return None
 
-  def _location_name(self, args):
+  def _location_name(self, args: parser_extensions.Namespace):
     """Parses location from args and returns its name."""
     location_ref = self._location_ref(args)
     if location_ref:
       return location_ref.RelativeName()
     return None
 
-  def _user_cluster_name(self, args):
+  def _user_cluster_name(self, args: parser_extensions.Namespace):
     """Parses user cluster from args and returns its name."""
     user_cluster_ref = self._user_cluster_ref(args)
     if user_cluster_ref:
       return user_cluster_ref.RelativeName()
     return None
 
-  def _user_cluster_parent(self, args):
+  def _user_cluster_parent(self, args: parser_extensions.Namespace):
     """Parses user cluster from args and returns its parent name."""
     user_cluster_ref = self._user_cluster_ref(args)
     if user_cluster_ref:
       return user_cluster_ref.Parent().RelativeName()
     return None
 
-  def _user_cluster_id(self, args):
+  def _user_cluster_id(self, args: parser_extensions.Namespace):
     """Parses user cluster from args and returns its ID."""
     user_cluster_ref = self._user_cluster_ref(args)
     if user_cluster_ref:
       return user_cluster_ref.Name()
     return None
 
-  def _admin_cluster_name(self, args):
+  def _admin_cluster_name(self, args: parser_extensions.Namespace):
     """Parses admin cluster from args and returns its name."""
     admin_cluster_ref = self._admin_cluster_ref(args)
     if admin_cluster_ref:
       return admin_cluster_ref.RelativeName()
     return None
 
-  def _admin_cluster_parent(self, args):
+  def _admin_cluster_parent(self, args: parser_extensions.Namespace):
     """Parses admin cluster from args and returns its parent name."""
     admin_cluster_ref = self._admin_cluster_ref(args)
     if admin_cluster_ref:
       return admin_cluster_ref.Parent().RelativeName()
     return None
 
-  def _admin_cluster_id(self, args):
+  def _admin_cluster_id(self, args: parser_extensions.Namespace):
     """Parses admin cluster from args and returns its ID."""
     admin_cluster_ref = self._admin_cluster_ref(args)
     if admin_cluster_ref:
       return admin_cluster_ref.Name()
     return None
 
-  def _admin_cluster_membership_ref(self, args):
+  def _admin_cluster_membership_ref(self, args: parser_extensions.Namespace):
     """Parses admin cluster resource argument and returns its reference."""
     if getattr(args.CONCEPTS, 'admin_cluster_membership', None):
       return args.CONCEPTS.admin_cluster_membership.Parse()
     return None
 
-  def _admin_cluster_membership_name(self, args):
+  def _admin_cluster_membership_name(self, args: parser_extensions.Namespace):
     """Parses admin cluster from args and returns its name."""
     admin_cluster_ref = self._admin_cluster_membership_ref(args)
     if admin_cluster_ref:
       return admin_cluster_ref.RelativeName()
     return None
 
-  def _node_pool_ref(self, args):
+  def _node_pool_ref(self, args: parser_extensions.Namespace):
     """Parses node pool resource argument and returns its reference."""
     if getattr(args.CONCEPTS, 'node_pool', None):
       return args.CONCEPTS.node_pool.Parse()
     return None
 
-  def _node_pool_name(self, args):
+  def _node_pool_name(self, args: parser_extensions.Namespace):
     """Parses node pool from args and returns its name."""
     node_pool_ref = self._node_pool_ref(args)
     if node_pool_ref:
       return node_pool_ref.RelativeName()
     return None
 
-  def _node_pool_id(self, args):
+  def _node_pool_id(self, args: parser_extensions.Namespace):
     """Parses node pool from args and returns its ID."""
     node_pool_ref = self._node_pool_ref(args)
     if node_pool_ref:
       return node_pool_ref.Name()
 
-  def _node_pool_parent(self, args):
+  def _node_pool_parent(self, args: parser_extensions.Namespace):
     """Parses node pool from args and returns its parent name."""
     node_pool_ref = self._node_pool_ref(args)
     if node_pool_ref:
@@ -192,7 +191,7 @@ class ClientBase(object):
 
     Args:
       node_taint: tuple, of format (TAINT_KEY, value), where value is a string
-        of format TAINT_VALUE=EFFECT.
+        of format TAINT_VALUE:EFFECT.
 
     Returns:
       If taint is valid, returns a dict mapping message NodeTaint to its value;
@@ -204,7 +203,7 @@ class ClientBase(object):
           'effect': EFFECT
       }
     """
-    taint_effect_enum = self._messages.NodeTaint.EffectValueValuesEnum
+    taint_effect_enum = messages.NodeTaint.EffectValueValuesEnum
     taint_effect_mapping = {
         'NoSchedule': taint_effect_enum.NO_SCHEDULE,
         'PreferNoSchedule': taint_effect_enum.PREFER_NO_SCHEDULE,
@@ -216,75 +215,67 @@ class ClientBase(object):
         six.text_type(key) for key in sorted(taint_effect_mapping.keys())
     )
 
-    if len(node_taint) != 2:
+    taint_pattern = re.compile(
+        r'([a-zA-Z0-9-_]*)=([a-zA-Z0-9-_]*):([a-zA-Z0-9-_]*)'
+    )
+    taint_match = taint_pattern.fullmatch(input_node_taint)
+    if not taint_match:
       raise arg_parsers.ArgumentTypeError(
           'Node taint [{}] not in correct format, expect KEY=VALUE:EFFECT.'
           .format(input_node_taint)
       )
-    taint_key = node_taint[0]
-
-    effect_delimiter_count = node_taint[1].count(':')
-    if effect_delimiter_count > 1:
+    taint_key, taint_value, taint_effect = taint_match.groups()
+    if taint_effect not in taint_effect_mapping:
       raise arg_parsers.ArgumentTypeError(
-          'Node taint [{}] not in correct format, expect KEY=VALUE:EFFECT.'
-          .format(input_node_taint)
-      )
-
-    if effect_delimiter_count == 0:
-      taint_value = node_taint[1]
-      raise arg_parsers.ArgumentTypeError(
-          'Taint effect unspecified: [{}], expect one of [{}].'.format(
+          'Invalid taint effect in [{}] , expect one of [{}]'.format(
               input_node_taint, valid_node_taint_effects
           )
       )
 
-    if effect_delimiter_count == 1:
-      taint_value, taint_effect = node_taint[1].split(':', 1)
-      if taint_effect not in taint_effect_mapping:
-        raise arg_parsers.ArgumentTypeError(
-            'Invalid taint effect in [{}] , expect one of [{}]'.format(
-                input_node_taint, valid_node_taint_effects
-            )
-        )
+    return {
+        'key': taint_key,
+        'value': taint_value,
+        'effect': taint_effect_mapping[taint_effect],
+    }
 
-      taint_effect = taint_effect_mapping[taint_effect]
-
-    return {'key': taint_key, 'value': taint_value, 'effect': taint_effect}
-
-  def _standalone_cluster_ref(self, args):
+  def _standalone_cluster_ref(self, args: parser_extensions.Namespace):
     """Parses standalone cluster resource argument and returns its reference."""
     if getattr(args.CONCEPTS, 'standalone_cluster', None):
       return args.CONCEPTS.standalone_cluster.Parse()
     return None
 
-  def _standalone_cluster_name(self, args):
+  def _standalone_cluster_name(self, args: parser_extensions.Namespace):
     """Parses standalone cluster from args and returns its name."""
     standalone_cluster_ref = self._standalone_cluster_ref(args)
     if standalone_cluster_ref:
       return standalone_cluster_ref.RelativeName()
     return None
 
-  def _standalone_cluster_parent(self, args):
+  def _standalone_cluster_parent(self, args: parser_extensions.Namespace):
     """Parses standalone cluster from args and returns its parent name."""
     standalone_cluster_ref = self._standalone_cluster_ref(args)
     if standalone_cluster_ref:
       return standalone_cluster_ref.Parent().RelativeName()
     return None
 
-  def _standalone_cluster_id(self, args):
+  def _standalone_cluster_id(self, args: parser_extensions.Namespace):
     """Parses standalone cluster from the given args and returns its ID."""
     standalone_cluster_ref = self._standalone_cluster_ref(args)
     if standalone_cluster_ref:
       return standalone_cluster_ref.Name()
     return None
 
-  def _standalone_cluster_membership_ref(self, args):
+  def _standalone_cluster_membership_ref(
+      self, args: parser_extensions.Namespace
+  ):
     """Parses standalone cluster resource argument and returns its reference."""
     if getattr(args.CONCEPTS, 'membership', None):
       return args.CONCEPTS.membership.Parse()
     return None
 
-  def _standalone_cluster_membership_name(self, args):
+  def _standalone_cluster_membership_name(
+      self, args: parser_extensions.Namespace
+  ):
     """Parses standalone cluster from args and returns its name."""
     standalone_cluster_ref = self._standalone_cluster_membership_ref(args)
     if standalone_cluster_ref:

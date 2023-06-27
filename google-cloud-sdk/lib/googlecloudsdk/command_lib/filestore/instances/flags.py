@@ -72,7 +72,8 @@ FILE_TIER_TO_TYPE = {
     'BASIC_HDD': 'BASIC',
     'BASIC_SSD': 'BASIC',
     'ENTERPRISE': 'ENTERPRISE',
-    'HIGH_SCALE_SSD': 'HIGH SCALE'
+    'HIGH_SCALE_SSD': 'HIGH SCALE',
+    'ZONAL': 'ZONAL',
 }
 
 
@@ -144,43 +145,69 @@ def AddKmsKeyArg(parser):
       required=False)
 
 
-def GetTierArg(messages):
+def GetTierArg(messages, api_version):
   """Adds a --tier flag to the given parser.
 
   Args:
     messages: The messages module.
+    api_version: filestore_client api version.
 
   Returns:
     the choice arg.
   """
-  tier_arg = (
-      arg_utils.ChoiceEnumMapper(
-          '--tier',
-          messages.Instance.TierValueValuesEnum,
-          help_str="""The service tier for the Cloud Filestore instance.
+  custom_mappings = {
+      'STANDARD': (
+          'standard',
+          """Standard Filestore instance, An alias for BASIC_HDD.
+            Use BASIC_HDD instead whenever possible.""",
+      ),
+      'PREMIUM': (
+          'premium',
+          """Premium Filestore instance, An alias for BASIC_SSD.
+                  Use BASIC_SSD instead whenever possible.""",
+      ),
+      'BASIC_HDD': ('basic-hdd', 'Performant NFS storage system using HDD.'),
+      'BASIC_SSD': ('basic-ssd', 'Performant NFS storage system using SSD.'),
+      'ENTERPRISE': (
+          'enterprise',
+          """ENTERPRISE instances offer the features\
+          and availability needed for mission-critical workloads.""",
+      ),
+      'HIGH_SCALE_SSD': (
+          'high-scale-ssd',
+          """High Scale instances offer NFS storage\
+          system with expanded capacity and performance scaling\
+          capabilities.""",
+      ),
+  }
+  if (
+      api_version == filestore_client.ALPHA_API_VERSION
+      or api_version == filestore_client.BETA_API_VERSION
+  ):
+    custom_mappings['HIGH_SCALE_SSD'] = (
+        'high-scale-ssd',
+        """High Scale instances offer NFS storage\
+          system with expanded capacity and performance scaling\
+          capabilities.
+          Use ZONAL instead whenever possible.""",
+    )
+    custom_mappings['ZONAL'] = (
+        'zonal',
+        """Zonal instances offer NFS storage\
+            system suitable for high performance computing application\
+            requirements. It offers fast performance that scales\
+            with capacity and allows you to grow and shrink\
+            capacity.""",
+    )
+  tier_arg = arg_utils.ChoiceEnumMapper(
+      '--tier',
+      messages.Instance.TierValueValuesEnum,
+      help_str="""The service tier for the Cloud Filestore instance.
        For more details, see:
        https://cloud.google.com/filestore/docs/instance-tiers """,
-          custom_mappings={
-              'STANDARD':
-                  ('standard',
-                   """Standard Filestore instance, An alias for BASIC_HDD.
-                   Use BASIC_HDD instead whenever possible."""),
-              'PREMIUM': ('premium',
-                          """Premium Filestore instance, An alias for BASIC_SSD.
-                          Use BASIC_SSD instead whenever possible."""),
-              'BASIC_HDD':
-                  ('basic-hdd', 'Performant NFS storage system using HDD.'),
-              'BASIC_SSD':
-                  ('basic-ssd', 'Performant NFS storage system using SSD.'),
-              'ENTERPRISE':
-                  ('enterprise', """ENTERPRISE instances offer the features\
-                  and availability needed for mission-critical workloads."""),
-              'HIGH_SCALE_SSD': (
-                  'high-scale-ssd', """High Scale instances offer NFS storage\
-                  system with expanded capacity and performance scaling\
-                  capabilities.""")
-          },
-          default='BASIC_HDD'))
+      custom_mappings=custom_mappings,
+      default='BASIC_HDD',
+  )
   return tier_arg
 
 
@@ -272,7 +299,7 @@ def AddNetworkArg(parser):
         allocated IP address range is specified, it must be one of the ranges
         associated with the private service access connection. When specified as
         a direct CIDR value, it must be a /29 CIDR block for Basic tier or a /24
-        CIDR block for High Scale or Enterprise tier in one of the internal IP
+        CIDR block for High Scale, Zonal or Enterprise tier in one of the internal IP
         address ranges (https://www.arin.net/knowledge/address_filters.html)
         that identifies the range of IP addresses reserved for this instance.
         For example, 10.0.0.0/29 or 192.168.0.0/24. The range you specify can't
@@ -312,6 +339,9 @@ unit is specified, GB is assumed. Acceptable instance capacities for each tier a
 * BASIC_HDD: 1TB-63.9TB in 1GB increments or its multiples.
 * BASIC_SSD: 2.5TB-63.9TB in 1GB increments or its multiples.
 * HIGH_SCALE_SSD: 10TB-100TB in 2.5TB increments or its multiples.
+* ZONAL: 1TB-100TB:
+  - 1TB-9.75TB in 256GB increments or its multiples.
+  - 10TB-100TB in 2.5TB increments or its multiples.
 * ENTERPRISE: 1TB-10TB in 256GB increments or its multiples.
 
 *name*::: The desired logical name of the volume.
@@ -453,7 +483,7 @@ def AddInstanceCreateArgs(parser, api_version):
   labels_util.AddCreateLabelsFlags(parser)
   AddNetworkArg(parser)
   messages = filestore_client.GetMessages(version=api_version)
-  GetTierArg(messages).choice_arg.AddToParser(parser)
+  GetTierArg(messages, api_version).choice_arg.AddToParser(parser)
   if api_version == filestore_client.BETA_API_VERSION:
     GetProtocolArg(messages).choice_arg.AddToParser(parser)
     AddManagedActiveDirectoryArg(parser)

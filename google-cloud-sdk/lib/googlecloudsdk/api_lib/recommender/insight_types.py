@@ -43,7 +43,7 @@ class InsightTypes(base.ClientBase):
     super(InsightTypes, self).__init__(api_version)
     self._service = self._client.insightTypes
 
-  def List(self, page_size, limit):
+  def List(self, page_size, limit=None):
     """List Insight Types.
 
     Args:

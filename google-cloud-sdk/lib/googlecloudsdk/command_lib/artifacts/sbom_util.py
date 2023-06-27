@@ -319,9 +319,7 @@ def _GetDockerImage(uri):
           location=None,
           scheme=None,
       )
-  except (
-      docker_name.BadNameException,
-  ) as e:
+  except (docker_name.BadNameException,) as e:
     raise ar_exceptions.InvalidInputValueError(
         'Failed to resolve {0}: {1}'.format(uri, str(e))
     )
@@ -336,6 +334,7 @@ def _GetDockerImage(uri):
   except (
       v2_2_docker_http.V2DiagnosticException,
       requests.exceptions.InvalidURL,
+      v2_2_docker_http.BadStateException,
   ) as e:
     raise ar_exceptions.InvalidInputValueError(
         'Failed to resolve {0}: {1}'.format(uri, str(e))
@@ -376,7 +375,18 @@ def ProcessArtifact(uri):
     return _GetGCRImage(uri)
   else:
     # Handle as normal docker containers
-    return _GetDockerImage(uri)
+    try:
+      return _GetDockerImage(uri)
+    except ar_exceptions.InvalidInputValueError as e:
+      log.debug('Failed to resolve the artifact: {}'.format(e))
+      return Artifact(
+          resource_uri=uri,
+          digests={},
+          artifact_type=ARTIFACT_TYPE_OTHER,
+          project=None,
+          location=None,
+          scheme=None,
+      )
 
 
 def _RemovePrefix(value, prefix):
@@ -528,9 +538,7 @@ def _DefaultGCSBucketName(project_num, location):
 def _GetSbomGCSPath(storage_path, resource_uri, sbom):
   uri_encoded = urllib.parse.urlencode({'uri': resource_uri})[4:]
   version = sbom.version.replace('.', '-')
-  return (
-      'gs://{storage_path}/{uri_encoded}/sbom/user-{version}.{ext}'
-  ).format(
+  return ('gs://{storage_path}/{uri_encoded}/sbom/user-{version}.{ext}').format(
       **{
           'storage_path': storage_path.replace('gs://', '').rstrip('/'),
           'uri_encoded': uri_encoded,

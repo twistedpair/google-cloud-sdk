@@ -191,14 +191,18 @@ class PrivateCloudsClient(util.VmwareClientBase):
         privateCloud=resource.RelativeName())
     return self.service.ResetNsxCredentials(request)
 
-  def GetVcenterCredentials(self, resource):
+  def GetVcenterCredentials(self, resource, username=None):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsShowVcenterCredentialsRequest(
-        privateCloud=resource.RelativeName())
+        privateCloud=resource.RelativeName(), username=username)
     return self.service.ShowVcenterCredentials(request)
 
-  def ResetVcenterCredentials(self, resource):
+  def ResetVcenterCredentials(self, resource, username=None):
+    vcenter = self.messages.ResetVcenterCredentialsRequest()
+    vcenter.username = username
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsResetVcenterCredentialsRequest(
-        privateCloud=resource.RelativeName())
+        privateCloud=resource.RelativeName(),
+        resetVcenterCredentialsRequest=vcenter,
+    )
     return self.service.ResetVcenterCredentials(request)
 
   def GetPrivateCloudType(self, private_cloud_type):

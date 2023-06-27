@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import datetime
 
 from cloudsdk.google.protobuf import json_format
+from googlecloudsdk.api_lib.storage.gcs_json import metadata_util as json_metadata_util
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
@@ -131,3 +132,41 @@ def get_object_resource_from_grpc_object(grpc_object):
       temporary_hold=(grpc_object.temporary_hold
                       if grpc_object.temporary_hold else None),
       update_time=_convert_proto_to_datetime(grpc_object.update_time))
+
+
+def update_object_metadata_from_request_config(
+    object_metadata, request_config, attributes_resource=None
+):
+  """Sets GRPC Storage Object fields based on values in request config.
+
+  Args:
+    object_metadata (gapic_clients.storage_v2.types.storage.Object): Existing
+      object metadata.
+    request_config (request_config_factory._GcsRequestConfig): May contain data
+      to add to object_metadata.
+    attributes_resource (resource_reference.FileObjectResource|None): Contains
+      the source StorageUrl. Can be None if source is pure stream.
+  """
+  resource_args = request_config.resource_args
+
+  should_gzip_locally = json_metadata_util.get_should_gzip_locally(
+      attributes_resource, request_config
+  )
+
+  content_encoding = json_metadata_util.get_content_encoding(
+      should_gzip_locally, resource_args
+  )
+  cache_control = json_metadata_util.get_cache_control(
+      should_gzip_locally, resource_args
+  )
+
+  json_metadata_util.process_value_or_clear_flag(
+      object_metadata, 'content_encoding', content_encoding
+  )
+  json_metadata_util.process_value_or_clear_flag(
+      object_metadata, 'cache_control', cache_control
+  )
+
+  json_metadata_util.process_value_or_clear_flag(
+      object_metadata, 'content_type', resource_args.content_type
+  )

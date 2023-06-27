@@ -19,7 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import resources
 
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1alpha',
@@ -42,3 +44,21 @@ def AddToUpdateMask(update_mask, field_name):
     update_mask += ','
   return update_mask + field_name
 
+
+def GetOperationResource(operation, release_track=base.ReleaseTrack.ALPHA):
+  """Converts an Operation to a Resource that can be used with `waiter.WaitFor`."""
+  api_version = VERSION_MAP.get(release_track)
+  return resources.Registry().ParseRelativeName(
+      operation.name,
+      'apphub.projects.locations.operations',
+      api_version=api_version,
+  )
+
+
+def WaitForOperation(poller, operation, message, max_wait_sec):
+  return waiter.WaitFor(
+      poller,
+      GetOperationResource(operation),
+      message,
+      max_wait_ms=max_wait_sec * 1000,
+  )

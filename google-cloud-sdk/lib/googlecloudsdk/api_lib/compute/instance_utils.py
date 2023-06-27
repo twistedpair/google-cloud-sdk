@@ -812,6 +812,17 @@ def ResolveSnapshotURI(user_project, snapshot, resource_parser):
   return None
 
 
+def ResolveInstantSnapshotURI(user_project, instant_snapshot, resource_parser):
+  if user_project and instant_snapshot and resource_parser:
+    instant_snapshot_ref = resource_parser.Parse(
+        instant_snapshot,
+        collection='compute.instantSnapshots',
+        params={'project': user_project},
+    )
+    return instant_snapshot_ref.SelfLink()
+  return None
+
+
 def GetReservationAffinity(args, client):
   """Returns the message of reservation affinity for the instance."""
   if args.IsSpecified('reservation_affinity'):

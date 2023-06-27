@@ -92,6 +92,8 @@ Format of the repository. REPOSITORY_FORMAT must be one of:\n
     APT package format.
  docker
     Docker image format.
+ go
+    Go module format.
  kfp
     KFP package format.
  maven

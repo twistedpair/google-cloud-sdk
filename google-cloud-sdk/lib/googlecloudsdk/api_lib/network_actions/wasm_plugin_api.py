@@ -18,20 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.network_actions import util
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
-
-API_VERSION_FOR_TRACK = {
-    base.ReleaseTrack.ALPHA: 'v1alpha1',
-}
-_API_NAME = 'networkservices'
-
-
-def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
-  api_version = API_VERSION_FOR_TRACK.get(release_track)
-  return apis.GetClientInstance(_API_NAME, api_version)
 
 
 class Client:
@@ -42,13 +31,13 @@ class Client:
   """
 
   def __init__(self, release_track):
-    self._client = GetClientInstance(release_track)
+    self._client = util.GetClientInstance(release_track)
     self._wasm_plugin_client = self._client.projects_locations_wasmPlugins
     self._operations_client = self._client.projects_locations_operations
     self.messages = self._client.MESSAGES_MODULE
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName(
-        'networkservices', API_VERSION_FOR_TRACK.get(release_track)
+        'networkservices', util.API_VERSION_FOR_TRACK.get(release_track)
     )
 
   def CreateWasmPlugin(
@@ -67,6 +56,30 @@ class Client:
         )
     )
     return self._wasm_plugin_client.Create(request)
+
+  def UpdateWasmPlugin(
+      self,
+      name,
+      main_version,
+      update_mask=None,
+      description=None,
+      labels=None,
+      log_config=None,
+  ):
+    """Calls the UpdateWasmPlugin API."""
+    request = (
+        self.messages.NetworkservicesProjectsLocationsWasmPluginsPatchRequest(
+            name=name,
+            updateMask=update_mask,
+            wasmPlugin=self.messages.WasmPlugin(
+                mainVersionId=main_version,
+                description=description,
+                labels=labels,
+                logConfig=log_config,
+            ),
+        )
+    )
+    return self._wasm_plugin_client.Patch(request)
 
   def WaitForOperation(
       self,

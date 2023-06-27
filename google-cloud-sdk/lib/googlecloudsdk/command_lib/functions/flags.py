@@ -92,6 +92,11 @@ DOCKER_REGISTRY_MAPPING = {
     'ARTIFACT_REGISTRY': 'artifact-registry',
 }
 
+RUNTIME_UPDATE_POLICY_MAPPING = {
+    'AUTOMATIC': 'automatic',
+    'ON_DEPLOY': 'on-deploy',
+}
+
 
 def AddMinLogLevelFlag(parser):
   min_log_arg = base.ChoiceArgument(
@@ -884,6 +889,20 @@ def AddIgnoreFileFlag(parser):
           'Override the .gcloudignore file and use the specified file instead.'
       ),
   )
+
+
+# Flags for Automatic Base Image Update
+def AddAutomaticUpdatePolicy(parser, track):
+  """Adds flags for selecting the automatic update policy."""
+  if track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
+    parser.add_argument(
+        '--automatic-update-policy',
+        hidden=True,
+        help="""\
+        Runtime update policy for the function being deployed.
+        The option `on-deploy` is used by default.
+      """,
+    )
 
 
 # Flags for Artifact Registry

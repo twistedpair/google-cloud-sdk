@@ -229,6 +229,39 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_WASMACTIONS = (
+      'projects.locations.wasmActions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/wasmActions/'
+              '{wasmActionsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_WASMPLUGINS = (
+      'projects.locations.wasmPlugins',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/wasmPlugins/'
+              '{wasmPluginsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_WASMPLUGINS_VERSIONS = (
+      'projects.locations.wasmPlugins.versions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/wasmPlugins/'
+              '{wasmPluginsId}/versions/{versionsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

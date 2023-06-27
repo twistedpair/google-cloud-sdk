@@ -183,7 +183,10 @@ def get_csv_line_from_resource(resource):
       mtime = resource_util.get_unix_timestamp_in_utc(resource.creation_time)
 
     mode_base_eight = mode.base_eight_str if mode else None
-    crc32c = resource.crc32c_hash
+    if resource.crc32c_hash == resource_reference.NOT_SUPPORTED_DO_NOT_DISPLAY:
+      crc32c = None
+    else:
+      crc32c = resource.crc32c_hash
     md5 = resource.md5_hash
 
   line_values = [

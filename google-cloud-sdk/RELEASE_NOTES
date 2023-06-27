@@ -6,6 +6,75 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 437.0.0 (2023-06-27)
+
+### Anthos Multi-Cloud
+
+*   Modified `gcloud container aws node-pools list` and `gcloud container azure node-pools list` to fetch server configurations and to give a warning when any of the node pools are running an end-of-life version.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.15 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.15>.
+* Update dev_appserver handling of api_version in app.yaml for python runtimes
+  for consistency with prod.
+* Added bundled services support for the [search api](https://cloud.google.com/appengine/docs/legacy/standard/python/search).
+
+### Artifact Registry
+
+* Updated the output of `gcloud artifacts docker images describe` to include SBOM location information.
+* Added flag `--show-sbom-references` to `gcloud artifacts docker images describe` to list SBOM reference occurrences.
+* Updated the output of `gcloud artifacts docker images describe` with flag `--show-all-metadata` to include SBOM reference occurrences.
+* Added `Go` as an option of `--repository-format` flag of `gcloud artifacts repositories create` to create Go repositories.
+* Added `gcloud artifacts go upload` command to upload Go modules.
+
+### Cloud Bigtable
+
+* The maximum retention period for a Cloud Bigtable backup has been increased from 30 days to 90 days, giving you more robust data protection and data quality control. For more information on how Bigtable backups work, see <https://cloud.google.com/bigtable/docs/backups>.
+
+### Cloud Build
+
+*   Added `gcloud beta builds connections create gitlab` and `gcloud beta builds connections update gitlab`.
+
+### Cloud Filestore
+
+*   Added `--tier=ZONAL` flag to `gcloud beta filestore instances create` to support a zonal filestore instance creation.
+
+### Cloud NetApp
+
+*   Removed a print statement that led to messy output during `gcloud beta netapp volumes replications create`.
+
+### Cloud SQL
+
+* Added `gcloud beta sql instances reencrypt`, which re-encrypts a Cloud SQL CMEK instance with the current primary key version in beta.
+
+### Cloud Storage
+
+* Release rsync command
+
+### Compute Engine
+
+* Gcloud compute will now retry two times if its follow-up Operations.Wait|Get
+requests return 503 error.
+
+### GKE Hub
+
+* Added `gcloud container fleet memberships support-access` which allows users to manage Support access.
+
+### Network Security
+
+* Added `gcloud network-security firewall-endpoints update` to alpha and beta. This command updates the labels of Cloud Firewall Plus endpoints.
+
+### Recaptcha
+
+* Removed `gcloud recaptcha firewallpolicies` surface and all commands within.
+  Please use `gcloud recaptcha firewall-policies` instead.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
 ## 436.0.0 (2023-06-21)
 
 ### AlloyDB

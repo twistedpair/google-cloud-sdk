@@ -123,24 +123,6 @@ class Collections(enum.Enum):
       ['projectId'],
       True
   )
-  PROJECTS_LOCATIONS = (
-      'projects.locations',
-      'projects/{projectsId}/locations/{locationsId}',
-      {},
-      ['projectsId', 'locationsId'],
-      True
-  )
-  PROJECTS_LOCATIONS_APPLICATIONS = (
-      'projects.locations.applications',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/applications/'
-              '{applicationsId}',
-      },
-      ['name'],
-      True
-  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

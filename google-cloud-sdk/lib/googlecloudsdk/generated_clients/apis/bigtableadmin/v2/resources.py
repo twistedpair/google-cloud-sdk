@@ -95,6 +95,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_INSTANCES_TABLES_VIEWS = (
+      'projects.instances.tables.views',
+      'projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/views/'
+      '{viewsId}',
+      {},
+      ['projectsId', 'instancesId', 'tablesId', 'viewsId'],
+      True
+  )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       '{+name}',

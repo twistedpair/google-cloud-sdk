@@ -22,12 +22,14 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import bare_metal_clusters as clusters
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import parser_extensions
+from googlecloudsdk.generated_clients.apis.gkeonprem.v1 import gkeonprem_v1_messages as messages
 
 
 class _BareMetalNodePoolsClient(clusters.ClustersClient):
   """Base class for GKE OnPrem Bare Metal API clients."""
 
-  def _node_taints(self, args):
+  def _node_taints(self, args: parser_extensions.Namespace):
     """Constructs proto message NodeTaint."""
     taint_messages = []
     node_taints = getattr(args, 'node_taints', {})
@@ -36,11 +38,11 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
 
     for node_taint in node_taints.items():
       taint_object = self._parse_node_taint(node_taint)
-      taint_messages.append(self._messages.NodeTaint(**taint_object))
+      taint_messages.append(messages.NodeTaint(**taint_object))
 
     return taint_messages
 
-  def _node_labels(self, args):
+  def _node_labels(self, args: parser_extensions.Namespace):
     """Constructs proto message LabelsValue."""
     node_labels = getattr(args, 'node_labels', {})
     additional_property_messages = []
@@ -49,18 +51,18 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
 
     for key, value in node_labels.items():
       additional_property_messages.append(
-          self._messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
+          messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
               key=key, value=value
           )
       )
 
-    labels_value_message = self._messages.BareMetalNodePoolConfig.LabelsValue(
+    labels_value_message = messages.BareMetalNodePoolConfig.LabelsValue(
         additionalProperties=additional_property_messages
     )
 
     return labels_value_message
 
-  def _node_configs_from_file(self, args):
+  def _node_configs_from_file(self, args: parser_extensions.Namespace):
     """Constructs proto message field node_configs."""
     if not args.node_configs_from_file:
       return []
@@ -94,7 +96,7 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
         'labels': self._node_config_labels(node_config.get('labels', {})),
     }
 
-    return self._messages.BareMetalNodeConfig(**kwargs)
+    return messages.BareMetalNodeConfig(**kwargs)
 
   def _node_config_labels(self, labels):
     """Constructs proto message LabelsValue."""
@@ -104,18 +106,18 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
 
     for key, value in labels.items():
       additional_property_messages.append(
-          self._messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
+          messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
               key=key, value=value
           )
       )
 
-    labels_value_message = self._messages.BareMetalNodeConfig.LabelsValue(
+    labels_value_message = messages.BareMetalNodeConfig.LabelsValue(
         additionalProperties=additional_property_messages
     )
 
     return labels_value_message
 
-  def _node_configs_from_flag(self, args):
+  def _node_configs_from_flag(self, args: parser_extensions.Namespace):
     """Constructs proto message field node_configs."""
     node_configs = []
     node_config_flag_value = getattr(args, 'node_configs', None)
@@ -125,7 +127,7 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
 
     return node_configs
 
-  def _serialized_image_pulls_disabled(self, args):
+  def _serialized_image_pulls_disabled(self, args: parser_extensions.Namespace):
     if 'disable_serialize_image_pulls' in args.GetSpecifiedArgsDict():
       return True
     elif 'enable_serialize_image_pulls' in args.GetSpecifiedArgsDict():
@@ -133,7 +135,7 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
     else:
       return None
 
-  def _kubelet_config(self, args):
+  def _kubelet_config(self, args: parser_extensions.Namespace):
     kwargs = {
         'registryPullQps': self.GetFlag(args, 'registry_pull_qps'),
         'registryBurst': self.GetFlag(args, 'registry_burst'),
@@ -142,10 +144,10 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
         ),
     }
     if any(kwargs.values()):
-      return self._messages.BareMetalKubeletConfig(**kwargs)
+      return messages.BareMetalKubeletConfig(**kwargs)
     return None
 
-  def _node_pool_config(self, args):
+  def _node_pool_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalNodePoolConfig."""
     if 'node_configs_from_file' in args.GetSpecifiedArgsDict():
       node_configs = self._node_configs_from_file(args)
@@ -159,11 +161,11 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalNodePoolConfig(**kwargs)
+      return messages.BareMetalNodePoolConfig(**kwargs)
 
     return None
 
-  def _annotations(self, args):
+  def _annotations(self, args: parser_extensions.Namespace):
     """Constructs proto message AnnotationsValue."""
     annotations = getattr(args, 'annotations', {})
     additional_property_messages = []
@@ -172,19 +174,17 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
 
     for key, value in annotations.items():
       additional_property_messages.append(
-          self._messages.BareMetalNodePool.AnnotationsValue.AdditionalProperty(
+          messages.BareMetalNodePool.AnnotationsValue.AdditionalProperty(
               key=key, value=value
           )
       )
 
-    annotation_value_message = (
-        self._messages.BareMetalNodePool.AnnotationsValue(
-            additionalProperties=additional_property_messages
-        )
+    annotation_value_message = messages.BareMetalNodePool.AnnotationsValue(
+        additionalProperties=additional_property_messages
     )
     return annotation_value_message
 
-  def _bare_metal_node_pool(self, args):
+  def _bare_metal_node_pool(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalNodePool."""
     kwargs = {
         'name': self._node_pool_name(args),
@@ -193,7 +193,7 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
         'annotations': self._annotations(args),
     }
 
-    return self._messages.BareMetalNodePool(**kwargs)
+    return messages.BareMetalNodePool(**kwargs)
 
 
 class NodePoolsClient(_BareMetalNodePoolsClient):
@@ -207,7 +207,7 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
 
   def List(self, location_ref, limit=None, page_size=None):
     """Lists Node Pools in the Anthos clusters on bare metal API."""
-    list_req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsListRequest(
+    list_req = messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsListRequest(
         parent=location_ref.RelativeName()
     )
 
@@ -222,13 +222,13 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
 
   def Describe(self, resource_ref):
     """Gets a GKE On-Prem Bare Metal API node pool resource."""
-    req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsGetRequest(
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsGetRequest(
         name=resource_ref.RelativeName()
     )
 
     return self._service.Get(req)
 
-  def Delete(self, args):
+  def Delete(self, args: parser_extensions.Namespace):
     """Deletes a GKE On-Prem Bare Metal API node pool resource."""
     kwargs = {
         'name': self._node_pool_name(args),
@@ -236,13 +236,13 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
         'validateOnly': self.GetFlag(args, 'validate_only'),
         'ignoreErrors': self.GetFlag(args, 'ignore_errors'),
     }
-    req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsDeleteRequest(
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsDeleteRequest(
         **kwargs
     )
 
     return self._service.Delete(req)
 
-  def Create(self, args):
+  def Create(self, args: parser_extensions.Namespace):
     """Creates a GKE On-Prem Bare Metal API node pool resource."""
     node_pool_ref = self._node_pool_ref(args)
     kwargs = {
@@ -251,12 +251,12 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
         'bareMetalNodePool': self._bare_metal_node_pool(args),
         'bareMetalNodePoolId': self._node_pool_id(args),
     }
-    req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsCreateRequest(
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsCreateRequest(
         **kwargs
     )
     return self._service.Create(req)
 
-  def Update(self, args):
+  def Update(self, args: parser_extensions.Namespace):
     """Updates a GKE On-Prem Bare Metal API node pool resource."""
     kwargs = {
         'allowMissing': self.GetFlag(args, 'allow_missing'),
@@ -267,32 +267,32 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
         'validateOnly': self.GetFlag(args, 'validate_only'),
         'bareMetalNodePool': self._bare_metal_node_pool(args),
     }
-    req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsPatchRequest(
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsPatchRequest(
         **kwargs
     )
     return self._service.Patch(req)
 
-  def Enroll(self, args):
+  def Enroll(self, args: parser_extensions.Namespace):
     """Enrolls an Anthos On-Prem Bare Metal API node pool resource."""
     kwargs = {
         'bareMetalNodePoolId': self._node_pool_id(args),
         'validateOnly': self.GetFlag(args, 'validate_only'),
     }
-    enroll_request = self._messages.EnrollBareMetalNodePoolRequest(**kwargs)
-    req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsEnrollRequest(
+    enroll_request = messages.EnrollBareMetalNodePoolRequest(**kwargs)
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsEnrollRequest(
         enrollBareMetalNodePoolRequest=enroll_request,
         parent=self._node_pool_parent(args),
     )
     return self._service.Enroll(req)
 
-  def Unenroll(self, args):
+  def Unenroll(self, args: parser_extensions.Namespace):
     """Unenrolls an Anthos On-Prem bare metal API node pool resource."""
     kwargs = {
         'allowMissing': self.GetFlag(args, 'allow_missing'),
         'name': self._node_pool_name(args),
         'validateOnly': self.GetFlag(args, 'validate_only'),
     }
-    req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsUnenrollRequest(
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsUnenrollRequest(
         **kwargs
     )
     return self._service.Unenroll(req)

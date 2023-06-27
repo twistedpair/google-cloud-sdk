@@ -96,13 +96,16 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
       upload_strategy=cloud_api.UploadStrategy.SIMPLE,
   ):
     """See super class."""
+
     client = self._get_gapic_client()
+
     if upload_strategy == cloud_api.UploadStrategy.SIMPLE:
       uploader = upload.SimpleUpload(
           client=client,
           source_stream=source_stream,
           destination_resource=destination_resource,
-          request_config=request_config
+          request_config=request_config,
+          source_resource=source_resource,
       )
     elif upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
       uploader = upload.ResumableUpload(
@@ -111,9 +114,17 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
           destination_resource=destination_resource,
           request_config=request_config,
           serialization_data=serialization_data,
-          tracker_callback=tracker_callback
+          source_resource=source_resource,
+          tracker_callback=tracker_callback,
       )
-    # TODO(b/279041215) Add streaming upload support
+    else:  # Streaming.
+      uploader = upload.StreamingUpload(
+          client=client,
+          source_stream=source_stream,
+          destination_resource=destination_resource,
+          request_config=request_config,
+          source_resource=source_resource,
+      )
 
     response = uploader.run()
     return metadata_util.get_object_resource_from_grpc_object(

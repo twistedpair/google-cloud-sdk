@@ -27,7 +27,7 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
-def AdddWasmPluginResource(parser, api_version):
+def AddWasmPluginResource(parser, api_version):
   wasm_plugin_data = yaml_data.ResourceYAMLData.FromPath(
       'network_actions.wasmPlugin')
   concept_parsers.ConceptParser(
@@ -78,3 +78,27 @@ def AddLogConfigFlag(parser):
         --log_config=enable=False
         """),
   )
+
+
+def AddVersionFlag(parser):
+  parser.add_argument(
+      '--main-version',
+      help=textwrap.dedent("""\
+          ID of the WasmPluginVersion that will be created for that
+          WasmPlugin and that will be set as the current main version."""),
+  )
+
+
+def AddImageFlag(parser):
+  parser.add_argument(
+      '--image',
+      help=textwrap.dedent("""\
+          URI of the container image containing the Wasm module, stored in the
+          Artifact Registry."""),
+  )
+
+
+def AddWasmPluginVersionArgs(parser):
+  wasm_plugin_version_group = parser.add_group(mutex=False, required=False)
+  AddVersionFlag(wasm_plugin_version_group)
+  AddImageFlag(wasm_plugin_version_group)

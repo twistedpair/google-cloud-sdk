@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 
+
 FIRESTORE_API_VERSION = 'v1'
 
 
@@ -33,3 +34,14 @@ def GetClient():
   """Returns the Cloud Firestore client for the appropriate release track."""
   return apis.GetClientInstance('firestore', FIRESTORE_API_VERSION)
 
+
+def FormatDurationString(duration):
+  """Returns the duration string.
+
+  Args:
+    duration: the duration, an int. The unit is seconds.
+
+  Returns:
+    a duration with string format.
+  """
+  return '{}s'.format(duration)

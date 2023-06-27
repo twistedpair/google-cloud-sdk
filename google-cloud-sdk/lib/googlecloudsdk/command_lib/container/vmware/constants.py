@@ -43,6 +43,7 @@ table(
     name.segment(5):label=NAME,
     name.segment(3):label=LOCATION,
     onPremVersion:label=VERSION,
+    platformConfig.platformVersion:label=PLATFORM_VERSION,
     state:label=STATE
 )
 """

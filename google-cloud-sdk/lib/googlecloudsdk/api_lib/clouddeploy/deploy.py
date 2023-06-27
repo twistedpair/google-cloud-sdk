@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2021 Google LLC. All Rights Reserved.
+# Copyright 2023 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.clouddeploy import client_util
+from googlecloudsdk.command_lib.deploy import automation_util
 from googlecloudsdk.command_lib.deploy import manifest_util
 from googlecloudsdk.command_lib.deploy import target_util
 from googlecloudsdk.core import log
@@ -69,6 +70,12 @@ class DeployClient(object):
       for resource in targets:
         operation_dict[resource.name] = target_util.PatchTarget(resource)
       self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+    # Create automation resource.
+    automations = resource_dict[manifest_util.AUTOMATION_KIND]
+    operation_dict = {}
+    for resource in automations:
+      operation_dict[resource.name] = automation_util.PatchAutomation(resource)
+    self.operation_client.CheckOperationStatus(operation_dict, msg_template)
 
   def DeleteResources(self, manifests, region, force):
     """Delete Cloud Deploy resources.

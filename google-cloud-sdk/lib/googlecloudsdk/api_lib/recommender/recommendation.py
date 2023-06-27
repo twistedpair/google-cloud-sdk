@@ -84,7 +84,7 @@ class Recommendation(base.ClientBase):
         name=name)
     return self._service.Get(request)
 
-  def List(self, parent_name, page_size, limit):
+  def List(self, parent_name, page_size, limit=None):
     """List Recommendations.
 
     Args:

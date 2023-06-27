@@ -469,11 +469,22 @@ def Run(args, track=None):
   if args.IsSpecified('runtime'):
     function.runtime = args.runtime
     updated_fields.append('runtime')
-
   elif is_new_function:
     raise calliope_exceptions.RequiredArgumentException(
         'runtime', 'Flag `--runtime` is required for new functions.'
     )
+
+  if (
+      track
+      in (
+          base.ReleaseTrack.ALPHA,
+          base.ReleaseTrack.BETA,
+      )
+      and args.IsSpecified('automatic_update_policy')
+      and args.automatic_update_policy == 'automatic'
+  ):
+    function.automaticUpdatePolicy = messages.AutomaticUpdatePolicy()
+    updated_fields.append('automatic_update_policy')
 
   warning = api_util.ValidateRuntimeOrRaise(
       v2_client.FunctionsClient(base.ReleaseTrack.GA),

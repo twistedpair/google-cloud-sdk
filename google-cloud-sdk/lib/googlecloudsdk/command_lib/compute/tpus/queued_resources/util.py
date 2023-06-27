@@ -144,10 +144,10 @@ def VerifyNodeCount(ref, args, request):
   return request
 
 
-def SetBestEffort(ref, args, request):
-  """Creates an empty BestEffort structure if arg flag is set."""
+def SetBestEffortOrSpot(ref, args, request):
+  """Creates an empty BestEffort structure if best-effort or spot arg flag is set."""
   del ref  # unused
-  if args.best_effort:
+  if args.best_effort or args.spot:
     tpu_messages = GetMessagesModule()
     if request.queuedResource is None:
       request.queuedResource = tpu_messages.QueuedResource()

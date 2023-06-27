@@ -86,6 +86,16 @@ class Client:
     )
     return self._endpoint_client.Create(create_request)
 
+  def UpdateEndpointLabels(self, name, labels):
+    """Calls the UpdateEndpoint API with 'labels' as the only mask."""
+    endpoint = self.messages.FirewallEndpoint(labels=labels)
+    update_request = self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest(
+        name=name,
+        firewallEndpoint=endpoint,
+        updateMask='labels',
+    )
+    return self._endpoint_client.Patch(update_request)
+
   def DeleteEndpoint(self, name):
     """Calls the DeleteEndpoint API."""
     delete_request = self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsDeleteRequest(

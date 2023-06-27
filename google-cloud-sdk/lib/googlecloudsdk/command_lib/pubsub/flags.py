@@ -326,29 +326,30 @@ def AddBigQueryConfigFlags(parser, is_update):
 def AddCloudStorageConfigFlags(parser, is_update):
   """Adds Cloud Storage config flags to parser."""
   current_group = parser
+  cloud_storage_config_group_help = """Cloud Storage Config Options. The Cloud
+        Pub/Sub service account associated with the enclosing subscription's
+        parent project (i.e.,
+        service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
+        must have permission to write to this Cloud Storage bucket and to read
+        this bucket's metadata."""
   if is_update:
-    mutual_exclusive_group = current_group.add_mutually_exclusive_group(
-        hidden=True)
+    mutual_exclusive_group = current_group.add_mutually_exclusive_group()
     mutual_exclusive_group.add_argument(
         '--clear-cloud-storage-config',
         action='store_true',
         default=None,
-        hidden=True,
         help="""If set, clear the Cloud Storage config from the subscription.""",
     )
     current_group = mutual_exclusive_group
+    cloud_storage_config_group_help += """\n\nNote that an update to the Cloud
+          Storage config will replace it with a new config containing only the
+          flags that are passed in the `update` CLI."""
   cloud_storage_config_group = current_group.add_argument_group(
-      hidden=True,
-      help="""Cloud Storage Config Options. The Cloud Pub/Sub service account
-        associated with the enclosing subscription's parent project (i.e.,
-        service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
-        must have permission to write to this Cloud Storage bucket and to read
-        this bucket's metadata."""
+      help=cloud_storage_config_group_help
   )
   cloud_storage_config_group.add_argument(
       '--cloud-storage-bucket',
       required=True,
-      hidden=True,
       help=(
           'A Cloud Storage bucket to which to write messages for this'
           ' subscription.'
@@ -357,13 +358,11 @@ def AddCloudStorageConfigFlags(parser, is_update):
   cloud_storage_config_group.add_argument(
       '--cloud-storage-file-prefix',
       default=None,
-      hidden=True,
       help='The prefix for Cloud Storage filename.',
   )
   cloud_storage_config_group.add_argument(
       '--cloud-storage-file-suffix',
       default=None,
-      hidden=True,
       help='The suffix for Cloud Storage filename.',
   )
   cloud_storage_config_group.add_argument(
@@ -374,7 +373,6 @@ def AddCloudStorageConfigFlags(parser, is_update):
                                                                 'MB', 'MiB',
                                                                 'GB', 'GiB']),
       default=None,
-      hidden=True,
       help=(
           ' The maximum bytes that can be written to a Cloud Storage file'
           ' before a new file is created. The value must be between 1KB to'
@@ -385,7 +383,6 @@ def AddCloudStorageConfigFlags(parser, is_update):
       '--cloud-storage-max-duration',
       type=arg_parsers.Duration(lower_bound='1m', upper_bound='10m',
                                 default_unit='s'),
-      hidden=True,
       help="""The maximum duration that can elapse before a new Cloud Storage
           file is created. The value must be between 1m and 10m.
           {}""".format(DURATION_HELP_STR),
@@ -399,7 +396,6 @@ def AddCloudStorageConfigFlags(parser, is_update):
           choices=['text', 'avro'],
       ),
       default='text',
-      hidden=True,
       metavar='OUTPUT_FORMAT',
       help=(
           'The output format for data written to Cloud Storage. Values: text'
@@ -411,7 +407,6 @@ def AddCloudStorageConfigFlags(parser, is_update):
       '--cloud-storage-write-metadata',
       action='store_true',
       default=None,
-      hidden=True,
       help=(
           'Whether or not to write the subscription name, message_id,'
           ' publish_time, attributes, and ordering_key as additional fields in'

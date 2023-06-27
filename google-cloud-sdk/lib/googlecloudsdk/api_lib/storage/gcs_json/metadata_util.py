@@ -22,8 +22,8 @@ import copy
 
 from apitools.base.py import encoding
 from apitools.base.py import encoding_helper
-
 from googlecloudsdk.api_lib.storage import metadata_util
+from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.api_lib.storage.gcs_json import metadata_field_converters
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.storage import encryption_util
@@ -33,6 +33,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+
 
 # Similar to CORS above, we need a sentinel value allowing us to specify
 # when a default object ACL should be private (containing no entries).
@@ -535,7 +536,68 @@ def get_cleared_bucket_fields(request_config):
   return cleared_fields
 
 
-def _process_value_or_clear_flag(metadata, key, value):
+def get_cache_control(should_gzip_locally, resource_args):
+  """Returns cache control metadata value.
+
+  If should_gzip_locally is True, append 'no-transform' to cache control value
+  with the user's given value.
+
+  Args:
+    should_gzip_locally (bool): True if file should be gzip locally.
+    resource_args (request_config_factory._ObjectConfig): Holds settings for a
+      cloud resource.
+
+  Returns:
+    (str|None) Cache control value.
+  """
+  if isinstance(resource_args, request_config_factory._ObjectConfig):  # pylint: disable=protected-access
+    user_cache_control = resource_args.cache_control
+  else:
+    user_cache_control = None
+
+  if should_gzip_locally:
+    return (
+        _NO_TRANSFORM
+        if user_cache_control is None
+        else '{}, {}'.format(user_cache_control, _NO_TRANSFORM)
+    )
+
+  return user_cache_control
+
+
+def get_content_encoding(should_gzip_locally, resource_args):
+  """Returns content encoding metadata value.
+
+  If should_gzip_locally is True, return gzip.
+
+  Args:
+    should_gzip_locally (bool): True if file should be gzip locally.
+    resource_args (request_config_factory._ObjectConfig): Holds settings for a
+      cloud resource.
+
+  Returns:
+    (str|None) Content encoding value.
+  """
+  if should_gzip_locally:
+    return 'gzip'
+
+  if isinstance(resource_args, request_config_factory._ObjectConfig):  # pylint: disable=protected-access
+    return resource_args.content_encoding
+
+  return None
+
+
+def get_should_gzip_locally(attributes_resource, request_config):
+  if isinstance(attributes_resource, resource_reference.FileObjectResource):
+    return gzip_util.should_gzip_locally(
+        request_config.gzip_settings,
+        attributes_resource.storage_url.object_name,
+    )
+
+  return False
+
+
+def process_value_or_clear_flag(metadata, key, value):
   """Sets appropriate metadata based on value."""
   if value == user_request_args_factory.CLEAR:
     setattr(metadata, key, None)
@@ -583,29 +645,15 @@ def update_object_metadata_from_request_config(
     object_metadata.metadata = encoding_helper.DictToMessage(
         custom_fields_dict, messages.Object.MetadataValue)
 
-  # Gzip handling.
-  if isinstance(attributes_resource, resource_reference.FileObjectResource):
-    should_gzip_locally = gzip_util.should_gzip_locally(
-        request_config.gzip_settings,
-        attributes_resource.storage_url.object_name,
-    )
-  else:
-    should_gzip_locally = False
-  if should_gzip_locally:
-    content_encoding = 'gzip'
-  else:
-    content_encoding = getattr(resource_args, 'content_encoding', None)
-  _process_value_or_clear_flag(object_metadata, 'contentEncoding',
-                               content_encoding)
+  should_gzip_locally = get_should_gzip_locally(
+      attributes_resource, request_config)
 
-  user_cache_control = getattr(resource_args, 'cache_control', None)
-  if should_gzip_locally:
-    cache_control = (
-        _NO_TRANSFORM if user_cache_control is None else '{}, {}'.format(
-            user_cache_control, _NO_TRANSFORM))
-  else:
-    cache_control = user_cache_control
-  _process_value_or_clear_flag(object_metadata, 'cacheControl', cache_control)
+  content_encoding = get_content_encoding(should_gzip_locally, resource_args)
+  process_value_or_clear_flag(object_metadata, 'contentEncoding',
+                              content_encoding)
+
+  cache_control = get_cache_control(should_gzip_locally, resource_args)
+  process_value_or_clear_flag(object_metadata, 'cacheControl', cache_control)
 
   if not resource_args:
     return
@@ -621,18 +669,18 @@ def update_object_metadata_from_request_config(
       object_metadata.kmsKeyName = resource_args.encryption_key.key
 
   # General metadata handling.
-  _process_value_or_clear_flag(object_metadata, 'contentDisposition',
-                               resource_args.content_disposition)
-  _process_value_or_clear_flag(object_metadata, 'contentLanguage',
-                               resource_args.content_language)
-  _process_value_or_clear_flag(object_metadata, 'customTime',
-                               resource_args.custom_time)
-  _process_value_or_clear_flag(object_metadata, 'contentType',
-                               resource_args.content_type)
-  _process_value_or_clear_flag(object_metadata, 'md5Hash',
-                               resource_args.md5_hash)
-  _process_value_or_clear_flag(object_metadata, 'storageClass',
-                               resource_args.storage_class)
+  process_value_or_clear_flag(object_metadata, 'contentDisposition',
+                              resource_args.content_disposition)
+  process_value_or_clear_flag(object_metadata, 'contentLanguage',
+                              resource_args.content_language)
+  process_value_or_clear_flag(object_metadata, 'customTime',
+                              resource_args.custom_time)
+  process_value_or_clear_flag(object_metadata, 'contentType',
+                              resource_args.content_type)
+  process_value_or_clear_flag(object_metadata, 'md5Hash',
+                              resource_args.md5_hash)
+  process_value_or_clear_flag(object_metadata, 'storageClass',
+                              resource_args.storage_class)
 
   if resource_args.event_based_hold is not None:
     object_metadata.eventBasedHold = resource_args.event_based_hold

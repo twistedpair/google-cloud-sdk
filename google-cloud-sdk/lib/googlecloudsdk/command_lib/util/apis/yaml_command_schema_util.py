@@ -289,6 +289,126 @@ class Choice(object):
     return {c.arg_value: c.enum_value for c in choices}
 
 
+def _SetFieldInMessage(message_instance, field_spec, value):
+  if value is None and field_spec.repeated:
+    value = []
+  arg_utils.SetFieldInMessage(message_instance, field_spec.api_field, value)
+
+
+def _ParseFieldsIntoMessage(field_dict, message, field_specs):
+  """Iterates through fields and adds fields to message instance.
+
+  Args:
+    field_dict: [str: apitools field], dictionary of the cli name to
+      the apitools field instance
+    message: apitools message class
+    field_specs: [SpecField], list of the fields to parse into message instance
+
+  Returns:
+    Instance of apitools message with the fields parsed into the message.
+  """
+  message_instance = message()
+  for f in field_specs:
+    value = field_dict.get(f.arg_name)
+    _SetFieldInMessage(message_instance, f, value)
+  return message_instance
+
+
+def _GenerateMessageTypeUtil(message, arg_type, field_specs):
+  """Creates function that iterates field specs and returns message instance.
+
+  Args:
+    message: apitools message class
+    arg_type: type function used to parse input string ie ArgDict or ArgObject
+    field_specs: [SpecField], list fields that need to be parsed into
+      each apitools message instance
+
+  Returns:
+    function that parses arg_value (str) and returns an apitools message or
+      list of messages ie Message(field1=value, field2=value) or
+      [Message(field1=value, field2=value), Message(field1=value, field2=value)]
+  """
+  def TypeFunc(arg_value):
+    result = arg_type(arg_value)
+    if isinstance(result, list):
+      return [_ParseFieldsIntoMessage(r, message, field_specs) for r in result]
+    return _ParseFieldsIntoMessage(result, message, field_specs)
+  return TypeFunc
+
+
+def _GenerateMapTypeUtil(message, arg_type, key_spec, value_spec):
+  """Creates function that returns message instance from arg_value str.
+
+  Args:
+    message: apitools message class
+    arg_type: type function used to parse input string ie ArgDict or ArgObject
+    key_spec: SpecField, specifes expected type of key field
+    value_spec: SpecField, specifies expected type of value field
+
+  Returns:
+    function that parses arg_value (str) and returns list of apitools messages
+      with key value fields ie
+      [Message(key=key1, value=value1), Message(key=key2, value=value2), etc]
+  """
+  def TypeFunc(arg_value):
+    result = arg_type(arg_value)
+    messages = []
+    # NOTE: While repeating fields and messages are accounted for, repeating
+    # maps are not. This is because repeating map fields are not allowed in
+    # proto definitions. Result will never be a list of dictionaries.
+    for k, v in sorted(six.iteritems(result)):
+      message_instance = message()
+      _SetFieldInMessage(message_instance, key_spec, k)
+      _SetFieldInMessage(message_instance, value_spec, v)
+      messages.append(message_instance)
+    return messages
+  return TypeFunc
+
+
+def _GenerateFieldTypeUtil(field, arg_type, field_spec):
+  """Creates function that iterates field specs and returns message instance.
+
+  Args:
+    field: apitools field instance
+    arg_type: type function used to parse input string into correct type
+      ie ArgObject(value_type=int, repeating=true), int, bool, etc
+    field_spec: SpecField, specifies type of the field we are creating
+
+  Returns:
+    function that parses arg_value (str) and returns an apitools field value
+      (or list of field values if repeating) with either correct python type
+      or enum type.
+  """
+  def TypeFunc(arg_value):
+    arg_value = arg_type(arg_value)
+    return arg_utils.ConvertValue(
+        field, arg_value, repeated=field_spec.repeated,
+        choices=field_spec.ChoiceMap())
+  return TypeFunc
+
+
+def _GetSimpleFieldType(message, field_spec):
+  """Retrieves the the type of the field from message.
+
+  Args:
+    message: Apitools message class
+    field_spec: SpecField, specifies the api field
+
+  Returns:
+    type function or apitools field class
+
+  Raises:
+    InvalidSchemaError: if the field type is not listed in arg_utils.TYPES
+  """
+  f = arg_utils.GetFieldFromMessage(message, field_spec.api_field)
+  t = field_spec.type or arg_utils.TYPES.get(f.variant)
+
+  if not t:
+    raise InvalidSchemaError('Unknown type for field: ' + field_spec.api_field)
+
+  return _GenerateFieldTypeUtil(f, t, field_spec)
+
+
 class ArgObject(arg_utils.ArgObjectType):
   """A wrapper to bind an ArgObject argument to a message or field."""
 
@@ -298,34 +418,148 @@ class ArgObject(arg_utils.ArgObjectType):
     # TODO(b/278780718) parse spec data that can be specifed by the user
     return cls()
 
-  def Action(self, repeated):
+  def Action(self, field):
     """Returns the correct argument action.
 
     Args:
-      repeated: bool, whether the field is repeated.
+      field: apitools field instance
 
     Returns:
       str, argument action string.
     """
-    if repeated:
-      return 'append'
+    if field.repeated:
+      return arg_parsers.FlattenAction()
     return 'store'
 
-  def GenerateType(self, field):
-    """Generates an argparse type function.
-
-    The argparse type function takes in the user input and returns the correct
-    type based off of the apitools message/field provided
+  def _GetFieldType(self, message, field_spec):
+    """Retrieves the the type of the field from messsage.
 
     Args:
-      field: The apitools message/field class for field.
+      message: Apitools message class
+      field_spec: SpecField, specifies the api field
 
     Returns:
-      f(str) -> message/field, The type function that parses user input into
-        apitools message.
+      type function or apitools class for the message field
     """
-    # TODO(b/278780718) pass in spec, key_type, and value_type from data
-    return arg_parsers.ArgObject(field)
+    f = arg_utils.GetFieldFromMessage(message, field_spec.api_field)
+    t = ArgObject().GenerateType(f, is_root=False)
+    return t
+
+  def _GenerateMapType(self, field, is_root=True):
+    """Returns function that parses apitools map fields from string.
+
+    Map fields are proto fields with type `map<...>` that generate
+    apitools message with an additionalProperties field
+
+    Args:
+      field: apitools field instance
+      is_root: whether the type function is for the root level of the message
+
+    Returns:
+      type function that takes string like 'foo=bar' or '{"foo": "bar"}' and
+        creates an apitools message additionalProperties field
+    """
+    try:
+      additional_props_field = arg_utils.GetFieldFromMessage(
+          field.type, arg_utils.ADDITIONAL_PROPS)
+    except arg_utils.UnknownFieldError:
+      raise InvalidSchemaError(
+          '{name} message does not contain field "{props}". Remove '
+          '"{props}" from api field name.'.format(
+              name=field.name,
+              props=arg_utils.ADDITIONAL_PROPS
+          ))
+
+    # TODO(b/278780718) allow spec data to specify the key, value fields
+    key_spec = SpecField.FromField(
+        arg_utils.GetFieldFromMessage(additional_props_field.type, 'key'))
+    value_spec = SpecField.FromField(
+        arg_utils.GetFieldFromMessage(additional_props_field.type, 'value'))
+
+    key_type = self._GetFieldType(additional_props_field.type, key_spec)
+    value_type = self._GetFieldType(additional_props_field.type, value_spec)
+
+    arg_type = arg_parsers.ArgObject(
+        key_type=key_type, value_type=value_type, enable_arg_dict=is_root)
+    map_type = _GenerateMapTypeUtil(
+        additional_props_field.type, arg_type, key_spec, value_spec)
+
+    # Uses an additional type function to map additionalProperties back into
+    # parent map message
+    def WrapperTypeFunc(arg_value):
+      additional_props = map_type(arg_value)
+      parent_message = field.type()
+      arg_utils.SetFieldInMessage(
+          parent_message, arg_utils.ADDITIONAL_PROPS, additional_props)
+      return parent_message
+
+    return WrapperTypeFunc
+
+  def _GenerateMessageType(self, field, is_root=True):
+    """Returns function that parses apitools message fields from string.
+
+    Args:
+      field: apitools field instance
+      is_root: whether the type function is for the root level of the message
+
+    Returns:
+      type function that takes string like 'foo=bar' or '{"foo": "bar"}' and
+        creates an apitools message like Message(foo=bar) or [Message(foo=bar)]
+    """
+    apitools_fields = field.type.all_fields()
+    output_only_fields = {'createTime', 'updateTime'}
+
+    # TODO(b/278780718) allow spec data to specify the message fields
+    field_specs = [
+        SpecField.FromField(f)
+        for f in apitools_fields if f.name not in output_only_fields
+    ]
+
+    spec = {f.arg_name: self._GetFieldType(field.type, f) for f in field_specs}
+    required = [f.arg_name for f in field_specs if f.required]
+    arg_obj = arg_parsers.ArgObject(spec=spec, required_keys=required,
+                                    repeated=field.repeated,
+                                    enable_arg_dict=is_root)
+
+    return _GenerateMessageTypeUtil(field.type, arg_obj, field_specs)
+
+  def _GenerateFieldType(self, field):
+    """Returns function that parses apitools field from string.
+
+    Args:
+      field: apitools field instance
+
+    Returns:
+      type function that takes string like '1' or ['1'] and parses it
+        into 1 or [1] depending on the apitools field type
+    """
+    field_type = arg_utils.TYPES.get(field.variant)
+    # TODO(b/278780718) allow spec data to specify the field type
+    field_spec = SpecField.FromField(field)
+    arg_field = arg_parsers.ArgObject(value_type=field_type,
+                                      repeated=field_spec.repeated,
+                                      enable_arg_dict=False)
+    return _GenerateFieldTypeUtil(field, arg_field, field_spec)
+
+  def GenerateType(self, field, is_root=True):
+    """Generates an argparse type function to use to parse the argument.
+
+    Args:
+      field: apitools field instance we are generating ArgObject for
+      is_root: bool, whether this is the first level of the ArgObject
+        we are generating for.
+
+    Returns:
+        Type function that returns apitools message instance or list
+          of instances.
+    """
+    field_type = arg_utils.GetFieldType(field)
+    if field_type == arg_utils.FieldType.MAP:
+      return self._GenerateMapType(field, is_root)
+    # TODO(b/286379489): add parsing logic for cyclical fields
+    if field_type == arg_utils.FieldType.MESSAGE:
+      return self._GenerateMessageType(field, is_root)
+    return self._GenerateFieldType(field)
 
 
 class ArgDict(arg_utils.RepeatedMessageBindableType):
@@ -343,7 +577,7 @@ class ArgDict(arg_utils.RepeatedMessageBindableType):
 
   @classmethod
   def FromData(cls, data):
-    fields = [ArgDictField.FromData(d) for d in data['spec']]
+    fields = [SpecField.FromData(d) for d in data['spec']]
     if data.get('flatten'):
       if len(fields) != 2:
         raise InvalidSchemaError(
@@ -373,29 +607,11 @@ class ArgDict(arg_utils.RepeatedMessageBindableType):
       f(str) -> message, The type function that parses the ArgDict and returns
       a message instance.
     """
-    spec = {}
-    for f in self.fields:
-      api_field = arg_utils.GetFieldFromMessage(message, f.api_field)
-      t = f.type or arg_utils.TYPES.get(api_field.variant)
-      if not t:
-        raise InvalidSchemaError('Unknown type for field: ' + f.api_field)
-      spec[f.arg_name] = t
+    spec = {f.arg_name: _GetSimpleFieldType(message, f) for f in self.fields}
 
     required = [f.arg_name for f in self.fields if f.required]
     arg_dict = arg_parsers.ArgDict(spec=spec, required_keys=required)
-
-    def Parse(arg_value):
-      """Inner method that argparse actually calls."""
-      result = arg_dict(arg_value)
-      message_instance = message()
-      for f in self.fields:
-        value = result.get(f.arg_name)
-        api_field = arg_utils.GetFieldFromMessage(message, f.api_field)
-        value = arg_utils.ConvertValue(
-            api_field, value, choices=Choice.ToChoiceMap(f.choices))
-        arg_utils.SetFieldInMessage(message_instance, f.api_field, value)
-      return message_instance
-    return Parse
+    return _GenerateMessageTypeUtil(message, arg_dict, self.fields)
 
 
 class FlattenedArgDict(arg_utils.RepeatedMessageBindableType):
@@ -414,14 +630,6 @@ class FlattenedArgDict(arg_utils.RepeatedMessageBindableType):
     self.key_spec = key_field
     self.value_spec = value_field
 
-  def _GetType(self, message, field):
-    f = arg_utils.GetFieldFromMessage(
-        message, field.api_field)
-    t = field.type or arg_utils.TYPES.get(f.variant)
-    if not t:
-      raise InvalidSchemaError('Unknown type for field: ' + field.api_field)
-    return f, t
-
   def GenerateType(self, message):
     """Generates an argparse type function to use to parse the argument.
 
@@ -438,30 +646,15 @@ class FlattenedArgDict(arg_utils.RepeatedMessageBindableType):
       f(str) -> [message], The type function that parses the ArgDict and returns
       a list of message instances.
     """
-    key_field, key_type = self._GetType(message, self.key_spec)
-    value_field, value_type = self._GetType(message, self.value_spec)
+    key_type = _GetSimpleFieldType(message, self.key_spec)
+    value_type = _GetSimpleFieldType(message, self.value_spec)
     arg_dict = arg_parsers.ArgDict(key_type=key_type, value_type=value_type)
 
-    def Parse(arg_value):
-      """Inner method that argparse actually calls."""
-      result = arg_dict(arg_value)
-      messages = []
-      for k, v in sorted(six.iteritems(result)):
-        message_instance = message()
-        arg_utils.SetFieldInMessage(
-            message_instance, self.key_spec.api_field,
-            arg_utils.ConvertValue(
-                key_field, k, choices=self.key_spec.ChoiceMap()))
-        arg_utils.SetFieldInMessage(
-            message_instance, self.value_spec.api_field,
-            arg_utils.ConvertValue(
-                value_field, v, choices=self.value_spec.ChoiceMap()))
-        messages.append(message_instance)
-      return messages
-    return Parse
+    return _GenerateMapTypeUtil(
+        message, arg_dict, self.key_spec, self.value_spec)
 
 
-class ArgDictField(object):
+class SpecField(object):
   """Attributes about the fields that make up an ArgDict spec.
 
   Attributes:
@@ -469,6 +662,7 @@ class ArgDictField(object):
       should be put.
     arg_name: The name of the key in the dict.
     type: The argparse type of the value of this field.
+    repeated: Whether the field is a repeated field
     required: True if the key is required.
     choices: A static map of choice to value the user types.
   """
@@ -478,15 +672,28 @@ class ArgDictField(object):
     api_field = data['api_field']
     arg_name = data.get('arg_name', api_field)
     t = ParseType(data.get('type'))
+    repeated = data.get('repeated', False)
     required = data.get('required', True)
     choices = data.get('choices')
     choices = [Choice(d) for d in choices] if choices else None
-    return cls(api_field, arg_name, t, required, choices)
+    return cls(api_field, arg_name, t, repeated, required, choices)
 
-  def __init__(self, api_field, arg_name, t, required, choices):
+  @classmethod
+  def FromField(cls, field):
+    return cls(
+        api_field=field.name,
+        arg_name=field.name,
+        t=None,
+        required=field.required,
+        repeated=field.repeated,
+        choices=None,
+    )
+
+  def __init__(self, api_field, arg_name, t, repeated, required, choices):
     self.api_field = api_field
     self.arg_name = arg_name
     self.type = t
+    self.repeated = repeated
     self.required = required
     self.choices = choices
 

@@ -56,6 +56,13 @@ best_effort:
   help_text: |
     If provided, the Node requested here may be scheduled at the 'best effort' tier.
 
+spot:
+  arg_name: spot
+  type: bool
+  action: store_true
+  help_text: |
+    If provided, the Node requested here will be created as Spot VMs.
+
 guaranteed:
   arg_name: guaranteed
   type: bool

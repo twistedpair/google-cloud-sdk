@@ -327,7 +327,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -2201,6 +2200,33 @@ class PrivateConnection(_messages.Message):
   updateTime = _messages.StringField(11)
   vmwareEngineNetwork = _messages.StringField(12)
   vmwareEngineNetworkCanonical = _messages.StringField(13)
+
+
+class RepairManagementDnsZoneBindingRequest(_messages.Message):
+  r"""Request message for VmwareEngine.RepairManagementDnsZoneBindings
+
+  Fields:
+    etag: Optional. Checksum used to ensure that the user-provided value is up
+      to date before the server processes the request. The server compares
+      provided checksum with the current checksum of the resource. If the
+      user-provided value is out of date, this request returns an `ABORTED`
+      error.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if the
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  etag = _messages.StringField(1)
+  requestId = _messages.StringField(2)
 
 
 class ResetNsxCredentialsRequest(_messages.Message):
@@ -4354,6 +4380,30 @@ class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsPatchRe
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsRepairRequest(
+    _messages.Message
+):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsRep
+
+  airRequest object.
+
+  Fields:
+    name: Required. The resource name of the management DNS zone binding to
+      repair. Resource names are schemeless URIs that follow the conventions
+      in https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/managementDnsZoneBindings/my-management-dns-zone-binding`
+    repairManagementDnsZoneBindingRequest: A
+      RepairManagementDnsZoneBindingRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  repairManagementDnsZoneBindingRequest = _messages.MessageField(
+      'RepairManagementDnsZoneBindingRequest', 2
+  )
 
 
 class VmwareengineProjectsLocationsPrivateCloudsPatchRequest(_messages.Message):

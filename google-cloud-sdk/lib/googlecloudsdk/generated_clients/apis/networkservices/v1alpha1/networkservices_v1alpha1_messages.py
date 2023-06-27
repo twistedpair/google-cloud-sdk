@@ -467,11 +467,14 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
   r"""The request parameters that contribute to the cache key.
 
   Fields:
-    excludeHost: Optional. If `true`, requests to different hosts are cached
-      separately. **Important:** Enable this only if the hosts share the same
-      origin and content. Removing the host from the cache key might
-      inadvertently result in different objects being cached than intended,
-      depending on which route the first user matched.
+    excludeHost: Optional. If `true`, exclude a request's host from the cache
+      key. Requests with different hosts share content in the cache. If
+      `false` (the default), a request's host is included in the cache key.
+      Requests with different hosts are stored independently. **Important:**
+      Enable this only if the hosts share the same origin and content.
+      Removing the host from the cache key might inadvertently result in
+      different objects being cached than intended, depending on which route
+      the first user matched.
     excludeQueryString: Optional. If `true`, exclude query string parameters
       from the cache key. If `false` (the default), include the query string
       parameters in the cache key according to included_query_parameters and
@@ -1130,8 +1133,9 @@ class ExtensionChain(_messages.Message):
   Fields:
     extensions: Required. A set of extensions that will execute for the
       matching request. Up to 3 extensions can be defined for each
-      ExtensionChain for LbTrafficExtension resource. LbRouteExtension chains
-      are limited to 1 extension per ExtensionChain
+      ExtensionChain for LbTrafficExtension resource.
+      LbServiceSteeringExtension chains are limited to 1 extension per
+      ExtensionChain
     matchCondition: Required. Conditions under which this chain should be
       invoked for a request.
     name: Required. The name for this extension chain. The name will be logged
@@ -2431,12 +2435,17 @@ class InvalidateCacheResponse(_messages.Message):
   r"""The response used by the `InvalidateCache` method."""
 
 
-class LbRouteExtension(_messages.Message):
-  r"""Message describing LbRouteExtension object
+class LbServiceSteeringExtension(_messages.Message):
+  r"""Message describing LbServiceSteeringExtension object
+
+  Enums:
+    LoadBalancingSchemeValueValuesEnum: Required. All backend services and
+      forwarding rules referenced by this extension must share the same load
+      balancing scheme. Supported values: INTERNAL_MANAGED, EXTERNAL_MANAGED.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the
-      LbRouteExtension resource.
+      LbServiceSteeringExtension resource.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -2451,24 +2460,43 @@ class LbRouteExtension(_messages.Message):
       projects/{project}/global/forwardingRules/{forwarding_rule} or
       projects/{project}/regions/{region}/forwardingRules/{forwarding_rule}.
       At least one of the forwarding rules and gateways is required. There can
-      be only one LBRouteExtension resource per Forwarding Rule.
+      be only one LbServiceSteeringExtension resource per Forwarding Rule.
     gateways: Optional. A list of references to the Gateways to which this
       service extension will attach to in format:
       projects/{project}/locations/{location}/gateways/{gateway}. At least one
       of the forwarding rules and gateways is required. There can be only one
-      LBRouteExtension resource per Gateway.
-    labels: Optional. Set of label tags associated with the LbRouteExtension
-      resource.
-    name: Required. Name of the LbRouteExtension resource. It matches pattern
-      `projects/{project}/locations/{location}/lbRouteExtensions/{lb_route_ext
-      ension}`.
+      LbServiceSteeringExtension resource per Gateway.
+    labels: Optional. Set of label tags associated with the
+      LbServiceSteeringExtension resource.
+    loadBalancingScheme: Required. All backend services and forwarding rules
+      referenced by this extension must share the same load balancing scheme.
+      Supported values: INTERNAL_MANAGED, EXTERNAL_MANAGED.
+    name: Required. Name of the LbServiceSteeringExtension resource. It
+      matches pattern `projects/{project}/locations/{location}/lbServiceSteeri
+      ngExtensions/{lb_service_steering_extension}`.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
+  class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
+    r"""Required. All backend services and forwarding rules referenced by this
+    extension must share the same load balancing scheme. Supported values:
+    INTERNAL_MANAGED, EXTERNAL_MANAGED.
+
+    Values:
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Should not be used.
+      INTERNAL_MANAGED: Signifies that this will be used for Internal HTTP(S)
+        Load Balancing.
+      EXTERNAL_MANAGED: Signifies that this will be used for External Managed
+        HTTP(S) Load Balancing.
+    """
+    LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
+    INTERNAL_MANAGED = 1
+    EXTERNAL_MANAGED = 2
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the LbRouteExtension
-    resource.
+    r"""Optional. Set of label tags associated with the
+    LbServiceSteeringExtension resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2495,12 +2523,20 @@ class LbRouteExtension(_messages.Message):
   forwardingRules = _messages.StringField(3, repeated=True)
   gateways = _messages.StringField(4, repeated=True)
   labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class LbTrafficExtension(_messages.Message):
   r"""Message describing LbTrafficExtension object
+
+  Enums:
+    LoadBalancingSchemeValueValuesEnum: Required. All backend services and
+      forwarding rules referenced by this extension must share the same load
+      balancing scheme. Supported values: INTERNAL_MANAGED, EXTERNAL_MANAGED.
+      For more information, refer to [Choosing a load
+      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the
@@ -2527,11 +2563,34 @@ class LbTrafficExtension(_messages.Message):
       LBTrafficExtension resource per Gateway.
     labels: Optional. Set of label tags associated with the LbTrafficExtension
       resource.
+    loadBalancingScheme: Required. All backend services and forwarding rules
+      referenced by this extension must share the same load balancing scheme.
+      Supported values: INTERNAL_MANAGED, EXTERNAL_MANAGED. For more
+      information, refer to [Choosing a load
+      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
     name: Required. Name of the LbTrafficExtension resource. It matches
       pattern `projects/{project}/locations/{location}/lbTrafficExtensions/{lb
       _traffic_extension}`.
     updateTime: Output only. The timestamp when the resource was updated.
   """
+
+  class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
+    r"""Required. All backend services and forwarding rules referenced by this
+    extension must share the same load balancing scheme. Supported values:
+    INTERNAL_MANAGED, EXTERNAL_MANAGED. For more information, refer to
+    [Choosing a load balancer](https://cloud.google.com/load-
+    balancing/docs/backend-service).
+
+    Values:
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Should not be used.
+      INTERNAL_MANAGED: Signifies that this will be used for Internal HTTP(S)
+        Load Balancing.
+      EXTERNAL_MANAGED: Signifies that this will be used for External Managed
+        HTTP(S) Load Balancing.
+    """
+    LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
+    INTERNAL_MANAGED = 1
+    EXTERNAL_MANAGED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2563,8 +2622,9 @@ class LbTrafficExtension(_messages.Message):
   forwardingRules = _messages.StringField(3, repeated=True)
   gateways = _messages.StringField(4, repeated=True)
   labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class ListEdgeCacheKeysetsResponse(_messages.Message):
@@ -2689,17 +2749,17 @@ class ListHttpRoutesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class ListLbRouteExtensionsResponse(_messages.Message):
-  r"""Message for response to listing LbRouteExtensions
+class ListLbServiceSteeringExtensionsResponse(_messages.Message):
+  r"""Message for response to listing LbServiceSteeringExtensions
 
   Fields:
-    lbRouteExtensions: The list of LbRouteExtension
+    lbServiceSteeringExtensions: The list of LbServiceSteeringExtension
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
   """
 
-  lbRouteExtensions = _messages.MessageField('LbRouteExtension', 1, repeated=True)
+  lbServiceSteeringExtensions = _messages.MessageField('LbServiceSteeringExtension', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -4444,15 +4504,17 @@ class NetworkservicesProjectsLocationsHttpRoutesTestIamPermissionsRequest(_messa
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest object.
+class NetworkservicesProjectsLocationsLbServiceSteeringExtensionsCreateRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsLbServiceSteeringExtensionsCreateRequest
+  object.
 
   Fields:
-    lbRouteExtension: A LbRouteExtension resource to be passed as the request
-      body.
-    lbRouteExtensionId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and lb_route_extension_id
-      from the method_signature of Create RPC
+    lbServiceSteeringExtension: A LbServiceSteeringExtension resource to be
+      passed as the request body.
+    lbServiceSteeringExtensionId: Required. Id of the requesting object If
+      auto-generating Id server-side, remove this field and
+      lb_service_steering_extension_id from the method_signature of Create RPC
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -4467,14 +4529,16 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest(_messages.M
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  lbRouteExtension = _messages.MessageField('LbRouteExtension', 1)
-  lbRouteExtensionId = _messages.StringField(2)
+  lbServiceSteeringExtension = _messages.MessageField('LbServiceSteeringExtension', 1)
+  lbServiceSteeringExtensionId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
 
 
-class NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest object.
+class NetworkservicesProjectsLocationsLbServiceSteeringExtensionsDeleteRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsLbServiceSteeringExtensionsDeleteRequest
+  object.
 
   Fields:
     name: Required. Name of the resource
@@ -4495,8 +4559,9 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest(_messages.M
   requestId = _messages.StringField(2)
 
 
-class NetworkservicesProjectsLocationsLbRouteExtensionsGetRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsGetRequest object.
+class NetworkservicesProjectsLocationsLbServiceSteeringExtensionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbServiceSteeringExtensionsGetRequest
+  object.
 
   Fields:
     name: Required. Name of the resource
@@ -4505,8 +4570,9 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsGetRequest(_messages.Mess
   name = _messages.StringField(1, required=True)
 
 
-class NetworkservicesProjectsLocationsLbRouteExtensionsListRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsListRequest object.
+class NetworkservicesProjectsLocationsLbServiceSteeringExtensionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbServiceSteeringExtensionsListRequest
+  object.
 
   Fields:
     filter: Filtering results
@@ -4514,7 +4580,7 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsListRequest(_messages.Mes
     pageSize: Requested page size. Server may return fewer items than
       requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListLbRouteExtensionsRequest
+    parent: Required. Parent value for ListLbServiceSteeringExtensionsRequest
   """
 
   filter = _messages.StringField(1)
@@ -4524,15 +4590,17 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsListRequest(_messages.Mes
   parent = _messages.StringField(5, required=True)
 
 
-class NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest object.
+class NetworkservicesProjectsLocationsLbServiceSteeringExtensionsPatchRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsLbServiceSteeringExtensionsPatchRequest
+  object.
 
   Fields:
-    lbRouteExtension: A LbRouteExtension resource to be passed as the request
-      body.
-    name: Required. Name of the LbRouteExtension resource. It matches pattern
-      `projects/{project}/locations/{location}/lbRouteExtensions/{lb_route_ext
-      ension}`.
+    lbServiceSteeringExtension: A LbServiceSteeringExtension resource to be
+      passed as the request body.
+    name: Required. Name of the LbServiceSteeringExtension resource. It
+      matches pattern `projects/{project}/locations/{location}/lbServiceSteeri
+      ngExtensions/{lb_service_steering_extension}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -4545,13 +4613,13 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest(_messages.Me
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the LbRouteExtension resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      overwritten in the LbServiceSteeringExtension resource by the update.
+      The fields specified in the update_mask are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then all fields will be overwritten.
   """
 
-  lbRouteExtension = _messages.MessageField('LbRouteExtension', 1)
+  lbServiceSteeringExtension = _messages.MessageField('LbServiceSteeringExtension', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
@@ -6268,6 +6336,10 @@ class ServiceBinding(_messages.Message):
       `projects/*/locations/global/serviceBindings/service_binding_name`.
     service: Required. The full Service Directory Service name of the format
       projects/*/locations/*/namespaces/*/services/*
+    serviceId: Output only. The unique identifier of the Service Directory
+      Service against which the Service Binding resource is validated. This is
+      populated when the Service Binding resource is used in another resource
+      (like Backend Service). This is of the UUID4 format.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -6301,7 +6373,8 @@ class ServiceBinding(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   service = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  serviceId = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class ServiceGraph(_messages.Message):

@@ -803,7 +803,8 @@ class RunAppsOperations(object):
               integration_name=name,
               region=region,
               integration_type=integration_type,
-              services=','.join(services),
+              # sorting is done here to guarantee output for scenario tests
+              services=','.join(sorted(services)),
               latest_deployment_status=six.text_type(status),
           ))
 

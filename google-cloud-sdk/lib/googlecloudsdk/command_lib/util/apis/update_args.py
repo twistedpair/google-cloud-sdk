@@ -112,22 +112,41 @@ class UpdateArgumentGenerator(six.with_metaclass(abc.ABCMeta, object)):
     """Set of flag types that need to be converted."""
     pass
 
+  def _CreateFlag(self, flag_type, flag_prefix, value_type, action):
+    """Creates a flag.
+
+    Args:
+      flag_type: FlagType, used to determine help text
+      flag_prefix: str | None, prefix for the flag name
+      value_type: func, type that flag is used to convert user input
+      action: str, flag action
+
+    Returns:
+      base.Argument with correct params
+    """
+    if flag_prefix is not None:
+      name = flag_prefix + '-' + self.arg_name
+    else:
+      name = self.arg_name
+    arg = base.Argument(
+        '--{}'.format(name),
+        action=action,
+        help=self._GetHelpText(flag_type))
+    if action != 'store_true':
+      arg.kwargs['type'] = value_type
+    return arg
+
   @property
   def set_arg(self):
     """Flag that sets field to specifed value."""
-    return base.Argument(
-        '--{}'.format(self.arg_name),
-        type=self.flag_type,
-        action=self.action,
-        help=self._GetHelpText(FlagType.SET))
+    return self._CreateFlag(
+        FlagType.SET, None, self.flag_type, self.action)
 
   @property
   def clear_arg(self):
     """Flag that clears field."""
-    return base.Argument(
-        '--clear-{}'.format(self.arg_name),
-        action='store_true',
-        help=self._GetHelpText(FlagType.CLEAR))
+    return self._CreateFlag(
+        FlagType.CLEAR, 'clear', None, 'store_true')
 
   @property
   def update_arg(self):
@@ -174,7 +193,7 @@ class UpdateArgumentGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
     update_group = base.ArgumentGroup(required=False)
     if FlagType.UPDATE in self.flags_to_generate and self.update_arg:
-      base_group.AddArgument(self.update_arg)
+      update_group.AddArgument(self.update_arg)
 
     clear_group = base.ArgumentGroup(
         mutex=True, required=False)
@@ -339,19 +358,13 @@ class UpdateListArgumentGenerator(UpdateArgumentGenerator):
 
   @property
   def update_arg(self):
-    return base.Argument(
-        '--add-{}'.format(self.arg_name),
-        action=self.action,
-        type=self.flag_type,
-        help=self._GetHelpText(FlagType.UPDATE))
+    return self._CreateFlag(
+        FlagType.UPDATE, 'add', self.flag_type, self.action)
 
   @property
   def remove_arg(self):
-    return base.Argument(
-        '--remove-{}'.format(self.arg_name),
-        action=self.action,
-        type=self.flag_type,
-        help=self._GetHelpText(FlagType.REMOVE))
+    return self._CreateFlag(
+        FlagType.REMOVE, 'remove', self.flag_type, self.action)
 
   def _ApplyClearFlag(self, output, clear_flag):
     if clear_flag:
@@ -393,11 +406,8 @@ class UpdateMapArgumentGenerator(UpdateArgumentGenerator):
 
   @property
   def update_arg(self):
-    return base.Argument(
-        '--update-{}'.format(self.arg_name),
-        type=self.flag_type,
-        action=self.action,
-        help=self._GetHelpText(FlagType.UPDATE))
+    return self._CreateFlag(
+        FlagType.UPDATE, 'update', self.flag_type, self.action)
 
   @property
   def remove_arg(self):
@@ -411,11 +421,8 @@ class UpdateMapArgumentGenerator(UpdateArgumentGenerator):
     key_type = key_field.type or arg_utils.TYPES.get(key_field.variant)
     key_list = arg_parsers.ArgList(element_type=key_type)
 
-    return base.Argument(
-        '--remove-{}'.format(self.arg_name),
-        type=key_list,
-        action='store',
-        help=self._GetHelpText(FlagType.REMOVE))
+    return self._CreateFlag(
+        FlagType.REMOVE, 'remove', key_list, 'store')
 
   def _WrapOutput(self, output_list):
     """Wraps field AdditionalProperties in apitools message if needed.

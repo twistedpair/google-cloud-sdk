@@ -24,13 +24,15 @@ from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.core import properties
+from googlecloudsdk.generated_clients.apis.gkeonprem.v1 import gkeonprem_v1_messages as messages
 
 
 class _BareMetalAdminClusterClient(client.ClientBase):
   """Base class for GKE OnPrem Bare Metal Admin Cluster API clients."""
 
-  def _annotations(self, args):
+  def _annotations(self, args: parser_extensions.Namespace):
     """Constructs proto message AnnotationsValue."""
     annotations = getattr(args, 'annotations', {})
     additional_property_messages = []
@@ -39,16 +41,16 @@ class _BareMetalAdminClusterClient(client.ClientBase):
 
     for key, value in annotations.items():
       additional_property_messages.append(
-          self._messages.BareMetalAdminCluster.AnnotationsValue.AdditionalProperty(
+          messages.BareMetalAdminCluster.AnnotationsValue.AdditionalProperty(
               key=key, value=value
           )
       )
 
-    return self._messages.BareMetalAdminCluster.AnnotationsValue(
+    return messages.BareMetalAdminCluster.AnnotationsValue(
         additionalProperties=additional_property_messages
     )
 
-  def _island_mode_cidr_config(self, args):
+  def _island_mode_cidr_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminIslandModeCidrConfig."""
     kwargs = {
         'serviceAddressCidrBlocks': getattr(
@@ -60,33 +62,33 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminIslandModeCidrConfig(**kwargs)
+      return messages.BareMetalAdminIslandModeCidrConfig(**kwargs)
 
     return None
 
-  def _network_config(self, args):
+  def _network_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminNetworkConfig."""
     kwargs = {
         'islandModeCidr': self._island_mode_cidr_config(args),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminNetworkConfig(**kwargs)
+      return messages.BareMetalAdminNetworkConfig(**kwargs)
 
     return None
 
-  def _vip_config(self, args):
+  def _vip_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminVipConfig."""
     kwargs = {
         'controlPlaneVip': getattr(args, 'control_plane_vip', None),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminVipConfig(**kwargs)
+      return messages.BareMetalAdminVipConfig(**kwargs)
 
     return None
 
-  def _port_config(self, args):
+  def _port_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminPortConfig."""
     kwargs = {
         'controlPlaneLoadBalancerPort': getattr(
@@ -95,22 +97,22 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminPortConfig(**kwargs)
+      return messages.BareMetalAdminPortConfig(**kwargs)
 
     return None
 
-  def _manual_lb_config(self, args):
+  def _manual_lb_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminManualLbConfig."""
     kwargs = {
         'enabled': getattr(args, 'enable_manual_lb', False),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminManualLbConfig(**kwargs)
+      return messages.BareMetalAdminManualLbConfig(**kwargs)
 
     return None
 
-  def _load_balancer_config(self, args):
+  def _load_balancer_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminLoadBalancerConfig."""
     kwargs = {
         'manualLbConfig': self._manual_lb_config(args),
@@ -119,11 +121,11 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminLoadBalancerConfig(**kwargs)
+      return messages.BareMetalAdminLoadBalancerConfig(**kwargs)
 
     return None
 
-  def _lvp_config(self, args):
+  def _lvp_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalLvpConfig."""
     kwargs = {
         'path': getattr(args, 'lvp_share_path', None),
@@ -131,11 +133,11 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalLvpConfig(**kwargs)
+      return messages.BareMetalLvpConfig(**kwargs)
 
     return None
 
-  def _lvp_share_config(self, args):
+  def _lvp_share_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalLvpShareConfig."""
     kwargs = {
         'lvpConfig': self._lvp_config(args),
@@ -143,11 +145,11 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalLvpShareConfig(**kwargs)
+      return messages.BareMetalLvpShareConfig(**kwargs)
 
     return None
 
-  def _lvp_node_mounts_config(self, args):
+  def _lvp_node_mounts_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalLvpConfig."""
     kwargs = {
         'path': getattr(args, 'lvp_node_mounts_config_path', None),
@@ -157,11 +159,11 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalLvpConfig(**kwargs)
+      return messages.BareMetalLvpConfig(**kwargs)
 
     return None
 
-  def _storage_config(self, args):
+  def _storage_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminStorageConfig."""
     kwargs = {
         'lvpShareConfig': self._lvp_share_config(args),
@@ -169,7 +171,7 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminStorageConfig(**kwargs)
+      return messages.BareMetalAdminStorageConfig(**kwargs)
 
     return None
 
@@ -181,12 +183,12 @@ class _BareMetalAdminClusterClient(client.ClientBase):
 
     for key, value in labels.items():
       additional_property_messages.append(
-          self._messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
+          messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
               key=key, value=value
           )
       )
 
-    labels_value_message = self._messages.BareMetalNodeConfig.LabelsValue(
+    labels_value_message = messages.BareMetalNodeConfig.LabelsValue(
         additionalProperties=additional_property_messages
     )
 
@@ -208,9 +210,11 @@ class _BareMetalAdminClusterClient(client.ClientBase):
         ),
     }
 
-    return self._messages.BareMetalNodeConfig(**kwargs)
+    return messages.BareMetalNodeConfig(**kwargs)
 
-  def _control_plane_node_configs_from_file(self, args):
+  def _control_plane_node_configs_from_file(
+      self, args: parser_extensions.Namespace
+  ):
     """Constructs proto message field node_configs."""
     if not args.control_plane_node_configs_from_file:
       return []
@@ -233,7 +237,7 @@ class _BareMetalAdminClusterClient(client.ClientBase):
 
     return control_plane_node_configs_messages
 
-  def _control_plane_node_taints(self, args):
+  def _control_plane_node_taints(self, args: parser_extensions.Namespace):
     """Constructs proto message NodeTaint."""
     taint_messages = []
     node_taints = getattr(args, 'control_plane_node_taints', {})
@@ -242,11 +246,11 @@ class _BareMetalAdminClusterClient(client.ClientBase):
 
     for node_taint in node_taints.items():
       taint_object = self._parse_node_taint(node_taint)
-      taint_messages.append(self._messages.NodeTaint(**taint_object))
+      taint_messages.append(messages.NodeTaint(**taint_object))
 
     return taint_messages
 
-  def _control_plane_node_labels(self, args):
+  def _control_plane_node_labels(self, args: parser_extensions.Namespace):
     """Constructs proto message LabelsValue."""
     node_labels = getattr(args, 'control_plane_node_labels', {})
     additional_property_messages = []
@@ -255,12 +259,12 @@ class _BareMetalAdminClusterClient(client.ClientBase):
 
     for key, value in node_labels.items():
       additional_property_messages.append(
-          self._messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
+          messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
               key=key, value=value
           )
       )
 
-    labels_value_message = self._messages.BareMetalNodePoolConfig.LabelsValue(
+    labels_value_message = messages.BareMetalNodePoolConfig.LabelsValue(
         additionalProperties=additional_property_messages
     )
 
@@ -296,12 +300,12 @@ class _BareMetalAdminClusterClient(client.ClientBase):
             )
         )
       additional_property_messages.append(
-          self._messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
+          messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
               key=key_val_pair[0], value=key_val_pair[1]
           )
       )
 
-    labels_value_message = self._messages.BareMetalNodeConfig.LabelsValue(
+    labels_value_message = messages.BareMetalNodeConfig.LabelsValue(
         additionalProperties=additional_property_messages
     )
 
@@ -315,11 +319,13 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalNodeConfig(**kwargs)
+      return messages.BareMetalNodeConfig(**kwargs)
 
     return None
 
-  def _control_plane_node_configs_from_flag(self, args):
+  def _control_plane_node_configs_from_flag(
+      self, args: parser_extensions.Namespace
+  ):
     """Constructs proto message field node_configs."""
     node_config_flag_value = (
         getattr(args, 'control_plane_node_configs', [])
@@ -331,7 +337,7 @@ class _BareMetalAdminClusterClient(client.ClientBase):
         self._node_config(node_config) for node_config in node_config_flag_value
     ]
 
-  def _node_pool_config(self, args):
+  def _node_pool_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalNodePoolConfig."""
     if 'control_plane_node_configs_from_file' in args.GetSpecifiedArgsDict():
       node_configs = self._control_plane_node_configs_from_file(args)
@@ -345,36 +351,34 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalNodePoolConfig(**kwargs)
+      return messages.BareMetalNodePoolConfig(**kwargs)
 
     return None
 
-  def _control_plane_node_pool_config(self, args):
+  def _control_plane_node_pool_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminControlPlaneNodePoolConfig."""
     kwargs = {
         'nodePoolConfig': self._node_pool_config(args),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminControlPlaneNodePoolConfig(**kwargs)
+      return messages.BareMetalAdminControlPlaneNodePoolConfig(**kwargs)
 
     return None
 
-  def _api_server_args(self, args):
+  def _api_server_args(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminApiServerArgument."""
     api_server_args = []
     api_server_args_flag_value = getattr(args, 'api_server_args', None)
     if api_server_args_flag_value:
       for key, val in api_server_args_flag_value.items():
         api_server_args.append(
-            self._messages.BareMetalAdminApiServerArgument(
-                argument=key, value=val
-            )
+            messages.BareMetalAdminApiServerArgument(argument=key, value=val)
         )
 
     return api_server_args
 
-  def _control_plane_config(self, args):
+  def _control_plane_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminControlPlaneConfig."""
     kwargs = {
         'controlPlaneNodePoolConfig': self._control_plane_node_pool_config(
@@ -384,11 +388,11 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminControlPlaneConfig(**kwargs)
+      return messages.BareMetalAdminControlPlaneConfig(**kwargs)
 
     return None
 
-  def _proxy_config(self, args):
+  def _proxy_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminProxyConfig."""
     kwargs = {
         'uri': getattr(args, 'uri', None),
@@ -396,22 +400,22 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminProxyConfig(**kwargs)
+      return messages.BareMetalAdminProxyConfig(**kwargs)
 
     return None
 
-  def _cluster_operations_config(self, args):
+  def _cluster_operations_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminClusterOperationsConfig ."""
     kwargs = {
         'enableApplicationLogs': getattr(args, 'enable_application_logs', None),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminClusterOperationsConfig(**kwargs)
+      return messages.BareMetalAdminClusterOperationsConfig(**kwargs)
 
     return None
 
-  def _maintenance_config(self, args):
+  def _maintenance_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminMaintenanceConfig."""
     kwargs = {
         'maintenanceAddressCidrBlocks': getattr(
@@ -420,67 +424,67 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminMaintenanceConfig(**kwargs)
+      return messages.BareMetalAdminMaintenanceConfig(**kwargs)
 
     return None
 
-  def _workload_node_config(self, args):
+  def _workload_node_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminWorkloadNodeConfig."""
     kwargs = {
         'maxPodsPerNode': getattr(args, 'max_pods_per_node', None),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminWorkloadNodeConfig(**kwargs)
+      return messages.BareMetalAdminWorkloadNodeConfig(**kwargs)
 
     return None
 
-  def _node_access_config(self, args):
+  def _node_access_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminNodeAccessConfig."""
     kwargs = {
         'loginUser': getattr(args, 'login_user', 'root'),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminNodeAccessConfig(**kwargs)
+      return messages.BareMetalAdminNodeAccessConfig(**kwargs)
 
     return None
 
   # TODO(b/257292798): Move to common directory
-  def _cluster_users(self, args):
+  def _cluster_users(self, args: parser_extensions.Namespace):
     """Constructs repeated proto message ClusterUser."""
     cluster_user_messages = []
     admin_users = getattr(args, 'admin_users', None)
     if admin_users:
       return [
-          self._messages.ClusterUser(username=admin_user)
+          messages.ClusterUser(username=admin_user)
           for admin_user in admin_users
       ]
     return cluster_user_messages
 
-  def _authorization(self, args):
+  def _authorization(self, args: parser_extensions.Namespace):
     """Constructs proto message Authorization."""
     kwargs = {
         'adminUsers': self._cluster_users(args),
     }
 
     if any(kwargs.values()):
-      return self._messages.Authorization(**kwargs)
+      return messages.Authorization(**kwargs)
 
     return None
 
-  def _security_config(self, args):
+  def _security_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminSecurityConfig."""
     kwargs = {
         'authorization': self._authorization(args),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminSecurityConfig(**kwargs)
+      return messages.BareMetalAdminSecurityConfig(**kwargs)
 
     return None
 
-  def _bare_metal_admin_cluster(self, args):
+  def _bare_metal_admin_cluster(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalAdminCluster."""
     kwargs = {
         'name': self._admin_cluster_name(args),
@@ -500,7 +504,7 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminCluster(**kwargs)
+      return messages.BareMetalAdminCluster(**kwargs)
 
     return None
 
@@ -512,21 +516,21 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
     super(AdminClustersClient, self).__init__(**kwargs)
     self._service = self._client.projects_locations_bareMetalAdminClusters
 
-  def Enroll(self, args):
+  def Enroll(self, args: parser_extensions.Namespace):
     """Enrolls an admin cluster to Anthos on bare metal."""
     kwargs = {
         'membership': self._admin_cluster_membership_name(args),
         'bareMetalAdminClusterId': self._admin_cluster_id(args),
     }
-    req = self._messages.GkeonpremProjectsLocationsBareMetalAdminClustersEnrollRequest(
+    req = messages.GkeonpremProjectsLocationsBareMetalAdminClustersEnrollRequest(
         parent=self._admin_cluster_parent(args),
-        enrollBareMetalAdminClusterRequest=self._messages.EnrollBareMetalAdminClusterRequest(
+        enrollBareMetalAdminClusterRequest=messages.EnrollBareMetalAdminClusterRequest(
             **kwargs
         ),
     )
     return self._service.Enroll(req)
 
-  def Unenroll(self, args):
+  def Unenroll(self, args: parser_extensions.Namespace):
     """Unenrolls an Anthos on bare metal admin cluster."""
     kwargs = {
         'name': self._admin_cluster_name(args),
@@ -534,12 +538,12 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
         'validateOnly': self.GetFlag(args, 'validate_only'),
         'ignoreErrors': self.GetFlag(args, 'ignore_errors'),
     }
-    req = self._messages.GkeonpremProjectsLocationsBareMetalAdminClustersUnenrollRequest(
+    req = messages.GkeonpremProjectsLocationsBareMetalAdminClustersUnenrollRequest(
         **kwargs
     )
     return self._service.Unenroll(req)
 
-  def List(self, args):
+  def List(self, args: parser_extensions.Namespace):
     """Lists admin clusters in the GKE On-Prem bare metal API."""
     # If location is not specified, and container_bare_metal/location is not set
     # list clusters of all locations within a project.
@@ -549,8 +553,10 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
     ):
       args.location = '-'
 
-    list_req = self._messages.GkeonpremProjectsLocationsBareMetalAdminClustersListRequest(
-        parent=self._location_name(args)
+    list_req = (
+        messages.GkeonpremProjectsLocationsBareMetalAdminClustersListRequest(
+            parent=self._location_name(args)
+        )
     )
 
     return list_pager.YieldFromList(
@@ -562,7 +568,7 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
         batch_size_attribute='pageSize',
     )
 
-  def QueryVersionConfig(self, args):
+  def QueryVersionConfig(self, args: parser_extensions.Namespace):
     """Query Anthos on bare metal admin version configuration."""
     kwargs = {
         'upgradeConfig_clusterName': self._admin_cluster_name(args),
@@ -571,17 +577,17 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
 
     # This is a workaround for the limitation in apitools with nested messages.
     encoding.AddCustomJsonFieldMapping(
-        self._messages.GkeonpremProjectsLocationsBareMetalAdminClustersQueryVersionConfigRequest,
+        messages.GkeonpremProjectsLocationsBareMetalAdminClustersQueryVersionConfigRequest,
         'upgradeConfig_clusterName',
         'upgradeConfig.clusterName',
     )
 
-    req = self._messages.GkeonpremProjectsLocationsBareMetalAdminClustersQueryVersionConfigRequest(
+    req = messages.GkeonpremProjectsLocationsBareMetalAdminClustersQueryVersionConfigRequest(
         **kwargs
     )
     return self._service.QueryVersionConfig(req)
 
-  def Create(self, args):
+  def Create(self, args: parser_extensions.Namespace):
     """Creates an admin cluster in Anthos on bare metal."""
     kwargs = {
         'parent': self._admin_cluster_parent(args),
@@ -589,30 +595,33 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
         'bareMetalAdminCluster': self._bare_metal_admin_cluster(args),
         'bareMetalAdminClusterId': self._admin_cluster_id(args),
     }
-    req = self._messages.GkeonpremProjectsLocationsBareMetalAdminClustersCreateRequest(
-        **kwargs
+    req = (
+        messages.GkeonpremProjectsLocationsBareMetalAdminClustersCreateRequest(
+            **kwargs
+        )
     )
     return self._service.Create(req)
 
-  def Update(self, args):
+  def Update(self, args: parser_extensions.Namespace):
     """Updates an admin cluster in Anthos on bare metal."""
     kwargs = {
-        'name':
-            self._admin_cluster_name(args),
-        'updateMask':
-            update_mask.get_update_mask(
-                args,
-                update_mask.BARE_METAL_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS),
+        'name': self._admin_cluster_name(args),
+        'updateMask': update_mask.get_update_mask(
+            args, update_mask.BARE_METAL_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS
+        ),
         'validateOnly': getattr(args, 'validate_only', False),
-        'bareMetalAdminCluster':
-            self._bare_metal_admin_cluster_for_update(args),
+        'bareMetalAdminCluster': self._bare_metal_admin_cluster_for_update(
+            args
+        ),
     }
-    req = self._messages.GkeonpremProjectsLocationsBareMetalAdminClustersPatchRequest(
+    req = messages.GkeonpremProjectsLocationsBareMetalAdminClustersPatchRequest(
         **kwargs
     )
     return self._service.Patch(req)
 
-  def _bare_metal_admin_cluster_for_update(self, args):
+  def _bare_metal_admin_cluster_for_update(
+      self, args: parser_extensions.Namespace
+  ):
     """Constructs proto message BareMetalAdminCluster."""
     kwargs = {
         'description': getattr(args, 'description', None),
@@ -628,5 +637,5 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
         'nodeAccessConfig': self._node_access_config(args),
     }
     if any(kwargs.values()):
-      return self._messages.BareMetalAdminCluster(**kwargs)
+      return messages.BareMetalAdminCluster(**kwargs)
     return None

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2021 Google LLC. All Rights Reserved.
+# Copyright 2023 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+
+from googlecloudsdk.command_lib.deploy import automation_util
 from googlecloudsdk.command_lib.deploy import deploy_util
 from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import target_util
@@ -29,13 +31,25 @@ from googlecloudsdk.core import resources
 PIPELINE_UPDATE_MASK = '*,labels'
 DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'
 TARGET_KIND_V1BETA1 = 'Target'
+AUTOMATION_KIND = 'Automation'
 API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'
 API_VERSION_V1 = 'deploy.cloud.google.com/v1'
-METADATA_FIELDS = ['annotations', 'labels']
 USAGE_CHOICES = ['RENDER', 'DEPLOY']
 # If changing these fields also change them in the UI code.
-EXCLUDE_FIELDS = ['createTime', 'etag', 'uid', 'updateTime', 'name'
-                 ] + METADATA_FIELDS
+NAME_FIELD = 'name'
+ADVANCE_ROLLOUT_FIELD = 'advanceRollout'
+PROMOTE_RELEASE_FIELD = 'promoteRelease'
+WAIT_FIELD = 'wait'
+LABELS_FIELD = 'labels'
+ANNOTATIONS_FIELD = 'annotations'
+METADATA_FIELDS = [ANNOTATIONS_FIELD, LABELS_FIELD]
+EXCLUDE_FIELDS = [
+    'createTime',
+    'etag',
+    'uid',
+    'updateTime',
+    NAME_FIELD,
+] + METADATA_FIELDS
 
 
 def ParseDeployConfig(messages, manifests, region):
@@ -52,7 +66,11 @@ def ParseDeployConfig(messages, manifests, region):
     exceptions.CloudDeployConfigError, if the declarative definition is
     incorrect.
   """
-  resource_dict = {DELIVERY_PIPELINE_KIND_V1BETA1: [], TARGET_KIND_V1BETA1: []}
+  resource_dict = {
+      DELIVERY_PIPELINE_KIND_V1BETA1: [],
+      TARGET_KIND_V1BETA1: [],
+      AUTOMATION_KIND: [],
+  }
   project = properties.VALUES.core.project.GetOrFail()
   for manifest in manifests:
     if manifest.get('apiVersion') is None:
@@ -91,17 +109,24 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
     incorrect.
   """
   metadata = manifest.get('metadata')
-  if not metadata or not metadata.get('name'):
+  if not metadata or not metadata.get(NAME_FIELD):
     raise exceptions.CloudDeployConfigError(
         'missing required field .metadata.name in {}'.format(kind))
   if kind == DELIVERY_PIPELINE_KIND_V1BETA1:
     resource_type = deploy_util.ResourceType.DELIVERY_PIPELINE
     resource, resource_ref = _CreateDeliveryPipelineResource(
-        messages, metadata['name'], project, region)
+        messages, metadata[NAME_FIELD], project, region
+    )
   elif kind == TARGET_KIND_V1BETA1:
     resource_type = deploy_util.ResourceType.TARGET
-    resource, resource_ref = _CreateTargetResource(messages, metadata['name'],
-                                                   project, region)
+    resource, resource_ref = _CreateTargetResource(
+        messages, metadata[NAME_FIELD], project, region
+    )
+  elif kind == AUTOMATION_KIND:
+    resource_type = deploy_util.ResourceType.AUTOMATION
+    resource, resource_ref = _CreateAutomationResource(
+        messages, metadata[NAME_FIELD], project, region
+    )
   else:
     raise exceptions.CloudDeployConfigError(
         'kind {} not supported'.format(kind))
@@ -124,15 +149,25 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
         stages = serial_pipeline.get('stages')
         for stage in stages:
           SetDeployParametersForPipelineStage(messages, stage)
-
+      if field == 'selector' and kind == AUTOMATION_KIND:
+        SetAutomationSelector(messages, resource, value)
+        continue
+      if field == 'rules' and kind == AUTOMATION_KIND:
+        SetAutomationRules(messages, resource, value)
+        continue
       setattr(resource, field, value)
 
   # Sets the properties in metadata.
   for field in metadata:
-    if field not in ['name', 'annotations', 'labels']:
+    if field not in [NAME_FIELD, ANNOTATIONS_FIELD, LABELS_FIELD]:
       setattr(resource, field, metadata.get(field))
-  deploy_util.SetMetadata(messages, resource, resource_type,
-                          metadata.get('annotations'), metadata.get('labels'))
+  deploy_util.SetMetadata(
+      messages,
+      resource,
+      resource_type,
+      metadata.get(ANNOTATIONS_FIELD),
+      metadata.get(LABELS_FIELD),
+  )
 
   resource_dict[kind].append(resource)
 
@@ -163,6 +198,14 @@ def _CreateDeliveryPipelineResource(messages, delivery_pipeline_name, project,
   return resource, resource_ref
 
 
+def _CreateAutomationResource(messages, name, project, region):
+  resource = messages.Automation()
+  resource_ref = automation_util.AutomationReference(name, project, region)
+  resource.name = resource_ref.RelativeName()
+
+  return resource, resource_ref
+
+
 def ProtoToManifest(resource, resource_ref, kind):
   """Converts a resource message to a cloud deploy resource manifest.
 
@@ -185,7 +228,7 @@ def ProtoToManifest(resource, resource_ref, kind):
     if v:
       manifest['metadata'][k] = v
   # Sets the name to resource ID instead of the full name.
-  manifest['metadata']['name'] = resource_ref.Name()
+  manifest['metadata'][NAME_FIELD] = resource_ref.Name()
 
   for f in resource.all_fields():
     if f.name in EXCLUDE_FIELDS:
@@ -205,8 +248,8 @@ def SetExecutionConfig(messages, target, execution_configs):
     messages: module containing the definitions of messages for Cloud Deploy.
     target:  googlecloudsdk.generated_clients.apis.clouddeploy.Target message.
     execution_configs:
-      [googlecloudsdk.generated_clients.apis.clouddeploy.ExecutionConfig], list of
-      ExecutionConfig messages.
+      [googlecloudsdk.generated_clients.apis.clouddeploy.ExecutionConfig], list
+      of ExecutionConfig messages.
 
   Raises:
     arg_parsers.ArgumentTypeError: if usage is not a valid enum.
@@ -301,3 +344,64 @@ def SetDeployParametersForTarget(messages,
             value=value))
   target.deployParameters = dps_value
 
+
+def SetAutomationSelector(messages, automation, selectors):
+  """Sets the selectors field of cloud deploy automation resource message.
+
+  Args:
+    messages: module containing the definitions of messages for Cloud Deploy.
+    automation:  googlecloudsdk.generated_clients.apis.clouddeploy.Automation
+      message.
+    selectors:
+      [googlecloudsdk.generated_clients.apis.clouddeploy.TargetAttributes], list
+      of TargetAttributes messages.
+  """
+  automation.selector = messages.AutomationResourceSelector()
+  for selector in selectors:
+    target_attribute = messages.TargetAttribute()
+    message = selector.get('target')
+    for field in message:
+      value = message.get(field)
+      if field == 'id':
+        setattr(target_attribute, field, value)
+      if field == LABELS_FIELD:
+        deploy_util.SetMetadata(
+            messages,
+            target_attribute,
+            deploy_util.ResourceType.TARGET_ATTRIBUTE,
+            None,
+            value,
+        )
+    automation.selector.targets.append(target_attribute)
+
+
+def SetAutomationRules(messages, automation, rules):
+  """Sets the rules field of cloud deploy automation resource message.
+
+  Args:
+    messages: module containing the definitions of messages for Cloud Deploy.
+    automation:  googlecloudsdk.generated_clients.apis.clouddeploy.Automation
+      message.
+    rules: [automation rule message], list of messages that are usd to create
+      googlecloudsdk.generated_clients.apis.clouddeploy.AutomationRule messages.
+  """
+  for rule in rules:
+    automation_rule = messages.AutomationRule()
+    if rule.get(PROMOTE_RELEASE_FIELD):
+      message = rule.get(PROMOTE_RELEASE_FIELD)
+      promote_release = messages.PromoteReleaseRule(
+          id=message.get(NAME_FIELD),
+          wait=message.get(WAIT_FIELD),
+          targetId=message.get('toTargetId'),
+          phase=message.get('toPhase'),
+      )
+      automation_rule.promoteReleaseRule = promote_release
+    if rule.get(ADVANCE_ROLLOUT_FIELD):
+      message = rule.get(ADVANCE_ROLLOUT_FIELD)
+      advance_rollout = messages.AdvanceRolloutRule(
+          id=message.get(NAME_FIELD),
+          wait=message.get(WAIT_FIELD),
+          phases=message.get('fromPhases'),
+      )
+      automation_rule.advanceRolloutRule = advance_rollout
+    automation.rules.append(automation_rule)

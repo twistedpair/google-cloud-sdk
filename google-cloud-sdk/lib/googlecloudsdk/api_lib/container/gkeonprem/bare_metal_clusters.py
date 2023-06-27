@@ -24,29 +24,31 @@ from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.core import properties
+from googlecloudsdk.generated_clients.apis.gkeonprem.v1 import gkeonprem_v1_messages as messages
 
 
 class _BareMetalClusterClient(client.ClientBase):
   """Base class for GKE OnPrem Bare Metal API clients."""
 
-  def _create_annotations(self, args):
+  def _create_annotations(self, args: parser_extensions.Namespace):
     """Constructs proto message AnnotationsValue for create command."""
     annotations = getattr(args, 'annotations', {})
 
     return self._dict_to_annotations_message(annotations)
 
-  def _add_annotations(self, args):
+  def _add_annotations(self, args: parser_extensions.Namespace):
     """Constructs proto message AnnotationsValue for adding new annotations."""
     result = {**self._get_current_annotations(args), **args.add_annotations}
 
     return self._dict_to_annotations_message(result)
 
-  def _clear_annotations(self, args):
+  def _clear_annotations(self):
     """Constructs proto message AnnotationsValue for clearing annotations."""
-    return self._messages.BareMetalCluster.AnnotationsValue()
+    return messages.BareMetalCluster.AnnotationsValue()
 
-  def _remove_annotations(self, args):
+  def _remove_annotations(self, args: parser_extensions.Namespace):
     """Constructs proto message AnnotationsValue for removing annotations."""
     curr_annotations = self._get_current_annotations(args)
     updated_annotations = {
@@ -57,11 +59,11 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return self._dict_to_annotations_message(updated_annotations)
 
-  def _set_annotations(self, args):
+  def _set_annotations(self, args: parser_extensions.Namespace):
     """Constructs proto message AnnotationsValue for setting annotations."""
     return self._dict_to_annotations_message(args.set_annotations)
 
-  def _get_current_annotations(self, args):
+  def _get_current_annotations(self, args: parser_extensions.Namespace):
     """Fetches the standalone cluster annotations."""
     cluster_ref = args.CONCEPTS.cluster.Parse()
     cluster_response = self.Describe(cluster_ref)
@@ -73,14 +75,14 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return curr_annotations
 
-  def _update_annotations(self, args):
+  def _update_annotations(self, args: parser_extensions.Namespace):
     """Constructs proto message AnnotationsValue for update command."""
     specified_args = args.GetSpecifiedArgsDict()
     if 'add_annotations' in specified_args:
       return self._add_annotations(args)
 
     if 'clear_annotations' in specified_args:
-      return self._clear_annotations(args)
+      return self._clear_annotations()
 
     if 'remove_annotations' in specified_args:
       return self._remove_annotations(args)
@@ -96,19 +98,17 @@ class _BareMetalClusterClient(client.ClientBase):
 
     for key, value in annotations.items():
       additional_property_messages.append(
-          self._messages.BareMetalCluster.AnnotationsValue.AdditionalProperty(
+          messages.BareMetalCluster.AnnotationsValue.AdditionalProperty(
               key=key, value=value
           )
       )
 
-    annotation_value_message = (
-        self._messages.BareMetalCluster.AnnotationsValue(
-            additionalProperties=additional_property_messages
-        )
+    annotation_value_message = messages.BareMetalCluster.AnnotationsValue(
+        additionalProperties=additional_property_messages
     )
     return annotation_value_message
 
-  def _annotations(self, args):
+  def _annotations(self, args: parser_extensions.Namespace):
     """Constructs proto message AnnotationsValue."""
     if args.command_path[-1] == 'update':
       return self._update_annotations(args)
@@ -118,7 +118,7 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return None
 
-  def _island_mode_cidr_config(self, args):
+  def _island_mode_cidr_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalIslandModeCidrConfig."""
     kwargs = {
         'serviceAddressCidrBlocks': getattr(
@@ -130,21 +130,21 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalIslandModeCidrConfig(**kwargs)
+      return messages.BareMetalIslandModeCidrConfig(**kwargs)
 
     return None
 
-  def _sr_iov_config(self, args):
+  def _sr_iov_config(self, args: parser_extensions.Namespace):
     kwargs = {
         'enabled': self.sr_iov_config_enabled(args),
     }
 
     if self.IsSet(kwargs):
-      return self._messages.BareMetalSrIovConfig(**kwargs)
+      return messages.BareMetalSrIovConfig(**kwargs)
 
     return None
 
-  def sr_iov_config_enabled(self, args):
+  def sr_iov_config_enabled(self, args: parser_extensions.Namespace):
     if 'enable_sr_iov_config' in args.GetSpecifiedArgsDict():
       return True
     elif 'disable_sr_iov_config' in args.GetSpecifiedArgsDict():
@@ -152,15 +152,17 @@ class _BareMetalClusterClient(client.ClientBase):
     else:
       return None
 
-  def _multiple_network_interfaces_config(self, args):
+  def _multiple_network_interfaces_config(
+      self, args: parser_extensions.Namespace
+  ):
     kwargs = {
         'enabled': self.GetFlag(args, 'enable_multi_nic_config'),
     }
     if self.IsSet(kwargs):
-      return self._messages.BareMetalMultipleNetworkInterfacesConfig(**kwargs)
+      return messages.BareMetalMultipleNetworkInterfacesConfig(**kwargs)
     return None
 
-  def _network_config(self, args):
+  def _network_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalNetworkConfig."""
     kwargs = {
         'islandModeCidr': self._island_mode_cidr_config(args),
@@ -172,11 +174,11 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if self.IsSet(kwargs):
-      return self._messages.BareMetalNetworkConfig(**kwargs)
+      return messages.BareMetalNetworkConfig(**kwargs)
 
     return None
 
-  def _vip_config(self, args):
+  def _vip_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalVipConfig."""
     kwargs = {
         'controlPlaneVip': getattr(args, 'control_plane_vip', None),
@@ -184,11 +186,11 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalVipConfig(**kwargs)
+      return messages.BareMetalVipConfig(**kwargs)
 
     return None
 
-  def _port_config(self, args):
+  def _port_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalPortConfig."""
     kwargs = {
         'controlPlaneLoadBalancerPort': getattr(
@@ -197,11 +199,11 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalPortConfig(**kwargs)
+      return messages.BareMetalPortConfig(**kwargs)
 
     return None
 
-  def _address_pools_from_file(self, args):
+  def _address_pools_from_file(self, args: parser_extensions.Namespace):
     """Constructs proto message field address_pools."""
     if not args.metal_lb_address_pools_from_file:
       return []
@@ -245,16 +247,16 @@ class _BareMetalClusterClient(client.ClientBase):
         'pool': pool,
     }
 
-    return self._messages.BareMetalLoadBalancerAddressPool(**kwargs)
+    return messages.BareMetalLoadBalancerAddressPool(**kwargs)
 
-  def _address_pools_from_flag(self, args):
+  def _address_pools_from_flag(self, args: parser_extensions.Namespace):
     if not args.metal_lb_address_pools:
       return []
 
     address_pools = []
     for address_pool in args.metal_lb_address_pools:
       address_pools.append(
-          self._messages.BareMetalLoadBalancerAddressPool(
+          messages.BareMetalLoadBalancerAddressPool(
               addresses=address_pool.get('addresses', []),
               avoidBuggyIps=address_pool.get('avoid-buggy-ips', None),
               manualAssign=address_pool.get('manual-assign', None),
@@ -278,9 +280,9 @@ class _BareMetalClusterClient(client.ClientBase):
         'labels': self._node_labels(metal_lb_node_config.get('labels', {})),
     }
 
-    return self._messages.BareMetalNodeConfig(**kwargs)
+    return messages.BareMetalNodeConfig(**kwargs)
 
-  def _metal_lb_node_configs_from_file(self, args):
+  def _metal_lb_node_configs_from_file(self, args: parser_extensions.Namespace):
     """Constructs proto message field node_configs."""
     if not args.metal_lb_load_balancer_node_configs_from_file:
       return []
@@ -335,12 +337,12 @@ class _BareMetalClusterClient(client.ClientBase):
             )
         )
       additional_property_messages.append(
-          self._messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
+          messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
               key=key_val_pair[0], value=key_val_pair[1]
           )
       )
 
-    labels_value_message = self._messages.BareMetalNodeConfig.LabelsValue(
+    labels_value_message = messages.BareMetalNodeConfig.LabelsValue(
         additionalProperties=additional_property_messages
     )
 
@@ -354,11 +356,11 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalNodeConfig(**kwargs)
+      return messages.BareMetalNodeConfig(**kwargs)
 
     return None
 
-  def _metal_lb_node_configs_from_flag(self, args):
+  def _metal_lb_node_configs_from_flag(self, args: parser_extensions.Namespace):
     """Constructs proto message field node_configs."""
     node_config_flag_value = (
         getattr(args, 'metal_lb_load_balancer_node_configs', [])
@@ -370,7 +372,7 @@ class _BareMetalClusterClient(client.ClientBase):
         self.node_config(node_config) for node_config in node_config_flag_value
     ]
 
-  def _metal_lb_node_taints(self, args):
+  def _metal_lb_node_taints(self, args: parser_extensions.Namespace):
     """Constructs proto message NodeTaint."""
     taint_messages = []
     node_taints = getattr(args, 'metal_lb_load_balancer_node_taints', {})
@@ -379,11 +381,11 @@ class _BareMetalClusterClient(client.ClientBase):
 
     for node_taint in node_taints.items():
       taint_object = self._parse_node_taint(node_taint)
-      taint_messages.append(self._messages.NodeTaint(**taint_object))
+      taint_messages.append(messages.NodeTaint(**taint_object))
 
     return taint_messages
 
-  def _metal_lb_labels(self, args):
+  def _metal_lb_labels(self, args: parser_extensions.Namespace):
     """Constructs proto message LabelsValue."""
     node_labels = getattr(args, 'metal_lb_load_balancer_node_labels', {})
     additional_property_messages = []
@@ -393,18 +395,20 @@ class _BareMetalClusterClient(client.ClientBase):
 
     for key, value in node_labels.items():
       additional_property_messages.append(
-          self._messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
+          messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
               key=key, value=value
           )
       )
 
-    labels_value_message = self._messages.BareMetalNodePoolConfig.LabelsValue(
+    labels_value_message = messages.BareMetalNodePoolConfig.LabelsValue(
         additionalProperties=additional_property_messages
     )
 
     return labels_value_message
 
-  def _metal_lb_load_balancer_node_pool_config(self, args):
+  def _metal_lb_load_balancer_node_pool_config(
+      self, args: parser_extensions.Namespace
+  ):
     """Constructs proto message BareMetalNodePoolConfig."""
     if (
         'metal_lb_load_balancer_node_configs_from_file'
@@ -422,10 +426,12 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalNodePoolConfig(**kwargs)
+      return messages.BareMetalNodePoolConfig(**kwargs)
     return None
 
-  def _metal_lb_serialize_image_pulls_disabled(self, args):
+  def _metal_lb_serialize_image_pulls_disabled(
+      self, args: parser_extensions.Namespace
+  ):
     if (
         'enable_metal_lb_load_balancer_serialize_image_pulls'
         in args.GetSpecifiedArgsDict()
@@ -439,7 +445,7 @@ class _BareMetalClusterClient(client.ClientBase):
     else:
       return None
 
-  def _metal_lb_kubelet_config(self, args):
+  def _metal_lb_kubelet_config(self, args: parser_extensions.Namespace):
     kwargs = {
         'registryBurst': self.GetFlag(
             args, 'metal_lb_load_balancer_registry_burst'
@@ -452,21 +458,21 @@ class _BareMetalClusterClient(client.ClientBase):
         ),
     }
     if self.IsSet(kwargs):
-      return self._messages.BareMetalKubeletConfig(**kwargs)
+      return messages.BareMetalKubeletConfig(**kwargs)
     return None
 
-  def _metal_lb_node_pool_config(self, args):
+  def _metal_lb_node_pool_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalLoadBalancerNodePoolConfig."""
     kwargs = {
         'nodePoolConfig': self._metal_lb_load_balancer_node_pool_config(args),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalLoadBalancerNodePoolConfig(**kwargs)
+      return messages.BareMetalLoadBalancerNodePoolConfig(**kwargs)
 
     return None
 
-  def _metal_lb_config(self, args):
+  def _metal_lb_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalMetalLbConfig."""
     if 'metal_lb_address_pools_from_file' in args.GetSpecifiedArgsDict():
       address_pools = self._address_pools_from_file(args)
@@ -478,22 +484,22 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalMetalLbConfig(**kwargs)
+      return messages.BareMetalMetalLbConfig(**kwargs)
 
     return None
 
-  def _manual_lb_config(self, args):
+  def _manual_lb_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalManualLbConfig."""
     kwargs = {
         'enabled': getattr(args, 'enable_manual_lb', False),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalManualLbConfig(**kwargs)
+      return messages.BareMetalManualLbConfig(**kwargs)
 
     return None
 
-  def _load_balancer_config(self, args):
+  def _load_balancer_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalLoadBalancerConfig."""
     kwargs = {
         'vipConfig': self._vip_config(args),
@@ -504,11 +510,11 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalLoadBalancerConfig(**kwargs)
+      return messages.BareMetalLoadBalancerConfig(**kwargs)
 
     return None
 
-  def _bgp_lb_config(self, args):
+  def _bgp_lb_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalBgpLbConfig."""
     kwargs = {
         'addressPools': self._bgp_address_pools(args),
@@ -520,10 +526,10 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalBgpLbConfig(**kwargs)
+      return messages.BareMetalBgpLbConfig(**kwargs)
     return None
 
-  def _bgp_address_pools(self, args):
+  def _bgp_address_pools(self, args: parser_extensions.Namespace):
     """Constructs repeated proto message BareMetalBgpLbConfig.BareMetalLoadBalancerAddressPool."""
     if 'bgp_address_pools' not in args.GetSpecifiedArgsDict():
       return []
@@ -531,7 +537,7 @@ class _BareMetalClusterClient(client.ClientBase):
     address_pools = []
     for address_pool in args.bgp_address_pools:
       address_pools.append(
-          self._messages.BareMetalLoadBalancerAddressPool(
+          messages.BareMetalLoadBalancerAddressPool(
               addresses=address_pool.get('addresses', []),
               avoidBuggyIps=address_pool.get('avoid-buggy-ips', None),
               manualAssign=address_pool.get('manual-assign', None),
@@ -541,14 +547,14 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return address_pools
 
-  def _bgp_peer_configs(self, args):
+  def _bgp_peer_configs(self, args: parser_extensions.Namespace):
     """Constructs repeated proto message BareMetalBgpPeerConfig."""
     if 'bgp_peer_configs' not in args.GetSpecifiedArgsDict():
       return []
 
     ret = []
     for peer_config in self.GetFlag(args, 'bgp_peer_configs'):
-      msg = self._messages.BareMetalBgpPeerConfig(
+      msg = messages.BareMetalBgpPeerConfig(
           asn=peer_config.get('asn', None),
           controlPlaneNodes=peer_config.get('control-plane-nodes', []),
           ipAddress=peer_config.get('ip', None),
@@ -557,17 +563,19 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return ret
 
-  def _bgp_load_balancer_node_pool_config(self, args):
+  def _bgp_load_balancer_node_pool_config(
+      self, args: parser_extensions.Namespace
+  ):
     """Constructs proto message BareMetalBgpLbConfig.BareMetalLoadBalancerNodePoolConfig."""
     kwargs = {
         'nodePoolConfig': self._bgp_node_pool_config(args),
     }
     if any(kwargs.values()):
-      return self._messages.BareMetalLoadBalancerNodePoolConfig(**kwargs)
+      return messages.BareMetalLoadBalancerNodePoolConfig(**kwargs)
 
     return None
 
-  def _bgp_node_pool_config(self, args):
+  def _bgp_node_pool_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalBgpLbConfig.BareMetalLoadBalancerNodePoolConfig.BareMetalNodePoolConfig."""
     kwargs = {
         'labels': self._bgp_load_balancer_node_labels(args),
@@ -576,10 +584,12 @@ class _BareMetalClusterClient(client.ClientBase):
         'kubeletConfig': self._bgp_load_balancer_kubelet_config(args),
     }
     if any(kwargs.values()):
-      return self._messages.BareMetalNodePoolConfig(**kwargs)
+      return messages.BareMetalNodePoolConfig(**kwargs)
     return None
 
-  def _bgp_serialize_image_pulls_disabled(self, args):
+  def _bgp_serialize_image_pulls_disabled(
+      self, args: parser_extensions.Namespace
+  ):
     if (
         'disable_bgp_load_balancer_serialize_image_pulls'
         in args.GetSpecifiedArgsDict()
@@ -593,7 +603,9 @@ class _BareMetalClusterClient(client.ClientBase):
     else:
       return None
 
-  def _bgp_load_balancer_kubelet_config(self, args):
+  def _bgp_load_balancer_kubelet_config(
+      self, args: parser_extensions.Namespace
+  ):
     """Constructs proto message BareMetalBgpLbConfig.BareMetalLoadBalancerNodePoolConfig.BareMetalNodePoolConfig.BareMetalKubeletConfig."""
     kwargs = {
         'registryBurst': self.GetFlag(args, 'bgp_load_balancer_registry_burst'),
@@ -605,10 +617,10 @@ class _BareMetalClusterClient(client.ClientBase):
         ),
     }
     if self.IsSet(kwargs):
-      return self._messages.BareMetalKubeletConfig(**kwargs)
+      return messages.BareMetalKubeletConfig(**kwargs)
     return None
 
-  def _bgp_load_balancer_node_configs(self, args):
+  def _bgp_load_balancer_node_configs(self, args: parser_extensions.Namespace):
     """Constructs repeated proto message BareMetalBgpLbConfig.BareMetalLoadBalancerNodePoolConfig.BareMetalNodePoolConfig.BareMetalNodeConfig."""
     if 'bgp_load_balancer_node_configs' not in args.GetSpecifiedArgsDict():
       return []
@@ -619,7 +631,7 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return node_configs
 
-  def _bgp_load_balancer_node_labels(self, args):
+  def _bgp_load_balancer_node_labels(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalBgpLbConfig.BareMetalLoadBalancerNodePoolConfig.BareMetalNodePoolConfig.LabelsValue."""
     if 'bgp_load_balancer_node_labels' not in args.GetSpecifiedArgsDict():
       return None
@@ -627,18 +639,18 @@ class _BareMetalClusterClient(client.ClientBase):
     additional_property_messages = []
     for key, value in args.bgp_load_balancer_node_labels.items():
       additional_property_messages.append(
-          self._messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
+          messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
               key=key, value=value
           )
       )
 
-    labels_value_message = self._messages.BareMetalNodePoolConfig.LabelsValue(
+    labels_value_message = messages.BareMetalNodePoolConfig.LabelsValue(
         additionalProperties=additional_property_messages
     )
 
     return labels_value_message
 
-  def _bgp_load_balancer_node_taints(self, args):
+  def _bgp_load_balancer_node_taints(self, args: parser_extensions.Namespace):
     """Constructs repeated proto message NodeTaint."""
     if 'bgp_load_balancer_node_taints' not in args.GetSpecifiedArgsDict():
       return []
@@ -647,11 +659,11 @@ class _BareMetalClusterClient(client.ClientBase):
     taint_messages = []
     for node_taint in node_taints.items():
       taint_object = self._parse_node_taint(node_taint)
-      taint_messages.append(self._messages.NodeTaint(**taint_object))
+      taint_messages.append(messages.NodeTaint(**taint_object))
 
     return taint_messages
 
-  def _lvp_config(self, args):
+  def _lvp_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalLvpConfig."""
     kwargs = {
         'path': getattr(args, 'lvp_share_path', None),
@@ -659,11 +671,11 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalLvpConfig(**kwargs)
+      return messages.BareMetalLvpConfig(**kwargs)
 
     return None
 
-  def _lvp_share_config(self, args):
+  def _lvp_share_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalLvpShareConfig."""
     kwargs = {
         'lvpConfig': self._lvp_config(args),
@@ -671,11 +683,11 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalLvpShareConfig(**kwargs)
+      return messages.BareMetalLvpShareConfig(**kwargs)
 
     return None
 
-  def _lvp_node_mounts_config(self, args):
+  def _lvp_node_mounts_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalLvpConfig."""
     kwargs = {
         'path': getattr(args, 'lvp_node_mounts_config_path', None),
@@ -685,11 +697,11 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalLvpConfig(**kwargs)
+      return messages.BareMetalLvpConfig(**kwargs)
 
     return None
 
-  def _storage_config(self, args):
+  def _storage_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalStorageConfig."""
     kwargs = {
         'lvpShareConfig': self._lvp_share_config(args),
@@ -697,7 +709,7 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalStorageConfig(**kwargs)
+      return messages.BareMetalStorageConfig(**kwargs)
 
     return None
 
@@ -709,12 +721,12 @@ class _BareMetalClusterClient(client.ClientBase):
 
     for key, value in labels.items():
       additional_property_messages.append(
-          self._messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
+          messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
               key=key, value=value
           )
       )
 
-    labels_value_message = self._messages.BareMetalNodeConfig.LabelsValue(
+    labels_value_message = messages.BareMetalNodeConfig.LabelsValue(
         additionalProperties=additional_property_messages
     )
 
@@ -736,9 +748,11 @@ class _BareMetalClusterClient(client.ClientBase):
         ),
     }
 
-    return self._messages.BareMetalNodeConfig(**kwargs)
+    return messages.BareMetalNodeConfig(**kwargs)
 
-  def _control_plane_node_configs_from_file(self, args):
+  def _control_plane_node_configs_from_file(
+      self, args: parser_extensions.Namespace
+  ):
     """Constructs proto message field node_configs."""
     if not args.control_plane_node_configs_from_file:
       return []
@@ -761,7 +775,9 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return control_plane_node_configs_messages
 
-  def _control_plane_node_configs_from_flag(self, args):
+  def _control_plane_node_configs_from_flag(
+      self, args: parser_extensions.Namespace
+  ):
     """Constructs proto message field node_configs."""
     node_configs = []
     node_config_flag_value = getattr(args, 'control_plane_node_configs', None)
@@ -771,7 +787,7 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return node_configs
 
-  def _control_plane_node_taints(self, args):
+  def _control_plane_node_taints(self, args: parser_extensions.Namespace):
     """Constructs proto message NodeTaint."""
     taint_messages = []
     node_taints = getattr(args, 'control_plane_node_taints', {})
@@ -780,11 +796,11 @@ class _BareMetalClusterClient(client.ClientBase):
 
     for node_taint in node_taints.items():
       taint_object = self._parse_node_taint(node_taint)
-      taint_messages.append(self._messages.NodeTaint(**taint_object))
+      taint_messages.append(messages.NodeTaint(**taint_object))
 
     return taint_messages
 
-  def _control_plane_node_labels(self, args):
+  def _control_plane_node_labels(self, args: parser_extensions.Namespace):
     """Constructs proto message LabelsValue."""
     node_labels = getattr(args, 'control_plane_node_labels', {})
     additional_property_messages = []
@@ -793,18 +809,18 @@ class _BareMetalClusterClient(client.ClientBase):
 
     for key, value in node_labels.items():
       additional_property_messages.append(
-          self._messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
+          messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
               key=key, value=value
           )
       )
 
-    labels_value_message = self._messages.BareMetalNodePoolConfig.LabelsValue(
+    labels_value_message = messages.BareMetalNodePoolConfig.LabelsValue(
         additionalProperties=additional_property_messages
     )
 
     return labels_value_message
 
-  def _node_pool_config(self, args):
+  def _node_pool_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalNodePoolConfig."""
     if 'control_plane_node_configs_from_file' in args.GetSpecifiedArgsDict():
       node_configs = self._control_plane_node_configs_from_file(args)
@@ -819,11 +835,13 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalNodePoolConfig(**kwargs)
+      return messages.BareMetalNodePoolConfig(**kwargs)
 
     return None
 
-  def _control_plane_serialize_image_pulls_disabled(self, args):
+  def _control_plane_serialize_image_pulls_disabled(
+      self, args: parser_extensions.Namespace
+  ):
     if (
         'disable_control_plane_serialize_image_pulls'
         in args.GetSpecifiedArgsDict()
@@ -837,7 +855,7 @@ class _BareMetalClusterClient(client.ClientBase):
     else:
       return None
 
-  def _control_plane_kubelet_config(self, args):
+  def _control_plane_kubelet_config(self, args: parser_extensions.Namespace):
     kwargs = {
         'registryPullQps': self.GetFlag(
             args, 'control_plane_registry_pull_qps'
@@ -848,33 +866,33 @@ class _BareMetalClusterClient(client.ClientBase):
         ),
     }
     if self.IsSet(kwargs):
-      return self._messages.BareMetalKubeletConfig(**kwargs)
+      return messages.BareMetalKubeletConfig(**kwargs)
     return None
 
-  def _control_plane_node_pool_config(self, args):
+  def _control_plane_node_pool_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalControlPlaneNodePoolConfig."""
     kwargs = {
         'nodePoolConfig': self._node_pool_config(args),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalControlPlaneNodePoolConfig(**kwargs)
+      return messages.BareMetalControlPlaneNodePoolConfig(**kwargs)
 
     return None
 
-  def _api_server_args(self, args):
+  def _api_server_args(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalApiServerArgument."""
     api_server_args = []
     api_server_args_flag_value = getattr(args, 'api_server_args', None)
     if api_server_args_flag_value:
       for key, val in api_server_args_flag_value.items():
         api_server_args.append(
-            self._messages.BareMetalApiServerArgument(argument=key, value=val)
+            messages.BareMetalApiServerArgument(argument=key, value=val)
         )
 
     return api_server_args
 
-  def _control_plane_config(self, args):
+  def _control_plane_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalControlPlaneConfig."""
     kwargs = {
         'controlPlaneNodePoolConfig': self._control_plane_node_pool_config(
@@ -884,11 +902,11 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalControlPlaneConfig(**kwargs)
+      return messages.BareMetalControlPlaneConfig(**kwargs)
 
     return None
 
-  def _proxy_config(self, args):
+  def _proxy_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalProxyConfig."""
     kwargs = {
         'uri': getattr(args, 'uri', None),
@@ -896,22 +914,22 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalProxyConfig(**kwargs)
+      return messages.BareMetalProxyConfig(**kwargs)
 
     return None
 
-  def _cluster_operations_config(self, args):
+  def _cluster_operations_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalClusterOperationsConfig."""
     kwargs = {
         'enableApplicationLogs': getattr(args, 'enable_application_logs', None),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalClusterOperationsConfig(**kwargs)
+      return messages.BareMetalClusterOperationsConfig(**kwargs)
 
     return None
 
-  def _maintenance_config(self, args):
+  def _maintenance_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalMaintenanceConfig."""
     kwargs = {
         'maintenanceAddressCidrBlocks': getattr(
@@ -920,7 +938,7 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalMaintenanceConfig(**kwargs)
+      return messages.BareMetalMaintenanceConfig(**kwargs)
 
     return None
 
@@ -930,7 +948,7 @@ class _BareMetalClusterClient(client.ClientBase):
       return None
 
     container_runtime_enum = (
-        self._messages.BareMetalWorkloadNodeConfig.ContainerRuntimeValueValuesEnum
+        messages.BareMetalWorkloadNodeConfig.ContainerRuntimeValueValuesEnum
     )
     container_runtime_mapping = {
         'ContainerRuntimeUnspecified': (
@@ -941,7 +959,7 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return container_runtime_mapping[container_runtime]
 
-  def _workload_node_config(self, args):
+  def _workload_node_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalWorkloadNodeConfig."""
     container_runtime = getattr(args, 'container_runtime', None)
     kwargs = {
@@ -950,18 +968,18 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalWorkloadNodeConfig(**kwargs)
+      return messages.BareMetalWorkloadNodeConfig(**kwargs)
 
     return None
 
   # TODO(b/257292798): Move to common directory
-  def _cluster_users(self, args):
+  def _cluster_users(self, args: parser_extensions.Namespace):
     """Constructs repeated proto message ClusterUser."""
     cluster_user_messages = []
     admin_users = getattr(args, 'admin_users', None)
     if admin_users:
       return [
-          self._messages.ClusterUser(username=admin_user)
+          messages.ClusterUser(username=admin_user)
           for admin_user in admin_users
       ]
 
@@ -972,47 +990,47 @@ class _BareMetalClusterClient(client.ClientBase):
     # On create, client side default admin user to the current gcloud user.
     gcloud_config_core_account = properties.VALUES.core.account.Get()
     if gcloud_config_core_account:
-      default_admin_user_message = self._messages.ClusterUser(
+      default_admin_user_message = messages.ClusterUser(
           username=gcloud_config_core_account
       )
       return cluster_user_messages.append(default_admin_user_message)
 
     return None
 
-  def _authorization(self, args):
+  def _authorization(self, args: parser_extensions.Namespace):
     """Constructs proto message Authorization."""
     kwargs = {
         'adminUsers': self._cluster_users(args),
     }
 
     if any(kwargs.values()):
-      return self._messages.Authorization(**kwargs)
+      return messages.Authorization(**kwargs)
 
     return None
 
-  def _security_config(self, args):
+  def _security_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalSecurityConfig."""
     kwargs = {
         'authorization': self._authorization(args),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalSecurityConfig(**kwargs)
+      return messages.BareMetalSecurityConfig(**kwargs)
 
     return None
 
-  def _node_access_config(self, args):
+  def _node_access_config(self, args: parser_extensions.Namespace):
     """Constructs proto message BareMetalNodeAccessConfig."""
     kwargs = {
         'loginUser': getattr(args, 'login_user', 'root'),
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalNodeAccessConfig(**kwargs)
+      return messages.BareMetalNodeAccessConfig(**kwargs)
 
     return None
 
-  def _bare_metal_user_cluster(self, args):
+  def _bare_metal_user_cluster(self, args: parser_extensions.Namespace):
     """Constructs proto message Bare Metal Cluster."""
     kwargs = {
         'name': self._user_cluster_name(args),
@@ -1033,7 +1051,7 @@ class _BareMetalClusterClient(client.ClientBase):
     }
 
     if any(kwargs.values()):
-      return self._messages.BareMetalCluster(**kwargs)
+      return messages.BareMetalCluster(**kwargs)
 
     return None
 
@@ -1045,7 +1063,7 @@ class ClustersClient(_BareMetalClusterClient):
     super(ClustersClient, self).__init__(**kwargs)
     self._service = self._client.projects_locations_bareMetalClusters
 
-  def List(self, args):
+  def List(self, args: parser_extensions.Namespace):
     """Lists Clusters in the GKE On-Prem Bare Metal API."""
     # If location is not specified, and container_bare_metal/location is not set
     # list clusters of all locations within a project.
@@ -1055,10 +1073,8 @@ class ClustersClient(_BareMetalClusterClient):
     ):
       args.location = '-'
 
-    list_req = (
-        self._messages.GkeonpremProjectsLocationsBareMetalClustersListRequest(
-            parent=self._location_name(args)
-        )
+    list_req = messages.GkeonpremProjectsLocationsBareMetalClustersListRequest(
+        parent=self._location_name(args)
     )
 
     return list_pager.YieldFromList(
@@ -1072,32 +1088,30 @@ class ClustersClient(_BareMetalClusterClient):
 
   def Describe(self, resource_ref):
     """Gets a GKE On-Prem Bare Metal API cluster resource."""
-    req = self._messages.GkeonpremProjectsLocationsBareMetalClustersGetRequest(
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersGetRequest(
         name=resource_ref.RelativeName()
     )
 
     return self._service.Get(req)
 
-  def Enroll(self, args):
+  def Enroll(self, args: parser_extensions.Namespace):
     """Enrolls a bare metal cluster to Anthos."""
     kwargs = {
         'adminClusterMembership': self._admin_cluster_membership_name(args),
         'bareMetalClusterId': self._user_cluster_id(args),
         'localName': getattr(args, 'local_name', None),
     }
-    enroll_bare_metal_cluster_request = (
-        self._messages.EnrollBareMetalClusterRequest(**kwargs)
+    enroll_bare_metal_cluster_request = messages.EnrollBareMetalClusterRequest(
+        **kwargs
     )
-    req = (
-        self._messages.GkeonpremProjectsLocationsBareMetalClustersEnrollRequest(
-            parent=self._user_cluster_parent(args),
-            enrollBareMetalClusterRequest=enroll_bare_metal_cluster_request,
-        )
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersEnrollRequest(
+        parent=self._user_cluster_parent(args),
+        enrollBareMetalClusterRequest=enroll_bare_metal_cluster_request,
     )
 
     return self._service.Enroll(req)
 
-  def QueryVersionConfig(self, args):
+  def QueryVersionConfig(self, args: parser_extensions.Namespace):
     """Query Anthos on bare metal version configuration."""
     kwargs = {
         'createConfig_adminClusterMembership': (
@@ -1109,35 +1123,35 @@ class ClustersClient(_BareMetalClusterClient):
 
     # This is a workaround for the limitation in apitools with nested messages.
     encoding.AddCustomJsonFieldMapping(
-        self._messages.GkeonpremProjectsLocationsBareMetalClustersQueryVersionConfigRequest,
+        messages.GkeonpremProjectsLocationsBareMetalClustersQueryVersionConfigRequest,
         'createConfig_adminClusterMembership',
         'createConfig.adminClusterMembership',
     )
     encoding.AddCustomJsonFieldMapping(
-        self._messages.GkeonpremProjectsLocationsBareMetalClustersQueryVersionConfigRequest,
+        messages.GkeonpremProjectsLocationsBareMetalClustersQueryVersionConfigRequest,
         'upgradeConfig_clusterName',
         'upgradeConfig.clusterName',
     )
 
-    req = self._messages.GkeonpremProjectsLocationsBareMetalClustersQueryVersionConfigRequest(
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersQueryVersionConfigRequest(
         **kwargs
     )
     return self._service.QueryVersionConfig(req)
 
-  def Unenroll(self, args):
+  def Unenroll(self, args: parser_extensions.Namespace):
     """Unenrolls an Anthos cluster on bare metal."""
     kwargs = {
         'name': self._user_cluster_name(args),
         'force': getattr(args, 'force', None),
         'allowMissing': getattr(args, 'allow_missing', None),
     }
-    req = self._messages.GkeonpremProjectsLocationsBareMetalClustersUnenrollRequest(
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersUnenrollRequest(
         **kwargs
     )
 
     return self._service.Unenroll(req)
 
-  def Delete(self, args):
+  def Delete(self, args: parser_extensions.Namespace):
     """Deletes an Anthos cluster on bare metal."""
     kwargs = {
         'name': self._user_cluster_name(args),
@@ -1146,15 +1160,13 @@ class ClustersClient(_BareMetalClusterClient):
         'force': getattr(args, 'force', False),
         'ignoreErrors': self.GetFlag(args, 'ignore_errors'),
     }
-    req = (
-        self._messages.GkeonpremProjectsLocationsBareMetalClustersDeleteRequest(
-            **kwargs
-        )
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersDeleteRequest(
+        **kwargs
     )
 
     return self._service.Delete(req)
 
-  def Create(self, args):
+  def Create(self, args: parser_extensions.Namespace):
     """Creates an Anthos cluster on bare metal."""
     kwargs = {
         'parent': self._user_cluster_parent(args),
@@ -1162,15 +1174,13 @@ class ClustersClient(_BareMetalClusterClient):
         'bareMetalCluster': self._bare_metal_user_cluster(args),
         'bareMetalClusterId': self._user_cluster_id(args),
     }
-    req = (
-        self._messages.GkeonpremProjectsLocationsBareMetalClustersCreateRequest(
-            **kwargs
-        )
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersCreateRequest(
+        **kwargs
     )
 
     return self._service.Create(req)
 
-  def Update(self, args):
+  def Update(self, args: parser_extensions.Namespace):
     """Updates an Anthos cluster on bare metal."""
     kwargs = {
         'name': self._user_cluster_name(args),
@@ -1181,15 +1191,18 @@ class ClustersClient(_BareMetalClusterClient):
         'validateOnly': self.GetFlag(args, 'validate_only'),
         'bareMetalCluster': self._bare_metal_user_cluster(args),
     }
-    req = (
-        self._messages.GkeonpremProjectsLocationsBareMetalClustersPatchRequest(
-            **kwargs
-        )
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersPatchRequest(
+        **kwargs
     )
 
     return self._service.Patch(req)
 
-  def CreateFromImport(self, args, bare_metal_cluster, bare_metal_cluster_ref):
+  def CreateFromImport(
+      self,
+      args: parser_extensions.Namespace,
+      bare_metal_cluster,
+      bare_metal_cluster_ref,
+  ):
     """Creates an Anthos cluster on bare metal."""
     kwargs = {
         'parent': bare_metal_cluster_ref.Parent().RelativeName(),
@@ -1197,14 +1210,14 @@ class ClustersClient(_BareMetalClusterClient):
         'bareMetalCluster': bare_metal_cluster,
         'bareMetalClusterId': bare_metal_cluster_ref.Name(),
     }
-    req = (
-        self._messages.GkeonpremProjectsLocationsBareMetalClustersCreateRequest(
-            **kwargs
-        )
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersCreateRequest(
+        **kwargs
     )
     return self._service.Create(req)
 
-  def UpdateFromFile(self, args, bare_metal_cluster):
+  def UpdateFromFile(
+      self, args: parser_extensions.Namespace, bare_metal_cluster
+  ):
     # explicitly list supported mutable fields
     # etag is excluded from the mutable fields, because it is derived.
     top_level_mutable_fields = [
@@ -1230,9 +1243,7 @@ class ClustersClient(_BareMetalClusterClient):
         'validateOnly': self.GetFlag(args, 'validate_only'),
         'bareMetalCluster': bare_metal_cluster,
     }
-    req = (
-        self._messages.GkeonpremProjectsLocationsBareMetalClustersPatchRequest(
-            **kwargs
-        )
+    req = messages.GkeonpremProjectsLocationsBareMetalClustersPatchRequest(
+        **kwargs
     )
     return self._service.Patch(req)

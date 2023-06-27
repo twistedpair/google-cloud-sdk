@@ -30,6 +30,7 @@ from googlecloudsdk.core import properties
 
 _POLLING_TIMEOUT_SEC = 60 * 30
 _MAX_TIME_BETWEEN_POLLS_SEC = 5
+_SERVICE_UNAVAILABLE_RETRY_COUNT = 3
 
 # The set of possible operation types is {insert, delete, update,
 # *.insert, *.delete, *.update} + all verbs. For example,
@@ -131,18 +132,24 @@ def _RecordProblems(operation, warnings, errors):
 
 def _RecordUnfinishedOperations(operations, errors):
   """Adds error messages stating that the given operations timed out."""
-  pending_resources = [operation.targetLink for operation in operations]
-  errors.append(
-      (None, ('Did not {action} the following resources within '
-              '{timeout}s: {links}. These operations may still be '
-              'underway remotely and may still succeed; use gcloud list '
-              'and describe commands or '
-              'https://console.developers.google.com/ to '
-              'check resource state').format(
-                  action=_HumanFriendlyNameForOpPresentTense(
-                      operations[0].operationType),
-                  timeout=_POLLING_TIMEOUT_SEC,
-                  links=', '.join(pending_resources))))
+  pending_resources = [operation.targetLink for operation, _ in operations]
+  errors.append((
+      None,
+      (
+          'Did not {action} the following resources within '
+          '{timeout}s: {links}. These operations may still be '
+          'underway remotely and may still succeed; use gcloud list '
+          'and describe commands or '
+          'https://console.developers.google.com/ to '
+          'check resource state'
+      ).format(
+          action=_HumanFriendlyNameForOpPresentTense(
+              operations[0][0].operationType
+          ),
+          timeout=_POLLING_TIMEOUT_SEC,
+          links=', '.join(pending_resources),
+      ),
+  ))
 
 
 class OperationData(object):
@@ -413,7 +420,9 @@ def WaitForOperations(
   unprocessed_operations = []
   for operation in operations_data:
     operation_details[operation.operation.selfLink] = operation
-    unprocessed_operations.append(operation.operation)
+    unprocessed_operations.append(
+        (operation.operation, _SERVICE_UNAVAILABLE_RETRY_COUNT)
+    )
 
   start = time_util.CurrentTimeSec()
   sleep_sec = 0
@@ -428,7 +437,7 @@ def WaitForOperations(
     operation_requests = []
 
     log.debug('Operations to inspect: %s', unprocessed_operations)
-    for operation in unprocessed_operations:
+    for operation, _ in unprocessed_operations:
       # Reify operation
       data = operation_details[operation.selfLink]
       # Need to update the operation since old operation may not have all the
@@ -506,17 +515,39 @@ def WaitForOperations(
     else:
       responses, request_errors = batch_helper.MakeRequests(
           requests=requests, http=http, batch_url=batch_url)
-    errors.extend(request_errors)
 
     all_done = True
+    # If a request return error, the response will be none. In this case, append
+    # the previous operation back to unprocessed_operations. Thus we need to
+    # save the unprocessed_operations before reset
+    previous_operations = unprocessed_operations
+    # save the current errors in case timeout
+    current_errors = list(request_errors)
     unprocessed_operations = []
-    for response in responses:
+    for seq, response in enumerate(responses):
       if isinstance(response, operation_type):
-        unprocessed_operations.append(response)
+        unprocessed_operations.append(
+            (response, _SERVICE_UNAVAILABLE_RETRY_COUNT)
+        )
         if response.status != operation_type.StatusValueValuesEnum.DONE:
           all_done = False
+      elif response is None and request_errors and request_errors[0][0] == 503:
+        # if the error code is 503, we do not want to record the error but
+        # ignore then retry
+        error = request_errors.pop(0)
+        operation, retry_count = previous_operations[seq]
+        retry_count -= 1
+        # each request will be retried for three times for 503 error
+        if retry_count > 0:
+          unprocessed_operations.append((operation, retry_count))
+          all_done = False
+        else:
+          # if three retries all fail, we return the error
+          errors.append(error)
       else:
         yield response
+
+    errors.extend(request_errors)
 
     # If there are no more operations, we are done.
     if not unprocessed_operations:
@@ -530,8 +561,13 @@ def WaitForOperations(
     # Did we time out? If so, record the operations that timed out so
     # they can be reported to the user.
     if time_util.CurrentTimeSec() - start > timeout:
-      log.debug('Timeout of %ss reached.', timeout)
-      _RecordUnfinishedOperations(unprocessed_operations, errors)
+      if not current_errors:
+        log.debug('Timeout of %ss reached.', timeout)
+        _RecordUnfinishedOperations(unprocessed_operations, errors)
+      else:
+        # we keep retry until timeout and there is still error, we still want
+        # to report 503 error to the client
+        errors.extend(current_errors)
       break
 
     # Sleeps before trying to poll the operations again.

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.apphub import consts as api_lib_consts
 from googlecloudsdk.api_lib.apphub import utils as api_lib_utils
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.apphub import utils as command_lib_utils
 from googlecloudsdk.core import log
 
@@ -31,6 +32,10 @@ class TopologyClient(object):
     self._generated_client = client or api_lib_utils.GetClientInstance()
     self.messages = messages or api_lib_utils.GetMessagesModule()
     self._topology_client = self._generated_client.projects_locations
+    self._poller = waiter.CloudOperationPoller(
+        self._topology_client,
+        self._generated_client.projects_locations_operations,
+    )
 
   def Describe(self):
     get_request = (
@@ -70,4 +75,16 @@ class TopologyClient(object):
         )
     )
 
-    return self._topology_client.UpdateTopology(update_request)
+    operation = self._topology_client.UpdateTopology(update_request)
+    update_response = api_lib_utils.WaitForOperation(
+        self._poller,
+        operation,
+        api_lib_consts.UpdateTopology.WAIT_FOR_UPDATE_MESSAGE,
+        api_lib_consts.UpdateTopology.UPDATE_TIMELIMIT_SEC,
+    )
+
+    log.UpdatedResource(
+        update_response.name, kind=api_lib_consts.Resource.TOPOLOGY
+    )
+
+    return update_response

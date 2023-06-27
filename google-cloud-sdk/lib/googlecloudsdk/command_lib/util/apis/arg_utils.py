@@ -206,7 +206,7 @@ def _GetAdditionalPropsField(field):
 
 
 def GetFieldType(field):
-  """Determines whether the apitools field is a map, message, or neither.
+  """Determines whether the apitools field is a map, message, or field.
 
   Args:
     field: messages.Field, apitools field instance
@@ -272,11 +272,11 @@ class ArgObjectType(object):
   of the message.
   """
 
-  def GenerateType(self, message):
+  def GenerateType(self, field):
     """Generates an argparse type function to use to parse the argument.
 
     Args:
-      message: The apitools message class.
+      field: The apitools field instance.
     """
     pass
 
@@ -378,8 +378,8 @@ def GenerateFlagType(field, attributes, fix_bools=True):
           field.name,
           'Type {0} cannot be used with a custom action. Remove '
           'action {1} from spec.'.format(type(flag_type).__name__, action))
-    action = flag_type.Action(repeated)
-    flag_type = flag_type.GenerateType(field.type)
+    action = flag_type.Action(field)
+    flag_type = flag_type.GenerateType(field)
   elif repeated:
     if flag_type:
       is_repeatable_message = isinstance(flag_type, RepeatedMessageBindableType)

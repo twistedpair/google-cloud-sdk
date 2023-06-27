@@ -77,7 +77,7 @@ class Insight(base.ClientBase):
         name=name)
     return self._service.Get(request)
 
-  def List(self, parent_name, page_size, limit, request_filter=None):
+  def List(self, parent_name, page_size, limit=None, request_filter=None):
     """List Insights.
 
     Args:

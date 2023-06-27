@@ -19,9 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
-from googlecloudsdk.calliope.exceptions import InvalidArgumentException
 from googlecloudsdk.command_lib.container.gkeonprem import flags
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
@@ -611,6 +611,8 @@ def _AddNodeTaint(vmware_node_config_group, for_update=False):
 Applies the given kubernetes taints on all nodes in the new node pool, which can
 be used with tolerations for pod scheduling.
 
+Taint effect must be one of the following: `NoSchedule`, `PreferNoSchedule`, or `NoExecute`.
+
 Examples:
 
   $ {command} node-pool-1 --cluster=example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
@@ -618,6 +620,8 @@ Examples:
   node_pool_update_help_text = """\
 Replaces all the user specified Kubernetes taints on all nodes in an existing
 node pool, which can be used with tolerations for pod scheduling.
+
+Taint effect must be one of the following: `NoSchedule`, `PreferNoSchedule`, or `NoExecute`.
 
 Examples:
 
@@ -1101,7 +1105,7 @@ def _ParseControlPlaneIpBlock(value):
     tuple: of structure (IP, hostname).
 
   Raises:
-    InvalidArgumentException: raise parsing error.
+    exceptions.InvalidArgumentException: raise parsing error.
   """
 
   parsing_error = """Malformed IP block [{}].
@@ -1114,7 +1118,7 @@ Examples: --control-plane-ip-block 'netmask=255.255.255.0,gateway=10.0.0.0,ips=1
   else:
     ip_block = value.split(' ')
     if len(ip_block) != 2:
-      raise InvalidArgumentException(
+      raise exceptions.InvalidArgumentException(
           '--control-plane-ip-block', message=parsing_error
       )
     else:
@@ -1131,7 +1135,7 @@ def _ParseStaticIpConfigIpBlock(value):
     tuple: of structure (IP, hostname).
 
   Raises:
-    InvalidArgumentException: raise parsing error.
+    exceptions.InvalidArgumentException: raise parsing error.
   """
 
   parsing_error = """Malformed IP block [{}].
@@ -1144,7 +1148,7 @@ Examples: ips=192.168.1.1;0.0.0.0 localhost;192.168.1.2/16
   else:
     ip_block = value.split(' ')
     if len(ip_block) != 2:
-      raise InvalidArgumentException(
+      raise exceptions.InvalidArgumentException(
           '--static-ip-config-ip-blocks', message=parsing_error
       )
     else:

@@ -70,30 +70,34 @@ def CheckSpecifiedDiskArgs(args,
   return True
 
 
-def CreateDiskMessages(args,
-                       project,
-                       location,
-                       scope,
-                       compute_client,
-                       resource_parser,
-                       image_uri,
-                       holder=None,
-                       boot_disk_size_gb=None,
-                       instance_name=None,
-                       create_boot_disk=False,
-                       csek_keys=None,
-                       support_kms=False,
-                       support_nvdimm=False,
-                       support_source_snapshot_csek=False,
-                       support_boot_snapshot_uri=False,
-                       support_image_csek=False,
-                       support_match_container_mount_disks=False,
-                       support_create_disk_snapshots=False,
-                       support_persistent_attached_disks=True,
-                       support_replica_zones=False,
-                       use_disk_type_uri=True,
-                       support_multi_writer=False,
-                       support_storage_pool=False):
+def CreateDiskMessages(
+    args,
+    project,
+    location,
+    scope,
+    compute_client,
+    resource_parser,
+    image_uri,
+    holder=None,
+    boot_disk_size_gb=None,
+    instance_name=None,
+    create_boot_disk=False,
+    csek_keys=None,
+    support_kms=False,
+    support_nvdimm=False,
+    support_source_snapshot_csek=False,
+    support_boot_snapshot_uri=False,
+    support_image_csek=False,
+    support_match_container_mount_disks=False,
+    support_create_disk_snapshots=False,
+    support_persistent_attached_disks=True,
+    support_replica_zones=False,
+    use_disk_type_uri=True,
+    support_multi_writer=False,
+    support_storage_pool=False,
+    support_source_instant_snapshot=False,
+    support_boot_instant_snapshot_uri=False,
+):
   """Creates disk messages for a single instance."""
 
   container_mount_disk = []
@@ -114,25 +118,26 @@ def CreateDiskMessages(args,
             container_mount_disk=container_mount_disk,
             use_disk_type_uri=use_disk_type_uri))
 
-  persistent_create_disks = (
-      CreatePersistentCreateDiskMessages(
-          compute_client=compute_client,
-          resources=resource_parser,
-          csek_keys=csek_keys,
-          create_disks=getattr(args, 'create_disk', []),
-          project=project,
-          location=location,
-          scope=scope,
-          holder=holder,
-          enable_kms=support_kms,
-          enable_snapshots=support_create_disk_snapshots,
-          container_mount_disk=container_mount_disk,
-          enable_source_snapshot_csek=support_source_snapshot_csek,
-          enable_image_csek=support_image_csek,
-          support_replica_zones=support_replica_zones,
-          use_disk_type_uri=use_disk_type_uri,
-          support_multi_writer=support_multi_writer,
-          support_storage_pool=support_storage_pool))
+  persistent_create_disks = CreatePersistentCreateDiskMessages(
+      compute_client=compute_client,
+      resources=resource_parser,
+      csek_keys=csek_keys,
+      create_disks=getattr(args, 'create_disk', []),
+      project=project,
+      location=location,
+      scope=scope,
+      holder=holder,
+      enable_kms=support_kms,
+      enable_snapshots=support_create_disk_snapshots,
+      container_mount_disk=container_mount_disk,
+      enable_source_snapshot_csek=support_source_snapshot_csek,
+      enable_image_csek=support_image_csek,
+      support_replica_zones=support_replica_zones,
+      use_disk_type_uri=use_disk_type_uri,
+      support_multi_writer=support_multi_writer,
+      support_storage_pool=support_storage_pool,
+      enable_source_instant_snapshots=support_source_instant_snapshot,
+  )
 
   local_nvdimms = []
   if support_nvdimm:
@@ -151,6 +156,14 @@ def CreateDiskMessages(args,
           snapshot=args.source_snapshot,
           resource_parser=resource_parser)
 
+    boot_instant_snapshot_uri = None
+    if support_boot_instant_snapshot_uri:
+      boot_instant_snapshot_uri = instance_utils.ResolveInstantSnapshotURI(
+          user_project=project,
+          instant_snapshot=args.source_instant_snapshot,
+          resource_parser=resource_parser,
+      )
+
     boot_disk = CreateDefaultBootAttachedDiskMessage(
         compute_client=compute_client,
         resources=resource_parser,
@@ -158,8 +171,9 @@ def CreateDiskMessages(args,
         disk_device_name=args.boot_disk_device_name,
         disk_auto_delete=args.boot_disk_auto_delete,
         disk_size_gb=boot_disk_size_gb,
-        require_csek_key_create=(args.require_csek_key_create
-                                 if csek_keys else None),
+        require_csek_key_create=(
+            args.require_csek_key_create if csek_keys else None
+        ),
         image_uri=image_uri,
         instance_name=instance_name,
         project=project,
@@ -170,7 +184,10 @@ def CreateDiskMessages(args,
         kms_args=args,
         snapshot_uri=boot_snapshot_uri,
         disk_provisioned_iops=args.boot_disk_provisioned_iops,
-        use_disk_type_uri=use_disk_type_uri)
+        use_disk_type_uri=use_disk_type_uri,
+        instant_snapshot_uri=boot_instant_snapshot_uri,
+        support_source_instant_snapshot=support_source_instant_snapshot,
+    )
     persistent_disks = [boot_disk] + persistent_disks
 
   # The boot disk must end up at index 0 in the disk messages.
@@ -248,24 +265,27 @@ def CreatePersistentAttachedDiskMessages(resources,
   return disks_messages
 
 
-def CreatePersistentCreateDiskMessages(compute_client,
-                                       resources,
-                                       csek_keys,
-                                       create_disks,
-                                       project,
-                                       location,
-                                       scope,
-                                       holder,
-                                       enable_kms=False,
-                                       enable_snapshots=False,
-                                       container_mount_disk=None,
-                                       enable_source_snapshot_csek=False,
-                                       enable_image_csek=False,
-                                       support_replica_zones=False,
-                                       use_disk_type_uri=True,
-                                       support_multi_writer=False,
-                                       support_image_family_scope=False,
-                                       support_storage_pool=False):
+def CreatePersistentCreateDiskMessages(
+    compute_client,
+    resources,
+    csek_keys,
+    create_disks,
+    project,
+    location,
+    scope,
+    holder,
+    enable_kms=False,
+    enable_snapshots=False,
+    container_mount_disk=None,
+    enable_source_snapshot_csek=False,
+    enable_image_csek=False,
+    support_replica_zones=False,
+    use_disk_type_uri=True,
+    support_multi_writer=False,
+    support_image_family_scope=False,
+    support_storage_pool=False,
+    enable_source_instant_snapshots=False,
+):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
   Args:
@@ -282,6 +302,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
       deleted when VM is deleted, * device-name - device name on VM, *
       source-snapshot - the snapshot to initialize from, *
       source-snapshot-csek-required - CSK protected snapshot, *
+      source-instant-snapshot - the instant snapshot to initialize from, *
       disk-resource-policy - resource policies applied to disk. *
       enable_source_snapshot_csek - CSK file for snapshot, * enable_image_csek -
       CSK file for image
@@ -299,6 +320,8 @@ def CreatePersistentCreateDiskMessages(compute_client,
     support_multi_writer: True if we allow multiple instances to write to disk.
     support_image_family_scope: True if the zonal image views are supported.
     support_storage_pool: True if storage pool is supported.
+    enable_source_instant_snapshots: True if instant snapshot initialization is
+      supported for the disk.
 
   Returns:
     list of API messages for attached disks
@@ -399,6 +422,19 @@ def CreatePersistentCreateDiskMessages(compute_client,
       snapshot_key_file = disk.get('source_snapshot_csek')
       if snapshot_key_file:
         initialize_params.snapshotKeyFile = snapshot_key_file
+
+    if enable_source_instant_snapshots:
+      instant_snapshot_name = disk.get('source-instant-snapshot')
+      attached_instant_snapshot_uri = instance_utils.ResolveInstantSnapshotURI(
+          user_project=project,
+          instant_snapshot=instant_snapshot_name,
+          resource_parser=resources,
+      )
+      if attached_instant_snapshot_uri:
+        initialize_params.sourceImage = None
+        initialize_params.sourceSnapshot = None
+        initialize_params.sourceInstantSnapshot = attached_instant_snapshot_uri
+
     boot = disk.get('boot', False)
 
     multi_writer = disk.get('multi-writer')
@@ -450,25 +486,29 @@ def CreatePersistentCreateDiskMessages(compute_client,
   return disks_messages
 
 
-def CreateDefaultBootAttachedDiskMessage(compute_client,
-                                         resources,
-                                         disk_type,
-                                         disk_device_name,
-                                         disk_auto_delete,
-                                         disk_size_gb,
-                                         require_csek_key_create,
-                                         image_uri,
-                                         instance_name,
-                                         project,
-                                         location,
-                                         scope,
-                                         csek_keys=None,
-                                         kms_args=None,
-                                         enable_kms=False,
-                                         snapshot_uri=None,
-                                         use_disk_type_uri=True,
-                                         disk_provisioned_iops=None,
-                                         disk_provisioned_throughput=None):
+def CreateDefaultBootAttachedDiskMessage(
+    compute_client,
+    resources,
+    disk_type,
+    disk_device_name,
+    disk_auto_delete,
+    disk_size_gb,
+    require_csek_key_create,
+    image_uri,
+    instance_name,
+    project,
+    location,
+    scope,
+    csek_keys=None,
+    kms_args=None,
+    enable_kms=False,
+    snapshot_uri=None,
+    use_disk_type_uri=True,
+    disk_provisioned_iops=None,
+    disk_provisioned_throughput=None,
+    instant_snapshot_uri=None,
+    support_source_instant_snapshot=False,
+):
   """Returns an AttachedDisk message for creating a new boot disk."""
   messages = compute_client.messages
   compute = compute_client.apitools_client
@@ -545,7 +585,14 @@ def CreateDefaultBootAttachedDiskMessage(compute_client,
 
   if snapshot_uri:
     initialize_params.sourceImage = None
+    if support_source_instant_snapshot:
+      initialize_params.sourceInstantSnapshot = None
     initialize_params.sourceSnapshot = snapshot_uri
+
+  elif instant_snapshot_uri:
+    initialize_params.sourceImage = None
+    initialize_params.sourceSnapshot = None
+    initialize_params.sourceInstantSnapshot = instant_snapshot_uri
 
   return messages.AttachedDisk(
       autoDelete=disk_auto_delete,

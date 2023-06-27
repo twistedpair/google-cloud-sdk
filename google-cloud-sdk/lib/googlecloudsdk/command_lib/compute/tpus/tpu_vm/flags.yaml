@@ -192,6 +192,42 @@ tags:
     targets for network firewalls. See https://cloud.google.com/vpc/docs/add-remove-network-tags for
     more details.
 
+add_tags:
+  arg_name: add-tags
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  required: false
+  metavar: TAGS
+  help_text: |
+    Tags to add to the TPU Node. Tags are used to identify valid sources or
+    targets for network firewalls. See https://cloud.google.com/vpc/docs/add-remove-network-tags for
+    more details.
+
+clear_tags:
+  arg_name: clear-tags
+  type: bool
+  default: false
+  required: false
+  help_text: |
+    Remove all tags. If `--add-tags` is also specified then `--clear-tags` is applied
+    first.
+
+    For example, to remove all tags:
+
+      $ {command} --clear-tags
+
+    To remove all existing tags and create two new tags, 'foo' and 'bar':
+
+      $ {command} --clear-tags --add-tags foo,bar
+
+remove_tags:
+  arg_name: remove-tags
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  required: false
+  metavar: TAG
+  help_text: |
+    List of tags to remove. If a tag does not exist it is silently ignored. If
+    `--add-tags` is also specified then `--add-tags` is applied first.
+
 data_disks:
   api_field: node.dataDisks
   arg_name: data-disk

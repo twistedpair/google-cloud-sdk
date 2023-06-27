@@ -308,6 +308,13 @@ def GetShowBuildDetailsFlag():
       help='Include build metadata in the output.')
 
 
+def GetShowSbomReferencesFlag():
+  return base.Argument(
+      '--show-sbom-references',
+      action='store_true',
+      help='Include SBOM metadata in the output.')
+
+
 def GetMetadataFilterFlag():
   return base.Argument(
       '--metadata-filter',

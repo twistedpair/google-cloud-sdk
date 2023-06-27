@@ -616,6 +616,17 @@ def AddExternalMasterGroup(parser):
   )
 
 
+def AddFailoverFlag(parser, show_negated_in_help=True):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--failover',
+      required=False,
+      hidden=True,
+      help='Whether the promote operation is a failover.',
+      **kwargs
+  )
+
+
 def AddFollowGAEApp(parser):
   parser.add_argument(
       '--follow-gae-app',

@@ -402,6 +402,7 @@ class ConnectSettings(_messages.Message):
       `SQLSERVER_2017_WEB`, `SQLSERVER_2019_STANDARD`,
       `SQLSERVER_2019_ENTERPRISE`, `SQLSERVER_2019_EXPRESS`, or
       `SQLSERVER_2019_WEB`.
+    dnsName: The dns name of the instance.
     ipAddresses: The assigned IP addresses for the instance.
     kind: This is always `sql#connectSettings`.
     region: The cloud region for the instance. e.g. `us-central1`, `europe-
@@ -534,10 +535,11 @@ class ConnectSettings(_messages.Message):
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
-  ipAddresses = _messages.MessageField('IpMapping', 3, repeated=True)
-  kind = _messages.StringField(4)
-  region = _messages.StringField(5)
-  serverCaCert = _messages.MessageField('SslCert', 6)
+  dnsName = _messages.StringField(3)
+  ipAddresses = _messages.MessageField('IpMapping', 4, repeated=True)
+  kind = _messages.StringField(5)
+  region = _messages.StringField(6)
+  serverCaCert = _messages.MessageField('SslCert', 7)
 
 
 class DataCacheConfig(_messages.Message):
@@ -1244,11 +1246,11 @@ class ExportContext(_messages.Message):
     Fields:
       bakType: Type of this bak file will be export, FULL or DIFF, SQL Server
         only
-      copyOnly: Whether or not the export will be exeucted with COPY_ONLY, SQL
-        Server only deprecated as the behavior should default to copy_only =
-        true use differential_base instead
-      differentialBase: Whether or not the backup can be use as differential
-        base only non copy only backup can be served as differential base
+      copyOnly: Deprecated: copy_only is deprecated. Use differential_base
+        instead
+      differentialBase: Whether or not the backup can be used as a
+        differential base copy_only backup can not be served as differential
+        base
       stripeCount: Option for specifying how many stripes to use for the
         export. If blank, and the value of the striped field is true, the
         number of stripes is automatically chosen.
@@ -1259,8 +1261,7 @@ class ExportContext(_messages.Message):
       r"""Type of this bak file will be export, FULL or DIFF, SQL Server only
 
       Values:
-        BAK_TYPE_UNSPECIFIED: default type to meet enum requirement, will be
-          set to FULL if not set
+        BAK_TYPE_UNSPECIFIED: default type.
         FULL: Full backup.
         DIFF: Differential backup.
       """
@@ -1641,8 +1642,7 @@ class ImportContext(_messages.Message):
       r"""Type of the bak content, FULL or DIFF.
 
       Values:
-        BAK_TYPE_UNSPECIFIED: default type to meet enum requirement, will be
-          set to FULL if not set
+        BAK_TYPE_UNSPECIFIED: default type.
         FULL: Full backup.
         DIFF: Differential backup.
       """
@@ -2384,6 +2384,8 @@ class PasswordValidationPolicy(_messages.Message):
 
   Fields:
     complexity: The complexity of the password.
+    disallowCompromisedCredentials: Disallow credentials that have been
+      compromised by a data breach. This flag is only supported for MySQL.
     disallowUsernameSubstring: Disallow username as a part of the password.
     enablePasswordPolicy: Whether the password policy is enabled or not.
     minLength: Minimum number of characters allowed.
@@ -2404,11 +2406,12 @@ class PasswordValidationPolicy(_messages.Message):
     COMPLEXITY_DEFAULT = 1
 
   complexity = _messages.EnumField('ComplexityValueValuesEnum', 1)
-  disallowUsernameSubstring = _messages.BooleanField(2)
-  enablePasswordPolicy = _messages.BooleanField(3)
-  minLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  passwordChangeInterval = _messages.StringField(5)
-  reuseInterval = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  disallowCompromisedCredentials = _messages.BooleanField(2)
+  disallowUsernameSubstring = _messages.BooleanField(3)
+  enablePasswordPolicy = _messages.BooleanField(4)
+  minLength = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  passwordChangeInterval = _messages.StringField(6)
+  reuseInterval = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class PerformDiskShrinkContext(_messages.Message):
@@ -2551,7 +2554,7 @@ class Settings(_messages.Message):
       updating an existing instance, it is left unchanged in the instance.
     DataDiskTypeValueValuesEnum: The type of data disk: `PD_SSD` (default) or
       `PD_HDD`. Not used for First Generation instances.
-    EditionValueValuesEnum: The edition of the instance.
+    EditionValueValuesEnum: Optional. The edition of the instance.
     PricingPlanValueValuesEnum: The pricing plan for this instance. This can
       be either `PER_USE` or `PACKAGE`. Only `PER_USE` is supported for Second
       Generation instances.
@@ -2608,7 +2611,7 @@ class Settings(_messages.Message):
     deletionProtectionEnabled: Configuration to protect against accidental
       instance deletion.
     denyMaintenancePeriods: Deny maintenance periods
-    edition: The edition of the instance.
+    edition: Optional. The edition of the instance.
     insightsConfig: Insights configuration, for now relevant only for
       Postgres.
     instanceVersion: The current software version the instance is running on.
@@ -2726,7 +2729,7 @@ class Settings(_messages.Message):
     OBSOLETE_LOCAL_SSD = 3
 
   class EditionValueValuesEnum(_messages.Enum):
-    r"""The edition of the instance.
+    r"""Optional. The edition of the instance.
 
     Values:
       EDITION_UNSPECIFIED: The instance did not specify the edition.
@@ -3361,12 +3364,17 @@ class SqlInstancesPromoteReplicaRequest(_messages.Message):
   r"""A SqlInstancesPromoteReplicaRequest object.
 
   Fields:
+    failover: Set to true if the promote operation should attempt to re-add
+      the original primary as a replica when it comes back online. Otherwise,
+      if this value is false or not set, the original primary will be a
+      standalone instance.
     instance: Cloud SQL read replica instance name.
     project: ID of the project that contains the read replica.
   """
 
-  instance = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
+  failover = _messages.BooleanField(1)
+  instance = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlInstancesReencryptRequest(_messages.Message):
@@ -3534,12 +3542,16 @@ class SqlInstancesSwitchoverRequest(_messages.Message):
   r"""A SqlInstancesSwitchoverRequest object.
 
   Fields:
+    dbTimeout: Optional. (MySQL only) Cloud SQL instance operations timeout,
+      which is a sum of all database operations. Default value is 10 minutes
+      and can be modified to a maximum value of 24 hours.
     instance: Cloud SQL read replica instance name.
     project: ID of the project that contains the replica.
   """
 
-  instance = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
+  dbTimeout = _messages.StringField(1)
+  instance = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlInstancesTruncateLogRequest(_messages.Message):
@@ -4284,11 +4296,15 @@ class User(_messages.Message):
       CLOUD_IAM_USER: Cloud IAM user.
       CLOUD_IAM_SERVICE_ACCOUNT: Cloud IAM service account.
       CLOUD_IAM_GROUP: Cloud IAM Group non-login user.
+      CLOUD_IAM_GROUP_USER: Cloud IAM Group login user.
+      CLOUD_IAM_GROUP_SERVICE_ACCOUNT: Cloud IAM Group service account.
     """
     BUILT_IN = 0
     CLOUD_IAM_USER = 1
     CLOUD_IAM_SERVICE_ACCOUNT = 2
     CLOUD_IAM_GROUP = 3
+    CLOUD_IAM_GROUP_USER = 4
+    CLOUD_IAM_GROUP_SERVICE_ACCOUNT = 5
 
   dualPasswordType = _messages.EnumField('DualPasswordTypeValueValuesEnum', 1)
   etag = _messages.StringField(2)
