@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 import re
 import sys
 
-from googlecloudsdk.api_lib import network_services
+from googlecloudsdk.api_lib import network_security
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
 from googlecloudsdk.command_lib.compute import reference_utils
@@ -138,11 +138,13 @@ def BuildSecurityProfileGroupUrl(security_profile_group, optional_organization,
       firewall_policy_id=firewall_policy_id,
       optional_organization=optional_organization)
   return reference_utils.BuildFullResourceUrlForOrgBasedResource(
-      base_uri=network_services.GetApiBaseUrl(
-          network_services.base.ReleaseTrack.GA),
+      base_uri=network_security.GetApiBaseUrl(
+          network_security.base.ReleaseTrack.GA
+      ),
       org_id=organization,
       collection_name='securityProfileGroups',
-      resource_name=security_profile_group)
+      resource_name=security_profile_group,
+  )
 
 
 def BuildAddressGroupUrl(address_group, optional_organization,

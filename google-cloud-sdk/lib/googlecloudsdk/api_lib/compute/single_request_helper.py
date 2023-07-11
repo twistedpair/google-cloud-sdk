@@ -21,12 +21,9 @@ from __future__ import unicode_literals
 import json
 
 from apitools.base.py import exceptions
-
 from googlecloudsdk.api_lib.compute import operation_quota_utils
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.api_lib.util import exceptions as http_exception
-from googlecloudsdk.core import properties
+import six
 
 
 def _GenerateErrorMessage(exception):
@@ -65,41 +62,27 @@ def MakeSingleRequest(service, method, request_body):
     a length-one response list and error list.
   """
   responses, errors = [], []
+  num_retries = service.client.num_retries
+  # stop the default retry behavior of http_wrapper.MakeRequest
+  service.client.num_retries = 0
   try:
-    # stop the default retry behavior of http_wrapper.MakeRequest
-    num_retries = service.client.num_retries
-    service.client.num_retries = 0
     response = getattr(service, method)(request=request_body)
-    service.client.num_retries = num_retries
     responses.append(response)
-  # Catch all 403 forbidden errors and give a special
-  # treatment to the "Compute API not enabled" error.
-  except exceptions.HttpForbiddenError as exception:
-    # check if gcloud should prompt
-    if properties.VALUES.core.should_prompt_to_enable_api.GetBool():
-      enablement_info = apis.GetApiEnablementInfo(exception)
-      if enablement_info:
-        project, service_token, enable_exception = enablement_info
-        try:
-          # prompt to enable then retry request
-          apis.PromptToEnableApi(
-              project, service_token, enable_exception, is_batch_request=True)
-          response = getattr(service, method)(request=request_body)
-          responses.append(response)
-          return responses, errors
-          # if not attempt enabled
-        except http_exception.HttpException:
-          pass
-    error_message = _GenerateErrorMessage(exception)
-    errors.append(error_message)
-    responses.append(None)
-    return responses, errors
   except exceptions.HttpError as exception:
     # TODO(b/260144046): Add Enable Service Prompt and Retry.
     error_message = _GenerateErrorMessage(exception)
     errors.append(error_message)
     # keep the same code behavior with batch_helper
     responses.append(None)
+  # After enabling the Compute API, it will still throw a Request Error.
+  # Catch the exception and retry.
+  except exceptions.RequestError as exception:
+    if six.text_type(exception) == 'Retry':
+      response = getattr(service, method)(request=request_body)
+      responses.append(response)
+    else:
+      raise exception
+  service.client.num_retries = num_retries
   return responses, errors
 
 

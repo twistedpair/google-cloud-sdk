@@ -89,6 +89,18 @@ class SasPortalDeployment(_messages.Message):
   sasUserIds = _messages.StringField(4, repeated=True)
 
 
+class SasPortalDeploymentAssociation(_messages.Message):
+  r"""Association between a gcp project and a SAS user id.
+
+  Fields:
+    gcpProjectId: GCP project id of the associated project.
+    userId: User id of the deployment.
+  """
+
+  gcpProjectId = _messages.StringField(1)
+  userId = _messages.StringField(2)
+
+
 class SasPortalDevice(_messages.Message):
   r"""A SasPortalDevice object.
 
@@ -567,6 +579,70 @@ class SasPortalListNodesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   nodes = _messages.MessageField('SasPortalNode', 2, repeated=True)
+
+
+class SasPortalMigrateOrganizationMetadata(_messages.Message):
+  r"""Long-running operation metadata message returned by the
+
+  MigrateOrganization.
+
+  Enums:
+    OperationStateValueValuesEnum: Output only. Current operation state
+
+  Fields:
+    operationState: Output only. Current operation state
+  """
+
+  class OperationStateValueValuesEnum(_messages.Enum):
+    r"""Output only.
+
+    Current operation state
+
+    Values:
+      OPERATION_STATE_UNSPECIFIED: Unspecified.
+      OPERATION_STATE_PENDING: Pending (Not started).
+      OPERATION_STATE_RUNNING: In-progress.
+      OPERATION_STATE_SUCCEEDED: Done successfully.
+      OPERATION_STATE_FAILED: Done with errors.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    OPERATION_STATE_PENDING = 1
+    OPERATION_STATE_RUNNING = 2
+    OPERATION_STATE_SUCCEEDED = 3
+    OPERATION_STATE_FAILED = 4
+
+  operationState = _messages.EnumField('OperationStateValueValuesEnum', 1)
+
+
+class SasPortalMigrateOrganizationRequest(_messages.Message):
+  r"""Request for [MigrateOrganization].
+
+  [spectrum.sas.portal.v1alpha1.Provisioning.MigrateOrganization]. GCP Project,
+  Organization Info, and caller's GAIA ID should be retrieved from the RPC
+  handler, and used to check authorization on SAS Portal organization and to
+  create GCP Projects.
+
+  Fields:
+    organizationId: Required. Id of the SAS organization to be migrated.
+  """
+
+  organizationId = _messages.IntegerField(1)
+
+
+class SasPortalMigrateOrganizationResponse(_messages.Message):
+  r"""Response for [MigrateOrganization].
+
+  [spectrum.sas.portal.v1alpha1.Provisioning.MigrateOrganization].
+
+  Fields:
+    deploymentAssociation: Optional. A list of deployment association that
+      were created for the migration, or current associations if they already
+      exist.
+  """
+
+  deploymentAssociation = _messages.MessageField(
+      'SasPortalDeploymentAssociation', 1, repeated=True
+  )
 
 
 class SasPortalMoveDeploymentRequest(_messages.Message):

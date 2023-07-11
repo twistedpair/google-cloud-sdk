@@ -4016,13 +4016,31 @@ class BackendService(_messages.Message):
     network: The URL of the network to which this backend service belongs.
       This field can only be specified when the load balancing scheme is set
       to INTERNAL.
-    outlierDetection: Settings controlling the eviction of unhealthy hosts
-      from the load balancing pool for the backend service. If not set, this
-      feature is considered disabled. This field is applicable to either: - A
-      regional backend service with the service_protocol set to HTTP, HTTPS,
-      HTTP2, or GRPC, and load_balancing_scheme set to INTERNAL_MANAGED. - A
-      global backend service with the load_balancing_scheme set to
-      INTERNAL_SELF_MANAGED.
+    outlierDetection: Settings controlling the ejection of unhealthy backend
+      endpoints from the load balancing pool of each individual proxy instance
+      that processes the traffic for the given backend service. If not set,
+      this feature is considered disabled. Results of the outlier detection
+      algorithm (ejection of endpoints from the load balancing pool and
+      returning them back to the pool) are executed independently by each
+      proxy instance of the load balancer. In most cases, more than one proxy
+      instance handles the traffic received by a backend service. Thus, it is
+      possible that an unhealthy endpoint is detected and ejected by only some
+      of the proxies, and while this happens, other proxies may continue to
+      send requests to the same unhealthy endpoint until they detect and eject
+      the unhealthy endpoint. Applicable backend endpoints can be: - VM
+      instances in an Instance Group - Endpoints in a Zonal NEG (GCE_VM_IP,
+      GCE_VM_IP_PORT) - Endpoints in a Hybrid Connectivity NEG
+      (NON_GCP_PRIVATE_IP_PORT) - Serverless NEGs, that resolve to Cloud Run,
+      App Engine, or Cloud Functions Services - Private Service Connect NEGs,
+      that resolve to Google-managed regional API endpoints or managed
+      services published using Private Service Connect Applicable backend
+      service types can be: - A global backend service with the
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED or EXTERNAL_MANAGED. -
+      A regional backend service with the serviceProtocol set to HTTP, HTTPS,
+      or HTTP2, and loadBalancingScheme set to INTERNAL_MANAGED or
+      EXTERNAL_MANAGED. Not supported for Serverless NEGs. Not supported when
+      the backend service is referenced by a URL map that is bound to target
+      gRPC proxy that has validateForProxyless field set to true.
     port: Deprecated in favor of portName. The TCP port to connect on the
       backend. The default value is 80. For Internal TCP/UDP Load Balancing
       and Network Load Balancing, omit port.
@@ -33142,9 +33160,11 @@ class ForwardingRule(_messages.Message):
       exclusive.
     allowGlobalAccess: This field is used along with the backend_service field
       for internal load balancing or with the target field for internal
-      TargetInstance. If the field is set to TRUE, clients can access ILB from
-      all regions. Otherwise only allows access from clients in the same
-      region as the internal load balancer.
+      TargetInstance. If set to true, clients can access the Internal TCP/UDP
+      Load Balancer, Internal HTTP(S) and TCP Proxy Load Balancer from all
+      regions. If false, only allows access from the local region the load
+      balancer is located at. Note that for INTERNAL_MANAGED forwarding rules,
+      this field cannot be changed after the forwarding rule is created.
     allowPscGlobalAccess: This is used in PSC consumer ForwardingRule to
       control whether the PSC endpoint can be accessed from another region.
     backendService: Identifies the backend service to which the forwarding
@@ -38190,6 +38210,8 @@ class InstanceGroupManager(_messages.Message):
     id: [Output Only] A unique identifier for this resource type. The server
       generates this identifier.
     instanceGroup: [Output Only] The URL of the Instance Group resource.
+    instanceLifecyclePolicy: The repair policy for this managed instance
+      group.
     instanceTemplate: The URL of the instance template that is specified for
       this managed instance group. The group uses this template to create all
       new instances in the managed instance group. The templates for existing
@@ -38254,20 +38276,21 @@ class InstanceGroupManager(_messages.Message):
   fingerprint = _messages.BytesField(7)
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   instanceGroup = _messages.StringField(9)
-  instanceTemplate = _messages.StringField(10)
-  kind = _messages.StringField(11, default='compute#instanceGroupManager')
-  listManagedInstancesResults = _messages.EnumField('ListManagedInstancesResultsValueValuesEnum', 12)
-  name = _messages.StringField(13)
-  namedPorts = _messages.MessageField('NamedPort', 14, repeated=True)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  statefulPolicy = _messages.MessageField('StatefulPolicy', 17)
-  status = _messages.MessageField('InstanceGroupManagerStatus', 18)
-  targetPools = _messages.StringField(19, repeated=True)
-  targetSize = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 21)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 22, repeated=True)
-  zone = _messages.StringField(23)
+  instanceLifecyclePolicy = _messages.MessageField('InstanceGroupManagerInstanceLifecyclePolicy', 10)
+  instanceTemplate = _messages.StringField(11)
+  kind = _messages.StringField(12, default='compute#instanceGroupManager')
+  listManagedInstancesResults = _messages.EnumField('ListManagedInstancesResultsValueValuesEnum', 13)
+  name = _messages.StringField(14)
+  namedPorts = _messages.MessageField('NamedPort', 15, repeated=True)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  statefulPolicy = _messages.MessageField('StatefulPolicy', 18)
+  status = _messages.MessageField('InstanceGroupManagerStatus', 19)
+  targetPools = _messages.StringField(20, repeated=True)
+  targetSize = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 22)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 23, repeated=True)
+  zone = _messages.StringField(24)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -38541,6 +38564,44 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
 
   healthCheck = _messages.StringField(1)
   initialDelaySec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
+  r"""A InstanceGroupManagerInstanceLifecyclePolicy object.
+
+  Enums:
+    ForceUpdateOnRepairValueValuesEnum: A bit indicating whether to forcefully
+      apply the group's latest configuration when repairing a VM. Valid
+      options are: - NO (default): If configuration updates are available,
+      they are not forcefully applied during repair. Instead, configuration
+      updates are applied according to the group's update policy. - YES: If
+      configuration updates are available, they are applied during repair.
+
+  Fields:
+    forceUpdateOnRepair: A bit indicating whether to forcefully apply the
+      group's latest configuration when repairing a VM. Valid options are: -
+      NO (default): If configuration updates are available, they are not
+      forcefully applied during repair. Instead, configuration updates are
+      applied according to the group's update policy. - YES: If configuration
+      updates are available, they are applied during repair.
+  """
+
+  class ForceUpdateOnRepairValueValuesEnum(_messages.Enum):
+    r"""A bit indicating whether to forcefully apply the group's latest
+    configuration when repairing a VM. Valid options are: - NO (default): If
+    configuration updates are available, they are not forcefully applied
+    during repair. Instead, configuration updates are applied according to the
+    group's update policy. - YES: If configuration updates are available, they
+    are applied during repair.
+
+    Values:
+      NO: <no description>
+      YES: <no description>
+    """
+    NO = 0
+    YES = 1
+
+  forceUpdateOnRepair = _messages.EnumField('ForceUpdateOnRepairValueValuesEnum', 1)
 
 
 class InstanceGroupManagerList(_messages.Message):
@@ -42977,8 +43038,9 @@ class InterconnectCircuitInfo(_messages.Message):
 
 
 class InterconnectDiagnostics(_messages.Message):
-  r"""Diagnostics information about interconnect, contains detailed and
-  current technical information about Google's side of the connection.
+  r"""Diagnostics information about the Interconnect connection, which
+  contains detailed and current technical information about Google's side of
+  the connection.
 
   Enums:
     BundleAggregationTypeValueValuesEnum: The aggregation type of the bundle
@@ -51944,57 +52006,62 @@ class OutlierDetection(_messages.Message):
   balancing pool for the backend service.
 
   Fields:
-    baseEjectionTime: The base time that a host is ejected for. The real
-      ejection time is equal to the base ejection time multiplied by the
-      number of times the host has been ejected. Defaults to 30000ms or 30s.
-    consecutiveErrors: Number of errors before a host is ejected from the
-      connection pool. When the backend host is accessed over HTTP, a 5xx
-      return code qualifies as an error. Defaults to 5. Not supported when the
-      backend service is referenced by a URL map that is bound to target gRPC
-      proxy that has validateForProxyless field set to true.
+    baseEjectionTime: The base time that a backend endpoint is ejected for.
+      Defaults to 30000ms or 30s. After a backend endpoint is returned back to
+      the load balancing pool, it can be ejected again in another ejection
+      analysis. Thus, the total ejection time is equal to the base ejection
+      time multiplied by the number of times the backend endpoint has been
+      ejected. Defaults to 30000ms or 30s.
+    consecutiveErrors: Number of consecutive errors before a backend endpoint
+      is ejected from the load balancing pool. When the backend endpoint is
+      accessed over HTTP, a 5xx return code qualifies as an error. Defaults to
+      5.
     consecutiveGatewayFailure: The number of consecutive gateway failures
       (502, 503, 504 status or connection errors that are mapped to one of
       those status codes) before a consecutive gateway failure ejection
-      occurs. Defaults to 3. Not supported when the backend service is
-      referenced by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
-    enforcingConsecutiveErrors: The percentage chance that a host will be
-      actually ejected when an outlier status is detected through consecutive
+      occurs. Defaults to 3.
+    enforcingConsecutiveErrors: The percentage chance that a backend endpoint
+      will be ejected when an outlier status is detected through consecutive
       5xx. This setting can be used to disable ejection or to ramp it up
-      slowly. Defaults to 0. Not supported when the backend service is
-      referenced by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
-    enforcingConsecutiveGatewayFailure: The percentage chance that a host will
-      be actually ejected when an outlier status is detected through
+      slowly. Defaults to 0.
+    enforcingConsecutiveGatewayFailure: The percentage chance that a backend
+      endpoint will be ejected when an outlier status is detected through
       consecutive gateway failures. This setting can be used to disable
-      ejection or to ramp it up slowly. Defaults to 100. Not supported when
-      the backend service is referenced by a URL map that is bound to target
-      gRPC proxy that has validateForProxyless field set to true.
-    enforcingSuccessRate: The percentage chance that a host will be actually
-      ejected when an outlier status is detected through success rate
+      ejection or to ramp it up slowly. Defaults to 100.
+    enforcingSuccessRate: The percentage chance that a backend endpoint will
+      be ejected when an outlier status is detected through success rate
       statistics. This setting can be used to disable ejection or to ramp it
-      up slowly. Defaults to 100.
+      up slowly. Defaults to 100. Not supported when the backend service uses
+      Serverless NEG.
     interval: Time interval between ejection analysis sweeps. This can result
-      in both new ejections as well as hosts being returned to service.
-      Defaults to 1 second.
-    maxEjectionPercent: Maximum percentage of hosts in the load balancing pool
-      for the backend service that can be ejected. Defaults to 50%.
-    successRateMinimumHosts: The number of hosts in a cluster that must have
-      enough request volume to detect success rate outliers. If the number of
-      hosts is less than this setting, outlier detection via success rate
-      statistics is not performed for any host in the cluster. Defaults to 5.
+      in both new ejections and backend endpoints being returned to service.
+      The interval is equal to the number of seconds as defined in
+      outlierDetection.interval.seconds plus the number of nanoseconds as
+      defined in outlierDetection.interval.nanos. Defaults to 1 second.
+    maxEjectionPercent: Maximum percentage of backend endpoints in the load
+      balancing pool for the backend service that can be ejected if the
+      ejection conditions are met. Defaults to 50%.
+    successRateMinimumHosts: The number of backend endpoints in the load
+      balancing pool that must have enough request volume to detect success
+      rate outliers. If the number of backend endpoints is fewer than this
+      setting, outlier detection via success rate statistics is not performed
+      for any backend endpoint in the load balancing pool. Defaults to 5. Not
+      supported when the backend service uses Serverless NEG.
     successRateRequestVolume: The minimum number of total requests that must
       be collected in one interval (as defined by the interval duration above)
-      to include this host in success rate based outlier detection. If the
-      volume is lower than this setting, outlier detection via success rate
-      statistics is not performed for that host. Defaults to 100.
+      to include this backend endpoint in success rate based outlier
+      detection. If the volume is lower than this setting, outlier detection
+      via success rate statistics is not performed for that backend endpoint.
+      Defaults to 100. Not supported when the backend service uses Serverless
+      NEG.
     successRateStdevFactor: This factor is used to determine the ejection
       threshold for success rate outlier ejection. The ejection threshold is
       the difference between the mean success rate, and the product of this
       factor and the standard deviation of the mean success rate: mean -
-      (stdev * success_rate_stdev_factor). This factor is divided by a
-      thousand to get a double. That is, if the desired factor is 1.9, the
-      runtime value should be 1900. Defaults to 1900.
+      (stdev * successRateStdevFactor). This factor is divided by a thousand
+      to get a double. That is, if the desired factor is 1.9, the runtime
+      value should be 1900. Defaults to 1900. Not supported when the backend
+      service uses Serverless NEG.
   """
 
   baseEjectionTime = _messages.MessageField('Duration', 1)
@@ -53652,7 +53719,7 @@ class PublicDelegatedPrefix(_messages.Message):
       retrieve a PublicDelegatedPrefix.
     id: [Output Only] The unique identifier for the resource type. The server
       generates this identifier.
-    ipCidrRange: The IPv4 address range, in CIDR format, represented by this
+    ipCidrRange: The IP address range, in CIDR format, represented by this
       public delegated prefix.
     isLiveMigration: If true, the prefix will be live migrated.
     kind: [Output Only] Type of the resource. Always
@@ -54084,8 +54151,8 @@ class PublicDelegatedPrefixPublicDelegatedSubPrefix(_messages.Message):
       PublicDelegatedSubPrefix.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    ipCidrRange: The IPv4 address range, in CIDR format, represented by this
-      sub public delegated prefix.
+    ipCidrRange: The IP address range, in CIDR format, represented by this sub
+      public delegated prefix.
     isAddress: Whether the sub prefix is delegated to create Address resources
       in the delegatee project.
     name: The name of the sub public delegated prefix.
@@ -58000,6 +58067,8 @@ class Route(_messages.Message):
     nextHopGateway: The URL to a gateway that should handle matching packets.
       You can only specify the internet gateway using a full or partial valid
       URL: projects/ project/global/gateways/default-internet-gateway
+    nextHopHub: [Output Only] The full resource name of the Network
+      Connectivity Center hub that will handle matching packets.
     nextHopIlb: The URL to a forwarding rule of type
       loadBalancingScheme=INTERNAL that should handle matching packets or the
       IP address of the forwarding Rule. For example, the following are all
@@ -58217,18 +58286,19 @@ class Route(_messages.Message):
   name = _messages.StringField(7)
   network = _messages.StringField(8)
   nextHopGateway = _messages.StringField(9)
-  nextHopIlb = _messages.StringField(10)
-  nextHopInstance = _messages.StringField(11)
-  nextHopIp = _messages.StringField(12)
-  nextHopNetwork = _messages.StringField(13)
-  nextHopPeering = _messages.StringField(14)
-  nextHopVpnTunnel = _messages.StringField(15)
-  priority = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
-  routeStatus = _messages.EnumField('RouteStatusValueValuesEnum', 17)
-  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 18)
-  selfLink = _messages.StringField(19)
-  tags = _messages.StringField(20, repeated=True)
-  warnings = _messages.MessageField('WarningsValueListEntry', 21, repeated=True)
+  nextHopHub = _messages.StringField(10)
+  nextHopIlb = _messages.StringField(11)
+  nextHopInstance = _messages.StringField(12)
+  nextHopIp = _messages.StringField(13)
+  nextHopNetwork = _messages.StringField(14)
+  nextHopPeering = _messages.StringField(15)
+  nextHopVpnTunnel = _messages.StringField(16)
+  priority = _messages.IntegerField(17, variant=_messages.Variant.UINT32)
+  routeStatus = _messages.EnumField('RouteStatusValueValuesEnum', 18)
+  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 19)
+  selfLink = _messages.StringField(20)
+  tags = _messages.StringField(21, repeated=True)
+  warnings = _messages.MessageField('WarningsValueListEntry', 22, repeated=True)
 
 
 class RouteAsPath(_messages.Message):
@@ -59269,6 +59339,9 @@ class RouterNat(_messages.Message):
   auto-allocate ephemeral IPs if no external IPs are provided.
 
   Enums:
+    AutoNetworkTierValueValuesEnum: The network tier to use when automatically
+      reserving IP addresses. Must be one of: PREMIUM, STANDARD. If not
+      specified, PREMIUM tier will be used.
     EndpointTypesValueListEntryValuesEnum:
     NatIpAllocateOptionValueValuesEnum: Specify the NatIpAllocateOption, which
       can take one of the following values: - MANUAL_ONLY: Uses only Nat IP
@@ -59288,6 +59361,9 @@ class RouterNat(_messages.Message):
       other Router.Nat section in any Router for this network in this region.
 
   Fields:
+    autoNetworkTier: The network tier to use when automatically reserving IP
+      addresses. Must be one of: PREMIUM, STANDARD. If not specified, PREMIUM
+      tier will be used.
     drainNatIps: A list of URLs of the IP resources to be drained. These IPs
       must be valid static external IPs that have been assigned to the NAT.
       These IPs should be used for updating/patching a NAT only.
@@ -59351,6 +59427,25 @@ class RouterNat(_messages.Message):
       30s if not set.
   """
 
+  class AutoNetworkTierValueValuesEnum(_messages.Enum):
+    r"""The network tier to use when automatically reserving IP addresses.
+    Must be one of: PREMIUM, STANDARD. If not specified, PREMIUM tier will be
+    used.
+
+    Values:
+      FIXED_STANDARD: Public internet quality with fixed bandwidth.
+      PREMIUM: High quality, Google-grade network tier, support for all
+        networking products.
+      STANDARD: Public internet quality, only limited support for other
+        networking products.
+      STANDARD_OVERRIDES_FIXED_STANDARD: (Output only) Temporary tier for
+        FIXED_STANDARD when fixed standard tier is expired or not configured.
+    """
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    STANDARD = 2
+    STANDARD_OVERRIDES_FIXED_STANDARD = 3
+
   class EndpointTypesValueListEntryValuesEnum(_messages.Enum):
     r"""EndpointTypesValueListEntryValuesEnum enum type.
 
@@ -59401,24 +59496,25 @@ class RouterNat(_messages.Message):
     ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES = 1
     LIST_OF_SUBNETWORKS = 2
 
-  drainNatIps = _messages.StringField(1, repeated=True)
-  enableDynamicPortAllocation = _messages.BooleanField(2)
-  enableEndpointIndependentMapping = _messages.BooleanField(3)
-  endpointTypes = _messages.EnumField('EndpointTypesValueListEntryValuesEnum', 4, repeated=True)
-  icmpIdleTimeoutSec = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  logConfig = _messages.MessageField('RouterNatLogConfig', 6)
-  maxPortsPerVm = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  minPortsPerVm = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  name = _messages.StringField(9)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 10)
-  natIps = _messages.StringField(11, repeated=True)
-  rules = _messages.MessageField('RouterNatRule', 12, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 13)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 14, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  tcpTimeWaitTimeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  autoNetworkTier = _messages.EnumField('AutoNetworkTierValueValuesEnum', 1)
+  drainNatIps = _messages.StringField(2, repeated=True)
+  enableDynamicPortAllocation = _messages.BooleanField(3)
+  enableEndpointIndependentMapping = _messages.BooleanField(4)
+  endpointTypes = _messages.EnumField('EndpointTypesValueListEntryValuesEnum', 5, repeated=True)
+  icmpIdleTimeoutSec = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('RouterNatLogConfig', 7)
+  maxPortsPerVm = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  minPortsPerVm = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  name = _messages.StringField(10)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 11)
+  natIps = _messages.StringField(12, repeated=True)
+  rules = _messages.MessageField('RouterNatRule', 13, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 14)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 15, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  tcpTimeWaitTimeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(19, variant=_messages.Variant.INT32)
 
 
 class RouterNatLogConfig(_messages.Message):
@@ -66268,6 +66364,13 @@ class TargetHttpProxy(_messages.Message):
       TargetHttpProxy; otherwise, the request will fail with error 412
       conditionNotMet. To see the latest fingerprint, make a get() request to
       retrieve the TargetHttpProxy.
+    httpKeepAliveTimeoutSec: Specifies how long to keep a connection open,
+      after completing a response, while there is no matching traffic (in
+      seconds). If an HTTP keep-alive is not specified, a default value (610
+      seconds) will be used. For Global external HTTP(S) load balancer, the
+      minimum allowed value is 5 seconds and the maximum allowed value is 1200
+      seconds. For Global external HTTP(S) load balancer (classic), this
+      option is not available publicly.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#targetHttpProxy for
@@ -66299,13 +66402,14 @@ class TargetHttpProxy(_messages.Message):
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   fingerprint = _messages.BytesField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default='compute#targetHttpProxy')
-  name = _messages.StringField(6)
-  proxyBind = _messages.BooleanField(7)
-  region = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  urlMap = _messages.StringField(10)
+  httpKeepAliveTimeoutSec = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default='compute#targetHttpProxy')
+  name = _messages.StringField(7)
+  proxyBind = _messages.BooleanField(8)
+  region = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  urlMap = _messages.StringField(11)
 
 
 class TargetHttpProxyAggregatedList(_messages.Message):
@@ -66777,6 +66881,13 @@ class TargetHttpsProxy(_messages.Message):
       otherwise, the request will fail with error 412 conditionNotMet. To see
       the latest fingerprint, make a get() request to retrieve the
       TargetHttpsProxy.
+    httpKeepAliveTimeoutSec: Specifies how long to keep a connection open,
+      after completing a response, while there is no matching traffic (in
+      seconds). If an HTTP keep-alive is not specified, a default value (610
+      seconds) will be used. For Global external HTTP(S) load balancer, the
+      minimum allowed value is 5 seconds and the maximum allowed value is 1200
+      seconds. For Global external HTTP(S) load balancer (classic), this
+      option is not available publicly.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#targetHttpsProxy for
@@ -66858,17 +66969,18 @@ class TargetHttpsProxy(_messages.Message):
   creationTimestamp = _messages.StringField(3)
   description = _messages.StringField(4)
   fingerprint = _messages.BytesField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default='compute#targetHttpsProxy')
-  name = _messages.StringField(8)
-  proxyBind = _messages.BooleanField(9)
-  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 10)
-  region = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  serverTlsPolicy = _messages.StringField(13)
-  sslCertificates = _messages.StringField(14, repeated=True)
-  sslPolicy = _messages.StringField(15)
-  urlMap = _messages.StringField(16)
+  httpKeepAliveTimeoutSec = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default='compute#targetHttpsProxy')
+  name = _messages.StringField(9)
+  proxyBind = _messages.BooleanField(10)
+  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 11)
+  region = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  serverTlsPolicy = _messages.StringField(14)
+  sslCertificates = _messages.StringField(15, repeated=True)
+  sslPolicy = _messages.StringField(16)
+  urlMap = _messages.StringField(17)
 
 
 class TargetHttpsProxyAggregatedList(_messages.Message):

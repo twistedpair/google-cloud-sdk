@@ -381,7 +381,8 @@ class Argument(YAMLArgument):
 
     if self.clearable:
       value = self._ParseUpdateArgsFromNamespace(namespace, message)
-      arg_utils.SetFieldInMessage(message, self.api_field, value)
+      if value:
+        arg_utils.SetFieldInMessage(message, self.api_field, value)
       return
 
     value = arg_utils.GetFromNamespace(

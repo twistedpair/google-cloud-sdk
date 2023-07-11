@@ -83,7 +83,7 @@ uncompressed on the local disk. The uploaded objects retain the `Content-Type`
 and name of the original files. However, the `Content-Encoding` metadata
 is set to `gzip` and the `Cache-Control` metadata set to `no-transform`.
 The data remains compressed on Cloud Storage servers and will not be
-decompressed on download by gcloud stroage because of the `no-transform`
+decompressed on download by gcloud storage because of the `no-transform`
 field.
 
 Since the local gzip option compresses data prior to upload, it is not subject

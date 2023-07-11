@@ -522,10 +522,13 @@ class Telemetry(_messages.Message):
       configuration.
     name: The full resource name of the telemetry object in the format of:
       "projects/{project}/locations/global/telemetry".
+    project: Output only. Project number which the telemetry configuration is
+      associated with Format: projects/{project}
   """
 
   monitoringEnabled = _messages.BooleanField(1)
   name = _messages.StringField(2)
+  project = _messages.StringField(3)
 
 
 class Topology(_messages.Message):
@@ -535,10 +538,13 @@ class Topology(_messages.Message):
     enabled: Whether or not Topology is enabled for the project
     name: The full resource name of the topology object in the format of:
       "projects/{project}/locations/{location}/topology"
+    project: Output only. Project number which the topology configuration is
+      associated with Format: projects/{project}
   """
 
   enabled = _messages.BooleanField(1)
   name = _messages.StringField(2)
+  project = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -133,17 +133,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_APPLICATIONS = (
-      'projects.locations.applications',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/applications/'
-              '{applicationsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

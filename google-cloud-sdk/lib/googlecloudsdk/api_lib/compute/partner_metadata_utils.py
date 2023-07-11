@@ -90,7 +90,10 @@ def _CreatePartnerMetadataDict(
     partner_metadata_file = json.loads(partner_metadata_from_file)
   partner_metadata_dict = {}
   for key in partner_metadata_file.keys():
-    partner_metadata_dict[key] = {'entries': partner_metadata_file[key]}
+    if 'entries' in partner_metadata_file[key]:
+      partner_metadata_dict[key] = partner_metadata_file[key]
+    else:
+      partner_metadata_dict[key] = {'entries': partner_metadata_file[key]}
   for key, value in partner_metadata.items():
     namespace, entry = key.split('/')
     if namespace not in partner_metadata_dict:

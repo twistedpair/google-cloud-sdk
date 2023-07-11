@@ -51,6 +51,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_RESOURCES = (
+      'projects.resources',
+      'projects/{projectsId}/resources/{resourcesId}',
+      {},
+      ['projectsId', 'resourcesId'],
+      True
+  )
   PROJECTS_SCANCONFIGS = (
       'projects.scanConfigs',
       '{+name}',

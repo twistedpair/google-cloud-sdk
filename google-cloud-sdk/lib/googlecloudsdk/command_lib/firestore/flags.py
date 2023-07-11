@@ -28,7 +28,6 @@ def AddCollectionIdsFlag(parser):
 
   Args:
     parser: The argparse parser.
-
   """
   parser.add_argument(
       '--collection-ids',
@@ -53,7 +52,6 @@ def AddDatabaseIdFlag(parser, required=False, hidden=False):
     parser: The argparse parser.
     required: Whether the flag must be set for running the command, a bool.
     hidden: Whether the flag is hidden in document, a bool.
-
   """
   parser.add_argument(
       '--database',
@@ -96,7 +94,6 @@ def AddSnapshotTimeFlag(parser):
 
   Args:
     parser: The argparse parser.
-
   """
   parser.add_argument(
       '--snapshot-time',
@@ -129,7 +126,6 @@ def AddLocationFlag(
     required: Whether the flag must be set for running the command, a bool.
     hidden: Whether the flag is hidden in document. a bool.
     suggestion_aliases: A list of flag name aliases. A list of string.
-
   """
   parser.add_argument(
       '--location',
@@ -154,7 +150,6 @@ def AddBackupFlag(parser):
 
   Args:
     parser: The argparse parser.
-
   """
   parser.add_argument(
       '--backup',
@@ -177,7 +172,6 @@ def AddBackupScheduleFlag(parser):
 
   Args:
     parser: The argparse parser.
-
   """
   parser.add_argument(
       '--backup-schedule',
@@ -201,7 +195,6 @@ def AddRetentionFlag(parser, required=False):
   Args:
     parser: The argparse parser.
     required: Whether the flag must be set for running the command, a bool.
-
   """
   parser.add_argument(
       '--retention',
@@ -226,21 +219,41 @@ def AddRecurrenceFlag(parser):
 
   Args:
     parser: The argparse parser.
-
   """
-  parser.add_argument(
-      '--recurrence',
-      metavar='RECURRENCE',
-      hidden=True,
+  group = parser.add_group(
+      help='Recurrence settings of a backup schedule.',
       required=True,
-      type=str,
-      help="""
-      The recurrence of the backup. recurrence represents how frequent the backups will be taken.
+      hidden=True,
+  )
+  help_text = """\
+      The recurrence settings of a backup schedule.
 
-      The available values are: `daily` and `weekly`.
+      Currently only daily and weekly backup schedules are supported.
 
-      For example, to set retention as 7 days.
+      When a weekly backup schedule is created, day-of-week is needed.
 
-        $ {command} --recurrence=daily
-      """,
+      For example, to create a weekly backup schedule which creates backups on
+      Monday.
+
+        $ {command} --recurrence=weekly --day-of-week=MON
+  """
+  group.add_argument(
+      '--recurrence', type=str, help=help_text, required=True, hidden=True
+  )
+
+  help_text = """\
+     The day of week (UTC time zone) of when backups are created.
+
+      The available values are: `MON`, `TUE`, `WED`, `THU`, `FRI`, `SAT`,`SUN`.
+      Values are case insensitive.
+
+      This is required when creating a weekly backup schedule.
+  """
+  group.add_argument(
+      '--day-of-week',
+      choices=arg_parsers.DayOfWeek.DAYS,
+      type=arg_parsers.DayOfWeek.Parse,
+      help=help_text,
+      required=False,
+      hidden=True,
   )

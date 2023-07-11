@@ -574,7 +574,9 @@ class ExistenceFilter(_messages.Message):
   Fields:
     count: The total count of documents that match target_id. If different
       from the count of documents in the client that match, the client must
-      manually determine which documents no longer match the target.
+      manually determine which documents no longer match the target. The
+      client can use the `unchanged_names` bloom filter to assist with this
+      determination.
     targetId: The target ID to which this filter applies.
     unchangedNames: A bloom filter that contains the UTF-8 byte encodings of
       the resource names of the documents that match target_id, in the form `p
@@ -799,11 +801,18 @@ class FirestoreProjectsDatabasesBackupSchedulesListRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesBackupSchedulesListRequest object.
 
   Fields:
+    pageSize: Number of backup schedules to be returned in the response. The
+      service may return fewer than this value and if left unspecified,
+      defaults to the server's maximum allowed page size.
+    pageToken: If non-empty, `page_token` should contain a next_page_token
+      from a previous ListBackupSchedulesResponse to the same `parent`.
     parent: Required. The parent database. Format is
       `projects/{project}/databases/{database}`.
   """
 
-  parent = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class FirestoreProjectsDatabasesBackupSchedulesPatchRequest(_messages.Message):
@@ -952,8 +961,11 @@ class FirestoreProjectsDatabasesCreateRequest(_messages.Message):
 
   Fields:
     databaseId: Required. The ID to use for the database, which will become
-      the final component of the database's resource name. The value must be
-      set to "(default)".
+      the final component of the database's resource name. This value should
+      be 4-63 characters. Valid characters are /a-z-/ with first character a
+      letter and the last a letter or a number. Must not be UUID-like
+      /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/. "(default)" database id is
+      also valid.
     googleFirestoreAdminV1Database: A GoogleFirestoreAdminV1Database resource
       to be passed as the request body.
     parent: Required. A parent name of the form `projects/{project_id}`
@@ -1379,10 +1391,19 @@ class FirestoreProjectsDatabasesListRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesListRequest object.
 
   Fields:
+    pageSize: The maximum number of database to return. The service may return
+      fewer than this value. If unspecified, the server will use a sensible
+      default.
+    pageToken: A page token, received from a previous `ListDatabasesRequest`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListDatabases` must match the call that
+      provided the page token.
     parent: Required. A parent name of the form `projects/{project_id}`
   """
 
-  parent = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class FirestoreProjectsDatabasesOperationsCancelRequest(_messages.Message):
@@ -1492,13 +1513,20 @@ class FirestoreProjectsLocationsBackupsListRequest(_messages.Message):
   r"""A FirestoreProjectsLocationsBackupsListRequest object.
 
   Fields:
+    pageSize: Number of backups to be returned in the response. The service
+      may return fewer than this value and if left unspecified, defaults to
+      the server's maximum allowed page size.
+    pageToken: If non-empty, `page_token` should contain a next_page_token
+      from a previous ListBackupsResponse to the same `parent`.
     parent: Required. The location to list backups from. Format is
       `projects/{project}/locations/{location}`. Use `{location} = '-'` to
       list backups from all locations for the given project. This allows
       listing backups from a single location or from all locations.
   """
 
-  parent = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class FirestoreProjectsLocationsGetRequest(_messages.Message):
@@ -2382,6 +2410,52 @@ class GoogleFirestoreAdminV1Progress(_messages.Message):
   estimatedWork = _messages.IntegerField(2)
 
 
+class GoogleFirestoreAdminV1RestoreDatabaseMetadata(_messages.Message):
+  r"""Metadata for the long-running operation from the RestoreDatabase
+  request.
+
+  Enums:
+    OperationStateValueValuesEnum: The operation state of the restore.
+
+  Fields:
+    backup: The name of the backup restoring from.
+    database: The name of the database being restored to.
+    endTime: The time the restore finished, unset for ongoing restores.
+    operationState: The operation state of the restore.
+    startTime: The time the restore was started.
+  """
+
+  class OperationStateValueValuesEnum(_messages.Enum):
+    r"""The operation state of the restore.
+
+    Values:
+      OPERATION_STATE_UNSPECIFIED: Unspecified.
+      INITIALIZING: Request is being prepared for processing.
+      PROCESSING: Request is actively being processed.
+      CANCELLING: Request is in the process of being cancelled after user
+        called google.longrunning.Operations.CancelOperation on the operation.
+      FINALIZING: Request has been processed and is in its finalization stage.
+      SUCCESSFUL: Request has completed successfully.
+      FAILED: Request has finished being processed, but encountered an error.
+      CANCELLED: Request has finished being cancelled after user called
+        google.longrunning.Operations.CancelOperation.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    INITIALIZING = 1
+    PROCESSING = 2
+    CANCELLING = 3
+    FINALIZING = 4
+    SUCCESSFUL = 5
+    FAILED = 6
+    CANCELLED = 7
+
+  backup = _messages.StringField(1)
+  database = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  operationState = _messages.EnumField('OperationStateValueValuesEnum', 4)
+  startTime = _messages.StringField(5)
+
+
 class GoogleFirestoreAdminV1RestoreDatabaseRequest(_messages.Message):
   r"""The request message for FirestoreAdmin.RestoreDatabase.
 
@@ -3053,6 +3127,8 @@ class ReadOnly(_messages.Message):
 
 class ReadWrite(_messages.Message):
   r"""Options for a transaction that can be used to read and write documents.
+  Firestore does not allow 3rd party auth requests to create read-write.
+  transactions.
 
   Fields:
     retryTransaction: An optional transaction to retry.

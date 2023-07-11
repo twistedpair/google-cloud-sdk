@@ -19,7 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
+from googlecloudsdk.command_lib.functions import run_util
 from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 
 
 def Run(args, release_track):
@@ -32,11 +35,56 @@ def Run(args, release_track):
 
   policy = client.projects_locations_functions.GetIamPolicy(
       messages.CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest(
-          resource=function_relative_name))
+          resource=function_relative_name
+      )
+  )
 
   iam_util.RemoveBindingFromIamPolicy(policy, args.member, args.role)
 
-  return client.projects_locations_functions.SetIamPolicy(
+  policy = client.projects_locations_functions.SetIamPolicy(
       messages.CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest(
           resource=function_relative_name,
-          setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))
+          setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy),
+      )
+  )
+
+  if args.role in [
+      'roles/cloudfunctions.admin',
+      'roles/cloudfunctions.developer',
+      'roles/cloudfunctions.invoker',
+  ]:
+    log.warning(
+        'The binding between member {member} and role {role} has been'
+        ' successfully removed. However, to make sure the member {member}'
+        " doesn't have the permission to invoke the 2nd gen function, you need"
+        ' to remove the invoker binding in the underlying Cloud Run service.'
+        ' This can be done by running the following command:\n '
+        ' gcloud functions remove-invoker-policy-binding {function_ref}'
+        ' --member={member} \n'.format(
+            member=args.member, role=args.role, function_ref=function_ref.Name()
+        )
+    )
+    if console_io.CanPrompt() and console_io.PromptContinue(
+        prompt_string=(
+            'Would you like to run this command and additionally deny [{}]'
+            ' permission to invoke function [{}]'
+        ).format(args.member, function_ref.Name()),
+    ):
+      function = client.projects_locations_functions.Get(
+          messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
+              name=function_ref.RelativeName()
+          )
+      )
+      run_util.AddOrRemoveInvokerBinding(
+          function, args.member, add_binding=False
+      )
+      log.status.Print(
+          'The role [roles/run.invoker] was successfully removed for member '
+          '{member} in the underlying Cloud Run service. You can view '
+          'its IAM policy by running:\n'
+          'gcloud run services get-iam-policy {service}\n'.format(
+              service=function.serviceConfig.service, member=args.member
+          )
+      )
+
+  return policy

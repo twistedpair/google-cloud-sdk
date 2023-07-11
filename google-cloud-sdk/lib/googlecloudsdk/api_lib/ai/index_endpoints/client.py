@@ -67,17 +67,7 @@ class IndexEndpointsClient(object):
     """Create a new v1 index endpoint."""
     labels = labels_util.ParseCreateArgs(
         args, self.messages.GoogleCloudAiplatformV1IndexEndpoint.LabelsValue)
-    if args.public_endpoint_enabled:
-      req = self.messages.AiplatformProjectsLocationsIndexEndpointsCreateRequest(
-          parent=location_ref.RelativeName(),
-          googleCloudAiplatformV1IndexEndpoint=self.messages.GoogleCloudAiplatformV1IndexEndpoint(
-              displayName=args.display_name,
-              description=args.description,
-              publicEndpointEnabled=args.public_endpoint_enabled,
-              labels=labels,
-          ),
-      )
-    else:
+    if args.network is not None:
       req = self.messages.AiplatformProjectsLocationsIndexEndpointsCreateRequest(
           parent=location_ref.RelativeName(),
           googleCloudAiplatformV1IndexEndpoint=self.messages.GoogleCloudAiplatformV1IndexEndpoint(
@@ -87,6 +77,17 @@ class IndexEndpointsClient(object):
               labels=labels,
           ),
       )
+    else:
+      req = self.messages.AiplatformProjectsLocationsIndexEndpointsCreateRequest(
+          parent=location_ref.RelativeName(),
+          googleCloudAiplatformV1IndexEndpoint=self.messages.GoogleCloudAiplatformV1IndexEndpoint(
+              displayName=args.display_name,
+              description=args.description,
+              publicEndpointEnabled=True,
+              labels=labels,
+          ),
+      )
+
     return self._service.Create(req)
 
   def PatchBeta(self, index_endpoint_ref, args):
@@ -219,7 +220,7 @@ class IndexEndpointsClient(object):
     return self._service.UndeployIndex(request)
 
   def MutateDeployedIndexBeta(self, index_endpoint_ref, args):
-    """Mutate an deployed index from an index endpoint."""
+    """Mutate a deployed index from an index endpoint."""
 
     automatic_resources = self.messages.GoogleCloudAiplatformV1beta1AutomaticResources(
     )
@@ -236,7 +237,7 @@ class IndexEndpointsClient(object):
     return self._service.MutateDeployedIndex(request)
 
   def MutateDeployedIndex(self, index_endpoint_ref, args):
-    """Mutate an deployed index from an index endpoint."""
+    """Mutate a deployed index from an index endpoint."""
 
     automatic_resources = self.messages.GoogleCloudAiplatformV1AutomaticResources(
     )

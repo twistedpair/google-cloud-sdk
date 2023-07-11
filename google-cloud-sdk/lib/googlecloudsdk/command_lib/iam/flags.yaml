@@ -64,6 +64,11 @@ workload_identity_pool:
         Organization administrators can further reduce the maximum
         session_duration value using the iam-workloadIdentitySessionDuration
         Resource Setting.
+  identity_mode:
+    api_field: workloadIdentityPool.identityMode
+    arg_name: identity-mode
+    help_text: |-
+      The identity mode of the pool.
 
 workload_identity_pool_provider:
   display_name:
@@ -306,6 +311,35 @@ workload_identity_pool_provider_key:
     help_text: |-
       The specifications for the key.
 
+workload_identity_pool_namespace:
+  description:
+    api_field: workloadIdentityPoolNamespace.description
+    arg_name: description
+    help_text: |-
+      A description of the namespace. Cannot exceed 256 characters.
+  disabled:
+    api_field: workloadIdentityPoolNamespace.disabled
+    arg_name: disabled
+    help_text: |-
+      Whether the namespace is disabled. If disabled, credentials may no longer be issued for this
+      identity and this identity will no longer be able to access Google Cloud APIs. Existing
+      credentials may continue to be accepted by third party APIs and workloads until they expire.
+
+workload_identity_pool_managed_identity:
+  description:
+    api_field: workloadIdentityPoolManagedIdentity.description
+    arg_name: description
+    help_text: |-
+      A description of the managed identity. Cannot exceed 256 characters.
+  disabled:
+    api_field: workloadIdentityPoolManagedIdentity.disabled
+    arg_name: disabled
+    help_text: |-
+      Whether the managed identity is disabled. If disabled, credentials may no longer be issued
+      for this identity and this identity will no longer be able to access Google Cloud APIs.
+      Existing credentials may continue to be accepted by third party APIs and workloads until they
+      expire.
+
 workforce_pool:
   parent:
     api_field: workforcePool.parent
@@ -456,22 +490,82 @@ workforce_pool_provider:
   oidc_client_secret_value: &oidc_client_secret_value
     api_field: workforcePoolProvider.oidc.clientSecret.value.plainText
     arg_name: client-secret-value
-    hidden: true
     help_text: |-
       The OIDC client secret. Required to enable Authorization Code flow for web sign-in.
   oidc_clearable_client_secret:
     group:
       mutex: true
-      hidden: true
       params:
       - arg_name: clear-client-secret
         api_field: workforcePoolProvider.oidc.clientSecret
         action: store_true
         processor: googlecloudsdk.command_lib.iam.hooks:ClearFlag
-        hidden: true
         help_text: |-
           Clear the OIDC client secret.
       - *oidc_client_secret_value
+  oidc_web_sso_response_type:
+    api_field: workforcePoolProvider.oidc.webSsoConfig.responseType
+    arg_name: web-sso-response-type
+    help_text: |-
+      Response Type to request for in the OIDC Authorization Request for web sign-in.
+      Use `code` to select the [authorization code flow](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth)
+      Use `id-token` to select the [implicit flow](https://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth).
+  oidc_web_sso_assertion_claims_behavior:
+    api_field: workforcePoolProvider.oidc.webSsoConfig.assertionClaimsBehavior
+    arg_name: web-sso-assertion-claims-behavior
+    help_text: |-
+      The behavior for how OIDC Claims are included in the `assertion` object used for attribute mapping and attribute condition.
+      Use `merge-user-info-over-id-token-claims` to merge the UserInfo Endpoint Claims with ID Token
+      Claims, preferring UserInfo Claim Values for the same Claim Name. Currently this option is only
+      available for Authorization Code flow.
+      Use `only-id-token-claims` to include only ID token claims.
+  oidc_web_sso_additional_scopes:
+    api_field: workforcePoolProvider.oidc.webSsoConfig.additionalScopes
+    arg_name: web-sso-additional-scopes
+    hidden: true
+    help_text: |-
+      Additional scopes to request for the OIDC authentication on
+      top of scopes requested by default. By default, the `openid`, `profile`
+      and `email` scopes that are supported by the identity provider are
+      requested.
+
+      Each additional scope may be at most 256
+      characters. A maximum of 10 additional scopes may be configured.
+  oidc_web_sso_group:
+    group:
+      required: true
+      params:
+      - api_field: workforcePoolProvider.oidc.webSsoConfig.responseType
+        arg_name: web-sso-response-type
+        required: true
+        help_text: |-
+          Response Type to request for in the OIDC Authorization Request for web sign-in.
+
+          Use `code` to select the [authorization code flow](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth)
+
+          Use `id-token` to select the [implicit flow](https://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth).
+      - api_field: workforcePoolProvider.oidc.webSsoConfig.assertionClaimsBehavior
+        arg_name: web-sso-assertion-claims-behavior
+        required: true
+        help_text: |-
+          The behavior for how OIDC Claims are included in the `assertion` object used for attribute mapping and attribute condition.
+
+          Use `merge-user-info-over-id-token-claims` to merge the UserInfo Endpoint Claims with ID Token
+          Claims, preferring UserInfo Claim Values for the same Claim Name. Currently this option is only
+          available for Authorization Code flow.
+
+          Use `only-id-token-claims` to include only ID token claims.
+      - api_field: workforcePoolProvider.oidc.webSsoConfig.additionalScopes
+        arg_name: web-sso-additional-scopes
+        hidden: true
+        help_text: |-
+          Additional scopes to request for in the OIDC authentication request on
+          top of scopes requested by default. By default, the `openid`, `profile`
+          and `email` scopes that are supported by the identity provider are
+          requested.
+
+          Each additional scope may be at most 256
+          characters. A maximum of 10 additional scopes may be configured.
   saml_idp_metadata_path:
     api_field: workforcePoolProvider.saml.idpMetadataXml
     type: "googlecloudsdk.calliope.arg_parsers:FileContents:"

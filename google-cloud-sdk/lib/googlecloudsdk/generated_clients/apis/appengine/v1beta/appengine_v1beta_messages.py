@@ -228,19 +228,6 @@ class AppengineAppsAuthorizedDomainsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class AppengineAppsCreateRequest(_messages.Message):
-  r"""A AppengineAppsCreateRequest object.
-
-  Fields:
-    application: A Application resource to be passed as the request body.
-    parent: The project and location in which the application should be
-      created, specified in the format projects/*/locations/*
-  """
-
-  application = _messages.MessageField('Application', 1)
-  parent = _messages.StringField(2)
-
-
 class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
   r"""A AppengineAppsDomainMappingsCreateRequest object.
 
@@ -730,42 +717,6 @@ class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
   version = _messages.MessageField('Version', 3)
 
 
-class AppengineProjectsLocationsApplicationsCreateRequest(_messages.Message):
-  r"""A AppengineProjectsLocationsApplicationsCreateRequest object.
-
-  Fields:
-    application: A Application resource to be passed as the request body.
-    parent: The project and location in which the application should be
-      created, specified in the format projects/*/locations/*
-  """
-
-  application = _messages.MessageField('Application', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class AppengineProjectsLocationsApplicationsGetRequest(_messages.Message):
-  r"""A AppengineProjectsLocationsApplicationsGetRequest object.
-
-  Fields:
-    name: Name of the Application resource to get. Example: apps/myapp.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class AppengineProjectsLocationsApplicationsRepairRequest(_messages.Message):
-  r"""A AppengineProjectsLocationsApplicationsRepairRequest object.
-
-  Fields:
-    name: Name of the application to repair. Example: apps/myapp
-    repairApplicationRequest: A RepairApplicationRequest resource to be passed
-      as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  repairApplicationRequest = _messages.MessageField('RepairApplicationRequest', 2)
-
-
 class AppengineProjectsLocationsGetRequest(_messages.Message):
   r"""A AppengineProjectsLocationsGetRequest object.
 
@@ -971,8 +922,8 @@ class AuthorizedCertificate(_messages.Message):
 
 class AuthorizedDomain(_messages.Message):
   r"""A domain that a user has been authorized to administer. To authorize use
-  of a domain, verify ownership via Webmaster Central
-  (https://www.google.com/webmasters/verification/home).
+  of a domain, verify ownership via Search Console
+  (https://search.google.com/search-console/welcome).
 
   Fields:
     id: Fully qualified domain name of the domain authorized for use. Example:
@@ -1833,7 +1784,7 @@ class LivenessCheck(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

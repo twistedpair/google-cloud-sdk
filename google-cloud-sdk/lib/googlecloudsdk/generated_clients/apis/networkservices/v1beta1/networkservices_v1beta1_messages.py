@@ -13,6 +13,31 @@ from apitools.base.py import extra_types
 package = 'networkservices'
 
 
+class Address(_messages.Message):
+  r"""Address can be either an IP address and port number, or a Unix domain
+  socket name.
+
+  Fields:
+    socketAddress: Specifies an IP:Port address.
+    uds: Specifies an Unix Domain Socket.
+  """
+
+  socketAddress = _messages.MessageField('AddressSocketAddress', 1)
+  uds = _messages.StringField(2)
+
+
+class AddressSocketAddress(_messages.Message):
+  r"""Specifies an IP:Port address.
+
+  Fields:
+    address: Required. Specifies an IPV4 address. CIDR are not allowed.
+    port: Required. Specifies the port.
+  """
+
+  address = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -127,9 +152,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -138,7 +165,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -155,9 +184,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -395,6 +422,9 @@ class EndpointPolicy(_messages.Message):
       1024 characters.
     endpointMatcher: Required. A matcher that selects endpoints to which the
       policies should be applied.
+    internalCaller: Optional. A flag set to identify internal controllers
+      Setting this will trigger a P4SA check to validate the caller is from an
+      allowlisted service's P4SA even if other optional fields are unset.
     labels: Optional. Set of label tags associated with the EndpointPolicy
       resource.
     name: Required. Name of the EndpointPolicy resource. It matches pattern
@@ -405,6 +435,10 @@ class EndpointPolicy(_messages.Message):
       applied to terminate the inbound traffic at the identified backends. If
       this field is not set, authentication is disabled(open) for this
       endpoint.
+    targets: Optional. A list of targets this policy should apply to.
+      Currently each target can only be fully qualified name of BackendService
+      from the same project. e.g.:
+      projects/*/backendServices/locations/global/
     trafficPortSelector: Optional. Port selector for the (matched) endpoints.
       If no port selector is provided, the matched config is applied to all
       ports.
@@ -457,12 +491,14 @@ class EndpointPolicy(_messages.Message):
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
   endpointMatcher = _messages.MessageField('EndpointMatcher', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  serverTlsPolicy = _messages.StringField(9)
-  trafficPortSelector = _messages.MessageField('TrafficPortSelector', 10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  internalCaller = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  serverTlsPolicy = _messages.StringField(10)
+  targets = _messages.StringField(11, repeated=True)
+  trafficPortSelector = _messages.MessageField('TrafficPortSelector', 12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  updateTime = _messages.StringField(14)
 
 
 class Expr(_messages.Message):
@@ -508,6 +544,8 @@ class Gateway(_messages.Message):
   Gateways to dictate how requests should be routed by this Gateway.
 
   Enums:
+    IpVersionValueValuesEnum: Optional. The IP Version that will be used by
+      this gateway. Valid options are IPV4 or IPV6. Default is IPV4.
     TypeValueValuesEnum: Immutable. The type of the customer managed gateway.
       This field is required. If unspecified, an error is returned.
 
@@ -516,10 +554,11 @@ class Gateway(_messages.Message):
       resource.
 
   Fields:
-    addresses: Zero or one IPv4-address on which the Gateway will receive the
-      traffic. When no address is provided, an IP from the subnetwork is
-      allocated This field only applies to gateways of type
-      'SECURE_WEB_GATEWAY'. Gateways of type 'OPEN_MESH' listen on 0.0.0.0.
+    addresses: Optional. Zero or one IPv4 or IPv6 address on which the Gateway
+      will receive the traffic. When no address is provided, an IP from the
+      subnetwork is allocated This field only applies to gateways of type
+      'SECURE_WEB_GATEWAY'. Gateways of type 'OPEN_MESH' listen on 0.0.0.0 for
+      IPv4 and :: for IPv6.
     authorizationPolicy: Optional. A fully-qualified AuthorizationPolicy URL
       reference. Specifies how traffic is authorized. If empty, authorization
       checks are disabled.
@@ -530,6 +569,16 @@ class Gateway(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    gatewaySecurityPolicy: Optional. A fully-qualified GatewaySecurityPolicy
+      URL reference. Defines how a server should apply security policy to
+      inbound (VM to Proxy) initiated connections. For example:
+      `projects/*/locations/*/gatewaySecurityPolicies/swg-policy`. This policy
+      is specific to gateways of type 'SECURE_WEB_GATEWAY'.
+    internalCaller: Optional. A flag set to identify internal controllers
+      Setting this will trigger a P4SA check to validate the caller is from an
+      allowlisted service's P4SA even if other optional fields are unset.
+    ipVersion: Optional. The IP Version that will be used by this gateway.
+      Valid options are IPV4 or IPV6. Default is IPV4.
     labels: Optional. Set of label tags associated with the Gateway resource.
     name: Required. Name of the Gateway resource. It matches pattern
       `projects/*/locations/*/gateways/`.
@@ -540,17 +589,18 @@ class Gateway(_messages.Message):
     ports: Required. One or more port numbers (1-65535), on which the Gateway
       will receive traffic. The proxy binds to the specified ports. Gateways
       of type 'SECURE_WEB_GATEWAY' are limited to 1 port. Gateways of type
-      'OPEN_MESH' listen on 0.0.0.0 and support multiple ports.
-    scope: Required. Immutable. Scope determines how configuration across
-      multiple Gateway instances are merged. The configuration for multiple
-      Gateway instances with the same scope will be merged as presented as a
-      single coniguration to the proxy/load balancer. Max length 64
-      characters. Scope should start with a letter and can only have letters,
-      numbers, hyphens.
-    securityPolicy: Optional. A fully-qualified SecurityPolicy URL reference.
-      Defines how a server should apply security policy to inbound (VM to
-      Proxy) initiated connections. This policy is specific to gateways of
-      type 'SECURE_WEB_GATEWAY'.
+      'OPEN_MESH' listen on 0.0.0.0 for IPv4 and :: for IPv6 and support
+      multiple ports.
+    scope: Optional. Scope determines how configuration across multiple
+      Gateway instances are merged. The configuration for multiple Gateway
+      instances with the same scope will be merged as presented as a single
+      coniguration to the proxy/load balancer. Max length 64 characters. Scope
+      should start with a letter and can only have letters, numbers, hyphens.
+    securityPolicy: Optional. A fully-qualified GatewaySecurityPolicy URL
+      reference. Defines how a server should apply security policy to inbound
+      (VM to Proxy) initiated connections. This policy is specific to gateways
+      of type 'SECURE_WEB_GATEWAY'. DEPRECATED!!!! Use the
+      gateway_security_policy field instead.
     selfLink: Output only. Server-defined URL of this resource
     serverTlsPolicy: Optional. A fully-qualified ServerTLSPolicy URL
       reference. Specifies how TLS traffic is terminated. If empty, TLS
@@ -562,7 +612,27 @@ class Gateway(_messages.Message):
     type: Immutable. The type of the customer managed gateway. This field is
       required. If unspecified, an error is returned.
     updateTime: Output only. The timestamp when the resource was updated.
+    workloadContextSelectors: Optional. Selects the workload where the gateway
+      should be applied to its targets. A gateway without a
+      WorkloadContextSelector should always be applied to its targets when
+      there is no conflict. If there are multiple WorkloadContextSelectors
+      then the policy will be applied to all targets if ANY of the
+      WorkloadContextSelectors match. Therefore these selectors can be
+      combined in an OR fashion. This field is used for GSM only.
   """
+
+  class IpVersionValueValuesEnum(_messages.Enum):
+    r"""Optional. The IP Version that will be used by this gateway. Valid
+    options are IPV4 or IPV6. Default is IPV4.
+
+    Values:
+      IP_VERSION_UNSPECIFIED: The type when IP version is not specified.
+      IPV4: The type for IP version 4.
+      IPV6: The type for IP version 6.
+    """
+    IP_VERSION_UNSPECIFIED = 0
+    IPV4 = 1
+    IPV6 = 2
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Immutable. The type of the customer managed gateway. This field is
@@ -609,17 +679,21 @@ class Gateway(_messages.Message):
   certificateUrls = _messages.StringField(3, repeated=True)
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  ports = _messages.IntegerField(9, repeated=True, variant=_messages.Variant.INT32)
-  scope = _messages.StringField(10)
-  securityPolicy = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  serverTlsPolicy = _messages.StringField(13)
-  subnetwork = _messages.StringField(14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
-  updateTime = _messages.StringField(16)
+  gatewaySecurityPolicy = _messages.StringField(6)
+  internalCaller = _messages.BooleanField(7)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  ports = _messages.IntegerField(12, repeated=True, variant=_messages.Variant.INT32)
+  scope = _messages.StringField(13)
+  securityPolicy = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  serverTlsPolicy = _messages.StringField(16)
+  subnetwork = _messages.StringField(17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  updateTime = _messages.StringField(19)
+  workloadContextSelectors = _messages.MessageField('WorkloadContextSelector', 20, repeated=True)
 
 
 class GetReferenceRequest(_messages.Message):
@@ -656,23 +730,26 @@ class GrpcRoute(_messages.Message):
       this route describes traffic. Format: [:] Hostname is the fully
       qualified domain name of a network host. This matches the RFC 1123
       definition of a hostname with 2 notable exceptions: - IPs are not
-      allowed. - A hostname may be prefixed with a wildcard label (*.). The
+      allowed. - A hostname may be prefixed with a wildcard label (`*.`). The
       wildcard label must appear by itself as the first label. Hostname can be
       "precise" which is a domain name without the terminating dot of a
-      network host (e.g. "foo.example.com") or "wildcard", which is a domain
-      name prefixed with a single wildcard label (e.g. *.example.com). Note
+      network host (e.g. `foo.example.com`) or "wildcard", which is a domain
+      name prefixed with a single wildcard label (e.g. `*.example.com`). Note
       that as per RFC1035 and RFC1123, a label must consist of lower case
       alphanumeric characters or '-', and must start and end with an
       alphanumeric character. No other punctuation is allowed. The routes
       associated with a Mesh or Gateway must have unique hostnames. If you
       attempt to attach multiple routes with conflicting hostnames, the
       configuration will be rejected. For example, while it is acceptable for
-      routes for the hostnames "*.foo.bar.com" and "*.bar.com" to be
+      routes for the hostnames `*.foo.bar.com` and `*.bar.com` to be
       associated with the same route, it is not possible to associate two
-      routes both with "*.bar.com" or both with "bar.com". If a port is
+      routes both with `*.bar.com` or both with `bar.com`. If a port is
       specified, then gRPC clients must use the channel URI with the port to
       match this rule (i.e. "xds:///service:123"), otherwise they must supply
       the URI without a port (i.e. "xds:///service").
+    internalCaller: Optional. A flag set to identify internal controllers
+      Setting this will trigger a P4SA check to validate the caller is from an
+      allowlisted service's P4SA even if other optional fields are unset.
     labels: Optional. Set of label tags associated with the GrpcRoute
       resource.
     meshes: Optional. Meshes defines a list of meshes this GrpcRoute is
@@ -720,13 +797,14 @@ class GrpcRoute(_messages.Message):
   description = _messages.StringField(2)
   gateways = _messages.StringField(3, repeated=True)
   hostnames = _messages.StringField(4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  meshes = _messages.StringField(6, repeated=True)
-  name = _messages.StringField(7)
-  routers = _messages.StringField(8, repeated=True)
-  rules = _messages.MessageField('GrpcRouteRouteRule', 9, repeated=True)
-  selfLink = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  internalCaller = _messages.BooleanField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  meshes = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  routers = _messages.StringField(9, repeated=True)
+  rules = _messages.MessageField('GrpcRouteRouteRule', 10, repeated=True)
+  selfLink = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class GrpcRouteDestination(_messages.Message):
@@ -1096,23 +1174,30 @@ class HttpRoute(_messages.Message):
       against the HTTP host header to select a HttpRoute to process the
       request. Hostname is the fully qualified domain name of a network host,
       as defined by RFC 1123 with the exception that: - IPs are not allowed. -
-      A hostname may be prefixed with a wildcard label (*.). The wildcard
+      A hostname may be prefixed with a wildcard label (`*.`). The wildcard
       label must appear by itself as the first label. Hostname can be
       "precise" which is a domain name without the terminating dot of a
-      network host (e.g. "foo.example.com") or "wildcard", which is a domain
-      name prefixed with a single wildcard label (e.g. *.example.com). Note
+      network host (e.g. `foo.example.com`) or "wildcard", which is a domain
+      name prefixed with a single wildcard label (e.g. `*.example.com`). Note
       that as per RFC1035 and RFC1123, a label must consist of lower case
       alphanumeric characters or '-', and must start and end with an
       alphanumeric character. No other punctuation is allowed. The routes
       associated with a Mesh or Gateways must have unique hostnames. If you
       attempt to attach multiple routes with conflicting hostnames, the
       configuration will be rejected. For example, while it is acceptable for
-      routes for the hostnames "*.foo.bar.com" and "*.bar.com" to be
+      routes for the hostnames `*.foo.bar.com` and `*.bar.com` to be
       associated with the same Mesh (or Gateways under the same scope), it is
-      not possible to associate two routes both with "*.bar.com" or both with
-      "bar.com".
+      not possible to associate two routes both with `*.bar.com` or both with
+      `bar.com`.
+    internalCaller: Optional. A flag set to identify internal controllers
+      Setting this will trigger a P4SA check to validate the caller is from an
+      allowlisted service's P4SA even if other optional fields are unset.
     labels: Optional. Set of label tags associated with the HttpRoute
       resource.
+    listenOn: The address to listen on. This can be either an IP address and
+      port number, or a Unix domain socket name. When attached to a Mesh,
+      defaults to 0.0.0.0:Mesh.InterceptionPort (which is 15001 by default).
+      Should not be set when attached to a Gateway.
     meshes: Optional. Meshes defines a list of meshes this HttpRoute is
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
@@ -1159,13 +1244,15 @@ class HttpRoute(_messages.Message):
   description = _messages.StringField(2)
   gateways = _messages.StringField(3, repeated=True)
   hostnames = _messages.StringField(4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  meshes = _messages.StringField(6, repeated=True)
-  name = _messages.StringField(7)
-  routers = _messages.StringField(8, repeated=True)
-  rules = _messages.MessageField('HttpRouteRouteRule', 9, repeated=True)
-  selfLink = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  internalCaller = _messages.BooleanField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  listenOn = _messages.MessageField('Address', 7)
+  meshes = _messages.StringField(8, repeated=True)
+  name = _messages.StringField(9)
+  routers = _messages.StringField(10, repeated=True)
+  rules = _messages.MessageField('HttpRouteRouteRule', 11, repeated=True)
+  selfLink = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class HttpRouteCorsPolicy(_messages.Message):
@@ -1602,6 +1689,10 @@ class HttpRouteRouteRule(_messages.Message):
   r"""Specifies how to match traffic and how to route traffic when traffic is
   matched.
 
+  Messages:
+    MetadataValue: Optional. Set of label tags associated with the RouteRule
+      resource.
+
   Fields:
     action: The detailed rule defining how to route matched traffic.
     matches: A list of matches define conditions used for matching the rule
@@ -1610,10 +1701,45 @@ class HttpRouteRouteRule(_messages.Message):
       matches field is specified, this rule will unconditionally match
       traffic. If a default rule is desired to be configured, add a rule with
       no matches specified to the end of the rules list.
+    metadata: Optional. Set of label tags associated with the RouteRule
+      resource.
+    workloadContextSelectors: Optional. Selects the workload where the route
+      rule should be applied to its targets. A route rule without a
+      WorkloadContextSelector should always be applied to its targets when
+      there is no conflict. If there are multiple WorkloadContextSelectors
+      then the policy will be applied to all targets if ANY of the
+      WorkloadContextSelectors match. Therefore these selectors can be
+      combined in an OR fashion.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the RouteRule resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   action = _messages.MessageField('HttpRouteRouteAction', 1)
   matches = _messages.MessageField('HttpRouteRouteMatch', 2, repeated=True)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  workloadContextSelectors = _messages.MessageField('WorkloadContextSelector', 4, repeated=True)
 
 
 class HttpRouteURLRewrite(_messages.Message):
@@ -1633,18 +1759,18 @@ class HttpRouteURLRewrite(_messages.Message):
 
 
 class InvalidateCacheRequest(_messages.Message):
-  r"""Request used by the `InvalidateCache` method.
+  r"""The request used by the `InvalidateCache` method.
 
   Fields:
     cacheTags: A list of cache tags used to identify cached objects. Cache
       tags are specified when the response is first cached, by setting the
-      "Cache-Tag" response header at the origin. By default, all objects have
+      `Cache-Tag` response header at the origin. By default, all objects have
       a cache tag representing the HTTP status code of the response, the MIME
       content-type, and the origin. Multiple cache tags in the same
       revalidation request are treated as Boolean `OR` - for example, `tag1 OR
-      tag2 OR tag3`. If a host and / or path are also specified, these are
-      treated as Boolean `AND` with any tags. Up to 10 tags may be specified
-      in a single invalidation request.
+      tag2 OR tag3`. If a host and path are also specified, these are treated
+      as Boolean `AND` with any tags. Up to 10 tags can be specified in a
+      single invalidation request.
     host: The hostname to invalidate against. You can specify an exact or
       wildcard host based on the host component. For example,
       `video.example.com` or `*.example.com`.
@@ -1659,7 +1785,7 @@ class InvalidateCacheRequest(_messages.Message):
 
 
 class InvalidateCacheResponse(_messages.Message):
-  r"""Response used by the InvalidateCache method."""
+  r"""The response used by the `InvalidateCache` method."""
 
 
 class ListEndpointPoliciesResponse(_messages.Message):
@@ -1686,10 +1812,12 @@ class ListGatewaysResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Locations that could not be reached.
   """
 
   gateways = _messages.MessageField('Gateway', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListGrpcRoutesResponse(_messages.Message):
@@ -1748,6 +1876,81 @@ class ListMeshesResponse(_messages.Message):
 
   meshes = _messages.MessageField('Mesh', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListMulticastConsumerAssociationsResponse(_messages.Message):
+  r"""Message for response to listing MulticastConsumerAssociations
+
+  Fields:
+    multicastConsumerAssociations: The list of MulticastConsumerAssociation
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastConsumerAssociations = _messages.MessageField('MulticastConsumerAssociation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastDomainActivationsResponse(_messages.Message):
+  r"""Message for response to listing MulticastDomainActivations
+
+  Fields:
+    multicastDomainActivations: The list of MulticastDomainActivation
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastDomainActivations = _messages.MessageField('MulticastDomainActivation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastDomainsResponse(_messages.Message):
+  r"""Message for response to listing MulticastDomains
+
+  Fields:
+    multicastDomains: The list of MulticastDomain
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastDomains = _messages.MessageField('MulticastDomain', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastGroupDefinitionsResponse(_messages.Message):
+  r"""Message for response to listing MulticastGroupDefinitions
+
+  Fields:
+    multicastGroupDefinitions: The list of MulticastGroupDefinition
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastGroupDefinitions = _messages.MessageField('MulticastGroupDefinition', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastGroupsResponse(_messages.Message):
+  r"""Message for response to listing MulticastGroups
+
+  Fields:
+    multicastGroups: The list of MulticastGroup
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastGroups = _messages.MessageField('MulticastGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -1811,6 +2014,21 @@ class ListServiceBindingsResponse(_messages.Message):
   serviceBindings = _messages.MessageField('ServiceBinding', 2, repeated=True)
 
 
+class ListServiceLbPoliciesResponse(_messages.Message):
+  r"""Response returned by the ListServiceLbPolicies method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    serviceLbPolicies: List of ServiceLbPolicy resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceLbPolicies = _messages.MessageField('ServiceLbPolicy', 2, repeated=True)
+
+
 class ListTcpRoutesResponse(_messages.Message):
   r"""Response returned by the ListTcpRoutes method.
 
@@ -1842,7 +2060,7 @@ class ListTlsRoutesResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -2057,8 +2275,11 @@ class Mesh(_messages.Message):
       instructs the SIDECAR proxy to listen on the specified port of localhost
       (127.0.0.1) address. The SIDECAR proxy will expect all traffic to be
       redirected to this port regardless of its actual ip:port destination. If
-      unset, a port '15001' is used as the interception port. This will is
+      unset, a port '15001' is used as the interception port. This is
       applicable only for sidecar proxy deployments.
+    internalCaller: Optional. A flag set to identify internal controllers
+      Setting this will trigger a P4SA check to validate the caller is from an
+      allowlisted service's P4SA even if other optional fields are unset.
     labels: Optional. Set of label tags associated with the Mesh resource.
     name: Required. Name of the Mesh resource. It matches pattern
       `projects/*/locations/global/meshes/`.
@@ -2093,10 +2314,11 @@ class Mesh(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   interceptionPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  selfLink = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  internalCaller = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  selfLink = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class MetadataLabelMatcher(_messages.Message):
@@ -2180,14 +2402,242 @@ class MetadataLabels(_messages.Message):
   labelValue = _messages.StringField(2)
 
 
+class MulticastConsumerAssociation(_messages.Message):
+  r"""Message describing MulticastConsumerAssociation object
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    domainActivation: Reference to the domain activation in the same zone as
+      the consumer association.
+    labels: Labels as key value pairs
+    name: name of resource
+    network: Reference to the network
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  domainActivation = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  network = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class MulticastDomain(_messages.Message):
+  r"""Message describing MulticastDomain object
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Labels as key value pairs
+    name: name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
+class MulticastDomainActivation(_messages.Message):
+  r"""Message describing MulticastDomainActivation object
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    domain: Reference to the domain that is being activated.
+    labels: Labels as key value pairs
+    name: name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  domain = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
+class MulticastGroup(_messages.Message):
+  r"""Message describing MulticastGroup object
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    domainActivation: Reference to the domain activation in the same zone as
+      the group.
+    groupDefinition: Optional. Reference to the global group definition for
+      the group.
+    labels: Labels as key value pairs
+    name: name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  domainActivation = _messages.StringField(2)
+  groupDefinition = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class MulticastGroupDefinition(_messages.Message):
+  r"""Message describing MulticastGroupDefinition object
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Labels as key value pairs
+    name: name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
 class NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest(_messages.Message):
   r"""A
   NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest
   object.
 
   Fields:
-    edgeCacheService: Required. A name of the EdgeCacheService to apply the
-      invalidation request to. Must be in the format
+    edgeCacheService: Required. The name of the EdgeCacheService resource to
+      apply the invalidation request to. Must be in the format
       `projects/*/locations/global/edgeCacheServices/*`.
     invalidateCacheRequest: A InvalidateCacheRequest resource to be passed as
       the request body.
@@ -2779,6 +3229,585 @@ class NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest(_messages.
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsCreateRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsCreateRequest
+  object.
+
+  Fields:
+    multicastConsumerAssociation: A MulticastConsumerAssociation resource to
+      be passed as the request body.
+    multicastConsumerAssociationId: Required. Id of the requesting object If
+      auto-generating Id server-side, remove this field and
+      multicast_consumer_association_id from the method_signature of Create
+      RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastConsumerAssociation = _messages.MessageField('MulticastConsumerAssociation', 1)
+  multicastConsumerAssociationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsDeleteRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsListRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsListRequest
+  object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for
+      ListMulticastConsumerAssociationsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest
+  object.
+
+  Fields:
+    multicastConsumerAssociation: A MulticastConsumerAssociation resource to
+      be passed as the request body.
+    name: name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the MulticastConsumerAssociation resource by the update.
+      The fields specified in the update_mask are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then all fields will be overwritten.
+  """
+
+  multicastConsumerAssociation = _messages.MessageField('MulticastConsumerAssociation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest
+  object.
+
+  Fields:
+    multicastDomainActivation: A MulticastDomainActivation resource to be
+      passed as the request body.
+    multicastDomainActivationId: Required. Id of the requesting object If
+      auto-generating Id server-side, remove this field and
+      multicast_domain_activation_id from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastDomainActivation = _messages.MessageField('MulticastDomainActivation', 1)
+  multicastDomainActivationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsDeleteRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastDomainActivationsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsListRequest
+  object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListMulticastDomainActivationsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest
+  object.
+
+  Fields:
+    multicastDomainActivation: A MulticastDomainActivation resource to be
+      passed as the request body.
+    name: name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the MulticastDomainActivation resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  multicastDomainActivation = _messages.MessageField('MulticastDomainActivation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsCreateRequest object.
+
+  Fields:
+    multicastDomain: A MulticastDomain resource to be passed as the request
+      body.
+    multicastDomainId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and multicast_domain_id
+      from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastDomain = _messages.MessageField('MulticastDomain', 1)
+  multicastDomainId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListMulticastDomainsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsPatchRequest object.
+
+  Fields:
+    multicastDomain: A MulticastDomain resource to be passed as the request
+      body.
+    name: name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the MulticastDomain resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  multicastDomain = _messages.MessageField('MulticastDomain', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest
+  object.
+
+  Fields:
+    multicastGroupDefinition: A MulticastGroupDefinition resource to be passed
+      as the request body.
+    multicastGroupDefinitionId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and
+      multicast_group_definition_id from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastGroupDefinition = _messages.MessageField('MulticastGroupDefinition', 1)
+  multicastGroupDefinitionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupDefinitionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupDefinitionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsListRequest
+  object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListMulticastGroupDefinitionsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest
+  object.
+
+  Fields:
+    multicastGroupDefinition: A MulticastGroupDefinition resource to be passed
+      as the request body.
+    name: name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the MulticastGroupDefinition resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  multicastGroupDefinition = _messages.MessageField('MulticastGroupDefinition', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupsCreateRequest object.
+
+  Fields:
+    multicastGroup: A MulticastGroup resource to be passed as the request
+      body.
+    multicastGroupId: Required. Id of the requesting object If auto-generating
+      Id server-side, remove this field and multicast_group_id from the
+      method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastGroup = _messages.MessageField('MulticastGroup', 1)
+  multicastGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupsListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListMulticastGroupsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupsPatchRequest object.
+
+  Fields:
+    multicastGroup: A MulticastGroup resource to be passed as the request
+      body.
+    name: name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the MulticastGroup resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  multicastGroup = _messages.MessageField('MulticastGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworkservicesProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsOperationsCancelRequest object.
 
@@ -2916,7 +3945,7 @@ class NetworkservicesProjectsLocationsServiceBindingsPatchRequest(_messages.Mess
 
   Fields:
     name: Required. Name of the ServiceBinding resource. It matches pattern
-      `projects/*/locations/global/serviceBindings/service_binding_name>`.
+      `projects/*/locations/global/serviceBindings/service_binding_name`.
     serviceBinding: A ServiceBinding resource to be passed as the request
       body.
     updateMask: Optional. Field mask is used to specify the fields to be
@@ -2951,6 +3980,148 @@ class NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest(_messag
 class NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest(_messages.Message):
   r"""A
   NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the ServiceLbPolicy. Must be in
+      the format `projects/{project}/locations/{location}`.
+    serviceLbPolicy: A ServiceLbPolicy resource to be passed as the request
+      body.
+    serviceLbPolicyId: Required. Short name of the ServiceLbPolicy resource to
+      be created. E.g. for resource name `projects/{project}/locations/{locati
+      on}/serviceLbPolicies/{service_lb_policy_name}`. the id is value of
+      {service_lb_policy_name}
+  """
+
+  parent = _messages.StringField(1, required=True)
+  serviceLbPolicy = _messages.MessageField('ServiceLbPolicy', 2)
+  serviceLbPolicyId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the ServiceLbPolicy to delete. Must be in the
+      format `projects/{project}/locations/{location}/serviceLbPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesGetRequest object.
+
+  Fields:
+    name: Required. A name of the ServiceLbPolicy to get. Must be in the
+      format `projects/{project}/locations/{location}/serviceLbPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of ServiceLbPolicies to return per call.
+    pageToken: The value returned by the last `ListServiceLbPoliciesResponse`
+      Indicates that this is a continuation of a prior `ListRouters` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the
+      ServiceLbPolicies should be listed, specified in the format
+      `projects/{project}/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest object.
+
+  Fields:
+    name: Required. Name of the ServiceLbPolicy resource. It matches pattern `
+      projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
+      licy_name}`.
+    serviceLbPolicy: A ServiceLbPolicy resource to be passed as the request
+      body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the ServiceLbPolicy resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serviceLbPolicy = _messages.MessageField('ServiceLbPolicy', 2)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsServiceLbPoliciesTestIamPermissionsRequest
   object.
 
   Fields:
@@ -3344,9 +4515,7 @@ class Reference(_messages.Message):
   Fields:
     createTime: Output only. The creation time.
     details: Details of the reference type with no implied semantics.
-      Cumulative size of the field must not be more than 1KiB. Note: For the
-      Arcus Reference API, you must add the proto you store in this field to
-      http://cs/symbol:cloud.cluster.reference.ReferencePayload
+      Cumulative size of the field must not be more than 1KiB.
     name: Output only. Relative resource name of the reference. Includes
       target resource as a parent and reference uid
       `{target_resource}/references/{reference_id}`. For example,
@@ -3355,6 +4524,10 @@ class Reference(_messages.Message):
     sourceResource: Required. Full resource name of the resource which refers
       the target resource. For example:
       //tpu.googleapis.com/projects/myproject/nodes/mynode
+    targetUniqueId: Output only. The unique_id of the target resource. Example
+      1: (For arcus resource) A-1-0-2-387420123-13-913517247483640811
+      unique_id format defined in go/m11n-unique-id-as-resource-id Example 2:
+      (For CCFE resource) 123e4567-e89b-12d3-a456-426614174000
     type: Required. Type of the reference. A service might impose limits on
       number of references of a specific type. Note: It's recommended to use
       CAPITALS_WITH_UNDERSCORES style for a type name.
@@ -3390,7 +4563,8 @@ class Reference(_messages.Message):
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   name = _messages.StringField(3)
   sourceResource = _messages.StringField(4)
-  type = _messages.StringField(5)
+  targetUniqueId = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class Rule(_messages.Message):
@@ -3463,9 +4637,13 @@ class ServiceBinding(_messages.Message):
     labels: Optional. Set of label tags associated with the ServiceBinding
       resource.
     name: Required. Name of the ServiceBinding resource. It matches pattern
-      `projects/*/locations/global/serviceBindings/service_binding_name>`.
-    service: Required. The full service directory service name of the format
+      `projects/*/locations/global/serviceBindings/service_binding_name`.
+    service: Required. The full Service Directory Service name of the format
       projects/*/locations/*/namespaces/*/services/*
+    serviceId: Output only. The unique identifier of the Service Directory
+      Service against which the Service Binding resource is validated. This is
+      populated when the Service Binding resource is used in another resource
+      (like Backend Service). This is of the UUID4 format.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -3500,7 +4678,131 @@ class ServiceBinding(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   service = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  serviceId = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class ServiceLbPolicy(_messages.Message):
+  r"""ServiceLbPolicy holds global load balancing and traffic distribution
+  configuration that can be applied to a BackendService.
+
+  Enums:
+    LoadBalancingAlgorithmValueValuesEnum: Optional. The type of load
+      balancing algorithm to be used. The default behavior is
+      WATERFALL_BY_REGION.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      ServiceLbPolicy resource.
+
+  Fields:
+    autoCapacityDrain: Optional. Configuration to automatically move traffic
+      away for unhealthy IG/NEG for the associated Backend Service.
+    createTime: Output only. The timestamp when this resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    failoverConfig: Optional. Configuration related to health based failover.
+    labels: Optional. Set of label tags associated with the ServiceLbPolicy
+      resource.
+    loadBalancingAlgorithm: Optional. The type of load balancing algorithm to
+      be used. The default behavior is WATERFALL_BY_REGION.
+    name: Required. Name of the ServiceLbPolicy resource. It matches pattern `
+      projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
+      licy_name}`.
+    updateTime: Output only. The timestamp when this resource was last
+      updated.
+  """
+
+  class LoadBalancingAlgorithmValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of load balancing algorithm to be used. The default
+    behavior is WATERFALL_BY_REGION.
+
+    Values:
+      LOAD_BALANCING_ALGORITHM_UNSPECIFIED: The type of the loadbalancing
+        algorithm is unspecified.
+      SPRAY_TO_WORLD: Balance traffic across all backends across the world
+        proportionally based on capacity.
+      SPRAY_TO_REGION: Direct traffic to the nearest region with endpoints and
+        capacity before spilling over to other regions and spread the traffic
+        from each client to all the MIGs/NEGs in a region.
+      WATERFALL_BY_REGION: Direct traffic to the nearest region with endpoints
+        and capacity before spilling over to other regions. All MIGs/NEGs
+        within a region are evenly loaded but each client might not spread the
+        traffic to all the MIGs/NEGs in the region.
+      WATERFALL_BY_ZONE: Attempt to keep traffic in a single zone closest to
+        the client, before spilling over to other zones.
+    """
+    LOAD_BALANCING_ALGORITHM_UNSPECIFIED = 0
+    SPRAY_TO_WORLD = 1
+    SPRAY_TO_REGION = 2
+    WATERFALL_BY_REGION = 3
+    WATERFALL_BY_ZONE = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the ServiceLbPolicy
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  autoCapacityDrain = _messages.MessageField('ServiceLbPolicyAutoCapacityDrain', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  failoverConfig = _messages.MessageField('ServiceLbPolicyFailoverConfig', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  loadBalancingAlgorithm = _messages.EnumField('LoadBalancingAlgorithmValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class ServiceLbPolicyAutoCapacityDrain(_messages.Message):
+  r"""Option to specify if an unhealthy IG/NEG should be considered for global
+  load balancing and traffic routing.
+
+  Fields:
+    enable: Optional. If set to 'True', an unhealthy IG/NEG will be set as
+      drained. - An IG/NEG is considered unhealthy if less than 25% of the
+      instances/endpoints in the IG/NEG are healthy. - This option will never
+      result in draining more than 50% of the configured IGs/NEGs for the
+      Backend Service.
+  """
+
+  enable = _messages.BooleanField(1)
+
+
+class ServiceLbPolicyFailoverConfig(_messages.Message):
+  r"""Option to specify health based failover behavior. This is not related to
+  Network load balancer FailoverPolicy.
+
+  Fields:
+    failoverHealthThreshold: Optional. The percentage threshold that a load
+      balancer will begin to send traffic to failover backends. If the
+      percentage of endpoints in a MIG/NEG is smaller than this value, traffic
+      would be sent to failover backends if possible. This field should be set
+      to a value between 1 and 99. The default value is 50 for Global external
+      HTTP(S) load balancer (classic) and Proxyless service mesh, and 70 for
+      others.
+  """
+
+  failoverHealthThreshold = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -3650,7 +4952,12 @@ class TcpRoute(_messages.Message):
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
       `projects/*/locations/global/gateways/`
+    internalCaller: Optional. A flag set to identify internal controllers
+      Setting this will trigger a P4SA check to validate the caller is from an
+      allowlisted service's P4SA even if other optional fields are unset.
     labels: Optional. Set of label tags associated with the TcpRoute resource.
+    listenOn: The address to listen on. This can be either an IP address and
+      port number, or a Unix domain socket name.
     meshes: Optional. Meshes defines a list of meshes this TcpRoute is
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
@@ -3696,28 +5003,36 @@ class TcpRoute(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   gateways = _messages.StringField(3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  meshes = _messages.StringField(5, repeated=True)
-  name = _messages.StringField(6)
-  routers = _messages.StringField(7, repeated=True)
-  rules = _messages.MessageField('TcpRouteRouteRule', 8, repeated=True)
-  selfLink = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  internalCaller = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  listenOn = _messages.MessageField('Address', 6)
+  meshes = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  routers = _messages.StringField(9, repeated=True)
+  rules = _messages.MessageField('TcpRouteRouteRule', 10, repeated=True)
+  selfLink = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class TcpRouteRouteAction(_messages.Message):
   r"""The specifications for routing traffic and applying associated policies.
 
   Fields:
+    blackholeDestination: Optional. If true, traffic will be dropped. Default
+      is false. Only one of route destinations, original destination or
+      blackhole destination can be set.
     destinations: Optional. The destination services to which traffic should
-      be forwarded. At least one destination service is required.
+      be forwarded. At least one destination service is required. Only one of
+      route destination or original destination can be set.
     originalDestination: Optional. If true, Router will use the destination IP
       and port of the original connection as the destination of the request.
-      Default is false.
+      Default is false. Only one of route destinations or original destination
+      can be set.
   """
 
-  destinations = _messages.MessageField('TcpRouteRouteDestination', 1, repeated=True)
-  originalDestination = _messages.BooleanField(2)
+  blackholeDestination = _messages.BooleanField(1)
+  destinations = _messages.MessageField('TcpRouteRouteDestination', 2, repeated=True)
+  originalDestination = _messages.BooleanField(3)
 
 
 class TcpRouteRouteDestination(_messages.Message):
@@ -3765,16 +5080,55 @@ class TcpRouteRouteRule(_messages.Message):
   r"""Specifies how to match traffic and how to route traffic when traffic is
   matched.
 
+  Messages:
+    MetadataValue: Optional. Set of label tags associated with the RouteRule
+      resource.
+
   Fields:
     action: Required. The detailed rule defining how to route matched traffic.
     matches: Optional. RouteMatch defines the predicate used to match requests
       to a given action. Multiple match types are "OR"ed for evaluation. If no
       routeMatch field is specified, this rule will unconditionally match
       traffic.
+    metadata: Optional. Set of label tags associated with the RouteRule
+      resource.
+    workloadContextSelectors: Optional. Selects the workload where the route
+      rule should be applied to its targets. A route rule without a
+      WorkloadContextSelector should always be applied to its targets when
+      there is no conflict. If there are multiple WorkloadContextSelectors
+      then the policy will be applied to all targets if ANY of the
+      WorkloadContextSelectors match. Therefore these selectors can be
+      combined in an OR fashion.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the RouteRule resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   action = _messages.MessageField('TcpRouteRouteAction', 1)
   matches = _messages.MessageField('TcpRouteRouteMatch', 2, repeated=True)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  workloadContextSelectors = _messages.MessageField('WorkloadContextSelector', 4, repeated=True)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -3813,6 +5167,11 @@ class TlsRoute(_messages.Message):
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
       `projects/*/locations/global/gateways/`
+    internalCaller: Optional. A flag set to identify internal controllers
+      Setting this will trigger a P4SA check to validate the caller is from an
+      allowlisted service's P4SA even if other optional fields are unset.
+    listenOn: The address to listen on. This can be either an IP address and
+      port number, or a Unix domain socket name.
     meshes: Optional. Meshes defines a list of meshes this TlsRoute is
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
@@ -3830,11 +5189,13 @@ class TlsRoute(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   gateways = _messages.StringField(3, repeated=True)
-  meshes = _messages.StringField(4, repeated=True)
-  name = _messages.StringField(5)
-  rules = _messages.MessageField('TlsRouteRouteRule', 6, repeated=True)
-  selfLink = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  internalCaller = _messages.BooleanField(4)
+  listenOn = _messages.MessageField('Address', 5)
+  meshes = _messages.StringField(6, repeated=True)
+  name = _messages.StringField(7)
+  rules = _messages.MessageField('TlsRouteRouteRule', 8, repeated=True)
+  selfLink = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class TlsRouteRouteAction(_messages.Message):
@@ -3885,11 +5246,11 @@ class TlsRouteRouteMatch(_messages.Message):
       "0.0.0.0/0" - matches against any IP address.
     port: Optional. Specifies the destination port to match against.
     sniHost: Optional. SNI (server name indicator) to match against. SNI will
-      be matched against all wildcard domains, i.e. www.example.com will be
-      first matched against www.example.com, then *.example.com, then *.com.
-      Partial wildcards are not supported, and values like *w.example.com are
-      invalid. At least one of sni_host and alpn is required. Up to 5 sni
-      hosts across all matches can be set.
+      be matched against all wildcard domains, i.e. `www.example.com` will be
+      first matched against `www.example.com`, then `*.example.com`, then
+      `*.com.` Partial wildcards are not supported, and values like
+      *w.example.com are invalid. At least one of sni_host and alpn is
+      required. Up to 5 sni hosts across all matches can be set.
   """
 
   alpn = _messages.StringField(1, repeated=True)
@@ -3902,14 +5263,53 @@ class TlsRouteRouteRule(_messages.Message):
   r"""Specifies how to match traffic and how to route traffic when traffic is
   matched.
 
+  Messages:
+    MetadataValue: Optional. Set of label tags associated with the RouteRule
+      resource.
+
   Fields:
     action: Required. The detailed rule defining how to route matched traffic.
     matches: Required. RouteMatch defines the predicate used to match requests
       to a given action. Multiple match types are "OR"ed for evaluation.
+    metadata: Optional. Set of label tags associated with the RouteRule
+      resource.
+    workloadContextSelectors: Optional. Selects the workload where the route
+      rule should be applied to its targets. A route rule without a
+      WorkloadContextSelector should always be applied to its targets when
+      there is no conflict. If there are multiple WorkloadContextSelectors
+      then the policy will be applied to all targets if ANY of the
+      WorkloadContextSelectors match. Therefore these selectors can be
+      combined in an OR fashion.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the RouteRule resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   action = _messages.MessageField('TlsRouteRouteAction', 1)
   matches = _messages.MessageField('TlsRouteRouteMatch', 2, repeated=True)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  workloadContextSelectors = _messages.MessageField('WorkloadContextSelector', 4, repeated=True)
 
 
 class TrafficPortSelector(_messages.Message):
@@ -3923,6 +5323,33 @@ class TrafficPortSelector(_messages.Message):
   """
 
   ports = _messages.StringField(1, repeated=True)
+
+
+class WorkloadContextSelector(_messages.Message):
+  r"""Determines which workloads a policy is applicable for.
+
+  Fields:
+    metadataSelectors: Required. A map of metadata label values used to select
+      workloads. If multiple MetadataSelectors are provided, all
+      MetadataSelectors must match in order for the policy to be applied to
+      this workload. Therefore these selectors must be combined in an AND
+      fashion.
+  """
+
+  metadataSelectors = _messages.MessageField('WorkloadContextSelectorMetadataSelector', 1, repeated=True)
+
+
+class WorkloadContextSelectorMetadataSelector(_messages.Message):
+  r"""This message type exists as opposed to using a map to support additional
+  fields in the future such as priority.
+
+  Fields:
+    key: Required. The metadata field being selected on
+    value: Required. The value for this metadata field to be compared with
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

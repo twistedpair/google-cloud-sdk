@@ -18,6 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+
+from argcomplete.completers import DirectoriesCompleter
 from googlecloudsdk.api_lib.functions.v1 import util as api_util
 from googlecloudsdk.api_lib.functions.v2 import client as client_v2
 from googlecloudsdk.calliope import actions
@@ -35,6 +38,8 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+
+import six
 
 API = 'cloudfunctions'
 API_VERSION = 'v1'
@@ -342,6 +347,7 @@ def AddSourceFlag(parser):
   """Add flag for specifying function source code to the parser."""
   parser.add_argument(
       '--source',
+      completer=DirectoriesCompleter,
       help="""\
       Location of source code to deploy.
 
@@ -434,7 +440,7 @@ def AddStageBucketFlag(parser):
   )
 
 
-def AddRuntimeFlag(parser):
+def AddRuntimeFlag(parser, choices=None):
   # TODO(b/110148388): Do not hardcode list of choices in the help text.
   parser.add_argument(
       '--runtime',
@@ -446,6 +452,7 @@ def AddRuntimeFlag(parser):
 
           For a list of available runtimes, run `gcloud functions runtimes list`.
           """,
+      choices=choices,
   )
 
 
@@ -852,6 +859,7 @@ def AddDataFlag(parser):
   parser.add_argument(
       '--data',
       help="""JSON string with data that will be passed to the function.""",
+      type=_ValidateJsonOrRaiseDataError
   )
 
 
@@ -868,6 +876,7 @@ def AddCloudEventsFlag(parser):
       the top-level 'data' field set as the HTTP body and all other JSON fields
       sent as HTTP headers.
       """,
+      type=_ValidateJsonOrRaiseCloudEventError
   )
 
 
@@ -1043,3 +1052,21 @@ def AddUpgradeFlags(parser):
           ' function copy will be deleted.'
       ),
   )
+
+
+def _ValidateJsonOrRaiseDataError(data):
+  return _ValidateJsonOrRaiseError(data, '--data')
+
+
+def _ValidateJsonOrRaiseCloudEventError(data):
+  return _ValidateJsonOrRaiseError(data, '--cloud-event')
+
+
+def _ValidateJsonOrRaiseError(data, arg_name):
+  """Checks validity of json string or raises an InvalidArgumentException."""
+  try:
+    json.loads(data)
+    return data
+  except ValueError as e:
+    raise calliope_exceptions.InvalidArgumentException(
+        arg_name, 'Is not a valid JSON: ' + six.text_type(e))

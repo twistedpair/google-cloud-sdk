@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
+from googlecloudsdk.core import log
 
 
 def Run(args, release_track):
@@ -28,7 +29,18 @@ def Run(args, release_track):
 
   function_ref = args.CONCEPTS.name.Parse()
   function_relative_name = function_ref.RelativeName()
-
+  function = client.projects_locations_functions.Get(
+      messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
+          name=function_ref.RelativeName()
+      )
+  )
+  log.warning(
+      'To view more details about the invoker policy in the underlying Cloud'
+      ' Run Service, please run:\n\n gcloud run services get-iam-policy {}\n'
+      .format(function.serviceConfig.service)
+  )
   return client.projects_locations_functions.GetIamPolicy(
       messages.CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest(
-          resource=function_relative_name))
+          resource=function_relative_name
+      )
+  )

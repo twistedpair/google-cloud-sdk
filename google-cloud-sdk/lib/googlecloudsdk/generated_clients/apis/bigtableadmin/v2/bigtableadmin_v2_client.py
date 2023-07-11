@@ -834,30 +834,30 @@ class BigtableadminV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a Table resource. Returns an empty policy if the resource exists but does not have a policy set.
+    def Delete(self, request, global_params=None):
+      r"""Permanently deletes a specified view.
 
       Args:
-        request: (BigtableadminProjectsInstancesTablesViewsGetIamPolicyRequest) input message
+        request: (BigtableadminProjectsInstancesTablesViewsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (Empty) The response message.
       """
-      config = self.GetMethodConfig('GetIamPolicy')
+      config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/views/{viewsId}:getIamPolicy',
-        http_method='POST',
-        method_id='bigtableadmin.projects.instances.tables.views.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v2/{+resource}:getIamPolicy',
-        request_field='getIamPolicyRequest',
-        request_type_name='BigtableadminProjectsInstancesTablesViewsGetIamPolicyRequest',
-        response_type_name='Policy',
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/views/{viewsId}',
+        http_method='DELETE',
+        method_id='bigtableadmin.projects.instances.tables.views.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesTablesViewsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -885,60 +885,6 @@ class BigtableadminV2(base_api.BaseApiClient):
         request_field='view',
         request_type_name='BigtableadminProjectsInstancesTablesViewsPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on a Table resource. Replaces any existing policy.
-
-      Args:
-        request: (BigtableadminProjectsInstancesTablesViewsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/views/{viewsId}:setIamPolicy',
-        http_method='POST',
-        method_id='bigtableadmin.projects.instances.tables.views.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v2/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='BigtableadminProjectsInstancesTablesViewsSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that the caller has on the specified table resource.
-
-      Args:
-        request: (BigtableadminProjectsInstancesTablesViewsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/views/{viewsId}:testIamPermissions',
-        http_method='POST',
-        method_id='bigtableadmin.projects.instances.tables.views.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v2/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='BigtableadminProjectsInstancesTablesViewsTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

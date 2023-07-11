@@ -975,6 +975,9 @@ class Backup(_messages.Message):
       scheme to protect the user data.
     encryptionInfo: Output only. The encryption information for the backup.
     etag: For Resource freshness validation (https://google.aip.dev/154)
+    expiryQuantity: Output only. The QuantityBasedExpiry of the backup,
+      specified by the backup's retention policy. Once the expiry quantity is
+      over retention, the backup is eligible to be garbage collected.
     expiryTime: Output only. The time at which after the backup is eligible to
       be garbage collected. It is the duration specified by the backup's
       retention policy, added to the backup's create_time.
@@ -991,6 +994,8 @@ class Backup(_messages.Message):
       (https://google.aip.dev/128#reconciliation), if true, indicates that the
       service is actively updating the resource. This can happen due to user-
       triggered updates or system actions like failover or maintenance.
+    satisfiesPzs: Indicates if the backup satisfies physical zone seperation.
+      https://cloud.google.com/locations/docs/zone-separation.
     sizeBytes: Output only. The size of the backup in bytes.
     state: Output only. The current state of the backup.
     type: The backup type, which suggests the trigger for the backup.
@@ -1093,15 +1098,17 @@ class Backup(_messages.Message):
   encryptionConfig = _messages.MessageField('EncryptionConfig', 8)
   encryptionInfo = _messages.MessageField('EncryptionInfo', 9)
   etag = _messages.StringField(10)
-  expiryTime = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  name = _messages.StringField(13)
-  reconciling = _messages.BooleanField(14)
-  sizeBytes = _messages.IntegerField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
+  expiryQuantity = _messages.MessageField('QuantityBasedExpiry', 11)
+  expiryTime = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  name = _messages.StringField(14)
+  reconciling = _messages.BooleanField(15)
+  satisfiesPzs = _messages.BooleanField(16)
+  sizeBytes = _messages.IntegerField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
 
 
 class BackupSource(_messages.Message):
@@ -1180,9 +1187,10 @@ class Cluster(_messages.Message):
       the Cluster promotion time. The cluster type is determined by which RPC
       was used to create the cluster (i.e. `CreateCluster` vs.
       `CreateSecondaryCluster`
-    DatabaseVersionValueValuesEnum: Output only. The database engine major
-      version. This is an output-only field and it's populated at the Cluster
-      creation time. This field cannot be changed after cluster creation.
+    DatabaseVersionValueValuesEnum: Optional. The database engine major
+      version. This is an optional field and it is populated at the Cluster
+      creation time. If a database version is not supplied at cluster creation
+      time, then a default database version will be used.
     StateValueValuesEnum: Output only. The current serving state of the
       cluster.
 
@@ -1211,9 +1219,10 @@ class Cluster(_messages.Message):
     continuousBackupInfo: Output only. Continuous backup properties for this
       cluster.
     createTime: Output only. Create time stamp
-    databaseVersion: Output only. The database engine major version. This is
-      an output-only field and it's populated at the Cluster creation time.
-      This field cannot be changed after cluster creation.
+    databaseVersion: Optional. The database engine major version. This is an
+      optional field and it is populated at the Cluster creation time. If a
+      database version is not supplied at cluster creation time, then a
+      default database version will be used.
     deleteTime: Output only. Delete time stamp
     displayName: User-settable and human-readable display name for the
       Cluster.
@@ -1250,6 +1259,8 @@ class Cluster(_messages.Message):
       service is actively updating the resource to reconcile them. This can
       happen due to user-triggered updates or system actions like failover or
       maintenance.
+    satisfiesPzs: Indicates if the cluster satisfies physical zone seperation.
+      https://cloud.google.com/locations/docs/zone-separation.
     secondaryConfig: Cross Region replication config specific to SECONDARY
       cluster.
     sslConfig: SSL configuration for this AlloyDB cluster.
@@ -1277,9 +1288,10 @@ class Cluster(_messages.Message):
     SECONDARY = 2
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
-    r"""Output only. The database engine major version. This is an output-only
-    field and it's populated at the Cluster creation time. This field cannot
-    be changed after cluster creation.
+    r"""Optional. The database engine major version. This is an optional field
+    and it is populated at the Cluster creation time. If a database version is
+    not supplied at cluster creation time, then a default database version
+    will be used.
 
     Values:
       DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
@@ -1396,11 +1408,12 @@ class Cluster(_messages.Message):
   networkConfig = _messages.MessageField('NetworkConfig', 19)
   primaryConfig = _messages.MessageField('PrimaryConfig', 20)
   reconciling = _messages.BooleanField(21)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 22)
-  sslConfig = _messages.MessageField('SslConfig', 23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  uid = _messages.StringField(25)
-  updateTime = _messages.StringField(26)
+  satisfiesPzs = _messages.BooleanField(22)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 23)
+  sslConfig = _messages.MessageField('SslConfig', 24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  uid = _messages.StringField(26)
+  updateTime = _messages.StringField(27)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1872,6 +1885,8 @@ class Instance(_messages.Message):
       service is actively updating the resource to reconcile them. This can
       happen due to user-triggered updates or system actions like failover or
       maintenance.
+    satisfiesPzs: Indicates if the instance satisfies physical zone
+      seperation. https://cloud.google.com/locations/docs/zone-separation.
     state: Output only. The current serving state of the instance.
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
@@ -2053,11 +2068,12 @@ class Instance(_messages.Message):
   queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 16)
   readPoolConfig = _messages.MessageField('ReadPoolConfig', 17)
   reconciling = _messages.BooleanField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  uid = _messages.StringField(20)
-  updatePolicy = _messages.MessageField('UpdatePolicy', 21)
-  updateTime = _messages.StringField(22)
-  writableNode = _messages.MessageField('Node', 23)
+  satisfiesPzs = _messages.BooleanField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  uid = _messages.StringField(21)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 22)
+  updateTime = _messages.StringField(23)
+  writableNode = _messages.MessageField('Node', 24)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -2419,6 +2435,28 @@ class PromoteClusterRequest(_messages.Message):
   validateOnly = _messages.BooleanField(3)
 
 
+class QuantityBasedExpiry(_messages.Message):
+  r"""A backup's position in a quantity-based retention queue, of backups with
+  the same source cluster and type, with length, retention, specified by the
+  backup's retention policy. Once the position is greater than the retention,
+  the backup is eligible to be garbage collected. Example: 5 backups from the
+  same source cluster and type with a quantity-based retention of 3 and
+  denoted by backup_id (position, retention). Safe: backup_5 (1, 3), backup_4,
+  (2, 3), backup_3 (3, 3). Awaiting garbage collection: backup_2 (4, 3),
+  backup_1 (5, 3)
+
+  Fields:
+    retentionCount: Output only. The backup's position among its backups with
+      the same source cluster and type, by descending chronological order
+      create time(i.e. newest first).
+    totalRetentionCount: Output only. The length of the quantity-based queue,
+      specified by the backup's retention policy.
+  """
+
+  retentionCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  totalRetentionCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class QuantityBasedRetention(_messages.Message):
   r"""A quantity based policy specifies that a certain number of the most
   recent successful backups should be retained.
@@ -2733,12 +2771,14 @@ class StorageDatabasecenterPartnerapiV1mainAvailabilityConfiguration(_messages.M
       AVAILABILITY_TYPE_UNSPECIFIED: <no description>
       ZONAL: Zonal available instance.
       REGIONAL: Regional available instance.
+      MULTI_REGIONAL: Multi regional instance
       AVAILABILITY_TYPE_OTHER: For rest of the other category
     """
     AVAILABILITY_TYPE_UNSPECIFIED = 0
     ZONAL = 1
     REGIONAL = 2
-    AVAILABILITY_TYPE_OTHER = 3
+    MULTI_REGIONAL = 3
+    AVAILABILITY_TYPE_OTHER = 4
 
   availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 1)
   externalReplicaConfigured = _messages.BooleanField(2)
@@ -2756,6 +2796,38 @@ class StorageDatabasecenterPartnerapiV1mainBackupConfiguration(_messages.Message
 
   automatedBackupEnabled = _messages.BooleanField(1)
   backupRetentionSettings = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainRetentionSettings', 2)
+
+
+class StorageDatabasecenterPartnerapiV1mainBackupRun(_messages.Message):
+  r"""A backup run.
+
+  Enums:
+    StatusValueValuesEnum: The status of this run. REQUIRED
+
+  Fields:
+    endTime: The time the backup operation completed. REQUIRED
+    error: Information about why the backup operation failed. This is only
+      present if the run has the FAILED status. OPTIONAL
+    startTime: The time the backup operation started. REQUIRED
+    status: The status of this run. REQUIRED
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""The status of this run. REQUIRED
+
+    Values:
+      STATUS_UNSPECIFIED: <no description>
+      SUCCESSFUL: The backup was successful.
+      FAILED: The backup was unsuccessful.
+    """
+    STATUS_UNSPECIFIED = 0
+    SUCCESSFUL = 1
+    FAILED = 2
+
+  endTime = _messages.StringField(1)
+  error = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainOperationError', 2)
+  startTime = _messages.StringField(3)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Message):
@@ -2780,13 +2852,11 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
       RESOURCE_METADATA: Database resource metadata feed from control plane
       OBSERVABILITY_DATA: Database resource monitoring data
       COMPLIANCE_DATA: Database resource compliance feed
-      FEEDTYPE_OTHER: For the rest of other category
     """
     FEEDTYPE_UNSPECIFIED = 0
     RESOURCE_METADATA = 1
     OBSERVABILITY_DATA = 2
     COMPLIANCE_DATA = 3
-    FEEDTYPE_OTHER = 4
 
   feedTimestamp = _messages.StringField(1)
   feedType = _messages.EnumField('FeedTypeValueValuesEnum', 2)
@@ -2795,7 +2865,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message):
-  r"""DatabaseResourceId will server as primary key for any resource ingestion
+  r"""DatabaseResourceId will serve as primary key for any resource ingestion
   event.
 
   Enums:
@@ -2805,12 +2875,9 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
   Fields:
     provider: Required. Cloud provider name. Ex:
       GCP/AWS/Azure/OnPrem/SelfManaged
-    resourceName: Required. Different from unique_id, a resource name can be
-      reused over time. That is after a resource named "ABC" is deleted, the
-      name "ABC" can be used to to create a new resource within the same
-      source.
     resourceType: Required. The type of resource this ID is identifying. Ex
-      sqladmin.googleapis.com/Instance, alloydb.googleapis.com/cluster
+      google.sqladmin.Instance, google.alloydb.cluster, google.sqladmin.Backup
+      REQUIRED
     uniqueId: Required. A service-local token that distinguishes this resource
       from other resources within the same service.
   """
@@ -2836,9 +2903,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
     PROVIDER_OTHER = 6
 
   provider = _messages.EnumField('ProviderValueValuesEnum', 1)
-  resourceName = _messages.StringField(2)
-  resourceType = _messages.StringField(3)
-  uniqueId = _messages.StringField(4)
+  resourceType = _messages.StringField(2)
+  uniqueId = _messages.StringField(3)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Message):
@@ -2851,28 +2917,33 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
       creation time.
 
   Messages:
-    AdditionalMetadataValue: A AdditionalMetadataValue object.
     UserLabelsValue: User-provided labels, represented as a dictionary where
       each label is a single key value pair.
 
   Fields:
-    additionalMetadata: A AdditionalMetadataValue attribute.
     availabilityConfiguration: Availability configuration for this instance
     backupConfiguration: Backup configuration for this instance
-    createTime: Required. Timestamp when resource was created
+    backupRun: Latest backup run information for this instance
+    creationTime: The creation time of the resource, i.e. the time when
+      resource is created and recorded in partner service.
     currentState: Current state of the instance.
     expectedState: The actual instance state.
     id: Required. Unique identifier for a Database resource
     instanceType: The type of the instance. Specified at creation time.
-    parentResourceId: Unique identifier for this resource's immediate parent
+    location: The resource location. REQUIRED
+    primaryResourceId: Unique identifier for this resource's immediate parent
       resource. This parent resource id would be used to build resource
       hierarchy in condor platform.
     product: The product this resource represents.
     resourceContainer: Closest parent Cloud Resource Manager container of this
       resource. It must either be resource name of a Cloud Resource Manager
-      project, folder, or org, with the format of "/", such as
-      "organizations/123", "folders/123", or "projects/123".
-    updateTime: Required. Timestamp when resource was last updated
+      project, for ex: "projects/123".
+    resourceName: Required. Different from unique_id, a resource name can be
+      reused over time. That is after a resource named "ABC" is deleted, the
+      name "ABC" can be used to to create a new resource within the same
+      source.
+    updationTime: The time at which the resource was updated and recorded at
+      partner service.
     userLabels: User-provided labels, represented as a dictionary where each
       label is a single key value pair.
   """
@@ -2920,32 +2991,6 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     INSTANCE_TYPE_OTHER = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class AdditionalMetadataValue(_messages.Message):
-    r"""A AdditionalMetadataValue object.
-
-    Messages:
-      AdditionalProperty: An additional property for a AdditionalMetadataValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AdditionalMetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
     r"""User-provided labels, represented as a dictionary where each label is
     a single key value pair.
@@ -2970,19 +3015,33 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  additionalMetadata = _messages.MessageField('AdditionalMetadataValue', 1)
-  availabilityConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainAvailabilityConfiguration', 2)
-  backupConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupConfiguration', 3)
-  createTime = _messages.StringField(4)
+  availabilityConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainAvailabilityConfiguration', 1)
+  backupConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupConfiguration', 2)
+  backupRun = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupRun', 3)
+  creationTime = _messages.StringField(4)
   currentState = _messages.EnumField('CurrentStateValueValuesEnum', 5)
   expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 6)
   id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 7)
   instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 8)
-  parentResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 9)
-  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 10)
-  resourceContainer = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
-  userLabels = _messages.MessageField('UserLabelsValue', 13)
+  location = _messages.StringField(9)
+  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 10)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 11)
+  resourceContainer = _messages.StringField(12)
+  resourceName = _messages.StringField(13)
+  updationTime = _messages.StringField(14)
+  userLabels = _messages.MessageField('UserLabelsValue', 15)
+
+
+class StorageDatabasecenterPartnerapiV1mainOperationError(_messages.Message):
+  r"""An error that occurred during a backup creation operation.
+
+  Fields:
+    code: Identifies the specific error that occurred. REQUIRED
+    message: Additional information about the error encountered. REQUIRED
+  """
+
+  code = _messages.StringField(1)
+  message = _messages.StringField(2)
 
 
 class StorageDatabasecenterPartnerapiV1mainRetentionSettings(_messages.Message):

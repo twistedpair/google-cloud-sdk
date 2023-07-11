@@ -837,6 +837,18 @@ class AiplatformProjectsLocationsDatasetsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class AiplatformProjectsLocationsDatasetsSavedQueriesDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsSavedQueriesDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the SavedQuery to delete. Format: `pr
+      ojects/{project}/locations/{location}/datasets/{dataset}/savedQueries/{s
+      aved_query}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AiplatformProjectsLocationsDatasetsSavedQueriesListRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsDatasetsSavedQueriesListRequest object.
 
@@ -1657,7 +1669,7 @@ class AiplatformProjectsLocationsFeaturestoresCreateRequest(_messages.Message):
       GoogleCloudAiplatformV1beta1Featurestore resource to be passed as the
       request body.
     parent: Required. The resource name of the Location to create
-      Featurestores. Format: `projects/{project}/locations/{location}'`
+      Featurestores. Format: `projects/{project}/locations/{location}`
   """
 
   featurestoreId = _messages.StringField(1)
@@ -4936,18 +4948,16 @@ class AiplatformProjectsLocationsPersistentResourcesListRequest(_messages.Messag
   r"""A AiplatformProjectsLocationsPersistentResourcesListRequest object.
 
   Fields:
-    filter: An expression for filtering the results of the request.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token. Typically obtained via
+    pageSize: Optional. The standard list page size.
+    pageToken: Optional. The standard list page token. Typically obtained via
       ListPersistentResourceResponse.next_page_token of the previous
       PersistentResourceService.ListPersistentResource call.
     parent: A string attribute.
   """
 
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class AiplatformProjectsLocationsPersistentResourcesOperationsCancelRequest(_messages.Message):
@@ -6720,6 +6730,17 @@ class AiplatformProjectsLocationsTensorboardsPatchRequest(_messages.Message):
   googleCloudAiplatformV1beta1Tensorboard = _messages.MessageField('GoogleCloudAiplatformV1beta1Tensorboard', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsTensorboardsReadSizeRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsReadSizeRequest object.
+
+  Fields:
+    tensorboard: Required. The name of the Tensorboard resource. Format:
+      `projects/{project}/locations/{location}/tensorboards/{tensorboard}`
+  """
+
+  tensorboard = _messages.StringField(1, required=True)
 
 
 class AiplatformProjectsLocationsTensorboardsReadUsageRequest(_messages.Message):
@@ -9239,9 +9260,11 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
       NVIDIA_A100_80GB: Nvidia A100 80GB GPU.
       NVIDIA_L4: Nvidia L4 GPU.
+      NVIDIA_H100_80GB: Nvidia H100 80Gb GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
       TPU_V4_POD: TPU v4.
+      TPU_V5_LITEPOD: TPU v5.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -9252,9 +9275,11 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
     NVIDIA_TESLA_A100 = 6
     NVIDIA_A100_80GB = 7
     NVIDIA_L4 = 8
-    TPU_V2 = 9
-    TPU_V3 = 10
-    TPU_V4_POD = 11
+    NVIDIA_H100_80GB = 9
+    TPU_V2 = 10
+    TPU_V3 = 11
+    TPU_V4_POD = 12
+    TPU_V5_LITEPOD = 13
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -11461,28 +11486,31 @@ class GoogleCloudAiplatformUiExportEndpointOperationMetadata(_messages.Message):
 
   Fields:
     genericMetadata: The common part of the operation metadata.
-    outputInfo: Output only. Information further describing the output of this
-      Endpoint export.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
-  outputInfo = _messages.MessageField('GoogleCloudAiplatformUiExportEndpointOperationMetadataOutputInfo', 2)
-
-
-class GoogleCloudAiplatformUiExportEndpointOperationMetadataOutputInfo(_messages.Message):
-  r"""Further describes the output of the ExportEndpoint. Supplements
-  OutputConfig.
-
-  Fields:
-    bigQueryModelOutputUri: Output only. If the Endpoint is being exported to
-      BigQuery this is the full path of the BigQuery ML model created.
-  """
-
-  bigQueryModelOutputUri = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformUiExportEndpointResponse(_messages.Message):
-  r"""Response message of EndpointService.ExportEndpoint operation."""
+  r"""Response message of EndpointService.ExportEndpoint operation.
+
+  Fields:
+    outputInfo: Information further describing the output of this Endpoint
+      export.
+  """
+
+  outputInfo = _messages.MessageField('GoogleCloudAiplatformUiExportEndpointResponseOutputInfo', 1)
+
+
+class GoogleCloudAiplatformUiExportEndpointResponseOutputInfo(_messages.Message):
+  r"""Describes the output of the ExportEndpoint.
+
+  Fields:
+    bigQueryDestination: If the Endpoint is being exported to BigQuery this is
+      the full path of the BigQuery ML model created.
+  """
+
+  bigQueryDestination = _messages.MessageField('GoogleCloudAiplatformUiBigQueryDestination', 1)
 
 
 class GoogleCloudAiplatformUiExportEvaluatedDataItemsOperationMetadata(_messages.Message):
@@ -24356,6 +24384,20 @@ class GoogleCloudAiplatformV1UndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
 
 
+class GoogleCloudAiplatformV1UpdateExplanationDatasetOperationMetadata(_messages.Message):
+  r"""Runtime operation information for ModelService.UpdateExplanationDataset.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1UpdateExplanationDatasetResponse(_messages.Message):
+  r"""Response message of ModelService.UpdateExplanationDataset operation."""
+
+
 class GoogleCloudAiplatformV1UpdateFeaturestoreOperationMetadata(_messages.Message):
   r"""Details of operations that perform update Featurestore.
 
@@ -27373,6 +27415,8 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
       JOB_STATE_UPDATING: The job is being updated. Only jobs in the `RUNNING`
         state can be updated. After updating, the job goes back to the
         `RUNNING` state.
+      JOB_STATE_PARTIALLY_SUCCEEDED: The job is partially succeeded, some
+        results may be missing due to errors.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -27385,6 +27429,7 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
     JOB_STATE_PAUSED = 8
     JOB_STATE_EXPIRED = 9
     JOB_STATE_UPDATING = 10
+    JOB_STATE_PARTIALLY_SUCCEEDED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -28371,6 +28416,8 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
       JOB_STATE_UPDATING: The job is being updated. Only jobs in the `RUNNING`
         state can be updated. After updating, the job goes back to the
         `RUNNING` state.
+      JOB_STATE_PARTIALLY_SUCCEEDED: The job is partially succeeded, some
+        results may be missing due to errors.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -28383,6 +28430,7 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
     JOB_STATE_PAUSED = 8
     JOB_STATE_EXPIRED = 9
     JOB_STATE_UPDATING = 10
+    JOB_STATE_PARTIALLY_SUCCEEDED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -28737,6 +28785,8 @@ class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
       JOB_STATE_UPDATING: The job is being updated. Only jobs in the `RUNNING`
         state can be updated. After updating, the job goes back to the
         `RUNNING` state.
+      JOB_STATE_PARTIALLY_SUCCEEDED: The job is partially succeeded, some
+        results may be missing due to errors.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -28749,6 +28799,7 @@ class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
     JOB_STATE_PAUSED = 8
     JOB_STATE_EXPIRED = 9
     JOB_STATE_UPDATING = 10
+    JOB_STATE_PARTIALLY_SUCCEEDED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationLabelsValue(_messages.Message):
@@ -28852,6 +28903,8 @@ class GoogleCloudAiplatformV1beta1Dataset(_messages.Message):
 
   Fields:
     createTime: Output only. Timestamp when this Dataset was created.
+    dataItemCount: Output only. The number of DataItems in this Dataset. Only
+      apply for non-structured Dataset.
     description: The description of the Dataset.
     displayName: Required. The user-defined name of the Dataset. The name can
       be up to 128 characters long and can consist of any UTF-8 characters.
@@ -28925,17 +28978,18 @@ class GoogleCloudAiplatformV1beta1Dataset(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  metadata = _messages.MessageField('extra_types.JsonValue', 7)
-  metadataArtifact = _messages.StringField(8)
-  metadataSchemaUri = _messages.StringField(9)
-  name = _messages.StringField(10)
-  savedQueries = _messages.MessageField('GoogleCloudAiplatformV1beta1SavedQuery', 11, repeated=True)
-  updateTime = _messages.StringField(12)
+  dataItemCount = _messages.IntegerField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  metadata = _messages.MessageField('extra_types.JsonValue', 8)
+  metadataArtifact = _messages.StringField(9)
+  metadataSchemaUri = _messages.StringField(10)
+  name = _messages.StringField(11)
+  savedQueries = _messages.MessageField('GoogleCloudAiplatformV1beta1SavedQuery', 12, repeated=True)
+  updateTime = _messages.StringField(13)
 
 
 class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
@@ -30948,28 +31002,31 @@ class GoogleCloudAiplatformV1beta1ExportEndpointOperationMetadata(_messages.Mess
 
   Fields:
     genericMetadata: The common part of the operation metadata.
-    outputInfo: Output only. Information further describing the output of this
-      Endpoint export.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
-  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ExportEndpointOperationMetadataOutputInfo', 2)
-
-
-class GoogleCloudAiplatformV1beta1ExportEndpointOperationMetadataOutputInfo(_messages.Message):
-  r"""Further describes the output of the ExportEndpoint. Supplements
-  OutputConfig.
-
-  Fields:
-    bigQueryModelOutputUri: Output only. If the Endpoint is being exported to
-      BigQuery this is the full path of the BigQuery ML model created.
-  """
-
-  bigQueryModelOutputUri = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1beta1ExportEndpointResponse(_messages.Message):
-  r"""Response message of EndpointService.ExportEndpoint operation."""
+  r"""Response message of EndpointService.ExportEndpoint operation.
+
+  Fields:
+    outputInfo: Information further describing the output of this Endpoint
+      export.
+  """
+
+  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ExportEndpointResponseOutputInfo', 1)
+
+
+class GoogleCloudAiplatformV1beta1ExportEndpointResponseOutputInfo(_messages.Message):
+  r"""Describes the output of the ExportEndpoint.
+
+  Fields:
+    bigQueryDestination: If the Endpoint is being exported to BigQuery this is
+      the full path of the BigQuery ML model created.
+  """
+
+  bigQueryDestination = _messages.MessageField('GoogleCloudAiplatformV1beta1BigQueryDestination', 1)
 
 
 class GoogleCloudAiplatformV1beta1ExportFeatureValuesOperationMetadata(_messages.Message):
@@ -32067,6 +32124,8 @@ class GoogleCloudAiplatformV1beta1HyperparameterTuningJob(_messages.Message):
       JOB_STATE_UPDATING: The job is being updated. Only jobs in the `RUNNING`
         state can be updated. After updating, the job goes back to the
         `RUNNING` state.
+      JOB_STATE_PARTIALLY_SUCCEEDED: The job is partially succeeded, some
+        results may be missing due to errors.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -32079,6 +32138,7 @@ class GoogleCloudAiplatformV1beta1HyperparameterTuningJob(_messages.Message):
     JOB_STATE_PAUSED = 8
     JOB_STATE_EXPIRED = 9
     JOB_STATE_UPDATING = 10
+    JOB_STATE_PARTIALLY_SUCCEEDED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -33429,6 +33489,7 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
       NVIDIA_A100_80GB: Nvidia A100 80GB GPU.
       NVIDIA_L4: Nvidia L4 GPU.
+      NVIDIA_H100_80GB: Nvidia H100 80Gb GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
       TPU_V4_POD: TPU v4.
@@ -33442,9 +33503,10 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     NVIDIA_TESLA_A100 = 6
     NVIDIA_A100_80GB = 7
     NVIDIA_L4 = 8
-    TPU_V2 = 9
-    TPU_V3 = 10
-    TPU_V4_POD = 11
+    NVIDIA_H100_80GB = 9
+    TPU_V2 = 10
+    TPU_V3 = 11
+    TPU_V4_POD = 12
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -34378,6 +34440,8 @@ class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(_messages.Message
       JOB_STATE_UPDATING: The job is being updated. Only jobs in the `RUNNING`
         state can be updated. After updating, the job goes back to the
         `RUNNING` state.
+      JOB_STATE_PARTIALLY_SUCCEEDED: The job is partially succeeded, some
+        results may be missing due to errors.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -34390,6 +34454,7 @@ class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(_messages.Message
     JOB_STATE_PAUSED = 8
     JOB_STATE_EXPIRED = 9
     JOB_STATE_UPDATING = 10
+    JOB_STATE_PARTIALLY_SUCCEEDED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -34498,6 +34563,7 @@ class GoogleCloudAiplatformV1beta1ModelEvaluation(_messages.Message):
   all of the test data against annotations from the test data.
 
   Fields:
+    biasConfigs: Specify the configuration for bias detection.
     createTime: Output only. Timestamp when this ModelEvaluation was created.
     displayName: The display name of the ModelEvaluation.
     explanationSpecs: Describes the values of ExplanationSpec that are used
@@ -34523,15 +34589,41 @@ class GoogleCloudAiplatformV1beta1ModelEvaluation(_messages.Message):
       `slice.dimension = `.
   """
 
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  explanationSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelEvaluationModelEvaluationExplanationSpec', 3, repeated=True)
-  metadata = _messages.MessageField('extra_types.JsonValue', 4)
-  metrics = _messages.MessageField('extra_types.JsonValue', 5)
-  metricsSchemaUri = _messages.StringField(6)
-  modelExplanation = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExplanation', 7)
-  name = _messages.StringField(8)
-  sliceDimensions = _messages.StringField(9, repeated=True)
+  biasConfigs = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelEvaluationBiasConfig', 1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  explanationSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelEvaluationModelEvaluationExplanationSpec', 4, repeated=True)
+  metadata = _messages.MessageField('extra_types.JsonValue', 5)
+  metrics = _messages.MessageField('extra_types.JsonValue', 6)
+  metricsSchemaUri = _messages.StringField(7)
+  modelExplanation = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExplanation', 8)
+  name = _messages.StringField(9)
+  sliceDimensions = _messages.StringField(10, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ModelEvaluationBiasConfig(_messages.Message):
+  r"""Configuration for bias detection.
+
+  Fields:
+    biasSlices: Specification for how the data should be sliced for bias. It
+      contains a list of slices, with limitation of two slices. The first
+      slice of data will be the slice_a. The second slice in the list
+      (slice_b) will be compared against the first slice. If only a single
+      slice is provided, then slice_a will be compared against "not slice_a".
+      Below are examples with feature "education" with value "low", "medium",
+      "high" in the dataset: Example 1: bias_slices = [{'education': 'low'}] A
+      single slice provided. In this case, slice_a is the collection of data
+      with 'education' equals 'low', and slice_b is the collection of data
+      with 'education' equals 'medium' or 'high'. Example 2: bias_slices =
+      [{'education': 'low'}, {'education': 'high'}] Two slices provided. In
+      this case, slice_a is the collection of data with 'education' equals
+      'low', and slice_b is the collection of data with 'education' equals
+      'high'.
+    labels: Positive labels selection on the target field.
+  """
+
+  biasSlices = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpec', 1)
+  labels = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1ModelEvaluationModelEvaluationExplanationSpec(_messages.Message):
@@ -35320,6 +35412,8 @@ class GoogleCloudAiplatformV1beta1NasJob(_messages.Message):
       JOB_STATE_UPDATING: The job is being updated. Only jobs in the `RUNNING`
         state can be updated. After updating, the job goes back to the
         `RUNNING` state.
+      JOB_STATE_PARTIALLY_SUCCEEDED: The job is partially succeeded, some
+        results may be missing due to errors.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -35332,6 +35426,7 @@ class GoogleCloudAiplatformV1beta1NasJob(_messages.Message):
     JOB_STATE_PAUSED = 8
     JOB_STATE_EXPIRED = 9
     JOB_STATE_UPDATING = 10
+    JOB_STATE_PARTIALLY_SUCCEEDED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -35570,7 +35665,7 @@ class GoogleCloudAiplatformV1beta1NasTrial(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1NasTrialDetail(_messages.Message):
-  r"""Represents a NasTrial details along with it's parameters. If there is a
+  r"""Represents a NasTrial details along with its parameters. If there is a
   corresponding train NasTrial, the train NasTrial is also returned.
 
   Fields:
@@ -35881,6 +35976,11 @@ class GoogleCloudAiplatformV1beta1PipelineJob(_messages.Message):
       launched, if applied, such as Vertex AI Training or Dataflow job. If
       left unspecified, the workload is not peered with any network.
     pipelineSpec: The spec of the pipeline.
+    reservedIpRanges: A list of names for the reserved ip ranges under the VPC
+      network that can be used for this Pipeline Job's workload. If set, we
+      will deploy the Pipeline Job's workload within the provided ip ranges.
+      Otherwise, the job will be deployed to any ip ranges under the provided
+      VPC network. Example: ['vertex-ai-ip-range'].
     runtimeConfig: Runtime config of the pipeline.
     serviceAccount: The service account that the pipeline workload runs as. If
       not specified, the Compute Engine default service account in the project
@@ -35990,13 +36090,14 @@ class GoogleCloudAiplatformV1beta1PipelineJob(_messages.Message):
   name = _messages.StringField(8)
   network = _messages.StringField(9)
   pipelineSpec = _messages.MessageField('PipelineSpecValue', 10)
-  runtimeConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig', 11)
-  serviceAccount = _messages.StringField(12)
-  startTime = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  templateMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1PipelineTemplateMetadata', 15)
-  templateUri = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  reservedIpRanges = _messages.StringField(11, repeated=True)
+  runtimeConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig', 12)
+  serviceAccount = _messages.StringField(13)
+  startTime = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  templateMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1PipelineTemplateMetadata', 16)
+  templateUri = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class GoogleCloudAiplatformV1beta1PipelineJobDetail(_messages.Message):
@@ -36515,9 +36616,15 @@ class GoogleCloudAiplatformV1beta1PredictRequestResponseLoggingConfig(_messages.
 class GoogleCloudAiplatformV1beta1PredictResponse(_messages.Message):
   r"""Response message for PredictionService.Predict.
 
+  Messages:
+    MetadataValue: Output only. Request-level metadata returned by the model.
+      The metadata type will be dependent upon the model implementation.
+
   Fields:
     deployedModelId: ID of the Endpoint's DeployedModel that served this
       prediction.
+    metadata: Output only. Request-level metadata returned by the model. The
+      metadata type will be dependent upon the model implementation.
     model: Output only. The resource name of the Model which is deployed as
       the DeployedModel that this prediction hits.
     modelDisplayName: Output only. The display name of the Model which is
@@ -36529,11 +36636,38 @@ class GoogleCloudAiplatformV1beta1PredictResponse(_messages.Message):
       DeployedModels' Model's PredictSchemata's prediction_schema_uri.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Output only. Request-level metadata returned by the model. The
+    metadata type will be dependent upon the model implementation.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   deployedModelId = _messages.StringField(1)
-  model = _messages.StringField(2)
-  modelDisplayName = _messages.StringField(3)
-  modelVersionId = _messages.StringField(4)
-  predictions = _messages.MessageField('extra_types.JsonValue', 5, repeated=True)
+  metadata = _messages.MessageField('MetadataValue', 2)
+  model = _messages.StringField(3)
+  modelDisplayName = _messages.StringField(4)
+  modelVersionId = _messages.StringField(5)
+  predictions = _messages.MessageField('extra_types.JsonValue', 6, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1PredictSchemata(_messages.Message):
@@ -37197,6 +37331,16 @@ class GoogleCloudAiplatformV1beta1ReadTensorboardBlobDataResponse(_messages.Mess
   """
 
   blobs = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardBlob', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ReadTensorboardSizeResponse(_messages.Message):
+  r"""Response message for TensorboardService.ReadTensorboardSize.
+
+  Fields:
+    storageSizeByte: Payload storage size for the TensorBoard
+  """
+
+  storageSizeByte = _messages.IntegerField(1)
 
 
 class GoogleCloudAiplatformV1beta1ReadTensorboardTimeSeriesDataResponse(_messages.Message):
@@ -40975,9 +41119,18 @@ class GoogleCloudAiplatformV1beta1ServiceAccountSpec(_messages.Message):
       resource; Otherwise, will always use [Vertex AI Custom Code Service
       Agent](https://cloud.google.com/vertex-ai/docs/general/access-
       control#service-agents)
+    serviceAccount: Optional. Default service account that this
+      PersistentResource's workloads run as. The workloads include: * Any
+      runtime specified via `ResourceRuntimeSpec` on creation time, e.g. Ray;
+      * Jobs submitted to PersistentResource, if no other service account
+      specified in the job specs. Only works when custom service account is
+      enabled and users have the `iam.serviceAccounts.actAs` permission on
+      this service account. Required if any containers specified in
+      `ResourceRuntimeSpec`.
   """
 
   enableCustomServiceAccount = _messages.BooleanField(1)
+  serviceAccount = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1SmoothGradConfig(_messages.Message):

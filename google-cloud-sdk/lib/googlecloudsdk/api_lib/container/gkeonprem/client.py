@@ -23,6 +23,7 @@ import re
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import parser_extensions
+from googlecloudsdk.generated_clients.apis.gkeonprem.v1 import gkeonprem_v1_client as client
 from googlecloudsdk.generated_clients.apis.gkeonprem.v1 import gkeonprem_v1_messages as messages
 import six
 
@@ -32,8 +33,16 @@ class ClientBase(object):
   """Base class for Anthos GKE On-Prem API clients."""
 
   def __init__(self, service=None):
-    self._client = apis.GetClientInstance('gkeonprem', 'v1')
+    self._client = self._get_client_instance()
     self._service = service
+
+  def _get_client_instance(self) -> client.GkeonpremV1:
+    """Returns the client instance.
+
+    Function created for IDE type hint only, inline type annotation is not
+    supported due to gcloud using a low Python3 version.
+    """
+    return apis.GetClientInstance('gkeonprem', 'v1')
 
   def GetFlag(self, args: parser_extensions.Namespace, flag, default=None):
     """Returns the flag value if it's set, otherwise returns None.
@@ -280,4 +289,31 @@ class ClientBase(object):
     standalone_cluster_ref = self._standalone_cluster_membership_ref(args)
     if standalone_cluster_ref:
       return standalone_cluster_ref.RelativeName()
+    return None
+
+  def _standalone_node_pool_ref(self, args: parser_extensions.Namespace):
+    """Parses node pool resource argument and returns its reference."""
+    if getattr(args.CONCEPTS, 'node_pool', None):
+      return args.CONCEPTS.node_pool.Parse()
+
+  def _standalone_node_pool_name(
+      self, args: parser_extensions.Namespace
+  ) -> None:
+    """Parses node pool from args and returns its name."""
+    node_pool_ref = self._standalone_node_pool_ref(args)
+    if node_pool_ref:
+      return node_pool_ref.RelativeName()
+    return None
+
+  def _standalone_node_pool_id(self, args: parser_extensions.Namespace):
+    """Parses node pool from args and returns its ID."""
+    node_pool_ref = self._standalone_node_pool_ref(args)
+    if node_pool_ref:
+      return node_pool_ref.Name()
+
+  def _standalone_node_pool_parent(self, args: parser_extensions.Namespace):
+    """Parses node pool from args and returns its parent name."""
+    node_pool_ref = self._standalone_node_pool_ref(args)
+    if node_pool_ref:
+      return node_pool_ref.Parent().RelativeName()
     return None

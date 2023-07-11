@@ -122,6 +122,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BAREMETALSTANDALONECLUSTERS_BAREMETALSTANDALONENODEPOOLS = (
+      'projects.locations.bareMetalStandaloneClusters.bareMetalStandaloneNodePools',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'bareMetalStandaloneClusters/{bareMetalStandaloneClustersId}/'
+              'bareMetalStandaloneNodePools/{bareMetalStandaloneNodePoolsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

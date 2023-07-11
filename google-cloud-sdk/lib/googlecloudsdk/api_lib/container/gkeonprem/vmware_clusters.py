@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Generator
+
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
@@ -37,7 +39,9 @@ class ClustersClient(client.ClientBase):
     super(ClustersClient, self).__init__(**kwargs)
     self._service = self._client.projects_locations_vmwareClusters
 
-  def List(self, args: parser_extensions.Namespace):
+  def List(
+      self, args: parser_extensions.Namespace
+  ) -> Generator[messages.VmwareCluster, None, None]:
     """Lists Clusters in the GKE On-Prem VMware API."""
     # If location is not specified, and container_vmware/location is not set,
     # list clusters of all locations within a project.
@@ -60,7 +64,7 @@ class ClustersClient(client.ClientBase):
         batch_size_attribute='pageSize',
     )
 
-  def Enroll(self, args: parser_extensions.Namespace):
+  def Enroll(self, args: parser_extensions.Namespace) -> messages.Operation:
     """Enrolls a VMware cluster to Anthos."""
     kwargs = {
         'adminClusterMembership': self._admin_cluster_membership_name(args),
@@ -77,7 +81,7 @@ class ClustersClient(client.ClientBase):
     )
     return self._service.Enroll(req)
 
-  def Unenroll(self, args: parser_extensions.Namespace):
+  def Unenroll(self, args: parser_extensions.Namespace) -> messages.Operation:
     """Unenrolls an Anthos cluster on VMware."""
     kwargs = {
         'name': self._user_cluster_name(args),
@@ -90,7 +94,7 @@ class ClustersClient(client.ClientBase):
     )
     return self._service.Unenroll(req)
 
-  def Delete(self, args: parser_extensions.Namespace):
+  def Delete(self, args: parser_extensions.Namespace) -> messages.Operation:
     """Deletes an Anthos cluster on VMware."""
     kwargs = {
         'name': self._user_cluster_name(args),
@@ -104,7 +108,7 @@ class ClustersClient(client.ClientBase):
     )
     return self._service.Delete(req)
 
-  def Create(self, args: parser_extensions.Namespace):
+  def Create(self, args: parser_extensions.Namespace) -> messages.Operation:
     """Creates an Anthos cluster on VMware."""
     kwargs = {
         'parent': self._user_cluster_parent(args),
@@ -122,7 +126,7 @@ class ClustersClient(client.ClientBase):
       args: parser_extensions.Namespace,
       vmware_cluster,
       vmware_cluster_ref,
-  ):
+  ) -> messages.Operation:
     """Creates an Anthos cluster on VMware."""
     kwargs = {
         'parent': vmware_cluster_ref.Parent().RelativeName(),
@@ -135,7 +139,7 @@ class ClustersClient(client.ClientBase):
     )
     return self._service.Create(req)
 
-  def Update(self, args: parser_extensions.Namespace):
+  def Update(self, args: parser_extensions.Namespace) -> messages.Operation:
     kwargs = {
         'name': self._user_cluster_name(args),
         'allowMissing': flags.Get(args, 'allow_missing'),
@@ -150,7 +154,9 @@ class ClustersClient(client.ClientBase):
     )
     return self._service.Patch(req)
 
-  def UpdateFromFile(self, args: parser_extensions.Namespace, vmware_cluster):
+  def UpdateFromFile(
+      self, args: parser_extensions.Namespace, vmware_cluster
+  ) -> messages.Operation:
     # explicitly list supported mutable fields
     # etag is excluded from the mutable fields, because it is derived.
     top_level_mutable_fields = [
@@ -178,7 +184,9 @@ class ClustersClient(client.ClientBase):
     )
     return self._service.Patch(req)
 
-  def query_version_config(self, args: parser_extensions.Namespace):
+  def QueryVersionConfig(
+      self, args: parser_extensions.Namespace
+  ) -> messages.QueryVmwareVersionConfigResponse:
     kwargs = {
         'createConfig_adminClusterMembership': (
             self._admin_cluster_membership_name(args)
@@ -458,7 +466,7 @@ class ClustersClient(client.ClientBase):
       return self._update_annotations(args)
     return None
 
-  def _vmware_host_ip(self, host_ip):
+  def _vmware_host_ip(self, host_ip) -> messages.VmwareHostIp:
     """Constructs proto message VmwareHostIp."""
     hostname = host_ip.get('hostname', None)
     if not hostname:
@@ -648,7 +656,7 @@ class ClustersClient(client.ClientBase):
 
   def _vmware_metal_lb_config_from_file(
       self, args: parser_extensions.Namespace
-  ):
+  ) -> messages.VmwareMetalLbConfig:
     file_content = args.metal_lb_config_from_file
     metal_lb_config = file_content.get('metalLBConfig', None)
     if not metal_lb_config:
@@ -669,7 +677,7 @@ class ClustersClient(client.ClientBase):
 
   def _vmware_metal_lb_config_from_flag(
       self, args: parser_extensions.Namespace
-  ):
+  ) -> messages.VmwareMetalLbConfig:
     vmware_metal_lb_config = messages.VmwareMetalLbConfig()
     for address_pool in args.metal_lb_config_address_pools:
       address_pool_message = messages.VmwareAddressPool(
@@ -706,12 +714,12 @@ class ClustersClient(client.ClientBase):
 
   def _address_pools(self, address_pools):
     """Constructs proto message field address_pools."""
-    address_pool_messages = []
-    for address_pool in address_pools:
-      address_pool_messages.append(self._vmware_address_pool(address_pool))
-    return address_pool_messages
+    return [
+        self._vmware_address_pool(address_pool)
+        for address_pool in address_pools
+    ]
 
-  def _vmware_address_pool(self, address_pool):
+  def _vmware_address_pool(self, address_pool) -> messages.VmwareAddressPool:
     """Constructs proto message VmwareAddressPool."""
     addresses = address_pool.get('addresses', [])
     if not addresses:

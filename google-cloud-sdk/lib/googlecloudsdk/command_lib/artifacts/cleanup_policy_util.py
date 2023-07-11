@@ -105,13 +105,12 @@ def SetDeleteCleanupPolicyUpdateMask(unused_ref, unused_args, request):
   return request
 
 
-def RepositoryToCleanupPoliciesResponse(response, args):
+def RepositoryToCleanupPoliciesResponse(response, unused_args):
   """Formats Cleanup Policies output and displays Dry Run status."""
-  if hasattr(args, 'dry_run') and args.dry_run is not None:
-    if response.cleanupPolicyDryRun:
-      log.status.Print('Dry run is enabled.')
-    else:
-      log.status.Print('Dry run is disabled.')
+  if response.cleanupPolicyDryRun:
+    log.status.Print('Dry run is enabled.')
+  else:
+    log.status.Print('Dry run is disabled.')
   if not response.cleanupPolicies:
     return []
   policies = apitools_encoding.MessageToDict(response.cleanupPolicies)

@@ -56,6 +56,7 @@ class SupportedFeatures:
       support_local_ssd_recovery_timeout,
       support_enable_target_shape,
       support_confidential_compute_type,
+      support_confidential_compute_type_tdx,
       support_max_count_per_zone,
       support_performance_monitoring_unit,
       support_custom_hostnames,
@@ -84,6 +85,9 @@ class SupportedFeatures:
     self.support_max_run_duration = support_max_run_duration
     self.support_enable_target_shape = support_enable_target_shape
     self.support_confidential_compute_type = support_confidential_compute_type
+    self.support_confidential_compute_type_tdx = (
+        support_confidential_compute_type_tdx
+    )
     self.support_max_count_per_zone = support_max_count_per_zone
     self.support_local_ssd_recovery_timeout = support_local_ssd_recovery_timeout
     self.support_performance_monitoring_unit = (
@@ -306,17 +310,19 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
       messages=compute_client.messages, args=args
   )
 
-  confidential_vm = False
+  confidential_vm_type = None
   if supported_features.support_confidential_compute:
     confidential_instance_config = (
         create_utils.BuildConfidentialInstanceConfigMessage(
             messages=compute_client.messages,
             args=args,
             support_confidential_compute_type=supported_features
-            .support_confidential_compute_type))
+            .support_confidential_compute_type,
+            support_confidential_compute_type_tdx=supported_features
+            .support_confidential_compute_type_tdx))
 
-    confidential_vm = (
-        args.IsSpecified('confidential_compute') and args.confidential_compute)
+    confidential_vm_type = instance_utils.GetConfidentialVmType(
+        args, supported_features.support_confidential_compute_type)
 
   service_accounts = create_utils.GetProjectServiceAccount(
       args, project, compute_client, skip_defaults)
@@ -354,7 +360,7 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
   machine_type_name = None
   if instance_utils.CheckSpecifiedMachineTypeArgs(args, skip_defaults):
     machine_type_name = instance_utils.CreateMachineTypeName(
-        args, confidential_vm)
+        args, confidential_vm_type)
 
     # Check to see if the custom machine type ratio is supported.
     instance_utils.CheckCustomCpuRamRatio(compute_client, project, location,

@@ -572,6 +572,20 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsPatchRequest(_mes
   updateMask = _messages.StringField(3)
 
 
+class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsBatchDeleteRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsBatchDele
+  teRequest object.
+
+  Fields:
+    batchDeleteVersionsRequest: A BatchDeleteVersionsRequest resource to be
+      passed as the request body.
+    parent: The name of the repository holding all requested versions.
+  """
+
+  batchDeleteVersionsRequest = _messages.MessageField('BatchDeleteVersionsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsDeleteRequest(_messages.Message):
   r"""A
   ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsDeleteRequest
@@ -810,6 +824,20 @@ class BatchDeleteVersionsMetadata(_messages.Message):
   failedVersions = _messages.StringField(1, repeated=True)
 
 
+class BatchDeleteVersionsRequest(_messages.Message):
+  r"""The request to delete multiple versions across a repository.
+
+  Fields:
+    names: Required. The names of the versions to delete. A maximum of 10000
+      versions can be deleted in a batch.
+    validateOnly: If true, the request is performed without deleting data,
+      following AIP-163.
+  """
+
+  names = _messages.StringField(1, repeated=True)
+  validateOnly = _messages.BooleanField(2)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -917,7 +945,7 @@ class CleanupPolicyCondition(_messages.Message):
       prefix match.
     tagPrefixes: Match versions by tag prefix. Applied on any prefix match.
     tagState: Match versions by tag status.
-    versionAge: Match versions older than a duration.
+    versionAge: DEPRECATED: Use older_than.
     versionNamePrefixes: Match versions by version name prefix. Applied on any
       prefix match.
   """
@@ -2252,10 +2280,10 @@ class Repository(_messages.Message):
     ModeValueValuesEnum: The mode of the repository.
 
   Messages:
-    CleanupPoliciesValue: Cleanup policies for this repository. Cleanup
-      policies indicate when certain package versions can be automatically
-      deleted. Map keys are policy IDs supplied by users during policy
-      creation. They must unique within a repository and be under 128
+    CleanupPoliciesValue: Optional. Cleanup policies for this repository.
+      Cleanup policies indicate when certain package versions can be
+      automatically deleted. Map keys are policy IDs supplied by users during
+      policy creation. They must unique within a repository and be under 128
       characters in length.
     LabelsValue: Labels with user-defined metadata. This field may contain up
       to 64 entries. Label keys and values may be no longer than 63
@@ -2263,12 +2291,13 @@ class Repository(_messages.Message):
       contain lowercase letters, numeric characters, underscores, and dashes.
 
   Fields:
-    cleanupPolicies: Cleanup policies for this repository. Cleanup policies
-      indicate when certain package versions can be automatically deleted. Map
-      keys are policy IDs supplied by users during policy creation. They must
-      unique within a repository and be under 128 characters in length.
-    cleanupPolicyDryRun: If true, the cleanup pipeline is prevented from
-      deleting versions in this repository.
+    cleanupPolicies: Optional. Cleanup policies for this repository. Cleanup
+      policies indicate when certain package versions can be automatically
+      deleted. Map keys are policy IDs supplied by users during policy
+      creation. They must unique within a repository and be under 128
+      characters in length.
+    cleanupPolicyDryRun: Optional. If true, the cleanup pipeline is prevented
+      from deleting versions in this repository.
     createTime: Output only. The time when the repository was created.
     description: The user-provided description of the repository.
     dockerConfig: Docker repository config contains repository level
@@ -2291,11 +2320,15 @@ class Repository(_messages.Message):
     remoteRepositoryConfig: Configuration specific for a Remote Repository.
     satisfiesPzs: Output only. If set, the repository satisfies physical zone
       separation.
+    sbomConfig: Optional. Config and state for sbom generation for resources
+      within this Repository.
     sizeBytes: Output only. The size, in bytes, of all artifact storage in
       this repository. Repositories that are generally available or in public
       preview use this to calculate storage costs.
     updateTime: Output only. The time when the repository was last updated.
     virtualRepositoryConfig: Configuration specific for a Virtual Repository.
+    vulnerabilityScanningConfig: Optional. Config and state for vulnerability
+      scanning of resources within this Repository.
   """
 
   class FormatValueValuesEnum(_messages.Enum):
@@ -2344,10 +2377,10 @@ class Repository(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CleanupPoliciesValue(_messages.Message):
-    r"""Cleanup policies for this repository. Cleanup policies indicate when
-    certain package versions can be automatically deleted. Map keys are policy
-    IDs supplied by users during policy creation. They must unique within a
-    repository and be under 128 characters in length.
+    r"""Optional. Cleanup policies for this repository. Cleanup policies
+    indicate when certain package versions can be automatically deleted. Map
+    keys are policy IDs supplied by users during policy creation. They must
+    unique within a repository and be under 128 characters in length.
 
     Messages:
       AdditionalProperty: An additional property for a CleanupPoliciesValue
@@ -2410,9 +2443,69 @@ class Repository(_messages.Message):
   name = _messages.StringField(11)
   remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 12)
   satisfiesPzs = _messages.BooleanField(13)
-  sizeBytes = _messages.IntegerField(14)
-  updateTime = _messages.StringField(15)
-  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 16)
+  sbomConfig = _messages.MessageField('SbomConfig', 14)
+  sizeBytes = _messages.IntegerField(15)
+  updateTime = _messages.StringField(16)
+  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 17)
+  vulnerabilityScanningConfig = _messages.MessageField('VulnerabilityScanningConfig', 18)
+
+
+class SbomConfig(_messages.Message):
+  r"""Config for whether to generate SBOMs for resources in this repository,
+  as well as output fields describing current state.
+
+  Enums:
+    EnablementConfigValueValuesEnum: Optional. Config for whether this
+      repository has sbom generation disabled.
+    EnablementStateValueValuesEnum: Output only. State of feature enablement,
+      combining repository enablement config and API enablement state.
+
+  Fields:
+    enablementConfig: Optional. Config for whether this repository has sbom
+      generation disabled.
+    enablementState: Output only. State of feature enablement, combining
+      repository enablement config and API enablement state.
+    enablementStateReason: Output only. Reason for the repository state and
+      potential actions to activate it.
+    lastEnableTime: Output only. The last time this repository config was set
+      to INHERITED.
+  """
+
+  class EnablementConfigValueValuesEnum(_messages.Enum):
+    r"""Optional. Config for whether this repository has sbom generation
+    disabled.
+
+    Values:
+      ENABLEMENT_CONFIG_UNSPECIFIED: Unspecified config was not set. This will
+        be interpreted as DISABLED.
+      INHERITED: Inherited indicates the repository is allowed for SBOM
+        generation, however the actual state will be inherited from the API
+        enablement state.
+      DISABLED: Disabled indicates the repository will not generate SBOMs.
+    """
+    ENABLEMENT_CONFIG_UNSPECIFIED = 0
+    INHERITED = 1
+    DISABLED = 2
+
+  class EnablementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of feature enablement, combining repository
+    enablement config and API enablement state.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Enablement state is unclear.
+      SBOM_UNSUPPORTED: Repository does not support SBOM generation.
+      SBOM_DISABLED: SBOM generation is disabled for this repository.
+      SBOM_ACTIVE: SBOM generation is active for this feature.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    SBOM_UNSUPPORTED = 1
+    SBOM_DISABLED = 2
+    SBOM_ACTIVE = 3
+
+  enablementConfig = _messages.EnumField('EnablementConfigValueValuesEnum', 1)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 2)
+  enablementStateReason = _messages.StringField(3)
+  lastEnableTime = _messages.StringField(4)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2652,10 +2745,11 @@ class UploadGenericArtifactRequest(_messages.Message):
     versionId: The ID of the version of the generic artifact. If the version
       does not exist, a new version will be created. E.g."1.0.0" The
       version_id must start and end with a letter or number, can only contain
-      letters, numbers, hyphens and periods,i.e. [a-z0-9-.] and cannot exceed
-      a total of 64 characters. While "latest" is a well-known name for the
-      latest version of a package, it is not yet supported and is reserved for
-      future use. Creating a version called "latest" is not allowed.
+      lowercase letters, numbers, hyphens and periods, i.e. [a-z0-9-.] and
+      cannot exceed a total of 64 characters. While "latest" is a well-known
+      name for the latest version of a package, it is not yet supported and is
+      reserved for future use. Creating a version called "latest" is not
+      allowed.
   """
 
   filename = _messages.StringField(1)
@@ -2889,6 +2983,68 @@ class VirtualRepositoryConfig(_messages.Message):
   """
 
   upstreamPolicies = _messages.MessageField('UpstreamPolicy', 1, repeated=True)
+
+
+class VulnerabilityScanningConfig(_messages.Message):
+  r"""Config on whether to perform vulnerability scanning for resources in
+  this repository, as well as output fields describing current state.
+
+  Enums:
+    EnablementConfigValueValuesEnum: Optional. Config for whether this
+      repository has vulnerability scanning disabled.
+    EnablementStateValueValuesEnum: Output only. State of feature enablement,
+      combining repository enablement config and API enablement state.
+
+  Fields:
+    enablementConfig: Optional. Config for whether this repository has
+      vulnerability scanning disabled.
+    enablementState: Output only. State of feature enablement, combining
+      repository enablement config and API enablement state.
+    enablementStateReason: Output only. Reason for the repository state and
+      potential actions to activate it.
+    lastEnableTime: Output only. The last time this repository config was
+      enabled.
+  """
+
+  class EnablementConfigValueValuesEnum(_messages.Enum):
+    r"""Optional. Config for whether this repository has vulnerability
+    scanning disabled.
+
+    Values:
+      ENABLEMENT_CONFIG_UNSPECIFIED: Unspecified config was not set. This will
+        be interpreted as DISABLED. On Repository creation, UNSPECIFIED
+        vulnerability scanning will be defaulted to INHERITED.
+      INHERITED: Inherited indicates the repository is allowed for
+        vulnerability scanning, however the actual state will be inherited
+        from the API enablement state.
+      DISABLED: Disabled indicates the repository will not perform
+        vulnerability scanning.
+    """
+    ENABLEMENT_CONFIG_UNSPECIFIED = 0
+    INHERITED = 1
+    DISABLED = 2
+
+  class EnablementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of feature enablement, combining repository
+    enablement config and API enablement state.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Enablement state is unclear.
+      SCANNING_UNSUPPORTED: Repository does not support vulnerability
+        scanning.
+      SCANNING_DISABLED: Vulnerability scanning is disabled for this
+        repository.
+      SCANNING_ACTIVE: Vulnerability scanning is active for this repository.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    SCANNING_UNSUPPORTED = 1
+    SCANNING_DISABLED = 2
+    SCANNING_ACTIVE = 3
+
+  enablementConfig = _messages.EnumField('EnablementConfigValueValuesEnum', 1)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 2)
+  enablementStateReason = _messages.StringField(3)
+  lastEnableTime = _messages.StringField(4)
 
 
 class YumArtifact(_messages.Message):

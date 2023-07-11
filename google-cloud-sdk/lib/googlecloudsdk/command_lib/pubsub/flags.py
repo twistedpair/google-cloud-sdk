@@ -429,16 +429,13 @@ def ParseExpirationPeriodWithNeverSentinel(value):
 
 
 def AddSubscriptionSettingsFlags(
-    parser, is_update=False, enable_no_wrapper_support=False,
-    enable_push_to_gcs=False,
-):
+    parser, is_update=False, enable_no_wrapper_support=False,):
   """Adds the flags for creating or updating a subscription.
 
   Args:
     parser: The argparse parser.
     is_update: Whether or not this is for the update operation (vs. create).
     enable_no_wrapper_support: whether or not to add no wrapper flag support.
-    enable_push_to_gcs: whether or not to enable GCS config flags support.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(
@@ -449,8 +446,7 @@ def AddSubscriptionSettingsFlags(
 
   mutex_group = parser.add_mutually_exclusive_group()
   AddBigQueryConfigFlags(mutex_group, is_update)
-  if enable_push_to_gcs:
-    AddCloudStorageConfigFlags(mutex_group, is_update)
+  AddCloudStorageConfigFlags(mutex_group, is_update)
   AddSubscriptionMessageRetentionFlags(parser, is_update)
   if not is_update:
     parser.add_argument(

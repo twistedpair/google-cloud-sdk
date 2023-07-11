@@ -112,10 +112,14 @@ def ListDatabases(project):
     a List of Databases.
   """
   messages = api_utils.GetMessages()
-  return _GetDatabaseService().List(
-      messages.FirestoreProjectsDatabasesListRequest(
-          parent='projects/{}'.format(project)
+  return list(
+      _GetDatabaseService()
+      .List(
+          messages.FirestoreProjectsDatabasesListRequest(
+              parent='projects/{}'.format(project)
+          )
       )
+      .databases
   )
 
 
@@ -137,6 +141,6 @@ def RestoreDatabase(project, source_backup, destination_database):
           googleFirestoreAdminV1RestoreDatabaseRequest=messages.GoogleFirestoreAdminV1RestoreDatabaseRequest(
               backup=source_backup,
               databaseId=destination_database,
-          )
+          ),
       )
   )

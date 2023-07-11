@@ -32,6 +32,8 @@ INGRESS_ALL = 'all'
 INGRESS_INTERNAL = 'internal'
 INGRESS_INTERNAL_AND_CLOUD_LOAD_BALANCING = 'internal-and-cloud-load-balancing'
 
+SERVICE_MIN_SCALE_ANNOTATION = 'run.googleapis.com/minScale'
+
 
 class Service(k8s_object.KubernetesObject):
   """Wraps a Serverless Service message, making fields more convenient.

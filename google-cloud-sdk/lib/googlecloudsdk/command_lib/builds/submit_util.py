@@ -104,6 +104,30 @@ def _GetBuildTimeout():
   return timeout_str
 
 
+def _GetBuildTags(builder) -> str:
+  """Get the builder tag for input builder useful to cloudbuild.
+
+  Args:
+    builder: Google owned builder that needs to be tagged. Any other builders
+      are marked as other
+  Returns:
+    Tag identifying the builder being used.
+  """
+  if (
+      builder == 'gcr.io/buildpacks/builder:latest'
+      or builder == 'gcr.io/buildpacks/builder'
+  ):
+    return ['latest']
+  elif builder == 'gcr.io/buildpacks/builder:google-22':
+    return ['google22']
+  elif builder == 'gcr.io/buildpacks/builder:v1':
+    return ['v1']
+  elif builder is None:
+    return ['default'] + _GetBuildTags(_DEFAULT_BUILDPACK_BUILDER)
+  else:
+    return ['other']
+
+
 def _SetBuildSteps(
     tag,
     no_cache,
@@ -114,6 +138,7 @@ def _SetBuildSteps(
     source,
     timeout_str,
     buildpack,
+    client_tag
 ):
   """Set build steps."""
   if tag is not None:
@@ -240,6 +265,15 @@ def _SetBuildSteps(
             args=pack_args,
         )
     )
+
+    client_tag = 'other' if client_tag is None else client_tag
+    cloudbuild_tags = list(
+        map(
+            lambda x: 'gcp-runtimes-builder-' + x + '-' + client_tag,
+            _GetBuildTags(builder),
+        )
+    )
+
     build_config = messages.Build(
         images=[image],
         steps=steps,
@@ -247,6 +281,7 @@ def _SetBuildSteps(
         substitutions=cloudbuild_util.EncodeSubstitutions(
             substitutions, messages
         ),
+        tags=cloudbuild_tags
     )
 
   else:
@@ -590,6 +625,7 @@ def CreateBuildConfig(
     hide_logs=False,
     arg_bucket_behavior=None,
     skip_set_source=False,
+    client_tag=None,
 ):
   """Returns a build config."""
 
@@ -604,6 +640,7 @@ def CreateBuildConfig(
       source,
       timeout_str,
       buildpack,
+      client_tag
   )
   if not skip_set_source:
     build_config = SetSource(
@@ -652,6 +689,7 @@ def CreateBuildConfigAlpha(
     hide_logs=False,
     arg_bucket_behavior=None,
     skip_set_source=False,
+    client_tag=None,
 ):
   """Returns a build config."""
   timeout_str = _GetBuildTimeout()
@@ -666,6 +704,7 @@ def CreateBuildConfigAlpha(
       source,
       timeout_str,
       buildpack,
+      client_tag
   )
   if not skip_set_source:
     build_config = SetSource(

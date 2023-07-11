@@ -122,6 +122,14 @@ def PopulateClusterAlphaMessage(req, messages, args):
     req.cluster.externalLoadBalancerIpv4AddressPools = (
         args.external_lb_ipv4_address_pools
     )
+  if flags.FlagIsExplicitlySet(args, 'version'):
+    req.cluster.targetVersion = args.version
+  if flags.FlagIsExplicitlySet(args, 'release_channel'):
+    req.cluster.releaseChannel = (
+        messages.Cluster.ReleaseChannelValueValuesEnum(
+            args.release_channel.upper()
+        )
+    )
   if (
       flags.FlagIsExplicitlySet(args, 'control_plane_node_location')
       or flags.FlagIsExplicitlySet(args, 'control_plane_node_count')

@@ -113,6 +113,13 @@ def PatchRequest(args):
   # Construct the patch instance and the update mask.
   update_masks = []
   management_config = messages.ManagementConfig()
+  bundles_config = messages.BundlesConfig(
+      configControllerConfig=messages.ConfigControllerConfig())
+  if args.experimental_features:
+    update_masks.append(
+        'bundles_config.config_controller_config.experimental_features')
+    bundles_config.configControllerConfig.experimentalFeatures = args.experimental_features  # pylint: disable=line-too-long
+
   if current.managementConfig.fullManagementConfig:
     full_management_config = messages.FullManagementConfig()
     if args.man_block:
@@ -127,7 +134,8 @@ def PatchRequest(args):
           'management_config.standard_management_config.man_block')
     management_config.standardManagementConfig = standard_management_config
 
-  patch = messages.KrmApiHost(managementConfig=management_config)
+  patch = messages.KrmApiHost(managementConfig=management_config,
+                              bundlesConfig=bundles_config)
   return messages.KrmapihostingProjectsLocationsKrmApiHostsPatchRequest(
       krmApiHost=patch,
       name=instance.RelativeName(),

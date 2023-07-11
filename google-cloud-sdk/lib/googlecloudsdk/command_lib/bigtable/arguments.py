@@ -237,7 +237,11 @@ class ArgAdder(object):
     return self
 
   def AddAppProfileRouting(
-      self, required=True, allow_failover_radius=False, is_update=False
+      self,
+      required=True,
+      allow_failover_radius=False,
+      allow_row_affinity=False,
+      is_update=False,
   ):
     """Adds arguments for app_profile routing to parser."""
     routing_group = self.parser.add_mutually_exclusive_group(required=required)
@@ -258,6 +262,15 @@ class ArgAdder(object):
         ),
         metavar='RESTRICT_TO',
     )
+    # By default, will not enable/disable unless the user explicitly says so.
+    if allow_row_affinity:
+      any_group.add_argument(
+          '--row-affinity',
+          action='store_true',
+          default=None,
+          help='Use row affinity sticky routing for this app profile.',
+          hidden=True,  # TODO(b/279939624): Remove hidden=True for GA
+      )
     if allow_failover_radius:
       choices = {
           'ANY_REGION': (

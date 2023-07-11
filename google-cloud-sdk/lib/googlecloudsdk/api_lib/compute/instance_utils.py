@@ -96,7 +96,7 @@ def InterpretMachineType(machine_type,
                          custom_memory,
                          ext=True,
                          vm_type=False,
-                         confidential_vm=False):
+                         confidential_vm_type=None):
   """Interprets the machine type for the instance.
 
   Args:
@@ -105,8 +105,8 @@ def InterpretMachineType(machine_type,
     custom_memory: amount of RAM memory in bytes for custom machine type,
     ext: extended custom machine type should be used if true,
     vm_type:  VM instance generation
-    confidential_vm: If True, default machine type is different for confidential
-      VMs.
+    confidential_vm_type: If not None, use default machine type based on
+        confidential-VM encryption type.
 
   Returns:
     A string representing the URL naming a machine-type.
@@ -120,8 +120,10 @@ def InterpretMachineType(machine_type,
   # Setting the machine type
   if machine_type:
     machine_type_name = machine_type
-  elif confidential_vm:
-    machine_type_name = constants.DEFAULT_MACHINE_TYPE_FOR_CONFIDENTIAL_VMS
+  elif confidential_vm_type is not None:
+    machine_type_name = constants.DEFAULT_MACHINE_TYPE_FOR_CONFIDENTIAL_VMS[
+        confidential_vm_type
+    ]
   else:
     machine_type_name = constants.DEFAULT_MACHINE_TYPE
 
@@ -342,7 +344,8 @@ def CreateShieldedInstanceIntegrityPolicyMessage(messages,
 
 
 def CreateConfidentialInstanceMessage(messages, args,
-                                      support_confidential_compute_type):
+                                      support_confidential_compute_type,
+                                      support_confidential_compute_type_tdx):
   """Create confidentialInstanceConfig message for VM."""
   confidential_instance_config_msg = None
   enable_confidential_compute = None
@@ -361,6 +364,13 @@ def CreateConfidentialInstanceMessage(messages, args,
         messages.ConfidentialInstanceConfig
         .ConfidentialInstanceTypeValueValuesEnum(
             args.confidential_compute_type))
+
+    if (not support_confidential_compute_type_tdx and
+        confidential_instance_type == (
+            messages.ConfidentialInstanceConfig
+            .ConfidentialInstanceTypeValueValuesEnum.TDX)):
+      enable_confidential_compute = None
+      confidential_instance_type = None
 
   if confidential_instance_type is None:
     if enable_confidential_compute is not None:
@@ -715,10 +725,10 @@ def CreateMachineTypeUri(args,
                          project,
                          location,
                          scope,
-                         confidential_vm=False):
+                         confidential_vm_type=None):
   """Create a machine type URI for given args and instance reference."""
 
-  machine_type_name = CreateMachineTypeName(args, confidential_vm)
+  machine_type_name = CreateMachineTypeName(args, confidential_vm_type)
 
   # Check to see if the custom machine type ratio is supported
   CheckCustomCpuRamRatio(compute_client, project, location, machine_type_name)
@@ -728,7 +738,7 @@ def CreateMachineTypeUri(args,
   return machine_type_uri
 
 
-def CreateMachineTypeName(args, confidential_vm=False):
+def CreateMachineTypeName(args, confidential_vm_type=None):
   """Create a machine type name for given args and instance reference."""
 
   machine_type = args.machine_type
@@ -744,7 +754,7 @@ def CreateMachineTypeName(args, confidential_vm=False):
       custom_memory=custom_memory,
       ext=ext,
       vm_type=vm_type,
-      confidential_vm=confidential_vm)
+      confidential_vm_type=confidential_vm_type)
 
   return machine_type_name
 
@@ -761,6 +771,22 @@ def ParseMachineType(resource_parser, machine_type_name, project, location,
   machine_type_uri = resource_parser.Parse(
       machine_type_name, collection=collection, params=params).SelfLink()
   return machine_type_uri
+
+
+def GetConfidentialVmType(args, support_confidential_compute_type):
+  """Returns the CONFIDENTIAL_VM_TYPES of the machine."""
+  confidential_vm_type = None
+
+  if args.IsSpecified('confidential_compute') and args.confidential_compute:
+    confidential_vm_type = constants.CONFIDENTIAL_VM_TYPES.SEV
+
+  if (support_confidential_compute_type
+      and args.IsSpecified('confidential_compute_type')
+      and args.confidential_compute_type is not None):
+    confidential_vm_type = getattr(constants.CONFIDENTIAL_VM_TYPES,
+                                   args.confidential_compute_type.upper())
+
+  return confidential_vm_type
 
 
 def GetCanIpForward(args, skip_defaults):

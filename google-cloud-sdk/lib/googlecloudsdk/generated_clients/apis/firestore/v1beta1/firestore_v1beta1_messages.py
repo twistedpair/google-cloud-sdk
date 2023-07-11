@@ -574,7 +574,9 @@ class ExistenceFilter(_messages.Message):
   Fields:
     count: The total count of documents that match target_id. If different
       from the count of documents in the client that match, the client must
-      manually determine which documents no longer match the target.
+      manually determine which documents no longer match the target. The
+      client can use the `unchanged_names` bloom filter to assist with this
+      determination.
     targetId: The target ID to which this filter applies.
     unchangedNames: A bloom filter that contains the UTF-8 byte encodings of
       the resource names of the documents that match target_id, in the form `p
@@ -1188,6 +1190,52 @@ class FirestoreProjectsDatabasesIndexesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class GoogleFirestoreAdminV1RestoreDatabaseMetadata(_messages.Message):
+  r"""Metadata for the long-running operation from the RestoreDatabase
+  request.
+
+  Enums:
+    OperationStateValueValuesEnum: The operation state of the restore.
+
+  Fields:
+    backup: The name of the backup restoring from.
+    database: The name of the database being restored to.
+    endTime: The time the restore finished, unset for ongoing restores.
+    operationState: The operation state of the restore.
+    startTime: The time the restore was started.
+  """
+
+  class OperationStateValueValuesEnum(_messages.Enum):
+    r"""The operation state of the restore.
+
+    Values:
+      OPERATION_STATE_UNSPECIFIED: Unspecified.
+      INITIALIZING: Request is being prepared for processing.
+      PROCESSING: Request is actively being processed.
+      CANCELLING: Request is in the process of being cancelled after user
+        called google.longrunning.Operations.CancelOperation on the operation.
+      FINALIZING: Request has been processed and is in its finalization stage.
+      SUCCESSFUL: Request has completed successfully.
+      FAILED: Request has finished being processed, but encountered an error.
+      CANCELLED: Request has finished being cancelled after user called
+        google.longrunning.Operations.CancelOperation.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    INITIALIZING = 1
+    PROCESSING = 2
+    CANCELLING = 3
+    FINALIZING = 4
+    SUCCESSFUL = 5
+    FAILED = 6
+    CANCELLED = 7
+
+  backup = _messages.StringField(1)
+  database = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  operationState = _messages.EnumField('OperationStateValueValuesEnum', 4)
+  startTime = _messages.StringField(5)
 
 
 class GoogleFirestoreAdminV1UpdateDatabaseMetadata(_messages.Message):
@@ -1905,6 +1953,8 @@ class ReadOnly(_messages.Message):
 
 class ReadWrite(_messages.Message):
   r"""Options for a transaction that can be used to read and write documents.
+  Firestore does not allow 3rd party auth requests to create read-write.
+  transactions.
 
   Fields:
     retryTransaction: An optional transaction to retry.

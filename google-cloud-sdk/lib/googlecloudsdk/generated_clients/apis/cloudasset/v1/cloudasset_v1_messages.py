@@ -617,9 +617,6 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
       include their permissions. If IamPolicyAnalysisQuery.access_selector is
       specified, the access section of the result will be determined by the
       selector, and this flag is not allowed to set. Default is false.
-    analysisQuery_options_includeDenyPolicyAnalysis: Optional. If true, the
-      response includes deny policy analysis results, and you can see which
-      access tuples are denied. Default is false.
     analysisQuery_options_outputGroupEdges: Optional. If true, the result will
       output the relevant membership relationships between groups and other
       groups, and between groups and principals. Default is false.
@@ -673,13 +670,12 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
   analysisQuery_options_expandGroups = _messages.BooleanField(6)
   analysisQuery_options_expandResources = _messages.BooleanField(7)
   analysisQuery_options_expandRoles = _messages.BooleanField(8)
-  analysisQuery_options_includeDenyPolicyAnalysis = _messages.BooleanField(9)
-  analysisQuery_options_outputGroupEdges = _messages.BooleanField(10)
-  analysisQuery_options_outputResourceEdges = _messages.BooleanField(11)
-  analysisQuery_resourceSelector_fullResourceName = _messages.StringField(12)
-  executionTimeout = _messages.StringField(13)
-  savedAnalysisQuery = _messages.StringField(14)
-  scope = _messages.StringField(15, required=True)
+  analysisQuery_options_outputGroupEdges = _messages.BooleanField(9)
+  analysisQuery_options_outputResourceEdges = _messages.BooleanField(10)
+  analysisQuery_resourceSelector_fullResourceName = _messages.StringField(11)
+  executionTimeout = _messages.StringField(12)
+  savedAnalysisQuery = _messages.StringField(13)
+  scope = _messages.StringField(14, required=True)
 
 
 class CloudassetAnalyzeMoveRequest(_messages.Message):
@@ -1392,20 +1388,20 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       location:(us-west1 OR global)` to find Google Cloud resources that
       contain "Important" as a word in any of the searchable fields and are
       also located in the "us-west1" region or the "global" location.
-    readMask: Optional. A comma-separated list of fields specifying which
-      fields to be returned in ResourceSearchResult. Only '*' or combination
-      of top level fields can be specified. Field names of both snake_case and
-      camelCase are supported. Examples: `"*"`, `"name,location"`,
-      `"name,versionedResources"`. The read_mask paths must be valid field
-      paths listed but not limited to (both snake_case and camelCase are
-      supported): * name * assetType * project * displayName * description *
-      location * tagKeys * tagValues * tagValueIds * labels * networkTags *
-      kmsKey (This field is deprecated. Please use the `kmsKeys` field to
-      retrieve Cloud KMS key information.) * kmsKeys * createTime * updateTime
-      * state * additionalAttributes * versionedResources If read_mask is not
-      specified, all fields except versionedResources will be returned. If
-      only '*' is specified, all fields including versionedResources will be
-      returned. Any invalid field path will trigger INVALID_ARGUMENT error.
+    readMask: Optional. A comma-separated list of fields that you want
+      returned in the results. The following fields are returned by default if
+      not specified: * `name` * `assetType` * `project` * `folders` *
+      `organization` * `displayName` * `description` * `location` * `labels` *
+      `networkTags` * `kmsKeys` * `createTime` * `updateTime` * `state` *
+      `additionalAttributes` * `parentFullResourceName` * `parentAssetType`
+      Some fields of large size, such as `versionedResources` and
+      `attachedResources`, are not returned by default, but you can specify
+      them in the `read_mask` parameter if you want to include them. If `"*"`
+      is specified, all [available fields](https://cloud.google.com/asset-inve
+      ntory/docs/reference/rest/v1/TopLevel/searchAllResources#resourcesearchr
+      esult) are returned. Examples: `"name,location"`,
+      `"name,versionedResources"`, `"*"`. Any invalid field path will trigger
+      INVALID_ARGUMENT error.
     scope: Required. A scope can be a project, a folder, or an organization.
       The search is limited to the resources within the `scope`. The caller
       must be granted the
@@ -1510,21 +1506,6 @@ class Date(_messages.Message):
   year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
-class DeniedAccess(_messages.Message):
-  r"""A denied access contains details about an access tuple that is blocked
-  by IAM deny policies.
-
-  Fields:
-    deniedAccessTuple: A denied access tuple that is either fully or partially
-      denied by IAM deny rules. This access tuple should match at least one
-      access tuple derived from IamPolicyAnalysisResult.
-    denyDetails: The details about how denied_access_tuple is denied.
-  """
-
-  deniedAccessTuple = _messages.MessageField('GoogleCloudAssetV1DeniedAccessAccessTuple', 1)
-  denyDetails = _messages.MessageField('GoogleCloudAssetV1DeniedAccessDenyDetail', 2, repeated=True)
-
-
 class EffectiveIamPolicy(_messages.Message):
   r"""The effective IAM policies on one resource.
 
@@ -1548,6 +1529,30 @@ class EffectiveIamPolicy(_messages.Message):
 
   fullResourceName = _messages.StringField(1)
   policies = _messages.MessageField('PolicyInfo', 2, repeated=True)
+
+
+class EffectiveTagDetails(_messages.Message):
+  r"""The effective tags and the ancestor resources from which they were
+  inherited.
+
+  Fields:
+    attachedResource: The [full resource name](https://cloud.google.com/asset-
+      inventory/docs/resource-name-format) of the ancestor from which an
+      effective_tag is inherited, according to [tag
+      inheritance](https://cloud.google.com/resource-manager/docs/tags/tags-
+      overview#inheritance).
+    effectiveTags: The effective tags inherited from the attached_resource.
+      Note that tags with the same key but different values may attach to
+      resources at a different hierarchy levels. The lower hierarchy tag value
+      will overwrite the higher hierarchy tag value of the same tag key. In
+      this case, the tag value at the higher hierarchy level will be removed.
+      For more information, see [tag
+      inheritance](https://cloud.google.com/resource-manager/docs/tags/tags-
+      overview#inheritance).
+  """
+
+  attachedResource = _messages.StringField(1)
+  effectiveTags = _messages.MessageField('Tag', 2, repeated=True)
 
 
 class Empty(_messages.Message):
@@ -1973,6 +1978,7 @@ class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource(_
       me Example: `cloudresourcemanager.googleapis.com/Project` See [Cloud
       Asset Inventory Supported Asset Types](https://cloud.google.com/asset-
       inventory/docs/supported-asset-types) for all supported asset types.
+    effectiveTags: The effective tags on this resource.
     folders: The folder(s) that this resource belongs to, in the format of
       folders/{FOLDER_NUMBER}. This field is available when the resource
       belongs (directly or cascadingly) to one or more folders.
@@ -1991,11 +1997,12 @@ class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource(_
   """
 
   assetType = _messages.StringField(1)
-  folders = _messages.StringField(2, repeated=True)
-  fullResourceName = _messages.StringField(3)
-  organization = _messages.StringField(4)
-  parent = _messages.StringField(5)
-  project = _messages.StringField(6)
+  effectiveTags = _messages.MessageField('EffectiveTagDetails', 2, repeated=True)
+  folders = _messages.StringField(3, repeated=True)
+  fullResourceName = _messages.StringField(4)
+  organization = _messages.StringField(5)
+  parent = _messages.StringField(6)
+  project = _messages.StringField(7)
 
 
 class GoogleCloudAssetV1BigQueryDestination(_messages.Message):
@@ -2160,93 +2167,6 @@ class GoogleCloudAssetV1CustomConstraint(_messages.Message):
   resourceTypes = _messages.StringField(7, repeated=True)
 
 
-class GoogleCloudAssetV1DeniedAccessAccess(_messages.Message):
-  r"""An IAM role or permission under analysis.
-
-  Fields:
-    permission: The IAM permission in [v1
-      format](https://cloud.google.com/iam/docs/permissions-reference)
-    role: The IAM role.
-  """
-
-  permission = _messages.StringField(1)
-  role = _messages.StringField(2)
-
-
-class GoogleCloudAssetV1DeniedAccessAccessTuple(_messages.Message):
-  r"""An access tuple contains a tuple of a resource, an identity and an
-  access.
-
-  Fields:
-    access: One access from
-      IamPolicyAnalysisResult.AccessControlList.accesses.
-    identity: One identity from
-      IamPolicyAnalysisResult.IdentityList.identities.
-    resource: One resource from
-      IamPolicyAnalysisResult.AccessControlList.resources.
-  """
-
-  access = _messages.MessageField('GoogleCloudAssetV1DeniedAccessAccess', 1)
-  identity = _messages.MessageField('GoogleCloudAssetV1DeniedAccessIdentity', 2)
-  resource = _messages.MessageField('GoogleCloudAssetV1DeniedAccessResource', 3)
-
-
-class GoogleCloudAssetV1DeniedAccessDenyDetail(_messages.Message):
-  r"""A deny detail that explains which IAM deny rule denies the
-  denied_access_tuple.
-
-  Fields:
-    accesses: The denied accesses. If this deny_rule fully denies the
-      denied_access_tuple, this field will be same as AccessTuple.access.
-      Otherwise, this field can contain AccessTuple.access and its descendant
-      accesses, such as a subset of IAM permissions contained in an IAM role.
-    denyRule: A deny rule in an IAM deny policy.
-    fullyDenied: Whether the deny_rule fully denies all access granted by the
-      denied_access_tuple. `True` means the deny rule fully blocks the access
-      tuple. `False` means the deny rule partially blocks the access tuple."
-    identities: If this deny_rule fully denies the denied_access_tuple, this
-      field will be same as AccessTuple.identity. Otherwise, this field can
-      contain AccessTuple.identity and its descendant identities, such as a
-      subset of users in a group.
-    resources: The resources that the identities are denied access to. If this
-      deny_rule fully denies the denied_access_tuple, this field will be same
-      as AccessTuple.resource. Otherwise, this field can contain
-      AccessTuple.resource and its descendant resources.
-  """
-
-  accesses = _messages.MessageField('GoogleCloudAssetV1DeniedAccessAccess', 1, repeated=True)
-  denyRule = _messages.MessageField('GoogleIamV2DenyRule', 2)
-  fullyDenied = _messages.BooleanField(3)
-  identities = _messages.MessageField('GoogleCloudAssetV1DeniedAccessIdentity', 4, repeated=True)
-  resources = _messages.MessageField('GoogleCloudAssetV1DeniedAccessResource', 5, repeated=True)
-
-
-class GoogleCloudAssetV1DeniedAccessIdentity(_messages.Message):
-  r"""An identity under analysis.
-
-  Fields:
-    name: The identity of members, formatted as appear in an [IAM policy
-      binding](https://cloud.google.com/iam/reference/rest/v1/Binding). For
-      example, they might be formatted like the following: -
-      user:foo@google.com - group:group1@google.com -
-      serviceAccount:s1@prj1.iam.gserviceaccount.com -
-      projectOwner:some_project_id - domain:google.com - allUsers
-  """
-
-  name = _messages.StringField(1)
-
-
-class GoogleCloudAssetV1DeniedAccessResource(_messages.Message):
-  r"""A Google Cloud resource under analysis.
-
-  Fields:
-    fullResourceName: The [full resource name](https://cloud.google.com/asset-
-      inventory/docs/resource-name-format)
-  """
-
-  fullResourceName = _messages.StringField(1)
-
-
 class GoogleCloudAssetV1Edge(_messages.Message):
   r"""A directional edge.
 
@@ -2289,6 +2209,7 @@ class GoogleCloudAssetV1GovernedContainer(_messages.Message):
       ner.policy_bundle. The evaluation will respect the organization policy
       [hierarchy rules](https://cloud.google.com/resource-
       manager/docs/organization-policy/understanding-hierarchy).
+    effectiveTags: The effective tags on this resource.
     folders: The folder(s) that this resource belongs to, in the format of
       folders/{FOLDER_NUMBER}. This field is available when the resource
       belongs (directly or cascadingly) to one or more folders.
@@ -2311,12 +2232,13 @@ class GoogleCloudAssetV1GovernedContainer(_messages.Message):
   """
 
   consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
-  folders = _messages.StringField(2, repeated=True)
-  fullResourceName = _messages.StringField(3)
-  organization = _messages.StringField(4)
-  parent = _messages.StringField(5)
-  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 6, repeated=True)
-  project = _messages.StringField(7)
+  effectiveTags = _messages.MessageField('EffectiveTagDetails', 2, repeated=True)
+  folders = _messages.StringField(3, repeated=True)
+  fullResourceName = _messages.StringField(4)
+  organization = _messages.StringField(5)
+  parent = _messages.StringField(6)
+  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 7, repeated=True)
+  project = _messages.StringField(8)
 
 
 class GoogleCloudAssetV1GovernedResource(_messages.Message):
@@ -2452,12 +2374,21 @@ class GoogleCloudAssetV1Resource(_messages.Message):
 
 
 class GoogleCloudAssetV1Rule(_messages.Message):
-  r"""Represents a rule defined in an organization policy
+  r"""This rule message is a customized version of the one defined in the
+  Organization Policy system. In addition to the fields defined in the
+  original organization policy, it contains additional field(s) under specific
+  circumstances to support analysis results.
 
   Fields:
     allowAll: Setting this to true means that all values are allowed. This
       field can be set only in Policies for list constraints.
     condition: The evaluating condition for this rule.
+    conditionEvaluation: The condition evaluation result for this rule. Only
+      populated if it meets all the following criteria: * there is a condition
+      defined for this rule * this rule is within a consolidated_policy * the
+      consolidated_policy is within
+      AnalyzeOrgPolicyGovernedContainersResponse.GovernedContainer or
+      AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource
     denyAll: Setting this to true means that all values are denied. This field
       can be set only in Policies for list constraints.
     enforce: If `true`, then the `Policy` is enforced. If `false`, then any
@@ -2469,9 +2400,10 @@ class GoogleCloudAssetV1Rule(_messages.Message):
 
   allowAll = _messages.BooleanField(1)
   condition = _messages.MessageField('Expr', 2)
-  denyAll = _messages.BooleanField(3)
-  enforce = _messages.BooleanField(4)
-  values = _messages.MessageField('GoogleCloudAssetV1StringValues', 5)
+  conditionEvaluation = _messages.MessageField('ConditionEvaluation', 3)
+  denyAll = _messages.BooleanField(4)
+  enforce = _messages.BooleanField(5)
+  values = _messages.MessageField('GoogleCloudAssetV1StringValues', 6)
 
 
 class GoogleCloudAssetV1StringValues(_messages.Message):
@@ -2886,79 +2818,6 @@ class GoogleCloudOrgpolicyV1RestoreDefault(_messages.Message):
   services activated.
   """
 
-
-
-class GoogleIamV2DenyRule(_messages.Message):
-  r"""A deny rule in an IAM deny policy.
-
-  Fields:
-    denialCondition: The condition that determines whether this deny rule
-      applies to a request. If the condition expression evaluates to `true`,
-      then the deny rule is applied; otherwise, the deny rule is not applied.
-      Each deny rule is evaluated independently. If this deny rule does not
-      apply to a request, other deny rules might still apply. The condition
-      can use CEL functions that evaluate [resource
-      tags](https://cloud.google.com/iam/help/conditions/resource-tags). Other
-      functions and operators are not supported.
-    deniedPermissions: The permissions that are explicitly denied by this
-      rule. Each permission uses the format
-      `{service_fqdn}/{resource}.{verb}`, where `{service_fqdn}` is the fully
-      qualified domain name for the service. For example,
-      `iam.googleapis.com/roles.list`.
-    deniedPrincipals: The identities that are prevented from using one or more
-      permissions on Google Cloud resources. This field can contain the
-      following values: * `principalSet://goog/public:all`: A special
-      identifier that represents any principal that is on the internet, even
-      if they do not have a Google Account or are not logged in. *
-      `principal://goog/subject/{email_id}`: A specific Google Account.
-      Includes Gmail, Cloud Identity, and Google Workspace user accounts. For
-      example, `principal://goog/subject/alice@example.com`. *
-      `deleted:principal://goog/subject/{email_id}?uid={uid}`: A specific
-      Google Account that was deleted recently. For example,
-      `deleted:principal://goog/subject/alice@example.com?uid=1234567890`. If
-      the Google Account is recovered, this identifier reverts to the standard
-      identifier for a Google Account. *
-      `principalSet://goog/group/{group_id}`: A Google group. For example,
-      `principalSet://goog/group/admins@example.com`. *
-      `deleted:principalSet://goog/group/{group_id}?uid={uid}`: A Google group
-      that was deleted recently. For example,
-      `deleted:principalSet://goog/group/admins@example.com?uid=1234567890`.
-      If the Google group is restored, this identifier reverts to the standard
-      identifier for a Google group. * `principal://iam.googleapis.com/project
-      s/-/serviceAccounts/{service_account_id}`: A Google Cloud service
-      account. For example,
-      `principal://iam.googleapis.com/projects/-/serviceAccounts/my-service-
-      account@iam.gserviceaccount.com`. * `deleted:principal://iam.googleapis.
-      com/projects/-/serviceAccounts/{service_account_id}?uid={uid}`: A Google
-      Cloud service account that was deleted recently. For example,
-      `deleted:principal://iam.googleapis.com/projects/-/serviceAccounts/my-
-      service-account@iam.gserviceaccount.com?uid=1234567890`. If the service
-      account is undeleted, this identifier reverts to the standard identifier
-      for a service account. *
-      `principalSet://goog/cloudIdentityCustomerId/{customer_id}`: All of the
-      principals associated with the specified Google Workspace or Cloud
-      Identity customer ID. For example,
-      `principalSet://goog/cloudIdentityCustomerId/C01Abc35`.
-    exceptionPermissions: Specifies the permissions that this rule excludes
-      from the set of denied permissions given by `denied_permissions`. If a
-      permission appears in `denied_permissions` _and_ in
-      `exception_permissions` then it will _not_ be denied. The excluded
-      permissions can be specified using the same syntax as
-      `denied_permissions`.
-    exceptionPrincipals: The identities that are excluded from the deny rule,
-      even if they are listed in the `denied_principals`. For example, you
-      could add a Google group to the `denied_principals`, then exclude
-      specific users who belong to that group. This field can contain the same
-      values as the `denied_principals` field, excluding
-      `principalSet://goog/public:all`, which represents all users on the
-      internet.
-  """
-
-  denialCondition = _messages.MessageField('Expr', 1)
-  deniedPermissions = _messages.StringField(2, repeated=True)
-  deniedPrincipals = _messages.StringField(3, repeated=True)
-  exceptionPermissions = _messages.StringField(4, repeated=True)
-  exceptionPrincipals = _messages.StringField(5, repeated=True)
 
 
 class GoogleIdentityAccesscontextmanagerV1AccessLevel(_messages.Message):
@@ -3627,10 +3486,6 @@ class IamPolicyAnalysis(_messages.Message):
     analysisQuery: The analysis query.
     analysisResults: A list of IamPolicyAnalysisResult that matches the
       analysis query, or empty if no result is found.
-    deniedAccesses: A list of DeniedAccess, which contains all access tuples
-      in the analysis_results that are denied by IAM deny policies. If no
-      access tuples are denied, the list is empty. This is only populated when
-      IamPolicyAnalysisQuery.Options.include_deny_policy_analysis is true.
     fullyExplored: Represents whether all entries in the analysis_results have
       been fully explored to answer the query.
     nonCriticalErrors: A list of non-critical errors happened during the query
@@ -3639,9 +3494,8 @@ class IamPolicyAnalysis(_messages.Message):
 
   analysisQuery = _messages.MessageField('IamPolicyAnalysisQuery', 1)
   analysisResults = _messages.MessageField('IamPolicyAnalysisResult', 2, repeated=True)
-  deniedAccesses = _messages.MessageField('DeniedAccess', 3, repeated=True)
-  fullyExplored = _messages.BooleanField(4)
-  nonCriticalErrors = _messages.MessageField('IamPolicyAnalysisState', 5, repeated=True)
+  fullyExplored = _messages.BooleanField(3)
+  nonCriticalErrors = _messages.MessageField('IamPolicyAnalysisState', 4, repeated=True)
 
 
 class IamPolicyAnalysisOutputConfig(_messages.Message):
@@ -4279,9 +4133,6 @@ class Options(_messages.Message):
       If IamPolicyAnalysisQuery.access_selector is specified, the access
       section of the result will be determined by the selector, and this flag
       is not allowed to set. Default is false.
-    includeDenyPolicyAnalysis: Optional. If true, the response includes deny
-      policy analysis results, and you can see which access tuples are denied.
-      Default is false.
     outputGroupEdges: Optional. If true, the result will output the relevant
       membership relationships between groups and other groups, and between
       groups and principals. Default is false.
@@ -4293,9 +4144,8 @@ class Options(_messages.Message):
   expandGroups = _messages.BooleanField(2)
   expandResources = _messages.BooleanField(3)
   expandRoles = _messages.BooleanField(4)
-  includeDenyPolicyAnalysis = _messages.BooleanField(5)
-  outputGroupEdges = _messages.BooleanField(6)
-  outputResourceEdges = _messages.BooleanField(7)
+  outputGroupEdges = _messages.BooleanField(5)
+  outputResourceEdges = _messages.BooleanField(6)
 
 
 class OrgPolicyResult(_messages.Message):
@@ -5447,6 +5297,23 @@ class TableSchema(_messages.Message):
   """
 
   fields = _messages.MessageField('TableFieldSchema', 1, repeated=True)
+
+
+class Tag(_messages.Message):
+  r"""The key and value for a [tag](https://cloud.google.com/resource-
+  manager/docs/tags/tags-overview),
+
+  Fields:
+    tagKey: TagKey namespaced name, in the format of
+      {ORG_ID}/{TAG_KEY_SHORT_NAME}.
+    tagValue: TagValue namespaced name, in the format of
+      {ORG_ID}/{TAG_KEY_SHORT_NAME}/{TAG_VALUE_SHORT_NAME}.
+    tagValueId: TagValue ID, in the format of tagValues/{TAG_VALUE_ID}.
+  """
+
+  tagKey = _messages.StringField(1)
+  tagValue = _messages.StringField(2)
+  tagValueId = _messages.StringField(3)
 
 
 class TemporalAsset(_messages.Message):

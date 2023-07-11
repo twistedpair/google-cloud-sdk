@@ -116,6 +116,7 @@ def AddUpdateArgs(
     include_alpha_logging,
     include_reserved_internal_range,
     include_external_ipv6_prefix,
+    include_allow_cidr_routes_overlap,
     api_version,
 ):
   """Add args to the parser for subnet update.
@@ -125,6 +126,7 @@ def AddUpdateArgs(
     include_alpha_logging: Include alpha-specific logging args.
     include_reserved_internal_range: Include reserved internal range args.
     include_external_ipv6_prefix: Inlcude user assigned external IPv6 prefix.
+    include_allow_cidr_routes_overlap: Include CIDR routes overlap args.
     api_version: The api version of the request.
   """
   messages = apis.GetMessagesModule('compute',
@@ -199,6 +201,16 @@ def AddUpdateArgs(
             ' not support VPC Flow Logs, this flag has no effect. For '
             ' more information, see '
             'https://cloud.google.com/vpc/docs/using-flow-logs.'))
+
+  if include_allow_cidr_routes_overlap:
+    updated_field.add_argument(
+        '--allow-cidr-routes-overlap',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=(
+            "Allow/disallow this subnetwork's IP address ranges to conflict "
+            'with existing static routes.'
+        ),
+    )
 
   AddLoggingAggregationInterval(parser, messages)
   parser.add_argument(

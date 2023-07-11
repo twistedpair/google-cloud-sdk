@@ -117,6 +117,24 @@ def GetClearShareSettingsFlag():
       help=help_text)
 
 
+def GetClearLocalSsdFlag():
+  """Gets the --clear-local-ssd flag."""
+  help_text = """\
+  Remove all local ssd information on the future reservation.
+  """
+  return base.Argument('--clear-local-ssd', action='store_true', help=help_text)
+
+
+def GetClearAcceleratorFlag():
+  """Gets the --clear-accelerator flag."""
+  help_text = """\
+  Remove all accelerators from the future reservation.
+  """
+  return base.Argument(
+      '--clear-accelerator', action='store_true', help=help_text
+  )
+
+
 def GetPlanningStatusFlag():
   """Gets the --planning-status flag."""
   help_text = """\
@@ -131,12 +149,14 @@ def GetPlanningStatusFlag():
       '--planning-status',
       type=lambda x: x.upper(),
       choices={
-          'DRAFT':
-              'Default planning status value.',
-          'SUBMITTED':
-              'Planning status value to immediately submit the future reservation.'
+          'DRAFT': 'Default planning status value.',
+          'SUBMITTED': (
+              'Planning status value to immediately submit the future'
+              ' reservation.'
+          ),
       },
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddCreateFlags(
@@ -205,7 +225,11 @@ def AddUpdateFlags(
     support_share_setting=False,
 ):
   """Adds all flags needed for the update command."""
+
+  GetNamePrefixFlag().AddToParser(parser)
   GetTotalCountFlag(required=False).AddToParser(parser)
+  reservation_flags.GetDescriptionFlag().AddToParser(parser)
+
   if support_planning_status:
     GetPlanningStatusFlag().AddToParser(parser)
   group = base.ArgumentGroup(
@@ -213,11 +237,28 @@ def AddUpdateFlags(
       required=False)
   group.AddArgument(reservation_flags.GetMachineType(required=False))
   group.AddArgument(reservation_flags.GetMinCpuPlatform())
+
+  accelerator_group = base.ArgumentGroup(
+      'Manage the accelerators of a future reservation.',
+      required=False,
+      mutex=True,
+  )
+  accelerator_group.AddArgument(reservation_flags.GetAcceleratorFlag())
+  accelerator_group.AddArgument(GetClearAcceleratorFlag())
+  group.AddArgument(accelerator_group)
+
+  local_ssd_group = base.ArgumentGroup(
+      'Manage the local ssd of a future reservation.',
+      required=False,
+      mutex=True,
+  )
   if support_local_ssd_count:
-    group.AddArgument(reservation_flags.GetLocalSsdFlagWithCount())
+    local_ssd_group.AddArgument(reservation_flags.GetLocalSsdFlagWithCount())
   else:
-    group.AddArgument(reservation_flags.GetLocalSsdFlag())
-  group.AddArgument(reservation_flags.GetAcceleratorFlag())
+    local_ssd_group.AddArgument(reservation_flags.GetLocalSsdFlag())
+  local_ssd_group.AddArgument(GetClearLocalSsdFlag())
+  group.AddArgument(local_ssd_group)
+
   if support_location_hint:
     group.AddArgument(reservation_flags.GetLocationHint())
   if support_fleet:

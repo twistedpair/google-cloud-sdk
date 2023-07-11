@@ -46,6 +46,7 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
     self.organizations_locations_global_tenants = self.OrganizationsLocationsGlobalTenantsService(self)
     self.organizations_locations_global = self.OrganizationsLocationsGlobalService(self)
     self.organizations_locations_insights = self.OrganizationsLocationsInsightsService(self)
+    self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations_subscriptions = self.OrganizationsLocationsSubscriptionsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
@@ -200,7 +201,7 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         method_id='beyondcorp.organizations.locations.global.partnerTenants.browserDlpRules.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId'],
+        query_params=['requestId', 'updateMask'],
         relative_path='v1alpha/{+name}',
         request_field='googleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule',
         request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesPatchRequest',
@@ -377,6 +378,33 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ProxyConfigs for PartnerTenant in a given organization.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpPartnerservicesV1alphaListProxyConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}/proxyConfigs',
+        http_method='GET',
+        method_id='beyondcorp.organizations.locations.global.partnerTenants.proxyConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/proxyConfigs',
+        request_field='',
+        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsListRequest',
+        response_type_name='GoogleCloudBeyondcorpPartnerservicesV1alphaListProxyConfigsResponse',
         supports_download=False,
     )
 
@@ -598,7 +626,7 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         method_id='beyondcorp.organizations.locations.global.partnerTenants.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=[],
         relative_path='v1alpha/{+parent}/partnerTenants',
         request_field='',
         request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsListRequest',
@@ -967,6 +995,124 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='BeyondcorpOrganizationsLocationsInsightsListRequest',
         response_type_name='GoogleCloudBeyondcorpSaasplatformInsightsV1alphaListInsightsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_operations resource."""
+
+    _NAME = 'organizations_locations_operations'
+
+    def __init__(self, client):
+      super(BeyondcorpV1alpha.OrganizationsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='beyondcorp.organizations.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:cancel',
+        request_field='googleLongrunningCancelOperationRequest',
+        request_type_name='BeyondcorpOrganizationsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='beyondcorp.organizations.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpOrganizationsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='beyondcorp.organizations.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpOrganizationsLocationsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='beyondcorp.organizations.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+name}/operations',
+        request_field='',
+        request_type_name='BeyondcorpOrganizationsLocationsOperationsListRequest',
+        response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 
@@ -1914,87 +2060,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Creates a new ClientConnectorService in a given project and location.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsClientConnectorServicesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clientConnectorServices',
-        http_method='POST',
-        method_id='beyondcorp.projects.locations.clientConnectorServices.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['clientConnectorServiceId', 'requestId', 'validateOnly'],
-        relative_path='v1alpha/{+parent}/clientConnectorServices',
-        request_field='clientConnectorService',
-        request_type_name='BeyondcorpProjectsLocationsClientConnectorServicesCreateRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single ClientConnectorService.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsClientConnectorServicesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clientConnectorServices/{clientConnectorServicesId}',
-        http_method='DELETE',
-        method_id='beyondcorp.projects.locations.clientConnectorServices.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'validateOnly'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpProjectsLocationsClientConnectorServicesDeleteRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single ClientConnectorService.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsClientConnectorServicesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ClientConnectorService) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clientConnectorServices/{clientConnectorServicesId}',
-        http_method='GET',
-        method_id='beyondcorp.projects.locations.clientConnectorServices.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpProjectsLocationsClientConnectorServicesGetRequest',
-        response_type_name='ClientConnectorService',
-        supports_download=False,
-    )
-
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -2019,60 +2084,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='BeyondcorpProjectsLocationsClientConnectorServicesGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists ClientConnectorServices in a given project and location.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsClientConnectorServicesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListClientConnectorServicesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clientConnectorServices',
-        http_method='GET',
-        method_id='beyondcorp.projects.locations.clientConnectorServices.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/clientConnectorServices',
-        request_field='',
-        request_type_name='BeyondcorpProjectsLocationsClientConnectorServicesListRequest',
-        response_type_name='ListClientConnectorServicesResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single ClientConnectorService.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsClientConnectorServicesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clientConnectorServices/{clientConnectorServicesId}',
-        http_method='PATCH',
-        method_id='beyondcorp.projects.locations.clientConnectorServices.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['allowMissing', 'requestId', 'updateMask', 'validateOnly'],
-        relative_path='v1alpha/{+name}',
-        request_field='clientConnectorService',
-        request_type_name='BeyondcorpProjectsLocationsClientConnectorServicesPatchRequest',
-        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -2140,87 +2151,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Creates a new ClientGateway in a given project and location.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsClientGatewaysCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clientGateways',
-        http_method='POST',
-        method_id='beyondcorp.projects.locations.clientGateways.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['clientGatewayId', 'requestId', 'validateOnly'],
-        relative_path='v1alpha/{+parent}/clientGateways',
-        request_field='clientGateway',
-        request_type_name='BeyondcorpProjectsLocationsClientGatewaysCreateRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single ClientGateway.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsClientGatewaysDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clientGateways/{clientGatewaysId}',
-        http_method='DELETE',
-        method_id='beyondcorp.projects.locations.clientGateways.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'validateOnly'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpProjectsLocationsClientGatewaysDeleteRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single ClientGateway.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsClientGatewaysGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ClientGateway) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clientGateways/{clientGatewaysId}',
-        http_method='GET',
-        method_id='beyondcorp.projects.locations.clientGateways.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpProjectsLocationsClientGatewaysGetRequest',
-        response_type_name='ClientGateway',
-        supports_download=False,
-    )
-
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -2245,33 +2175,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='BeyondcorpProjectsLocationsClientGatewaysGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists ClientGateways in a given project and location.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsClientGatewaysListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListClientGatewaysResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clientGateways',
-        http_method='GET',
-        method_id='beyondcorp.projects.locations.clientGateways.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/clientGateways',
-        request_field='',
-        request_type_name='BeyondcorpProjectsLocationsClientGatewaysListRequest',
-        response_type_name='ListClientGatewaysResponse',
         supports_download=False,
     )
 

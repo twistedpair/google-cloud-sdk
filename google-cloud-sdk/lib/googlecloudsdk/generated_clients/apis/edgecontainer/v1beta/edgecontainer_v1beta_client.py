@@ -728,6 +728,33 @@ class EdgecontainerV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetServerConfig(self, request, global_params=None):
+      r"""Gets the server config.
+
+      Args:
+        request: (EdgecontainerProjectsLocationsGetServerConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServerConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetServerConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetServerConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/serverConfig',
+        http_method='GET',
+        method_id='edgecontainer.projects.locations.getServerConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}/serverConfig',
+        request_field='',
+        request_type_name='EdgecontainerProjectsLocationsGetServerConfigRequest',
+        response_type_name='ServerConfig',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.
 

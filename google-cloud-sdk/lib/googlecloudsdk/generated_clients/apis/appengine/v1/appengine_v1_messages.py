@@ -865,9 +865,8 @@ class AuthorizedCertificate(_messages.Message):
 
 
 class AuthorizedDomain(_messages.Message):
-  r"""A domain that a user has been authorized to administer.
-
-  To authorize use of a domain, verify ownership via Search Console
+  r"""A domain that a user has been authorized to administer. To authorize use
+  of a domain, verify ownership via Search Console
   (https://search.google.com/search-console/welcome).
 
   Fields:
@@ -1178,6 +1177,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class EndpointsApiService(_messages.Message):

@@ -50,6 +50,7 @@ _DPV2_OBS_MODE = {
 
 _DNS_PROVIDER = {
     'clouddns': 'Selects Cloud DNS as the DNS provider for the cluster.',
+    'kubedns': 'Selects Kube DNS as the DNS provider for the cluster.',
     'default': 'Selects the default DNS provider (kube-dns) for the cluster.',
 }
 
@@ -2136,7 +2137,7 @@ def AddClusterDNSFlags(parser, hidden=False):
   """Adds flags related to clusterDNS to parser.
 
   This includes:
-  --cluster-dns={clouddns|default},
+  --cluster-dns={clouddns|kubedns|default},
   --cluster-dns-scope={cluster|vpc},
   --cluster-dns-domain=string
 
@@ -3661,18 +3662,18 @@ def AddRuntimeVulnerabilityInsightFlag(parser):
   )
 
 
-def AddEnableKubeletReadonlyPortFlag(parser):
+def AddEnableKubeletReadonlyPortFlag(parser, hidden=True):
   """Adds Kubernetes Read Only Port's enablement flag to the parser."""
   parser.add_argument(
-      '--enble-insecure-kubelet-readonly-port',
+      '--enable-insecure-kubelet-readonly-port',
       default=None,
       action='store_true',
-      hidden=True,
+      hidden=hidden,
       help=textwrap.dedent("""\
-      Enables the insecure Kubernetes Read Only Port API's features.
+      Enables the Kubelet's insecure Read Only Port.
 
       To disable in an existing cluster, explicitly set flag to
-      `--no-enble-insecure-kubelet-readonly-port`.
+      `--no-enable-insecure-kubelet-readonly-port`.
       """),
   )
 

@@ -96,6 +96,62 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MULTICASTCONSUMERASSOCIATIONS = (
+      'projects.locations.multicastConsumerAssociations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicastConsumerAssociations/'
+              '{multicastConsumerAssociationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MULTICASTDOMAINACTIVATIONS = (
+      'projects.locations.multicastDomainActivations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicastDomainActivations/{multicastDomainActivationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MULTICASTDOMAINS = (
+      'projects.locations.multicastDomains',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicastDomains/{multicastDomainsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MULTICASTGROUPDEFINITIONS = (
+      'projects.locations.multicastGroupDefinitions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicastGroupDefinitions/{multicastGroupDefinitionsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MULTICASTGROUPS = (
+      'projects.locations.multicastGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/multicastGroups/'
+              '{multicastGroupsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -114,6 +170,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/serviceBindings/'
               '{serviceBindingsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SERVICELBPOLICIES = (
+      'projects.locations.serviceLbPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'serviceLbPolicies/{serviceLbPoliciesId}',
       },
       ['name'],
       True

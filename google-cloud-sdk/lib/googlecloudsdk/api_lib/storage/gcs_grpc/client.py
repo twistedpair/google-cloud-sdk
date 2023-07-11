@@ -24,7 +24,9 @@ from googlecloudsdk.api_lib.storage.gcs_grpc import metadata_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import upload
 from googlecloudsdk.api_lib.storage.gcs_json import client as gcs_json_client
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
+from googlecloudsdk.core import exceptions as core_exceptions
 
 
 class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
@@ -98,6 +100,17 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
     """See super class."""
 
     client = self._get_gapic_client()
+
+    source_path = self._get_source_path(source_resource)
+    should_gzip_in_flight = gzip_util.should_gzip_in_flight(
+        request_config.gzip_settings, source_path)
+
+    if should_gzip_in_flight:
+      raise core_exceptions.InternalError(
+          'Gzip transport encoding is not supported with GRPC API, please use'
+          ' the JSON API instead, changing the storage/preferred_api config'
+          ' value to json.'
+      )
 
     if upload_strategy == cloud_api.UploadStrategy.SIMPLE:
       uploader = upload.SimpleUpload(

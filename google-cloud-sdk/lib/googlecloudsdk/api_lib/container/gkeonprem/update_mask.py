@@ -214,7 +214,7 @@ BARE_METAL_STANDALONE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
 }
 
 
-def get_update_mask(args, args_to_update_masks):
+def get_update_mask(args, args_to_update_masks) -> str:
   """Maps user provided arguments to API supported mutable fields in format of yaml field paths.
 
   Args:

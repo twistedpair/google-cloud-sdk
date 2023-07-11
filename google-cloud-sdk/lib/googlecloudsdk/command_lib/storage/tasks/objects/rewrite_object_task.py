@@ -78,11 +78,16 @@ class RewriteObjectTask(task.Task):
                   ' {} match the existing data.'.format(self._object_resource) +
                   ' Performing patch instead of rewrite.')
       return task.Output(
-          additional_task_iterators=[[
-              patch_object_task.PatchObjectTask(self._object_resource,
-                                                self._user_request_args)
-          ]],
-          messages=None)
+          additional_task_iterators=[
+              [
+                  patch_object_task.PatchObjectTask(
+                      self._object_resource,
+                      user_request_args=self._user_request_args,
+                  )
+              ]
+          ],
+          messages=None,
+      )
 
     if storage_class_changing and not encryption_changing:
       # Preserve current encryption.

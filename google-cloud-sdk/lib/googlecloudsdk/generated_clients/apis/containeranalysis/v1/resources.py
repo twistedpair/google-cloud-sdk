@@ -51,6 +51,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_RESOURCES = (
+      'projects.resources',
+      'projects/{projectsId}/resources/{resourcesId}',
+      {},
+      ['projectsId', 'resourcesId'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

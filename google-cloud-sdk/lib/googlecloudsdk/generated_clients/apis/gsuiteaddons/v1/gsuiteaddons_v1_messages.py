@@ -182,12 +182,17 @@ class GoogleAppsScriptTypeDocsDocsAddOnManifest(_messages.Message):
   Fields:
     homepageTrigger: If present, this overrides the configuration from
       `addOns.common.homepageTrigger`.
+    linkPreviewTriggers: A list of extension points for previewing links in a
+      Google Docs document. For details, see [Preview links with smart
+      chips](https://developers.google.com/workspace/add-ons/guides/preview-
+      links-smart-chips).
     onFileScopeGrantedTrigger: Endpoint to execute when file scope
       authorization is granted for this document/user pair.
   """
 
   homepageTrigger = _messages.MessageField('GoogleAppsScriptTypeHomepageExtensionPoint', 1)
-  onFileScopeGrantedTrigger = _messages.MessageField('GoogleAppsScriptTypeDocsDocsExtensionPoint', 2)
+  linkPreviewTriggers = _messages.MessageField('GoogleAppsScriptTypeLinkPreviewExtensionPoint', 2, repeated=True)
+  onFileScopeGrantedTrigger = _messages.MessageField('GoogleAppsScriptTypeDocsDocsExtensionPoint', 3)
 
 
 class GoogleAppsScriptTypeDocsDocsExtensionPoint(_messages.Message):
@@ -401,6 +406,80 @@ class GoogleAppsScriptTypeLayoutProperties(_messages.Message):
   useNewMaterialDesign = _messages.BooleanField(3)
 
 
+class GoogleAppsScriptTypeLinkPreviewExtensionPoint(_messages.Message):
+  r"""The configuration for a trigger that fires when a user types or pastes a
+  link from a third-party or non-Google service into a Google Docs document.
+  [Developer Preview](https://developers.google.com/workspace/preview).
+
+  Messages:
+    LocalizedLabelTextValue: Optional. A map of `labelText` to localize into
+      other languages. Format the language in [ISO
+      639](https://wikipedia.org/wiki/ISO_639_macrolanguage) and the
+      country/region in [ISO 3166](https://wikipedia.org/wiki/ISO_3166),
+      separated by a hyphen `-`. For example, `en-US`. If a user's locale is
+      present in the map's keys, the user sees the localized version of the
+      `labelText`.
+
+  Fields:
+    labelText: Required. The text for an example smart chip that prompts users
+      to preview the link, such as `Example: Support case`. This text is
+      static and displays before users execute the add-on.
+    localizedLabelText: Optional. A map of `labelText` to localize into other
+      languages. Format the language in [ISO
+      639](https://wikipedia.org/wiki/ISO_639_macrolanguage) and the
+      country/region in [ISO 3166](https://wikipedia.org/wiki/ISO_3166),
+      separated by a hyphen `-`. For example, `en-US`. If a user's locale is
+      present in the map's keys, the user sees the localized version of the
+      `labelText`.
+    logoUrl: Optional. The icon that displays in the smart chip. If omitted,
+      the chip uses your add-on's toolbar icon,
+      [`logoUrl`](https://developers.google.com/workspace/add-ons/reference/re
+      st/v1/projects.deployments#CommonAddOnManifest.FIELDS.logoUrl).
+    patterns: Required. An array of URL patterns that trigger the add-on to
+      preview links.
+    runFunction: Required. Endpoint to execute when a link preview is
+      triggered.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LocalizedLabelTextValue(_messages.Message):
+    r"""Optional. A map of `labelText` to localize into other languages.
+    Format the language in [ISO
+    639](https://wikipedia.org/wiki/ISO_639_macrolanguage) and the
+    country/region in [ISO 3166](https://wikipedia.org/wiki/ISO_3166),
+    separated by a hyphen `-`. For example, `en-US`. If a user's locale is
+    present in the map's keys, the user sees the localized version of the
+    `labelText`.
+
+    Messages:
+      AdditionalProperty: An additional property for a LocalizedLabelTextValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        LocalizedLabelTextValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LocalizedLabelTextValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labelText = _messages.StringField(1)
+  localizedLabelText = _messages.MessageField('LocalizedLabelTextValue', 2)
+  logoUrl = _messages.StringField(3)
+  patterns = _messages.MessageField('GoogleAppsScriptTypeUriPattern', 4, repeated=True)
+  runFunction = _messages.StringField(5)
+
+
 class GoogleAppsScriptTypeMenuItemExtensionPoint(_messages.Message):
   r"""Common format for declaring a menu item or button that appears within a
   host app.
@@ -484,6 +563,28 @@ class GoogleAppsScriptTypeUniversalActionExtensionPoint(_messages.Message):
   label = _messages.StringField(1)
   openLink = _messages.StringField(2)
   runFunction = _messages.StringField(3)
+
+
+class GoogleAppsScriptTypeUriPattern(_messages.Message):
+  r"""The configuration for each URL pattern that triggers a link preview.
+
+  Fields:
+    hostPattern: Required for each URL pattern to preview. The domain of the
+      URL pattern. The add-on previews links that contain this domain in the
+      URL. To preview links for a specific subdomain, like
+      `subdomain.example.com`, include the subdomain. To preview links for the
+      entire domain, specify a wildcard character with an asterisk (`*`) as
+      the subdomain. For example, `*.example.com` matches
+      `subdomain.example.com` and `another.subdomain.example.com`.
+    pathPrefix: Optional. The path that appends the domain of the
+      `hostPattern`. For example, if the URL host pattern is
+      `support.example.com`, to match URLs for cases hosted at
+      `support.example.com/cases/`, enter `cases`. To match all URLs in the
+      host pattern domain, leave `pathPrefix` empty.
+  """
+
+  hostPattern = _messages.StringField(1)
+  pathPrefix = _messages.StringField(2)
 
 
 class GoogleCloudGsuiteaddonsV1AddOns(_messages.Message):

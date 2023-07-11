@@ -296,11 +296,14 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesPatchRe
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Supported fields include: rule_setting.value.*,
+      group.id/group.email.
   """
 
   googleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesSetIamPolicyRequest(_messages.Message):
@@ -434,33 +437,11 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsListRequest(_messages.
   object.
 
   Fields:
-    filter: Optional. Filter partnerTenants to be returned. See [List Sub-
-      Collections]
-      (https://cloud.google.com/apis/design/design_patterns#list_sub-
-      collections) for more details. All fields can be used in the filter.
-      Usage: field_filter="fieldName1=fieldVal1 AND fieldName2=fieldVal2".
-      NOTE: Only `AND` conditions are allowed.
-    orderBy: Optional. Specifies the ordering of results. Currently, only
-      ordering by the "name" and "create_time" fields are supported. See
-      [Sorting order](https://cloud.google.com/apis/design/design_patterns#sor
-      ting_order) for more information.
-    pageSize: Optional. The maximum number of items to return. The service may
-      return fewer than this value. If unspecified, at most 50 items will be
-      returned. The maximum value is 1000; values above 1000 are coerced to
-      1000. Regardless of the page_size value, the response may include a
-      partial list and a caller should only rely on response's next_page_token
-      to determine if there are more instances left to be queried.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
     parent: Required. The parent organization to which the PartnerTenants
       belong. Format: `organizations/{organization_id}/locations/global`
   """
 
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
+  parent = _messages.StringField(1, required=True)
 
 
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsPatchRequest(_messages.Message):
@@ -587,6 +568,20 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetRequest
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsListRequest(_messages.Message):
+  r"""A
+  BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsListRequest
+  object.
+
+  Fields:
+    parent: Required. The parent organization to which the ProxyConfigs
+      belong. Format: `organizations/{organization_id}/locations/global/partne
+      rTenants/{partner_tenant_id}`
+  """
+
+  parent = _messages.StringField(1, required=True)
 
 
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsPatchRequest(_messages.Message):
@@ -981,6 +976,56 @@ class BeyondcorpOrganizationsLocationsInsightsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 6)
+
+
+class BeyondcorpOrganizationsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsOperationsCancelRequest object.
+
+  Fields:
+    googleLongrunningCancelOperationRequest: A
+      GoogleLongrunningCancelOperationRequest resource to be passed as the
+      request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class BeyondcorpOrganizationsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpOrganizationsLocationsOperationsGetRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpOrganizationsLocationsOperationsListRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class BeyondcorpOrganizationsLocationsSubscriptionsCreateRequest(_messages.Message):
@@ -1683,66 +1728,6 @@ class BeyondcorpProjectsLocationsApplicationsTestIamPermissionsRequest(_messages
   resource = _messages.StringField(2, required=True)
 
 
-class BeyondcorpProjectsLocationsClientConnectorServicesCreateRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsClientConnectorServicesCreateRequest
-  object.
-
-  Fields:
-    clientConnectorService: A ClientConnectorService resource to be passed as
-      the request body.
-    clientConnectorServiceId: Optional. User-settable client connector service
-      resource ID. * Must start with a letter. * Must contain between 4-63
-      characters from `/a-z-/`. * Must end with a number or a letter. A random
-      system generated name will be assigned if not specified by the user.
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, validates request by executing a dry-run
-      which would not alter the resource in any way.
-  """
-
-  clientConnectorService = _messages.MessageField('ClientConnectorService', 1)
-  clientConnectorServiceId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
-
-
-class BeyondcorpProjectsLocationsClientConnectorServicesDeleteRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsClientConnectorServicesDeleteRequest
-  object.
-
-  Fields:
-    name: Required. Name of the resource.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, validates request by executing a dry-run
-      which would not alter the resource in any way.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  validateOnly = _messages.BooleanField(3)
-
-
 class BeyondcorpProjectsLocationsClientConnectorServicesGetIamPolicyRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsClientConnectorServicesGetIamPolicyRequest
   object.
@@ -1768,74 +1753,6 @@ class BeyondcorpProjectsLocationsClientConnectorServicesGetIamPolicyRequest(_mes
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
-
-
-class BeyondcorpProjectsLocationsClientConnectorServicesGetRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsClientConnectorServicesGetRequest object.
-
-  Fields:
-    name: Required. Name of the resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BeyondcorpProjectsLocationsClientConnectorServicesListRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsClientConnectorServicesListRequest object.
-
-  Fields:
-    filter: Optional. Filtering results.
-    orderBy: Optional. Hint for how to order the results.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListClientConnectorServicesRequest.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class BeyondcorpProjectsLocationsClientConnectorServicesPatchRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsClientConnectorServicesPatchRequest object.
-
-  Fields:
-    allowMissing: Optional. If set as true, will create the resource if it is
-      not found.
-    clientConnectorService: A ClientConnectorService resource to be passed as
-      the request body.
-    name: Required. Name of resource. The name is ignored during creation.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the ClientConnectorService resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten.
-      Mutable fields: display_name, ingress.config.destination_routes.
-    validateOnly: Optional. If set, validates request by executing a dry-run
-      which would not alter the resource in any way.
-  """
-
-  allowMissing = _messages.BooleanField(1)
-  clientConnectorService = _messages.MessageField('ClientConnectorService', 2)
-  name = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  updateMask = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
 
 
 class BeyondcorpProjectsLocationsClientConnectorServicesSetIamPolicyRequest(_messages.Message):
@@ -1874,62 +1791,6 @@ class BeyondcorpProjectsLocationsClientConnectorServicesTestIamPermissionsReques
   resource = _messages.StringField(2, required=True)
 
 
-class BeyondcorpProjectsLocationsClientGatewaysCreateRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsClientGatewaysCreateRequest object.
-
-  Fields:
-    clientGateway: A ClientGateway resource to be passed as the request body.
-    clientGatewayId: Optional. User-settable client gateway resource ID. *
-      Must start with a letter. * Must contain between 4-63 characters from
-      `/a-z-/`. * Must end with a number or a letter.
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, validates request by executing a dry-run
-      which would not alter the resource in any way.
-  """
-
-  clientGateway = _messages.MessageField('ClientGateway', 1)
-  clientGatewayId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
-
-
-class BeyondcorpProjectsLocationsClientGatewaysDeleteRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsClientGatewaysDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, validates request by executing a dry-run
-      which would not alter the resource in any way.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  validateOnly = _messages.BooleanField(3)
-
-
 class BeyondcorpProjectsLocationsClientGatewaysGetIamPolicyRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsClientGatewaysGetIamPolicyRequest object.
 
@@ -1954,36 +1815,6 @@ class BeyondcorpProjectsLocationsClientGatewaysGetIamPolicyRequest(_messages.Mes
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
-
-
-class BeyondcorpProjectsLocationsClientGatewaysGetRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsClientGatewaysGetRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BeyondcorpProjectsLocationsClientGatewaysListRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsClientGatewaysListRequest object.
-
-  Fields:
-    filter: Optional. Filtering results.
-    orderBy: Optional. Hint for how to order the results.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListClientGatewaysRequest.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
 
 
 class BeyondcorpProjectsLocationsClientGatewaysSetIamPolicyRequest(_messages.Message):
@@ -2757,160 +2588,6 @@ class BeyondcorpProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class ClientConnectorService(_messages.Message):
-  r"""Message describing ClientConnectorService object.
-
-  Enums:
-    StateValueValuesEnum: Output only. The operational state of the
-      ClientConnectorService.
-
-  Fields:
-    createTime: Output only. [Output only] Create time stamp.
-    displayName: Optional. User-provided name. The display name should follow
-      certain format. * Must be 6 to 30 characters in length. * Can only
-      contain lowercase letters, numbers, and hyphens. * Must start with a
-      letter.
-    egress: Required. The details of the egress settings.
-    ingress: Required. The details of the ingress settings.
-    name: Required. Name of resource. The name is ignored during creation.
-    state: Output only. The operational state of the ClientConnectorService.
-    updateTime: Output only. [Output only] Update time stamp.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The operational state of the ClientConnectorService.
-
-    Values:
-      STATE_UNSPECIFIED: Default value. This value is unused.
-      CREATING: ClientConnectorService is being created.
-      UPDATING: ClientConnectorService is being updated.
-      DELETING: ClientConnectorService is being deleted.
-      RUNNING: ClientConnectorService is running.
-      DOWN: ClientConnectorService is down and may be restored in the future.
-        This happens when CCFE sends ProjectState = OFF.
-      ERROR: ClientConnectorService encountered an error and is in an
-        indeterministic state.
-    """
-    STATE_UNSPECIFIED = 0
-    CREATING = 1
-    UPDATING = 2
-    DELETING = 3
-    RUNNING = 4
-    DOWN = 5
-    ERROR = 6
-
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  egress = _messages.MessageField('Egress', 3)
-  ingress = _messages.MessageField('Ingress', 4)
-  name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
-
-
-class ClientConnectorServiceOperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
-class ClientGateway(_messages.Message):
-  r"""Message describing ClientGateway object.
-
-  Enums:
-    StateValueValuesEnum: Output only. The operational state of the gateway.
-
-  Fields:
-    clientConnectorService: Output only. The client connector service name
-      that the client gateway is associated to. Client Connector Services,
-      named as follows: `projects/{project_id}/locations/{location_id}/client_
-      connector_services/{client_connector_service_id}`.
-    createTime: Output only. [Output only] Create time stamp.
-    id: Output only. A unique identifier for the instance generated by the
-      system.
-    name: Required. name of resource. The name is ignored during creation.
-    state: Output only. The operational state of the gateway.
-    updateTime: Output only. [Output only] Update time stamp.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The operational state of the gateway.
-
-    Values:
-      STATE_UNSPECIFIED: Default value. This value is unused.
-      CREATING: Gateway is being created.
-      UPDATING: Gateway is being updated.
-      DELETING: Gateway is being deleted.
-      RUNNING: Gateway is running.
-      DOWN: Gateway is down and may be restored in the future. This happens
-        when CCFE sends ProjectState = OFF.
-      ERROR: ClientGateway encountered an error and is in indeterministic
-        state.
-    """
-    STATE_UNSPECIFIED = 0
-    CREATING = 1
-    UPDATING = 2
-    DELETING = 3
-    RUNNING = 4
-    DOWN = 5
-    ERROR = 6
-
-  clientConnectorService = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  id = _messages.StringField(3)
-  name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
-
-
-class ClientGatewayOperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have been
-      cancelled successfully have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
 class CloudPubSubNotificationConfig(_messages.Message):
   r"""The configuration for Pub/Sub messaging for the connector.
 
@@ -2995,35 +2672,6 @@ class CloudSecurityZerotrustApplinkAppConnectorProtoGateway(_messages.Message):
 
 class CloudSecurityZerotrustApplinkLogagentProtoLogAgentDetails(_messages.Message):
   r"""LogAgentDetails reflects the details of a log agent."""
-
-
-class Config(_messages.Message):
-  r"""The basic ingress config for ClientGateways.
-
-  Enums:
-    TransportProtocolValueValuesEnum: Required. Immutable. The transport
-      protocol used between the client and the server.
-
-  Fields:
-    destinationRoutes: Required. The settings used to configure basic
-      ClientGateways.
-    transportProtocol: Required. Immutable. The transport protocol used
-      between the client and the server.
-  """
-
-  class TransportProtocolValueValuesEnum(_messages.Enum):
-    r"""Required. Immutable. The transport protocol used between the client
-    and the server.
-
-    Values:
-      TRANSPORT_PROTOCOL_UNSPECIFIED: Default value. This value is unused.
-      TCP: TCP protocol.
-    """
-    TRANSPORT_PROTOCOL_UNSPECIFIED = 0
-    TCP = 1
-
-  destinationRoutes = _messages.MessageField('DestinationRoute', 1, repeated=True)
-  transportProtocol = _messages.EnumField('TransportProtocolValueValuesEnum', 2)
 
 
 class Connection(_messages.Message):
@@ -3374,32 +3022,6 @@ class ContainerHealthDetails(_messages.Message):
   errorMsg = _messages.StringField(2)
   expectedConfigVersion = _messages.StringField(3)
   extendedStatus = _messages.MessageField('ExtendedStatusValue', 4)
-
-
-class DestinationRoute(_messages.Message):
-  r"""The setting used to configure ClientGateways. It is adding routes to the
-  client's routing table after the connection is established.
-
-  Fields:
-    address: Required. The network address of the subnet for which the packet
-      is routed to the ClientGateway.
-    netmask: Required. The network mask of the subnet for which the packet is
-      routed to the ClientGateway.
-  """
-
-  address = _messages.StringField(1)
-  netmask = _messages.StringField(2)
-
-
-class Egress(_messages.Message):
-  r"""The details of the egress info. One of the following options should be
-  set.
-
-  Fields:
-    peeredVpc: A VPC from the consumer project.
-  """
-
-  peeredVpc = _messages.MessageField('PeeredVpc', 1)
 
 
 class Empty(_messages.Message):
@@ -4230,26 +3852,34 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaListPartnerTenantsResponse(_mes
   r"""Message for response to listing PartnerTenants.
 
   Fields:
-    nextPageToken: A token which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
     partnerTenants: The list of PartnerTenant objects.
-    unreachable: Locations that could not be reached.
   """
 
-  nextPageToken = _messages.StringField(1)
-  partnerTenants = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
+  partnerTenants = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant', 1, repeated=True)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaListProxyConfigsResponse(_messages.Message):
+  r"""Message for response to listing ProxyConfigs.
+
+  Fields:
+    proxyConfigs: The list of ProxyConfig objects.
+  """
+
+  proxyConfigs = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig', 1, repeated=True)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerMetadata(_messages.Message):
   r"""Metadata associated with PartnerTenant and is provided by the Partner.
 
   Fields:
+    internalTenantId: Optional. UUID used by the Partner to refer to the
+      PartnerTenant in their internal systems.
     partnerTenantId: Optional. UUID used by the Partner to refer to the
       PartnerTenant in their internal systems.
   """
 
-  partnerTenantId = _messages.StringField(1)
+  internalTenantId = _messages.StringField(1)
+  partnerTenantId = _messages.StringField(2)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerServiceOperationMetadata(_messages.Message):
@@ -5312,17 +4942,6 @@ class ImageConfig(_messages.Message):
   targetImage = _messages.StringField(2)
 
 
-class Ingress(_messages.Message):
-  r"""Settings of how to connect to the ClientGateway. One of the following
-  options should be set.
-
-  Fields:
-    config: The basic ingress config for ClientGateways.
-  """
-
-  config = _messages.MessageField('Config', 1)
-
-
 class ListAppGatewaysResponse(_messages.Message):
   r"""Response message for BeyondCorp.ListAppGateways.
 
@@ -5334,36 +4953,6 @@ class ListAppGatewaysResponse(_messages.Message):
   """
 
   appGateways = _messages.MessageField('AppGateway', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListClientConnectorServicesResponse(_messages.Message):
-  r"""Message for response to listing ClientConnectorServices.
-
-  Fields:
-    clientConnectorServices: The list of ClientConnectorService.
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    unreachable: Locations that could not be reached.
-  """
-
-  clientConnectorServices = _messages.MessageField('ClientConnectorService', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListClientGatewaysResponse(_messages.Message):
-  r"""Message for response to listing ClientGateways.
-
-  Fields:
-    clientGateways: The list of ClientGateway.
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    unreachable: Locations that could not be reached.
-  """
-
-  clientGateways = _messages.MessageField('ClientGateway', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -5407,17 +4996,6 @@ class NotificationConfig(_messages.Message):
   """
 
   pubsubNotification = _messages.MessageField('CloudPubSubNotificationConfig', 1)
-
-
-class PeeredVpc(_messages.Message):
-  r"""The peered VPC owned by the consumer project.
-
-  Fields:
-    networkVpc: Required. The name of the peered VPC owned by the consumer
-      project.
-  """
-
-  networkVpc = _messages.StringField(1)
 
 
 class PrincipalInfo(_messages.Message):

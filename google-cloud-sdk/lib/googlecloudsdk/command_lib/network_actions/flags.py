@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import textwrap
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.network_actions import util
 from googlecloudsdk.command_lib.util.apis import yaml_data
@@ -27,9 +28,10 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
-def AddWasmPluginResource(parser, api_version):
+def AddWasmPluginResource(parser, api_version, message):
   wasm_plugin_data = yaml_data.ResourceYAMLData.FromPath(
-      'network_actions.wasmPlugin')
+      'network_actions.wasmPlugin'
+  )
   concept_parsers.ConceptParser(
       [
           presentation_specs.ResourcePresentationSpec(
@@ -38,7 +40,7 @@ def AddWasmPluginResource(parser, api_version):
                   wasm_plugin_data.GetData(),
                   api_version=api_version,
               ),
-              'The ID of the WasmPlugin to create.',
+              message,
               required=True,
           )
       ],
@@ -80,13 +82,8 @@ def AddLogConfigFlag(parser):
   )
 
 
-def AddVersionFlag(parser):
-  parser.add_argument(
-      '--main-version',
-      help=textwrap.dedent("""\
-          ID of the WasmPluginVersion that will be created for that
-          WasmPlugin and that will be set as the current main version."""),
-  )
+def AddVersionFlag(parser, version_message):
+  parser.add_argument('--main-version', help=version_message)
 
 
 def AddImageFlag(parser):
@@ -98,7 +95,36 @@ def AddImageFlag(parser):
   )
 
 
-def AddWasmPluginVersionArgs(parser):
+def AddPluginConfigFlag(parser):
+  """Adds flags defining plugin config."""
+  plugin_config_group = parser.add_group(
+      mutex=True,
+      required=False,
+      help="""Configuration for the WasmPlugin, provided to the plugin at
+              runtime via the proxy_on_configure call (the exact name of the
+              invoked function depends on the Proxy-Wasm SDK used).""",
+  )
+  plugin_config_group.add_argument(
+      '--plugin-config',
+      required=False,
+      help="""WasmPlugin configuration in the textual format."""
+  )
+  plugin_config_group.add_argument(
+      '--plugin-config-file',
+      required=False,
+      type=arg_parsers.FileContents(binary=True),
+      help="""Path to a local file containing the plugin configuration."""
+  )
+  plugin_config_group.add_argument(
+      '--plugin-config-uri',
+      required=False,
+      help="""URI of the container image containing the plugin configuration,
+              stored in the Artifact Registry."""
+  )
+
+
+def AddWasmPluginVersionArgs(parser, version_message):
   wasm_plugin_version_group = parser.add_group(mutex=False, required=False)
-  AddVersionFlag(wasm_plugin_version_group)
+  AddVersionFlag(wasm_plugin_version_group, version_message)
   AddImageFlag(wasm_plugin_version_group)
+  AddPluginConfigFlag(wasm_plugin_version_group)

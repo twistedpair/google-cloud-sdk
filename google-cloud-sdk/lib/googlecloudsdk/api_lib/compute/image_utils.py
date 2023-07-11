@@ -130,7 +130,7 @@ class ImageExpander(object):
                       image_family=None,
                       image_project=None,
                       return_image_resource=False,
-                      confidential_vm=False,
+                      confidential_vm_type=None,
                       image_family_scope=None,
                       support_image_family_scope=False):
     """Resolves the image or image-family value.
@@ -149,7 +149,8 @@ class ImageExpander(object):
       image_project: The project of the image.
       return_image_resource: If True, always makes an API call to also
         fetch the image resource.
-      confidential_vm: If True, default image is different for confidential VMs
+      confidential_vm_type: If not None, use default guest image based on
+        confidential-VM encryption type.
       image_family_scope: Override for selection of global or zonal image
         views.
       support_image_family_scope: If True, add support for the
@@ -197,8 +198,10 @@ class ImageExpander(object):
         if image_family_scope == 'zonal':
           params['zone'] = '-'
           collection = 'compute.imageFamilyViews'
-      elif confidential_vm:
-        image_family = constants.DEFAULT_IMAGE_FAMILY_FOR_CONFIDENTIAL_VMS
+      elif confidential_vm_type is not None:
+        image_family = constants.DEFAULT_IMAGE_FAMILY_FOR_CONFIDENTIAL_VMS[
+            confidential_vm_type
+        ]
         params['project'] = 'ubuntu-os-cloud'
       else:
         image_family = constants.DEFAULT_IMAGE_FAMILY

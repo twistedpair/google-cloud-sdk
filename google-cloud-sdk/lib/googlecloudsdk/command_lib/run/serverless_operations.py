@@ -47,7 +47,6 @@ from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.run import artifact_registry
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
-from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.run import messages_util
 from googlecloudsdk.command_lib.run import name_generator
 from googlecloudsdk.command_lib.run import resource_name_conversion
@@ -1644,7 +1643,7 @@ class ServerlessOperations(object):
       wait=False,
       asyn=False,
       release_track=None,
-      overrides=None
+      overrides=None,
   ):
     """Run a Cloud Run Job, creating an Execution.
 
@@ -1687,9 +1686,7 @@ class ServerlessOperations(object):
     )
     getter = functools.partial(self.GetExecution, execution_ref)
     terminal_condition = (
-        execution.COMPLETED_CONDITION
-        if wait
-        else execution.STARTED_CONDITION
+        execution.COMPLETED_CONDITION if wait else execution.STARTED_CONDITION
     )
     ex = self.GetExecution(execution_ref)
     for msg in run_condition.GetNonTerminalMessages(
@@ -1932,6 +1929,7 @@ class ServerlessOperations(object):
         arg_git_source_revision=None,
         buildpack=build_pack,
         hide_logs=True,
+        client_tag='gcloudrun'
     )
     tracker.CompleteStage(stages.UPLOAD_SOURCE)
     return build_messages, build_config
@@ -1960,23 +1958,21 @@ class ServerlessOperations(object):
     for override in config_overrides:
       run_job = override.Adjust(run_job)
 
-  def GetExecutionOverrides(self, args):
-    container_overrides = self._GetContainerOverrides(args)
+  def GetExecutionOverrides(self, tasks, task_timeout, container_overrides):
     return self.messages_module.Overrides(
         containerOverrides=container_overrides,
-        taskCount=args.tasks,
-        timeoutSeconds=args.task_timeout,
+        taskCount=tasks,
+        timeoutSeconds=task_timeout,
     )
 
-  def _GetContainerOverrides(self, args):
+  def GetContainerOverrides(self, update_env_vars, args, clear_args):
     container_overrides = []
-    if flags.HasContainerOverrides(args):
-      env_vars = self._GetEnvVarList(args.update_env_vars)
-      container_overrides.append(
-          self.messages_module.ContainerOverride(
-              args=args.args or [], env=env_vars
-          )
-      )
+    env_vars = self._GetEnvVarList(update_env_vars)
+    container_overrides.append(
+        self.messages_module.ContainerOverride(
+            args=args or [], env=env_vars, clearArgs=clear_args
+        )
+    )
     return container_overrides
 
   def _GetEnvVarList(self, env_vars):

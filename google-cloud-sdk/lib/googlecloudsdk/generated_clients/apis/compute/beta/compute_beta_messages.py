@@ -1934,6 +1934,8 @@ class AttachedDiskInitializeParams(_messages.Message):
       zones/zone/diskTypes/diskType If you specify this field when creating or
       updating an instance template or all-instances configuration, specify
       the type of the disk, not the URL. For example: pd-standard.
+    enableConfidentialCompute: Whether this disk is using confidential compute
+      mode.
     guestOsFeatures: A list of features to enable on the guest operating
       system. Applicable only for bootable images. Read Enabling guest
       operating system features to see a list of available options. Guest OS
@@ -2093,21 +2095,22 @@ class AttachedDiskInitializeParams(_messages.Message):
   diskName = _messages.StringField(3)
   diskSizeGb = _messages.IntegerField(4)
   diskType = _messages.StringField(5)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 7)
-  licenses = _messages.StringField(8, repeated=True)
-  multiWriter = _messages.BooleanField(9)
-  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 10)
-  provisionedIops = _messages.IntegerField(11)
-  provisionedThroughput = _messages.IntegerField(12)
-  replicaZones = _messages.StringField(13, repeated=True)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 14)
-  resourcePolicies = _messages.StringField(15, repeated=True)
-  sourceImage = _messages.StringField(16)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceInstantSnapshot = _messages.StringField(18)
-  sourceSnapshot = _messages.StringField(19)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
+  enableConfidentialCompute = _messages.BooleanField(6)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 8)
+  licenses = _messages.StringField(9, repeated=True)
+  multiWriter = _messages.BooleanField(10)
+  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 11)
+  provisionedIops = _messages.IntegerField(12)
+  provisionedThroughput = _messages.IntegerField(13)
+  replicaZones = _messages.StringField(14, repeated=True)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 15)
+  resourcePolicies = _messages.StringField(16, repeated=True)
+  sourceImage = _messages.StringField(17)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
+  sourceInstantSnapshot = _messages.StringField(19)
+  sourceSnapshot = _messages.StringField(20)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
 
 
 class AuditConfig(_messages.Message):
@@ -3400,6 +3403,13 @@ class Backend(_messages.Message):
       accepted even though it has no impact and is ignored. Specifically,
       Backend.maxUtilization is ignored when Backend.balancingMode is RATE. In
       the future, this incompatible combination will be rejected.
+    PreferenceValueValuesEnum: This field indicates whether this backend
+      should be fully utilized before sending traffic to backends with default
+      preference. The possible values are: - PREFERRED: Backends with this
+      preference level will be filled up to their capacity limits first, based
+      on RTT. - DEFAULT: If preferred backends don't have enough capacity,
+      backends in this layer would be used and traffic would be assigned based
+      on the load balancing algorithm you use. This is the default
 
   Fields:
     balancingMode: Specifies how to determine whether the backend of a load
@@ -3459,6 +3469,13 @@ class Backend(_messages.Message):
     maxUtilization: Optional parameter to define a target capacity for the
       UTILIZATION balancing mode. The valid range is [0.0, 1.0]. For usage
       guidelines, see Utilization balancing mode.
+    preference: This field indicates whether this backend should be fully
+      utilized before sending traffic to backends with default preference. The
+      possible values are: - PREFERRED: Backends with this preference level
+      will be filled up to their capacity limits first, based on RTT. -
+      DEFAULT: If preferred backends don't have enough capacity, backends in
+      this layer would be used and traffic would be assigned based on the load
+      balancing algorithm you use. This is the default
   """
 
   class BalancingModeValueValuesEnum(_messages.Enum):
@@ -3482,6 +3499,25 @@ class Backend(_messages.Message):
     RATE = 1
     UTILIZATION = 2
 
+  class PreferenceValueValuesEnum(_messages.Enum):
+    r"""This field indicates whether this backend should be fully utilized
+    before sending traffic to backends with default preference. The possible
+    values are: - PREFERRED: Backends with this preference level will be
+    filled up to their capacity limits first, based on RTT. - DEFAULT: If
+    preferred backends don't have enough capacity, backends in this layer
+    would be used and traffic would be assigned based on the load balancing
+    algorithm you use. This is the default
+
+    Values:
+      DEFAULT: No preference.
+      PREFERENCE_UNSPECIFIED: If preference is unspecified, we set it to the
+        DEFAULT value
+      PREFERRED: Traffic will be sent to this backend first.
+    """
+    DEFAULT = 0
+    PREFERENCE_UNSPECIFIED = 1
+    PREFERRED = 2
+
   balancingMode = _messages.EnumField('BalancingModeValueValuesEnum', 1)
   capacityScaler = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   description = _messages.StringField(3)
@@ -3494,6 +3530,7 @@ class Backend(_messages.Message):
   maxRatePerEndpoint = _messages.FloatField(10, variant=_messages.Variant.FLOAT)
   maxRatePerInstance = _messages.FloatField(11, variant=_messages.Variant.FLOAT)
   maxUtilization = _messages.FloatField(12, variant=_messages.Variant.FLOAT)
+  preference = _messages.EnumField('PreferenceValueValuesEnum', 13)
 
 
 class BackendBucket(_messages.Message):
@@ -4125,13 +4162,31 @@ class BackendService(_messages.Message):
     network: The URL of the network to which this backend service belongs.
       This field can only be specified when the load balancing scheme is set
       to INTERNAL.
-    outlierDetection: Settings controlling the eviction of unhealthy hosts
-      from the load balancing pool for the backend service. If not set, this
-      feature is considered disabled. This field is applicable to either: - A
-      regional backend service with the service_protocol set to HTTP, HTTPS,
-      HTTP2, or GRPC, and load_balancing_scheme set to INTERNAL_MANAGED. - A
-      global backend service with the load_balancing_scheme set to
-      INTERNAL_SELF_MANAGED.
+    outlierDetection: Settings controlling the ejection of unhealthy backend
+      endpoints from the load balancing pool of each individual proxy instance
+      that processes the traffic for the given backend service. If not set,
+      this feature is considered disabled. Results of the outlier detection
+      algorithm (ejection of endpoints from the load balancing pool and
+      returning them back to the pool) are executed independently by each
+      proxy instance of the load balancer. In most cases, more than one proxy
+      instance handles the traffic received by a backend service. Thus, it is
+      possible that an unhealthy endpoint is detected and ejected by only some
+      of the proxies, and while this happens, other proxies may continue to
+      send requests to the same unhealthy endpoint until they detect and eject
+      the unhealthy endpoint. Applicable backend endpoints can be: - VM
+      instances in an Instance Group - Endpoints in a Zonal NEG (GCE_VM_IP,
+      GCE_VM_IP_PORT) - Endpoints in a Hybrid Connectivity NEG
+      (NON_GCP_PRIVATE_IP_PORT) - Serverless NEGs, that resolve to Cloud Run,
+      App Engine, or Cloud Functions Services - Private Service Connect NEGs,
+      that resolve to Google-managed regional API endpoints or managed
+      services published using Private Service Connect Applicable backend
+      service types can be: - A global backend service with the
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED or EXTERNAL_MANAGED. -
+      A regional backend service with the serviceProtocol set to HTTP, HTTPS,
+      or HTTP2, and loadBalancingScheme set to INTERNAL_MANAGED or
+      EXTERNAL_MANAGED. Not supported for Serverless NEGs. Not supported when
+      the backend service is referenced by a URL map that is bound to target
+      gRPC proxy that has validateForProxyless field set to true.
     port: Deprecated in favor of portName. The TCP port to connect on the
       backend. The default value is 80. For Internal TCP/UDP Load Balancing
       and Network Load Balancing, omit port.
@@ -4161,6 +4216,9 @@ class BackendService(_messages.Message):
     serviceBindings: URLs of networkservices.ServiceBinding resources. Can
       only be set if load balancing scheme is INTERNAL_SELF_MANAGED. If set,
       lists of backends and health checks must be both empty.
+    serviceLbPolicy: URL to networkservices.ServiceLbPolicy resource. Can only
+      be set if load balancing scheme is EXTERNAL, EXTERNAL_MANAGED,
+      INTERNAL_MANAGED or INTERNAL_SELF_MANAGED and the scope is global.
     sessionAffinity: Type of session affinity to use. The default is NONE.
       Only NONE and HEADER_FIELD are supported when the backend service is
       referenced by a URL map that is bound to target gRPC proxy that has
@@ -4417,9 +4475,10 @@ class BackendService(_messages.Message):
   securitySettings = _messages.MessageField('SecuritySettings', 35)
   selfLink = _messages.StringField(36)
   serviceBindings = _messages.StringField(37, repeated=True)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 38)
-  subsetting = _messages.MessageField('Subsetting', 39)
-  timeoutSec = _messages.IntegerField(40, variant=_messages.Variant.INT32)
+  serviceLbPolicy = _messages.StringField(38)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 39)
+  subsetting = _messages.MessageField('Subsetting', 40)
+  timeoutSec = _messages.IntegerField(41, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -15672,6 +15731,18 @@ class ComputeInterconnectsGetDiagnosticsRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class ComputeInterconnectsGetMacsecConfigRequest(_messages.Message):
+  r"""A ComputeInterconnectsGetMacsecConfigRequest object.
+
+  Fields:
+    interconnect: Name of the interconnect resource to query.
+    project: Project ID for this request.
+  """
+
+  interconnect = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
 class ComputeInterconnectsGetRequest(_messages.Message):
   r"""A ComputeInterconnectsGetRequest object.
 
@@ -23212,6 +23283,38 @@ class ComputeRegionInstantSnapshotsTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeRegionNetworkEndpointGroupsAttachNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsAttachNetworkEndpointsRequest
+  object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group where you are
+      attaching network endpoints to. It should comply with RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where you want to create the network
+      endpoint group. It should comply with RFC1035.
+    regionNetworkEndpointGroupsAttachEndpointsRequest: A
+      RegionNetworkEndpointGroupsAttachEndpointsRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionNetworkEndpointGroupsAttachEndpointsRequest = _messages.MessageField('RegionNetworkEndpointGroupsAttachEndpointsRequest', 4)
+  requestId = _messages.StringField(5)
+
+
 class ComputeRegionNetworkEndpointGroupsDeleteRequest(_messages.Message):
   r"""A ComputeRegionNetworkEndpointGroupsDeleteRequest object.
 
@@ -23237,6 +23340,39 @@ class ComputeRegionNetworkEndpointGroupsDeleteRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkEndpointGroupsDetachNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsDetachNetworkEndpointsRequest
+  object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group you are
+      detaching network endpoints from. It should comply with RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+    regionNetworkEndpointGroupsDetachEndpointsRequest: A
+      RegionNetworkEndpointGroupsDetachEndpointsRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000). end_interface:
+      MixerMutationRequestBuilder
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionNetworkEndpointGroupsDetachEndpointsRequest = _messages.MessageField('RegionNetworkEndpointGroupsDetachEndpointsRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionNetworkEndpointGroupsGetRequest(_messages.Message):
@@ -23280,6 +23416,79 @@ class ComputeRegionNetworkEndpointGroupsInsertRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    networkEndpointGroup: The name of the network endpoint group from which
+      you want to generate a list of included network endpoints. It should
+      comply with RFC1035.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  networkEndpointGroup = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  region = _messages.StringField(7, required=True)
+  returnPartialSuccess = _messages.BooleanField(8)
 
 
 class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
@@ -32198,6 +32407,8 @@ class Disk(_messages.Message):
       provide an encryption key when creating the disk, then the disk is
       encrypted using an automatically generated key and you don't need to
       provide a key to use the disk later.
+    enableConfidentialCompute: Whether this disk is using confidential compute
+      mode.
     eraseWindowsVssSignature: Specifies whether the disk restored from a
       source snapshot should erase Windows specific VSS signature.
     guestOsFeatures: A list of features to enable on the guest operating
@@ -32494,52 +32705,53 @@ class Disk(_messages.Message):
   creationTimestamp = _messages.StringField(4)
   description = _messages.StringField(5)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
-  eraseWindowsVssSignature = _messages.BooleanField(7)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 10)
-  kind = _messages.StringField(11, default='compute#disk')
-  labelFingerprint = _messages.BytesField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  lastAttachTimestamp = _messages.StringField(14)
-  lastDetachTimestamp = _messages.StringField(15)
-  licenseCodes = _messages.IntegerField(16, repeated=True)
-  licenses = _messages.StringField(17, repeated=True)
-  locationHint = _messages.StringField(18)
-  locked = _messages.BooleanField(19)
-  multiWriter = _messages.BooleanField(20)
-  name = _messages.StringField(21)
-  options = _messages.StringField(22)
-  params = _messages.MessageField('DiskParams', 23)
-  physicalBlockSizeBytes = _messages.IntegerField(24)
-  provisionedIops = _messages.IntegerField(25)
-  provisionedThroughput = _messages.IntegerField(26)
-  region = _messages.StringField(27)
-  replicaZones = _messages.StringField(28, repeated=True)
-  resourcePolicies = _messages.StringField(29, repeated=True)
-  resourceStatus = _messages.MessageField('DiskResourceStatus', 30)
-  satisfiesPzs = _messages.BooleanField(31)
-  selfLink = _messages.StringField(32)
-  sizeGb = _messages.IntegerField(33)
-  sourceConsistencyGroupPolicy = _messages.StringField(34)
-  sourceConsistencyGroupPolicyId = _messages.StringField(35)
-  sourceDisk = _messages.StringField(36)
-  sourceDiskId = _messages.StringField(37)
-  sourceImage = _messages.StringField(38)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 39)
-  sourceImageId = _messages.StringField(40)
-  sourceInstantSnapshot = _messages.StringField(41)
-  sourceInstantSnapshotId = _messages.StringField(42)
-  sourceSnapshot = _messages.StringField(43)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 44)
-  sourceSnapshotId = _messages.StringField(45)
-  sourceStorageObject = _messages.StringField(46)
-  status = _messages.EnumField('StatusValueValuesEnum', 47)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 48)
-  type = _messages.StringField(49)
-  userLicenses = _messages.StringField(50, repeated=True)
-  users = _messages.StringField(51, repeated=True)
-  zone = _messages.StringField(52)
+  enableConfidentialCompute = _messages.BooleanField(7)
+  eraseWindowsVssSignature = _messages.BooleanField(8)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 9, repeated=True)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 11)
+  kind = _messages.StringField(12, default='compute#disk')
+  labelFingerprint = _messages.BytesField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  lastAttachTimestamp = _messages.StringField(15)
+  lastDetachTimestamp = _messages.StringField(16)
+  licenseCodes = _messages.IntegerField(17, repeated=True)
+  licenses = _messages.StringField(18, repeated=True)
+  locationHint = _messages.StringField(19)
+  locked = _messages.BooleanField(20)
+  multiWriter = _messages.BooleanField(21)
+  name = _messages.StringField(22)
+  options = _messages.StringField(23)
+  params = _messages.MessageField('DiskParams', 24)
+  physicalBlockSizeBytes = _messages.IntegerField(25)
+  provisionedIops = _messages.IntegerField(26)
+  provisionedThroughput = _messages.IntegerField(27)
+  region = _messages.StringField(28)
+  replicaZones = _messages.StringField(29, repeated=True)
+  resourcePolicies = _messages.StringField(30, repeated=True)
+  resourceStatus = _messages.MessageField('DiskResourceStatus', 31)
+  satisfiesPzs = _messages.BooleanField(32)
+  selfLink = _messages.StringField(33)
+  sizeGb = _messages.IntegerField(34)
+  sourceConsistencyGroupPolicy = _messages.StringField(35)
+  sourceConsistencyGroupPolicyId = _messages.StringField(36)
+  sourceDisk = _messages.StringField(37)
+  sourceDiskId = _messages.StringField(38)
+  sourceImage = _messages.StringField(39)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 40)
+  sourceImageId = _messages.StringField(41)
+  sourceInstantSnapshot = _messages.StringField(42)
+  sourceInstantSnapshotId = _messages.StringField(43)
+  sourceSnapshot = _messages.StringField(44)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 45)
+  sourceSnapshotId = _messages.StringField(46)
+  sourceStorageObject = _messages.StringField(47)
+  status = _messages.EnumField('StatusValueValuesEnum', 48)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 49)
+  type = _messages.StringField(50)
+  userLicenses = _messages.StringField(51, repeated=True)
+  users = _messages.StringField(52, repeated=True)
+  zone = _messages.StringField(53)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -35622,9 +35834,11 @@ class ForwardingRule(_messages.Message):
       exclusive.
     allowGlobalAccess: This field is used along with the backend_service field
       for internal load balancing or with the target field for internal
-      TargetInstance. If the field is set to TRUE, clients can access ILB from
-      all regions. Otherwise only allows access from clients in the same
-      region as the internal load balancer.
+      TargetInstance. If set to true, clients can access the Internal TCP/UDP
+      Load Balancer, Internal HTTP(S) and TCP Proxy Load Balancer from all
+      regions. If false, only allows access from the local region the load
+      balancer is located at. Note that for INTERNAL_MANAGED forwarding rules,
+      this field cannot be changed after the forwarding rule is created.
     allowPscGlobalAccess: This is used in PSC consumer ForwardingRule to
       control whether the PSC endpoint can be accessed from another region.
     backendService: Identifies the backend service to which the forwarding
@@ -39399,6 +39613,9 @@ class Image(_messages.Message):
       property when you create the resource.
     diskSizeGb: Size of the image when restored onto a persistent disk (in
       GB).
+    enableConfidentialCompute: Whether this image is created from a
+      confidential compute mode disk. [Output Only]: This field is not set by
+      user, but from source disk.
     family: The name of the image family to which this image belongs. The
       image family name can be from a publicly managed image family provided
       by Compute Engine, or from a custom image family you create. For
@@ -39636,35 +39853,36 @@ class Image(_messages.Message):
   deprecated = _messages.MessageField('DeprecationStatus', 4)
   description = _messages.StringField(5)
   diskSizeGb = _messages.IntegerField(6)
-  family = _messages.StringField(7)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
-  kind = _messages.StringField(11, default='compute#image')
-  labelFingerprint = _messages.BytesField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  licenseCodes = _messages.IntegerField(14, repeated=True)
-  licenses = _messages.StringField(15, repeated=True)
-  locked = _messages.BooleanField(16)
-  name = _messages.StringField(17)
-  rawDisk = _messages.MessageField('RawDiskValue', 18)
-  rolloutOverride = _messages.MessageField('RolloutPolicy', 19)
-  satisfiesPzs = _messages.BooleanField(20)
-  selfLink = _messages.StringField(21)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 22)
-  sourceDisk = _messages.StringField(23)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
-  sourceDiskId = _messages.StringField(25)
-  sourceImage = _messages.StringField(26)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
-  sourceImageId = _messages.StringField(28)
-  sourceSnapshot = _messages.StringField(29)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 30)
-  sourceSnapshotId = _messages.StringField(31)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 32, default='RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 33)
-  storageLocations = _messages.StringField(34, repeated=True)
-  userLicenses = _messages.StringField(35, repeated=True)
+  enableConfidentialCompute = _messages.BooleanField(7)
+  family = _messages.StringField(8)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 9, repeated=True)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
+  kind = _messages.StringField(12, default='compute#image')
+  labelFingerprint = _messages.BytesField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  licenseCodes = _messages.IntegerField(15, repeated=True)
+  licenses = _messages.StringField(16, repeated=True)
+  locked = _messages.BooleanField(17)
+  name = _messages.StringField(18)
+  rawDisk = _messages.MessageField('RawDiskValue', 19)
+  rolloutOverride = _messages.MessageField('RolloutPolicy', 20)
+  satisfiesPzs = _messages.BooleanField(21)
+  selfLink = _messages.StringField(22)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 23)
+  sourceDisk = _messages.StringField(24)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
+  sourceDiskId = _messages.StringField(26)
+  sourceImage = _messages.StringField(27)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 28)
+  sourceImageId = _messages.StringField(29)
+  sourceSnapshot = _messages.StringField(30)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 31)
+  sourceSnapshotId = _messages.StringField(32)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 33, default='RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 34)
+  storageLocations = _messages.StringField(35, repeated=True)
+  userLicenses = _messages.StringField(36, repeated=True)
 
 
 class ImageFamilyView(_messages.Message):
@@ -45292,6 +45510,7 @@ class Interconnect(_messages.Message):
   network. For more information, read the Dedicated Interconnect Overview.
 
   Enums:
+    AvailableFeaturesValueListEntryValuesEnum:
     InterconnectTypeValueValuesEnum: Type of interconnect, which can take one
       of the following values: - PARTNER: A partner-managed interconnection
       shared between customers though a partner. - DEDICATED: A dedicated
@@ -45311,6 +45530,7 @@ class Interconnect(_messages.Message):
       OS_UNDER_MAINTENANCE: An Interconnect that is undergoing internal
       maintenance. No attachments may be provisioned or updated on this
       Interconnect.
+    RequestedFeaturesValueListEntryValuesEnum:
     StateValueValuesEnum: [Output Only] The current state of Interconnect
       functionality, which can take one of the following values: - ACTIVE: The
       Interconnect is valid, turned up and ready to use. Attachments may be
@@ -45330,6 +45550,11 @@ class Interconnect(_messages.Message):
       to true, the Interconnect is functional and can carry traffic. When set
       to false, no packets can be carried over the interconnect and no BGP
       routes are exchanged over it. By default, the status is set to true.
+    availableFeatures: [Output only] List of features available for this
+      Interconnect connection, which can take one of the following values: -
+      MACSEC If present then the interconnect was created on MACsec capable
+      hardware ports. If not present then the interconnect is provisioned on
+      non-MACsec capable ports and MACsec enablement will fail.
     circuitInfos: [Output Only] A list of CircuitInfo objects, that describe
       the individual circuits in this LAG.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -45374,6 +45599,10 @@ class Interconnect(_messages.Message):
       the speed of the entire bundle.
     location: URL of the InterconnectLocation object that represents where
       this connection is to be provisioned.
+    macsec: Configuration to enable Media Access Control security (MACsec) on
+      the Interconnect connection between Google and your on-premises router.
+    macsecEnabled: Enable or disable MACsec on this Interconnect connection.
+      MACsec enablement fails if the MACsec object is not specified.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -45404,6 +45633,13 @@ class Interconnect(_messages.Message):
     remoteLocation: Indicates that this is a Cross-Cloud Interconnect. This
       field specifies the location outside of Google's network that the
       interconnect is connected to.
+    requestedFeatures: Optional. List of features requested for this
+      Interconnect connection, which can take one of the following values: -
+      MACSEC If specified then the interconnect will be created on MACsec
+      capable hardware ports. If not specified, the default value is false,
+      which will allocate non-MACsec capable ports first if available. This
+      parameter can only be provided during interconnect INSERT and cannot be
+      changed using interconnect PATCH.
     requestedLinkCount: Target number of physical links in the link bundle, as
       requested by the customer.
     satisfiesPzs: [Output Only] Reserved for future use.
@@ -45416,6 +45652,14 @@ class Interconnect(_messages.Message):
       UNDER_MAINTENANCE: The Interconnect is undergoing internal maintenance.
       No attachments may be provisioned or updated on this Interconnect.
   """
+
+  class AvailableFeaturesValueListEntryValuesEnum(_messages.Enum):
+    r"""AvailableFeaturesValueListEntryValuesEnum enum type.
+
+    Values:
+      IF_MACSEC: Media Access Control security (MACsec)
+    """
+    IF_MACSEC = 0
 
   class InterconnectTypeValueValuesEnum(_messages.Enum):
     r"""Type of interconnect, which can take one of the following values: -
@@ -45469,6 +45713,14 @@ class Interconnect(_messages.Message):
     OS_ACTIVE = 0
     OS_UNPROVISIONED = 1
 
+  class RequestedFeaturesValueListEntryValuesEnum(_messages.Enum):
+    r"""RequestedFeaturesValueListEntryValuesEnum enum type.
+
+    Values:
+      IF_MACSEC: Media Access Control security (MACsec)
+    """
+    IF_MACSEC = 0
+
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] The current state of Interconnect functionality, which
     can take one of the following values: - ACTIVE: The Interconnect is valid,
@@ -45514,31 +45766,35 @@ class Interconnect(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   adminEnabled = _messages.BooleanField(1)
-  circuitInfos = _messages.MessageField('InterconnectCircuitInfo', 2, repeated=True)
-  creationTimestamp = _messages.StringField(3)
-  customerName = _messages.StringField(4)
-  description = _messages.StringField(5)
-  expectedOutages = _messages.MessageField('InterconnectOutageNotification', 6, repeated=True)
-  googleIpAddress = _messages.StringField(7)
-  googleReferenceId = _messages.StringField(8)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  interconnectAttachments = _messages.StringField(10, repeated=True)
-  interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 11)
-  kind = _messages.StringField(12, default='compute#interconnect')
-  labelFingerprint = _messages.BytesField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 15)
-  location = _messages.StringField(16)
-  name = _messages.StringField(17)
-  nocContactEmail = _messages.StringField(18)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 19)
-  peerIpAddress = _messages.StringField(20)
-  provisionedLinkCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  remoteLocation = _messages.StringField(22)
-  requestedLinkCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  satisfiesPzs = _messages.BooleanField(24)
-  selfLink = _messages.StringField(25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
+  availableFeatures = _messages.EnumField('AvailableFeaturesValueListEntryValuesEnum', 2, repeated=True)
+  circuitInfos = _messages.MessageField('InterconnectCircuitInfo', 3, repeated=True)
+  creationTimestamp = _messages.StringField(4)
+  customerName = _messages.StringField(5)
+  description = _messages.StringField(6)
+  expectedOutages = _messages.MessageField('InterconnectOutageNotification', 7, repeated=True)
+  googleIpAddress = _messages.StringField(8)
+  googleReferenceId = _messages.StringField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  interconnectAttachments = _messages.StringField(11, repeated=True)
+  interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 12)
+  kind = _messages.StringField(13, default='compute#interconnect')
+  labelFingerprint = _messages.BytesField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 16)
+  location = _messages.StringField(17)
+  macsec = _messages.MessageField('InterconnectMacsec', 18)
+  macsecEnabled = _messages.BooleanField(19)
+  name = _messages.StringField(20)
+  nocContactEmail = _messages.StringField(21)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 22)
+  peerIpAddress = _messages.StringField(23)
+  provisionedLinkCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  remoteLocation = _messages.StringField(25)
+  requestedFeatures = _messages.EnumField('RequestedFeaturesValueListEntryValuesEnum', 26, repeated=True)
+  requestedLinkCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  satisfiesPzs = _messages.BooleanField(28)
+  selfLink = _messages.StringField(29)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -46667,8 +46923,9 @@ class InterconnectCircuitInfo(_messages.Message):
 
 
 class InterconnectDiagnostics(_messages.Message):
-  r"""Diagnostics information about interconnect, contains detailed and
-  current technical information about Google's side of the connection.
+  r"""Diagnostics information about the Interconnect connection, which
+  contains detailed and current technical information about Google's side of
+  the connection.
 
   Enums:
     BundleAggregationTypeValueValuesEnum: The aggregation type of the bundle
@@ -46843,6 +47100,7 @@ class InterconnectDiagnosticsLinkStatus(_messages.Message):
     googleDemarc: The Demarc address assigned by Google and provided in the
       LoA.
     lacpStatus: A InterconnectDiagnosticsLinkLACPStatus attribute.
+    macsec: Describes the status of MACsec encryption on this link.
     operationalStatus: The operational status of the link.
     receivingOpticalPower: An InterconnectDiagnostics.LinkOpticalPower object,
       describing the current value and status of the received light level.
@@ -46867,9 +47125,23 @@ class InterconnectDiagnosticsLinkStatus(_messages.Message):
   circuitId = _messages.StringField(2)
   googleDemarc = _messages.StringField(3)
   lacpStatus = _messages.MessageField('InterconnectDiagnosticsLinkLACPStatus', 4)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 5)
-  receivingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 6)
-  transmittingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 7)
+  macsec = _messages.MessageField('InterconnectDiagnosticsMacsecStatus', 5)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 6)
+  receivingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 7)
+  transmittingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 8)
+
+
+class InterconnectDiagnosticsMacsecStatus(_messages.Message):
+  r"""Describes the status of MACsec encryption on the link.
+
+  Fields:
+    ckn: Indicates the Connectivity Association Key Name (CKN) currently being
+      used if MACsec is operational.
+    operational: Indicates whether or not MACsec is operational on this link.
+  """
+
+  ckn = _messages.StringField(1)
+  operational = _messages.BooleanField(2)
 
 
 class InterconnectList(_messages.Message):
@@ -47042,6 +47314,8 @@ class InterconnectLocation(_messages.Message):
   VLAN Attachments.
 
   Enums:
+    AvailableFeaturesValueListEntryValuesEnum:
+    AvailableLinkTypesValueListEntryValuesEnum:
     ContinentValueValuesEnum: [Output Only] Continent for this location, which
       can take one of the following values: - AFRICA - ASIA_PAC - EUROPE -
       NORTH_AMERICA - SOUTH_AMERICA
@@ -47058,6 +47332,12 @@ class InterconnectLocation(_messages.Message):
       InterconnectLocation. Within a metropolitan area (metro), maintenance
       will not be simultaneously scheduled in more than one availability zone.
       Example: "zone1" or "zone2".
+    availableFeatures: [Output only] List of features available at this
+      InterconnectLocation, which can take one of the following values: -
+      MACSEC
+    availableLinkTypes: [Output only] List of link types available at this
+      InterconnectLocation, which can take one of the following values: -
+      LINK_TYPE_ETHERNET_10G_LR - LINK_TYPE_ETHERNET_100G_LR
     city: [Output Only] Metropolitan area designator that indicates which city
       an interconnect is located. For example: "Chicago, IL", "Amsterdam,
       Netherlands".
@@ -47089,6 +47369,25 @@ class InterconnectLocation(_messages.Message):
       Interconnects.
     supportsPzs: [Output Only] Reserved for future use.
   """
+
+  class AvailableFeaturesValueListEntryValuesEnum(_messages.Enum):
+    r"""AvailableFeaturesValueListEntryValuesEnum enum type.
+
+    Values:
+      IF_MACSEC: Media Access Control security (MACsec)
+    """
+    IF_MACSEC = 0
+
+  class AvailableLinkTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""AvailableLinkTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      LINK_TYPE_ETHERNET_100G_LR: 100G Ethernet, LR Optics.
+      LINK_TYPE_ETHERNET_10G_LR: 10G Ethernet, LR Optics. [(rate_bps) =
+        10000000000];
+    """
+    LINK_TYPE_ETHERNET_100G_LR = 0
+    LINK_TYPE_ETHERNET_10G_LR = 1
 
   class ContinentValueValuesEnum(_messages.Enum):
     r"""[Output Only] Continent for this location, which can take one of the
@@ -47135,20 +47434,22 @@ class InterconnectLocation(_messages.Message):
 
   address = _messages.StringField(1)
   availabilityZone = _messages.StringField(2)
-  city = _messages.StringField(3)
-  continent = _messages.EnumField('ContinentValueValuesEnum', 4)
-  creationTimestamp = _messages.StringField(5)
-  description = _messages.StringField(6)
-  facilityProvider = _messages.StringField(7)
-  facilityProviderFacilityId = _messages.StringField(8)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default='compute#interconnectLocation')
-  name = _messages.StringField(11)
-  peeringdbFacilityId = _messages.StringField(12)
-  regionInfos = _messages.MessageField('InterconnectLocationRegionInfo', 13, repeated=True)
-  selfLink = _messages.StringField(14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  supportsPzs = _messages.BooleanField(16)
+  availableFeatures = _messages.EnumField('AvailableFeaturesValueListEntryValuesEnum', 3, repeated=True)
+  availableLinkTypes = _messages.EnumField('AvailableLinkTypesValueListEntryValuesEnum', 4, repeated=True)
+  city = _messages.StringField(5)
+  continent = _messages.EnumField('ContinentValueValuesEnum', 6)
+  creationTimestamp = _messages.StringField(7)
+  description = _messages.StringField(8)
+  facilityProvider = _messages.StringField(9)
+  facilityProviderFacilityId = _messages.StringField(10)
+  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(12, default='compute#interconnectLocation')
+  name = _messages.StringField(13)
+  peeringdbFacilityId = _messages.StringField(14)
+  regionInfos = _messages.MessageField('InterconnectLocationRegionInfo', 15, repeated=True)
+  selfLink = _messages.StringField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  supportsPzs = _messages.BooleanField(18)
 
 
 class InterconnectLocationList(_messages.Message):
@@ -47352,6 +47653,86 @@ class InterconnectLocationRegionInfo(_messages.Message):
   expectedRttMs = _messages.IntegerField(1)
   locationPresence = _messages.EnumField('LocationPresenceValueValuesEnum', 2)
   region = _messages.StringField(3)
+
+
+class InterconnectMacsec(_messages.Message):
+  r"""Configuration information for enabling Media Access Control security
+  (MACsec) on this Interconnect connection between Google and your on-premises
+  router.
+
+  Fields:
+    failOpen: If set to true, the Interconnect connection is configured with a
+      should-secure MACsec security policy, that allows the Google router to
+      fallback to cleartext traffic if the MKA session cannot be established.
+      By default, the Interconnect connection is configured with a must-secure
+      security policy that drops all traffic if the MKA session cannot be
+      established with your router.
+    preSharedKeys: Required. A keychain placeholder describing a set of named
+      key objects along with their start times. A MACsec CKN/CAK will be
+      generated for each key in the key chain. Google router will
+      automatically pick the key with the most recent startTime when
+      establishing or re-establishing a MACsec secure link.
+  """
+
+  failOpen = _messages.BooleanField(1)
+  preSharedKeys = _messages.MessageField('InterconnectMacsecPreSharedKey', 2, repeated=True)
+
+
+class InterconnectMacsecConfig(_messages.Message):
+  r"""MACsec configuration information for the Interconnect connection.
+  Contains the generated Connectivity Association Key Name (CKN) and the key
+  (CAK) for this Interconnect connection.
+
+  Fields:
+    preSharedKeys: A keychain placeholder describing a set of named key
+      objects along with their start times. A MACsec CKN/CAK is generated for
+      each key in the key chain. Google router automatically picks the key
+      with the most recent startTime when establishing or re-establishing a
+      MACsec secure link.
+  """
+
+  preSharedKeys = _messages.MessageField('InterconnectMacsecConfigPreSharedKey', 1, repeated=True)
+
+
+class InterconnectMacsecConfigPreSharedKey(_messages.Message):
+  r"""Describes a pre-shared key used to setup MACsec in static connectivity
+  association key (CAK) mode.
+
+  Fields:
+    cak: An auto-generated Connectivity Association Key (CAK) for this key.
+    ckn: An auto-generated Connectivity Association Key Name (CKN) for this
+      key.
+    name: User provided name for this pre-shared key.
+    startTime: User provided timestamp on or after which this key is valid.
+  """
+
+  cak = _messages.StringField(1)
+  ckn = _messages.StringField(2)
+  name = _messages.StringField(3)
+  startTime = _messages.StringField(4)
+
+
+class InterconnectMacsecPreSharedKey(_messages.Message):
+  r"""Describes a pre-shared key used to setup MACsec in static connectivity
+  association key (CAK) mode.
+
+  Fields:
+    name: Required. A name for this pre-shared key. The name must be 1-63
+      characters long, and comply with RFC1035. Specifically, the name must be
+      1-63 characters long and match the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
+      lowercase letter, and all following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash.
+    startTime: A RFC3339 timestamp on or after which the key is valid.
+      startTime can be in the future. If the keychain has a single key,
+      startTime can be omitted. If the keychain has multiple keys, startTime
+      is mandatory for each key. The start times of keys must be in increasing
+      order. The start times of two consecutive keys must be at least 6 hours
+      apart.
+  """
+
+  name = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class InterconnectOutageNotification(_messages.Message):
@@ -47907,6 +48288,18 @@ class InterconnectsGetDiagnosticsResponse(_messages.Message):
   """
 
   result = _messages.MessageField('InterconnectDiagnostics', 1)
+
+
+class InterconnectsGetMacsecConfigResponse(_messages.Message):
+  r"""Response for the InterconnectsGetMacsecConfigRequest.
+
+  Fields:
+    etag: end_interface: MixerGetResponseWithEtagBuilder
+    result: A InterconnectMacsecConfig attribute.
+  """
+
+  etag = _messages.StringField(1)
+  result = _messages.MessageField('InterconnectMacsecConfig', 2)
 
 
 class License(_messages.Message):
@@ -55744,57 +56137,62 @@ class OutlierDetection(_messages.Message):
   balancing pool for the backend service.
 
   Fields:
-    baseEjectionTime: The base time that a host is ejected for. The real
-      ejection time is equal to the base ejection time multiplied by the
-      number of times the host has been ejected. Defaults to 30000ms or 30s.
-    consecutiveErrors: Number of errors before a host is ejected from the
-      connection pool. When the backend host is accessed over HTTP, a 5xx
-      return code qualifies as an error. Defaults to 5. Not supported when the
-      backend service is referenced by a URL map that is bound to target gRPC
-      proxy that has validateForProxyless field set to true.
+    baseEjectionTime: The base time that a backend endpoint is ejected for.
+      Defaults to 30000ms or 30s. After a backend endpoint is returned back to
+      the load balancing pool, it can be ejected again in another ejection
+      analysis. Thus, the total ejection time is equal to the base ejection
+      time multiplied by the number of times the backend endpoint has been
+      ejected. Defaults to 30000ms or 30s.
+    consecutiveErrors: Number of consecutive errors before a backend endpoint
+      is ejected from the load balancing pool. When the backend endpoint is
+      accessed over HTTP, a 5xx return code qualifies as an error. Defaults to
+      5.
     consecutiveGatewayFailure: The number of consecutive gateway failures
       (502, 503, 504 status or connection errors that are mapped to one of
       those status codes) before a consecutive gateway failure ejection
-      occurs. Defaults to 3. Not supported when the backend service is
-      referenced by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
-    enforcingConsecutiveErrors: The percentage chance that a host will be
-      actually ejected when an outlier status is detected through consecutive
+      occurs. Defaults to 3.
+    enforcingConsecutiveErrors: The percentage chance that a backend endpoint
+      will be ejected when an outlier status is detected through consecutive
       5xx. This setting can be used to disable ejection or to ramp it up
-      slowly. Defaults to 0. Not supported when the backend service is
-      referenced by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
-    enforcingConsecutiveGatewayFailure: The percentage chance that a host will
-      be actually ejected when an outlier status is detected through
+      slowly. Defaults to 0.
+    enforcingConsecutiveGatewayFailure: The percentage chance that a backend
+      endpoint will be ejected when an outlier status is detected through
       consecutive gateway failures. This setting can be used to disable
-      ejection or to ramp it up slowly. Defaults to 100. Not supported when
-      the backend service is referenced by a URL map that is bound to target
-      gRPC proxy that has validateForProxyless field set to true.
-    enforcingSuccessRate: The percentage chance that a host will be actually
-      ejected when an outlier status is detected through success rate
+      ejection or to ramp it up slowly. Defaults to 100.
+    enforcingSuccessRate: The percentage chance that a backend endpoint will
+      be ejected when an outlier status is detected through success rate
       statistics. This setting can be used to disable ejection or to ramp it
-      up slowly. Defaults to 100.
+      up slowly. Defaults to 100. Not supported when the backend service uses
+      Serverless NEG.
     interval: Time interval between ejection analysis sweeps. This can result
-      in both new ejections as well as hosts being returned to service.
-      Defaults to 1 second.
-    maxEjectionPercent: Maximum percentage of hosts in the load balancing pool
-      for the backend service that can be ejected. Defaults to 50%.
-    successRateMinimumHosts: The number of hosts in a cluster that must have
-      enough request volume to detect success rate outliers. If the number of
-      hosts is less than this setting, outlier detection via success rate
-      statistics is not performed for any host in the cluster. Defaults to 5.
+      in both new ejections and backend endpoints being returned to service.
+      The interval is equal to the number of seconds as defined in
+      outlierDetection.interval.seconds plus the number of nanoseconds as
+      defined in outlierDetection.interval.nanos. Defaults to 1 second.
+    maxEjectionPercent: Maximum percentage of backend endpoints in the load
+      balancing pool for the backend service that can be ejected if the
+      ejection conditions are met. Defaults to 50%.
+    successRateMinimumHosts: The number of backend endpoints in the load
+      balancing pool that must have enough request volume to detect success
+      rate outliers. If the number of backend endpoints is fewer than this
+      setting, outlier detection via success rate statistics is not performed
+      for any backend endpoint in the load balancing pool. Defaults to 5. Not
+      supported when the backend service uses Serverless NEG.
     successRateRequestVolume: The minimum number of total requests that must
       be collected in one interval (as defined by the interval duration above)
-      to include this host in success rate based outlier detection. If the
-      volume is lower than this setting, outlier detection via success rate
-      statistics is not performed for that host. Defaults to 100.
+      to include this backend endpoint in success rate based outlier
+      detection. If the volume is lower than this setting, outlier detection
+      via success rate statistics is not performed for that backend endpoint.
+      Defaults to 100. Not supported when the backend service uses Serverless
+      NEG.
     successRateStdevFactor: This factor is used to determine the ejection
       threshold for success rate outlier ejection. The ejection threshold is
       the difference between the mean success rate, and the product of this
       factor and the standard deviation of the mean success rate: mean -
-      (stdev * success_rate_stdev_factor). This factor is divided by a
-      thousand to get a double. That is, if the desired factor is 1.9, the
-      runtime value should be 1900. Defaults to 1900.
+      (stdev * successRateStdevFactor). This factor is divided by a thousand
+      to get a double. That is, if the desired factor is 1.9, the runtime
+      value should be 1900. Defaults to 1900. Not supported when the backend
+      service uses Serverless NEG.
   """
 
   baseEjectionTime = _messages.MessageField('Duration', 1)
@@ -57612,7 +58010,7 @@ class PublicDelegatedPrefix(_messages.Message):
       retrieve a PublicDelegatedPrefix.
     id: [Output Only] The unique identifier for the resource type. The server
       generates this identifier.
-    ipCidrRange: The IPv4 address range, in CIDR format, represented by this
+    ipCidrRange: The IP address range, in CIDR format, represented by this
       public delegated prefix.
     isLiveMigration: If true, the prefix will be live migrated.
     kind: [Output Only] Type of the resource. Always
@@ -58044,8 +58442,8 @@ class PublicDelegatedPrefixPublicDelegatedSubPrefix(_messages.Message):
       PublicDelegatedSubPrefix.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    ipCidrRange: The IPv4 address range, in CIDR format, represented by this
-      sub public delegated prefix.
+    ipCidrRange: The IP address range, in CIDR format, represented by this sub
+      public delegated prefix.
     isAddress: Whether the sub prefix is delegated to create Address resources
       in the delegatee project.
     name: The name of the sub public delegated prefix.
@@ -60198,6 +60596,26 @@ class RegionList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class RegionNetworkEndpointGroupsAttachEndpointsRequest(_messages.Message):
+  r"""A RegionNetworkEndpointGroupsAttachEndpointsRequest object.
+
+  Fields:
+    networkEndpoints: The list of network endpoints to be attached.
+  """
+
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 1, repeated=True)
+
+
+class RegionNetworkEndpointGroupsDetachEndpointsRequest(_messages.Message):
+  r"""A RegionNetworkEndpointGroupsDetachEndpointsRequest object.
+
+  Fields:
+    networkEndpoints: The list of network endpoints to be detached.
+  """
+
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 1, repeated=True)
 
 
 class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse(_messages.Message):
@@ -63383,6 +63801,8 @@ class RouterNat(_messages.Message):
       SUBNETWORK_IP_RANGE_TO_NAT_OPTION_UNSPECIFIED. Note that if this field
       contains ALL_SUBNETWORKS_ALL_IP_RANGES then there should not be any
       other Router.Nat section in any Router for this network in this region.
+    TypeValueValuesEnum: Indicates whether this NAT is used for public or
+      private IP translation. If unspecified, it defaults to PUBLIC.
 
   Fields:
     autoNetworkTier: The network tier to use when automatically reserving IP
@@ -63447,6 +63867,8 @@ class RouterNat(_messages.Message):
       in TIME_WAIT state. Defaults to 120s if not set.
     tcpTransitoryIdleTimeoutSec: Timeout (in seconds) for TCP transitory
       connections. Defaults to 30s if not set.
+    type: Indicates whether this NAT is used for public or private IP
+      translation. If unspecified, it defaults to PUBLIC.
     udpIdleTimeoutSec: Timeout (in seconds) for UDP connections. Defaults to
       30s if not set.
   """
@@ -63474,11 +63896,14 @@ class RouterNat(_messages.Message):
     r"""EndpointTypesValueListEntryValuesEnum enum type.
 
     Values:
+      ENDPOINT_TYPE_MANAGED_PROXY_LB: This is used for Regional
+        Internal/External HTTP(S) and TCP Proxy load balancer endpoints.
       ENDPOINT_TYPE_SWG: This is used for Secure Web Gateway endpoints.
       ENDPOINT_TYPE_VM: This is the default.
     """
-    ENDPOINT_TYPE_SWG = 0
-    ENDPOINT_TYPE_VM = 1
+    ENDPOINT_TYPE_MANAGED_PROXY_LB = 0
+    ENDPOINT_TYPE_SWG = 1
+    ENDPOINT_TYPE_VM = 2
 
   class NatIpAllocateOptionValueValuesEnum(_messages.Enum):
     r"""Specify the NatIpAllocateOption, which can take one of the following
@@ -63520,6 +63945,17 @@ class RouterNat(_messages.Message):
     ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES = 1
     LIST_OF_SUBNETWORKS = 2
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Indicates whether this NAT is used for public or private IP
+    translation. If unspecified, it defaults to PUBLIC.
+
+    Values:
+      PRIVATE: NAT used for private IP translation.
+      PUBLIC: NAT used for public IP translation. This is the default.
+    """
+    PRIVATE = 0
+    PUBLIC = 1
+
   autoNetworkTier = _messages.EnumField('AutoNetworkTierValueValuesEnum', 1)
   drainNatIps = _messages.StringField(2, repeated=True)
   enableDynamicPortAllocation = _messages.BooleanField(3)
@@ -63538,7 +63974,8 @@ class RouterNat(_messages.Message):
   tcpEstablishedIdleTimeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
   tcpTimeWaitTimeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
   tcpTransitoryIdleTimeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  udpIdleTimeoutSec = _messages.IntegerField(20, variant=_messages.Variant.INT32)
 
 
 class RouterNatLogConfig(_messages.Message):
@@ -63617,14 +64054,23 @@ class RouterNatRuleAction(_messages.Message):
     sourceNatActiveIps: A list of URLs of the IP resources used for this NAT
       rule. These IP addresses must be valid static external IP addresses
       assigned to the project. This field is used for public NAT.
+    sourceNatActiveRanges: A list of URLs of the subnetworks used as source
+      ranges for this NAT Rule. These subnetworks must have purpose set to
+      PRIVATE_NAT. This field is used for private NAT.
     sourceNatDrainIps: A list of URLs of the IP resources to be drained. These
       IPs must be valid static external IPs that have been assigned to the
       NAT. These IPs should be used for updating/patching a NAT rule only.
       This field is used for public NAT.
+    sourceNatDrainRanges: A list of URLs of subnetworks representing source
+      ranges to be drained. This is only supported on patch/update, and these
+      subnetworks must have previously been used as active ranges in this NAT
+      Rule. This field is used for private NAT.
   """
 
   sourceNatActiveIps = _messages.StringField(1, repeated=True)
-  sourceNatDrainIps = _messages.StringField(2, repeated=True)
+  sourceNatActiveRanges = _messages.StringField(2, repeated=True)
+  sourceNatDrainIps = _messages.StringField(3, repeated=True)
+  sourceNatDrainRanges = _messages.StringField(4, repeated=True)
 
 
 class RouterNatSubnetworkToNat(_messages.Message):
@@ -65154,6 +65600,8 @@ class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(_messages.Me
     ruleVisibility: Rule visibility can be one of the following: STANDARD -
       opaque rules. (default) PREMIUM - transparent rules. This field is only
       supported in Global Security Policies of type CLOUD_ARMOR.
+    thresholdConfigs: Configuration options for layer7 adaptive protection for
+      various customizable thresholds.
   """
 
   class RuleVisibilityValueValuesEnum(_messages.Enum):
@@ -65170,6 +65618,28 @@ class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(_messages.Me
 
   enable = _messages.BooleanField(1)
   ruleVisibility = _messages.EnumField('RuleVisibilityValueValuesEnum', 2)
+  thresholdConfigs = _messages.MessageField('SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfig', 3, repeated=True)
+
+
+class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfig(_messages.Message):
+  r"""A
+  SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfig
+  object.
+
+  Fields:
+    autoDeployConfidenceThreshold: A number attribute.
+    autoDeployExpirationSec: A integer attribute.
+    autoDeployImpactedBaselineThreshold: A number attribute.
+    autoDeployLoadThreshold: A number attribute.
+    name: The name must be 1-63 characters long, and comply with RFC1035. The
+      name must be unique within the security policy.
+  """
+
+  autoDeployConfidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  autoDeployExpirationSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  autoDeployImpactedBaselineThreshold = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  autoDeployLoadThreshold = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(5)
 
 
 class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
@@ -65194,9 +65664,11 @@ class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
     Values:
       DISABLED: <no description>
       STANDARD: <no description>
+      STANDARD_WITH_GRAPHQL: <no description>
     """
     DISABLED = 0
     STANDARD = 1
+    STANDARD_WITH_GRAPHQL = 2
 
   class LogLevelValueValuesEnum(_messages.Enum):
     r"""LogLevelValueValuesEnum enum type.
@@ -67191,6 +67663,9 @@ class Snapshot(_messages.Message):
     diskSizeGb: [Output Only] Size of the source disk, specified in GB.
     downloadBytes: [Output Only] Number of bytes downloaded to restore a
       snapshot to a disk.
+    enableConfidentialCompute: Whether this snapshot is created from a
+      confidential compute mode disk. [Output Only]: This field is not set by
+      user, but from source disk.
     guestFlush: [Input Only] Whether to attempt an application consistent
       snapshot by informing the OS to prepare for the snapshot process.
     guestOsFeatures: [Output Only] A list of features to enable on the guest
@@ -67367,33 +67842,34 @@ class Snapshot(_messages.Message):
   description = _messages.StringField(6)
   diskSizeGb = _messages.IntegerField(7)
   downloadBytes = _messages.IntegerField(8)
-  guestFlush = _messages.BooleanField(9)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 10, repeated=True)
-  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(12, default='compute#snapshot')
-  labelFingerprint = _messages.BytesField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  licenseCodes = _messages.IntegerField(15, repeated=True)
-  licenses = _messages.StringField(16, repeated=True)
-  locationHint = _messages.StringField(17)
-  name = _messages.StringField(18)
-  satisfiesPzs = _messages.BooleanField(19)
-  selfLink = _messages.StringField(20)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
-  snapshotType = _messages.EnumField('SnapshotTypeValueValuesEnum', 22)
-  sourceDisk = _messages.StringField(23)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
-  sourceDiskId = _messages.StringField(25)
-  sourceInstantSnapshot = _messages.StringField(26)
-  sourceInstantSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
-  sourceInstantSnapshotId = _messages.StringField(28)
-  sourceSnapshotSchedulePolicy = _messages.StringField(29)
-  sourceSnapshotSchedulePolicyId = _messages.StringField(30)
-  status = _messages.EnumField('StatusValueValuesEnum', 31)
-  storageBytes = _messages.IntegerField(32)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 33)
-  storageLocations = _messages.StringField(34, repeated=True)
-  userLicenses = _messages.StringField(35, repeated=True)
+  enableConfidentialCompute = _messages.BooleanField(9)
+  guestFlush = _messages.BooleanField(10)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 11, repeated=True)
+  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(13, default='compute#snapshot')
+  labelFingerprint = _messages.BytesField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  licenseCodes = _messages.IntegerField(16, repeated=True)
+  licenses = _messages.StringField(17, repeated=True)
+  locationHint = _messages.StringField(18)
+  name = _messages.StringField(19)
+  satisfiesPzs = _messages.BooleanField(20)
+  selfLink = _messages.StringField(21)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
+  snapshotType = _messages.EnumField('SnapshotTypeValueValuesEnum', 23)
+  sourceDisk = _messages.StringField(24)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
+  sourceDiskId = _messages.StringField(26)
+  sourceInstantSnapshot = _messages.StringField(27)
+  sourceInstantSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 28)
+  sourceInstantSnapshotId = _messages.StringField(29)
+  sourceSnapshotSchedulePolicy = _messages.StringField(30)
+  sourceSnapshotSchedulePolicyId = _messages.StringField(31)
+  status = _messages.EnumField('StatusValueValuesEnum', 32)
+  storageBytes = _messages.IntegerField(33)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 34)
+  storageLocations = _messages.StringField(35, repeated=True)
+  userLicenses = _messages.StringField(36, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -69670,6 +70146,7 @@ class Subnetwork(_messages.Message):
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
         Balancing.
       PRIVATE: Regular user created or automatically created subnet.
+      PRIVATE_NAT: Subnetwork used as source range for Private NAT Gateways.
       PRIVATE_RFC_1918: Regular user created or automatically created subnet.
       PRIVATE_SERVICE_CONNECT: Subnetworks created for Private Service Connect
         in the producer network.
@@ -69678,9 +70155,10 @@ class Subnetwork(_messages.Message):
     """
     INTERNAL_HTTPS_LOAD_BALANCER = 0
     PRIVATE = 1
-    PRIVATE_RFC_1918 = 2
-    PRIVATE_SERVICE_CONNECT = 3
-    REGIONAL_MANAGED_PROXY = 4
+    PRIVATE_NAT = 2
+    PRIVATE_RFC_1918 = 3
+    PRIVATE_SERVICE_CONNECT = 4
+    REGIONAL_MANAGED_PROXY = 5
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when
@@ -75900,6 +76378,7 @@ class UsableSubnetwork(_messages.Message):
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
         Balancing.
       PRIVATE: Regular user created or automatically created subnet.
+      PRIVATE_NAT: Subnetwork used as source range for Private NAT Gateways.
       PRIVATE_RFC_1918: Regular user created or automatically created subnet.
       PRIVATE_SERVICE_CONNECT: Subnetworks created for Private Service Connect
         in the producer network.
@@ -75908,9 +76387,10 @@ class UsableSubnetwork(_messages.Message):
     """
     INTERNAL_HTTPS_LOAD_BALANCER = 0
     PRIVATE = 1
-    PRIVATE_RFC_1918 = 2
-    PRIVATE_SERVICE_CONNECT = 3
-    REGIONAL_MANAGED_PROXY = 4
+    PRIVATE_NAT = 2
+    PRIVATE_RFC_1918 = 3
+    PRIVATE_SERVICE_CONNECT = 4
+    REGIONAL_MANAGED_PROXY = 5
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when

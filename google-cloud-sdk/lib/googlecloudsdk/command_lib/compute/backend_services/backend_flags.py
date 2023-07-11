@@ -293,13 +293,14 @@ def _GetPreference():
   """Returns the --preference flag value choices name:description dict."""
   preferences = {
       'DEFAULT': textwrap.dedent("""
-          If preferred backends don't have enough capacity, backends in this
-          layer would be used and traffic would be assigned based on the load
-          balancing algorithm you use. This is the default.
+          This is the default setting. If the designated preferred backends
+          don't have enough capacity, backends in the default category are used.
+          Traffic is distributed between default backends based on the load
+          balancing algorithm you use.
           """),
       'PREFERRED': textwrap.dedent("""
-          Backends with this preference level will be filled up to their
-          capacity limits first, based on RTT.
+          Backends with this preference setting are used up to their capacity
+          limits first, while optimizing overall network latency.
           """),
   }
   return preferences
@@ -308,13 +309,13 @@ def _GetPreference():
 def AddPreference(parser):
   """Adds preference argument to the argparse."""
   help_text = """\
-  Defines whether this backend should be fully utilized before
+  Defines whether a backend should be fully utilized before
   sending traffic to backends with default preference.
   """
   incompatible_types = ['INTERNET_IP_PORT', 'INTERNET_FQDN_PORT', 'SERVERLESS']
   help_text += """\
-  This cannot be used with regional managed instance groups and when the
-  endpoint type of an attached network endpoint group is {0}.
+  This parameter cannot be used with regional managed instance groups and when
+  the endpoint type of an attached network endpoint group is {0}.
   """.format(_JoinTypes(incompatible_types))
   parser.add_argument(
       '--preference',

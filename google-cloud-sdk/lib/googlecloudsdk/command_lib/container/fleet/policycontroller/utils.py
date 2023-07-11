@@ -170,10 +170,6 @@ def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
 def set_template_library_config(enabled, poco_hub_config, messages):
   """Sets the given Policy Controller Hub Config object's TemplateLibraryConfig.
 
-  During b/275380338, the TemplateLibraryConfig lives in two locations and has
-  two fields representing the desired installation.  This method wraps this
-  complexity.
-
   Args:
     enabled: boolean installation of the template library
     poco_hub_config: current config object read from GKE Hub API
@@ -189,16 +185,13 @@ def set_template_library_config(enabled, poco_hub_config, messages):
       else messages.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.NOT_INSTALLED
   )
 
-  # Set both the new `installation` and the old `included`
   library_config = messages.PolicyControllerTemplateLibraryConfig(
-      included=enabled, installation=install
+      installation=install
   )
 
-  # Insert the TemplateLibraryConfig in both new and old locations (for now)
   if poco_hub_config.policyContent is None:
     poco_hub_config.policyContent = messages.PolicyControllerPolicyContentSpec()
   poco_hub_config.policyContent.templateLibrary = library_config
-  poco_hub_config.templateLibraryConfig = library_config
 
 
 def build_poco_monitoring_config(backends_list, messages):

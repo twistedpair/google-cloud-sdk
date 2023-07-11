@@ -36,10 +36,14 @@ def ListBackups(project, location):
   Returns:
     a List of Backups.
   """
-  return _GetBackupService().List(
-      api_utils.GetMessages().FirestoreProjectsLocationsBackupsListRequest(
-          parent='projects/{}/locations/{}'.format(project, location)
+  return list(
+      _GetBackupService()
+      .List(
+          api_utils.GetMessages().FirestoreProjectsLocationsBackupsListRequest(
+              parent='projects/{}/locations/{}'.format(project, location)
+          )
       )
+      .backups
   )
 
 

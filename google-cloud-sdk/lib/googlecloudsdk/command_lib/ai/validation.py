@@ -123,9 +123,3 @@ def ValidateEndpointArgs(network=None, public_endpoint_enabled=None):
         ' --public-endpoint-enabled',
         'for public enpdoint.',
     )
-  if network is None and not public_endpoint_enabled:
-    raise exceptions.InvalidArgumentException(
-        'Please either set --network for private endpoint, or set'
-        ' --public-endpoint-enabled',
-        'for public enpdoint.',
-    )

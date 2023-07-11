@@ -360,29 +360,11 @@ class BundleInstallSpec(_messages.Message):
   r"""BundleInstallSpec is the specification configuration for a single
   managed bundle.
 
-  Enums:
-    ManagementValueValuesEnum: Management specifies how the bundle will be
-      managed by the controller.
-
   Fields:
-    exemptedNamespaces: the set of namespaces to be exempted from the bundle
-    management: Management specifies how the bundle will be managed by the
-      controller.
+    exemptedNamespaces: The set of namespaces to be exempted from the bundle.
   """
 
-  class ManagementValueValuesEnum(_messages.Enum):
-    r"""Management specifies how the bundle will be managed by the controller.
-
-    Values:
-      MANAGEMENT_UNSPECIFIED: No Management strategy has been specified.
-      INSTALLED: The entity should be insistently reconciled by the Hub
-        controller.
-    """
-    MANAGEMENT_UNSPECIFIED = 0
-    INSTALLED = 1
-
   exemptedNamespaces = _messages.StringField(1, repeated=True)
-  management = _messages.EnumField('ManagementValueValuesEnum', 2)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -647,37 +629,37 @@ class ConfigSync(_messages.Message):
       false which disallows vertical scaling. This field is deprecated.
     enabled: Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
-      will be applied if exist. If set to false and Managed Config Sync is
-      disabled, all other ConfigSync fields will be ignored, ConfigSync
-      resources will be deleted. Setting this field to false while enabling
-      Managed Config Sync is invalid. If omitted, ConfigSync resources will be
-      managed if: * the git or oci field is present; or * Managed Config Sync
-      is enabled (i.e., managed.enabled is true).
+      will be applied if exist. If set to false, all other ConfigSync fields
+      will be ignored, ConfigSync resources will be deleted. If omitted,
+      ConfigSync resources will be managed depends on the presence of the git
+      or oci field.
     git: Git repo configuration for the cluster.
-    managed: Configuration for Managed Config Sync.
-    metricsGcpServiceAccountEmail: The Email of the GCP Service Account (GSA)
-      used for exporting Config Sync metrics to Cloud Monitoring and Cloud
-      Monarch when Workload Identity is enabled. The GSA should have the
-      Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role. The
-      Kubernetes ServiceAccount `default` in the namespace `config-management-
-      monitoring` should be binded to the GSA. This field is required when
-      Managed Config Sync is enabled.
+    metricsGcpServiceAccountEmail: The Email of the Google Cloud Service
+      Account (GSA) used for exporting Config Sync metrics to Cloud Monitoring
+      and Cloud Monarch when Workload Identity is enabled. The GSA should have
+      the Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role.
+      The Kubernetes ServiceAccount `default` in the namespace `config-
+      management-monitoring` should be binded to the GSA. This field is
+      required when automatic Feature management is enabled.
     oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. Defaults to false which disables the Config Sync
       admission webhook and does not prevent drifts.
     sourceFormat: Specifies whether the Config Sync Repo is in "hierarchical"
       or "unstructured" mode.
+    stopSyncing: Set to true to stop syncing configs for a single cluster when
+      automatic Feature management is enabled. Default to false. The field
+      will be ignored when automatic Feature management is disabled.
   """
 
   allowVerticalScale = _messages.BooleanField(1)
   enabled = _messages.BooleanField(2)
   git = _messages.MessageField('GitConfig', 3)
-  managed = _messages.MessageField('Managed', 4)
-  metricsGcpServiceAccountEmail = _messages.StringField(5)
-  oci = _messages.MessageField('OciConfig', 6)
-  preventDrift = _messages.BooleanField(7)
-  sourceFormat = _messages.StringField(8)
+  metricsGcpServiceAccountEmail = _messages.StringField(4)
+  oci = _messages.MessageField('OciConfig', 5)
+  preventDrift = _messages.BooleanField(6)
+  sourceFormat = _messages.StringField(7)
+  stopSyncing = _messages.BooleanField(8)
 
 
 class ConfigSyncDeploymentState(_messages.Message):
@@ -1613,18 +1595,11 @@ class FleetDefaultMemberConfig(_messages.Message):
       applied to all existing Memberships in addition to any future
       Memberships.
     serviceMesh: Spec for ServiceMesh.
-    setTime: Timestamp for when the default member configuration was first
-      set. This timestamp is used in situations where a Fleet has existing
-      Memberships that were active before default member configuration was
-      set. Controllers can compare this timestamp to the Membership creation
-      timestamp in order to identify whether the Membership needs to be
-      processed.
   """
 
   identityService = _messages.MessageField('MemberConfig', 1)
   retroactiveApply = _messages.BooleanField(2)
   serviceMesh = _messages.MessageField('ServiceMeshMembershipSpec', 3)
-  setTime = _messages.StringField(4)
 
 
 class FleetObservabilityBaseFeatureState(_messages.Message):
@@ -2624,22 +2599,6 @@ class LoggingConfig(_messages.Message):
   fleetScopeLogsConfig = _messages.MessageField('RoutingConfig', 2)
 
 
-class Managed(_messages.Message):
-  r"""Configuration for Managed Config Sync.
-
-  Fields:
-    enabled: Set to true to enable Managed Config Sync. Defaults to false
-      which disables Managed Config Sync. Setting this field to true when
-      configSync.enabled is false is invalid.
-    stopSyncing: Set to true to stop syncing configs for a single cluster.
-      Default to false. If set to true, Managed Config Sync will not upgrade
-      Config Sync.
-  """
-
-  enabled = _messages.BooleanField(1)
-  stopSyncing = _messages.BooleanField(2)
-
-
 class MemberConfig(_messages.Message):
   r"""The configuration for a member/cluster
 
@@ -2654,6 +2613,9 @@ class MembershipConfig(_messages.Message):
   r"""Configuration for a single cluster. Intended to parallel the
   ConfigManagement CR.
 
+  Enums:
+    ManagementValueValuesEnum: Enables automatic Feature management.
+
   Fields:
     binauthz: Binauthz conifguration for the cluster.
     cluster: The user-specified cluster name used by Config Sync cluster-name-
@@ -2665,16 +2627,31 @@ class MembershipConfig(_messages.Message):
       annotation or ClusterSelector.
     configSync: Config Sync configuration for the cluster.
     hierarchyController: Hierarchy Controller configuration for the cluster.
+    management: Enables automatic Feature management.
     policyController: Policy Controller configuration for the cluster.
     version: Version of ACM installed.
   """
+
+  class ManagementValueValuesEnum(_messages.Enum):
+    r"""Enables automatic Feature management.
+
+    Values:
+      MANAGEMENT_UNSPECIFIED: Unspecified
+      MANAGEMENT_AUTOMATIC: Google will manage the Feature for the cluster.
+      MANAGEMENT_MANUAL: User will manually manage the Feature for the
+        cluster.
+    """
+    MANAGEMENT_UNSPECIFIED = 0
+    MANAGEMENT_AUTOMATIC = 1
+    MANAGEMENT_MANUAL = 2
 
   binauthz = _messages.MessageField('BinauthzConfig', 1)
   cluster = _messages.StringField(2)
   configSync = _messages.MessageField('ConfigSync', 3)
   hierarchyController = _messages.MessageField('HierarchyControllerConfig', 4)
-  policyController = _messages.MessageField('PolicyController', 5)
-  version = _messages.StringField(6)
+  management = _messages.EnumField('ManagementValueValuesEnum', 5)
+  policyController = _messages.MessageField('PolicyController', 6)
+  version = _messages.StringField(7)
 
 
 class MeshConnectivity(_messages.Message):
@@ -3246,6 +3223,10 @@ class PolicyContentState(_messages.Message):
   Fields:
     bundleStates: The state of the any bundles included in the chosen version
       of the manifest
+    referentialSyncConfigState: The state of the referential data sync
+      configuration. This could represent the state of either the syncSet
+      object(s) or the config object, depending on the version of PoCo
+      configured by the user.
     templateLibraryState: The state of the template library
   """
 
@@ -3276,7 +3257,8 @@ class PolicyContentState(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   bundleStates = _messages.MessageField('BundleStatesValue', 1)
-  templateLibraryState = _messages.MessageField('OnClusterState', 2)
+  referentialSyncConfigState = _messages.MessageField('OnClusterState', 2)
+  templateLibraryState = _messages.MessageField('OnClusterState', 3)
 
 
 class PolicyController(_messages.Message):
@@ -3299,6 +3281,7 @@ class PolicyController(_messages.Message):
       evaluated.
     templateLibraryInstalled: Installs the default template library along with
       Policy Controller.
+    updateTime: Output only. Last time this membership spec was updated.
   """
 
   auditIntervalSeconds = _messages.IntegerField(1)
@@ -3309,22 +3292,42 @@ class PolicyController(_messages.Message):
   mutationEnabled = _messages.BooleanField(6)
   referentialRulesEnabled = _messages.BooleanField(7)
   templateLibraryInstalled = _messages.BooleanField(8)
+  updateTime = _messages.StringField(9)
 
 
 class PolicyControllerDeploymentConfig(_messages.Message):
   r"""Deployment-specific configuration.
 
+  Enums:
+    PodAffinityValueValuesEnum: Pod affinity configuration.
+
   Fields:
     containerResources: Container resource requirements.
+    podAffinity: Pod affinity configuration.
     podAntiAffinity: Pod anti-affinity enablement.
     podTolerations: Pod tolerations of node taints.
     replicaCount: Pod replica count.
   """
 
+  class PodAffinityValueValuesEnum(_messages.Enum):
+    r"""Pod affinity configuration.
+
+    Values:
+      AFFINITY_UNSPECIFIED: No affinity configuration has been specified.
+      NO_AFFINITY: Affinity configurations will be removed from the
+        deployment.
+      ANTI_AFFINITY: Anti-affinity configuration will be applied to this
+        deployment. Default for admissions deployment.
+    """
+    AFFINITY_UNSPECIFIED = 0
+    NO_AFFINITY = 1
+    ANTI_AFFINITY = 2
+
   containerResources = _messages.MessageField('ResourceRequirements', 1)
-  podAntiAffinity = _messages.BooleanField(2)
-  podTolerations = _messages.MessageField('Toleration', 3, repeated=True)
-  replicaCount = _messages.IntegerField(4)
+  podAffinity = _messages.EnumField('PodAffinityValueValuesEnum', 2)
+  podAntiAffinity = _messages.BooleanField(3)
+  podTolerations = _messages.MessageField('Toleration', 4, repeated=True)
+  replicaCount = _messages.IntegerField(5)
 
 
 class PolicyControllerFeatureSpec(_messages.Message):
@@ -3376,14 +3379,11 @@ class PolicyControllerFeatureState(_messages.Message):
     ComponentStatesValue: On-cluster states of the components we would like to
       track. Currently these include (also serving as map keys): 1.
       "admission" 2. "audit" 3. "mutation"
-    ContentStatesValue: The state of the template library and any specified
-      bundles
 
   Fields:
     componentStates: On-cluster states of the components we would like to
       track. Currently these include (also serving as map keys): 1.
       "admission" 2. "audit" 3. "mutation"
-    contentStates: The state of the template library and any specified bundles
     policyContentState: The overall content state observed by the Hub Feature
       controller.
     state: The overall Policy Controller lifecycle state observed by the Hub
@@ -3475,35 +3475,9 @@ class PolicyControllerFeatureState(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ContentStatesValue(_messages.Message):
-    r"""The state of the template library and any specified bundles
-
-    Messages:
-      AdditionalProperty: An additional property for a ContentStatesValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type ContentStatesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ContentStatesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A OnClusterState attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('OnClusterState', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   componentStates = _messages.MessageField('ComponentStatesValue', 1)
-  contentStates = _messages.MessageField('ContentStatesValue', 2)
-  policyContentState = _messages.MessageField('PolicyContentState', 3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  policyContentState = _messages.MessageField('PolicyContentState', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class PolicyControllerHubConfig(_messages.Message):
@@ -3543,8 +3517,6 @@ class PolicyControllerHubConfig(_messages.Message):
     referentialRulesEnabled: Enables the ability to use Constraint Templates
       that reference to objects other than the object currently being
       evaluated.
-    templateLibraryConfig: Configures the library templates to install along
-      with Policy Controller.
   """
 
   class InstallSpecValueValuesEnum(_messages.Enum):
@@ -3603,7 +3575,6 @@ class PolicyControllerHubConfig(_messages.Message):
   mutationEnabled = _messages.BooleanField(8)
   policyContent = _messages.MessageField('PolicyContentSpec', 9)
   referentialRulesEnabled = _messages.BooleanField(10)
-  templateLibraryConfig = _messages.MessageField('TemplateLibraryConfig', 11)
 
 
 class PolicyControllerMembershipSpec(_messages.Message):
@@ -3627,6 +3598,7 @@ class PolicyControllerMigration(_messages.Message):
     StageValueValuesEnum: Stage of the migration.
 
   Fields:
+    copyTime: Last time this membership spec was copied to PoCo feature.
     stage: Stage of the migration.
   """
 
@@ -3644,7 +3616,8 @@ class PolicyControllerMigration(_messages.Message):
     ACM_MANAGED = 1
     POCO_MANAGED = 2
 
-  stage = _messages.EnumField('StageValueValuesEnum', 1)
+  copyTime = _messages.StringField(1)
+  stage = _messages.EnumField('StageValueValuesEnum', 2)
 
 
 class PolicyControllerMonitoring(_messages.Message):
@@ -4400,8 +4373,6 @@ class TemplateLibraryConfig(_messages.Message):
       library is installed on the cluster.
 
   Fields:
-    included: Whether the standard template library should be installed or
-      not.
     installation: Configures the manner in which the template library is
       installed on the cluster.
   """
@@ -4419,8 +4390,7 @@ class TemplateLibraryConfig(_messages.Message):
     NOT_INSTALLED = 1
     ALL = 2
 
-  included = _messages.BooleanField(1)
-  installation = _messages.EnumField('InstallationValueValuesEnum', 2)
+  installation = _messages.EnumField('InstallationValueValuesEnum', 1)
 
 
 class TestIamPermissionsRequest(_messages.Message):

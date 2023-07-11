@@ -1844,6 +1844,10 @@ class RevisionStatus(_messages.Message):
       provisioned. * `ContainerHealthy`: `True` when the Revision readiness
       check completes. * `Active`: `True` when the Revision may receive
       traffic.
+    desiredReplicas: Output only. The desired number of instances running this
+      revision. For Cloud Run, this only includes instances provisioned using
+      the minScale annotation. It does not include instances created by
+      autoscaling.
     imageDigest: ImageDigest holds the resolved digest for the image specified
       within .Spec.Container.Image. The digest is resolved during the creation
       of Revision. This field holds the digest value regardless of whether a
@@ -1859,10 +1863,11 @@ class RevisionStatus(_messages.Message):
   """
 
   conditions = _messages.MessageField('GoogleCloudRunV1Condition', 1, repeated=True)
-  imageDigest = _messages.StringField(2)
-  logUrl = _messages.StringField(3)
-  observedGeneration = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  serviceName = _messages.StringField(5)
+  desiredReplicas = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  imageDigest = _messages.StringField(3)
+  logUrl = _messages.StringField(4)
+  observedGeneration = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  serviceName = _messages.StringField(6)
 
 
 class RevisionTemplate(_messages.Message):

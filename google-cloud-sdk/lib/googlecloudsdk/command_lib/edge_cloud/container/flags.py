@@ -259,3 +259,30 @@ def AddLROMaximumTimeout(parser):
       Overwrite the default LRO maximum timeout.
       """
   )
+
+
+def AddVersion(parser):
+  parser.add_argument(
+      '--version',
+      hidden=True,
+      help="""
+      The target cluster version. For example: "1.5.0".
+      """
+  )
+
+
+def AddReleaseChannel(parser):
+  parser.add_argument(
+      '--release-channel',
+      hidden=True,
+      default='RELEASE_CHANNEL_UNSPECIFIED',
+      help="""
+      The release channel a cluster is subscribed to. It supports two values,
+      NONE and REGULAR. NONE is used to opt out of any release channel. Clusters
+      subscribed to the REGULAR channel will be automatically upgraded to
+      versions that are considered GA quality, and cannot be manually upgraded.
+      Additionally, if the REGULAR channel is used, a specific target version
+      cannot be set with the 'version' flag. If left unspecified, the release
+      channel will default to REGULAR.
+      """
+  )

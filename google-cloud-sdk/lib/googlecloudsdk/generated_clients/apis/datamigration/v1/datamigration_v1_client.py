@@ -448,7 +448,7 @@ class DatamigrationV1(base_api.BaseApiClient):
         method_id='datamigration.projects.locations.conversionWorkspaces.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId'],
+        query_params=['force', 'requestId'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='DatamigrationProjectsLocationsConversionWorkspacesDeleteRequest',
@@ -868,6 +868,33 @@ class DatamigrationV1(base_api.BaseApiClient):
         request_field='generateSshScriptRequest',
         request_type_name='DatamigrationProjectsLocationsMigrationJobsGenerateSshScriptRequest',
         response_type_name='SshScript',
+        supports_download=False,
+    )
+
+    def GenerateTcpProxyScript(self, request, global_params=None):
+      r"""Generate a TCP Proxy configuration script to configure a cloud-hosted VM running a TCP Proxy.
+
+      Args:
+        request: (DatamigrationProjectsLocationsMigrationJobsGenerateTcpProxyScriptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TcpProxyScript) The response message.
+      """
+      config = self.GetMethodConfig('GenerateTcpProxyScript')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateTcpProxyScript.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:generateTcpProxyScript',
+        http_method='POST',
+        method_id='datamigration.projects.locations.migrationJobs.generateTcpProxyScript',
+        ordered_params=['migrationJob'],
+        path_params=['migrationJob'],
+        query_params=[],
+        relative_path='v1/{+migrationJob}:generateTcpProxyScript',
+        request_field='generateTcpProxyScriptRequest',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsGenerateTcpProxyScriptRequest',
+        response_type_name='TcpProxyScript',
         supports_download=False,
     )
 

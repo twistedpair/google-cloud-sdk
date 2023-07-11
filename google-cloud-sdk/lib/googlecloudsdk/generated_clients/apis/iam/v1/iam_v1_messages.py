@@ -450,38 +450,6 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class GcpCondition(_messages.Message):
-  r"""Defines the attribute-value pair that will be used as a matching
-  condition for a GCP source name.
-
-  Fields:
-    attribute: Required. The attribute key that will be matched. Supported
-      attributes are `resource` and `attached_service_account`.
-    value: Required. The value that should exactly match the attribute of the
-      workload. Supported values are: * Arbitrary string representing a
-      resource or a service account * "ALL" The value "ALL" can be used to
-      indicate that any workload source is allowed. However, it can only be
-      used when the attribute is "resource". For example, the following
-      condition would allow all workload sources: .
-  """
-
-  attribute = _messages.StringField(1)
-  value = _messages.StringField(2)
-
-
-class GcpConditionSet(_messages.Message):
-  r"""A set of GcpConditions used to match the container workload source. The
-  workload is considered to match the policy if at least one condition matches
-  the workload. The maximum number of conditions is restricted to 100
-  GcpConditions.
-
-  Fields:
-    gcpConditions: A list of GcpConditions.
-  """
-
-  gcpConditions = _messages.MessageField('GcpCondition', 1, repeated=True)
-
-
 class GetIamPolicyRequest(_messages.Message):
   r"""Request message for `GetIamPolicy` method.
 
@@ -571,6 +539,12 @@ class GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig(_messages.Message):
       the OIDC Authorization Request for web sign-in.
 
   Fields:
+    additionalScopes: Additional scopes to request for in the OIDC
+      authentication request on top of scopes requested by default. By
+      default, the `openid`, `profile` and `email` scopes that are supported
+      by the identity provider are requested. Each additional scope may be at
+      most 256 characters. A maximum of 10 additional scopes may be
+      configured.
     assertionClaimsBehavior: Required. The behavior for how OIDC Claims are
       included in the `assertion` object used for attribute mapping and
       attribute condition.
@@ -610,8 +584,9 @@ class GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig(_messages.Message):
     CODE = 1
     ID_TOKEN = 2
 
-  assertionClaimsBehavior = _messages.EnumField('AssertionClaimsBehaviorValueValuesEnum', 1)
-  responseType = _messages.EnumField('ResponseTypeValueValuesEnum', 2)
+  additionalScopes = _messages.StringField(1, repeated=True)
+  assertionClaimsBehavior = _messages.EnumField('AssertionClaimsBehaviorValueValuesEnum', 2)
+  responseType = _messages.EnumField('ResponseTypeValueValuesEnum', 3)
 
 
 class GoogleIamAdminV1WorkforcePoolProviderSaml(_messages.Message):
@@ -725,6 +700,109 @@ class IamLocationsWorkforcePoolsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsInstalledAppsCreateRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsInstalledAppsCreateRequest object.
+
+  Fields:
+    parent: Required. The pool to create this workforce pool installed app in.
+      Format: `locations/{location}/workforcePools/{workforce_pool}`
+    workforcePoolInstalledApp: A WorkforcePoolInstalledApp resource to be
+      passed as the request body.
+    workforcePoolInstalledAppId: Required. The ID to use for the workforce
+      pool installed app, which becomes the final component of the resource
+      name. This value should be 4-32 characters, and may contain the
+      characters [a-z0-9-]. The prefix `gcp-` is reserved for use by Google,
+      and may not be specified.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  workforcePoolInstalledApp = _messages.MessageField('WorkforcePoolInstalledApp', 2)
+  workforcePoolInstalledAppId = _messages.StringField(3)
+
+
+class IamLocationsWorkforcePoolsInstalledAppsDeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsInstalledAppsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the workforce pool installed app to delete.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
+      pps/{installed_app}`
+    validateOnly: Optional. If set, validate the request and preview the
+      response, but do not actually post it.
+  """
+
+  name = _messages.StringField(1, required=True)
+  validateOnly = _messages.BooleanField(2)
+
+
+class IamLocationsWorkforcePoolsInstalledAppsGetRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsInstalledAppsGetRequest object.
+
+  Fields:
+    name: Required. The name of the workforce pool installed app to retrieve.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
+      pps/{installed_app}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsInstalledAppsListRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsInstalledAppsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of workforce pool installed apps to
+      return. If unspecified, at most 50 workforce pool installed apps will be
+      returned. The maximum value is 1000; values above 1000 are truncated to
+      1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListWorkforcePoolInstalledApps` call. Provide this to retrieve the
+      subsequent page.
+    parent: Required. The parent to list installed apps, format:
+      'locations/{location}/workforcePools/{workforce_pool}'
+    showDeleted: Optional. Whether to return soft-deleted workforce pool
+      installed apps.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class IamLocationsWorkforcePoolsInstalledAppsPatchRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsInstalledAppsPatchRequest object.
+
+  Fields:
+    name: Immutable. The resource name of the workforce pool installed app.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
+      pps/{installed_app}`
+    updateMask: Required. The list of fields to update.
+    workforcePoolInstalledApp: A WorkforcePoolInstalledApp resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  workforcePoolInstalledApp = _messages.MessageField('WorkforcePoolInstalledApp', 3)
+
+
+class IamLocationsWorkforcePoolsInstalledAppsUndeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsInstalledAppsUndeleteRequest object.
+
+  Fields:
+    name: Required. The name of the workforce pool installed app to undelete.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
+      pps/{installed_app}`
+    undeleteWorkforcePoolInstalledAppRequest: A
+      UndeleteWorkforcePoolInstalledAppRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteWorkforcePoolInstalledAppRequest = _messages.MessageField('UndeleteWorkforcePoolInstalledAppRequest', 2)
 
 
 class IamLocationsWorkforcePoolsListRequest(_messages.Message):
@@ -1269,6 +1347,181 @@ class IamOrganizationsRolesUndeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   undeleteRoleRequest = _messages.MessageField('UndeleteRoleRequest', 2)
+
+
+class IamProjectsLocationsOauthClientsCreateRequest(_messages.Message):
+  r"""A IamProjectsLocationsOauthClientsCreateRequest object.
+
+  Fields:
+    oauthClient: A OauthClient resource to be passed as the request body.
+    oauthClientId: Required. The ID to use for the oauth client, which becomes
+      the final component of the resource name. This value should be 4-32
+      characters, and may contain the characters [a-z0-9-]. The prefix `gcp-`
+      is reserved for use by Google, and may not be specified.
+    parent: Required. The parent resource to create the oauth client in. The
+      only supported location is `global`.
+  """
+
+  oauthClient = _messages.MessageField('OauthClient', 1)
+  oauthClientId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class IamProjectsLocationsOauthClientsCredentialsCreateRequest(_messages.Message):
+  r"""A IamProjectsLocationsOauthClientsCredentialsCreateRequest object.
+
+  Fields:
+    oauthClientCredential: A OauthClientCredential resource to be passed as
+      the request body.
+    oauthClientCredentialId: Required. The ID to use for the oauth client
+      credential, which becomes the final component of the resource name. This
+      value should be 4-32 characters, and may contain the characters
+      [a-z0-9-]. The prefix `gcp-` is reserved for use by Google, and may not
+      be specified.
+    parent: Required. The parent resource to create the oauth client
+      Credential in.
+  """
+
+  oauthClientCredential = _messages.MessageField('OauthClientCredential', 1)
+  oauthClientCredentialId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class IamProjectsLocationsOauthClientsCredentialsDeleteRequest(_messages.Message):
+  r"""A IamProjectsLocationsOauthClientsCredentialsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the oauth client credential to delete. Format:
+      `projects/{project}/locations/{location}/oauthClients/{oauth_client}/cre
+      dentials/{credential}`.
+    validateOnly: Optional. If set, validate the request and preview the
+      response, but do not actually post it.
+  """
+
+  name = _messages.StringField(1, required=True)
+  validateOnly = _messages.BooleanField(2)
+
+
+class IamProjectsLocationsOauthClientsCredentialsGetRequest(_messages.Message):
+  r"""A IamProjectsLocationsOauthClientsCredentialsGetRequest object.
+
+  Fields:
+    name: Required. The name of the oauth client credential to retrieve.
+      Format: `projects/{project}/locations/{location}/oauthClients/{oauth_cli
+      ent}/credentials/{credential}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsOauthClientsCredentialsListRequest(_messages.Message):
+  r"""A IamProjectsLocationsOauthClientsCredentialsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of oauth client credentials to
+      return. If unspecified, at most 50 oauth client credentials will be
+      returned. The maximum value is 1000; values above 1000 are truncated to
+      1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListOauthClientCredentials` call. Provide this to retrieve the
+      subsequent page.
+    parent: Required. The parent to list oauth client credentials for.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class IamProjectsLocationsOauthClientsCredentialsPatchRequest(_messages.Message):
+  r"""A IamProjectsLocationsOauthClientsCredentialsPatchRequest object.
+
+  Fields:
+    name: Immutable. The resource name of the oauth client credential. Format:
+      `projects/{project}/locations/{location}/
+      oauthClients/{oauth_client}/credentials/{credential}`
+    oauthClientCredential: A OauthClientCredential resource to be passed as
+      the request body.
+    updateMask: Required. The list of fields to update.
+  """
+
+  name = _messages.StringField(1, required=True)
+  oauthClientCredential = _messages.MessageField('OauthClientCredential', 2)
+  updateMask = _messages.StringField(3)
+
+
+class IamProjectsLocationsOauthClientsDeleteRequest(_messages.Message):
+  r"""A IamProjectsLocationsOauthClientsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the oauth client to delete. Format:
+      `projects/{project}/locations/{location}/oauthClients/{oauth_client}`.
+    validateOnly: Optional. If set, validate the request and preview the
+      response, but do not actually post it.
+  """
+
+  name = _messages.StringField(1, required=True)
+  validateOnly = _messages.BooleanField(2)
+
+
+class IamProjectsLocationsOauthClientsGetRequest(_messages.Message):
+  r"""A IamProjectsLocationsOauthClientsGetRequest object.
+
+  Fields:
+    name: Required. The name of the oauth client to retrieve. Format:
+      `projects/{project}/locations/{location}/oauthClients/{oauth_client}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsOauthClientsListRequest(_messages.Message):
+  r"""A IamProjectsLocationsOauthClientsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of oauth clients to return. If
+      unspecified, at most 50 oauth clients will be returned. The maximum
+      value is 1000; values above 1000 are truncated to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListOauthClients` call. Provide this to retrieve the subsequent page.
+    parent: Required. The parent to list oauth clients for.
+    showDeleted: Optional. Whether to return soft-deleted oauth clients.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class IamProjectsLocationsOauthClientsPatchRequest(_messages.Message):
+  r"""A IamProjectsLocationsOauthClientsPatchRequest object.
+
+  Fields:
+    name: Immutable. The resource name of the oauth client.
+      Format:`projects/{project}/locations/{location}/oauthClients/
+      {oauth_client}`.
+    oauthClient: A OauthClient resource to be passed as the request body.
+    updateMask: Required. The list of fields to update.
+  """
+
+  name = _messages.StringField(1, required=True)
+  oauthClient = _messages.MessageField('OauthClient', 2)
+  updateMask = _messages.StringField(3)
+
+
+class IamProjectsLocationsOauthClientsUndeleteRequest(_messages.Message):
+  r"""A IamProjectsLocationsOauthClientsUndeleteRequest object.
+
+  Fields:
+    name: Required. The name of the oauth client to undelete. Format:
+      `projects/{project}/locations/{location}/oauthClients/{oauth_client}`.
+    undeleteOauthClientRequest: A UndeleteOauthClientRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteOauthClientRequest = _messages.MessageField('UndeleteOauthClientRequest', 2)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsCreateRequest(_messages.Message):
@@ -3005,6 +3258,34 @@ class LintResult(_messages.Message):
   validationUnitName = _messages.StringField(6)
 
 
+class ListOauthClientCredentialsResponse(_messages.Message):
+  r"""Response message for ListOauthClientCredentials.
+
+  Fields:
+    nextPageToken: Optional. A token, which can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+    oauthClientCredentials: A list of oauth client credentials.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  oauthClientCredentials = _messages.MessageField('OauthClientCredential', 2, repeated=True)
+
+
+class ListOauthClientsResponse(_messages.Message):
+  r"""Response message for ListOauthClients.
+
+  Fields:
+    nextPageToken: Optional. A token, which can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+    oauthClients: A list of oauth clients.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  oauthClients = _messages.MessageField('OauthClient', 2, repeated=True)
+
+
 class ListRolesResponse(_messages.Message):
   r"""The response containing the roles defined under a resource.
 
@@ -3050,6 +3331,21 @@ class ListServiceAccountsResponse(_messages.Message):
 
   accounts = _messages.MessageField('ServiceAccount', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListWorkforcePoolInstalledAppsResponse(_messages.Message):
+  r"""Response message for ListWorkforcePoolInstalledApps.
+
+  Fields:
+    nextPageToken: Optional. A token, which can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+    workforcePoolInstalledApps: Output only. A list of workforce pool
+      installed apps.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workforcePoolInstalledApps = _messages.MessageField('WorkforcePoolInstalledApp', 2, repeated=True)
 
 
 class ListWorkforcePoolProviderKeysResponse(_messages.Message):
@@ -3168,6 +3464,125 @@ class ListWorkloadSourcesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   workloadSources = _messages.MessageField('WorkloadSource', 2, repeated=True)
+
+
+class OauthClient(_messages.Message):
+  r"""Represents an oauth client. Used to access Google Cloud resources on
+  behave of a user by using OAuth2 Protocol to obtain an access token from
+  Google Cloud Platform.
+
+  Enums:
+    AllowedGrantTypesValueListEntryValuesEnum:
+    ClientTypeValueValuesEnum: Immutable. The type of oauth client. either
+      public or private.
+    StateValueValuesEnum: Output only. The state of the oauth client.
+
+  Fields:
+    allowedGrantTypes: Optional. The list of OAuth grant type is allowed for
+      the oauth client.
+    allowedRedirectUris: Optional. The list of redirect uris that is allowed
+      to redirect back when authorization process is completed.
+    allowedScopes: Optional. The list of scopes that the oauth client is
+      allowed to request during OAuth flows. The following scopes are
+      supported: * `https://www.googleapis.com/auth/cloud-platform`: See,
+      edit, configure, and delete your Google Cloud data and see the email
+      address for your Google Account. * `openid`: Associate you with your
+      personal info on Google Cloud. * `email`: See your Google Cloud Account
+      email address.
+    clientId: Output only. The system-generated oauth client id.
+    clientType: Immutable. The type of oauth client. either public or private.
+    description: Optional. A user-specified description of the oauth client.
+      Cannot exceed 256 characters.
+    disabled: Optional. Whether the oauth client is disabled. You cannot use a
+      disabled oauth client for login.
+    displayName: Optional. A user-specified display name of the oauth client.
+      Cannot exceed 32 characters.
+    expireTime: Output only. Time after which the oauth client will be
+      permanently purged and cannot be recovered.
+    name: Immutable. The resource name of the oauth client.
+      Format:`projects/{project}/locations/{location}/oauthClients/
+      {oauth_client}`.
+    state: Output only. The state of the oauth client.
+  """
+
+  class AllowedGrantTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""AllowedGrantTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      GRANT_TYPE_UNSPECIFIED: should not be used
+      AUTHORIZATION_CODE_GRANT: authorization code grant
+      REFRESH_TOKEN_GRANT: refresh token grant
+    """
+    GRANT_TYPE_UNSPECIFIED = 0
+    AUTHORIZATION_CODE_GRANT = 1
+    REFRESH_TOKEN_GRANT = 2
+
+  class ClientTypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The type of oauth client. either public or private.
+
+    Values:
+      CLIENT_TYPE_UNSPECIFIED: should not be used
+      PUBLIC_CLIENT: public client has no secret
+      CONFIDENTIAL_CLIENT: private client
+    """
+    CLIENT_TYPE_UNSPECIFIED = 0
+    PUBLIC_CLIENT = 1
+    CONFIDENTIAL_CLIENT = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the oauth client.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: The oauth client is active.
+      DELETED: The oauth client is soft-deleted. Soft-deleted oauth client is
+        permanently deleted after approximately 30 days unless restored via
+        UndeleteOauthClient.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  allowedGrantTypes = _messages.EnumField('AllowedGrantTypesValueListEntryValuesEnum', 1, repeated=True)
+  allowedRedirectUris = _messages.StringField(2, repeated=True)
+  allowedScopes = _messages.StringField(3, repeated=True)
+  clientId = _messages.StringField(4)
+  clientType = _messages.EnumField('ClientTypeValueValuesEnum', 5)
+  description = _messages.StringField(6)
+  disabled = _messages.BooleanField(7)
+  displayName = _messages.StringField(8)
+  expireTime = _messages.StringField(9)
+  name = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+
+
+class OauthClientCredential(_messages.Message):
+  r"""Represents an oauth client credential. Used to authenticate an oauth
+  client while accessing Google Cloud resources on behalf of a user by using
+  OAuth2 Protocol.
+
+  Fields:
+    clientSecret: Output only. The system-generated oauth client secret.
+    createTime: Output only. The timestamp when the oauth client credential
+      was created
+    disabled: Optional. Whether the oauth client credential is disabled. You
+      cannot use a disabled oauth client credential for OAuth.
+    displayName: Optional. A user-specified display name of the oauth client
+      credential Cannot exceed 32 characters.
+    name: Immutable. The resource name of the oauth client credential. Format:
+      `projects/{project}/locations/{location}/
+      oauthClients/{oauth_client}/credentials/{credential}`
+    updateTime: Output only. The timestamp for the last update of the oauth
+      client credential. If no updates have been made, the creation time will
+      serve as the designated value.
+  """
+
+  clientSecret = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  disabled = _messages.BooleanField(3)
+  displayName = _messages.StringField(4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class Oidc(_messages.Message):
@@ -3604,11 +4019,13 @@ class Role(_messages.Message):
     etag: Used to perform a consistent read-modify-write.
     includedPermissions: The names of the permissions this role grants when
       bound in an IAM policy.
-    name: The name of the role. When Role is used in CreateRole, the role name
-      must not be set. When Role is used in output and other input such as
-      UpdateRole, the role name is the complete path, e.g.,
-      roles/logging.viewer for predefined roles and
-      organizations/{ORGANIZATION_ID}/roles/logging.viewer for custom roles.
+    name: The name of the role. When `Role` is used in `CreateRole`, the role
+      name must not be set. When `Role` is used in output and other input such
+      as `UpdateRole`, the role name is the complete path. For example,
+      `roles/logging.viewer` for predefined roles,
+      `organizations/{ORGANIZATION_ID}/roles/my-role` for organization-level
+      custom roles, and `projects/{PROJECT_ID}/roles/my-role` for project-
+      level custom roles.
     stage: The current launch stage of the role. If the `ALPHA` launch stage
       has been selected for a role, the `stage` field will not be included in
       the returned definition for the role.
@@ -4098,6 +4515,17 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class UndeleteOauthClientRequest(_messages.Message):
+  r"""Request message for UndeleteOauthClient.
+
+  Fields:
+    validateOnly: Optional. If set, validate the request and preview the
+      response, but do not actually post it.
+  """
+
+  validateOnly = _messages.BooleanField(1)
+
+
 class UndeleteRoleRequest(_messages.Message):
   r"""The request to undelete an existing role.
 
@@ -4120,6 +4548,17 @@ class UndeleteServiceAccountResponse(_messages.Message):
   """
 
   restoredAccount = _messages.MessageField('ServiceAccount', 1)
+
+
+class UndeleteWorkforcePoolInstalledAppRequest(_messages.Message):
+  r"""Request message for UndeleteWorkforcePoolInstalledApp.
+
+  Fields:
+    validateOnly: Optional. If set, validate the request and preview the
+      response, but do not actually post it.
+  """
+
+  validateOnly = _messages.BooleanField(1)
 
 
 class UndeleteWorkforcePoolProviderKeyRequest(_messages.Message):
@@ -4225,6 +4664,68 @@ class WorkforcePool(_messages.Message):
   parent = _messages.StringField(5)
   sessionDuration = _messages.StringField(6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
+
+
+class WorkforcePoolInstalledApp(_messages.Message):
+  r"""Represents a workforce pool installed app. Used to indicate that a
+  workforce pool administrator has completed the installation process, thereby
+  giving consent for the installed app, i.e. OAuth Client, to access workforce
+  pool users' information and resources.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the workforce pool
+      installed app.
+
+  Fields:
+    appId: Output only. The resource ID of the app that is installed. Current
+      only OAuth Client is supported. If the istalled app is an OAuth client,
+      this field represents the system generated OAuth client ID.
+    createTime: Output only. The timestamp when the workforce pool installed
+      app was created.
+    deleteTime: Output only. The timestamp that the workforce pool installed
+      app was soft deleted.
+    description: Optional. A user-specified description of the workforce pool
+      installed app. Cannot exceed 256 characters.
+    displayName: Optional. A user-specified display name of the workforce pool
+      installed app Cannot exceed 32 characters.
+    expireTime: Output only. Time after which the workforce pool installed app
+      will be permanently purged and cannot be recovered.
+    name: Immutable. The resource name of the workforce pool installed app.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
+      pps/{installed_app}`
+    oauthClient: Immutable. The resource name of an OAuth client to be
+      installed. Format:
+      `projects/{project}/locations/{location}/oauthClients/{oauth_client}`.
+    state: Output only. The state of the workforce pool installed app.
+    updateTime: Output only. The timestamp for the last update of the
+      workforce pool installed app.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the workforce pool installed app.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: The workforce pool installed app is active.
+      DELETED: The workforce pool installed app is soft-deleted. Soft-deleted
+        workforce pool installed apps are permanently deleted after
+        approximately 30 days unless restored via
+        UndeleteWorkforcePoolInstalledApp.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  appId = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  expireTime = _messages.StringField(6)
+  name = _messages.StringField(7)
+  oauthClient = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class WorkforcePoolProvider(_messages.Message):
@@ -4497,6 +4998,7 @@ class WorkloadIdentityPool(_messages.Message):
   IAM policies to grant these identities access to Google Cloud resources.
 
   Enums:
+    IdentityModeValueValuesEnum: Immutable. The identity mode of the pool.
     StateValueValuesEnum: Output only. The state of the pool.
 
   Fields:
@@ -4505,6 +5007,7 @@ class WorkloadIdentityPool(_messages.Message):
       exchange tokens, or use existing tokens to access resources. If the pool
       is re-enabled, existing tokens grant access again.
     displayName: A display name for the pool. Cannot exceed 32 characters.
+    identityMode: Immutable. The identity mode of the pool.
     name: Output only. The resource name of the pool.
     sessionDuration: Overrides the lifespan of access tokens issued when
       federating using this pool. If not set, the lifespan of issued access
@@ -4518,6 +5021,29 @@ class WorkloadIdentityPool(_messages.Message):
       workloadIdentitySessionDuration Resource Setting.
     state: Output only. The state of the pool.
   """
+
+  class IdentityModeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The identity mode of the pool.
+
+    Values:
+      IDENTITY_MODE_UNSPECIFIED: Existing pools will be in this mode. For
+        existing worklod identity pools created through the public API, they
+        will act as if they are set to FEDERATION_ONLY.
+      FEDERATION_ONLY: With FEDERATION_ONLY mode, providers can be created at
+        the root level within the pool. Attribute mappings must specify a
+        "google.subject" claim that specifies the identity of the federation
+        workload. Namespace or any sub-namespace resources is not allowed with
+        this mode.
+      TRUST_DOMAIN: With TRUST_DOMAIN mode, providers can be created at the
+        root level within the pool. Attribute mappings must specify the
+        "google.namespace" and "google.workload_identifier" claims that,
+        respectively, specify the namespace and individual sub-namespace
+        identifier for the workload. Namespaces and sub-Namespace resources
+        are allowed.
+    """
+    IDENTITY_MODE_UNSPECIFIED = 0
+    FEDERATION_ONLY = 1
+    TRUST_DOMAIN = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the pool.
@@ -4540,9 +5066,10 @@ class WorkloadIdentityPool(_messages.Message):
   description = _messages.StringField(1)
   disabled = _messages.BooleanField(2)
   displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  sessionDuration = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  identityMode = _messages.EnumField('IdentityModeValueValuesEnum', 4)
+  name = _messages.StringField(5)
+  sessionDuration = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class WorkloadIdentityPoolManagedIdentity(_messages.Message):
@@ -4904,21 +5431,53 @@ class WorkloadSource(_messages.Message):
   identity based on the conditions.
 
   Fields:
+    conditionSet: Required. A set of allowlisted attribute values. Applicable
+      if you are using a Google Cloud workload source, such as projects/.
     etag: The etag for this workload source. If this is provided on update, it
       must match the server's etag.
-    gcpConditionSet: Required. A set of allowlisted attribute values.
-      Applicable if you are using a GCP workload source, such as projects/.
     name: Output only. The resource name of the workload source. The format
       should be one of: * /workloadSources/ * /workloadSources/
     workloadSourceId: Output only. The id of the workload source. Matches
       workloads running in the specified source id. Available ids include: *
-      `projects/`: Matches workloads running in a GCP project.
+      `projects/`: Matches workloads running in a Google Cloud project.
   """
 
-  etag = _messages.StringField(1)
-  gcpConditionSet = _messages.MessageField('GcpConditionSet', 2)
+  conditionSet = _messages.MessageField('WorkloadSourceConditionSet', 1)
+  etag = _messages.StringField(2)
   name = _messages.StringField(3)
   workloadSourceId = _messages.StringField(4)
+
+
+class WorkloadSourceCondition(_messages.Message):
+  r"""Defines the attribute-value pair that will be used as a matching
+  condition for a Google Cloud workload source.
+
+  Fields:
+    attribute: Required. The attribute key that will be matched. Supported
+      attributes are `resource` and `attached_service_account`.
+    value: Required. The value that should exactly match the attribute of the
+      workload. Supported values are: * Arbitrary string representing a
+      resource or a service account * "ALL" The value "ALL" can be used to
+      indicate that any workload source is allowed. However, it can only be
+      used when the attribute is "resource". For example, the following
+      condition would allow all workload sources: .
+  """
+
+  attribute = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class WorkloadSourceConditionSet(_messages.Message):
+  r"""A set of WorkloadSourceConditions used to match the container workload
+  source. The workload is considered to match the policy if at least one
+  condition matches the workload. The maximum number of conditions is
+  restricted to 50 WorkloadSourceConditions.
+
+  Fields:
+    conditions: Required. A list of WorkloadSourceConditions.
+  """
+
+  conditions = _messages.MessageField('WorkloadSourceCondition', 1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

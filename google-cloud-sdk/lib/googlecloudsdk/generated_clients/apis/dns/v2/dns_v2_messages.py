@@ -1024,7 +1024,7 @@ class DnsResponsePoliciesPatchRequest(_messages.Message):
     location: Specifies the location of the resource. This information will be
       used for routing and will be part of the resource name.
     project: Identifies the project addressed by this request.
-    responsePolicy: User assigned name of the Respones Policy addressed by
+    responsePolicy: User assigned name of the response policy addressed by
       this request.
     responsePolicyResource: A ResponsePolicy resource to be passed as the
       request body.
@@ -1323,12 +1323,22 @@ class GoogleIamV1Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -1345,9 +1355,7 @@ class GoogleIamV1Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -1709,6 +1717,9 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
       addresses go to the internet. When set to PRIVATE, Cloud DNS always
       sends queries through the VPC network for this target.
     ipv4Address: IPv4 address of a target name server.
+    ipv6Address: IPv6 address of a target name server. Does not accept both
+      fields (ipv4 & ipv6) being populated. Public preview as of November
+      2022.
     kind: A string attribute.
   """
 
@@ -1730,7 +1741,8 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
 
   forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
   ipv4Address = _messages.StringField(2)
-  kind = _messages.StringField(3, default='dns#managedZoneForwardingConfigNameServerTarget')
+  ipv6Address = _messages.StringField(3)
+  kind = _messages.StringField(4, default='dns#managedZoneForwardingConfigNameServerTarget')
 
 
 class ManagedZoneOperationsListResponse(_messages.Message):
@@ -2097,7 +2109,9 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
       ranges; that is, RFC1918 addresses go to the VPC network, non-RFC1918
       addresses go to the internet. When set to PRIVATE, Cloud DNS always
       sends queries through the VPC network for this target.
-    ipv4Address: IPv4 address to forward to.
+    ipv4Address: IPv4 address to forward queries to.
+    ipv6Address: IPv6 address to forward to. Does not accept both fields (ipv4
+      & ipv6) being populated. Public preview as of November 2022.
     kind: A string attribute.
   """
 
@@ -2119,7 +2133,8 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
 
   forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
   ipv4Address = _messages.StringField(2)
-  kind = _messages.StringField(3, default='dns#policyAlternativeNameServerConfigTargetNameServer')
+  ipv6Address = _messages.StringField(3)
+  kind = _messages.StringField(4, default='dns#policyAlternativeNameServerConfigTargetNameServer')
 
 
 class PolicyNetwork(_messages.Message):
@@ -2235,12 +2250,14 @@ class RRSetRoutingPolicy(_messages.Message):
   Fields:
     geo: A RRSetRoutingPolicyGeoPolicy attribute.
     kind: A string attribute.
+    primaryBackup: A RRSetRoutingPolicyPrimaryBackupPolicy attribute.
     wrr: A RRSetRoutingPolicyWrrPolicy attribute.
   """
 
   geo = _messages.MessageField('RRSetRoutingPolicyGeoPolicy', 1)
   kind = _messages.StringField(2, default='dns#rRSetRoutingPolicy')
-  wrr = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 3)
+  primaryBackup = _messages.MessageField('RRSetRoutingPolicyPrimaryBackupPolicy', 3)
+  wrr = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 4)
 
 
 class RRSetRoutingPolicyGeoPolicy(_messages.Message):
@@ -2248,19 +2265,30 @@ class RRSetRoutingPolicyGeoPolicy(_messages.Message):
   the querying user.
 
   Fields:
+    enableFencing: Without fencing, if health check fails for all configured
+      items in the current geo bucket, we'll failover to the next nearest geo
+      bucket. With fencing, if health check is enabled, as long as some
+      targets in the current geo bucket are healthy, we'll return only the
+      healthy targets. However, if they're all unhealthy, we won't failover to
+      the next nearest bucket, we'll simply return all the items in the
+      current bucket even though they're unhealthy.
     items: The primary geo routing configuration. If there are multiple items
       with the same location, an error is returned instead.
     kind: A string attribute.
   """
 
-  items = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 1, repeated=True)
-  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicyGeoPolicy')
+  enableFencing = _messages.BooleanField(1)
+  items = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 2, repeated=True)
+  kind = _messages.StringField(3, default='dns#rRSetRoutingPolicyGeoPolicy')
 
 
 class RRSetRoutingPolicyGeoPolicyGeoPolicyItem(_messages.Message):
   r"""ResourceRecordSet data for one geo location.
 
   Fields:
+    healthCheckedTargets: For A and AAAA types only. Endpoints to return in
+      the query result only if they are healthy. These can be specified along
+      with rrdata within this item.
     kind: A string attribute.
     location: The geo-location granularity is a GCP region. This location
       string should correspond to a GCP region. e.g. "us-east1",
@@ -2271,10 +2299,103 @@ class RRSetRoutingPolicyGeoPolicyGeoPolicyItem(_messages.Message):
       enabled zones, there's a restriction of 1 ip per item. .
   """
 
-  kind = _messages.StringField(1, default='dns#rRSetRoutingPolicyGeoPolicyGeoPolicyItem')
-  location = _messages.StringField(2)
-  rrdatas = _messages.StringField(3, repeated=True)
-  signatureRrdatas = _messages.StringField(4, repeated=True)
+  healthCheckedTargets = _messages.MessageField('RRSetRoutingPolicyHealthCheckTargets', 1)
+  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicyGeoPolicyGeoPolicyItem')
+  location = _messages.StringField(3)
+  rrdatas = _messages.StringField(4, repeated=True)
+  signatureRrdatas = _messages.StringField(5, repeated=True)
+
+
+class RRSetRoutingPolicyHealthCheckTargets(_messages.Message):
+  r"""HealthCheckTargets describes endpoints to health-check when responding
+  to Routing Policy queries. Only the healthy endpoints will be included in
+  the response.
+
+  Fields:
+    internalLoadBalancers: A RRSetRoutingPolicyLoadBalancerTarget attribute.
+  """
+
+  internalLoadBalancers = _messages.MessageField('RRSetRoutingPolicyLoadBalancerTarget', 1, repeated=True)
+
+
+class RRSetRoutingPolicyLoadBalancerTarget(_messages.Message):
+  r"""A RRSetRoutingPolicyLoadBalancerTarget object.
+
+  Enums:
+    IpProtocolValueValuesEnum:
+    LoadBalancerTypeValueValuesEnum: The type of Load Balancer specified by
+      this target. Must match the configuration of the Load Balancer located
+      at the LoadBalancerTarget's IP address/port and region.
+
+  Fields:
+    ipAddress: The frontend IP address of the Load Balancer to health check.
+    ipProtocol: A IpProtocolValueValuesEnum attribute.
+    kind: A string attribute.
+    loadBalancerType: The type of Load Balancer specified by this target. Must
+      match the configuration of the Load Balancer located at the
+      LoadBalancerTarget's IP address/port and region.
+    networkUrl: The fully qualified url of the network on which the ILB is
+      present. This should be formatted like https://www.googleapis.com/comput
+      e/v1/projects/{project}/global/networks/{network}
+    port: The configured port of the Load Balancer.
+    project: The project ID in which the ILB exists.
+    region: The region in which the ILB exists.
+  """
+
+  class IpProtocolValueValuesEnum(_messages.Enum):
+    r"""IpProtocolValueValuesEnum enum type.
+
+    Values:
+      UNDEFINED: <no description>
+      TCP: <no description>
+      UDP: <no description>
+    """
+    UNDEFINED = 0
+    TCP = 1
+    UDP = 2
+
+  class LoadBalancerTypeValueValuesEnum(_messages.Enum):
+    r"""The type of Load Balancer specified by this target. Must match the
+    configuration of the Load Balancer located at the LoadBalancerTarget's IP
+    address/port and region.
+
+    Values:
+      NONE: <no description>
+      REGIONAL_L4ILB: <no description>
+    """
+    NONE = 0
+    REGIONAL_L4ILB = 1
+
+  ipAddress = _messages.StringField(1)
+  ipProtocol = _messages.EnumField('IpProtocolValueValuesEnum', 2)
+  kind = _messages.StringField(3, default='dns#rRSetRoutingPolicyLoadBalancerTarget')
+  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 4)
+  networkUrl = _messages.StringField(5)
+  port = _messages.StringField(6)
+  project = _messages.StringField(7)
+  region = _messages.StringField(8)
+
+
+class RRSetRoutingPolicyPrimaryBackupPolicy(_messages.Message):
+  r"""Configures a RRSetRoutingPolicy such that all queries are responded with
+  the primary_targets if they are healthy. And if all of them are unhealthy,
+  then we fallback to a geo localized policy.
+
+  Fields:
+    backupGeoTargets: Backup targets provide a regional failover policy for
+      the otherwise global primary targets. If serving state is set to BACKUP,
+      this policy essentially becomes a geo routing policy.
+    kind: A string attribute.
+    primaryTargets: A RRSetRoutingPolicyHealthCheckTargets attribute.
+    trickleTraffic: When serving state is PRIMARY, this field provides the
+      option of sending a small percentage of the traffic to the backup
+      targets.
+  """
+
+  backupGeoTargets = _messages.MessageField('RRSetRoutingPolicyGeoPolicy', 1)
+  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicyPrimaryBackupPolicy')
+  primaryTargets = _messages.MessageField('RRSetRoutingPolicyHealthCheckTargets', 3)
+  trickleTraffic = _messages.FloatField(4)
 
 
 class RRSetRoutingPolicyWrrPolicy(_messages.Message):
@@ -2294,6 +2415,12 @@ class RRSetRoutingPolicyWrrPolicyWrrPolicyItem(_messages.Message):
   r"""A routing block which contains the routing information for one WRR item.
 
   Fields:
+    healthCheckedTargets: endpoints that need to be health checked before
+      making the routing decision. The unhealthy endpoints will be omitted
+      from the result. If all endpoints within a buckete are unhealthy, we'll
+      choose a different bucket (sampled w.r.t. its weight) for responding.
+      Note that if DNSSEC is enabled for this zone, only one of rrdata or
+      health_checked_targets can be set.
     kind: A string attribute.
     rrdatas: A string attribute.
     signatureRrdatas: DNSSEC generated signatures for all the rrdata within
@@ -2305,10 +2432,11 @@ class RRSetRoutingPolicyWrrPolicyWrrPolicyItem(_messages.Message):
       weights configured for all items. This weight should be non-negative.
   """
 
-  kind = _messages.StringField(1, default='dns#rRSetRoutingPolicyWrrPolicyWrrPolicyItem')
-  rrdatas = _messages.StringField(2, repeated=True)
-  signatureRrdatas = _messages.StringField(3, repeated=True)
-  weight = _messages.FloatField(4)
+  healthCheckedTargets = _messages.MessageField('RRSetRoutingPolicyHealthCheckTargets', 1)
+  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicyWrrPolicyWrrPolicyItem')
+  rrdatas = _messages.StringField(3, repeated=True)
+  signatureRrdatas = _messages.StringField(4, repeated=True)
+  weight = _messages.FloatField(5)
 
 
 class ResourceRecordSet(_messages.Message):
@@ -2380,15 +2508,15 @@ class ResponsePoliciesListResponse(_messages.Message):
 
   Fields:
     header: A ResponseHeader attribute.
-    nextPageToken: The presence of this field indicates that there exist more
-      results following your last page of results in pagination order. To
-      fetch them, make another list request using this value as your page
-      token. This lets you the complete contents of even very large
-      collections one page at a time. However, if the contents of the
-      collection change between the first and last paginated list request, the
-      set of all elements returned are an inconsistent view of the collection.
-      You cannot retrieve a consistent snapshot of a collection larger than
-      the maximum page size.
+    nextPageToken: The presence of this field indicates that more results
+      exist following your last page of results in pagination order. To fetch
+      them, make another list request by using this value as your page token.
+      This lets you view the complete contents of even very large collections
+      one page at a time. However, if the contents of the collection change
+      between the first and last paginated list request, the set of all
+      elements returned are an inconsistent view of the collection. You cannot
+      retrieve a consistent snapshot of a collection larger than the maximum
+      page size.
     responsePolicies: The Response Policy resources.
   """
 
@@ -2425,6 +2553,9 @@ class ResponsePolicy(_messages.Message):
   r"""A Response Policy is a collection of selectors that apply to queries
   made against one or more Virtual Private Cloud networks.
 
+  Messages:
+    LabelsValue: User labels.
+
   Fields:
     description: User-provided description for this Response Policy.
     gkeClusters: The list of Google Kubernetes Engine clusters to which this
@@ -2432,17 +2563,43 @@ class ResponsePolicy(_messages.Message):
     id: Unique identifier for the resource; defined by the server (output
       only).
     kind: A string attribute.
+    labels: User labels.
     networks: List of network names specifying networks to which this policy
       is applied.
     responsePolicyName: User assigned name for this Response Policy.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   description = _messages.StringField(1)
   gkeClusters = _messages.MessageField('ResponsePolicyGKECluster', 2, repeated=True)
   id = _messages.IntegerField(3)
   kind = _messages.StringField(4, default='dns#responsePolicy')
-  networks = _messages.MessageField('ResponsePolicyNetwork', 5, repeated=True)
-  responsePolicyName = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 5)
+  networks = _messages.MessageField('ResponsePolicyNetwork', 6, repeated=True)
+  responsePolicyName = _messages.StringField(7)
 
 
 class ResponsePolicyGKECluster(_messages.Message):
@@ -2506,12 +2663,18 @@ class ResponsePolicyRule(_messages.Message):
     Values:
       BEHAVIOR_UNSPECIFIED: <no description>
       BYPASS_RESPONSE_POLICY: Skip a less-specific ResponsePolicyRule and
-        continue normal query logic. This can be used in conjunction with a
-        wildcard to exempt a subset of the wildcard ResponsePolicyRule from
-        the ResponsePolicy behavior and e.g., query the public internet
-        instead. For instance, if these rules exist: *.example.com -> 1.2.3.4
-        foo.example.com -> PASSTHRU Then a query for 'foo.example.com' skips
-        the wildcard.
+        continue normal query logic. This can be used with a less-specific
+        wildcard selector to exempt a subset of the wildcard
+        ResponsePolicyRule from the ResponsePolicy behavior and query the
+        public Internet instead. For instance, if these rules exist:
+        *.example.com -> LocalData 1.2.3.4 foo.example.com -> Behavior
+        'bypassResponsePolicy' Then a query for 'foo.example.com' skips the
+        wildcard. This additionally functions to facilitate the allowlist
+        feature. RPZs can be applied to multiple levels in the (eventually
+        org, folder, project, network) hierarchy. If a rule is applied at a
+        higher level of the hierarchy, adding a passthru rule at a lower level
+        will supersede that, and a query from an affected vm to that domain
+        will be exempt from the RPZ and proceed to normal resolution behavior.
     """
     BEHAVIOR_UNSPECIFIED = 0
     BYPASS_RESPONSE_POLICY = 1

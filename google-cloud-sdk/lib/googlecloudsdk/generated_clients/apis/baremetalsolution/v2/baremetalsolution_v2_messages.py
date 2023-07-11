@@ -109,19 +109,6 @@ class BaremetalsolutionProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class BaremetalsolutionProjectsLocationsInstanceProvisioningSettingsFetchRequest(_messages.Message):
-  r"""A
-  BaremetalsolutionProjectsLocationsInstanceProvisioningSettingsFetchRequest
-  object.
-
-  Fields:
-    location: Required. The parent project and location containing the
-      ProvisioningSettings.
-  """
-
-  location = _messages.StringField(1, required=True)
-
-
 class BaremetalsolutionProjectsLocationsInstanceQuotasListRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsInstanceQuotasListRequest object.
 
@@ -1041,16 +1028,6 @@ class EvictVolumeRequest(_messages.Message):
   r"""Request for skip volume cooloff and delete it."""
 
 
-class FetchInstanceProvisioningSettingsResponse(_messages.Message):
-  r"""Response with all provisioning settings.
-
-  Fields:
-    images: The OS images available.
-  """
-
-  images = _messages.MessageField('OSImage', 1, repeated=True)
-
-
 class GoogleCloudBaremetalsolutionV2LogicalInterface(_messages.Message):
   r"""Each logical interface represents a logical abstraction of the
   underlying physical interface (for eg. bond, nic) of the instance. Each
@@ -1070,37 +1047,6 @@ class GoogleCloudBaremetalsolutionV2LogicalInterface(_messages.Message):
   interfaceIndex = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   logicalNetworkInterfaces = _messages.MessageField('LogicalNetworkInterface', 2, repeated=True)
   name = _messages.StringField(3)
-
-
-class GoogleCloudBaremetalsolutionV2ServerNetworkTemplateLogicalInterface(_messages.Message):
-  r"""Logical interface.
-
-  Enums:
-    TypeValueValuesEnum: Interface type.
-
-  Fields:
-    name: Interface name. This is not a globally unique identifier. Name is
-      unique only inside the ServerNetworkTemplate. This is of syntax or and
-      forms part of the network template name.
-    required: If true, interface must have network connected.
-    type: Interface type.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Interface type.
-
-    Values:
-      INTERFACE_TYPE_UNSPECIFIED: Unspecified value.
-      BOND: Bond interface type.
-      NIC: NIC interface type.
-    """
-    INTERFACE_TYPE_UNSPECIFIED = 0
-    BOND = 1
-    NIC = 2
-
-  name = _messages.StringField(1)
-  required = _messages.BooleanField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class Instance(_messages.Message):
@@ -1268,6 +1214,7 @@ class InstanceConfig(_messages.Message):
       planning#server_configurations)
     privateNetwork: Private network address, if any. Filled if
       InstanceConfig.multivlan_config is false.
+    sshKeyNames: List of names of ssh keys used to provision the instance.
     userNote: User note field, it can be used by customers to add additional
       information for the BMS Ops team .
   """
@@ -1297,7 +1244,8 @@ class InstanceConfig(_messages.Message):
   networkTemplate = _messages.StringField(9)
   osImage = _messages.StringField(10)
   privateNetwork = _messages.MessageField('NetworkAddress', 11)
-  userNote = _messages.StringField(12)
+  sshKeyNames = _messages.StringField(12, repeated=True)
+  userNote = _messages.StringField(13)
 
 
 class InstanceQuota(_messages.Message):
@@ -2123,27 +2071,6 @@ class NfsShare(_messages.Message):
   volume = _messages.StringField(9)
 
 
-class OSImage(_messages.Message):
-  r"""Operation System image.
-
-  Fields:
-    applicableInstanceTypes: Instance types this image is applicable to.
-      [Available types](https://cloud.google.com/bare-metal/docs/bms-
-      planning#server_configurations)
-    code: OS Image code.
-    description: OS Image description.
-    name: Output only. OS Image's unique name.
-    supportedNetworkTemplates: Network templates that can be used with this OS
-      Image.
-  """
-
-  applicableInstanceTypes = _messages.StringField(1, repeated=True)
-  code = _messages.StringField(2)
-  description = _messages.StringField(3)
-  name = _messages.StringField(4)
-  supportedNetworkTemplates = _messages.MessageField('ServerNetworkTemplate', 5, repeated=True)
-
-
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -2468,23 +2395,6 @@ class Schedule(_messages.Message):
   crontabSpec = _messages.StringField(1)
   prefix = _messages.StringField(2)
   retentionCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-
-
-class ServerNetworkTemplate(_messages.Message):
-  r"""Network template.
-
-  Fields:
-    applicableInstanceTypes: Instance types this template is applicable to.
-    logicalInterfaces: Logical interfaces.
-    name: Output only. Template's unique name. The full resource name follows
-      the pattern: `projects/{project}/locations/{location}/serverNetworkTempl
-      ate/{server_network_template}` Generally, the {server_network_template}
-      follows the syntax of "bond" or "nic".
-  """
-
-  applicableInstanceTypes = _messages.StringField(1, repeated=True)
-  logicalInterfaces = _messages.MessageField('GoogleCloudBaremetalsolutionV2ServerNetworkTemplateLogicalInterface', 2, repeated=True)
-  name = _messages.StringField(3)
 
 
 class SnapshotReservationDetail(_messages.Message):

@@ -160,7 +160,7 @@ class FirestoreV1(base_api.BaseApiClient):
         method_id='firestore.projects.databases.backupSchedules.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['pageSize', 'pageToken'],
         relative_path='v1/{+parent}/backupSchedules',
         request_field='',
         request_type_name='FirestoreProjectsDatabasesBackupSchedulesListRequest',
@@ -233,7 +233,7 @@ class FirestoreV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the field configuration and metadata for this database. Currently, FirestoreAdmin.ListFields only supports listing fields that have been explicitly overridden. To issue this query, call FirestoreAdmin.ListFields with the filter set to `indexConfig.usesAncestorConfig:false` .
+      r"""Lists the field configuration and metadata for this database. Currently, FirestoreAdmin.ListFields only supports listing fields that have been explicitly overridden. To issue this query, call FirestoreAdmin.ListFields with the filter set to `indexConfig.usesAncestorConfig:false or `ttlConfig:*`.
 
       Args:
         request: (FirestoreProjectsDatabasesCollectionGroupsFieldsListRequest) input message
@@ -1165,7 +1165,7 @@ class FirestoreV1(base_api.BaseApiClient):
         method_id='firestore.projects.databases.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['pageSize', 'pageToken'],
         relative_path='v1/{+parent}/databases',
         request_field='',
         request_type_name='FirestoreProjectsDatabasesListRequest',
@@ -1310,7 +1310,7 @@ class FirestoreV1(base_api.BaseApiClient):
         method_id='firestore.projects.locations.backups.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['pageSize', 'pageToken'],
         relative_path='v1/{+parent}/backups',
         request_field='',
         request_type_name='FirestoreProjectsLocationsBackupsListRequest',

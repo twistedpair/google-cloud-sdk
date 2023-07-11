@@ -30,6 +30,10 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class ChannelConfig(_messages.Message):
+  r"""Configuration for a release channel."""
+
+
 class CloudRouter(_messages.Message):
   r"""The Cloud Router info.
 
@@ -51,7 +55,12 @@ class CloudVpn(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""A Google Distributed Cloud Edge Kubernetes cluster.
+  r"""A Google Distributed Cloud Edge Kubernetes cluster. Next: 24
+
+  Enums:
+    ReleaseChannelValueValuesEnum: Optional. The release channel a cluster is
+      subscribed to.
+    StatusValueValuesEnum: Output only. The current status of the cluster.
 
   Messages:
     LabelsValue: Labels associated with this resource.
@@ -86,9 +95,45 @@ class Cluster(_messages.Message):
       nodes. This field can be empty if the cluster does not have any worker
       nodes.
     port: Output only. The port number of the Kubernetes API server.
+    releaseChannel: Optional. The release channel a cluster is subscribed to.
+    status: Output only. The current status of the cluster.
     systemAddonsConfig: Optional. The configuration of the system add-ons.
+    targetVersion: Optional. The target cluster version. For example: "1.5.0".
     updateTime: Output only. The time when the cluster was last updated.
   """
+
+  class ReleaseChannelValueValuesEnum(_messages.Enum):
+    r"""Optional. The release channel a cluster is subscribed to.
+
+    Values:
+      RELEASE_CHANNEL_UNSPECIFIED: Unspecified release channel. This will
+        default to the REGULAR channel.
+      NONE: No release channel.
+      REGULAR: Regular release channel.
+    """
+    RELEASE_CHANNEL_UNSPECIFIED = 0
+    NONE = 1
+    REGULAR = 2
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Output only. The current status of the cluster.
+
+    Values:
+      STATUS_UNSPECIFIED: Status unknown.
+      PROVISIONING: The cluster is being created.
+      RUNNING: The cluster is created and fully usable.
+      DELETING: The cluster is being deleted.
+      ERROR: The status indicates that some errors occurred while
+        reconciling/deleting the cluster.
+      RECONCILING: The cluster is undergoing some work such as version
+        upgrades, etc.
+    """
+    STATUS_UNSPECIFIED = 0
+    PROVISIONING = 1
+    RUNNING = 2
+    DELETING = 3
+    ERROR = 4
+    RECONCILING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -131,8 +176,11 @@ class Cluster(_messages.Message):
   networking = _messages.MessageField('ClusterNetworking', 15)
   nodeVersion = _messages.StringField(16)
   port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 18)
-  updateTime = _messages.StringField(19)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 20)
+  targetVersion = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
 
 
 class ClusterNetworking(_messages.Message):
@@ -469,6 +517,17 @@ class EdgecontainerProjectsLocationsGetRequest(_messages.Message):
 
   Fields:
     name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EdgecontainerProjectsLocationsGetServerConfigRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsGetServerConfigRequest object.
+
+  Fields:
+    name: Required. The name (project and location) of the server config to
+      get, specified in the format `projects/*/locations/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1415,6 +1474,48 @@ class Remote(_messages.Message):
 
 
 
+class ServerConfig(_messages.Message):
+  r"""Server configuration for supported versions and release channels.
+
+  Messages:
+    ChannelsValue: Output only. Mapping from release channel to channel
+      config.
+
+  Fields:
+    channels: Output only. Mapping from release channel to channel config.
+    defaultVersion: Output only. Default version, e.g.: "1.4.0".
+    versions: Output only. Supported versions, e.g.: ["1.4.0", "1.5.0"].
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ChannelsValue(_messages.Message):
+    r"""Output only. Mapping from release channel to channel config.
+
+    Messages:
+      AdditionalProperty: An additional property for a ChannelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ChannelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ChannelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ChannelConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ChannelConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  channels = _messages.MessageField('ChannelsValue', 1)
+  defaultVersion = _messages.StringField(2)
+  versions = _messages.MessageField('Version', 3, repeated=True)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1582,6 +1683,16 @@ class UpgradeClusterRequest(_messages.Message):
   requestId = _messages.StringField(1)
   schedule = _messages.EnumField('ScheduleValueValuesEnum', 2)
   targetVersion = _messages.StringField(3)
+
+
+class Version(_messages.Message):
+  r"""Version of a cluster.
+
+  Fields:
+    name: Output only. Name of the version, e.g.: "1.4.0".
+  """
+
+  name = _messages.StringField(1)
 
 
 class VpcProject(_messages.Message):

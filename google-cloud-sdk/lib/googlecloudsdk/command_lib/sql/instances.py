@@ -478,6 +478,9 @@ class _BaseInstances(object):
           sql_messages, args.active_directory_domain
       )
 
+    if not IsBetaOrNewer(release_track):
+      args.password_policy_disallow_compromised_credentials = None
+
     settings.passwordValidationPolicy = reducers.PasswordPolicy(
         sql_messages,
         password_policy_min_length=args.password_policy_min_length,
@@ -485,6 +488,7 @@ class _BaseInstances(object):
         password_policy_reuse_interval=args.password_policy_reuse_interval,
         password_policy_disallow_username_substring=args.password_policy_disallow_username_substring,
         password_policy_password_change_interval=args.password_policy_password_change_interval,
+        password_policy_disallow_compromised_credentials=args.password_policy_disallow_compromised_credentials,
         enable_password_policy=args.enable_password_policy,
     )
 
@@ -611,6 +615,9 @@ class _BaseInstances(object):
           sql_messages, args.active_directory_domain
       )
 
+    if not IsBetaOrNewer(release_track):
+      args.password_policy_disallow_compromised_credentials = None
+
     settings.passwordValidationPolicy = reducers.PasswordPolicy(
         sql_messages,
         password_policy_min_length=args.password_policy_min_length,
@@ -618,8 +625,8 @@ class _BaseInstances(object):
         password_policy_reuse_interval=args.password_policy_reuse_interval,
         password_policy_disallow_username_substring=args.password_policy_disallow_username_substring,
         password_policy_password_change_interval=args.password_policy_password_change_interval,
+        password_policy_disallow_compromised_credentials=args.password_policy_disallow_compromised_credentials,
         enable_password_policy=args.enable_password_policy,
-        clear_password_policy=args.clear_password_policy,
     )
 
     settings.sqlServerAuditConfig = reducers.SqlServerAuditConfig(

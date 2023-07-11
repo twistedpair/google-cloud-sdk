@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import re
 
 from googlecloudsdk.command_lib.deploy import automation_util
 from googlecloudsdk.command_lib.deploy import deploy_util
@@ -42,6 +43,18 @@ PROMOTE_RELEASE_FIELD = 'promoteRelease'
 WAIT_FIELD = 'wait'
 LABELS_FIELD = 'labels'
 ANNOTATIONS_FIELD = 'annotations'
+SELECTOR_FIELD = 'selector'
+RULES_FIELD = 'rules'
+TARGET_ID_FIELD = 'targetId'
+ID_FIELD = 'id'
+ADVANCE_ROLLOUT_RULE_FIELD = 'advanceRolloutRule'
+PROMOTE_RELEASE_RULE_FIELD = 'promoteReleaseRule'
+TO_TARGET_ID_FIELD = 'toTargetId'
+PHASE_FIELD = 'phase'
+PHASES_FIELD = 'phases'
+FROM_PHASES_FIELD = 'fromPhases'
+TO_PHASE_FIELD = 'toPhase'
+TARGET_FIELD = 'target'
 METADATA_FIELDS = [ANNOTATIONS_FIELD, LABELS_FIELD]
 EXCLUDE_FIELDS = [
     'createTime',
@@ -149,10 +162,10 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
         stages = serial_pipeline.get('stages')
         for stage in stages:
           SetDeployParametersForPipelineStage(messages, stage)
-      if field == 'selector' and kind == AUTOMATION_KIND:
+      if field == SELECTOR_FIELD and kind == AUTOMATION_KIND:
         SetAutomationSelector(messages, resource, value)
         continue
-      if field == 'rules' and kind == AUTOMATION_KIND:
+      if field == RULES_FIELD and kind == AUTOMATION_KIND:
         SetAutomationRules(messages, resource, value)
         continue
       setattr(resource, field, value)
@@ -228,7 +241,12 @@ def ProtoToManifest(resource, resource_ref, kind):
     if v:
       manifest['metadata'][k] = v
   # Sets the name to resource ID instead of the full name.
-  manifest['metadata'][NAME_FIELD] = resource_ref.Name()
+  if kind == AUTOMATION_KIND:
+    manifest['metadata'][NAME_FIELD] = (
+        resource_ref.AsDict()['deliveryPipelinesId'] + '/' + resource_ref.Name()
+    )
+  else:
+    manifest['metadata'][NAME_FIELD] = resource_ref.Name()
 
   for f in resource.all_fields():
     if f.name in EXCLUDE_FIELDS:
@@ -236,6 +254,12 @@ def ProtoToManifest(resource, resource_ref, kind):
     v = getattr(resource, f.name)
     # Skips the 'zero' values in the message.
     if v:
+      if f.name == SELECTOR_FIELD and kind == AUTOMATION_KIND:
+        ExportAutomationSelector(manifest, v)
+        continue
+      if f.name == RULES_FIELD and kind == AUTOMATION_KIND:
+        ExportAutomationRules(manifest, v)
+        continue
       manifest[f.name] = v
 
   return manifest
@@ -319,8 +343,7 @@ def SetDeployParametersForPipelineStage(messages, stage):
   stage['deployParameters'] = dps_values
 
 
-def SetDeployParametersForTarget(messages,
-                                 target, deploy_parameters=None):
+def SetDeployParametersForTarget(messages, target, deploy_parameters=None):
   """Sets the deployParameters field of cloud deploy target message.
 
   Args:
@@ -359,10 +382,10 @@ def SetAutomationSelector(messages, automation, selectors):
   automation.selector = messages.AutomationResourceSelector()
   for selector in selectors:
     target_attribute = messages.TargetAttribute()
-    message = selector.get('target')
+    message = selector.get(TARGET_FIELD)
     for field in message:
       value = message.get(field)
-      if field == 'id':
+      if field == ID_FIELD:
         setattr(target_attribute, field, value)
       if field == LABELS_FIELD:
         deploy_util.SetMetadata(
@@ -391,17 +414,85 @@ def SetAutomationRules(messages, automation, rules):
       message = rule.get(PROMOTE_RELEASE_FIELD)
       promote_release = messages.PromoteReleaseRule(
           id=message.get(NAME_FIELD),
-          wait=message.get(WAIT_FIELD),
-          targetId=message.get('toTargetId'),
-          phase=message.get('toPhase'),
+          wait=_WaitMinToSec(message.get(WAIT_FIELD)),
+          targetId=message.get(TO_TARGET_ID_FIELD),
+          phase=message.get(TO_PHASE_FIELD),
       )
       automation_rule.promoteReleaseRule = promote_release
     if rule.get(ADVANCE_ROLLOUT_FIELD):
       message = rule.get(ADVANCE_ROLLOUT_FIELD)
       advance_rollout = messages.AdvanceRolloutRule(
           id=message.get(NAME_FIELD),
-          wait=message.get(WAIT_FIELD),
-          phases=message.get('fromPhases'),
+          wait=_WaitMinToSec(message.get(WAIT_FIELD)),
+          phases=message.get(FROM_PHASES_FIELD),
       )
       automation_rule.advanceRolloutRule = advance_rollout
     automation.rules.append(automation_rule)
+
+
+def ExportAutomationSelector(manifest, resource_selector):
+  """Exports the selector field of the Automation resource.
+
+  Args:
+    manifest: A dictionary that represents the cloud deploy Automation resource.
+    resource_selector:
+      googlecloudsdk.generated_clients.apis.clouddeploy.AutomationResourceSelector
+      message.
+  """
+  manifest[SELECTOR_FIELD] = []
+  for selector in getattr(resource_selector, 'targets'):
+    manifest[SELECTOR_FIELD].append({TARGET_FIELD: selector})
+
+
+def ExportAutomationRules(manifest, rules):
+  """Exports the selector field of the Automation resource.
+
+  Args:
+    manifest: A dictionary that represents the cloud deploy Automation resource.
+    rules: [googlecloudsdk.generated_clients.apis.clouddeploy.AutomationRule],
+      list of AutomationRule message.
+  """
+  manifest[RULES_FIELD] = []
+  for rule in rules:
+    resource = {}
+    if getattr(rule, PROMOTE_RELEASE_RULE_FIELD):
+      message = getattr(rule, PROMOTE_RELEASE_RULE_FIELD)
+      promote = {}
+      resource[PROMOTE_RELEASE_FIELD] = promote
+      promote[NAME_FIELD] = getattr(message, ID_FIELD)
+      if getattr(message, TARGET_ID_FIELD):
+        promote[TO_TARGET_ID_FIELD] = getattr(message, TARGET_ID_FIELD)
+      if getattr(message, PHASE_FIELD):
+        promote[TO_PHASE_FIELD] = getattr(message, PHASE_FIELD)
+      if getattr(message, WAIT_FIELD):
+        promote[WAIT_FIELD] = _WaitSecToMin(getattr(message, WAIT_FIELD))
+    if getattr(rule, ADVANCE_ROLLOUT_RULE_FIELD):
+      advance = {}
+      resource[ADVANCE_ROLLOUT_FIELD] = advance
+      message = getattr(rule, ADVANCE_ROLLOUT_RULE_FIELD)
+      advance[NAME_FIELD] = getattr(message, ID_FIELD)
+      if getattr(message, PHASES_FIELD):
+        advance[FROM_PHASES_FIELD] = getattr(message, PHASES_FIELD)
+      if getattr(message, WAIT_FIELD):
+        advance[WAIT_FIELD] = _WaitSecToMin(getattr(message, WAIT_FIELD))
+    manifest[RULES_FIELD].append(resource)
+
+
+def _WaitMinToSec(wait):
+  if not wait:
+    return wait
+  if not re.fullmatch(r'\d+m', wait):
+    raise exceptions.AutomationWaitFormatError()
+  mins = wait[:-1]
+  # convert the minute to second
+  seconds = int(mins) * 60
+  return '%ss' % seconds
+
+
+def _WaitSecToMin(wait):
+  if not wait:
+    return wait
+  seconds = wait[:-1]
+  # convert the minute to second
+  mins = int(seconds) // 60
+  return '%sm' % mins

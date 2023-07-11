@@ -18,8 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-
 from googlecloudsdk.api_lib.firestore import api_utils
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import exceptions as ex
 
 
 def _GetBackupSchedulesService():
@@ -61,13 +62,17 @@ def ListBackupSchedules(project, database):
     a list of backup schedules.
   """
   messages = api_utils.GetMessages()
-  return _GetBackupSchedulesService().List(
-      messages.FirestoreProjectsDatabasesBackupSchedulesListRequest(
-          parent='projects/{}/databases/{}'.format(
-              project,
-              database,
-          ),
+  return list(
+      _GetBackupSchedulesService()
+      .List(
+          messages.FirestoreProjectsDatabasesBackupSchedulesListRequest(
+              parent='projects/{}/databases/{}'.format(
+                  project,
+                  database,
+              ),
+          )
       )
+      .backupSchedules
   )
 
 
@@ -127,7 +132,9 @@ def UpdateBackupSchedule(project, database, backup_schedule, retention):
   )
 
 
-def CreateBackupSchedule(project, database, retention, recurrence):
+def CreateBackupSchedule(
+    project, database, retention, recurrence, day_of_week=None
+):
   """Creates a backup schedule.
 
   Args:
@@ -138,28 +145,46 @@ def CreateBackupSchedule(project, database, retention, recurrence):
       backup be deleted. The unit is seconds.
     recurrence: the recurrence of the backup schedule, a string. The valid
       values are: daily and weekly.
+    day_of_week: day of week for weekly backup schdeule.
 
   Returns:
     a backup schedule.
 
   Raises:
-    ValueError: if recurrence is invalid.
+    InvalidArgumentException: if recurrence is invalid.
+    ConflictingArgumentsException: if recurrence is daily but day-of-week is
+    provided.
+    RequiredArgumentException: if recurrence is weekly but day-of-week is not
+    provided.
   """
   messages = api_utils.GetMessages()
   backup_schedule = messages.GoogleFirestoreAdminV1BackupSchedule()
   backup_schedule.retention = api_utils.FormatDurationString(retention)
   if recurrence == 'daily':
+    if day_of_week is not None:
+      raise ex.ConflictingArgumentsException(
+          '--day-of-week',
+          'Cannot set day of week for daily backup schedules.',
+      )
     backup_schedule.dailyRecurrence = (
         messages.GoogleFirestoreAdminV1DailyRecurrence()
     )
   elif recurrence == 'weekly':
+    if day_of_week is None:
+      raise ex.RequiredArgumentException(
+          '--day-of-week',
+          'Day of week is required for weekly backup schedules, please use'
+          ' --day-of-week to specify this value',
+      )
     backup_schedule.weeklyRecurrence = (
         messages.GoogleFirestoreAdminV1WeeklyRecurrence()
     )
+    backup_schedule.weeklyRecurrence.day = ConvertDayOfWeek(day_of_week)
   else:
-    raise ValueError(
+    raise ex.InvalidArgumentException(
+        '--recurrence',
         'invalid recurrence: {}. The available values are: `daily` and'
-        ' `weekly`.'.format(recurrence)
+        ' `weekly`.'.format(recurrence),
     )
 
   return _GetBackupSchedulesService().Create(
@@ -171,3 +196,24 @@ def CreateBackupSchedule(project, database, retention, recurrence):
           googleFirestoreAdminV1BackupSchedule=backup_schedule,
       )
   )
+
+
+def ConvertDayOfWeek(day):
+  """Converts the user-given day-of-week into DayValueValuesEnum.
+
+  Args:
+    day: day of Week for weekly backup schdeule.
+
+  Returns:
+    DayValueValuesEnum.
+
+  Raises:
+    ValueError: if it is an invalid input.
+  """
+
+  day_num = arg_parsers.DayOfWeek.DAYS.index(day)
+  messages = api_utils.GetMessages().GoogleFirestoreAdminV1WeeklyRecurrence()
+  # a special case for SUN.
+  if day_num == 0:
+    day_num = 7
+  return messages.DayValueValuesEnum(day_num)

@@ -1287,10 +1287,14 @@ def BuildShieldedInstanceConfigMessage(messages, args):
 
 
 def BuildConfidentialInstanceConfigMessage(
-    messages, args, support_confidential_compute_type=False):
+    messages, args,
+    support_confidential_compute_type=False,
+    support_confidential_compute_type_tdx=False):
   """Builds a confidential instance configuration message."""
   return instance_utils.CreateConfidentialInstanceMessage(
-      messages, args, support_confidential_compute_type)
+      messages, args,
+      support_confidential_compute_type,
+      support_confidential_compute_type_tdx)
 
 
 def GetImageUri(args,
@@ -1298,7 +1302,7 @@ def GetImageUri(args,
                 create_boot_disk,
                 project,
                 resource_parser,
-                confidential_vm=False,
+                confidential_vm_type=None,
                 image_family_scope=None,
                 support_image_family_scope=False):
   """Retrieves the image uri for the specified image."""
@@ -1310,7 +1314,7 @@ def GetImageUri(args,
         image_family=args.image_family,
         image_project=args.image_project,
         return_image_resource=False,
-        confidential_vm=confidential_vm,
+        confidential_vm_type=confidential_vm_type,
         image_family_scope=image_family_scope,
         support_image_family_scope=support_image_family_scope)
     return image_uri
@@ -1363,7 +1367,7 @@ def CreateMachineTypeUri(args,
                          project,
                          location,
                          scope,
-                         confidential_vm=False):
+                         confidential_vm_type=False):
   """Create a machine type URI for given args and instance reference."""
 
   machine_type = args.machine_type
@@ -1379,7 +1383,7 @@ def CreateMachineTypeUri(args,
       custom_memory=custom_memory,
       ext=ext,
       vm_type=vm_type,
-      confidential_vm=confidential_vm)
+      confidential_vm_type=confidential_vm_type)
 
   # Check to see if the custom machine type ratio is supported
   instance_utils.CheckCustomCpuRamRatio(compute_client, project, location,

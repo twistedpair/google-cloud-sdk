@@ -22,8 +22,8 @@ from __future__ import unicode_literals
 import enum
 import os
 import re
-from apitools.base.py import exceptions as apitools_exceptions
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.container import kubeconfig
 from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import global_methods
@@ -1026,9 +1026,23 @@ def AddMinInstancesFlag(parser):
       '--min-instances',
       type=_ScaleValue,
       help=(
-          'The minimum number of container instances of the Service to run '
-          "or 'default' to remove any minimum."
+          'The minimum number of container instances for this Revision of the '
+          "Service to run or 'default' to remove any minimum."
       ),
+  )
+
+
+def AddServiceMinInstancesFlag(parser):
+  """Add service-level min scaling flag."""
+  parser.add_argument(
+      '--service-min-instances',
+      type=_ScaleValue,
+      help=(
+          'The minimum number of container instances for this Service to run '
+          "or 'default' to remove any minimum. These instances will be divided "
+          'among all Revisions receiving a percentage of traffic.'
+      ),
+      hidden=True,
   )
 
 
@@ -1575,6 +1589,27 @@ def _GetScalingChanges(args):
   return result
 
 
+def _GetServiceScalingChanges(args):
+  """Return the changes for service-level scaling for the given args."""
+  result = []
+  if 'service_min_instances' in args and args.service_min_instances is not None:
+    scale_value = args.service_min_instances
+    if scale_value.restore_default or scale_value.instance_count == 0:
+      result.append(
+          config_changes.DeleteAnnotationChange(
+              service.SERVICE_MIN_SCALE_ANNOTATION
+          )
+      )
+    else:
+      result.append(
+          config_changes.SetAnnotationChange(
+              service.SERVICE_MIN_SCALE_ANNOTATION,
+              str(scale_value.instance_count),
+          )
+      )
+  return result
+
+
 def _IsVolumeMountKey(key):
   """Returns True if the key refers to a volume mount."""
   return key.startswith('/')
@@ -1949,6 +1984,7 @@ def GetServiceConfigurationChanges(args):
   changes = _GetConfigurationChanges(args)
 
   changes.extend(_GetScalingChanges(args))
+  changes.extend(_GetServiceScalingChanges(args))
   if _HasTrafficChanges(args):
     changes.append(_GetTrafficChanges(args))
   if 'no_traffic' in args and args.no_traffic:

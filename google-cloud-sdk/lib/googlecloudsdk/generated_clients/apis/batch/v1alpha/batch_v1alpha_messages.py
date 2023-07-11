@@ -20,6 +20,11 @@ class Accelerator(_messages.Message):
 
   Fields:
     count: The number of accelerators of this type.
+    driverVersion: Optional. The NVIDIA GPU driver version that should be
+      installed for this type. You can define the specific driver version such
+      as "470.103.01", following the driver version requirements in
+      https://cloud.google.com/compute/docs/gpus/install-drivers-gpu#minimum-
+      driver. Batch will install the specific accelerator driver if qualified.
     installGpuDrivers: Deprecated: please use instances[0].install_gpu_drivers
       instead.
     type: The accelerator type. For example, "nvidia-tesla-t4". See `gcloud
@@ -27,8 +32,9 @@ class Accelerator(_messages.Message):
   """
 
   count = _messages.IntegerField(1)
-  installGpuDrivers = _messages.BooleanField(2)
-  type = _messages.StringField(3)
+  driverVersion = _messages.StringField(2)
+  installGpuDrivers = _messages.BooleanField(3)
+  type = _messages.StringField(4)
 
 
 class ActionCondition(_messages.Message):
@@ -249,8 +255,8 @@ class BatchProjectsLocationsJobsListRequest(_messages.Message):
 
   Fields:
     filter: List filter.
-    orderBy: Sort results. Supported are "name", "name desc", "create_time",
-      "create_time desc", and "".
+    orderBy: Optional. Sort results. Supported are "name", "name desc",
+      "create_time", and "create_time desc".
     pageSize: Page size.
     pageToken: Page token.
     parent: Parent path.
@@ -280,7 +286,7 @@ class BatchProjectsLocationsJobsTaskGroupsTasksListRequest(_messages.Message):
     filter: Task filter, null filter matches all Tasks. Filter string should
       be of the format State=TaskStatus.State e.g. State=RUNNING
     orderBy: Sort results. Supported are "name", "name desc", "create_time",
-      "create_time desc", and "".
+      and "create_time desc".
     pageSize: Page size.
     pageToken: Page token.
     parent: Required. Name of a TaskGroup from which Tasks are being
@@ -430,15 +436,14 @@ class Disk(_messages.Message):
     diskInterface: Local SSDs are available through both "SCSI" and "NVMe"
       interfaces. If not indicated, "NVMe" will be the default one for local
       ssds. We only support "SCSI" for persistent disks now.
-    image: Name of a public or custom image used as the data source. For
-      example, the following are all valid URLs: * Specify the image by its
-      family name: projects/{project}/global/images/family/{image_family} *
-      Specify the image version:
-      projects/{project}/global/images/{image_version} You can also use Batch
-      customized image in short names. The following image values are
-      supported for a boot disk: * "batch-debian": use Batch Debian images. *
-      "batch-centos": use Batch CentOS images. * "batch-cos": use Batch
-      Container-Optimized images. * "batch-hpc-centos": use Batch HPC CentOS
+    image: Name of an image used as the data source. For example, the
+      following are all valid URLs: * Specify the image by its family name:
+      projects/project/global/images/family/image_family * Specify the image
+      version: projects/project/global/images/image_version You can also use
+      Batch customized image in short names. The following image values are
+      supported for a boot disk: * `batch-debian`: use Batch Debian images. *
+      `batch-centos`: use Batch CentOS images. * `batch-cos`: use Batch
+      Container-Optimized images. * `batch-hpc-centos`: use Batch HPC CentOS
       images.
     sizeGb: Disk size in GB. For persistent disk, this field is ignored if
       `data_source` is `image` or `snapshot`. For local SSD, size_gb should be
@@ -616,7 +621,12 @@ class InstancePolicyOrTemplate(_messages.Message):
     installGpuDrivers: Set this field true if users want Batch to help fetch
       drivers from a third party location and install them for GPUs specified
       in policy.accelerators or instance_template on their behalf. Default is
-      false.
+      false. For Container-Optimized Image cases, Batch will install the
+      accelerator driver following milestones of
+      https://cloud.google.com/container-optimized-os/docs/release-notes. For
+      non Container-Optimized Image cases, following
+      https://github.com/GoogleCloudPlatform/compute-gpu-
+      installation/blob/main/linux/install_gpu_driver.py.
     instanceTemplate: Name of an instance template used to create VMs. Named
       the field as 'instance_template' instead of 'template' to avoid c++
       keyword conflict.
@@ -873,7 +883,7 @@ class JobStatus(_messages.Message):
     r"""Job state
 
     Values:
-      STATE_UNSPECIFIED: <no description>
+      STATE_UNSPECIFIED: Job state unspecified.
       QUEUED: Job is admitted (validated and persisted) and waiting for
         resources.
       SCHEDULED: Job is scheduled to run as soon as resource allocation is
@@ -1187,7 +1197,7 @@ class Message(_messages.Message):
     r"""The new job state.
 
     Values:
-      STATE_UNSPECIFIED: <no description>
+      STATE_UNSPECIFIED: Job state unspecified.
       QUEUED: Job is admitted (validated and persisted) and waiting for
         resources.
       SCHEDULED: Job is scheduled to run as soon as resource allocation is
@@ -1264,9 +1274,9 @@ class NetworkInterface(_messages.Message):
   Fields:
     network: The URL of an existing network resource. You can specify the
       network as a full or partial URL. For example, the following are all
-      valid URLs: * https://www.googleapis.com/compute/v1/projects/{project}/g
-      lobal/networks/{network} * projects/{project}/global/networks/{network}
-      * global/networks/{network}
+      valid URLs: https://www.googleapis.com/compute/v1/projects/project/globa
+      l/networks/network projects/project/global/networks/network
+      global/networks/network
     noExternalIpAddress: Default is false (with an external IP address).
       Required if no external public IP address is attached to the VM. If no
       external public IP address, additional configuration is required to
@@ -1276,10 +1286,10 @@ class NetworkInterface(_messages.Message):
       information.
     subnetwork: The URL of an existing subnetwork resource in the network. You
       can specify the subnetwork as a full or partial URL. For example, the
-      following are all valid URLs: * https://www.googleapis.com/compute/v1/pr
-      ojects/{project}/regions/{region}/subnetworks/{subnetwork} *
-      projects/{project}/regions/{region}/subnetworks/{subnetwork} *
-      regions/{region}/subnetworks/{subnetwork}
+      following are all valid URLs: https://www.googleapis.com/compute/v1/proj
+      ects/project/regions/region/subnetworks/subnetwork
+      projects/project/regions/region/subnetworks/subnetwork
+      regions/region/subnetworks/subnetwork
   """
 
   network = _messages.StringField(1)

@@ -253,6 +253,33 @@ class WorkflowsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListRevisions(self, request, global_params=None):
+      r"""Lists revisions for a given workflow.
+
+      Args:
+        request: (WorkflowsProjectsLocationsWorkflowsListRevisionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkflowRevisionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListRevisions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListRevisions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}:listRevisions',
+        http_method='GET',
+        method_id='workflows.projects.locations.workflows.listRevisions',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+name}:listRevisions',
+        request_field='',
+        request_type_name='WorkflowsProjectsLocationsWorkflowsListRevisionsRequest',
+        response_type_name='ListWorkflowRevisionsResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an existing workflow. Running this method has no impact on already running executions of the workflow. A new revision of the workflow might be created as a result of a successful update operation. In that case, the new revision is used in new workflow executions.
 

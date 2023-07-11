@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -118,6 +119,9 @@ def GenerateUpdateMask(api_version='v2'):
     update_mask = set()
     tpu_messages = GetMessagesModule(version=api_version)
 
+    if args.IsSpecified('description'):
+      update_mask.add('description')
+
     if (args.IsSpecified('update_labels') or
         args.IsSpecified('remove_labels') or args.IsSpecified('clear_labels')):
       labels_diff = labels_util.Diff.FromUpdateArgs(args)
@@ -135,6 +139,39 @@ def GenerateUpdateMask(api_version='v2'):
       if set(tags_update) != set(request.node.tags):
         request.node.tags = tags_update
         update_mask.add('tags')
+
+    if args.IsSpecified('metadata_from_file'):
+      metadata_dict = metadata_utils.ConstructMetadataDict(
+          None, args.metadata_from_file)
+      request.node.metadata = tpu_messages.Node.MetadataValue()
+      for key, value in six.iteritems(metadata_dict):
+        request.node.metadata.additionalProperties.append(
+            tpu_messages.Node.MetadataValue.AdditionalProperty(
+                key=key, value=value))
+      update_mask.add('metadata')
+    elif (args.IsSpecified('update_metadata') or
+          args.IsSpecified('remove_metadata') or
+          args.IsSpecified('clear_metadata')):
+      metadata_dict = {}
+      if request.node.metadata is not None:
+        for item in request.node.metadata.additionalProperties:
+          metadata_dict[item.key] = item.value
+      # Apply flags one by one since we allow multiple flags to be set at once.
+      # The order should match the flags' descriptions.
+      metadata_update = map_util.ApplyMapFlags(metadata_dict, None,
+                                               None, args.clear_metadata, None,
+                                               None)
+      metadata_update = map_util.ApplyMapFlags(metadata_update, None,
+                                               args.update_metadata, None, None,
+                                               None)
+      metadata_update = map_util.ApplyMapFlags(metadata_update, None, None,
+                                               None, args.remove_metadata, None)
+      request.node.metadata = tpu_messages.Node.MetadataValue()
+      for key, value in six.iteritems(metadata_update):
+        request.node.metadata.additionalProperties.append(
+            tpu_messages.Node.MetadataValue.AdditionalProperty(
+                key=key, value=value))
+      update_mask.add('metadata')
 
     if not update_mask:
       raise NoFieldsSpecifiedError(

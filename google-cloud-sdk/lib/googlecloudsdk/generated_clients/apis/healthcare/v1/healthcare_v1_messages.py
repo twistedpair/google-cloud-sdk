@@ -71,8 +71,8 @@ class AnalyzeEntitiesResponse(_messages.Message):
     entities: The union of all the candidate entities that the entity_mentions
       in this response could link to. These are UMLS concepts or normalized
       mention content.
-    entityMentions: entity_mentions contains all the annotated medical
-      entities that were mentioned in the provided document.
+    entityMentions: The `entity_mentions` field contains all the annotated
+      medical entities that were mentioned in the provided document.
     relationships: relationships contains all the binary relationships that
       were identified between entity mentions within the provided document.
   """
@@ -815,12 +815,19 @@ class DeidentifyConfig(_messages.Message):
       found in the source_dataset.
     text: Configures de-identification of text wherever it is found in the
       source_dataset.
+    useRegionalDataProcessing: Ensures in-flight data remains in the region of
+      origin during de-identification. Using this option results in a
+      significant reduction of throughput, and is not compatible with
+      `LOCATION` or `ORGANIZATION_NAME` infoTypes. `LOCATION` must be excluded
+      within `TextConfig`, and must also be excluded within `ImageConfig` if
+      image redaction is required.
   """
 
   dicom = _messages.MessageField('DicomConfig', 1)
   fhir = _messages.MessageField('FhirConfig', 2)
   image = _messages.MessageField('ImageConfig', 3)
   text = _messages.MessageField('TextConfig', 4)
+  useRegionalDataProcessing = _messages.BooleanField(5)
 
 
 class DeidentifyDatasetRequest(_messages.Message):
@@ -1013,6 +1020,12 @@ class DicomStore(_messages.Message):
       id}`.
     notificationConfig: Notification destination for new DICOM instances.
       Supplied by the client.
+    streamConfigs: Optional. A list of streaming configs used to configure the
+      destination of streaming exports for every DICOM instance insertion in
+      this DICOM store. After a new config is added to `stream_configs`, DICOM
+      instance insertions are streamed to the new destination. When a config
+      is removed from `stream_configs`, the server stops streaming to that
+      destination. Each config must contain a unique destination.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1049,6 +1062,7 @@ class DicomStore(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 1)
   name = _messages.StringField(2)
   notificationConfig = _messages.MessageField('NotificationConfig', 3)
+  streamConfigs = _messages.MessageField('GoogleCloudHealthcareV1DicomStreamConfig', 4, repeated=True)
 
 
 class Empty(_messages.Message):
@@ -1314,7 +1328,49 @@ class ExportMessagesRequest(_messages.Message):
       the `start_time` defined below. Only messages whose `send_time` lies in
       the range `start_time` (inclusive) to `end_time` (exclusive) are
       exported.
+    filter: Restricts messages exported to those matching a filter, only
+      applicable to PubsubDestination and GcsDestination. The following syntax
+      is available: * A string field value can be written as text inside
+      quotation marks, for example `"query text"`. The only valid relational
+      operation for text fields is equality (`=`), where text is searched
+      within the field, rather than having the field be equal to the text. For
+      example, `"Comment = great"` returns messages with `great` in the
+      comment field. * A number field value can be written as an integer, a
+      decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in the `yyyy-mm-dd`
+      format. Fields with date and time use the RFC3339 time format. Leading
+      zeros are required for one-digit months and days. The valid relational
+      operators for date fields are the equality operator (`=`) , along with
+      the less than/greater than operators (`<`, `<=`, `>`, `>=`). Note that
+      there is no inequality (`!=`) operator. You can prepend the `NOT`
+      operator to an expression to negate it. * Multiple field query
+      expressions can be combined in one query by adding `AND` or `OR`
+      operators between the expressions. If a boolean operator appears within
+      a quoted string, it is not treated as special, and is just another part
+      of the character string to be matched. You can prepend the `NOT`
+      operator to an expression to negate it. The following fields and
+      functions are available for filtering: * `message_type`, from the
+      MSH-9.1 field. For example, `NOT message_type = "ADT"`. * `send_date` or
+      `sendDate`, the `yyyy-mm-dd` date the message was sent in the dataset's
+      time_zone, from the MSH-7 segment. For example, `send_date <
+      "2017-01-02"`. * `send_time`, the timestamp when the message was sent,
+      using the RFC3339 time format for comparisons, from the MSH-7 segment.
+      For example, `send_time < "2017-01-02T00:00:00-05:00"`. * `create_time`,
+      the timestamp when the message was created in the HL7v2 store. Use the
+      RFC3339 time format for comparisons. For example, `create_time <
+      "2017-01-02T00:00:00-05:00"`. * `send_facility`, the care center that
+      the message came from, from the MSH-4 segment. For example,
+      `send_facility = "ABC"`. Note: The filter will be applied to every
+      message in the HL7v2 store whose `send_time` lies in the range defined
+      by the `start_time` and the `end_time`. Even if the filter only matches
+      a small set of messages, the export operation can still take a long time
+      to finish when a lot of messages are between the specified `start_time`
+      and `end_time` range.
     gcsDestination: Export to a Cloud Storage destination.
+    pubsubDestination: Export messages to a Pub/Sub topic.
     startTime: The start of the range in `send_time` (MSH.7, https://www.hl7.o
       rg/documentcenter/public_temp_2E58C1F9-1C23-BA17-
       0C6126475344DA9D/wg/conf/HL7MSH.htm) to process. If not specified, the
@@ -1325,8 +1381,10 @@ class ExportMessagesRequest(_messages.Message):
   """
 
   endTime = _messages.StringField(1)
-  gcsDestination = _messages.MessageField('GcsDestination', 2)
-  startTime = _messages.StringField(3)
+  filter = _messages.StringField(2)
+  gcsDestination = _messages.MessageField('GcsDestination', 3)
+  pubsubDestination = _messages.MessageField('PubsubDestination', 4)
+  startTime = _messages.StringField(5)
 
 
 class ExportMessagesResponse(_messages.Message):
@@ -1454,6 +1512,45 @@ class FhirFilter(_messages.Message):
   resources = _messages.MessageField('Resources', 1)
 
 
+class FhirNotificationConfig(_messages.Message):
+  r"""Contains the configuration for FHIR notifications.
+
+  Fields:
+    pubsubTopic: The [Pub/Sub](https://cloud.google.com/pubsub/docs/) topic
+      that notifications of changes are published on. Supplied by the client.
+      The notification is a `PubsubMessage` with the following fields: *
+      `PubsubMessage.Data` contains the resource name. *
+      `PubsubMessage.MessageId` is the ID of this notification. It is
+      guaranteed to be unique within the topic. * `PubsubMessage.PublishTime`
+      is the time when the message was published. Note that notifications are
+      only sent if the topic is non-empty. [Topic
+      names](https://cloud.google.com/pubsub/docs/overview#names) must be
+      scoped to a project. The Cloud Healthcare API service account,
+      service-@gcp-sa-healthcare.iam.gserviceaccount.com, must have publisher
+      permissions on the given Pub/Sub topic. Not having adequate permissions
+      causes the calls that send notifications to fail
+      (https://cloud.google.com/healthcare-api/docs/permissions-healthcare-
+      api-gcp-products#dicom_fhir_and_hl7v2_store_cloud_pubsub_permissions).
+      If a notification can't be published to Pub/Sub, errors are logged to
+      Cloud Logging. For more information, see [Viewing error logs in Cloud
+      Logging](https://cloud.google.com/healthcare-api/docs/how-tos/logging).
+    sendFullResource: Whether to send full FHIR resource to this Pub/Sub
+      topic.
+    sendPreviousResourceOnDelete: Whether to send full FHIR resource to this
+      Pub/Sub topic for deleting FHIR resource. Note that setting this to true
+      does not guarantee that all previous resources will be sent in the
+      format of full FHIR resource. When a resource change is too large or
+      during heavy traffic, only the resource name will be sent. Clients
+      should always check the "payloadType" label from a Pub/Sub message to
+      determine whether it needs to fetch the full previous resource as a
+      separate operation.
+  """
+
+  pubsubTopic = _messages.StringField(1)
+  sendFullResource = _messages.BooleanField(2)
+  sendPreviousResourceOnDelete = _messages.BooleanField(3)
+
+
 class FhirStore(_messages.Message):
   r"""Represents a FHIR store.
 
@@ -1537,10 +1634,13 @@ class FhirStore(_messages.Message):
     name: Output only. Resource name of the FHIR store, of the form
       `projects/{project_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`
       .
-    notificationConfig: If non-empty, publish all resource modifications of
-      this FHIR store to this destination. The Pub/Sub message attributes
-      contain a map with a string describing the action that has triggered the
-      notification. For example, "action":"CreateResource".
+    notificationConfig: Deprecated. Use `notification_configs` instead. If
+      non-empty, publish all resource modifications of this FHIR store to this
+      destination. The Pub/Sub message attributes contain a map with a string
+      describing the action that has triggered the notification. For example,
+      "action":"CreateResource".
+    notificationConfigs: Specifies where and whether to send notifications
+      upon changes to a FHIR store.
     streamConfigs: A list of streaming configs that configure the destinations
       of streaming export for every resource mutation in this FHIR store. Each
       store is allowed to have up to 10 streaming configs. After a new config
@@ -1641,9 +1741,10 @@ class FhirStore(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
   notificationConfig = _messages.MessageField('NotificationConfig', 8)
-  streamConfigs = _messages.MessageField('StreamConfig', 9, repeated=True)
-  validationConfig = _messages.MessageField('ValidationConfig', 10)
-  version = _messages.EnumField('VersionValueValuesEnum', 11)
+  notificationConfigs = _messages.MessageField('FhirNotificationConfig', 9, repeated=True)
+  streamConfigs = _messages.MessageField('StreamConfig', 10, repeated=True)
+  validationConfig = _messages.MessageField('ValidationConfig', 11)
+  version = _messages.EnumField('VersionValueValuesEnum', 12)
 
 
 class FhirStoreMetric(_messages.Message):
@@ -1961,6 +2062,37 @@ class GoogleCloudHealthcareV1DicomGcsSource(_messages.Message):
   """
 
   uri = _messages.StringField(1)
+
+
+class GoogleCloudHealthcareV1DicomStreamConfig(_messages.Message):
+  r"""StreamConfig specifies configuration for a streaming DICOM export.
+
+  Fields:
+    bigqueryDestination: Results are appended to this table. The server
+      creates a new table in the given BigQuery dataset if the specified table
+      does not exist. To enable the Cloud Healthcare API to write to your
+      BigQuery table, you must give the Cloud Healthcare API service account
+      the bigquery.dataEditor role. The service account is:
+      `service-{PROJECT_NUMBER}@gcp-sa-healthcare.iam.gserviceaccount.com`.
+      The PROJECT_NUMBER identifies the project that the DICOM store resides
+      in. To get the project number, go to the Cloud Console Dashboard. It is
+      recommended to not have a custom schema in the destination table which
+      could conflict with the schema created by the Cloud Healthcare API.
+      Instance deletions are not applied to the destination table. The
+      destination's table schema will be automatically updated in case a new
+      instance's data is incompatible with the current schema. The schema
+      should not be updated manually as this can cause incompatibilies that
+      cannot be resolved automatically. One resolution in this case is to
+      delete the incompatible table and let the server recreate one, though
+      the newly created table only contains data after the table recreation.
+      BigQuery imposes a 1 MB limit on streaming insert row size, therefore
+      any instance that generates more than 1 MB of BigQuery data will not be
+      streamed. If an instance cannot be streamed to BigQuery, errors will be
+      logged to Cloud Logging (see [Viewing error logs in Cloud
+      Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)).
+  """
+
+  bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1DicomBigQueryDestination', 1)
 
 
 class GoogleCloudHealthcareV1FhirBigQueryDestination(_messages.Message):
@@ -3979,7 +4111,7 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesCreateRequest(_messa
   Fields:
     createMessageRequest: A CreateMessageRequest resource to be passed as the
       request body.
-    parent: The name of the dataset this message belongs to.
+    parent: The name of the HL7v2 store this message belongs to.
   """
 
   createMessageRequest = _messages.MessageField('CreateMessageRequest', 1)
@@ -5050,7 +5182,7 @@ class ListUserDataMappingsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -5233,9 +5365,12 @@ class NotificationConfig(_messages.Message):
       that not all operations trigger notifications, see [Configuring Pub/Sub
       notifications](https://cloud.google.com/healthcare/docs/how-tos/pubsub)
       for specific details.
+    sendForBulkImport: Indicates whether or not to send Pub/Sub notifications
+      on bulk import. Only supported for DICOM imports.
   """
 
   pubsubTopic = _messages.StringField(1)
+  sendForBulkImport = _messages.BooleanField(2)
 
 
 class Operation(_messages.Message):
@@ -5540,6 +5675,27 @@ class ProgressCounter(_messages.Message):
   success = _messages.IntegerField(3)
 
 
+class PubsubDestination(_messages.Message):
+  r"""The Pub/Sub output destination. The Cloud Healthcare Service Agent
+  requires the `roles/pubsub.publisher` Cloud IAM role on the Pub/Sub topic.
+
+  Fields:
+    pubsubTopic: The [Pub/Sub](https://cloud.google.com/pubsub/docs/) topic
+      that Pub/Sub messages are published on. Supplied by the client. The
+      `PubsubMessage` contains the following fields: * `PubsubMessage.Data`
+      contains the resource name. * `PubsubMessage.MessageId` is the ID of
+      this notification. It is guaranteed to be unique within the topic. *
+      `PubsubMessage.PublishTime` is the time when the message was published.
+      [Topic names](https://cloud.google.com/pubsub/docs/overview#names) must
+      be scoped to a project. The Cloud Healthcare API service account,
+      service-PROJECT_NUMBER@gcp-sa-healthcare.iam.gserviceaccount.com, must
+      have publisher permissions on the given Pub/Sub topic. Not having
+      adequate permissions causes the calls that send notifications to fail.
+  """
+
+  pubsubTopic = _messages.StringField(1)
+
+
 class QueryAccessibleDataRequest(_messages.Message):
   r"""Queries all data_ids that are consented for a given use in the given
   consent store and writes them to a specified destination. The returned
@@ -5771,11 +5927,14 @@ class SchemaConfig(_messages.Message):
         this limitation, the server will not generate schemas for fields of
         type `Resource`, which can hold any resource type. The affected fields
         are `Parameters.parameter.resource`, `Bundle.entry.resource`, and
-        `Bundle.entry.response.outcome`.
+        `Bundle.entry.response.outcome`. Analytics schema does not gracefully
+        handle extensions with one or more occurrences, anaytics schema also
+        does not handle contained resource.
       ANALYTICS_V2: Analytics V2, similar to schema defined by the FHIR
         community, with added support for extensions with one or more
         occurrences and contained resources in stringified JSON. Analytics V2
-        uses more space in the destination table than Analytics V1.
+        uses more space in the destination table than Analytics V1. It is
+        generally recommended to use Analytics V2 over Analytics.
     """
     SCHEMA_TYPE_UNSPECIFIED = 0
     ANALYTICS = 1
@@ -6271,11 +6430,17 @@ class TextConfig(_messages.Message):
   r"""A TextConfig object.
 
   Fields:
+    additionalTransformations: Transformations to apply to the detected data,
+      overridden by `exclude_info_types`.
+    excludeInfoTypes: InfoTypes to skip transforming, overriding
+      `additional_transformations`.
     transformations: The transformations to apply to the detected data.
       Deprecated. Use `additional_transformations` instead.
   """
 
-  transformations = _messages.MessageField('InfoTypeTransformation', 1, repeated=True)
+  additionalTransformations = _messages.MessageField('InfoTypeTransformation', 1, repeated=True)
+  excludeInfoTypes = _messages.StringField(2, repeated=True)
+  transformations = _messages.MessageField('InfoTypeTransformation', 3, repeated=True)
 
 
 class TextSpan(_messages.Message):

@@ -1301,8 +1301,8 @@ class DataflowProjectsJobsUpdateRequest(_messages.Message):
       RequestedJobState will be considered for update. If the FieldMask is not
       empty and RequestedJobState is none/empty, The fields specified in the
       update mask will be the only ones considered for update. If both
-      RequestedJobState and update_mask are specified, we will first handle
-      RequestedJobState and then the update_mask fields.
+      RequestedJobState and update_mask are specified, an error will be
+      returned as we cannot update both state and mask.
   """
 
   job = _messages.MessageField('Job', 1)
@@ -1919,8 +1919,8 @@ class DataflowProjectsLocationsJobsUpdateRequest(_messages.Message):
       RequestedJobState will be considered for update. If the FieldMask is not
       empty and RequestedJobState is none/empty, The fields specified in the
       update mask will be the only ones considered for update. If both
-      RequestedJobState and update_mask are specified, we will first handle
-      RequestedJobState and then the update_mask fields.
+      RequestedJobState and update_mask are specified, an error will be
+      returned as we cannot update both state and mask.
   """
 
   job = _messages.MessageField('Job', 1)
@@ -5029,6 +5029,8 @@ class ParameterMetadata(_messages.Message):
   Fields:
     customMetadata: Optional. Additional metadata for describing this
       parameter.
+    enumOptions: Optional. The options shown when ENUM ParameterType is
+      specified.
     groupName: Optional. Specifies a group name for this parameter to be
       rendered under. Group header text will be rendered exactly as specified
       in this field. Only considered when parent_name is NOT provided.
@@ -5079,6 +5081,8 @@ class ParameterMetadata(_messages.Message):
       KMS_KEY_NAME: The parameter specifies a KMS Key name.
       WORKER_REGION: The parameter specifies a Worker Region.
       WORKER_ZONE: The parameter specifies a Worker Zone.
+      BOOLEAN: The parameter specifies a boolean input.
+      ENUM: The parameter specifies an enum input.
     """
     DEFAULT = 0
     TEXT = 1
@@ -5097,6 +5101,8 @@ class ParameterMetadata(_messages.Message):
     KMS_KEY_NAME = 14
     WORKER_REGION = 15
     WORKER_ZONE = 16
+    BOOLEAN = 17
+    ENUM = 18
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomMetadataValue(_messages.Message):
@@ -5124,15 +5130,30 @@ class ParameterMetadata(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   customMetadata = _messages.MessageField('CustomMetadataValue', 1)
-  groupName = _messages.StringField(2)
-  helpText = _messages.StringField(3)
-  isOptional = _messages.BooleanField(4)
-  label = _messages.StringField(5)
-  name = _messages.StringField(6)
-  paramType = _messages.EnumField('ParamTypeValueValuesEnum', 7)
-  parentName = _messages.StringField(8)
-  parentTriggerValues = _messages.StringField(9, repeated=True)
-  regexes = _messages.StringField(10, repeated=True)
+  enumOptions = _messages.MessageField('ParameterMetadataEnumOption', 2, repeated=True)
+  groupName = _messages.StringField(3)
+  helpText = _messages.StringField(4)
+  isOptional = _messages.BooleanField(5)
+  label = _messages.StringField(6)
+  name = _messages.StringField(7)
+  paramType = _messages.EnumField('ParamTypeValueValuesEnum', 8)
+  parentName = _messages.StringField(9)
+  parentTriggerValues = _messages.StringField(10, repeated=True)
+  regexes = _messages.StringField(11, repeated=True)
+
+
+class ParameterMetadataEnumOption(_messages.Message):
+  r"""ParameterMetadataEnumOption specifies the option shown in the enum form.
+
+  Fields:
+    description: Optional. The description to display for the enum option.
+    label: Optional. The label to display for the enum option.
+    value: Required. The value of the enum option.
+  """
+
+  description = _messages.StringField(1)
+  label = _messages.StringField(2)
+  value = _messages.StringField(3)
 
 
 class PartialGroupByKeyInstruction(_messages.Message):
@@ -5574,6 +5595,8 @@ class RuntimeEnvironment(_messages.Message):
       value pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
     bypassTempDirValidation: Optional. Whether to bypass the safety checks for
       the job's temporary directory. Use with caution.
+    diskSizeGb: Optional. The disk size, in gigabytes, to use on each remote
+      Compute Engine worker instance.
     enableStreamingEngine: Optional. Whether to enable Streaming Engine for
       the job.
     ipConfiguration: Optional. Configuration for VM IPs.
@@ -5661,19 +5684,20 @@ class RuntimeEnvironment(_messages.Message):
   additionalExperiments = _messages.StringField(1, repeated=True)
   additionalUserLabels = _messages.MessageField('AdditionalUserLabelsValue', 2)
   bypassTempDirValidation = _messages.BooleanField(3)
-  enableStreamingEngine = _messages.BooleanField(4)
-  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 5)
-  kmsKeyName = _messages.StringField(6)
-  machineType = _messages.StringField(7)
-  maxWorkers = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  network = _messages.StringField(9)
-  numWorkers = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  serviceAccountEmail = _messages.StringField(11)
-  subnetwork = _messages.StringField(12)
-  tempLocation = _messages.StringField(13)
-  workerRegion = _messages.StringField(14)
-  workerZone = _messages.StringField(15)
-  zone = _messages.StringField(16)
+  diskSizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  enableStreamingEngine = _messages.BooleanField(5)
+  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 6)
+  kmsKeyName = _messages.StringField(7)
+  machineType = _messages.StringField(8)
+  maxWorkers = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  network = _messages.StringField(10)
+  numWorkers = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  serviceAccountEmail = _messages.StringField(12)
+  subnetwork = _messages.StringField(13)
+  tempLocation = _messages.StringField(14)
+  workerRegion = _messages.StringField(15)
+  workerZone = _messages.StringField(16)
+  zone = _messages.StringField(17)
 
 
 class RuntimeMetadata(_messages.Message):

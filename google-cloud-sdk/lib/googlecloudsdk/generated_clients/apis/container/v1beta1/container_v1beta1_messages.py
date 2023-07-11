@@ -180,14 +180,14 @@ class AdvancedMachineFeatures(_messages.Message):
   Enums:
     PerformanceMonitoringUnitValueValuesEnum: Type of Performance Monitoring
       Unit (PMU) requested on node pool instances. If unset, PMU will not be
-      available to the node
+      available to the node.
 
   Fields:
     enableNestedVirtualization: Whether or not to enable nested virtualization
       (defaults to false).
     performanceMonitoringUnit: Type of Performance Monitoring Unit (PMU)
       requested on node pool instances. If unset, PMU will not be available to
-      the node
+      the node.
     threadsPerCore: The number of threads per physical core. To disable
       simultaneous multithreading (SMT) set this to 1. If unset, the maximum
       number of threads supported per core by the underlying processor is
@@ -196,7 +196,7 @@ class AdvancedMachineFeatures(_messages.Message):
 
   class PerformanceMonitoringUnitValueValuesEnum(_messages.Enum):
     r"""Type of Performance Monitoring Unit (PMU) requested on node pool
-    instances. If unset, PMU will not be available to the node
+    instances. If unset, PMU will not be available to the node.
 
     Values:
       PERFORMANCE_MONITORING_UNIT_UNSPECIFIED: PMU not enabled.
@@ -2203,7 +2203,7 @@ class DNSConfig(_messages.Message):
       PLATFORM_DEFAULT: Use GKE default DNS provider(kube-dns) for DNS
         resolution.
       CLOUD_DNS: Use CloudDNS for DNS resolution.
-      KUBE_DNS: Use KubeDNS for DNS resolution
+      KUBE_DNS: Use KubeDNS for DNS resolution.
     """
     PROVIDER_UNSPECIFIED = 0
     PLATFORM_DEFAULT = 1
@@ -2747,7 +2747,7 @@ class IPAllocationPolicy(_messages.Message):
       for the cluster. This field is only applicable when `use_ip_aliases` is
       true.
     defaultPodIpv4RangeUtilization: Output only. [Output only] The utilization
-      of the cluster default IPv4 range for pod. The ratio is Usage/[Total
+      of the cluster default IPv4 range for the pod. The ratio is Usage/[Total
       number of IPs in the secondary range],
       Usage=numNodes*numZones*podIPsPerNode.
     ipv6AccessType: The ipv6 access type (internal or external) when
@@ -4309,7 +4309,7 @@ class NodeNetworkConfig(_messages.Message):
       applicable if `ip_allocation_policy.use_ip_aliases` is true. This field
       cannot be changed after the node pool has been created.
     podIpv4RangeUtilization: Output only. [Output only] The utilization of the
-      IPv4 range for pod. The ratio is Usage/[Total number of IPs in the
+      IPv4 range for the pod. The ratio is Usage/[Total number of IPs in the
       secondary range], Usage=numNodes*numZones*podIPsPerNode.
     podRange: The ID of the secondary range for pod IPs. If `create_pod_range`
       is true, this ID is used for the new range. If `create_pod_range` is
@@ -4847,7 +4847,7 @@ class PlacementPolicy(_messages.Message):
   Fields:
     policyName: If set, refers to the name of a custom resource policy
       supplied by the user. The resource policy must be in the same project
-      and region as the node pool. If not found, InvalidArgument error will be
+      and region as the node pool. If not found, InvalidArgument error is
       returned.
     tpuTopology: TPU placement topology for pod slice node pool.
       https://cloud.google.com/tpu/docs/types-topologies#tpu_topologies
@@ -5025,9 +5025,9 @@ class QueuedProvisioning(_messages.Message):
   pool.
 
   Fields:
-    enabled: Denotes that this nodepool is QRM specific. I.e. nodes can be
-      only obtained through queuing via Cluster Autoscaler ProvisioningRequest
-      API.
+    enabled: Denotes that this nodepool is QRM specific, meaning nodes can be
+      only obtained through queuing via the Cluster Autoscaler
+      ProvisioningRequest API.
   """
 
   enabled = _messages.BooleanField(1)

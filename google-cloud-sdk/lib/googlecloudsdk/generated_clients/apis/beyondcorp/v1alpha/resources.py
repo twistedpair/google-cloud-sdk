@@ -106,6 +106,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_OPERATIONS = (
+      'organizations.locations.operations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_SUBSCRIPTIONS = (
       'organizations.locations.subscriptions',
       '{+name}',
@@ -163,28 +174,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/appGateways/'
               '{appGatewaysId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_CLIENTCONNECTORSERVICES = (
-      'projects.locations.clientConnectorServices',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'clientConnectorServices/{clientConnectorServicesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_CLIENTGATEWAYS = (
-      'projects.locations.clientGateways',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/clientGateways/'
-              '{clientGatewaysId}',
       },
       ['name'],
       True

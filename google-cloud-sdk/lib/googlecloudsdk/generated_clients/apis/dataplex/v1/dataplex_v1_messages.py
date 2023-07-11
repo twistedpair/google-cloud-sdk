@@ -3364,10 +3364,10 @@ class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfo(_messages.Me
     integerProfile: Integer type field information.
     nullRatio: Ratio of rows with null value against total scanned rows.
     stringProfile: String type field information.
-    topNValues: The list of top N non-null values and number of times they
-      occur in the scanned data. N is 10 or equal to the number of distinct
-      values in the field, whichever is smaller. Not available for complex
-      non-groupable field type RECORD and fields with REPEATABLE mode.
+    topNValues: The list of top N non-null values, frequency and ratio with
+      which they occur in the scanned data. N is 10 or equal to the number of
+      distinct values in the field, whichever is smaller. Not available for
+      complex non-groupable field type RECORD and fields with REPEATABLE mode.
   """
 
   distinctRatio = _messages.FloatField(1)
@@ -3429,8 +3429,8 @@ class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoIntegerFieldI
       third quartile (Q3) splits off the highest 25% of data from the lowest
       75%. It is known as the upper or 75th empirical quartile, as 75% of the
       data lies below this point. Here, the quartiles is provided as an
-      ordered list of quartile values for the scanned data, occurring in order
-      Q1, median, Q3.
+      ordered list of approximate quartile values for the scanned data,
+      occurring in order Q1, median, Q3.
     standardDeviation: Standard deviation of non-null values in the scanned
       data. NaN, if the field has a NaN.
   """
@@ -3461,11 +3461,14 @@ class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoTopNValue(_me
 
   Fields:
     count: Count of the corresponding value in the scanned data.
+    ratio: Ratio of the corresponding value in the field against the total
+      number of rows in the scanned data.
     value: String value of a top N non-null value.
   """
 
   count = _messages.IntegerField(1)
-  value = _messages.StringField(2)
+  ratio = _messages.FloatField(2)
+  value = _messages.StringField(3)
 
 
 class GoogleCloudDataplexV1DataProfileSpec(_messages.Message):
@@ -3542,46 +3545,55 @@ class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
   Fields:
     column: Optional. The unnested column which this rule is evaluated
       against.
+    description: Optional. Description of the rule. The maximum length is
+      1,024 characters.
     dimension: Required. The dimension a rule belongs to. Results are also
       aggregated at the dimension level. Supported dimensions are
       "COMPLETENESS", "ACCURACY", "CONSISTENCY", "VALIDITY", "UNIQUENESS",
       "INTEGRITY"
     ignoreNull: Optional. Rows with null values will automatically fail a
       rule, unless ignore_null is true. In that case, such null rows are
-      trivially considered passing.Only applicable to ColumnMap rules.
-    nonNullExpectation: ColumnMap rule which evaluates whether each column
+      trivially considered passing.This field is only valid for row-level type
+      rules.
+    name: Optional. A mutable name for the rule. The name must contain only
+      letters (a-z, A-Z), numbers (0-9), or hyphens (-). The maximum length is
+      63 characters. Must start with a letter. Must end with a number or a
+      letter.
+    nonNullExpectation: Row-level rule which evaluates whether each column
       value is null.
-    rangeExpectation: ColumnMap rule which evaluates whether each column value
+    rangeExpectation: Row-level rule which evaluates whether each column value
       lies between a specified range.
-    regexExpectation: ColumnMap rule which evaluates whether each column value
+    regexExpectation: Row-level rule which evaluates whether each column value
       matches a specified regex.
-    rowConditionExpectation: Table rule which evaluates whether each row
-      passes the specified condition.
-    setExpectation: ColumnMap rule which evaluates whether each column value
+    rowConditionExpectation: Row-level rule which evaluates whether each row
+      in a table passes the specified condition.
+    setExpectation: Row-level rule which evaluates whether each column value
       is contained by a specified set.
-    statisticRangeExpectation: ColumnAggregate rule which evaluates whether
-      the column aggregate statistic lies between a specified range.
-    tableConditionExpectation: Table rule which evaluates whether the provided
-      expression is true.
+    statisticRangeExpectation: Aggregate rule which evaluates whether the
+      column aggregate statistic lies between a specified range.
+    tableConditionExpectation: Aggregate rule which evaluates whether the
+      provided expression is true for a table.
     threshold: Optional. The minimum ratio of passing_rows / total_rows
       required to pass this rule, with a range of 0.0, 1.0.0 indicates default
-      value (i.e. 1.0).
-    uniquenessExpectation: ColumnAggregate rule which evaluates whether the
-      column has duplicates.
+      value (i.e. 1.0).This field is only valid for row-level type rules.
+    uniquenessExpectation: Aggregate rule which evaluates whether the column
+      has duplicates.
   """
 
   column = _messages.StringField(1)
-  dimension = _messages.StringField(2)
-  ignoreNull = _messages.BooleanField(3)
-  nonNullExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleNonNullExpectation', 4)
-  rangeExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleRangeExpectation', 5)
-  regexExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleRegexExpectation', 6)
-  rowConditionExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleRowConditionExpectation', 7)
-  setExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleSetExpectation', 8)
-  statisticRangeExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation', 9)
-  tableConditionExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleTableConditionExpectation', 10)
-  threshold = _messages.FloatField(11)
-  uniquenessExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleUniquenessExpectation', 12)
+  description = _messages.StringField(2)
+  dimension = _messages.StringField(3)
+  ignoreNull = _messages.BooleanField(4)
+  name = _messages.StringField(5)
+  nonNullExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleNonNullExpectation', 6)
+  rangeExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleRangeExpectation', 7)
+  regexExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleRegexExpectation', 8)
+  rowConditionExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleRowConditionExpectation', 9)
+  setExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleSetExpectation', 10)
+  statisticRangeExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation', 11)
+  tableConditionExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleTableConditionExpectation', 12)
+  threshold = _messages.FloatField(13)
+  uniquenessExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleUniquenessExpectation', 14)
 
 
 class GoogleCloudDataplexV1DataQualityRuleNonNullExpectation(_messages.Message):
@@ -3627,19 +3639,19 @@ class GoogleCloudDataplexV1DataQualityRuleResult(_messages.Message):
   results.
 
   Fields:
-    evaluatedCount: The number of rows a rule was evaluated against. This
-      field is only valid for ColumnMap type rules.Evaluated count can be
-      configured to either include all rows (default) - with null rows
-      automatically failing rule evaluation, or exclude null rows from the
-      evaluated_count, by setting ignore_nulls = true.
-    failingRowsQuery: The query to find rows that did not pass this rule. Only
-      applies to ColumnMap and RowCondition rules.
+    evaluatedCount: The number of rows a rule was evaluated against.This field
+      is only valid for row-level type rules.Evaluated count can be configured
+      to either include all rows (default) - with null rows automatically
+      failing rule evaluation, or exclude null rows from the evaluated_count,
+      by setting ignore_nulls = true.
+    failingRowsQuery: The query to find rows that did not pass this rule.This
+      field is only valid for row-level type rules.
     nullCount: The number of rows with null values in the specified column.
-    passRatio: The ratio of passed_count / evaluated_count. This field is only
-      valid for ColumnMap type rules.
+    passRatio: The ratio of passed_count / evaluated_count.This field is only
+      valid for row-level type rules.
     passed: Whether the rule passed or failed.
-    passedCount: The number of rows which passed a rule evaluation. This field
-      is only valid for ColumnMap type rules.
+    passedCount: The number of rows which passed a rule evaluation.This field
+      is only valid for row-level type rules.
     rule: The rule specified in the DataQualitySpec, as is.
   """
 
@@ -3732,6 +3744,104 @@ class GoogleCloudDataplexV1DataQualityRuleTableConditionExpectation(_messages.Me
 
 class GoogleCloudDataplexV1DataQualityRuleUniquenessExpectation(_messages.Message):
   r"""Evaluates whether the column has duplicates."""
+
+
+class GoogleCloudDataplexV1DataQualityScanRuleResult(_messages.Message):
+  r"""Information about the result of a data quality rule for data quality
+  scan. The monitored resource is 'DataScan'.
+
+  Enums:
+    EvalutionTypeValueValuesEnum: The evaluation type of the data quality
+      rule.
+    ResultValueValuesEnum: The result of the data quality rule.
+    RuleTypeValueValuesEnum: The type of the data quality rule.
+
+  Fields:
+    column: The column which this rule is evaluated against.
+    dataSource: The data source of the data scan (e.g. BigQuery table name).
+    evaluatedRowCount: The number of rows evaluated against the data quality
+      rule. This field is only valid for rules of PER_ROW evaluation type.
+    evalutionType: The evaluation type of the data quality rule.
+    jobId: Identifier of the specific data scan job this log entry is for.
+    nullRowCount: The number of rows with null values in the specified column.
+    passedRowCount: The number of rows which passed a rule evaluation. This
+      field is only valid for rules of PER_ROW evaluation type.
+    result: The result of the data quality rule.
+    ruleDimension: The dimension of the data quality rule.
+    ruleName: The name of the data quality rule.
+    ruleType: The type of the data quality rule.
+    thresholdPercent: The passing threshold (0.0, 100.0) of the data quality
+      rule.
+  """
+
+  class EvalutionTypeValueValuesEnum(_messages.Enum):
+    r"""The evaluation type of the data quality rule.
+
+    Values:
+      EVALUATION_TYPE_UNSPECIFIED: An unspecified evaluation type.
+      PER_ROW: The rule evaluation is done at per row level.
+      AGGREGATE: The rule evaluation is done for an aggregate of rows.
+    """
+    EVALUATION_TYPE_UNSPECIFIED = 0
+    PER_ROW = 1
+    AGGREGATE = 2
+
+  class ResultValueValuesEnum(_messages.Enum):
+    r"""The result of the data quality rule.
+
+    Values:
+      RESULT_UNSPECIFIED: An unspecified result.
+      PASSED: The data quality rule passed.
+      FAILED: The data quality rule failed.
+    """
+    RESULT_UNSPECIFIED = 0
+    PASSED = 1
+    FAILED = 2
+
+  class RuleTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the data quality rule.
+
+    Values:
+      RULE_TYPE_UNSPECIFIED: An unspecified rule type.
+      NON_NULL_EXPECTATION: Please see https://cloud.google.com/dataplex/docs/
+        reference/rest/v1/DataQualityRule#nonnullexpectation.
+      RANGE_EXPECTATION: Please see https://cloud.google.com/dataplex/docs/ref
+        erence/rest/v1/DataQualityRule#rangeexpectation.
+      REGEX_EXPECTATION: Please see https://cloud.google.com/dataplex/docs/ref
+        erence/rest/v1/DataQualityRule#regexexpectation.
+      ROW_CONDITION_EXPECTATION: Please see https://cloud.google.com/dataplex/
+        docs/reference/rest/v1/DataQualityRule#rowconditionexpectation.
+      SET_EXPECTATION: Please see https://cloud.google.com/dataplex/docs/refer
+        ence/rest/v1/DataQualityRule#setexpectation.
+      STATISTIC_RANGE_EXPECTATION: Please see https://cloud.google.com/dataple
+        x/docs/reference/rest/v1/DataQualityRule#statisticrangeexpectation.
+      TABLE_CONDITION_EXPECTATION: Please see https://cloud.google.com/dataple
+        x/docs/reference/rest/v1/DataQualityRule#tableconditionexpectation.
+      UNIQUENESS_EXPECTATION: Please see https://cloud.google.com/dataplex/doc
+        s/reference/rest/v1/DataQualityRule#uniquenessexpectation.
+    """
+    RULE_TYPE_UNSPECIFIED = 0
+    NON_NULL_EXPECTATION = 1
+    RANGE_EXPECTATION = 2
+    REGEX_EXPECTATION = 3
+    ROW_CONDITION_EXPECTATION = 4
+    SET_EXPECTATION = 5
+    STATISTIC_RANGE_EXPECTATION = 6
+    TABLE_CONDITION_EXPECTATION = 7
+    UNIQUENESS_EXPECTATION = 8
+
+  column = _messages.StringField(1)
+  dataSource = _messages.StringField(2)
+  evaluatedRowCount = _messages.IntegerField(3)
+  evalutionType = _messages.EnumField('EvalutionTypeValueValuesEnum', 4)
+  jobId = _messages.StringField(5)
+  nullRowCount = _messages.IntegerField(6)
+  passedRowCount = _messages.IntegerField(7)
+  result = _messages.EnumField('ResultValueValuesEnum', 8)
+  ruleDimension = _messages.StringField(9)
+  ruleName = _messages.StringField(10)
+  ruleType = _messages.EnumField('RuleTypeValueValuesEnum', 11)
+  thresholdPercent = _messages.FloatField(12)
 
 
 class GoogleCloudDataplexV1DataQualitySpec(_messages.Message):
@@ -3885,6 +3995,7 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
     endTime: The time when the data scan job finished.
     jobId: The identifier of the specific data scan job this log entry is for.
     message: The message describing the data scan job event.
+    postScanActionsResult: The result of post scan actions.
     scope: The scope of the data scan (e.g. full, incremental).
     specVersion: A version identifier of the spec which was used to execute
       this job.
@@ -3954,18 +4065,21 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
   endTime = _messages.StringField(6)
   jobId = _messages.StringField(7)
   message = _messages.StringField(8)
-  scope = _messages.EnumField('ScopeValueValuesEnum', 9)
-  specVersion = _messages.StringField(10)
-  startTime = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  trigger = _messages.EnumField('TriggerValueValuesEnum', 13)
-  type = _messages.EnumField('TypeValueValuesEnum', 14)
+  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataScanEventPostScanActionsResult', 9)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 10)
+  specVersion = _messages.StringField(11)
+  startTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  trigger = _messages.EnumField('TriggerValueValuesEnum', 14)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
 
 
 class GoogleCloudDataplexV1DataScanEventDataProfileAppliedConfigs(_messages.Message):
   r"""Applied configs for data profile type data scan job.
 
   Fields:
+    columnFilterApplied: Boolean indicating whether a column filter was
+      applied in the DataScan job.
     rowFilterApplied: Boolean indicating whether a row filter was applied in
       the DataScan job.
     samplingPercent: The percentage of the records selected from the dataset
@@ -3973,8 +4087,9 @@ class GoogleCloudDataplexV1DataScanEventDataProfileAppliedConfigs(_messages.Mess
       imply that sampling was not applied.
   """
 
-  rowFilterApplied = _messages.BooleanField(1)
-  samplingPercent = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  columnFilterApplied = _messages.BooleanField(1)
+  rowFilterApplied = _messages.BooleanField(2)
+  samplingPercent = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataScanEventDataProfileResult(_messages.Message):
@@ -4048,6 +4163,46 @@ class GoogleCloudDataplexV1DataScanEventDataQualityResult(_messages.Message):
   dimensionPassed = _messages.MessageField('DimensionPassedValue', 1)
   passed = _messages.BooleanField(2)
   rowCount = _messages.IntegerField(3)
+
+
+class GoogleCloudDataplexV1DataScanEventPostScanActionsResult(_messages.Message):
+  r"""Post scan actions result for data scan job.
+
+  Fields:
+    bigqueryExportResult: The result of BigQuery export post scan action.
+  """
+
+  bigqueryExportResult = _messages.MessageField('GoogleCloudDataplexV1DataScanEventPostScanActionsResultBigQueryExportResult', 1)
+
+
+class GoogleCloudDataplexV1DataScanEventPostScanActionsResultBigQueryExportResult(_messages.Message):
+  r"""The result of BigQuery export post scan action.
+
+  Enums:
+    StateValueValuesEnum: Execution state for the BigQuery exporting.
+
+  Fields:
+    message: Additional information about the BigQuery exporting.
+    state: Execution state for the BigQuery exporting.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Execution state for the BigQuery exporting.
+
+    Values:
+      STATE_UNSPECIFIED: The exporting state is unspecified.
+      SUCCEEDED: The exporting completed successfully.
+      FAILED: The exporting is no longer running due to an error.
+      SKIPPED: The exporting is skipped due to no valid scan result to export
+        (usually caused by scan failed).
+    """
+    STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+    SKIPPED = 3
+
+  message = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class GoogleCloudDataplexV1DataScanExecutionSpec(_messages.Message):
@@ -4523,7 +4678,7 @@ class GoogleCloudDataplexV1EntityCompatibilityStatusCompatibility(_messages.Mess
 
 class GoogleCloudDataplexV1Environment(_messages.Message):
   r"""Environment represents a user-visible compute infrastructure for
-  analytics within a lake. LINT.IfChange
+  analytics within a lake.
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the environment.

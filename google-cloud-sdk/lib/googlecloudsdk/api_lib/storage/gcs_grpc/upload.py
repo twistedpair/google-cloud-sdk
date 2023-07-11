@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import copy
 import functools
 import os
 
@@ -27,6 +28,7 @@ from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import metadata_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import retry_util
 from googlecloudsdk.command_lib.storage import hash_util
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -55,8 +57,9 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
         Metadata for the destination object.
       request_config (gcs_api.GcsRequestConfig): Tracks additional request
         preferences.
-      source_resource (FileObjectResource|None): Contains the
-        source StorageUrl. Can be None if source is pure stream.
+      source_resource (FileObjectResource|ObjectResource|None): Contains the
+        source StorageUrl and source object metadata for daisy chain transfers.
+        Can be None if source is pure stream.
       start_offset (int): The offset from the beginning of the object at
         which the data should be written.
     """
@@ -200,6 +203,27 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
       ):
         break
 
+  def _set_metadata_if_source_is_object_resource(
+      self, object_metadata):
+    """Copies metadata from _source_resource to object_metadata.
+
+    It is copied if _source_resource is an instance of ObjectResource, this is
+    in case a daisy chain copy is performed.
+
+    Args:
+      object_metadata (gapic_clients.storage_v2.types.storage.Object): Existing
+        object metadata.
+    """
+
+    if not isinstance(self._source_resource, resource_reference.ObjectResource):
+      return
+
+    if not self._source_resource.custom_fields:
+      return
+
+    object_metadata.metadata = copy.deepcopy(
+        self._source_resource.custom_fields)
+
   def _get_write_object_spec(self, size=None):
     """Returns the WriteObjectSpec instance.
 
@@ -217,6 +241,10 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
             self._destination_resource.storage_url.bucket_name),
         size=size)
 
+    self._set_metadata_if_source_is_object_resource(
+        destination_object
+    )
+
     metadata_util.update_object_metadata_from_request_config(
         destination_object, self._request_config, self._source_resource
     )
@@ -231,6 +259,25 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
         ),
         object_size=size)
 
+  def _call_write_object(self, first_message):
+    """Calls write object api method with routing header.
+
+    Args:
+      first_message (WriteObjectSpec|str): WriteObjectSpec for Simple uploads.
+    Returns:
+      (gapic_clients.storage_v2.types.WriteObjectResponse) Request response.
+    """
+    return self._client.storage.write_object(
+        requests=self._upload_write_object_request_generator(
+            first_message=first_message
+        ),
+        metadata=metadata_util.get_bucket_name_routing_header(
+            grpc_util.get_full_bucket_name(
+                self._destination_resource.storage_url.bucket_name
+            )
+        ),
+    )
+
   @abc.abstractmethod
   def run(self):
     """Performs an upload and returns and returns an Object message."""
@@ -242,18 +289,18 @@ class SimpleUpload(_Upload):
 
   @retry_util.grpc_default_retryer
   def run(self):
-    """"Uploads the object in non-resumable mode.
+    """Uploads the object in non-resumable mode.
 
     Returns:
       (gapic_clients.storage_v2.types.WriteObjectResponse) A WriteObjectResponse
       instance.
     """
     write_object_spec = self._get_write_object_spec(
-        self._request_config.resource_args.size)
-    return self._client.storage.write_object(
-        requests=self._upload_write_object_request_generator(
-            first_message=write_object_spec
-        ))
+        self._request_config.resource_args.size
+    )
+    return self._call_write_object(
+        write_object_spec
+    )
 
 
 class RecoverableUpload(_Upload):
@@ -310,11 +357,7 @@ class RecoverableUpload(_Upload):
     return True
 
   def _perform_upload(self, upload_id):
-    return self._client.storage.write_object(
-        requests=self._upload_write_object_request_generator(
-            first_message=upload_id
-        )
-    )
+    return self._call_write_object(upload_id)
 
   def run(self):
     upload_id = self._initialize_upload()
@@ -453,11 +496,7 @@ class StreamingUpload(RecoverableUpload):
     self._log_message()
     response = None
     while True:
-      response = self._client.storage.write_object(
-          requests=self._upload_write_object_request_generator(
-              first_message=upload_id
-          )
-      )
+      response = self._call_write_object(upload_id)
       if self._source_stream_finished:
         break
       self._start_offset = response.persisted_size

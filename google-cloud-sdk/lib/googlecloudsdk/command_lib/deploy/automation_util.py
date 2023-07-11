@@ -67,3 +67,15 @@ def PatchAutomation(resource):
       The operation message.
   """
   return automation.AutomationsClient().Patch(resource)
+
+
+def DeleteAutomation(name):
+  """Deletes an automation resource by calling the delete automation API.
+
+  Args:
+    name: str, automation name.
+
+  Returns:
+    The operation message.
+  """
+  return automation.AutomationsClient().Delete(name)

@@ -251,7 +251,6 @@ volume_data_restore_policy:
 cluster_resource_conflict_policy:
   arg_name: cluster-resource-conflict-policy
   api_field: restorePlan.restoreConfig.clusterResourceConflictPolicy
-  required: true
   help_text: |
     Define how to handle restore-time conflicts for cluster-scoped resources.
   choices:
@@ -313,13 +312,60 @@ namespaced_resource_restore_mode_update:
 cluster_resource_restore_scope:
   arg_name: cluster-resource-restore-scope
   api_field: restorePlan.restoreConfig.clusterResourceRestoreScope
+  action:
+    deprecated:
+      removed: false
+      warn: |
+        Flag cluster-resource-restore-scope is deprecated and will be removed in release 460.0.0
+          Please use --cluster-resource-scope-selected-group-kinds instead.
+  hidden: true
   type: arg_list
-  required: true
   processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ProcessClusterResourceRestoreScope
   help_text: |
-    List of cluster-scoped resource types to be restored. Not specifying this means NO cluster
-    resource will be restored. The format of a resource is "<group>/<kind>", e.g.
+    List of cluster-scoped resource group kinds to restore from the backup. If specified,
+    only the selected resources will be restored. The format of a resource is "<group>/<kind>", e.g.
     `storage.k8s.io/StorageClass` for StorageClass. Use an empty string for core API group.
+
+cluster_resource_selected_group_kinds:
+  arg_name: cluster-resource-scope-selected-group-kinds
+  api_field: restorePlan.restoreConfig.clusterResourceRestoreScope
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ProcessSelectedGroupKinds
+  type: arg_list
+  help_text: |
+    List of cluster-scoped resource group kinds to restore from the backup. If specified,
+    only the selected resources will be restored. The format of a resource is "<group>/<kind>", e.g.
+    `storage.k8s.io/StorageClass` for StorageClass. Use an empty string for core API group.
+
+cluster_resource_excluded_group_kinds:
+  arg_name: cluster-resource-scope-excluded-group-kinds
+  api_field: restorePlan.restoreConfig.clusterResourceRestoreScope
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ProcessExcludedGroupKinds
+  type: arg_list
+  help_text: |
+    List of cluster-scoped resource group kinds to NOT restore from the backup. If specified,
+    all valid cluster-scoped resources will be restored except for those specified in the list.
+    The format of a resource is "<group>/<kind>", e.g. `storage.k8s.io/StorageClass` for
+    StorageClass. Use an empty string for core API group.
+
+cluster_resource_all_group_kinds:
+  arg_name: cluster-resource-scope-all-group-kinds
+  api_field: restorePlan.restoreConfig.clusterResourceRestoreScope
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ProcessAllGroupKinds
+  type: bool
+  action: store_true
+  default: null
+  help_text: |
+    If true, all valid cluster-scoped resources will be restored.
+
+cluster_resource_no_group_kinds:
+  arg_name: cluster-resource-scope-no-group-kinds
+  api_field: restorePlan.restoreConfig.clusterResourceRestoreScope
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ProcessNoGroupKinds
+  type: bool
+  action: store_true
+  default: null
+  help_text: |
+    If true, no cluster-scoped resources will be restored.
 
 restore_plan_all_namespaces:
   arg_name: all-namespaces
@@ -331,6 +377,16 @@ restore_plan_all_namespaces:
   help_text: |
     If true, restore all namespaced resources in the backup.
 
+restore_plan_no_namespaces:
+  arg_name: no-namespaces
+  api_field: restorePlan.restoreConfig.noNamespaces
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ProcessNoNamespaces
+  type: bool
+  action: store_true
+  default: null
+  help_text: |
+    If true, do not restore any namespaced resources in the backup.
+
 restore_plan_selected_namespaces:
   arg_name: selected-namespaces
   api_field: restorePlan.restoreConfig.selectedNamespaces.namespaces
@@ -339,6 +395,15 @@ restore_plan_selected_namespaces:
   help_text: |
     List of selected namespaces to restore. Only those namespaced resources belonging to a selected
     namespace are restored.
+
+restore_plan_excluded_namespaces:
+  arg_name: excluded-namespaces
+  api_field: restorePlan.restoreConfig.excludedNamespaces.namespaces
+  type: arg_list
+  default: null
+  help_text: |
+    List of selected namespaces to skip. All namespaced resources in all namespaces excluding
+    selected namespaces are restored.
 
 restore_plan_selected_applications:
   arg_name: selected-applications

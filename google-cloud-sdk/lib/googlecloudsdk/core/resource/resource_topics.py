@@ -358,7 +358,10 @@ def _ParseTransformDocString(func):
 
   # Collect the formal arg list with defaults for the function prototype.
   import inspect  # pylint: disable=g-import-not-at-top, For startup efficiency.
-  argspec = inspect.getargspec(func)
+  # getfullargspec() may fail in the future if the "func" method passed in has
+  # kwargs-only arguments, in which case refactoring will be needed. See
+  # b/287663703 for more details.
+  argspec = inspect.getfullargspec(func)
   default_index_start = len(argspec.args) - len(argspec.defaults or [])
   formals = []
   for formal_index, formal in enumerate(argspec.args):

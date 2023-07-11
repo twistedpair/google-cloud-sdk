@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import resources
@@ -25,13 +26,17 @@ from googlecloudsdk.core import resources
 
 def GetAdminClusterMembershipResource(membership_name):
   return resources.REGISTRY.ParseRelativeName(
-      membership_name, collection='gkehub.projects.locations.memberships')
+      membership_name, collection='gkehub.projects.locations.memberships'
+  )
 
 
 def AdminClusterMembershipAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='admin_cluster_membership',
-      help_text='admin cluster membership of the {resource}, in the form of projects/PROJECT/locations/global/memberships/MEMBERSHIP. '
+      help_text=(
+          'admin cluster membership of the {resource}, in the form of'
+          ' projects/PROJECT/locations/global/memberships/MEMBERSHIP. '
+      ),
   )
 
 
@@ -53,9 +58,9 @@ def GetAdminClusterMembershipResourceSpec():
   )
 
 
-def AddAdminClusterMembershipResourceArg(parser,
-                                         positional=True,
-                                         required=True):
+def AddAdminClusterMembershipResourceArg(
+    parser: parser_arguments.ArgumentInterceptor, positional=True, required=True
+):
   """Adds a resource argument for a VMware admin cluster membership.
 
   Args:
@@ -63,16 +68,20 @@ def AddAdminClusterMembershipResourceArg(parser,
     positional: bool, whether the argument is positional or not.
     required: bool, whether the argument is required or not.
   """
-  name = 'admin_cluster_membership' if positional else '--admin-cluster-membership'
+  name = (
+      'admin_cluster_membership' if positional else '--admin-cluster-membership'
+  )
   # TODO(b/227667209): Add fallthrough from cluster location when regional
   # membership is implemented.
   concept_parsers.ConceptParser.ForResource(
       name,
       GetAdminClusterMembershipResourceSpec(),
-      'membership of the admin cluster. Membership can be the membership ID or the full resource name.',
+      'membership of the admin cluster. Membership can be the membership ID or'
+      ' the full resource name.',
       required=required,
       flag_name_overrides={
           'location': '--admin-cluster-membership-location',
-      }).AddToParser(parser)
+      },
+  ).AddToParser(parser)
 
   parser.set_defaults(admin_cluster_membership_location='global')

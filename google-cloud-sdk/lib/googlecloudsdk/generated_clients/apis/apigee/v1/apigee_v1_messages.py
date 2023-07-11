@@ -567,7 +567,7 @@ class ApigeeOrganizationsAppgroupsAppsCreateRequest(_messages.Message):
   Fields:
     googleCloudApigeeV1AppGroupApp: A GoogleCloudApigeeV1AppGroupApp resource
       to be passed as the request body.
-    parent: Required. Name of the appgroup. Use the following structure in
+    parent: Required. Name of the AppGroup. Use the following structure in
       your request: `organizations/{org}/appgroups/{app_group_name}`
   """
 
@@ -579,7 +579,7 @@ class ApigeeOrganizationsAppgroupsAppsDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsAppgroupsAppsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the appgroup app. Use the following structure in
+    name: Required. Name of the AppGroup app. Use the following structure in
       your request:
       `organizations/{org}/appgroups/{app_group_name}/apps/{app}`
   """
@@ -591,7 +591,7 @@ class ApigeeOrganizationsAppgroupsAppsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsAppgroupsAppsGetRequest object.
 
   Fields:
-    name: Required. Name of the appgroup app. Use the following structure in
+    name: Required. Name of the AppGroup app. Use the following structure in
       your request:
       `organizations/{org}/appgroups/{app_group_name}/apps/{app}`
   """
@@ -690,10 +690,10 @@ class ApigeeOrganizationsAppgroupsAppsListRequest(_messages.Message):
   Fields:
     pageSize: Optional. Maximum number entries to return. If unspecified, at
       most 1000 entries will be returned.
-    pageToken: Optional. Page token. If provides, must be a valid appgroup app
+    pageToken: Optional. Page token. If provides, must be a valid AppGroup app
       returned from a previous call that can be used to retrieve the next
       page.
-    parent: Required. Name of the appgroup. Use the following structure in
+    parent: Required. Name of the AppGroup. Use the following structure in
       your request: `organizations/{org}/appgroups/{app_group_name}`
   """
 
@@ -711,7 +711,7 @@ class ApigeeOrganizationsAppgroupsAppsUpdateRequest(_messages.Message):
       `application/octet-stream`, with empty body.
     googleCloudApigeeV1AppGroupApp: A GoogleCloudApigeeV1AppGroupApp resource
       to be passed as the request body.
-    name: Required. Name of the appgroup app. Use the following structure in
+    name: Required. Name of the AppGroup app. Use the following structure in
       your request:
       `organizations/{org}/appgroups/{app_group_name}/apps/{app}`
   """
@@ -727,7 +727,7 @@ class ApigeeOrganizationsAppgroupsCreateRequest(_messages.Message):
   Fields:
     googleCloudApigeeV1AppGroup: A GoogleCloudApigeeV1AppGroup resource to be
       passed as the request body.
-    parent: Required. Name of the Apigee organization in which the appgroup is
+    parent: Required. Name of the Apigee organization in which the AppGroup is
       created. Use the following structure in your request:
       `organizations/{org}`.
   """
@@ -740,7 +740,7 @@ class ApigeeOrganizationsAppgroupsDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsAppgroupsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the appgroup. Use the following structure in your
+    name: Required. Name of the AppGroup. Use the following structure in your
       request: `organizations/{org}/appgroups/{app_group_name}`
   """
 
@@ -751,7 +751,7 @@ class ApigeeOrganizationsAppgroupsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsAppgroupsGetRequest object.
 
   Fields:
-    name: Required. Name of the appgroup. Use the following structure in your
+    name: Required. Name of the AppGroup. Use the following structure in your
       request: `organizations/{org}/appgroups/{app_group_name}`
   """
 
@@ -762,13 +762,13 @@ class ApigeeOrganizationsAppgroupsListRequest(_messages.Message):
   r"""A ApigeeOrganizationsAppgroupsListRequest object.
 
   Fields:
-    filter: The filter expression to be used to get the list of appgroups,
+    filter: The filter expression to be used to get the list of AppGroups,
       where filtering can be done on name, correlationID or channelID of the
       app group. Example: filter = "name = foobar"
-    pageSize: Count of appgroups a single page can have in the response. If
-      unspecified, at most 1000 appgroups will be returned. The maximum value
+    pageSize: Count of AppGroups a single page can have in the response. If
+      unspecified, at most 1000 AppGroups will be returned. The maximum value
       is 1000; values above 1000 will be coerced to 1000.
-    pageToken: The starting index record for listing the appgroups.
+    pageToken: The starting index record for listing the AppGroups.
     parent: Required. Name of the Apigee organization. Use the following
       structure in your request: `organizations/{org}`.
   """
@@ -788,7 +788,7 @@ class ApigeeOrganizationsAppgroupsUpdateRequest(_messages.Message):
       `application/octet-stream`, with empty body.
     googleCloudApigeeV1AppGroup: A GoogleCloudApigeeV1AppGroup resource to be
       passed as the request body.
-    name: Required. Name of the appgroup. Use the following structure in your
+    name: Required. Name of the AppGroup. Use the following structure in your
       request: `organizations/{org}/appgroups/{app_group_name}`
   """
 
@@ -813,14 +813,15 @@ class ApigeeOrganizationsAppsListRequest(_messages.Message):
 
   Fields:
     apiProduct: API product.
-    apptype: Optional. Filter by the type of the app. Valid values are
-      `company` or `developer`. Defaults to `developer`.
+    apptype: Optional. 'apptype' is no longer available. Use a 'filter'
+      instead.
     expand: Optional. Flag that specifies whether to return an expanded list
       of apps for the organization. Defaults to `false`.
     filter: Optional. The filter expression to be used to get the list of
       apps, where filtering can be done on developerEmail, apiProduct,
-      consumerKey, status, appId, appName and appType. Example: filter =
-      "developerEmail = foo@bar.com"
+      consumerKey, status, appId, appName and appType. Examples:
+      "developerEmail=foo@bar.com", "appType=AppGroup", or "appType=Developer"
+      "filter" is supported from ver 1.10.0 and above.
     ids: Optional. Comma-separated list of app IDs on which to filter.
     includeCred: Optional. Flag that specifies whether to include credentials
       in the response.
@@ -828,8 +829,10 @@ class ApigeeOrganizationsAppsListRequest(_messages.Message):
       `approved` or `revoked`. Defaults to `approved`.
     pageSize: Optional. Count of apps a single page can have in the response.
       If unspecified, at most 100 apps will be returned. The maximum value is
-      100; values above 100 will be coerced to 100.
+      100; values above 100 will be coerced to 100. "page_size" is supported
+      from ver 1.10.0 and above.
     pageToken: Optional. The starting index record for listing the developers.
+      "page_token" is supported from ver 1.10.0 and above.
     parent: Required. Resource path of the parent in the following format:
       `organizations/{org}`
     rows: Optional. Maximum number of app IDs to return. Defaults to 10000.
@@ -5540,28 +5543,28 @@ class GoogleCloudApigeeV1AppGroupApp(_messages.Message):
   [DeleteAppGroupApp].[AppGroupApp.DeleteAppGroupApp]
 
   Fields:
-    apiProducts: List of API products associated with the appgroup app.
+    apiProducts: List of API products associated with the AppGroup app.
     appGroup: Immutable. Name of the parent AppGroup whose resource name
       format is of syntax (organizations/*/appgroups/*).
-    appId: Immutable. ID of the appgroup app.
-    attributes: List of attributes for the appgroup app.
+    appId: Immutable. ID of the AppGroup app.
+    attributes: List of attributes for the AppGroup app.
     callbackUrl: Callback URL used by OAuth 2.0 authorization servers to
-      communicate authorization codes back to appgroup apps.
-    createdAt: Output only. Time the appgroup app was created in milliseconds
+      communicate authorization codes back to AppGroup apps.
+    createdAt: Output only. Time the AppGroup app was created in milliseconds
       since epoch.
-    credentials: Output only. Set of credentials for the appgroup app
+    credentials: Output only. Set of credentials for the AppGroup app
       consisting of the consumer key/secret pairs associated with the API
       products.
     keyExpiresIn: Immutable. Expiration time, in seconds, for the consumer key
-      that is generated for the appgroup app. If not set or left to the
+      that is generated for the AppGroup app. If not set or left to the
       default value of `-1`, the API key never expires. The expiration time
       can't be updated after it is set.
-    lastModifiedAt: Output only. Time the appgroup app was modified in
+    lastModifiedAt: Output only. Time the AppGroup app was modified in
       milliseconds since epoch.
-    name: Immutable. Name of the appgroup app whose resource name format is of
+    name: Immutable. Name of the AppGroup app whose resource name format is of
       syntax (organizations/*/appgroups/*/apps/*).
-    scopes: Scopes to apply to the appgroup app. The specified scopes must
-      already exist for the API product that you associate with the appgroup
+    scopes: Scopes to apply to the AppGroup app. The specified scopes must
+      already exist for the API product that you associate with the AppGroup
       app.
     status: Status of the App. Valid values include `approved` or `revoked`.
   """
@@ -8042,7 +8045,7 @@ class GoogleCloudApigeeV1ListAppGroupAppsResponse(_messages.Message):
   r"""Response for ListAppGroupApps
 
   Fields:
-    appGroupApps: List of appgroup apps and their credentials.
+    appGroupApps: List of AppGroup apps and their credentials.
     nextPageToken: Token that can be sent as `next_page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
   """
@@ -8056,7 +8059,7 @@ class GoogleCloudApigeeV1ListAppGroupsResponse(_messages.Message):
   optional page token and the total count of apps.
 
   Fields:
-    appGroups: List of appgroups.
+    appGroups: List of AppGroups.
     nextPageToken: Token that can be sent as `next_page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
     totalSize: Total count of AppGroups.
@@ -10334,7 +10337,7 @@ class GoogleCloudApigeeV1SecurityAction(_messages.Message):
   r"""A SecurityAction is rule that can be enforced at an environment level.
   The result is one of: - A denied API call - An explicitly allowed API call -
   A flagged API call (HTTP headers added before the target receives it) At
-  least one attribute is required to create a SecurityAction.
+  least one condition is required to create a SecurityAction.
 
   Enums:
     StateValueValuesEnum: Required. Only an ENABLED SecurityAction is
@@ -10348,9 +10351,9 @@ class GoogleCloudApigeeV1SecurityAction(_messages.Message):
       in the repeated list is deployed at the time of enforcement. If set,
       several restrictions are enforced on SecurityActions. There can be at
       most 100 enabled actions with proxies set in an env. Several other
-      restrictions apply on attributes and are detailed later.
-    attributeConfig: Required. A valid SecurityAction must contain at least
-      one attribute.
+      restrictions apply on conditions and are detailed later.
+    conditionConfig: Required. A valid SecurityAction must contain at least
+      one condition.
     createTime: Output only. The create time for this SecurityAction.
     deny: Deny a request through if it matches this SecurityAction.
     description: Optional. An optional user provided description of the
@@ -10385,7 +10388,7 @@ class GoogleCloudApigeeV1SecurityAction(_messages.Message):
 
   allow = _messages.MessageField('GoogleCloudApigeeV1SecurityActionAllow', 1)
   apiProxies = _messages.StringField(2, repeated=True)
-  attributeConfig = _messages.MessageField('GoogleCloudApigeeV1SecurityActionAttributeConfig', 3)
+  conditionConfig = _messages.MessageField('GoogleCloudApigeeV1SecurityActionConditionConfig', 3)
   createTime = _messages.StringField(4)
   deny = _messages.MessageField('GoogleCloudApigeeV1SecurityActionDeny', 5)
   description = _messages.StringField(6)
@@ -10404,10 +10407,10 @@ class GoogleCloudApigeeV1SecurityActionAllow(_messages.Message):
 
 
 
-class GoogleCloudApigeeV1SecurityActionAttributeConfig(_messages.Message):
-  r"""The following are a list of attributes. A valid SecurityAction must
-  contain at least one attribute. Within a attribute, each condition is ORed.
-  Across attributes conditions are ANDed. For example if a SecurityAction has
+class GoogleCloudApigeeV1SecurityActionConditionConfig(_messages.Message):
+  r"""The following are a list of conditions. A valid SecurityAction must
+  contain at least one condition. Within a condition, each element is ORed.
+  Across conditions elements are ANDed. For example if a SecurityAction has
   the following: api_keys: ["key1", "key2"] and developers: ["dev1", "dev2"]
   then this is interpreted as: enforce the action if the incoming request has
   ((api_key = "key1" OR api_key="key") AND (developer="dev1" OR
@@ -10558,8 +10561,8 @@ class GoogleCloudApigeeV1SecurityProfile(_messages.Message):
       this profile.
     name: Immutable. Name of the security profile resource. Format:
       organizations/{org}/securityProfiles/{profile}
-    profileConfig: Customized profile configuration that computes the security
-      score.
+    profileConfig: Required. Customized profile configuration that computes
+      the security score.
     revisionCreateTime: Output only. The time when revision was created.
     revisionId: Output only. Revision ID of the security profile.
     revisionPublishTime: Output only. The time when revision was published.

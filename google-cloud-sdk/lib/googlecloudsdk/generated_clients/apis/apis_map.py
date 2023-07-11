@@ -493,6 +493,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'authztoolkit': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.authztoolkit.v1alpha',
+                    client_classpath='authztoolkit_v1alpha_client.AuthztoolkitV1alpha',
+                    base_url='https://authztoolkit.googleapis.com/',
+                    messages_modulepath='authztoolkit_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'baremetalsolution': {
         'v1':
             APIDef(
@@ -2682,6 +2694,18 @@ MAP = {
                     base_url='https://oslogin.googleapis.com/',
                     messages_modulepath='oslogin_v1beta_messages'),
                 default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'parallelstore': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.parallelstore.v1alpha',
+                    client_classpath='parallelstore_v1alpha_client.ParallelstoreV1alpha',
+                    base_url='https://parallelstore.googleapis.com/',
+                    messages_modulepath='parallelstore_v1alpha_messages'),
+                default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

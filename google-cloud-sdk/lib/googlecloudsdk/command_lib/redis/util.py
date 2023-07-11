@@ -100,11 +100,13 @@ def InstanceUpdateRedisConfigFlag():
       Currently, the only supported parameters are:\n
       Redis version 3.2 and newer: {}.\n
       Redis version 4.0 and newer: {}.\n
-      Redis version 5.0 and newer: {}.
+      Redis version 5.0 and newer: {}.\n
+      Redis version 7.0 and newer: {}.
       """.format(
           ', '.join(VALID_REDIS_3_2_CONFIG_KEYS),
           ', '.join(VALID_REDIS_4_0_CONFIG_KEYS),
           ', '.join(VALID_REDIS_5_0_CONFIG_KEYS),
+          ', '.join(VALID_REDIS_7_0_CONFIG_KEYS),
       ),
   )
 

@@ -48,6 +48,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  LOCATIONS_WORKFORCEPOOLS_INSTALLEDAPPS = (
+      'locations.workforcePools.installedApps',
+      '{+name}',
+      {
+          '':
+              'locations/{locationsId}/workforcePools/{workforcePoolsId}/'
+              'installedApps/{installedAppsId}',
+      },
+      ['name'],
+      True
+  )
   LOCATIONS_WORKFORCEPOOLS_OPERATIONS = (
       'locations.workforcePools.operations',
       '{+name}',
@@ -152,6 +163,28 @@ class Collections(enum.Enum):
       'projects/{projectsId}/locations/{locationsId}',
       {},
       ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_OAUTHCLIENTS = (
+      'projects.locations.oauthClients',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/oauthClients/'
+              '{oauthClientsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_OAUTHCLIENTS_CREDENTIALS = (
+      'projects.locations.oauthClients.credentials',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/oauthClients/'
+              '{oauthClientsId}/credentials/{credentialsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_WORKLOADIDENTITYPOOLS = (

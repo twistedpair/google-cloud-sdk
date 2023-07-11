@@ -87,6 +87,7 @@ def Create(
     transactional_writes=False,
     force=False,
     priority=None,
+    row_affinity=False,
 ):
   """Create an app profile.
 
@@ -105,6 +106,7 @@ def Create(
       writes enabled. This is only possible when using single cluster routing.
     force: bool, Whether to ignore API warnings and create forcibly.
     priority: string, The request priority of the new app profile.
+    row_affinity: bool, Whether to use row affinity sticky routing.
 
   Raises:
     ConflictingArgumentsException:
@@ -123,6 +125,10 @@ def Create(
   if multi_cluster and transactional_writes:
     raise exceptions.ConflictingArgumentsException(
         '--route-any', '--transactional-writes'
+    )
+  if cluster and row_affinity:
+    raise exceptions.ConflictingArgumentsException(
+        '--route-to', '--row-affinity'
     )
   if cluster and restrict_to:
     raise exceptions.ConflictingArgumentsException(
@@ -153,7 +159,9 @@ def Create(
         )
     )
     multi_cluster_routing = msgs.MultiClusterRoutingUseAny(
-        clusterIds=restrict_to or [], failoverRadius=failover_radius_enum
+        clusterIds=restrict_to or [],
+        failoverRadius=failover_radius_enum,
+        rowAffinity=msgs.RowAffinity() if row_affinity else None,
     )
   elif cluster:
     single_cluster_routing = msgs.SingleClusterRouting(
@@ -189,6 +197,7 @@ def Update(
     transactional_writes=False,
     force=False,
     priority=None,
+    row_affinity=None,
 ):
   """Update an app profile.
 
@@ -207,6 +216,8 @@ def Update(
       writes enabled. This is only possible when using single cluster routing.
     force: bool, Whether to ignore API warnings and create forcibly.
     priority: string, The request priority of the app profile.
+    row_affinity: bool, Whether to use row affinity sticky routing. If None,
+      then no change should be made.
 
   Raises:
     ConflictingArgumentsException:
@@ -234,6 +245,10 @@ def Update(
     raise exceptions.ConflictingArgumentsException(
         '--route-to', '--failover-radius'
     )
+  if cluster and row_affinity:
+    raise exceptions.ConflictingArgumentsException(
+        '--route-to', '--row-affinity'
+    )
   if not multi_cluster and not cluster:
     raise exceptions.OneOfArgumentsRequiredException(
         ['--route-to', '--route-any'],
@@ -252,8 +267,8 @@ def Update(
         clusterId=cluster, allowTransactionalWrites=transactional_writes
     )
   elif multi_cluster:
-    changed_fields.append('multiClusterRoutingUseAny')
     if failover_radius:
+      changed_fields.append('multiClusterRoutingUseAny.failoverRadius')
       failover_radius_enum = (
           msgs.MultiClusterRoutingUseAny.FailoverRadiusValueValuesEnum(
               failover_radius
@@ -261,9 +276,22 @@ def Update(
       )
     else:
       failover_radius_enum = None
+    if restrict_to:
+      changed_fields.append('multiClusterRoutingUseAny.clusterIds')
+    if row_affinity is not None:
+      changed_fields.append('multiClusterRoutingUseAny.rowAffinity')
     app_profile.multiClusterRoutingUseAny = msgs.MultiClusterRoutingUseAny(
-        clusterIds=restrict_to or [], failoverRadius=failover_radius_enum
+        clusterIds=restrict_to or [],
+        failoverRadius=failover_radius_enum,
+        rowAffinity=msgs.RowAffinity() if row_affinity else None,
     )
+    # If the only update is from single cluster to default multi cluster config,
+    # then set the field mask to be the entire proto message.
+    if (
+        app_profile.multiClusterRoutingUseAny
+        == msgs.MultiClusterRoutingUseAny()
+    ):
+      changed_fields.append('multiClusterRoutingUseAny')
 
   if description:
     changed_fields.append('description')

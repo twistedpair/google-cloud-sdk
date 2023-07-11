@@ -41,6 +41,20 @@ def GetMessagesV1beta1():
   return apis.GetMessagesModule('containeranalysis', 'v1beta1')
 
 
+def ExportSbomV1beta1(project, uri):
+  """Export SBOM for AR image resources."""
+  client = GetClientV1beta1()
+  messages = GetMessagesV1beta1()
+  resource_ref = resources.REGISTRY.Create(
+      'containeranalysis.projects.resources',
+      projectsId=project,
+      resourcesId=uri
+  )
+  name = resource_ref.RelativeName()
+  req = messages.ContaineranalysisProjectsResourcesExportSBOMRequest(name=name)
+  return client.projects_resources.ExportSBOM(req)
+
+
 def ListOccurrencesV1beta1(project, res_filter, page_size=1000):
   """List occurrences for resources in a project."""
   client = GetClientV1beta1()

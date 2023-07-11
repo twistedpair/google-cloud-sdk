@@ -126,6 +126,33 @@ Create a deployment from the "https://github.com/examples/repository.git" repo, 
     --git-source-directory="staging/compute" --git-source-ref="mainline"
 """
 
+  local_source_help = """\
+Local storage path where config files are stored.
+      e.g. `./path/to/blueprint`
+
+Examples:
+
+Create a deployment from a local storage path `./path/to/blueprint`:
+
+  $ {command} projects/p1/location/us-central1/deployments/my-deployment --local-source="./path/to/blueprint"
+"""
+
+  stage_bucket_help = """\
+Use in conjunction with `--local-source` to specify a destination storage bucket for
+uploading local files.
+
+If unspecified, the bucket defaults to `gs://PROJECT_NAME_blueprints`. Uploaded
+content will appear in the `source` object under a name comprised of the
+timestamp and a UUID. The final output destination looks like this:
+`gs://_BUCKET_/source/1615850562.234312-044e784992744951b0cd71c0b011edce/`
+
+Examples:
+
+Create a deployment from a local storage path `./path/to/blueprint` and stage-bucket `gs://my-bucket`:
+
+  $ {command} projects/p1/location/us-central1/deployments/my-deployment --local-source="./path/to/blueprint" --stage-bucket="gs://my-bucket"
+"""
+
   source_group = parser.add_group(mutex=False)
   source_group.add_argument(
       '--input-values',
@@ -159,6 +186,31 @@ Create a deployment from the "https://github.com/examples/repository.git" repo, 
   git_source_group.add_argument(
       '--git-source-ref',
       help=git_source_ref_help,
+  )
+
+  local_source_group = source_details.add_group(mutex=False)
+
+  local_source_group.add_argument(
+      '--local-source',
+      help=local_source_help,
+  )
+
+  local_source_group.add_argument(
+      '--ignore-file',
+      help=(
+          'Override the `.gcloudignore` file and use the specified file '
+          'instead. See `gcloud topic gcloudignore` for more information.'
+      ),
+  )
+
+  # Note: we cannot specify a default here since the default value we would WANT
+  # to use is dynamic; it includes the project ID.
+  local_source_group.add_argument(
+      '--stage-bucket',
+      help=stage_bucket_help,
+      # This will ensure that "--stage-bucket" takes on the form
+      # "gs://my-bucket/".
+      type=functions_api_util.ValidateAndStandarizeBucketUriOrRaise,
   )
 
 

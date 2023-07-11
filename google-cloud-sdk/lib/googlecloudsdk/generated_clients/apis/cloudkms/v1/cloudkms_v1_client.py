@@ -672,6 +672,60 @@ class CloudkmsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RawDecrypt(self, request, global_params=None):
+      r"""Decrypts data that was originally encrypted using a raw cryptographic mechanism. The CryptoKey.purpose must be RAW_ENCRYPT_DECRYPT.
+
+      Args:
+        request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRawDecryptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RawDecryptResponse) The response message.
+      """
+      config = self.GetMethodConfig('RawDecrypt')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RawDecrypt.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:rawDecrypt',
+        http_method='POST',
+        method_id='cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.rawDecrypt',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:rawDecrypt',
+        request_field='rawDecryptRequest',
+        request_type_name='CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRawDecryptRequest',
+        response_type_name='RawDecryptResponse',
+        supports_download=False,
+    )
+
+    def RawEncrypt(self, request, global_params=None):
+      r"""Encrypts data using portable cryptographic primitives. Most users should choose Encrypt and Decrypt rather than their raw counterparts. The CryptoKey.purpose must be RAW_ENCRYPT_DECRYPT.
+
+      Args:
+        request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRawEncryptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RawEncryptResponse) The response message.
+      """
+      config = self.GetMethodConfig('RawEncrypt')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RawEncrypt.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:rawEncrypt',
+        http_method='POST',
+        method_id='cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.rawEncrypt',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:rawEncrypt',
+        request_field='rawEncryptRequest',
+        request_type_name='CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRawEncryptRequest',
+        response_type_name='RawEncryptResponse',
+        supports_download=False,
+    )
+
     def Restore(self, request, global_params=None):
       r"""Restore a CryptoKeyVersion in the DESTROY_SCHEDULED state. Upon restoration of the CryptoKeyVersion, state will be set to DISABLED, and destroy_time will be cleared.
 

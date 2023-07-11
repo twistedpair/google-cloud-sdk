@@ -19,13 +19,150 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import numbers
+import os
+import uuid
 
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import extra_types
 from googlecloudsdk.api_lib.config_manager import configmanager_util
+from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.calliope import exceptions as c_exceptions
+from googlecloudsdk.command_lib.config_manager import deterministic_snapshot
+from googlecloudsdk.command_lib.config_manager import staging_bucket_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.resource import resource_transform
+from googlecloudsdk.core.util import times
 import six
+
+
+def _UploadSourceDirToGCS(gcs_client, source, gcs_source_staging, ignore_file):
+  """Uploads a local directory to GCS.
+
+  Uploads one file at a time rather than tarballing/zipping for compatibility
+  with the back-end.
+
+  Args:
+    gcs_client: a storage_api.StorageClient instance for interacting with GCS.
+    source: string, a path to a local directory.
+    gcs_source_staging: resources.Resource, the bucket to upload to. This must
+      already exist.
+    ignore_file: optional string, a path to a gcloudignore file.
+  """
+
+  source_snapshot = deterministic_snapshot.DeterministicSnapshot(
+      source, ignore_file=ignore_file
+  )
+
+  size_str = resource_transform.TransformSize(source_snapshot.uncompressed_size)
+  log.status.Print(
+      'Uploading {num_files} file(s) totalling {size}.'.format(
+          num_files=len(source_snapshot.files), size=size_str
+      )
+  )
+
+  for file_metadata in source_snapshot.GetSortedFiles():
+    full_local_path = os.path.join(file_metadata.root, file_metadata.path)
+
+    target_obj_ref = 'gs://{0}/{1}/{2}'.format(
+        gcs_source_staging.bucket, gcs_source_staging.object, file_metadata.path
+    )
+    target_obj_ref = resources.REGISTRY.Parse(
+        target_obj_ref, collection='storage.objects'
+    )
+
+    gcs_client.CopyFileToGCS(full_local_path, target_obj_ref)
+
+
+def _UploadSourceToGCS(source, stage_bucket, ignore_file):
+  """Uploads local content to GCS.
+
+  This will ensure that the source and destination exist before triggering the
+  upload.
+
+  Args:
+    source: string, a local path.
+    stage_bucket: optional string. When not provided, the default staging bucket
+      will be used (see GetDefaultStagingBucket). This string is of the format
+      "gs://bucket-name/". A "source" object will be created under this bucket,
+      and any uploaded artifacts will be stored there.
+    ignore_file: string, a path to a gcloudignore file.
+
+  Returns:
+    A string in the format "gs://path/to/resulting/upload".
+
+  Raises:
+    RequiredArgumentException: if stage-bucket is owned by another project.
+    BadFileException: if the source doesn't exist or isn't a directory.
+  """
+  gcs_client = storage_api.StorageClient()
+
+  # The object name to use for our GCS storage.
+  gcs_object_name = 'source'
+
+  if stage_bucket is None:
+    used_default_bucket_name = True
+    gcs_source_bucket_name = staging_bucket_util.GetDefaultStagingBucket()
+    gcs_source_staging_dir = 'gs://{0}/{1}'.format(
+        gcs_source_bucket_name, gcs_object_name
+    )
+  else:
+    used_default_bucket_name = False
+    gcs_source_staging_dir = stage_bucket + gcs_object_name
+
+  # By calling REGISTRY.Parse on "gs://my-bucket/foo", the result's "bucket"
+  # property will be "my-bucket" and the "object" property will be "foo".
+  gcs_source_staging_dir_ref = resources.REGISTRY.Parse(
+      gcs_source_staging_dir, collection='storage.objects'
+  )
+
+  # Make sure the bucket exists
+  try:
+    gcs_client.CreateBucketIfNotExists(
+        gcs_source_staging_dir_ref.bucket,
+        check_ownership=used_default_bucket_name,
+    )
+  except storage_api.BucketInWrongProjectError:
+    raise c_exceptions.RequiredArgumentException(
+        'stage-bucket',
+        'A bucket with name {} already exists and is owned by '
+        'another project. Specify a bucket using '
+        '--stage-bucket.'.format(gcs_source_staging_dir_ref.bucket),
+    )
+
+  # This will look something like this:
+  # "1615850562.234312-044e784992744951b0cd71c0b011edce"
+  staged_object = '{stamp}-{uuid}'.format(
+      stamp=times.GetTimeStampFromDateTime(times.Now()),
+      uuid=uuid.uuid4().hex,
+  )
+
+  if gcs_source_staging_dir_ref.object:
+    staged_object = gcs_source_staging_dir_ref.object + '/' + staged_object
+
+  gcs_source_staging = resources.REGISTRY.Create(
+      collection='storage.objects',
+      bucket=gcs_source_staging_dir_ref.bucket,
+      object=staged_object,
+  )
+
+  if not os.path.exists(source):
+    raise c_exceptions.BadFileException(
+        'could not find source [{}]'.format(source)
+    )
+
+  if not os.path.isdir(source):
+    raise c_exceptions.BadFileException(
+        'source is not a directory [{}]'.format(source)
+    )
+
+  _UploadSourceDirToGCS(gcs_client, source, gcs_source_staging, ignore_file)
+
+  upload_bucket = 'gs://{0}/{1}'.format(
+      gcs_source_staging.bucket, gcs_source_staging.object
+  )
+
+  return upload_bucket
 
 
 def UpdateDeploymentDeleteRequestWithForce(unused_ref, unused_args, request):
@@ -37,6 +174,9 @@ def UpdateDeploymentDeleteRequestWithForce(unused_ref, unused_args, request):
 
 def _CreateTFBlueprint(
     messages,
+    local_source,
+    stage_bucket,
+    ignore_file,
     gcs_source,
     git_source_repo,
     git_source_directory,
@@ -48,6 +188,10 @@ def _CreateTFBlueprint(
   Args:
     messages: ModuleType, the messages module that lets us form blueprints API
       messages based on our protos.
+    local_source: Local storage path where config files are stored.
+    stage_bucket: optional string. Destination for storing local config files
+      specified by local source flag. e.g. "gs://bucket-name/".
+    ignore_file: optional string, a path to a gcloudignore file.
     gcs_source:  URI of an object in Google Cloud Storage. e.g.
       `gs://{bucket}/{object}`
     git_source_repo: Repository URL.
@@ -66,6 +210,9 @@ def _CreateTFBlueprint(
 
   if gcs_source is not None:
     terraform_blueprint.gcsSource = gcs_source
+  elif local_source is not None:
+    upload_bucket = _UploadSourceToGCS(local_source, stage_bucket, ignore_file)
+    terraform_blueprint.gcsSource = upload_bucket
   else:
     terraform_blueprint.gitSource = messages.GitSource(
         repo=git_source_repo,
@@ -81,6 +228,9 @@ def Apply(
     async_,
     deployment_full_name,
     service_account,
+    local_source=None,
+    stage_bucket=None,
+    ignore_file=None,
     import_existing_resources=None,
     artifacts_gcs_bucket=None,
     worker_pool=None,
@@ -104,6 +254,10 @@ def Apply(
       credential to manage resources. e.g.
       `projects/{projectID}/serviceAccounts/{serviceAccount}` The default Cloud
       Build SA will be used initially if this field is not set.
+    local_source: Local storage path where config files are stored.
+    stage_bucket: optional string. Destination for storing local config files
+      specified by local source flag. e.g. "gs://bucket-name/".
+    ignore_file: optional string, a path to a gcloudignore file.
     import_existing_resources: By default, Cloud Config Manager will return a
       failure when Terraform encounters a 409 code (resource conflict error)
       during actuation. If this flag is set to true, Cloud Config Manager will
@@ -167,6 +321,9 @@ def Apply(
 
   tf_blueprint = _CreateTFBlueprint(
       messages,
+      local_source,
+      stage_bucket,
+      ignore_file,
       gcs_source,
       git_source_repo,
       git_source_directory,

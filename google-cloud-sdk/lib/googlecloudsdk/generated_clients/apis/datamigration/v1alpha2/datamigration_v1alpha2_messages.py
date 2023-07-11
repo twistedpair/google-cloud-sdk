@@ -1434,6 +1434,8 @@ class MigrationJobVerificationError(_messages.Message):
       SOURCE_SIZE_EXCEEDS_THRESHOLD: The source DB size in Bytes exceeds a
         certain threshold. The migration might require an increase of quota,
         or might not be supported.
+      EXISTING_CONFLICTING_DATABASES: The destination DB contains existing
+        databases that are conflicting with those in the source DB.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -1449,6 +1451,7 @@ class MigrationJobVerificationError(_messages.Message):
     UNSUPPORTED_DATABASE_FDW_CONFIG = 11
     ERROR_RDBMS = 12
     SOURCE_SIZE_EXCEEDS_THRESHOLD = 13
+    EXISTING_CONFLICTING_DATABASES = 14
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)

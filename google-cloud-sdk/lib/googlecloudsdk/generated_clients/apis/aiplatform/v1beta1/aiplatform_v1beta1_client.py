@@ -1698,6 +1698,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Delete(self, request, global_params=None):
+      r"""Deletes a SavedQuery.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsSavedQueriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/savedQueries/{savedQueriesId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.datasets.savedQueries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDatasetsSavedQueriesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists SavedQueries in a Dataset.
 
@@ -8728,7 +8755,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.persistentResources.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken'],
         relative_path='v1beta1/{+parent}/persistentResources',
         request_field='',
         request_type_name='AiplatformProjectsLocationsPersistentResourcesListRequest',
@@ -11923,6 +11950,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1beta1Tensorboard',
         request_type_name='AiplatformProjectsLocationsTensorboardsPatchRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def ReadSize(self, request, global_params=None):
+      r"""Returns the storage size for a given TensorBoard instance.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsReadSizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ReadTensorboardSizeResponse) The response message.
+      """
+      config = self.GetMethodConfig('ReadSize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReadSize.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}:readSize',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.readSize',
+        ordered_params=['tensorboard'],
+        path_params=['tensorboard'],
+        query_params=[],
+        relative_path='v1beta1/{+tensorboard}:readSize',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsReadSizeRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ReadTensorboardSizeResponse',
         supports_download=False,
     )
 

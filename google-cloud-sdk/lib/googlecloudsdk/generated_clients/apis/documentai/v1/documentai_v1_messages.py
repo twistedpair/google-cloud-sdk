@@ -917,14 +917,17 @@ class GoogleCloudDocumentaiUiv1beta3ImportDocumentsMetadataIndividualImportStatu
 
   Fields:
     inputGcsSource: The source Cloud Storage URI of the document.
+    outputDocumentId: The document id of imported document if it was
+      successful, otherwise empty.
     outputGcsDestination: The output_gcs_destination of the processed document
       if it was successful, otherwise empty.
     status: The status of the importing of the document.
   """
 
   inputGcsSource = _messages.StringField(1)
-  outputGcsDestination = _messages.StringField(2)
-  status = _messages.MessageField('GoogleRpcStatus', 3)
+  outputDocumentId = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3DocumentId', 2)
+  outputGcsDestination = _messages.StringField(3)
+  status = _messages.MessageField('GoogleRpcStatus', 4)
 
 
 class GoogleCloudDocumentaiUiv1beta3ImportDocumentsResponse(_messages.Message):
@@ -1087,10 +1090,14 @@ class GoogleCloudDocumentaiUiv1beta3SampleDocumentsResponse(_messages.Message):
   r"""Response of the sample documents operation.
 
   Fields:
+    sampleTestStatus: The status of sampling documents in test split.
+    sampleTrainingStatus: The status of sampling documents in training split.
     selectedDocuments: The result of the sampling process.
   """
 
-  selectedDocuments = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3SampleDocumentsResponseSelectedDocument', 1, repeated=True)
+  sampleTestStatus = _messages.MessageField('GoogleRpcStatus', 1)
+  sampleTrainingStatus = _messages.MessageField('GoogleRpcStatus', 2)
+  selectedDocuments = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3SampleDocumentsResponseSelectedDocument', 3, repeated=True)
 
 
 class GoogleCloudDocumentaiUiv1beta3SampleDocumentsResponseSelectedDocument(_messages.Message):
@@ -1321,13 +1328,15 @@ class GoogleCloudDocumentaiV1BatchProcessRequest(_messages.Message):
     documentOutputConfig: The output configuration for the
       BatchProcessDocuments method.
     inputDocuments: The input documents for the BatchProcessDocuments method.
+    processOptions: Inference-time options for the process API
     skipHumanReview: Whether human review should be skipped for this request.
       Default to `false`.
   """
 
   documentOutputConfig = _messages.MessageField('GoogleCloudDocumentaiV1DocumentOutputConfig', 1)
   inputDocuments = _messages.MessageField('GoogleCloudDocumentaiV1BatchDocumentsInputConfig', 2)
-  skipHumanReview = _messages.BooleanField(3)
+  processOptions = _messages.MessageField('GoogleCloudDocumentaiV1ProcessOptions', 3)
+  skipHumanReview = _messages.BooleanField(4)
 
 
 class GoogleCloudDocumentaiV1BatchProcessResponse(_messages.Message):
@@ -2850,6 +2859,62 @@ class GoogleCloudDocumentaiV1NormalizedVertex(_messages.Message):
   y = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
+class GoogleCloudDocumentaiV1OcrConfig(_messages.Message):
+  r"""Config for Document OCR.
+
+  Fields:
+    advancedOcrOptions: A list of advanced OCR options to further fine-tune
+      OCR behavior. Current valid values are: - `legacy_layout`: a heuristics
+      layout detection algorithm, which serves as an alternative to the
+      current ML-based layout detection algorithm. Customers can choose the
+      best suitable layout algorithm based on their situation.
+    computeStyleInfo: Turn on font id model and returns font style
+      information.
+    enableImageQualityScores: Enables intelligent document quality scores
+      after OCR. Can help with diagnosing why OCR responses are of poor
+      quality for a given input. Adds additional latency comparable to regular
+      OCR to the process call.
+    enableNativePdfParsing: Enables special handling for PDFs with existing
+      text information. Results in better text extraction quality in such PDF
+      inputs.
+    enableSymbol: Includes symbol level OCR information if set to true.
+    hints: Hints for the OCR model.
+  """
+
+  advancedOcrOptions = _messages.StringField(1, repeated=True)
+  computeStyleInfo = _messages.BooleanField(2)
+  enableImageQualityScores = _messages.BooleanField(3)
+  enableNativePdfParsing = _messages.BooleanField(4)
+  enableSymbol = _messages.BooleanField(5)
+  hints = _messages.MessageField('GoogleCloudDocumentaiV1OcrConfigHints', 6)
+
+
+class GoogleCloudDocumentaiV1OcrConfigHints(_messages.Message):
+  r"""Hints for OCR Engine
+
+  Fields:
+    languageHints: List of BCP-47 language codes to use for OCR. In most
+      cases, not specifying it yields the best results since it enables
+      automatic language detection. For languages based on the Latin alphabet,
+      setting hints is not needed. In rare cases, when the language of the
+      text in the image is known, setting a hint will help get better results
+      (although it will be a significant hindrance if the hint is wrong).
+  """
+
+  languageHints = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDocumentaiV1ProcessOptions(_messages.Message):
+  r"""Options for Process API
+
+  Fields:
+    ocrConfig: Only applicable to `OCR_PROCESSOR`. Returns error if set on
+      other processor types.
+  """
+
+  ocrConfig = _messages.MessageField('GoogleCloudDocumentaiV1OcrConfig', 1)
+
+
 class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):
   r"""Request message for the ProcessDocument method.
 
@@ -2859,6 +2924,7 @@ class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):
       pages field, so it must be in the form of `{document_field_name}` or
       `pages.{page_field_name}`.
     inlineDocument: An inline document proto.
+    processOptions: Inference-time options for the process API
     rawDocument: A raw document content (bytes).
     skipHumanReview: Whether human review should be skipped for this request.
       Default to `false`.
@@ -2866,8 +2932,9 @@ class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):
 
   fieldMask = _messages.StringField(1)
   inlineDocument = _messages.MessageField('GoogleCloudDocumentaiV1Document', 2)
-  rawDocument = _messages.MessageField('GoogleCloudDocumentaiV1RawDocument', 3)
-  skipHumanReview = _messages.BooleanField(4)
+  processOptions = _messages.MessageField('GoogleCloudDocumentaiV1ProcessOptions', 3)
+  rawDocument = _messages.MessageField('GoogleCloudDocumentaiV1RawDocument', 4)
+  skipHumanReview = _messages.BooleanField(5)
 
 
 class GoogleCloudDocumentaiV1ProcessResponse(_messages.Message):
@@ -3268,6 +3335,8 @@ class GoogleCloudDocumentaiV1TrainProcessorVersionRequest(_messages.Message):
       training. This processor version must be a child of `parent`. Format: `p
       rojects/{project}/locations/{location}/processors/{processor}/processorV
       ersions/{processorVersion}`.
+    customDocumentExtractionOptions: Options to control Custom Document
+      Extraction (CDE) Processor.
     documentSchema: Optional. The schema the processor version will be trained
       with.
     inputData: Optional. The input data used to train the ProcessorVersion.
@@ -3275,9 +3344,36 @@ class GoogleCloudDocumentaiV1TrainProcessorVersionRequest(_messages.Message):
   """
 
   baseProcessorVersion = _messages.StringField(1)
-  documentSchema = _messages.MessageField('GoogleCloudDocumentaiV1DocumentSchema', 2)
-  inputData = _messages.MessageField('GoogleCloudDocumentaiV1TrainProcessorVersionRequestInputData', 3)
-  processorVersion = _messages.MessageField('GoogleCloudDocumentaiV1ProcessorVersion', 4)
+  customDocumentExtractionOptions = _messages.MessageField('GoogleCloudDocumentaiV1TrainProcessorVersionRequestCustomDocumentExtractionOptions', 2)
+  documentSchema = _messages.MessageField('GoogleCloudDocumentaiV1DocumentSchema', 3)
+  inputData = _messages.MessageField('GoogleCloudDocumentaiV1TrainProcessorVersionRequestInputData', 4)
+  processorVersion = _messages.MessageField('GoogleCloudDocumentaiV1ProcessorVersion', 5)
+
+
+class GoogleCloudDocumentaiV1TrainProcessorVersionRequestCustomDocumentExtractionOptions(_messages.Message):
+  r"""Options to control the training of the Custom Document Extraction (CDE)
+  Processor.
+
+  Enums:
+    TrainingMethodValueValuesEnum: Training method to use for CDE training.
+
+  Fields:
+    trainingMethod: Training method to use for CDE training.
+  """
+
+  class TrainingMethodValueValuesEnum(_messages.Enum):
+    r"""Training method to use for CDE training.
+
+    Values:
+      TRAINING_METHOD_UNSPECIFIED: <no description>
+      MODEL_BASED: <no description>
+      TEMPLATE_BASED: <no description>
+    """
+    TRAINING_METHOD_UNSPECIFIED = 0
+    MODEL_BASED = 1
+    TEMPLATE_BASED = 2
+
+  trainingMethod = _messages.EnumField('TrainingMethodValueValuesEnum', 1)
 
 
 class GoogleCloudDocumentaiV1TrainProcessorVersionRequestInputData(_messages.Message):
@@ -5569,6 +5665,87 @@ class GoogleCloudDocumentaiV1beta3CommonOperationMetadata(_messages.Message):
   updateTime = _messages.StringField(5)
 
 
+class GoogleCloudDocumentaiV1beta3Dataset(_messages.Message):
+  r"""A singleton resource under a Processor which configures a collection of
+  documents.
+
+  Enums:
+    StateValueValuesEnum: Required. State of the dataset. Ignored when
+      updating dataset.
+
+  Fields:
+    documentWarehouseConfig: Optional. Document AI Warehouse-based dataset
+      configuration.
+    gcsManagedConfig: Optional. User-managed Cloud Storage dataset
+      configuration. Use this configuration if the dataset documents are
+      stored under a user-managed Cloud Storage location.
+    name: Dataset resource name. Format:
+      `projects/{project}/locations/{location}/processors/{processor}/dataset`
+    spannerIndexingConfig: Optional. A lightweight indexing source with low
+      latency and high reliability, but lacking advanced features like CMEK
+      and content-based search.
+    state: Required. State of the dataset. Ignored when updating dataset.
+    unmanagedDatasetConfig: Optional. Unmanaged dataset configuration. Use
+      this configuration if the dataset documents are managed by the document
+      service internally (not user-managed).
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Required. State of the dataset. Ignored when updating dataset.
+
+    Values:
+      STATE_UNSPECIFIED: Default unspecified enum, should not be used.
+      UNINITIALIZED: Dataset has not been initialized.
+      INITIALIZING: Dataset is being initialized.
+      INITIALIZED: Dataset has been initialized.
+    """
+    STATE_UNSPECIFIED = 0
+    UNINITIALIZED = 1
+    INITIALIZING = 2
+    INITIALIZED = 3
+
+  documentWarehouseConfig = _messages.MessageField('GoogleCloudDocumentaiV1beta3DatasetDocumentWarehouseConfig', 1)
+  gcsManagedConfig = _messages.MessageField('GoogleCloudDocumentaiV1beta3DatasetGCSManagedConfig', 2)
+  name = _messages.StringField(3)
+  spannerIndexingConfig = _messages.MessageField('GoogleCloudDocumentaiV1beta3DatasetSpannerIndexingConfig', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  unmanagedDatasetConfig = _messages.MessageField('GoogleCloudDocumentaiV1beta3DatasetUnmanagedDatasetConfig', 6)
+
+
+class GoogleCloudDocumentaiV1beta3DatasetDocumentWarehouseConfig(_messages.Message):
+  r"""Configuration specific to the Document AI Warehouse-based
+  implementation.
+
+  Fields:
+    collection: Output only. The collection in Document AI Warehouse
+      associated with the dataset.
+    schema: Output only. The schema in Document AI Warehouse associated with
+      the dataset.
+  """
+
+  collection = _messages.StringField(1)
+  schema = _messages.StringField(2)
+
+
+class GoogleCloudDocumentaiV1beta3DatasetGCSManagedConfig(_messages.Message):
+  r"""Configuration specific to the Cloud Storage-based implementation.
+
+  Fields:
+    gcsPrefix: Required. The Cloud Storage URI (a directory) where the
+      documents belonging to the dataset must be stored.
+  """
+
+  gcsPrefix = _messages.MessageField('GoogleCloudDocumentaiV1beta3GcsPrefix', 1)
+
+
+class GoogleCloudDocumentaiV1beta3DatasetSpannerIndexingConfig(_messages.Message):
+  r"""Configuration specific to spanner-based indexing."""
+
+
+class GoogleCloudDocumentaiV1beta3DatasetUnmanagedDatasetConfig(_messages.Message):
+  r"""Configuration specific to an unmanaged dataset."""
+
+
 class GoogleCloudDocumentaiV1beta3DeleteProcessorMetadata(_messages.Message):
   r"""The long-running operation metadata for the DeleteProcessor method.
 
@@ -5657,6 +5834,16 @@ class GoogleCloudDocumentaiV1beta3EvaluateProcessorVersionResponse(_messages.Mes
   """
 
   evaluation = _messages.StringField(1)
+
+
+class GoogleCloudDocumentaiV1beta3GcsPrefix(_messages.Message):
+  r"""Specifies all documents on Cloud Storage with a common prefix.
+
+  Fields:
+    gcsUriPrefix: The URI prefix.
+  """
+
+  gcsUriPrefix = _messages.StringField(1)
 
 
 class GoogleCloudDocumentaiV1beta3HumanReviewStatus(_messages.Message):
@@ -5870,6 +6057,16 @@ class GoogleCloudDocumentaiV1beta3UndeployProcessorVersionMetadata(_messages.Mes
 
 class GoogleCloudDocumentaiV1beta3UndeployProcessorVersionResponse(_messages.Message):
   r"""Response message for the UndeployProcessorVersion method."""
+
+
+class GoogleCloudDocumentaiV1beta3UpdateDatasetOperationMetadata(_messages.Message):
+  r"""A GoogleCloudDocumentaiV1beta3UpdateDatasetOperationMetadata object.
+
+  Fields:
+    commonMetadata: The basic metadata of the long running operation.
+  """
+
+  commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):
@@ -6154,7 +6351,7 @@ class GoogleTypeColor(_messages.Message):
   `java.awt.Color` in Java; it can also be trivially provided to UIColor's
   `+colorWithRed:green:blue:alpha` method in iOS; and, with just a little
   work, it can be easily formatted into a CSS `rgba()` string in JavaScript.
-  This reference page does not have information about the absolute color space
+  This reference page doesn't have information about the absolute color space
   that should be used to interpret the RGB value-for example, sRGB, Adobe RGB,
   DCI-P3, and BT.2020. By default, applications should assume the sRGB color
   space. When color equality needs to be decided, implementations, unless

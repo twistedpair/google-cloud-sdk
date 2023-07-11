@@ -2796,10 +2796,12 @@ class TaskRef(_messages.Message):
   PipelineRef can be used to refer to a specific instance of a Pipeline.
 
   Enums:
+    CustomTaskValueValuesEnum: Optional. The CustomTask definition to use.
     ResolverValueValuesEnum: Resolver is the name of the resolver that should
       perform resolution of the referenced Tekton resource.
 
   Fields:
+    customTask: Optional. The CustomTask definition to use.
     name: Name of the task.
     params: Params contains the parameters used to identify the referenced
       Tekton resource. Example entries might include "repo" or "path" but the
@@ -2807,6 +2809,16 @@ class TaskRef(_messages.Message):
     resolver: Resolver is the name of the resolver that should perform
       resolution of the referenced Tekton resource.
   """
+
+  class CustomTaskValueValuesEnum(_messages.Enum):
+    r"""Optional. The CustomTask definition to use.
+
+    Values:
+      CUSTOM_TASK_UNSPECIFIED: Default value. This value is unused.
+      DOCKER: Sets up a Docker Daemon.
+    """
+    CUSTOM_TASK_UNSPECIFIED = 0
+    DOCKER = 1
 
   class ResolverValueValuesEnum(_messages.Enum):
     r"""Resolver is the name of the resolver that should perform resolution of
@@ -2825,9 +2837,10 @@ class TaskRef(_messages.Message):
     GCB_REPO = 2
     GIT = 3
 
-  name = _messages.StringField(1)
-  params = _messages.MessageField('Param', 2, repeated=True)
-  resolver = _messages.EnumField('ResolverValueValuesEnum', 3)
+  customTask = _messages.EnumField('CustomTaskValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  params = _messages.MessageField('Param', 3, repeated=True)
+  resolver = _messages.EnumField('ResolverValueValuesEnum', 4)
 
 
 class TaskResult(_messages.Message):

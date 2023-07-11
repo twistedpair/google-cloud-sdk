@@ -847,6 +847,36 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatchRequest(_
   updateMask = _messages.StringField(3)
 
 
+class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRawDecryptRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRawDecrypt
+  Request object.
+
+  Fields:
+    name: Required. The resource name of the CryptoKeyVersion to use for
+      decryption.
+    rawDecryptRequest: A RawDecryptRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rawDecryptRequest = _messages.MessageField('RawDecryptRequest', 2)
+
+
+class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRawEncryptRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRawEncrypt
+  Request object.
+
+  Fields:
+    name: Required. The resource name of the CryptoKeyVersion to use for
+      encryption.
+    rawEncryptRequest: A RawEncryptRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rawEncryptRequest = _messages.MessageField('RawEncryptRequest', 2)
+
+
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestoreRequest(_messages.Message):
   r"""A
   CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestoreRequest
@@ -1345,13 +1375,18 @@ class CryptoKey(_messages.Message):
         AsymmetricSign and GetPublicKey.
       ASYMMETRIC_DECRYPT: CryptoKeys with this purpose may be used with
         AsymmetricDecrypt and GetPublicKey.
+      RAW_ENCRYPT_DECRYPT: CryptoKeys with this purpose may be used with
+        RawEncrypt and RawDecrypt. This purpose is meant to be used for
+        interoperable symmetric encryption and does not support automatic
+        CryptoKey rotation.
       MAC: CryptoKeys with this purpose may be used with MacSign.
     """
     CRYPTO_KEY_PURPOSE_UNSPECIFIED = 0
     ENCRYPT_DECRYPT = 1
     ASYMMETRIC_SIGN = 2
     ASYMMETRIC_DECRYPT = 3
-    MAC = 4
+    RAW_ENCRYPT_DECRYPT = 4
+    MAC = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1456,6 +1491,8 @@ class CryptoKeyVersion(_messages.Message):
     Values:
       CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED: Not specified.
       GOOGLE_SYMMETRIC_ENCRYPTION: Creates symmetric encryption keys.
+      AES_128_GCM: AES-GCM (Galois Counter Mode) using 128-bit keys.
+      AES_256_GCM: AES-GCM (Galois Counter Mode) using 256-bit keys.
       RSA_SIGN_PSS_2048_SHA256: RSASSA-PSS 2048 bit key with a SHA256 digest.
       RSA_SIGN_PSS_3072_SHA256: RSASSA-PSS 3072 bit key with a SHA256 digest.
       RSA_SIGN_PSS_4096_SHA256: RSASSA-PSS 4096 bit key with a SHA256 digest.
@@ -1507,33 +1544,35 @@ class CryptoKeyVersion(_messages.Message):
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
-    RSA_SIGN_PSS_2048_SHA256 = 2
-    RSA_SIGN_PSS_3072_SHA256 = 3
-    RSA_SIGN_PSS_4096_SHA256 = 4
-    RSA_SIGN_PSS_4096_SHA512 = 5
-    RSA_SIGN_PKCS1_2048_SHA256 = 6
-    RSA_SIGN_PKCS1_3072_SHA256 = 7
-    RSA_SIGN_PKCS1_4096_SHA256 = 8
-    RSA_SIGN_PKCS1_4096_SHA512 = 9
-    RSA_SIGN_RAW_PKCS1_2048 = 10
-    RSA_SIGN_RAW_PKCS1_3072 = 11
-    RSA_SIGN_RAW_PKCS1_4096 = 12
-    RSA_DECRYPT_OAEP_2048_SHA256 = 13
-    RSA_DECRYPT_OAEP_3072_SHA256 = 14
-    RSA_DECRYPT_OAEP_4096_SHA256 = 15
-    RSA_DECRYPT_OAEP_4096_SHA512 = 16
-    RSA_DECRYPT_OAEP_2048_SHA1 = 17
-    RSA_DECRYPT_OAEP_3072_SHA1 = 18
-    RSA_DECRYPT_OAEP_4096_SHA1 = 19
-    EC_SIGN_P256_SHA256 = 20
-    EC_SIGN_P384_SHA384 = 21
-    EC_SIGN_SECP256K1_SHA256 = 22
-    HMAC_SHA256 = 23
-    HMAC_SHA1 = 24
-    HMAC_SHA384 = 25
-    HMAC_SHA512 = 26
-    HMAC_SHA224 = 27
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 28
+    AES_128_GCM = 2
+    AES_256_GCM = 3
+    RSA_SIGN_PSS_2048_SHA256 = 4
+    RSA_SIGN_PSS_3072_SHA256 = 5
+    RSA_SIGN_PSS_4096_SHA256 = 6
+    RSA_SIGN_PSS_4096_SHA512 = 7
+    RSA_SIGN_PKCS1_2048_SHA256 = 8
+    RSA_SIGN_PKCS1_3072_SHA256 = 9
+    RSA_SIGN_PKCS1_4096_SHA256 = 10
+    RSA_SIGN_PKCS1_4096_SHA512 = 11
+    RSA_SIGN_RAW_PKCS1_2048 = 12
+    RSA_SIGN_RAW_PKCS1_3072 = 13
+    RSA_SIGN_RAW_PKCS1_4096 = 14
+    RSA_DECRYPT_OAEP_2048_SHA256 = 15
+    RSA_DECRYPT_OAEP_3072_SHA256 = 16
+    RSA_DECRYPT_OAEP_4096_SHA256 = 17
+    RSA_DECRYPT_OAEP_4096_SHA512 = 18
+    RSA_DECRYPT_OAEP_2048_SHA1 = 19
+    RSA_DECRYPT_OAEP_3072_SHA1 = 20
+    RSA_DECRYPT_OAEP_4096_SHA1 = 21
+    EC_SIGN_P256_SHA256 = 22
+    EC_SIGN_P384_SHA384 = 23
+    EC_SIGN_SECP256K1_SHA256 = 24
+    HMAC_SHA256 = 25
+    HMAC_SHA1 = 26
+    HMAC_SHA384 = 27
+    HMAC_SHA512 = 28
+    HMAC_SHA224 = 29
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 30
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -1654,6 +1693,8 @@ class CryptoKeyVersionTemplate(_messages.Message):
     Values:
       CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED: Not specified.
       GOOGLE_SYMMETRIC_ENCRYPTION: Creates symmetric encryption keys.
+      AES_128_GCM: AES-GCM (Galois Counter Mode) using 128-bit keys.
+      AES_256_GCM: AES-GCM (Galois Counter Mode) using 256-bit keys.
       RSA_SIGN_PSS_2048_SHA256: RSASSA-PSS 2048 bit key with a SHA256 digest.
       RSA_SIGN_PSS_3072_SHA256: RSASSA-PSS 3072 bit key with a SHA256 digest.
       RSA_SIGN_PSS_4096_SHA256: RSASSA-PSS 4096 bit key with a SHA256 digest.
@@ -1705,33 +1746,35 @@ class CryptoKeyVersionTemplate(_messages.Message):
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
-    RSA_SIGN_PSS_2048_SHA256 = 2
-    RSA_SIGN_PSS_3072_SHA256 = 3
-    RSA_SIGN_PSS_4096_SHA256 = 4
-    RSA_SIGN_PSS_4096_SHA512 = 5
-    RSA_SIGN_PKCS1_2048_SHA256 = 6
-    RSA_SIGN_PKCS1_3072_SHA256 = 7
-    RSA_SIGN_PKCS1_4096_SHA256 = 8
-    RSA_SIGN_PKCS1_4096_SHA512 = 9
-    RSA_SIGN_RAW_PKCS1_2048 = 10
-    RSA_SIGN_RAW_PKCS1_3072 = 11
-    RSA_SIGN_RAW_PKCS1_4096 = 12
-    RSA_DECRYPT_OAEP_2048_SHA256 = 13
-    RSA_DECRYPT_OAEP_3072_SHA256 = 14
-    RSA_DECRYPT_OAEP_4096_SHA256 = 15
-    RSA_DECRYPT_OAEP_4096_SHA512 = 16
-    RSA_DECRYPT_OAEP_2048_SHA1 = 17
-    RSA_DECRYPT_OAEP_3072_SHA1 = 18
-    RSA_DECRYPT_OAEP_4096_SHA1 = 19
-    EC_SIGN_P256_SHA256 = 20
-    EC_SIGN_P384_SHA384 = 21
-    EC_SIGN_SECP256K1_SHA256 = 22
-    HMAC_SHA256 = 23
-    HMAC_SHA1 = 24
-    HMAC_SHA384 = 25
-    HMAC_SHA512 = 26
-    HMAC_SHA224 = 27
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 28
+    AES_128_GCM = 2
+    AES_256_GCM = 3
+    RSA_SIGN_PSS_2048_SHA256 = 4
+    RSA_SIGN_PSS_3072_SHA256 = 5
+    RSA_SIGN_PSS_4096_SHA256 = 6
+    RSA_SIGN_PSS_4096_SHA512 = 7
+    RSA_SIGN_PKCS1_2048_SHA256 = 8
+    RSA_SIGN_PKCS1_3072_SHA256 = 9
+    RSA_SIGN_PKCS1_4096_SHA256 = 10
+    RSA_SIGN_PKCS1_4096_SHA512 = 11
+    RSA_SIGN_RAW_PKCS1_2048 = 12
+    RSA_SIGN_RAW_PKCS1_3072 = 13
+    RSA_SIGN_RAW_PKCS1_4096 = 14
+    RSA_DECRYPT_OAEP_2048_SHA256 = 15
+    RSA_DECRYPT_OAEP_3072_SHA256 = 16
+    RSA_DECRYPT_OAEP_4096_SHA256 = 17
+    RSA_DECRYPT_OAEP_4096_SHA512 = 18
+    RSA_DECRYPT_OAEP_2048_SHA1 = 19
+    RSA_DECRYPT_OAEP_3072_SHA1 = 20
+    RSA_DECRYPT_OAEP_4096_SHA1 = 21
+    EC_SIGN_P256_SHA256 = 22
+    EC_SIGN_P384_SHA384 = 23
+    EC_SIGN_SECP256K1_SHA256 = 24
+    HMAC_SHA256 = 25
+    HMAC_SHA1 = 26
+    HMAC_SHA384 = 27
+    HMAC_SHA512 = 28
+    HMAC_SHA224 = 29
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 30
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -2227,6 +2270,8 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     Values:
       CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED: Not specified.
       GOOGLE_SYMMETRIC_ENCRYPTION: Creates symmetric encryption keys.
+      AES_128_GCM: AES-GCM (Galois Counter Mode) using 128-bit keys.
+      AES_256_GCM: AES-GCM (Galois Counter Mode) using 256-bit keys.
       RSA_SIGN_PSS_2048_SHA256: RSASSA-PSS 2048 bit key with a SHA256 digest.
       RSA_SIGN_PSS_3072_SHA256: RSASSA-PSS 3072 bit key with a SHA256 digest.
       RSA_SIGN_PSS_4096_SHA256: RSASSA-PSS 4096 bit key with a SHA256 digest.
@@ -2278,33 +2323,35 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
-    RSA_SIGN_PSS_2048_SHA256 = 2
-    RSA_SIGN_PSS_3072_SHA256 = 3
-    RSA_SIGN_PSS_4096_SHA256 = 4
-    RSA_SIGN_PSS_4096_SHA512 = 5
-    RSA_SIGN_PKCS1_2048_SHA256 = 6
-    RSA_SIGN_PKCS1_3072_SHA256 = 7
-    RSA_SIGN_PKCS1_4096_SHA256 = 8
-    RSA_SIGN_PKCS1_4096_SHA512 = 9
-    RSA_SIGN_RAW_PKCS1_2048 = 10
-    RSA_SIGN_RAW_PKCS1_3072 = 11
-    RSA_SIGN_RAW_PKCS1_4096 = 12
-    RSA_DECRYPT_OAEP_2048_SHA256 = 13
-    RSA_DECRYPT_OAEP_3072_SHA256 = 14
-    RSA_DECRYPT_OAEP_4096_SHA256 = 15
-    RSA_DECRYPT_OAEP_4096_SHA512 = 16
-    RSA_DECRYPT_OAEP_2048_SHA1 = 17
-    RSA_DECRYPT_OAEP_3072_SHA1 = 18
-    RSA_DECRYPT_OAEP_4096_SHA1 = 19
-    EC_SIGN_P256_SHA256 = 20
-    EC_SIGN_P384_SHA384 = 21
-    EC_SIGN_SECP256K1_SHA256 = 22
-    HMAC_SHA256 = 23
-    HMAC_SHA1 = 24
-    HMAC_SHA384 = 25
-    HMAC_SHA512 = 26
-    HMAC_SHA224 = 27
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 28
+    AES_128_GCM = 2
+    AES_256_GCM = 3
+    RSA_SIGN_PSS_2048_SHA256 = 4
+    RSA_SIGN_PSS_3072_SHA256 = 5
+    RSA_SIGN_PSS_4096_SHA256 = 6
+    RSA_SIGN_PSS_4096_SHA512 = 7
+    RSA_SIGN_PKCS1_2048_SHA256 = 8
+    RSA_SIGN_PKCS1_3072_SHA256 = 9
+    RSA_SIGN_PKCS1_4096_SHA256 = 10
+    RSA_SIGN_PKCS1_4096_SHA512 = 11
+    RSA_SIGN_RAW_PKCS1_2048 = 12
+    RSA_SIGN_RAW_PKCS1_3072 = 13
+    RSA_SIGN_RAW_PKCS1_4096 = 14
+    RSA_DECRYPT_OAEP_2048_SHA256 = 15
+    RSA_DECRYPT_OAEP_3072_SHA256 = 16
+    RSA_DECRYPT_OAEP_4096_SHA256 = 17
+    RSA_DECRYPT_OAEP_4096_SHA512 = 18
+    RSA_DECRYPT_OAEP_2048_SHA1 = 19
+    RSA_DECRYPT_OAEP_3072_SHA1 = 20
+    RSA_DECRYPT_OAEP_4096_SHA1 = 21
+    EC_SIGN_P256_SHA256 = 22
+    EC_SIGN_P384_SHA384 = 23
+    EC_SIGN_SECP256K1_SHA256 = 24
+    HMAC_SHA256 = 25
+    HMAC_SHA1 = 26
+    HMAC_SHA384 = 27
+    HMAC_SHA512 = 28
+    HMAC_SHA224 = 29
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 30
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   cryptoKeyVersion = _messages.StringField(2)
@@ -3000,6 +3047,8 @@ class PublicKey(_messages.Message):
     Values:
       CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED: Not specified.
       GOOGLE_SYMMETRIC_ENCRYPTION: Creates symmetric encryption keys.
+      AES_128_GCM: AES-GCM (Galois Counter Mode) using 128-bit keys.
+      AES_256_GCM: AES-GCM (Galois Counter Mode) using 256-bit keys.
       RSA_SIGN_PSS_2048_SHA256: RSASSA-PSS 2048 bit key with a SHA256 digest.
       RSA_SIGN_PSS_3072_SHA256: RSASSA-PSS 3072 bit key with a SHA256 digest.
       RSA_SIGN_PSS_4096_SHA256: RSASSA-PSS 4096 bit key with a SHA256 digest.
@@ -3051,33 +3100,35 @@ class PublicKey(_messages.Message):
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
-    RSA_SIGN_PSS_2048_SHA256 = 2
-    RSA_SIGN_PSS_3072_SHA256 = 3
-    RSA_SIGN_PSS_4096_SHA256 = 4
-    RSA_SIGN_PSS_4096_SHA512 = 5
-    RSA_SIGN_PKCS1_2048_SHA256 = 6
-    RSA_SIGN_PKCS1_3072_SHA256 = 7
-    RSA_SIGN_PKCS1_4096_SHA256 = 8
-    RSA_SIGN_PKCS1_4096_SHA512 = 9
-    RSA_SIGN_RAW_PKCS1_2048 = 10
-    RSA_SIGN_RAW_PKCS1_3072 = 11
-    RSA_SIGN_RAW_PKCS1_4096 = 12
-    RSA_DECRYPT_OAEP_2048_SHA256 = 13
-    RSA_DECRYPT_OAEP_3072_SHA256 = 14
-    RSA_DECRYPT_OAEP_4096_SHA256 = 15
-    RSA_DECRYPT_OAEP_4096_SHA512 = 16
-    RSA_DECRYPT_OAEP_2048_SHA1 = 17
-    RSA_DECRYPT_OAEP_3072_SHA1 = 18
-    RSA_DECRYPT_OAEP_4096_SHA1 = 19
-    EC_SIGN_P256_SHA256 = 20
-    EC_SIGN_P384_SHA384 = 21
-    EC_SIGN_SECP256K1_SHA256 = 22
-    HMAC_SHA256 = 23
-    HMAC_SHA1 = 24
-    HMAC_SHA384 = 25
-    HMAC_SHA512 = 26
-    HMAC_SHA224 = 27
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 28
+    AES_128_GCM = 2
+    AES_256_GCM = 3
+    RSA_SIGN_PSS_2048_SHA256 = 4
+    RSA_SIGN_PSS_3072_SHA256 = 5
+    RSA_SIGN_PSS_4096_SHA256 = 6
+    RSA_SIGN_PSS_4096_SHA512 = 7
+    RSA_SIGN_PKCS1_2048_SHA256 = 8
+    RSA_SIGN_PKCS1_3072_SHA256 = 9
+    RSA_SIGN_PKCS1_4096_SHA256 = 10
+    RSA_SIGN_PKCS1_4096_SHA512 = 11
+    RSA_SIGN_RAW_PKCS1_2048 = 12
+    RSA_SIGN_RAW_PKCS1_3072 = 13
+    RSA_SIGN_RAW_PKCS1_4096 = 14
+    RSA_DECRYPT_OAEP_2048_SHA256 = 15
+    RSA_DECRYPT_OAEP_3072_SHA256 = 16
+    RSA_DECRYPT_OAEP_4096_SHA256 = 17
+    RSA_DECRYPT_OAEP_4096_SHA512 = 18
+    RSA_DECRYPT_OAEP_2048_SHA1 = 19
+    RSA_DECRYPT_OAEP_3072_SHA1 = 20
+    RSA_DECRYPT_OAEP_4096_SHA1 = 21
+    EC_SIGN_P256_SHA256 = 22
+    EC_SIGN_P384_SHA384 = 23
+    EC_SIGN_SECP256K1_SHA256 = 24
+    HMAC_SHA256 = 25
+    HMAC_SHA1 = 26
+    HMAC_SHA384 = 27
+    HMAC_SHA512 = 28
+    HMAC_SHA224 = 29
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 30
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""The ProtectionLevel of the CryptoKeyVersion public key.
@@ -3101,6 +3152,313 @@ class PublicKey(_messages.Message):
   pem = _messages.StringField(3)
   pemCrc32c = _messages.IntegerField(4)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 5)
+
+
+class RawDecryptRequest(_messages.Message):
+  r"""Request message for KeyManagementService.RawDecrypt.
+
+  Fields:
+    additionalAuthenticatedData: Optional. Optional data that must match the
+      data originally supplied in
+      RawEncryptRequest.additional_authenticated_data.
+    additionalAuthenticatedDataCrc32c: Optional. An optional CRC32C checksum
+      of the RawDecryptRequest.additional_authenticated_data. If specified,
+      KeyManagementService will verify the integrity of the received
+      additional_authenticated_data using this checksum. KeyManagementService
+      will report an error if the checksum verification fails. If you receive
+      a checksum error, your client should verify that
+      CRC32C(additional_authenticated_data) is equal to
+      additional_authenticated_data_crc32c, and if so, perform a limited
+      number of retries. A persistent mismatch may indicate an issue in your
+      computation of the CRC32C checksum. Note: This field is defined as int64
+      for reasons of compatibility across different languages. However, it is
+      a non-negative integer, which will never exceed 2^32-1, and can be
+      safely downconverted to uint32 in languages that support this type.
+    ciphertext: Required. The encrypted data originally returned in
+      RawEncryptResponse.ciphertext.
+    ciphertextCrc32c: Optional. An optional CRC32C checksum of the
+      RawDecryptRequest.ciphertext. If specified, KeyManagementService will
+      verify the integrity of the received ciphertext using this checksum.
+      KeyManagementService will report an error if the checksum verification
+      fails. If you receive a checksum error, your client should verify that
+      CRC32C(ciphertext) is equal to ciphertext_crc32c, and if so, perform a
+      limited number of retries. A persistent mismatch may indicate an issue
+      in your computation of the CRC32C checksum. Note: This field is defined
+      as int64 for reasons of compatibility across different languages.
+      However, it is a non-negative integer, which will never exceed 2^32-1,
+      and can be safely downconverted to uint32 in languages that support this
+      type.
+    initializationVector: Required. The initialization vector (IV) used during
+      encryption, which must match the data originally provided in
+      RawEncryptResponse.initialization_vector.
+    initializationVectorCrc32c: Optional. An optional CRC32C checksum of the
+      RawDecryptRequest.initialization_vector. If specified,
+      KeyManagementService will verify the integrity of the received
+      initialization_vector using this checksum. KeyManagementService will
+      report an error if the checksum verification fails. If you receive a
+      checksum error, your client should verify that
+      CRC32C(initialization_vector) is equal to initialization_vector_crc32c,
+      and if so, perform a limited number of retries. A persistent mismatch
+      may indicate an issue in your computation of the CRC32C checksum. Note:
+      This field is defined as int64 for reasons of compatibility across
+      different languages. However, it is a non-negative integer, which will
+      never exceed 2^32-1, and can be safely downconverted to uint32 in
+      languages that support this type.
+    tagLength: The length of the authentication tag that is appended to the
+      end of the ciphertext. If unspecified (0), the default value for the
+      key's algorithm will be used (for AES-GCM, the default value is 16).
+  """
+
+  additionalAuthenticatedData = _messages.BytesField(1)
+  additionalAuthenticatedDataCrc32c = _messages.IntegerField(2)
+  ciphertext = _messages.BytesField(3)
+  ciphertextCrc32c = _messages.IntegerField(4)
+  initializationVector = _messages.BytesField(5)
+  initializationVectorCrc32c = _messages.IntegerField(6)
+  tagLength = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+
+
+class RawDecryptResponse(_messages.Message):
+  r"""Response message for KeyManagementService.RawDecrypt.
+
+  Enums:
+    ProtectionLevelValueValuesEnum: The ProtectionLevel of the
+      CryptoKeyVersion used in decryption.
+
+  Fields:
+    plaintext: The decrypted data.
+    plaintextCrc32c: Integrity verification field. A CRC32C checksum of the
+      returned RawDecryptResponse.plaintext. An integrity check of plaintext
+      can be performed by computing the CRC32C checksum of plaintext and
+      comparing your results to this field. Discard the response in case of
+      non-matching checksum values, and perform a limited number of retries. A
+      persistent mismatch may indicate an issue in your computation of the
+      CRC32C checksum. Note: receiving this response message indicates that
+      KeyManagementService is able to successfully decrypt the ciphertext.
+      Note: This field is defined as int64 for reasons of compatibility across
+      different languages. However, it is a non-negative integer, which will
+      never exceed 2^32-1, and can be safely downconverted to uint32 in
+      languages that support this type.
+    protectionLevel: The ProtectionLevel of the CryptoKeyVersion used in
+      decryption.
+    verifiedAdditionalAuthenticatedDataCrc32c: Integrity verification field. A
+      flag indicating whether
+      RawDecryptRequest.additional_authenticated_data_crc32c was received by
+      KeyManagementService and used for the integrity verification of
+      additional_authenticated_data. A false value of this field indicates
+      either that // RawDecryptRequest.additional_authenticated_data_crc32c
+      was left unset or that it was not delivered to KeyManagementService. If
+      you've set RawDecryptRequest.additional_authenticated_data_crc32c but
+      this field is still false, discard the response and perform a limited
+      number of retries.
+    verifiedCiphertextCrc32c: Integrity verification field. A flag indicating
+      whether RawDecryptRequest.ciphertext_crc32c was received by
+      KeyManagementService and used for the integrity verification of the
+      ciphertext. A false value of this field indicates either that
+      RawDecryptRequest.ciphertext_crc32c was left unset or that it was not
+      delivered to KeyManagementService. If you've set
+      RawDecryptRequest.ciphertext_crc32c but this field is still false,
+      discard the response and perform a limited number of retries.
+    verifiedInitializationVectorCrc32c: Integrity verification field. A flag
+      indicating whether RawDecryptRequest.initialization_vector_crc32c was
+      received by KeyManagementService and used for the integrity verification
+      of initialization_vector. A false value of this field indicates either
+      that RawDecryptRequest.initialization_vector_crc32c was left unset or
+      that it was not delivered to KeyManagementService. If you've set
+      RawDecryptRequest.initialization_vector_crc32c but this field is still
+      false, discard the response and perform a limited number of retries.
+  """
+
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""The ProtectionLevel of the CryptoKeyVersion used in decryption.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
+    EXTERNAL = 3
+    EXTERNAL_VPC = 4
+
+  plaintext = _messages.BytesField(1)
+  plaintextCrc32c = _messages.IntegerField(2)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 3)
+  verifiedAdditionalAuthenticatedDataCrc32c = _messages.BooleanField(4)
+  verifiedCiphertextCrc32c = _messages.BooleanField(5)
+  verifiedInitializationVectorCrc32c = _messages.BooleanField(6)
+
+
+class RawEncryptRequest(_messages.Message):
+  r"""Request message for KeyManagementService.RawEncrypt.
+
+  Fields:
+    additionalAuthenticatedData: Optional. Optional data that, if specified,
+      must also be provided during decryption through
+      RawDecryptRequest.additional_authenticated_data. This field may only be
+      used in conjunction with an algorithm that accepts additional
+      authenticated data (for example, AES-GCM). The maximum size depends on
+      the key version's protection_level. For SOFTWARE keys, the plaintext
+      must be no larger than 64KiB. For HSM keys, the combined length of the
+      plaintext and additional_authenticated_data fields must be no larger
+      than 8KiB.
+    additionalAuthenticatedDataCrc32c: Optional. An optional CRC32C checksum
+      of the RawEncryptRequest.additional_authenticated_data. If specified,
+      KeyManagementService will verify the integrity of the received
+      additional_authenticated_data using this checksum. KeyManagementService
+      will report an error if the checksum verification fails. If you receive
+      a checksum error, your client should verify that
+      CRC32C(additional_authenticated_data) is equal to
+      additional_authenticated_data_crc32c, and if so, perform a limited
+      number of retries. A persistent mismatch may indicate an issue in your
+      computation of the CRC32C checksum. Note: This field is defined as int64
+      for reasons of compatibility across different languages. However, it is
+      a non-negative integer, which will never exceed 2^32-1, and can be
+      safely downconverted to uint32 in languages that support this type.
+    initializationVector: Optional. A customer-supplied initialization vector
+      that will be used for encryption. If it is not provided for AES-CBC and
+      AES-CTR, one will be generated. It will be returned in
+      RawEncryptResponse.initialization_vector.
+    initializationVectorCrc32c: Optional. An optional CRC32C checksum of the
+      RawEncryptRequest.initialization_vector. If specified,
+      KeyManagementService will verify the integrity of the received
+      initialization_vector using this checksum. KeyManagementService will
+      report an error if the checksum verification fails. If you receive a
+      checksum error, your client should verify that
+      CRC32C(initialization_vector) is equal to initialization_vector_crc32c,
+      and if so, perform a limited number of retries. A persistent mismatch
+      may indicate an issue in your computation of the CRC32C checksum. Note:
+      This field is defined as int64 for reasons of compatibility across
+      different languages. However, it is a non-negative integer, which will
+      never exceed 2^32-1, and can be safely downconverted to uint32 in
+      languages that support this type.
+    plaintext: Required. The data to encrypt. Must be no larger than 64KiB.
+      The maximum size depends on the key version's protection_level. For
+      SOFTWARE keys, the plaintext must be no larger than 64KiB. For HSM keys,
+      the combined length of the plaintext and additional_authenticated_data
+      fields must be no larger than 8KiB.
+    plaintextCrc32c: Optional. An optional CRC32C checksum of the
+      RawEncryptRequest.plaintext. If specified, KeyManagementService will
+      verify the integrity of the received plaintext using this checksum.
+      KeyManagementService will report an error if the checksum verification
+      fails. If you receive a checksum error, your client should verify that
+      CRC32C(plaintext) is equal to plaintext_crc32c, and if so, perform a
+      limited number of retries. A persistent mismatch may indicate an issue
+      in your computation of the CRC32C checksum. Note: This field is defined
+      as int64 for reasons of compatibility across different languages.
+      However, it is a non-negative integer, which will never exceed 2^32-1,
+      and can be safely downconverted to uint32 in languages that support this
+      type.
+  """
+
+  additionalAuthenticatedData = _messages.BytesField(1)
+  additionalAuthenticatedDataCrc32c = _messages.IntegerField(2)
+  initializationVector = _messages.BytesField(3)
+  initializationVectorCrc32c = _messages.IntegerField(4)
+  plaintext = _messages.BytesField(5)
+  plaintextCrc32c = _messages.IntegerField(6)
+
+
+class RawEncryptResponse(_messages.Message):
+  r"""Response message for KeyManagementService.RawEncrypt.
+
+  Enums:
+    ProtectionLevelValueValuesEnum: The ProtectionLevel of the
+      CryptoKeyVersion used in encryption.
+
+  Fields:
+    ciphertext: The encrypted data. In the case of AES-GCM, the authentication
+      tag is the tag_length bytes at the end of this field.
+    ciphertextCrc32c: Integrity verification field. A CRC32C checksum of the
+      returned RawEncryptResponse.ciphertext. An integrity check of ciphertext
+      can be performed by computing the CRC32C checksum of ciphertext and
+      comparing your results to this field. Discard the response in case of
+      non-matching checksum values, and perform a limited number of retries. A
+      persistent mismatch may indicate an issue in your computation of the
+      CRC32C checksum. Note: This field is defined as int64 for reasons of
+      compatibility across different languages. However, it is a non-negative
+      integer, which will never exceed 2^32-1, and can be safely downconverted
+      to uint32 in languages that support this type.
+    initializationVector: The initialization vector (IV) generated by the
+      service during encryption. This value must be stored and provided in
+      RawDecryptRequest.initialization_vector at decryption time.
+    initializationVectorCrc32c: Integrity verification field. A CRC32C
+      checksum of the returned RawEncryptResponse.initialization_vector. An
+      integrity check of initialization_vector can be performed by computing
+      the CRC32C checksum of initialization_vector and comparing your results
+      to this field. Discard the response in case of non-matching checksum
+      values, and perform a limited number of retries. A persistent mismatch
+      may indicate an issue in your computation of the CRC32C checksum. Note:
+      This field is defined as int64 for reasons of compatibility across
+      different languages. However, it is a non-negative integer, which will
+      never exceed 2^32-1, and can be safely downconverted to uint32 in
+      languages that support this type.
+    name: The resource name of the CryptoKeyVersion used in encryption. Check
+      this field to verify that the intended resource was used for encryption.
+    protectionLevel: The ProtectionLevel of the CryptoKeyVersion used in
+      encryption.
+    tagLength: The length of the authentication tag that is appended to the
+      end of the ciphertext.
+    verifiedAdditionalAuthenticatedDataCrc32c: Integrity verification field. A
+      flag indicating whether
+      RawEncryptRequest.additional_authenticated_data_crc32c was received by
+      KeyManagementService and used for the integrity verification of
+      additional_authenticated_data. A false value of this field indicates
+      either that // RawEncryptRequest.additional_authenticated_data_crc32c
+      was left unset or that it was not delivered to KeyManagementService. If
+      you've set RawEncryptRequest.additional_authenticated_data_crc32c but
+      this field is still false, discard the response and perform a limited
+      number of retries.
+    verifiedInitializationVectorCrc32c: Integrity verification field. A flag
+      indicating whether RawEncryptRequest.initialization_vector_crc32c was
+      received by KeyManagementService and used for the integrity verification
+      of initialization_vector. A false value of this field indicates either
+      that RawEncryptRequest.initialization_vector_crc32c was left unset or
+      that it was not delivered to KeyManagementService. If you've set
+      RawEncryptRequest.initialization_vector_crc32c but this field is still
+      false, discard the response and perform a limited number of retries.
+    verifiedPlaintextCrc32c: Integrity verification field. A flag indicating
+      whether RawEncryptRequest.plaintext_crc32c was received by
+      KeyManagementService and used for the integrity verification of the
+      plaintext. A false value of this field indicates either that
+      RawEncryptRequest.plaintext_crc32c was left unset or that it was not
+      delivered to KeyManagementService. If you've set
+      RawEncryptRequest.plaintext_crc32c but this field is still false,
+      discard the response and perform a limited number of retries.
+  """
+
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""The ProtectionLevel of the CryptoKeyVersion used in encryption.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
+    EXTERNAL = 3
+    EXTERNAL_VPC = 4
+
+  ciphertext = _messages.BytesField(1)
+  ciphertextCrc32c = _messages.IntegerField(2)
+  initializationVector = _messages.BytesField(3)
+  initializationVectorCrc32c = _messages.IntegerField(4)
+  name = _messages.StringField(5)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 6)
+  tagLength = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  verifiedAdditionalAuthenticatedDataCrc32c = _messages.BooleanField(8)
+  verifiedInitializationVectorCrc32c = _messages.BooleanField(9)
+  verifiedPlaintextCrc32c = _messages.BooleanField(10)
 
 
 class RestoreCryptoKeyVersionRequest(_messages.Message):

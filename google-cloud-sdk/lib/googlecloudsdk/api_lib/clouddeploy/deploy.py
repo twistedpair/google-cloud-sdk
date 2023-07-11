@@ -99,6 +99,15 @@ class DeployClient(object):
       for resource in targets:
         operation_dict[resource.name] = target_util.DeleteTarget(resource.name)
       self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+    # Then delete the child resources.
+    automations = resource_dict[manifest_util.AUTOMATION_KIND]
+    operation_dict = {}
+    for resource in automations:
+      operation_dict[resource.name] = automation_util.DeleteAutomation(
+          resource.name
+      )
+      self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+
     pipelines = resource_dict[manifest_util.DELIVERY_PIPELINE_KIND_V1BETA1]
     if pipelines:
       operation_dict = {}

@@ -262,6 +262,17 @@ class GoogleCloudRecommenderV1beta1InsightStateInfo(_messages.Message):
   stateMetadata = _messages.MessageField('StateMetadataValue', 2)
 
 
+class GoogleCloudRecommenderV1beta1InsightType(_messages.Message):
+  r"""The type of insight.
+
+  Fields:
+    name: The insight_type's name in format insightTypes/{insight_type} eg:
+      insightTypes/google.iam.policy.Insight
+  """
+
+  name = _messages.StringField(1)
+
+
 class GoogleCloudRecommenderV1beta1InsightTypeConfig(_messages.Message):
   r"""Configuration for an InsightType.
 
@@ -377,6 +388,19 @@ class GoogleCloudRecommenderV1beta1InsightTypeGenerationConfig(_messages.Message
   params = _messages.MessageField('ParamsValue', 1)
 
 
+class GoogleCloudRecommenderV1beta1ListInsightTypesResponse(_messages.Message):
+  r"""Response for the `ListInsightTypes` method. Next ID: 3
+
+  Fields:
+    insightTypes: The set of recommenders available
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  insightTypes = _messages.MessageField('GoogleCloudRecommenderV1beta1InsightType', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudRecommenderV1beta1ListInsightsResponse(_messages.Message):
   r"""Response to the `ListInsights` method.
 
@@ -401,6 +425,19 @@ class GoogleCloudRecommenderV1beta1ListRecommendationsResponse(_messages.Message
 
   nextPageToken = _messages.StringField(1)
   recommendations = _messages.MessageField('GoogleCloudRecommenderV1beta1Recommendation', 2, repeated=True)
+
+
+class GoogleCloudRecommenderV1beta1ListRecommendersResponse(_messages.Message):
+  r"""Response for the `ListRecommender` method. Next ID: 3
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    recommenders: The set of recommenders available
+  """
+
+  nextPageToken = _messages.StringField(1)
+  recommenders = _messages.MessageField('GoogleCloudRecommenderV1beta1RecommenderType', 2, repeated=True)
 
 
 class GoogleCloudRecommenderV1beta1MarkInsightAcceptedRequest(_messages.Message):
@@ -1068,6 +1105,17 @@ class GoogleCloudRecommenderV1beta1RecommenderGenerationConfig(_messages.Message
   params = _messages.MessageField('ParamsValue', 1)
 
 
+class GoogleCloudRecommenderV1beta1RecommenderType(_messages.Message):
+  r"""The type of a recommender.
+
+  Fields:
+    name: The recommender's name in format RecommenderTypes/{recommender_type}
+      eg: recommenderTypes/google.iam.policy.Recommender
+  """
+
+  name = _messages.StringField(1)
+
+
 class GoogleCloudRecommenderV1beta1ReliabilityProjection(_messages.Message):
   r"""Contains information on the impact of a reliability recommendation.
 
@@ -1639,6 +1687,20 @@ class RecommenderFoldersLocationsRecommendersRecommendationsMarkSucceededRequest
   name = _messages.StringField(2, required=True)
 
 
+class RecommenderInsightTypesListRequest(_messages.Message):
+  r"""A RecommenderInsightTypesListRequest object.
+
+  Fields:
+    pageSize: Optional. The number of InsightTypes to return per page. The
+      service may return fewer than this value.
+    pageToken: Optional. A page token, received from a previous
+      `ListRecommenders` call. Provide this to retrieve the subsequent page.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+
+
 class RecommenderOrganizationsLocationsInsightTypesGetConfigRequest(_messages.Message):
   r"""A RecommenderOrganizationsLocationsInsightTypesGetConfigRequest object.
 
@@ -2133,6 +2195,20 @@ class RecommenderProjectsLocationsRecommendersUpdateConfigRequest(_messages.Mess
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
   validateOnly = _messages.BooleanField(4)
+
+
+class RecommenderRecommendersListRequest(_messages.Message):
+  r"""A RecommenderRecommendersListRequest object.
+
+  Fields:
+    pageSize: Optional. The number of RecommenderTypes to return per page. The
+      service may return fewer than this value.
+    pageToken: Optional. A page token, received from a previous
+      `ListRecommenders` call. Provide this to retrieve the subsequent page.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

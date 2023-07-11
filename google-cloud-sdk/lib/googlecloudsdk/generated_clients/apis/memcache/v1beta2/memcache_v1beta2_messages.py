@@ -209,6 +209,35 @@ class GoogleCloudMemcacheV1beta2OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class GoogleCloudMemcacheV1beta2UpgradeInstanceRequest(_messages.Message):
+  r"""Request for UpgradeInstance.
+
+  Enums:
+    MemcacheVersionValueValuesEnum: Required. Speciefies the target version of
+      memcached engine to upgrade to
+
+  Fields:
+    memcacheVersion: Required. Speciefies the target version of memcached
+      engine to upgrade to
+  """
+
+  class MemcacheVersionValueValuesEnum(_messages.Enum):
+    r"""Required. Speciefies the target version of memcached engine to upgrade
+    to
+
+    Values:
+      MEMCACHE_VERSION_UNSPECIFIED: Memcache version is not specified by
+        customer
+      MEMCACHE_1_5: Memcached 1.5 version.
+      MEMCACHE_1_6_15: Memcached 1.6.15 version.
+    """
+    MEMCACHE_VERSION_UNSPECIFIED = 0
+    MEMCACHE_1_5 = 1
+    MEMCACHE_1_6_15 = 2
+
+  memcacheVersion = _messages.EnumField('MemcacheVersionValueValuesEnum', 1)
+
+
 class GoogleCloudMemcacheV1beta2ZoneMetadata(_messages.Message):
   r"""A GoogleCloudMemcacheV1beta2ZoneMetadata object."""
 
@@ -872,6 +901,8 @@ class Instance(_messages.Message):
       DELETING: Memcached instance is being deleted.
       PERFORMING_MAINTENANCE: Memcached instance is going through maintenance,
         e.g. data plane rollout.
+      MEMCACHE_VERSION_UPGRADING: Memcached instance is undergoing memcached
+        engine version upgrade
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -879,6 +910,7 @@ class Instance(_messages.Message):
     UPDATING = 3
     DELETING = 4
     PERFORMING_MAINTENANCE = 5
+    MEMCACHE_VERSION_UPGRADING = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1432,6 +1464,22 @@ class MemcacheProjectsLocationsInstancesUpdateParametersRequest(_messages.Messag
 
   name = _messages.StringField(1, required=True)
   updateParametersRequest = _messages.MessageField('UpdateParametersRequest', 2)
+
+
+class MemcacheProjectsLocationsInstancesUpgradeRequest(_messages.Message):
+  r"""A MemcacheProjectsLocationsInstancesUpgradeRequest object.
+
+  Fields:
+    googleCloudMemcacheV1beta2UpgradeInstanceRequest: A
+      GoogleCloudMemcacheV1beta2UpgradeInstanceRequest resource to be passed
+      as the request body.
+    name: Required. Memcache instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+      where `location_id` refers to a GCP region.
+  """
+
+  googleCloudMemcacheV1beta2UpgradeInstanceRequest = _messages.MessageField('GoogleCloudMemcacheV1beta2UpgradeInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class MemcacheProjectsLocationsListRequest(_messages.Message):

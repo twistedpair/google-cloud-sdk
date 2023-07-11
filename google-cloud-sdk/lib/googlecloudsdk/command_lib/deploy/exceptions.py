@@ -155,3 +155,12 @@ class AutomationNameFormatError(exceptions.Error):
         'Automation name {} in the configuration should be in the format'
         'of pipeline_id/automation_id.'.format(automation_name)
     )
+
+
+class AutomationWaitFormatError(exceptions.Error):
+  """Error when the name of the automation in the config file is not formatted correctly."""
+
+  def __init__(self):
+    super(AutomationWaitFormatError, self).__init__(
+        'Wait must be numbers with the last character m, e.g. 5m.'
+    )

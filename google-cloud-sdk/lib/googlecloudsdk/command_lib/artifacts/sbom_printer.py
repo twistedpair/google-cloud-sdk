@@ -52,7 +52,9 @@ class SbomPrinter(cp.CustomPrinterBase):
     if sig:
       printer.AddRecord({"signed_by": sig}, delimit=False)
     if "exists" in sbom_ref.file_info:
-      printer.AddRecord({"file_exists": True}, delimit=False)
+      printer.AddRecord(
+          {"file_exists": sbom_ref.file_info["exists"]}, delimit=False
+      )
     if "err_msg" in sbom_ref.file_info:
       printer.AddRecord(
           {"file_err_msg": sbom_ref.file_info["err_msg"]}, delimit=False

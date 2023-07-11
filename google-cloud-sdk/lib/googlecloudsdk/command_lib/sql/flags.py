@@ -330,9 +330,10 @@ def AddBackupLocation(parser, allow_empty):
 # Currently, MAX_BACKUP_RETENTION_COUNT=365, and MIN_BACKUP_RETENTION_COUNT=1.
 def AddRetainedBackupsCount(parser):
   help_text = (
-      'How many backups to keep. The valid range is between 1 and 365. The '
-      'default value is 7 if not specified. Applicable only if --no-backups is '
-      'not specified.'
+      'How many backups to keep. The valid range is between 1 and 365. '
+      'Default value is 7 for Enterprise edition instances. For '
+      'Enterprise_Plus Postgres and MySQL instances, default values are 15 and '
+      '8 respectively. Applicable only if --no-backups is not specified.'
   )
   parser.add_argument(
       '--retained-backups-count',
@@ -345,11 +346,14 @@ def AddRetainedBackupsCount(parser):
 # MIN_TRANSACTION_LOG_RETENTION_DAYS=1.
 def AddRetainedTransactionLogDays(parser):
   help_text = (
-      'How many days of transaction logs to keep. The valid range is between 1 '
-      'and 35. The default value is 7. The 35 days log retention feature is '
-      'only enabled for specific customer. Only use this option when point-in-'
-      'time recovery is enabled. Storage size for transaction logs increases '
-      'when the number of days for log retention increases.'
+      'How many days of transaction logs to keep. The valid range is between '
+      '1 and 35. Only use this option when point-in-time recovery is enabled. '
+      'If logs are stored on disk, storage size for transaction logs could '
+      'increase when the number of days for log retention increases. '
+      'For Enterprise, default and max retention values are 7 and 7 '
+      'respectively. For MySQL Enterprise_Plus, default and max retention '
+      'values are 7 and 7. For Postgres Enterprise_Plus, default and max '
+      'retention values are 14 and 35.'
   )
   parser.add_argument(
       '--retained-transaction-log-days',
@@ -937,7 +941,6 @@ def AddEdition(parser):
       required=False,
       choices=['enterprise', 'enterprise-plus'],
       default=None,
-      hidden=True,
       help_str='Specifies the edition of Cloud SQL instance.',
   )
   edition_flag.AddToParser(parser)
@@ -1479,6 +1482,24 @@ def AddPasswordPolicyDisallowUsernameSubstring(
   )
 
 
+def AddPasswordPolicyDisallowCompromisedCredentials(
+    parser, show_negated_in_help=True
+):
+  """Add the flag to specify password policy disallow username as substring.
+
+  Args:
+    parser: The current argparse parser to add this to.
+    show_negated_in_help: Show negative action in help.
+  """
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--password-policy-disallow-compromised-credentials',
+      required=False,
+      help='Disallow credentials that have been compromised by a data breach.',
+      **kwargs
+  )
+
+
 def AddPasswordPolicyPasswordChangeInterval(parser):
   """Add the flag to specify password policy password change interval.
 
@@ -1830,7 +1851,6 @@ def AddShowEdition(parser):
   kwargs = _GetKwargsForBoolFlag(False)
   parser.add_argument(
       '--show-edition',
-      hidden=True,
       required=False,
       help='Show the edition field.',
       **kwargs
@@ -1992,11 +2012,10 @@ def AddEnableDataCache(parser, show_negated_in_help=False):
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--enable-data-cache',
-      hidden=True,
       required=False,
       help=(
           'Enable use of data cache for accelerated read performance. This flag'
-          ' is only available for Enterprise Plus edition instances.'
+          ' is only available for Enterprise_Plus edition instances.'
       ),
       **kwargs
   )

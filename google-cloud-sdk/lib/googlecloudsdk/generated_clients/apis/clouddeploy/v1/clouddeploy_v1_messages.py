@@ -4729,7 +4729,7 @@ class Target(_messages.Message):
       and used by the user, and not by Google Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
-    anthosCluster: Information specifying an Anthos Cluster.
+    anthosCluster: Optional. Information specifying an Anthos Cluster.
     createTime: Output only. Time at which the `Target` was created.
     deployParameters: Optional. The deploy parameters to use for this target.
     description: Optional. Description of the `Target`. Max length is 255
@@ -4744,7 +4744,7 @@ class Target(_messages.Message):
       `RENDER` and `DEPLOY` `ExecutionEnvironmentUsage` values. When no
       configurations are specified, execution will use the default specified
       in `DefaultPool`.
-    gke: Information specifying a GKE Cluster.
+    gke: Optional. Information specifying a GKE Cluster.
     labels: Optional. Labels are attributes that can be set and used by both
       the user and by Google Cloud Deploy. Labels must meet the following
       constraints: * Keys and values can contain only lowercase letters,
@@ -4753,11 +4753,11 @@ class Target(_messages.Message):
       start with a lowercase letter or international character. * Each
       resource is limited to a maximum of 64 labels. Both keys and values are
       additionally constrained to be <= 128 bytes.
-    multiTarget: Information specifying a multiTarget.
+    multiTarget: Optional. Information specifying a multiTarget.
     name: Optional. Name of the `Target`. Format is
       projects/{project}/locations/{location}/targets/a-z{0,62}.
     requireApproval: Optional. Whether or not the `Target` requires approval.
-    run: Information specifying a Cloud Run deployment target.
+    run: Optional. Information specifying a Cloud Run deployment target.
     targetId: Output only. Resource id of the `Target`.
     uid: Output only. Unique identifier of the `Target`.
     updateTime: Output only. Most recent time at which the `Target` was

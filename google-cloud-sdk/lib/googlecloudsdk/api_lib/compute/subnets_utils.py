@@ -67,6 +67,7 @@ def MakeSubnetworkUpdateRequest(
     client,
     subnet_ref,
     enable_private_ip_google_access=None,
+    allow_cidr_routes_overlap=None,
     add_secondary_ranges=None,
     add_secondary_ranges_with_reserved_internal_range=None,
     remove_secondary_ranges=None,
@@ -91,6 +92,8 @@ def MakeSubnetworkUpdateRequest(
     subnet_ref: Reference to a subnetwork
     enable_private_ip_google_access: Enable/disable access to Google Cloud APIs
       from this subnet for instances without a public ip address.
+    allow_cidr_routes_overlap: Allow/Disallow this subnetwork's ranges to
+      conflict with existing static routes.
     add_secondary_ranges: List of secondary IP ranges to add to the subnetwork
       for use in IP aliasing.
     add_secondary_ranges_with_reserved_internal_range: List of secondary IP
@@ -217,6 +220,19 @@ def MakeSubnetworkUpdateRequest(
                 convert_to_enum(private_ipv6_google_access_type))))
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
+  elif allow_cidr_routes_overlap is not None:
+    subnetwork = client.messages.Subnetwork()
+    original_subnetwork = client.MakeRequests([(
+        client.apitools_client.subnetworks,
+        'Get',
+        client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()),
+    )])[0]
+    subnetwork.fingerprint = original_subnetwork.fingerprint
+
+    subnetwork.allowSubnetCidrRoutesOverlap = allow_cidr_routes_overlap
+    return client.MakeRequests(
+        [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)]
+    )
   elif set_new_purpose is not None:
     subnetwork = client.messages.Subnetwork()
     original_subnetwork = client.MakeRequests([

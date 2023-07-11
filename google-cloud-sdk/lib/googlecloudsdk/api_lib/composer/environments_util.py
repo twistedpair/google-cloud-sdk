@@ -752,6 +752,118 @@ def LoadSnapshot(environment_ref,
   return GetService(release_track=release_track).LoadSnapshot(request_message)
 
 
+def ExecuteAirflowCommand(
+    command,
+    subcommand,
+    parameters,
+    environment_ref,
+    release_track=base.ReleaseTrack.ALPHA,
+):
+  """Starts execution of an Airflow CLI command through Composer API.
+
+  Args:
+    command: string, the command to execute.
+    subcommand: string, the subcommand to execute.
+    parameters: string[], optional, additinal parameters for the command.
+    environment_ref: Resource, the Composer environment to execute the command.
+    release_track: base.ReleaseTrack, the release track of command. Determines
+      which Composer client library is used.
+
+  Returns:
+    ExecuteAirflowCommandResponse: information about the execution.
+  """
+  message_module = api_util.GetMessagesModule(release_track=release_track)
+  request_message = message_module.ComposerProjectsLocationsEnvironmentsExecuteAirflowCommandRequest(
+      environment=environment_ref.RelativeName(),
+      executeAirflowCommandRequest=message_module.ExecuteAirflowCommandRequest(
+          command=command,
+          subcommand=subcommand,
+          parameters=parameters,
+      ),
+  )
+  return GetService(release_track=release_track).ExecuteAirflowCommand(
+      request_message
+  )
+
+
+def StopAirflowCommand(
+    execution_id,
+    pod_name,
+    pod_namespace,
+    force,
+    environment_ref,
+    release_track=base.ReleaseTrack.ALPHA,
+):
+  """Stops the execution of an Airflow CLI command.
+
+  Args:
+    execution_id: string, the unique ID of execution.
+    pod_name: string, the pod the execution is running on.
+    pod_namespace: string, the pod's namespace.
+    force: boolean, If true, the execution is terminated forcefully (SIGKILL).
+      If false, the  execution is stopped gracefully, giving it time for
+      cleanup.
+    environment_ref: Resource, the Composer environment to stop the command.
+    release_track: base.ReleaseTrack, the release track of command. Determines
+      which Composer client library is used.
+
+  Returns:
+    StopAirflowCommandResponse: information whether stopping the execution was
+    successful.
+  """
+  message_module = api_util.GetMessagesModule(release_track=release_track)
+  request_message = message_module.ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest(
+      environment=environment_ref.RelativeName(),
+      stopAirflowCommandRequest=message_module.StopAirflowCommandRequest(
+          executionId=execution_id,
+          pod=pod_name,
+          podNamespace=pod_namespace,
+          force=force,
+      ),
+  )
+  return GetService(release_track=release_track).StopAirflowCommand(
+      request_message
+  )
+
+
+def PollAirflowCommand(
+    execution_id,
+    pod_name,
+    pod_namespace,
+    next_line_number,
+    environment_ref,
+    release_track=base.ReleaseTrack.ALPHA,
+):
+  """Polls the execution of an Airflow CLI command through Composer API.
+
+  Args:
+    execution_id: string, the unique ID of execution.
+    pod_name: string, the pod the execution is running on.
+    pod_namespace: string, the pod's namespace.
+    next_line_number: int, line of the output which should be fetched.
+    environment_ref: Resource, the Composer environment to poll the command.
+    release_track: base.ReleaseTrack, the release track of command. Determines
+      which Composer client library is used.
+
+  Returns:
+    PollAirflowCommandResponse: the next output lines from the execution and
+    information whether the execution is still running.
+  """
+  message_module = api_util.GetMessagesModule(release_track=release_track)
+  request_message = message_module.ComposerProjectsLocationsEnvironmentsPollAirflowCommandRequest(
+      environment=environment_ref.RelativeName(),
+      pollAirflowCommandRequest=message_module.PollAirflowCommandRequest(
+          executionId=execution_id,
+          pod=pod_name,
+          podNamespace=pod_namespace,
+          nextLineNumber=next_line_number,
+      ),
+  )
+  return GetService(release_track=release_track).PollAirflowCommand(
+      request_message
+  )
+
+
 def DatabaseFailover(environment_ref, release_track=base.ReleaseTrack.ALPHA):
   """Triggers the database failover (only for highly resilient environments).
 

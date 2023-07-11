@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Generator
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
@@ -35,7 +37,9 @@ class NodePoolsClient(client.ClientBase):
         self._client.projects_locations_vmwareClusters_vmwareNodePools
     )
 
-  def List(self, args: parser_extensions.Namespace):
+  def List(
+      self, args: parser_extensions.Namespace
+  ) -> Generator[messages.VmwareNodePool, None, None]:
     """Lists Node Pools in the Anthos clusters on VMware API."""
     list_req = messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsListRequest(
         parent=self._user_cluster_name(args)
@@ -49,7 +53,7 @@ class NodePoolsClient(client.ClientBase):
         batch_size_attribute='pageSize',
     )
 
-  def Delete(self, args: parser_extensions.Namespace):
+  def Delete(self, args: parser_extensions.Namespace) -> messages.Operation:
     """Deletes a gkeonprem node pool API resource."""
     kwargs = {
         'allowMissing': flags.Get(args, 'allow_missing'),
@@ -63,7 +67,7 @@ class NodePoolsClient(client.ClientBase):
     )
     return self._service.Delete(req)
 
-  def Create(self, args: parser_extensions.Namespace):
+  def Create(self, args: parser_extensions.Namespace) -> messages.Operation:
     """Creates a gkeonprem node pool API resource."""
     node_pool_ref = self._node_pool_ref(args)
     kwargs = {
@@ -77,7 +81,7 @@ class NodePoolsClient(client.ClientBase):
     )
     return self._service.Create(req)
 
-  def Update(self, args: parser_extensions.Namespace):
+  def Update(self, args: parser_extensions.Namespace) -> messages.Operation:
     """Updates a gkeonprem node pool API resource."""
     kwargs = {
         'allowMissing': flags.Get(args, 'allow_missing'),
@@ -93,7 +97,7 @@ class NodePoolsClient(client.ClientBase):
     )
     return self._service.Patch(req)
 
-  def Enroll(self, args: parser_extensions.Namespace):
+  def Enroll(self, args: parser_extensions.Namespace) -> messages.Operation:
     """Enrolls an Anthos on VMware node pool API resource."""
     enroll_vmware_node_pool_request = messages.EnrollVmwareNodePoolRequest(
         vmwareNodePoolId=self._node_pool_id(args),
@@ -104,7 +108,7 @@ class NodePoolsClient(client.ClientBase):
     )
     return self._service.Enroll(req)
 
-  def Unenroll(self, args: parser_extensions.Namespace):
+  def Unenroll(self, args: parser_extensions.Namespace) -> messages.Operation:
     """Unenrolls an Anthos on VMware node pool API resource."""
     kwargs = {
         'allowMissing': flags.Get(args, 'allow_missing'),
@@ -117,7 +121,9 @@ class NodePoolsClient(client.ClientBase):
     )
     return self._service.Unenroll(req)
 
-  def _vmware_node_pool(self, args: parser_extensions.Namespace):
+  def _vmware_node_pool(
+      self, args: parser_extensions.Namespace
+  ) -> messages.VmwareNodePool:
     """Constructs proto message VmwareNodePool."""
     kwargs = {
         'name': self._node_pool_name(args),
@@ -145,7 +151,9 @@ class NodePoolsClient(client.ClientBase):
       taint_messages.append(messages.NodeTaint(**taint_object))
     return taint_messages
 
-  def _labels_value(self, args: parser_extensions.Namespace):
+  def _labels_value(
+      self, args: parser_extensions.Namespace
+  ) -> messages.VmwareNodeConfig.LabelsValue:
     """Constructs proto message LabelsValue."""
     node_labels = flags.Get(args, 'node_labels', {})
     additional_property_messages = []

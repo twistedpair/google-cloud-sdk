@@ -317,11 +317,11 @@ ADDONS_OPTIONS = DEFAULT_ADDONS + [
     GCEPDCSIDRIVER,
     GCPFILESTORECSIDRIVER,
     BACKUPRESTORE,
+    GCSFUSECSIDRIVER,
 ]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
     ISTIO,
     APPLICATIONMANAGER,
-    GCSFUSECSIDRIVER,
 ]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [CLOUDBUILD]
 
@@ -684,7 +684,7 @@ class CreateClusterOptions(object):
       enable_security_posture=None,
       enable_nested_virtualization=None,
       network_performance_config=None,
-      enble_insecure_kubelet_readonly_port=None,
+      enable_insecure_kubelet_readonly_port=None,
       enable_k8s_beta_apis=None,
       security_posture=None,
       workload_vulnerability_scanning=None,
@@ -879,8 +879,8 @@ class CreateClusterOptions(object):
     self.enable_multi_networking = enable_multi_networking
     self.enable_security_posture = enable_security_posture
     self.network_performance_config = network_performance_config
-    self.enble_insecure_kubelet_readonly_port = (
-        enble_insecure_kubelet_readonly_port
+    self.enable_insecure_kubelet_readonly_port = (
+        enable_insecure_kubelet_readonly_port
     )
     self.enable_k8s_beta_apis = enable_k8s_beta_apis
     self.security_posture = security_posture
@@ -1017,7 +1017,7 @@ class UpdateClusterOptions(object):
       clear_fleet_project=None,
       enable_security_posture=None,
       network_performance_config=None,
-      enble_insecure_kubelet_readonly_port=None,
+      enable_insecure_kubelet_readonly_port=None,
       enable_k8s_beta_apis=None,
       security_posture=None,
       workload_vulnerability_scanning=None,
@@ -1146,8 +1146,8 @@ class UpdateClusterOptions(object):
     self.clear_fleet_project = clear_fleet_project
     self.enable_security_posture = enable_security_posture
     self.network_performance_config = network_performance_config
-    self.enble_insecure_kubelet_readonly_port = (
-        enble_insecure_kubelet_readonly_port
+    self.enable_insecure_kubelet_readonly_port = (
+        enable_insecure_kubelet_readonly_port
     )
     self.enable_k8s_beta_apis = enable_k8s_beta_apis
     self.security_posture = security_posture
@@ -1261,7 +1261,8 @@ class CreateNodePoolOptions(object):
                additional_pod_network=None,
                enable_nested_virtualization=None,
                sole_tenant_node_affinity_file=None,
-               host_maintenance_interval=None):
+               host_maintenance_interval=None,
+               enable_insecure_kubelet_readonly_port=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1340,6 +1341,8 @@ class CreateNodePoolOptions(object):
     self.additional_pod_network = additional_pod_network
     self.sole_tenant_node_affinity_file = sole_tenant_node_affinity_file
     self.host_maintenance_interval = host_maintenance_interval
+    self.enable_insecure_kubelet_readonly_port = (
+        enable_insecure_kubelet_readonly_port)
 
 
 class UpdateNodePoolOptions(object):
@@ -1378,7 +1381,8 @@ class UpdateNodePoolOptions(object):
                enable_fast_socket=None,
                logging_variant=None,
                accelerators=None,
-               windows_os_version=None):
+               windows_os_version=None,
+               enable_insecure_kubelet_readonly_port=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1412,6 +1416,8 @@ class UpdateNodePoolOptions(object):
     self.enable_fast_socket = enable_fast_socket
     self.logging_variant = logging_variant
     self.windows_os_version = windows_os_version
+    self.enable_insecure_kubelet_readonly_port = (
+        enable_insecure_kubelet_readonly_port)
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -1720,6 +1726,7 @@ class APIAdapter(object):
           enable_application_manager=(APPLICATIONMANAGER in options.addons),
           enable_cloud_build=(CLOUDBUILD in options.addons),
           enable_backup_restore=(BACKUPRESTORE in options.addons),
+          enable_gcsfuse_csi_driver=(GCSFUSECSIDRIVER in options.addons),
       )
       # CONFIGCONNECTOR is disabled by default.
       if CONFIGCONNECTOR in options.addons:
@@ -1920,6 +1927,15 @@ class APIAdapter(object):
         if options.workload_policies == 'allow-net-admin':
           cluster.autopilot.workloadPolicyConfig.allowNetAdmin = True
 
+      if options.enable_insecure_kubelet_readonly_port is not None:
+        if cluster.autoscaling is None:
+          cluster.autoscaling = self.messages.ClusterAutoscaling()
+        if cluster.autoscaling.autoprovisioningNodePoolDefaults is None:
+          # pylint: disable=line-too-long
+          cluster.autoscaling.autoprovisioningNodePoolDefaults = self.messages.AutoprovisioningNodePoolDefaults()
+        # pylint: disable=line-too-long
+        cluster.autoscaling.autoprovisioningNodePoolDefaults.insecureKubeletReadonlyPortEnabled = options.enable_insecure_kubelet_readonly_port
+
       if options.boot_disk_kms_key:
         if cluster.autoscaling is None:
           cluster.autoscaling = self.messages.ClusterAutoscaling()
@@ -2088,6 +2104,13 @@ class APIAdapter(object):
             self.messages.SecurityPostureConfig.ModeValueValuesEnum.DISABLED
         )
 
+    if options.enable_insecure_kubelet_readonly_port is not None:
+      if options.autopilot is None:
+        if node_config.kubeletConfig is None:
+          node_config.kubeletConfig = self.messages.NodeKubeletConfig()
+        node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled = (
+            options.enable_insecure_kubelet_readonly_port)
+
     if options.security_posture is not None:
       if cluster.securityPostureConfig is None:
         cluster.securityPostureConfig = self.messages.SecurityPostureConfig()
@@ -2229,6 +2252,9 @@ class APIAdapter(object):
       util.LoadSystemConfigFromYAML(node_config,
                                     options.system_config_from_file,
                                     self.messages)
+      if options.enable_insecure_kubelet_readonly_port is not None:
+        node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled = (
+            options.enable_insecure_kubelet_readonly_port)
 
     self.ParseAdvancedMachineFeatures(options, node_config)
 
@@ -2612,7 +2638,9 @@ class APIAdapter(object):
     provider_enum = self.messages.DNSConfig.ClusterDnsValueValuesEnum
     if options.cluster_dns.lower() == 'clouddns':
       dns_config.clusterDns = provider_enum.CLOUD_DNS
-    else:
+    elif options.cluster_dns.lower() == 'kubedns':
+      dns_config.clusterDns = provider_enum.KUBE_DNS
+    else:  # 'default' or not specified
       dns_config.clusterDns = provider_enum.PLATFORM_DEFAULT
 
     if options.cluster_dns_scope is not None:
@@ -2802,7 +2830,9 @@ class APIAdapter(object):
                                           diskType=disk_type,
                                           imageType=autoprovisioning_image_type,
                                           shieldedInstanceConfig=
-                                          shielded_instance_config)
+                                          shielded_instance_config,
+                                          insecureKubeletReadonlyPortEnabled=
+                                          options.enable_insecure_kubelet_readonly_port)
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \
             sorted(autoprovisioning_locations)
@@ -3066,6 +3096,9 @@ class APIAdapter(object):
       if options.disable_addons.get(GCPFILESTORECSIDRIVER) is not None:
         addons.gcpFilestoreCsiDriverConfig = self.messages.GcpFilestoreCsiDriverConfig(
             enabled=not options.disable_addons.get(GCPFILESTORECSIDRIVER))
+      if options.disable_addons.get(GCSFUSECSIDRIVER) is not None:
+        addons.gcsFuseCsiDriverConfig = self.messages.GcsFuseCsiDriverConfig(
+            enabled=not options.disable_addons.get(GCSFUSECSIDRIVER))
       if options.disable_addons.get(BACKUPRESTORE) is not None:
         addons.gkeBackupAgentConfig = (
             self.messages.GkeBackupAgentConfig(
@@ -3422,12 +3455,13 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredNetworkPerformanceConfig=perf)
 
-    if options.enble_insecure_kubelet_readonly_port is not None:
-      node_kubelet_config = self.messages.NodeKubeletConfig()
-      # pylint: disable=line-too-long
-      node_kubelet_config.insecureKubeletReadonlyPortEnabled = options.enble_insecure_kubelet_readonly_port
-      # pylint: disable=line-too-long
-      update = self.messages.ClusterUpdate(desiredAutopilotInsecureKubeletReadonlyPortEnabled=options.enble_insecure_kubelet_readonly_port)
+    if options.enable_insecure_kubelet_readonly_port is not None:
+      if options.enable_autoprovisioning is None:
+        node_kubelet_config = self.messages.NodeKubeletConfig()
+        node_kubelet_config.insecureKubeletReadonlyPortEnabled = (
+            options.enable_insecure_kubelet_readonly_port)
+        update = self.messages.ClusterUpdate(
+            desiredNodeKubeletConfig=node_kubelet_config)
 
     if options.workload_policies is not None:
       workload_policies = self.messages.WorkloadPolicyConfig()
@@ -3531,7 +3565,8 @@ class APIAdapter(object):
                     enable_filestore_csi_driver=None,
                     enable_application_manager=None,
                     enable_cloud_build=None,
-                    enable_backup_restore=None):
+                    enable_backup_restore=None,
+                    enable_gcsfuse_csi_driver=None):
     """Generates an AddonsConfig object given specific parameters.
 
     Args:
@@ -3545,6 +3580,7 @@ class APIAdapter(object):
       enable_application_manager: whether to enable ApplicationManager.
       enable_cloud_build: whether to enable CloudBuild.
       enable_backup_restore: whether to enable BackupRestore.
+      enable_gcsfuse_csi_driver: wherher to enable GcsFuseCsiDriver.
 
     Returns:
       An AddonsConfig object that contains the options defining what addons to
@@ -3579,6 +3615,9 @@ class APIAdapter(object):
       addons.cloudBuildConfig = self.messages.CloudBuildConfig(enabled=True)
     if enable_backup_restore:
       addons.gkeBackupAgentConfig = self.messages.GkeBackupAgentConfig(
+          enabled=True)
+    if enable_gcsfuse_csi_driver:
+      addons.gcsFuseCsiDriverConfig = self.messages.GcsFuseCsiDriverConfig(
           enabled=True)
 
     return addons
@@ -3977,6 +4016,9 @@ class APIAdapter(object):
       util.LoadSystemConfigFromYAML(
           node_config, options.system_config_from_file, self.messages
       )
+      if options.enable_insecure_kubelet_readonly_port is not None:
+        node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled = (
+            options.enable_insecure_kubelet_readonly_port)
 
     pool.networkConfig = self._GetNetworkConfig(options)
 
@@ -4199,6 +4241,9 @@ class APIAdapter(object):
       util.LoadSystemConfigFromYAML(node_config,
                                     options.system_config_from_file,
                                     self.messages)
+      if options.enable_insecure_kubelet_readonly_port is not None:
+        node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled = (
+            options.enable_insecure_kubelet_readonly_port)
       update_request.linuxNodeConfig = node_config.linuxNodeConfig
       update_request.kubeletConfig = node_config.kubeletConfig
     elif options.labels is not None:
@@ -4910,11 +4955,6 @@ class V1Beta1Adapter(V1Adapter):
               istio_auth = mtls
         cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=False, auth=istio_auth)
-      # GcsFuseCSIDriver is disabled by default.
-      if GCSFUSECSIDRIVER in options.addons:
-        cluster.addonsConfig.gcsFuseCsiDriverConfig = (
-            self.messages.GcsFuseCsiDriverConfig(enabled=True)
-        )
     if (options.enable_autoprovisioning is not None or
         options.autoscaling_profile is not None):
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
@@ -5194,10 +5234,6 @@ class V1Beta1Adapter(V1Adapter):
         update.desiredAddonsConfig.cloudBuildConfig = (
             self.messages.CloudBuildConfig(
                 enabled=(not options.disable_addons.get(CLOUDBUILD))))
-      if options.disable_addons.get(GCSFUSECSIDRIVER) is not None:
-        update.desiredAddonsConfig.gcsFuseCsiDriverConfig = (
-            self.messages.GcsFuseCsiDriverConfig(
-                enabled=(not options.disable_addons.get(GCSFUSECSIDRIVER))))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -5312,7 +5348,9 @@ class V1Beta1Adapter(V1Adapter):
                                           diskType=disk_type,
                                           imageType=autoprovisioning_image_type,
                                           shieldedInstanceConfig=
-                                          shielded_instance_config)
+                                          shielded_instance_config,
+                                          insecureKubeletReadonlyPortEnabled=
+                                          options.enable_insecure_kubelet_readonly_port)
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \
           sorted(autoprovisioning_locations)
@@ -5455,11 +5493,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
               istio_auth = mtls
         cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=False, auth=istio_auth)
-      # GcsFuseCSIDriver is disabled by default.
-      if GCSFUSECSIDRIVER in options.addons:
-        cluster.addonsConfig.gcsFuseCsiDriverConfig = (
-            self.messages.GcsFuseCsiDriverConfig(enabled=True)
-        )
     if options.enable_workload_certificates:
       if not options.workload_pool:
         raise util.Error(
@@ -5743,10 +5776,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         update.desiredAddonsConfig.cloudBuildConfig = (
             self.messages.CloudBuildConfig(
                 enabled=(not options.disable_addons.get(CLOUDBUILD))))
-      if options.disable_addons.get(GCSFUSECSIDRIVER) is not None:
-        update.desiredAddonsConfig.gcsFuseCsiDriverConfig = (
-            self.messages.GcsFuseCsiDriverConfig(
-                enabled=(not options.disable_addons.get(GCSFUSECSIDRIVER))))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -5874,7 +5903,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
                                           diskType=disk_type,
                                           imageType=autoprovisioning_image_type,
                                           shieldedInstanceConfig=
-                                          shielded_instance_config)
+                                          shielded_instance_config,
+                                          insecureKubeletReadonlyPortEnabled=
+                                          options.enable_insecure_kubelet_readonly_port)
 
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \

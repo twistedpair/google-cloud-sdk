@@ -19,15 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import argparse
-import os
-import random
 import re
-import string
 
 from apitools.base.py import base_api
 from apitools.base.py import exceptions as apitools_exceptions
-from apitools.base.py import http_wrapper
-from apitools.base.py import transfer
 from googlecloudsdk.api_lib.functions import api_enablement
 from googlecloudsdk.api_lib.functions import cmek_util
 from googlecloudsdk.api_lib.functions import secrets as secrets_util
@@ -35,7 +30,6 @@ from googlecloudsdk.api_lib.functions.v1 import util as api_util_v1
 from googlecloudsdk.api_lib.functions.v2 import client as client_v2
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
-from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.calliope.arg_parsers import ArgumentTypeError
@@ -44,19 +38,17 @@ from googlecloudsdk.command_lib.functions import flags
 from googlecloudsdk.command_lib.functions import labels_util
 from googlecloudsdk.command_lib.functions import run_util
 from googlecloudsdk.command_lib.functions import secrets_config
+from googlecloudsdk.command_lib.functions import source_util
 from googlecloudsdk.command_lib.functions.v2 import deploy_util
 from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.command_lib.run import serverless_operations
-from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
-from googlecloudsdk.core import transports
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
-from googlecloudsdk.core.util import archive
 from googlecloudsdk.core.util import files as file_utils
 
 _SIGNED_URL_UPLOAD_ERROR_MESSSAGE = (
@@ -113,10 +105,6 @@ _V1_ONLY_FLAG_ERROR = (
     '`%s` is only supported in Cloud Functions (First generation).'
 )
 
-_DEFAULT_IGNORE_FILE = gcloudignore.DEFAULT_IGNORE_FILE + '\nnode_modules\n'
-
-_ZIP_MIME_TYPE = 'application/zip'
-
 _DEPLOYMENT_TOOL_LABEL = 'deployment-tool'
 _DEPLOYMENT_TOOL_VALUE = 'cli-gcloud'
 
@@ -168,13 +156,6 @@ _CPU_VALUE_PATTERN = r"""
     (?P<suffix>[-/ac-zAC-Z]+)?           # Optional scale.
     $                                    # End of input marker.
 """
-
-
-def _GcloudIgnoreCreationPredicate(directory):
-  # type: (str) -> bool
-  return gcloudignore.AnyFileOrDirExists(
-      directory, gcloudignore.GIT_FILES + ['node_modules']
-  )
 
 
 def _GetSourceGCS(messages, source):
@@ -237,56 +218,6 @@ def _GetSourceCSR(messages, source):
   return messages.Source(repoSource=repo_source)
 
 
-def _UploadToStageBucket(region, function_name, zip_file_path, stage_bucket):
-  # type: (str, str, str, str) -> storage_util.ObjectReference
-  """Uploads a ZIP file to a user-provided stage bucket.
-
-  Args:
-    region: str, the region to deploy the function to
-    function_name: str, the name of the function
-    zip_file_path: str, the path to the ZIP file
-    stage_bucket: str, the name of the stage bucket
-
-  Returns:
-    dest_object: storage_util.ObjectReference, a reference to the uploaded
-                 Cloud Storage object
-  """
-  dest_object = storage_util.ObjectReference.FromBucketRef(
-      storage_util.BucketReference.FromArgument(stage_bucket),
-      '{}-{}-{}.zip'.format(
-          region,
-          function_name,
-          ''.join(random.choice(string.ascii_lowercase) for _ in range(12)),
-      ),
-  )
-  storage_api.StorageClient().CopyFileToGCS(zip_file_path, dest_object)
-  return dest_object
-
-
-def _UploadToGeneratedUrl(zip_file_path, url):
-  # type: (str, str) -> None
-  """Uploads a ZIP file to a signed Cloud Storage URL.
-
-  Args:
-    zip_file_path: str, the path to the ZIP file
-    url: str, the signed Cloud Storage URL
-  """
-  upload = transfer.Upload.FromFile(zip_file_path, mime_type=_ZIP_MIME_TYPE)
-  try:
-    request = http_wrapper.Request(
-        url, http_method='PUT', headers={'content-type': upload.mime_type}
-    )
-    request.body = upload.stream.read()
-    upload.stream.close()
-    response = http_wrapper.MakeRequest(
-        transports.GetApitoolsTransport(), request
-    )
-  finally:
-    upload.stream.close()
-  if response.status_code // 100 != 2:
-    raise exceptions.FunctionsError(_SIGNED_URL_UPLOAD_ERROR_MESSSAGE)
-
-
 def _GetSourceLocal(
     args,
     client,
@@ -308,20 +239,14 @@ def _GetSourceLocal(
     cloudfunctions_v2_messages.Source
   """
   messages = client.MESSAGES_MODULE
-  region = function_ref.locationsId
   with file_utils.TemporaryDirectory() as tmp_dir:
-    zip_file_path = os.path.join(tmp_dir, 'fun.zip')
-    chooser = gcloudignore.GetFileChooserForDir(
-        source,
-        default_ignore_file=_DEFAULT_IGNORE_FILE,
-        gcloud_ignore_creation_predicate=_GcloudIgnoreCreationPredicate,
-        ignore_file=args.ignore_file,
+    zip_file_path = source_util.CreateSourcesZipFile(
+        tmp_dir, source, args.ignore_file
     )
-    archive.MakeZipFromDir(zip_file_path, source, predicate=chooser.IsIncluded)
 
     if args.stage_bucket:
-      dest_object = _UploadToStageBucket(
-          region, function_ref.Name(), zip_file_path, args.stage_bucket
+      dest_object = source_util.UploadToStageBucket(
+          zip_file_path, function_ref, args.stage_bucket
       )
       return messages.Source(
           storageSource=messages.StorageSource(
@@ -343,7 +268,7 @@ def _GetSourceLocal(
         cmek_util.ProcessException(e, kms_key)
         raise e
 
-      _UploadToGeneratedUrl(zip_file_path, dest.uploadUrl)
+      source_util.UploadToGeneratedUrl(zip_file_path, dest.uploadUrl)
 
       return messages.Source(storageSource=dest.storageSource)
 

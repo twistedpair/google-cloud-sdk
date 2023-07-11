@@ -104,7 +104,6 @@ def ConstructResourcePools(
   """
 
   resource_pools = []
-  print(persistent_resource_config.resourcePools)
   if isinstance(persistent_resource_config.resourcePools, list):
     resource_pools = persistent_resource_config.resourcePools
   if resource_pool_specs:

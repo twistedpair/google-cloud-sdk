@@ -28,7 +28,7 @@ enable_delete_protection:
   api_field: googleFirestoreAdminV1Database.deleteProtectionState
   arg_name: delete-protection
   action: store_true
-  default: false
+  default: null
   required: false
   help_text: |
     If set to true, the firestore database will be updated to have database delete protection

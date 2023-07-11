@@ -1061,37 +1061,37 @@ class ConfigManagementConfigSync(_messages.Message):
       false which disallows vertical scaling. This field is deprecated.
     enabled: Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
-      will be applied if exist. If set to false and Managed Config Sync is
-      disabled, all other ConfigSync fields will be ignored, ConfigSync
-      resources will be deleted. Setting this field to false while enabling
-      Managed Config Sync is invalid. If omitted, ConfigSync resources will be
-      managed if: * the git or oci field is present; or * Managed Config Sync
-      is enabled (i.e., managed.enabled is true).
+      will be applied if exist. If set to false, all other ConfigSync fields
+      will be ignored, ConfigSync resources will be deleted. If omitted,
+      ConfigSync resources will be managed depends on the presence of the git
+      or oci field.
     git: Git repo configuration for the cluster.
-    managed: Configuration for Managed Config Sync.
-    metricsGcpServiceAccountEmail: The Email of the GCP Service Account (GSA)
-      used for exporting Config Sync metrics to Cloud Monitoring and Cloud
-      Monarch when Workload Identity is enabled. The GSA should have the
-      Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role. The
-      Kubernetes ServiceAccount `default` in the namespace `config-management-
-      monitoring` should be binded to the GSA. This field is required when
-      Managed Config Sync is enabled.
+    metricsGcpServiceAccountEmail: The Email of the Google Cloud Service
+      Account (GSA) used for exporting Config Sync metrics to Cloud Monitoring
+      and Cloud Monarch when Workload Identity is enabled. The GSA should have
+      the Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role.
+      The Kubernetes ServiceAccount `default` in the namespace `config-
+      management-monitoring` should be binded to the GSA. This field is
+      required when automatic Feature management is enabled.
     oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. If set to `false`, disables the Config Sync admission
       webhook and does not prevent drifts.
     sourceFormat: Specifies whether the Config Sync Repo is in "hierarchical"
       or "unstructured" mode.
+    stopSyncing: Set to true to stop syncing configs for a single cluster when
+      automatic Feature management is enabled. Default to false. The field
+      will be ignored when automatic Feature management is disabled.
   """
 
   allowVerticalScale = _messages.BooleanField(1)
   enabled = _messages.BooleanField(2)
   git = _messages.MessageField('ConfigManagementGitConfig', 3)
-  managed = _messages.MessageField('ConfigManagementManaged', 4)
-  metricsGcpServiceAccountEmail = _messages.StringField(5)
-  oci = _messages.MessageField('ConfigManagementOciConfig', 6)
-  preventDrift = _messages.BooleanField(7)
-  sourceFormat = _messages.StringField(8)
+  metricsGcpServiceAccountEmail = _messages.StringField(4)
+  oci = _messages.MessageField('ConfigManagementOciConfig', 5)
+  preventDrift = _messages.BooleanField(6)
+  sourceFormat = _messages.StringField(7)
+  stopSyncing = _messages.BooleanField(8)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -1358,8 +1358,8 @@ class ConfigManagementGitConfig(_messages.Message):
   r"""Git repo configuration for a single cluster.
 
   Fields:
-    gcpServiceAccountEmail: The GCP Service Account Email used for auth when
-      secret_type is gcpServiceAccount.
+    gcpServiceAccountEmail: The Google Cloud Service Account Email used for
+      auth when secret_type is gcpServiceAccount.
     httpsProxy: URL for the HTTPS proxy to be used when communicating with the
       Git repo.
     policyDir: The path within the Git repository that represents the top
@@ -1495,25 +1495,12 @@ class ConfigManagementInstallError(_messages.Message):
   errorMessage = _messages.StringField(1)
 
 
-class ConfigManagementManaged(_messages.Message):
-  r"""Configuration for Managed Config Sync.
-
-  Fields:
-    enabled: Set to true to enable Managed Config Sync. Defaults to false
-      which disables Managed Config Sync. Setting this field to true when
-      configSync.enabled is false is invalid.
-    stopSyncing: Set to true to stop syncing configs for a single cluster.
-      Default to false. If set to true, Managed Config Sync will not upgrade
-      Config Sync.
-  """
-
-  enabled = _messages.BooleanField(1)
-  stopSyncing = _messages.BooleanField(2)
-
-
 class ConfigManagementMembershipSpec(_messages.Message):
   r"""**Anthos Config Management**: Configuration for a single cluster.
   Intended to parallel the ConfigManagement CR.
+
+  Enums:
+    ManagementValueValuesEnum: Enables automatic Feature management.
 
   Fields:
     binauthz: Binauthz conifguration for the cluster.
@@ -1526,16 +1513,31 @@ class ConfigManagementMembershipSpec(_messages.Message):
       annotation or ClusterSelector.
     configSync: Config Sync configuration for the cluster.
     hierarchyController: Hierarchy Controller configuration for the cluster.
+    management: Enables automatic Feature management.
     policyController: Policy Controller configuration for the cluster.
     version: Version of ACM installed.
   """
+
+  class ManagementValueValuesEnum(_messages.Enum):
+    r"""Enables automatic Feature management.
+
+    Values:
+      MANAGEMENT_UNSPECIFIED: Unspecified
+      MANAGEMENT_AUTOMATIC: Google will manage the Feature for the cluster.
+      MANAGEMENT_MANUAL: User will manually manage the Feature for the
+        cluster.
+    """
+    MANAGEMENT_UNSPECIFIED = 0
+    MANAGEMENT_AUTOMATIC = 1
+    MANAGEMENT_MANUAL = 2
 
   binauthz = _messages.MessageField('ConfigManagementBinauthzConfig', 1)
   cluster = _messages.StringField(2)
   configSync = _messages.MessageField('ConfigManagementConfigSync', 3)
   hierarchyController = _messages.MessageField('ConfigManagementHierarchyControllerConfig', 4)
-  policyController = _messages.MessageField('ConfigManagementPolicyController', 5)
-  version = _messages.StringField(6)
+  management = _messages.EnumField('ManagementValueValuesEnum', 5)
+  policyController = _messages.MessageField('ConfigManagementPolicyController', 6)
+  version = _messages.StringField(7)
 
 
 class ConfigManagementMembershipState(_messages.Message):
@@ -1568,8 +1570,8 @@ class ConfigManagementOciConfig(_messages.Message):
   r"""OCI repo configuration for a single cluster
 
   Fields:
-    gcpServiceAccountEmail: The GCP Service Account Email used for auth when
-      secret_type is gcpServiceAccount.
+    gcpServiceAccountEmail: The Google Cloud Service Account Email used for
+      auth when secret_type is gcpServiceAccount.
     policyDir: The absolute path of the directory that contains the local
       resources. Default: the root directory of the image.
     secretType: Type of secret configured for access to the Git repo.
@@ -1638,6 +1640,7 @@ class ConfigManagementPolicyController(_messages.Message):
       evaluated.
     templateLibraryInstalled: Installs the default template library along with
       Policy Controller.
+    updateTime: Output only. Last time this membership spec was updated.
   """
 
   auditIntervalSeconds = _messages.IntegerField(1)
@@ -1648,6 +1651,7 @@ class ConfigManagementPolicyController(_messages.Message):
   mutationEnabled = _messages.BooleanField(6)
   referentialRulesEnabled = _messages.BooleanField(7)
   templateLibraryInstalled = _messages.BooleanField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ConfigManagementPolicyControllerMigration(_messages.Message):
@@ -1657,6 +1661,7 @@ class ConfigManagementPolicyControllerMigration(_messages.Message):
     StageValueValuesEnum: Stage of the migration.
 
   Fields:
+    copyTime: Last time this membership spec was copied to PoCo feature.
     stage: Stage of the migration.
   """
 
@@ -1674,7 +1679,8 @@ class ConfigManagementPolicyControllerMigration(_messages.Message):
     ACM_MANAGED = 1
     POCO_MANAGED = 2
 
-  stage = _messages.EnumField('StageValueValuesEnum', 1)
+  copyTime = _messages.StringField(1)
+  stage = _messages.EnumField('StageValueValuesEnum', 2)
 
 
 class ConfigManagementPolicyControllerMonitoring(_messages.Message):
@@ -1911,6 +1917,18 @@ class DataAccessOptions(_messages.Message):
     LOG_FAIL_CLOSED = 1
 
   logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+
+
+class DefaultClusterConfig(_messages.Message):
+  r"""DefaultClusterConfig describes the default cluster configurations to be
+  applied to all clusters born-in-fleet.
+
+  Fields:
+    securityPostureConfig: Enable/Disable Security Posture API features for
+      the cluster.
+  """
+
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 1)
 
 
 class DeleteReferenceRequest(_messages.Message):
@@ -2373,13 +2391,19 @@ class Fleet(_messages.Message):
     SamenessModeValueValuesEnum: Optional. The sameness mode this fleet is
       using.
 
+  Messages:
+    LabelsValue: Optional. Labels for this Fleet.
+
   Fields:
     createTime: Output only. When the Fleet was created.
+    defaultClusterConfig: The default cluster configurations to apply across
+      the fleet.
     deleteTime: Output only. When the Fleet was deleted.
     displayName: Optional. A user-assigned display name of the Fleet. When
       present, it must be between 4 to 30 characters. Allowed characters are:
       lowercase and uppercase letters, numbers, hyphen, single-quote, double-
       quote, space, and exclamation point. Example: `Production Fleet`
+    labels: Optional. Labels for this Fleet.
     name: Output only. The full, unique resource name of this fleet in the
       format of `projects/{project}/locations/{location}/fleets/{fleet}`. Each
       Google Cloud project can have at most one fleet resource, named
@@ -2407,14 +2431,40 @@ class Fleet(_messages.Message):
     ALL_CLUSTER_NAMESPACES = 1
     MAPPED_FLEET_NAMESPACES = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels for this Fleet.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  samenessMode = _messages.EnumField('SamenessModeValueValuesEnum', 5)
-  state = _messages.MessageField('FleetLifecycleState', 6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  defaultClusterConfig = _messages.MessageField('DefaultClusterConfig', 2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  samenessMode = _messages.EnumField('SamenessModeValueValuesEnum', 7)
+  state = _messages.MessageField('FleetLifecycleState', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class FleetLifecycleState(_messages.Message):
@@ -4849,11 +4899,15 @@ class MembershipBinding(_messages.Message):
   r"""MembershipBinding is a subresource of a Membership, representing what
   Fleet Scopes (or other, future Fleet resources) a Membership is bound to.
 
+  Messages:
+    LabelsValue: Optional. Labels for this MembershipBinding.
+
   Fields:
     createTime: Output only. When the membership binding was created.
     deleteTime: Output only. When the membership binding was deleted.
     fleet: Whether the membershipbinding is Fleet-wide; true means that this
       Membership should be bound to all Namespaces in this entire Fleet.
+    labels: Optional. Labels for this MembershipBinding.
     name: The resource name for the membershipbinding itself `projects/{projec
       t}/locations/{location}/memberships/{membership}/bindings/{membershipbin
       ding}`
@@ -4867,14 +4921,39 @@ class MembershipBinding(_messages.Message):
     updateTime: Output only. When the membership binding was last updated.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels for this MembershipBinding.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   fleet = _messages.BooleanField(3)
-  name = _messages.StringField(4)
-  scope = _messages.StringField(5)
-  state = _messages.MessageField('MembershipBindingLifecycleState', 6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  scope = _messages.StringField(6)
+  state = _messages.MessageField('MembershipBindingLifecycleState', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class MembershipBindingLifecycleState(_messages.Message):
@@ -4967,13 +5046,15 @@ class MembershipFeatureSpec(_messages.Message):
     cloudbuild: Cloud Build-specific spec
     configDeliveryArgoCd: ConfigDeliveryArgoCD specific spec.
     configmanagement: Config Management-specific spec.
-    fleetInherited: True if value of `feature_spec` was inherited from a
-      fleet-level default.
     fleetobservability: Fleet observability membership spec
     helloworld: Hello World-specific spec.
     identityservice: Identity Service-specific spec.
     mesh: Anthos Service Mesh-specific spec
     namespaceactuation: FNS Actuation membership spec
+    origin: Whether this per-Membership spec was inherited from a fleet-level
+      default. This field can be updated by users by either overriding a
+      Membership config (updated to USER implicitly) or setting to FLEET
+      explicitly.
     policycontroller: Policy Controller spec.
     rbacrolebindingactuation: RBAC Role Binding Actuation membership spec
     workloadcertificate: Workload Certificate spec.
@@ -4983,12 +5064,12 @@ class MembershipFeatureSpec(_messages.Message):
   cloudbuild = _messages.MessageField('CloudBuildMembershipSpec', 2)
   configDeliveryArgoCd = _messages.MessageField('ConfigDeliveryArgoCDMembershipSpec', 3)
   configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 4)
-  fleetInherited = _messages.BooleanField(5)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 6)
-  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 7)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 8)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 9)
-  namespaceactuation = _messages.MessageField('NamespaceActuationMembershipSpec', 10)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 5)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 6)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 7)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 8)
+  namespaceactuation = _messages.MessageField('NamespaceActuationMembershipSpec', 9)
+  origin = _messages.MessageField('Origin', 10)
   policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 11)
   rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 12)
   workloadcertificate = _messages.MessageField('MembershipSpec', 13)
@@ -5190,11 +5271,25 @@ class MultiClusterIngressFeatureSpec(_messages.Message):
 class Namespace(_messages.Message):
   r"""Namespace represents a namespace across the Fleet
 
+  Messages:
+    LabelsValue: Optional. Labels for this Namespace.
+    NamespaceLabelsValue: Optional. Namespace-level cluster namespace labels.
+      These labels are applied to the related namespace of the member clusters
+      bound to the parent Scope. Scope-level labels (`namespace_labels` in the
+      Fleet Scope resource) take precedence over Namespace-level labels if
+      they share a key. Keys and values must be Kubernetes-conformant.
+
   Fields:
     createTime: Output only. When the namespace was created.
     deleteTime: Output only. When the namespace was deleted.
+    labels: Optional. Labels for this Namespace.
     name: The resource name for the namespace
       `projects/{project}/locations/{location}/namespaces/{namespace}`
+    namespaceLabels: Optional. Namespace-level cluster namespace labels. These
+      labels are applied to the related namespace of the member clusters bound
+      to the parent Scope. Scope-level labels (`namespace_labels` in the Fleet
+      Scope resource) take precedence over Namespace-level labels if they
+      share a key. Keys and values must be Kubernetes-conformant.
     scope: Required. Scope associated with the namespace
     state: Output only. State of the namespace resource.
     tenancyProject: Tenancy Project associated with the namespace
@@ -5204,14 +5299,69 @@ class Namespace(_messages.Message):
     updateTime: Output only. When the namespace was last updated.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels for this Namespace.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NamespaceLabelsValue(_messages.Message):
+    r"""Optional. Namespace-level cluster namespace labels. These labels are
+    applied to the related namespace of the member clusters bound to the
+    parent Scope. Scope-level labels (`namespace_labels` in the Fleet Scope
+    resource) take precedence over Namespace-level labels if they share a key.
+    Keys and values must be Kubernetes-conformant.
+
+    Messages:
+      AdditionalProperty: An additional property for a NamespaceLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type NamespaceLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NamespaceLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  scope = _messages.StringField(4)
-  state = _messages.MessageField('NamespaceLifecycleState', 5)
-  tenancyProject = _messages.IntegerField(6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  namespaceLabels = _messages.MessageField('NamespaceLabelsValue', 5)
+  scope = _messages.StringField(6)
+  state = _messages.MessageField('NamespaceLifecycleState', 7)
+  tenancyProject = _messages.IntegerField(8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class NamespaceActuationFeatureSpec(_messages.Message):
@@ -5445,6 +5595,31 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class Origin(_messages.Message):
+  r"""Origin defines where this MembershipFeatureSpec originated from.
+
+  Enums:
+    TypeValueValuesEnum: Type specifies which type of origin is set.
+
+  Fields:
+    type: Type specifies which type of origin is set.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type specifies which type of origin is set.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unknown or not set.
+      FLEET: Per-Membership spec was inherited from the fleet-level default.
+      USER: Per-Membership spec was inherited from a user specification.
+    """
+    TYPE_UNSPECIFIED = 0
+    FLEET = 1
+    USER = 2
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -5535,29 +5710,11 @@ class PolicyControllerBundleInstallSpec(_messages.Message):
   r"""BundleInstallSpec is the specification configuration for a single
   managed bundle.
 
-  Enums:
-    ManagementValueValuesEnum: Management specifies how the bundle will be
-      managed by the controller.
-
   Fields:
-    exemptedNamespaces: the set of namespaces to be exempted from the bundle
-    management: Management specifies how the bundle will be managed by the
-      controller.
+    exemptedNamespaces: The set of namespaces to be exempted from the bundle.
   """
 
-  class ManagementValueValuesEnum(_messages.Enum):
-    r"""Management specifies how the bundle will be managed by the controller.
-
-    Values:
-      MANAGEMENT_UNSPECIFIED: No Management strategy has been specified.
-      INSTALLED: The entity should be insistently reconciled by the Hub
-        controller
-    """
-    MANAGEMENT_UNSPECIFIED = 0
-    INSTALLED = 1
-
   exemptedNamespaces = _messages.StringField(1, repeated=True)
-  management = _messages.EnumField('ManagementValueValuesEnum', 2)
 
 
 class PolicyControllerHubConfig(_messages.Message):
@@ -5597,8 +5754,6 @@ class PolicyControllerHubConfig(_messages.Message):
     referentialRulesEnabled: Enables the ability to use Constraint Templates
       that reference to objects other than the object currently being
       evaluated.
-    templateLibraryConfig: Configures the library templates to install along
-      with Policy Controller.
   """
 
   class InstallSpecValueValuesEnum(_messages.Enum):
@@ -5614,11 +5769,15 @@ class PolicyControllerHubConfig(_messages.Message):
       INSTALL_SPEC_SUSPENDED: Request to suspend Policy Controller i.e. its
         webhooks. If Policy Controller is not installed, it will be installed
         but suspended.
+      INSTALL_SPEC_DETACHED: Request to stop all reconciliation actions by
+        PoCo Hub controller. This is a breakglass mechanism to stop PoCo Hub
+        from affecting cluster resources.
     """
     INSTALL_SPEC_UNSPECIFIED = 0
     INSTALL_SPEC_NOT_INSTALLED = 1
     INSTALL_SPEC_ENABLED = 2
     INSTALL_SPEC_SUSPENDED = 3
+    INSTALL_SPEC_DETACHED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DeploymentConfigsValue(_messages.Message):
@@ -5657,7 +5816,6 @@ class PolicyControllerHubConfig(_messages.Message):
   mutationEnabled = _messages.BooleanField(8)
   policyContent = _messages.MessageField('PolicyControllerPolicyContentSpec', 9)
   referentialRulesEnabled = _messages.BooleanField(10)
-  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 11)
 
 
 class PolicyControllerMembershipSpec(_messages.Message):
@@ -5684,14 +5842,10 @@ class PolicyControllerMembershipState(_messages.Message):
   Messages:
     ComponentStatesValue: Currently these include (also serving as map keys):
       1. "admission" 2. "audit" 3. "mutation"
-    ContentStatesValue: The state of the template library and any bundles
-      included in the chosen version of the manifest
 
   Fields:
     componentStates: Currently these include (also serving as map keys): 1.
       "admission" 2. "audit" 3. "mutation"
-    contentStates: The state of the template library and any bundles included
-      in the chosen version of the manifest
     policyContentState: The overall content state observed by the Hub Feature
       controller.
     state: The overall Policy Controller lifecycle state observed by the Hub
@@ -5739,6 +5893,8 @@ class PolicyControllerMembershipState(_messages.Message):
       SUSPENDED: Policy Controller (PC) is installed but suspended. This means
         that the policies are not enforced, but violations are still recorded
         (through audit).
+      DETACHED: PoCo Hub is not taking any action to reconcile cluster
+        objects. Changes to those objects will not be overwritten by PoCo Hub.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
@@ -5749,6 +5905,7 @@ class PolicyControllerMembershipState(_messages.Message):
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
     SUSPENDED = 8
+    DETACHED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ComponentStatesValue(_messages.Message):
@@ -5776,36 +5933,9 @@ class PolicyControllerMembershipState(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ContentStatesValue(_messages.Message):
-    r"""The state of the template library and any bundles included in the
-    chosen version of the manifest
-
-    Messages:
-      AdditionalProperty: An additional property for a ContentStatesValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type ContentStatesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ContentStatesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A PolicyControllerOnClusterState attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('PolicyControllerOnClusterState', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   componentStates = _messages.MessageField('ComponentStatesValue', 1)
-  contentStates = _messages.MessageField('ContentStatesValue', 2)
-  policyContentState = _messages.MessageField('PolicyControllerPolicyContentState', 3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  policyContentState = _messages.MessageField('PolicyControllerPolicyContentState', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class PolicyControllerMonitoringConfig(_messages.Message):
@@ -5889,6 +6019,8 @@ class PolicyControllerOnClusterState(_messages.Message):
       SUSPENDED: Policy Controller (PC) is installed but suspended. This means
         that the policies are not enforced, but violations are still recorded
         (through audit).
+      DETACHED: PoCo Hub is not taking any action to reconcile cluster
+        objects. Changes to those objects will not be overwritten by PoCo Hub.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
@@ -5899,6 +6031,7 @@ class PolicyControllerOnClusterState(_messages.Message):
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
     SUSPENDED = 8
+    DETACHED = 9
 
   details = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -5960,6 +6093,10 @@ class PolicyControllerPolicyContentState(_messages.Message):
   Fields:
     bundleStates: The state of the any bundles included in the chosen version
       of the manifest
+    referentialSyncConfigState: The state of the referential data sync
+      configuration. This could represent the state of either the syncSet
+      object(s) or the config object, depending on the version of PoCo
+      configured by the user.
     templateLibraryState: The state of the template library
   """
 
@@ -5990,23 +6127,43 @@ class PolicyControllerPolicyContentState(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   bundleStates = _messages.MessageField('BundleStatesValue', 1)
-  templateLibraryState = _messages.MessageField('PolicyControllerOnClusterState', 2)
+  referentialSyncConfigState = _messages.MessageField('PolicyControllerOnClusterState', 2)
+  templateLibraryState = _messages.MessageField('PolicyControllerOnClusterState', 3)
 
 
 class PolicyControllerPolicyControllerDeploymentConfig(_messages.Message):
   r"""Deployment-specific configuration.
 
+  Enums:
+    PodAffinityValueValuesEnum: Pod affinity configuration.
+
   Fields:
     containerResources: Container resource requirements.
+    podAffinity: Pod affinity configuration.
     podAntiAffinity: Pod anti-affinity enablement.
     podTolerations: Pod tolerations of node taints.
     replicaCount: Pod replica count.
   """
 
+  class PodAffinityValueValuesEnum(_messages.Enum):
+    r"""Pod affinity configuration.
+
+    Values:
+      AFFINITY_UNSPECIFIED: No affinity configuration has been specified.
+      NO_AFFINITY: Affinity configurations will be removed from the
+        deployment.
+      ANTI_AFFINITY: Anti-affinity configuration will be applied to this
+        deployment. Default for admissions deployment.
+    """
+    AFFINITY_UNSPECIFIED = 0
+    NO_AFFINITY = 1
+    ANTI_AFFINITY = 2
+
   containerResources = _messages.MessageField('PolicyControllerResourceRequirements', 1)
-  podAntiAffinity = _messages.BooleanField(2)
-  podTolerations = _messages.MessageField('PolicyControllerToleration', 3, repeated=True)
-  replicaCount = _messages.IntegerField(4)
+  podAffinity = _messages.EnumField('PodAffinityValueValuesEnum', 2)
+  podAntiAffinity = _messages.BooleanField(3)
+  podTolerations = _messages.MessageField('PolicyControllerToleration', 4, repeated=True)
+  replicaCount = _messages.IntegerField(5)
 
 
 class PolicyControllerResourceList(_messages.Message):
@@ -6043,8 +6200,6 @@ class PolicyControllerTemplateLibraryConfig(_messages.Message):
       library is installed on the cluster.
 
   Fields:
-    included: Whether the standard template library should be installed or
-      not.
     installation: Configures the manner in which the template library is
       installed on the cluster.
   """
@@ -6062,8 +6217,7 @@ class PolicyControllerTemplateLibraryConfig(_messages.Message):
     NOT_INSTALLED = 1
     ALL = 2
 
-  included = _messages.BooleanField(1)
-  installation = _messages.EnumField('InstallationValueValuesEnum', 2)
+  installation = _messages.EnumField('InstallationValueValuesEnum', 1)
 
 
 class PolicyControllerToleration(_messages.Message):
@@ -6085,10 +6239,14 @@ class PolicyControllerToleration(_messages.Message):
 class RBACRoleBinding(_messages.Message):
   r"""RBACRoleBinding represents a rbacrolebinding across the Fleet
 
+  Messages:
+    LabelsValue: Optional. Labels for this RBACRolebinding.
+
   Fields:
     createTime: Output only. When the rbacrolebinding was created.
     deleteTime: Output only. When the rbacrolebinding was deleted.
     group: group is the group, as seen by the kubernetes cluster.
+    labels: Optional. Labels for this RBACRolebinding.
     name: The resource name for the rbacrolebinding `projects/{project}/locati
       ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
       ` or `projects/{project}/locations/{location}/memberships/{membership}/r
@@ -6104,15 +6262,40 @@ class RBACRoleBinding(_messages.Message):
       example "alice" or "alice@domain.tld"
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels for this RBACRolebinding.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   group = _messages.StringField(3)
-  name = _messages.StringField(4)
-  role = _messages.MessageField('Role', 5)
-  state = _messages.MessageField('RBACRoleBindingLifecycleState', 6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
-  user = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  role = _messages.MessageField('Role', 6)
+  state = _messages.MessageField('RBACRoleBindingLifecycleState', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+  user = _messages.StringField(10)
 
 
 class RBACRoleBindingActuationFeatureSpec(_messages.Message):
@@ -6452,12 +6635,28 @@ class Rule(_messages.Message):
 class Scope(_messages.Message):
   r"""Scope represents a Scope in a Fleet.
 
+  Messages:
+    LabelsValue: Optional. Labels for this Scope.
+    NamespaceLabelsValue: Optional. Scope-level cluster namespace labels. For
+      the member clusters bound to the Scope, these labels are applied to each
+      namespace under the Scope. Scope-level labels take precedence over
+      Namespace-level labels (`namespace_labels` in the Fleet Namespace
+      resource) if they share a key. Keys and values must be Kubernetes-
+      conformant.
+
   Fields:
     allMemberships: If true, all Memberships in the Fleet bind to this Scope.
     createTime: Output only. When the scope was created.
     deleteTime: Output only. When the scope was deleted.
+    labels: Optional. Labels for this Scope.
     name: The resource name for the scope
       `projects/{project}/locations/{location}/scopes/{scope}`
+    namespaceLabels: Optional. Scope-level cluster namespace labels. For the
+      member clusters bound to the Scope, these labels are applied to each
+      namespace under the Scope. Scope-level labels take precedence over
+      Namespace-level labels (`namespace_labels` in the Fleet Namespace
+      resource) if they share a key. Keys and values must be Kubernetes-
+      conformant.
     state: Output only. State of the scope resource.
     uid: Output only. Google-generated UUID for this resource. This is unique
       across all scope resources. If a scope resource is deleted and another
@@ -6465,13 +6664,68 @@ class Scope(_messages.Message):
     updateTime: Output only. When the scope was last updated.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels for this Scope.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NamespaceLabelsValue(_messages.Message):
+    r"""Optional. Scope-level cluster namespace labels. For the member
+    clusters bound to the Scope, these labels are applied to each namespace
+    under the Scope. Scope-level labels take precedence over Namespace-level
+    labels (`namespace_labels` in the Fleet Namespace resource) if they share
+    a key. Keys and values must be Kubernetes-conformant.
+
+    Messages:
+      AdditionalProperty: An additional property for a NamespaceLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type NamespaceLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NamespaceLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   allMemberships = _messages.BooleanField(1)
   createTime = _messages.StringField(2)
   deleteTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  state = _messages.MessageField('ScopeLifecycleState', 5)
-  uid = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  namespaceLabels = _messages.MessageField('NamespaceLabelsValue', 6)
+  state = _messages.MessageField('ScopeLifecycleState', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ScopeFeatureSpec(_messages.Message):
@@ -6527,6 +6781,55 @@ class ScopeLifecycleState(_messages.Message):
     UPDATING = 4
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
+class SecurityPostureConfig(_messages.Message):
+  r"""SecurityPostureConfig defines the flags needed to enable/disable
+  features for the Security Posture API.
+
+  Enums:
+    ModeValueValuesEnum: Sets which mode to use for Security Posture features.
+    VulnerabilityModeValueValuesEnum: Sets which mode to use for vulnerability
+      scanning.
+
+  Fields:
+    mode: Sets which mode to use for Security Posture features.
+    vulnerabilityMode: Sets which mode to use for vulnerability scanning.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Sets which mode to use for Security Posture features.
+
+    Values:
+      MODE_UNSPECIFIED: Default value not specified.
+      DISABLED: Disables Security Posture features on the cluster.
+      BASIC: Applies Security Posture features on the cluster.
+      ENTERPRISE: Applies the Security Posture off cluster Enterprise level
+        features.
+    """
+    MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    BASIC = 2
+    ENTERPRISE = 3
+
+  class VulnerabilityModeValueValuesEnum(_messages.Enum):
+    r"""Sets which mode to use for vulnerability scanning.
+
+    Values:
+      VULNERABILITY_MODE_UNSPECIFIED: Default value not specified.
+      VULNERABILITY_DISABLED: Disables vulnerability scanning on the cluster.
+      VULNERABILITY_BASIC: Applies basic vulnerability scanning on the
+        cluster.
+      VULNERABILITY_ENTERPRISE: Applies the Security Posture's vulnerability
+        on cluster Enterprise level features.
+    """
+    VULNERABILITY_MODE_UNSPECIFIED = 0
+    VULNERABILITY_DISABLED = 1
+    VULNERABILITY_BASIC = 2
+    VULNERABILITY_ENTERPRISE = 3
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+  vulnerabilityMode = _messages.EnumField('VulnerabilityModeValueValuesEnum', 2)
 
 
 class ServiceMeshAnalysisMessage(_messages.Message):

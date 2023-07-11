@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Generator
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.util import waiter
@@ -67,7 +69,9 @@ class OperationsClient(client.ClientBase):
         max_wait_ms=max_wait_ms,
     )
 
-  def List(self, args: parser_extensions.Namespace):
+  def List(
+      self, args: parser_extensions.Namespace
+  ) -> Generator[messages.Operation, None, None]:
     """List operations."""
     list_req = messages.GkeonpremProjectsLocationsOperationsListRequest(
         name=self._location_name(args)
@@ -120,6 +124,9 @@ def log_operation(resource_ref, action, past_tense, is_async=False):
       'bareMetalAdminClusters': 'admin cluster in Anthos on bare metal',
       'bareMetalStandaloneClusters': (
           'standalone cluster in Anthos on bare metal'
+      ),
+      'bareMetalStandaloneNodePools': (
+          'node pool of a standalone cluster in Anthos on bare metal'
       ),
   }
   resource_name = resource_type_to_name.get(resource_type, 'unknown resource')

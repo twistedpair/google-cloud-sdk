@@ -312,6 +312,11 @@ class BackupPlan(_messages.Message):
       the last successful Backup created via this BackupPlan.
     retentionPolicy: RetentionPolicy governs lifecycle of Backups created
       under this plan.
+    rpoRiskLevel: Output only. A number that represents the current risk level
+      of this BackupPlan from RPO perspective with 1 being no risk and 5 being
+      highest risk.
+    rpoRiskReason: Output only. Human-readable description of why the
+      BackupPlan is in the current rpo_risk_level and action items if any.
     state: Output only. State of the BackupPlan. This State field reflects the
       various stages a BackupPlan can be in during the Create operation. It
       will be set to "DEACTIVATED" if the BackupPlan is deactivated on an
@@ -383,10 +388,12 @@ class BackupPlan(_messages.Message):
   name = _messages.StringField(9)
   protectedPodCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   retentionPolicy = _messages.MessageField('RetentionPolicy', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  stateReason = _messages.StringField(13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  rpoRiskLevel = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  rpoRiskReason = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  stateReason = _messages.StringField(15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class Binding(_messages.Message):
@@ -534,6 +541,67 @@ class ClusterResourceRestoreScope(_messages.Message):
   selectedGroupKinds = _messages.MessageField('GroupKind', 4, repeated=True)
 
 
+class Date(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values. * A month and day, with a zero year (for example, an
+  anniversary). * A year on its own, with a zero month and a zero day. * A
+  year and month, with a zero day (for example, a credit card expiration
+  date). Related types: * google.type.TimeOfDay * google.type.DateTime *
+  google.protobuf.Timestamp
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class DayOfWeekList(_messages.Message):
+  r"""Holds repeated DyasOfWeek values as a container.
+
+  Enums:
+    DaysOfWeekValueListEntryValuesEnum:
+
+  Fields:
+    daysOfWeek: A list of days of week.
+  """
+
+  class DaysOfWeekValueListEntryValuesEnum(_messages.Enum):
+    r"""DaysOfWeekValueListEntryValuesEnum enum type.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  daysOfWeek = _messages.EnumField('DaysOfWeekValueListEntryValuesEnum', 1, repeated=True)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -553,6 +621,31 @@ class EncryptionKey(_messages.Message):
   """
 
   gcpKmsEncryptionKey = _messages.StringField(1)
+
+
+class ExclusionWindow(_messages.Message):
+  r"""Defines a time window during which no backup should happen. All time and
+  date are in UTC. Next id: 6
+
+  Fields:
+    daily: The exclusion window occurs every day if set to "True". Specifying
+      this field to "False" is an error.
+    daysOfWeek: The exclusion window occurs on these days of each week in UTC.
+    duration: Required. Specifies duration of the window. Duration must be at
+      most 23 hours for daily recurrence windows and days of week recurrence
+      windows that includes all seven days a week to allow at least one hour
+      for backup to happen.
+    singleOccurrenceDate: No recurrence. The exclusion window occurs only once
+      and on this date in UTC.
+    startTime: Required. Specifies the start time of the window using time of
+      the day in UTC.
+  """
+
+  daily = _messages.BooleanField(1)
+  daysOfWeek = _messages.MessageField('DayOfWeekList', 2)
+  duration = _messages.StringField(3)
+  singleOccurrenceDate = _messages.MessageField('Date', 4)
+  startTime = _messages.MessageField('TimeOfDay', 5)
 
 
 class Expr(_messages.Message):
@@ -2231,9 +2324,9 @@ class RestoreConfig(_messages.Message):
       USE_EXISTING_VERSION: Do not attempt to restore the conflicting
         resource.
       USE_BACKUP_VERSION: Delete the existing version before re-creating it
-        from the Backup. Note that this is a dangerous option which could
-        cause unintentional data loss if used inappropriately - for example,
-        deleting a CRD will cause Kubernetes to delete all CRs of that type.
+        from the Backup. This is a dangerous option which could cause
+        unintentional data loss if used inappropriately. For example, deleting
+        a CRD will cause Kubernetes to delete all CRs of that type.
     """
     CLUSTER_RESOURCE_CONFLICT_POLICY_UNSPECIFIED = 0
     USE_EXISTING_VERSION = 1
@@ -2273,16 +2366,16 @@ class RestoreConfig(_messages.Message):
 
     Values:
       VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED: Unspecified (illegal).
-      RESTORE_VOLUME_DATA_FROM_BACKUP: For each PVC to be restored, will
-        create a new underlying volume (and PV) from the corresponding
-        VolumeBackup contained within the Backup.
+      RESTORE_VOLUME_DATA_FROM_BACKUP: For each PVC to be restored, create a
+        new underlying volume and PV from the corresponding VolumeBackup
+        contained within the Backup.
       REUSE_VOLUME_HANDLE_FROM_BACKUP: For each PVC to be restored, attempt to
         reuse the original PV contained in the Backup (with its original
-        underlying volume). Note that option is likely only usable when
-        restoring a workload to its original cluster.
-      NO_VOLUME_DATA_RESTORATION: For each PVC to be restored, PVCs will be
-        created without any particular action to restore data. In this case,
-        the normal Kubernetes provisioning logic would kick in, and this would
+        underlying volume). This option is likely only usable when restoring a
+        workload to its original cluster.
+      NO_VOLUME_DATA_RESTORATION: For each PVC to be restored, create PVC
+        without any particular action to restore data. In this case, the
+        normal Kubernetes provisioning logic would kick in, and this would
         likely result in either dynamically provisioning blank PVs or binding
         to statically provisioned PVs.
     """
@@ -2438,21 +2531,53 @@ class RetentionPolicy(_messages.Message):
   locked = _messages.BooleanField(3)
 
 
+class RpoConfig(_messages.Message):
+  r"""Defines RPO scheduling configuration for automatically creating Backups
+  via this BackupPlan. Next id: 3
+
+  Fields:
+    exclusionWindows: User specified time windows during which backup can NOT
+      happen for this BackupPlan - backups should start and finish outside of
+      any given exclusion window. Note: backup jobs will be scheduled to start
+      and finish outside the duration of the window as much as possible, but
+      running jobs will not get canceled when it runs into the window. We only
+      support single exclusion_window for a BackupPLan currently. All the time
+      and date values in exclusion_windows entry in the API are in UTC.
+    targetRpoMinutes: Required. Defines the target RPO for the BackupPlan in
+      minutes, which means the target maximum data loss in time that is
+      acceptable for this BackupPlan. This must be at least 1.
+  """
+
+  exclusionWindows = _messages.MessageField('ExclusionWindow', 1, repeated=True)
+  targetRpoMinutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class Schedule(_messages.Message):
-  r"""Schedule defines scheduling parameters for automatically creating
-  Backups via this BackupPlan.
+  r"""Defines scheduling parameters for automatically creating Backups via
+  this BackupPlan.
 
   Fields:
     cronSchedule: A standard [cron](https://wikipedia.com/wiki/cron) string
       that defines a repeating schedule for creating Backups via this
-      BackupPlan. If this is defined, then backup_retain_days must also be
-      defined. Default (empty): no automatic backup creation will occur.
+      BackupPlan. This is mutually exclusive with the rpo_config field since
+      at most one schedule can be defined for a BackupPlan. If this is
+      defined, then backup_retain_days must also be defined. Default (empty):
+      no automatic backup creation will occur.
+    nextScheduledBackupTime: Output only. Start time of next scheduled backup
+      under this BackupPlan by either cron_schedule or rpo config.
     paused: This flag denotes whether automatic Backup creation is paused for
       this BackupPlan. Default: False
+    rpoConfig: Defines the RPO schedule configuration for this BackupPlan.
+      This is mutually exclusive with the cron_schedule field since at most
+      one schedule can be defined for a BackupPLan. If this is defined, then
+      backup_retain_days must also be defined. Default (empty): no automatic
+      backup creation will occur.
   """
 
   cronSchedule = _messages.StringField(1)
-  paused = _messages.BooleanField(2)
+  nextScheduledBackupTime = _messages.StringField(2)
+  paused = _messages.BooleanField(3)
+  rpoConfig = _messages.MessageField('RpoConfig', 4)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2606,12 +2731,35 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class TimeOfDay(_messages.Message):
+  r"""Represents a time of day. The date and time zone are either not
+  significant or are specified elsewhere. An API may choose to allow leap
+  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
+
+  Fields:
+    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
+      choose to allow the value "24:00:00" for scenarios like business closing
+      time.
+    minutes: Minutes of hour of day. Must be from 0 to 59.
+    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
+    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
+      API may allow the value 60 if it allows leap-seconds.
+  """
+
+  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class TransformationRule(_messages.Message):
   r"""A transformation rule to be applied against Kubernetes resources as they
   are selected for restoration from a Backup. A rule contains both filtering
   logic (which resources are subject to transform) and transformation logic.
 
   Fields:
+    description: The description is a user specified string description of the
+      transformation rule.
     fieldActions: Required. A list of transformation rule actions to take
       against candidate resources. Actions are executed in order defined -
       this order matters, as they could potentially interfere with each other
@@ -2623,8 +2771,9 @@ class TransformationRule(_messages.Message):
       specific resources are affected by transformation rule actions.
   """
 
-  fieldActions = _messages.MessageField('TransformationRuleAction', 1, repeated=True)
-  resourceFilter = _messages.MessageField('ResourceFilter', 2)
+  description = _messages.StringField(1)
+  fieldActions = _messages.MessageField('TransformationRuleAction', 2, repeated=True)
+  resourceFilter = _messages.MessageField('ResourceFilter', 3)
 
 
 class TransformationRuleAction(_messages.Message):

@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -36,19 +37,21 @@ _MODE_CHOICES = {
 }
 
 _GROUP_CHOICES = {
-    'ALL_SUBNETS':
+    'ALL_SUBNETS': (
         'Automatically advertise all available subnets. This excludes '
-        'any routes learned for subnets that use VPC Network Peering.',
+        'any routes learned for subnets that use VPC Network Peering.'
+    ),
 }
 
 _BFD_SESSION_INITIALIZATION_MODE_CHOICES = {
-    'ACTIVE':
-        'The Cloud Router will initiate the BFD session for this BGP peer.',
-    'PASSIVE':
+    'ACTIVE': (
+        'The Cloud Router will initiate the BFD session for this BGP peer.'
+    ),
+    'PASSIVE': (
         'The Cloud Router will wait for the peer router to initiate the BFD '
-        'session for this BGP peer.',
-    'DISABLED':
-        'BFD is disabled for this BGP peer.',
+        'session for this BGP peer.'
+    ),
+    'DISABLED': 'BFD is disabled for this BGP peer.',
 }
 
 
@@ -58,7 +61,8 @@ class RoutersCompleter(compute_completers.ListCommandCompleter):
     super(RoutersCompleter, self).__init__(
         collection='compute.routers',
         list_command='compute routers list --uri',
-        **kwargs)
+        **kwargs
+    )
 
 
 def RouterArgument(required=True, plural=False):
@@ -68,7 +72,8 @@ def RouterArgument(required=True, plural=False):
       plural=plural,
       required=required,
       regional_collection='compute.routers',
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
+  )
 
 
 def RouterArgumentForVpnTunnel(required=True):
@@ -80,12 +85,15 @@ def RouterArgumentForVpnTunnel(required=True):
       required=required,
       regional_collection='compute.routers',
       short_help='The Router to use for dynamic routing.',
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
+  )
 
 
 def RouterArgumentForOtherResources(required=True, suppress_region=True):
-  region_explanation = ('Should be the same as --region, if not specified, '
-                        'it will be inherited from --region.')
+  region_explanation = (
+      'Should be the same as --region, if not specified, '
+      'it will be inherited from --region.'
+  )
   return compute_flags.ResourceArgument(
       resource_name='router',
       name='--router',
@@ -95,7 +103,8 @@ def RouterArgumentForOtherResources(required=True, suppress_region=True):
       regional_collection='compute.routers',
       short_help='The Google Cloud Router to use for dynamic routing.',
       region_explanation=region_explanation,
-      region_hidden=suppress_region)
+      region_hidden=suppress_region,
+  )
 
 
 def RouterArgumentForNat():
@@ -107,14 +116,16 @@ def RouterArgumentForNat():
       required=True,
       regional_collection='compute.routers',
       short_help='The Router to use for NAT.',
-      region_hidden=True)
+      region_hidden=True,
+  )
 
 
 def AddCreateRouterArgs(parser):
   """Adds common arguments for creating routers."""
 
   parser.add_argument(
-      '--description', help='An optional description of this router.')
+      '--description', help='An optional description of this router.'
+  )
 
   AddAsnArg(parser)
 
@@ -124,21 +135,40 @@ def AddKeepaliveIntervalArg(parser):
   parser.add_argument(
       '--keepalive-interval',
       type=arg_parsers.Duration(
-          default_unit='s', lower_bound='20s', upper_bound='60s'),
-      help='The interval between BGP keepalive messages that are sent to the '
-      'peer. If set, this value must be between 20 and 60 seconds. The default '
-      'is 20 seconds. See $ gcloud topic datetimes for information on duration '
-      'formats.\n\n'
-      'BGP systems exchange keepalive messages to determine whether a link or '
-      'host has failed or is no longer available. Hold time is the length of '
-      'time in seconds that the BGP session is considered operational without '
-      'any activity. After the hold time expires, the session is dropped.\n\n'
-      'Hold time is three times the interval at which keepalive messages are '
-      'sent, and the hold time is the maximum number of seconds allowed to '
-      'elapse between successive keepalive messages that BGP receives from a '
-      'peer. BGP will use the smaller of either the local hold time value or '
-      'the peer\'s  hold time value as the hold time for the BGP connection '
-      'between the two peers.')
+          default_unit='s', lower_bound='20s', upper_bound='60s'
+      ),
+      help=(
+          'The interval between BGP keepalive messages that are sent to the'
+          ' peer. If set, this value must be between 20 and 60 seconds. The'
+          ' default is 20 seconds. See $ gcloud topic datetimes for information'
+          ' on duration formats.\n\nBGP systems exchange keepalive messages to'
+          ' determine whether a link or host has failed or is no longer'
+          ' available. Hold time is the length of time in seconds that the BGP'
+          ' session is considered operational without any activity. After the'
+          ' hold time expires, the session is dropped.\n\nHold time is three'
+          ' times the interval at which keepalive messages are sent, and the'
+          ' hold time is the maximum number of seconds allowed to elapse'
+          ' between successive keepalive messages that BGP receives from a'
+          ' peer. BGP will use the smaller of either the local hold time value'
+          " or the peer's  hold time value as the hold time for the BGP"
+          ' connection between the two peers.'
+      ),
+  )
+
+
+def AddBgpIdentifierRangeArg(parser):
+  """Adds BGP identifier range argument for routers."""
+  parser.add_argument(
+      '--bgp-identifier-range',
+      type=utils.IPV4RangeArgument,
+      help=(
+          'Range of valid BGP Identifiers for this Router. Must be a link-local'
+          ' IPv4 range from 169.254.0.0/16, of size at least /30, even if the'
+          ' BGP sessions are over IPv6. It must not overlap with any IPv4 BGP'
+          ' session ranges. This is commonly called "router ID" by other'
+          ' vendors.'
+      ),
+  )
 
 
 def AddAsnArg(parser):
@@ -147,12 +177,15 @@ def AddAsnArg(parser):
       '--asn',
       required=False,
       type=int,
-      help='The optional BGP autonomous system number (ASN) for this router. '
-      'Must be a 16-bit or 32-bit private ASN as defined in '
-      'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.')
+      help=(
+          'The optional BGP autonomous system number (ASN) for this router. '
+          'Must be a 16-bit or 32-bit private ASN as defined in '
+          'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.'
+      ),
+  )
 
 
-def AddInterfaceArgs(parser, for_update=False):
+def AddInterfaceArgs(parser, for_update=False, enable_ipv6_bgp=False):
   """Adds common arguments for routers add-interface or update-interface."""
 
   operation = 'added'
@@ -162,27 +195,66 @@ def AddInterfaceArgs(parser, for_update=False):
   parser.add_argument(
       '--interface-name',
       required=True,
-      help='The name of the interface being {0}.'.format(operation))
+      help='The name of the interface being {0}.'.format(operation),
+  )
 
-  parser.add_argument(
-      '--ip-address',
-      type=utils.IPV4Argument,
-      help='The link local address of the router for this interface.')
+  if enable_ipv6_bgp:
+    parser.add_argument(
+        '--ip-address',
+        type=utils.IPArgument,
+        help=(
+            'The link local (IPv4) or ULA (IPv6) address of the router for this'
+            ' interface.'
+        ),
+    )
+    parser.add_argument(
+        '--mask-length',
+        type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=126),
+        help=(
+            'The subnet mask for the IP range of the interface. The interface'
+            ' IP address and BGP peer IP address must be selected from the'
+            ' subnet defined by this range.'
+        ),
+    )
+    parser.add_argument(
+        '--ip-version',
+        type=arg_utils.ChoiceToEnumName,
+        choices={
+            'IPV4': 'Interface with IPv4-based BGP.',
+            'IPV6': 'Interface with IPv6-based BGP.',
+        },
+        help=(
+            'IP version of the interface. Possible values are IPV4 and IPV6.'
+            ' Defaults to IPV4.'
+        ),
+    )
 
-  parser.add_argument(
-      '--mask-length',
-      type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=31),
-      help='The subnet mask for the link-local IP range of the interface. '
-      'The interface IP address and BGP peer IP address must be selected from '
-      'the subnet defined by this link-local range.')
+  else:
+    parser.add_argument(
+        '--ip-address',
+        type=utils.IPV4Argument,
+        help='The link local address of the router for this interface.',
+    )
+    parser.add_argument(
+        '--mask-length',
+        type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=31),
+        help=(
+            'The subnet mask for the link-local IP range of the interface. The'
+            ' interface IP address and BGP peer IP address must be selected'
+            ' from the subnet defined by this link-local range.'
+        ),
+    )
 
   if not for_update:
     parser.add_argument(
         '--redundant-interface',
-        help='The interface that is redundant to the current interface.')
+        help='The interface that is redundant to the current interface.',
+    )
 
 
-def AddBgpPeerArgs(parser, for_add_bgp_peer=False, is_update=False):
+def AddBgpPeerArgs(
+    parser, for_add_bgp_peer=False, is_update=False, enable_ipv6_bgp=False
+):
   """Adds common arguments for managing BGP peers."""
 
   operation = 'updated'
@@ -192,60 +264,101 @@ def AddBgpPeerArgs(parser, for_add_bgp_peer=False, is_update=False):
   parser.add_argument(
       '--peer-name',
       required=True,
-      help='The name of the new BGP peer being {0}.'.format(operation))
+      help='The name of the new BGP peer being {0}.'.format(operation),
+  )
 
   parser.add_argument(
       '--interface',
       required=for_add_bgp_peer,
-      help='The name of the interface for this BGP peer.')
+      help='The name of the interface for this BGP peer.',
+  )
 
   parser.add_argument(
       '--peer-asn',
       required=for_add_bgp_peer,
       type=int,
-      help='The BGP autonomous system number (ASN) for this BGP peer. '
-      'Must be a 16-bit or 32-bit private ASN as defined in '
-      'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.')
+      help=(
+          'The BGP autonomous system number (ASN) for this BGP peer. '
+          'Must be a 16-bit or 32-bit private ASN as defined in '
+          'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.'
+      ),
+  )
 
   # For add_bgp_peer, we only require the interface and infer the IP instead.
   if not for_add_bgp_peer:
-    parser.add_argument(
-        '--ip-address',
-        type=utils.IPV4Argument,
-        help='The link-local address of the Cloud Router interface for this '
-        'BGP peer. Must be a link-local IPv4 address belonging to the range '
-        '169.254.0.0/16 and must belong to same subnet as the interface '
-        'address of the peer router.')
+    if enable_ipv6_bgp:
+      parser.add_argument(
+          '--ip-address',
+          type=utils.IPArgument,
+          help=(
+              'The address of the Cloud Router interface for this BGP peer.'
+              ' Must be a link-local IPv4 address in  the range 169.254.0.0/16'
+              ' or an ULA IPv6 address in the range fdff:1::/64. It must also'
+              ' be in the same subnet as the interface address of the peer'
+              ' router.'
+          ),
+      )
+    else:
+      parser.add_argument(
+          '--ip-address',
+          type=utils.IPV4Argument,
+          help=(
+              'The link-local address of the Cloud Router interface for this'
+              ' BGP peer. Must be a link-local IPv4 address belonging to the'
+              ' range 169.254.0.0/16 and must belong to same subnet as the'
+              ' interface address of the peer router.'
+          ),
+      )
 
-  parser.add_argument(
-      '--peer-ip-address',
-      type=utils.IPV4Argument,
-      help='The link-local address of the peer router. Must be a link-local '
-      'IPv4 address belonging to the range 169.254.0.0/16.')
+  if enable_ipv6_bgp:
+    parser.add_argument(
+        '--peer-ip-address',
+        type=utils.IPArgument,
+        help=(
+            'The address of the peer router. Must be a link-local IPv4 address'
+            ' in the the range 169.254.0.0/16 or an ULA IPv6 address in the'
+            ' range fdff:1::/64.'
+        ),
+    )
+  else:
+    parser.add_argument(
+        '--peer-ip-address',
+        type=utils.IPV4Argument,
+        help=(
+            'The link-local address of the peer router. Must be a link-local '
+            'IPv4 address belonging to the range 169.254.0.0/16.'
+        ),
+    )
 
   parser.add_argument(
       '--advertised-route-priority',
       type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=65535),
-      help='The priority of routes advertised to this BGP peer. In the case '
-      'where there is more than one matching route of maximum length, '
-      'the routes with lowest priority value win. 0 <= priority <= '
-      '65535. If not specified, will use Google-managed priorities.')
+      help=(
+          'The priority of routes advertised to this BGP peer. In the case '
+          'where there is more than one matching route of maximum length, '
+          'the routes with lowest priority value win. 0 <= priority <= '
+          '65535. If not specified, will use Google-managed priorities.'
+      ),
+  )
 
-  bfd_group_help = ('Arguments to {0} BFD (Bidirectional Forwarding Detection) '
-                    'settings:'.format('update' if is_update else 'configure'))
+  bfd_group_help = (
+      'Arguments to {0} BFD (Bidirectional Forwarding Detection) '
+      'settings:'.format('update' if is_update else 'configure')
+  )
   bfd_group = parser.add_group(help=bfd_group_help)
   bfd_group.add_argument(
       '--bfd-session-initialization-mode',
       choices=_BFD_SESSION_INITIALIZATION_MODE_CHOICES,
       type=lambda mode: mode.upper(),
       metavar='BFD_SESSION_INITIALIZATION_MODE',
-      help='The BFD session initialization mode for this BGP peer. Must be one '
-      'of:\n\n'
-      'ACTIVE - The Cloud Router will initiate the BFD session for this BGP '
-      'peer.\n\n'
-      'PASSIVE - The Cloud Router will wait for the peer router to initiate '
-      'the BFD session for this BGP peer.\n\n'
-      'DISABLED - BFD is disabled for this BGP peer.')
+      help=(
+          'The BFD session initialization mode for this BGP peer. Must be one'
+          ' of:\n\nACTIVE - The Cloud Router will initiate the BFD session for'
+          ' this BGP peer.\n\nPASSIVE - The Cloud Router will wait for the peer'
+          ' router to initiate the BFD session for this BGP peer.\n\nDISABLED -'
+          ' BFD is disabled for this BGP peer.'
+      ),
+  )
 
   bfd_group.add_argument(
       '--bfd-min-transmit-interval',
@@ -253,77 +366,160 @@ def AddBgpPeerArgs(parser, for_add_bgp_peer=False, is_update=False):
           default_unit='ms',
           lower_bound='1000ms',
           upper_bound='30000ms',
-          parsed_unit='ms'),
-      help='The minimum transmit interval between BFD control packets. The '
-      'default is 1000 milliseconds. See $ gcloud topic datetimes for '
-      'information on duration formats.')
+          parsed_unit='ms',
+      ),
+      help=(
+          'The minimum transmit interval between BFD control packets. The '
+          'default is 1000 milliseconds. See $ gcloud topic datetimes for '
+          'information on duration formats.'
+      ),
+  )
   bfd_group.add_argument(
       '--bfd-min-receive-interval',
       type=arg_parsers.Duration(
           default_unit='ms',
           lower_bound='1000ms',
           upper_bound='30000ms',
-          parsed_unit='ms'),
-      help='The minimum receive interval between BFD control packets. The '
-      'default is 1000 milliseconds. See $ gcloud topic datetimes for '
-      'information on duration formats.')
+          parsed_unit='ms',
+      ),
+      help=(
+          'The minimum receive interval between BFD control packets. The '
+          'default is 1000 milliseconds. See $ gcloud topic datetimes for '
+          'information on duration formats.'
+      ),
+  )
   bfd_group.add_argument(
       '--bfd-multiplier',
       type=int,
-      help='The number of consecutive BFD control packets that must be '
-      'missed before BFD declares that a peer is unavailable.')
+      help=(
+          'The number of consecutive BFD control packets that must be '
+          'missed before BFD declares that a peer is unavailable.'
+      ),
+  )
 
   enabled_display_help = (
       'If enabled, the peer connection can be established with routing '
       'information. If disabled, any active session with the peer is '
-      'terminated and all associated routing information is removed.')
+      'terminated and all associated routing information is removed.'
+  )
 
   if not is_update:
     enabled_display_help += ' Enabled by default.'
   parser.add_argument(
       '--enabled',
       action=arg_parsers.StoreTrueFalseAction,
-      help=enabled_display_help)
+      help=enabled_display_help,
+  )
 
   enable_ipv6_display_help = (
       'If IPv6 is enabled, the peer connection can be established with '
       'IPv6 route exchange. If disabled, no IPv6 route exchange is allowed '
-      'on any active session.')
+      'on any active session.'
+  )
   if not is_update:
     enable_ipv6_display_help += ' Disabled by default.'
   parser.add_argument(
       '--enable-ipv6',
       action=arg_parsers.StoreTrueFalseAction,
-      help=enable_ipv6_display_help)
+      help=enable_ipv6_display_help,
+  )
 
+  if enable_ipv6_bgp:
+    ipv6_nexthop_address_help = (
+        'If IPv6 route exchange is enabled for IPv4-based BGP, the IPv6 next'
+        ' hop address of the Cloud Router interface for this BGP peer.'
+        ' Ignored otherwise. Must be a Google owned global unicast IPv6'
+        ' address belonging to the range 2600:2d00:0:2:0:0:0:0/64 or'
+        ' 2600:2d00:0:3:0:0:0:0/64 and must belong to same subnet as the'
+        ' interface address of the peer router.'
+    )
+  else:
+    ipv6_nexthop_address_help = (
+        'The IPv6 next hop address of the Cloud Router interface '
+        'for this BGP peer. Must be a Google owned global unicast IPv6 '
+        'address belonging to the range 2600:2d00:0:2:0:0:0:0/64 or '
+        '2600:2d00:0:3:0:0:0:0/64 and must belong to same subnet as '
+        'the interface address of the peer router.'
+    )
   parser.add_argument(
       '--ipv6-nexthop-address',
       type=utils.IPV6Argument,
-      help='The IPv6 next hop address of the Cloud Router interface '
-      'for this BGP peer. Must be a Google owned global unicast IPv6 '
-      'address belonging to the range 2600:2d00:0:2:0:0:0:0/64 or '
-      '2600:2d00:0:3:0:0:0:0/64 and must belong to same subnet as '
-      'the interface address of the peer router.')
+      help=ipv6_nexthop_address_help,
+  )
 
+  if enable_ipv6_bgp:
+    peer_ipv6_nexthop_address_help = (
+        'If IPv6 route exchange is enabled for IPv4-based BGP, the IPv6 next'
+        ' hop address of the peer router. Ignored otherwise. Must be a Google'
+        ' owned global unicast IPv6 address belonging to the range'
+        ' 2600:2d00:0:2:0:0:0:0/64 or 2600:2d00:0:3:0:0:0:0/64.'
+    )
+  else:
+    peer_ipv6_nexthop_address_help = (
+        'The IPv6 next hop address of the peer router. Must be a '
+        'Google owned global unicast IPv6 address belonging to the range '
+        '2600:2d00:0:2:0:0:0:0/64 or 2600:2d00:0:3:0:0:0:0/64.'
+    )
   parser.add_argument(
       '--peer-ipv6-nexthop-address',
       type=utils.IPV6Argument,
-      help='The IPv6 next hop address of the peer router. Must be a '
-      'Google owned global unicast IPv6 address belonging to the range '
-      '2600:2d00:0:2:0:0:0:0/64 or 2600:2d00:0:3:0:0:0:0/64.')
+      help=peer_ipv6_nexthop_address_help,
+  )
+
+  if enable_ipv6_bgp:
+    enable_ipv4_display_help = (
+        'If IPv4 is enabled, the peer connection can be established with '
+        'IPv4 route exchange. If disabled, no IPv4 route exchange is allowed '
+        'on any active session.'
+    )
+    if not is_update:
+      enable_ipv4_display_help += (
+          ' By default enabled for IPv4-based BGP sessions.'
+      )
+    parser.add_argument(
+        '--enable-ipv4',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=enable_ipv4_display_help,
+    )
+
+    parser.add_argument(
+        '--ipv4-nexthop-address',
+        type=utils.IPV4Argument,
+        help=(
+            'If IPv4 route exchange is enabled for IPv6-based BGP, the IPv4'
+            ' next hop address of the Cloud Router interface for this BGP peer.'
+            ' Ignored otherwise. Must be a Google owned link-local IPv4 address'
+            ' in the range 169.254.0.0/16 and must belong to the same subnet as'
+            ' the interface address of the peer router.'
+        ),
+    )
+
+    parser.add_argument(
+        '--peer-ipv4-nexthop-address',
+        type=utils.IPV4Argument,
+        help=(
+            'If IPv4 route exchange is enabled for IPv6-based BGP, the IPv4'
+            ' next hop address of the peer router. Ignored otherwise. Must be a'
+            ' Google owned link-local IPv4 address in the range 169.254.0.0/16.'
+        ),
+    )
 
   parser.add_argument(
       '--md5-authentication-key',
       type=str,
-      help='The MD5 authentication key for this BGP peer. Maximum length is '
-      '80 characters. Can contain only printable ASCII characters.')
+      help=(
+          'The MD5 authentication key for this BGP peer. Maximum length is '
+          '80 characters. Can contain only printable ASCII characters.'
+      ),
+  )
 
   if is_update:
     parser.add_argument(
         '--clear-md5-authentication-key',
         action='store_true',
         default=None,
-        help='If specified, remove MD5 authentication from the BGP peer.')
+        help='If specified, remove MD5 authentication from the BGP peer.',
+    )
 
 
 def AddUpdateCustomAdvertisementArgs(parser, resource_str):
@@ -341,16 +537,19 @@ def AddReplaceCustomAdvertisementArgs(parser, resource_str):
       choices=_MODE_CHOICES,
       type=lambda mode: mode.upper(),
       metavar='MODE',
-      help="""The new advertisement mode for this {0}.""".format(resource_str))
+      help="""The new advertisement mode for this {0}.""".format(resource_str),
+  )
 
   parser.add_argument(
       '--set-advertisement-groups',
       type=arg_parsers.ArgList(
-          choices=_GROUP_CHOICES, element_type=lambda group: group.upper()),
+          choices=_GROUP_CHOICES, element_type=lambda group: group.upper()
+      ),
       metavar='GROUP',
       help="""The list of pre-defined groups of IP ranges to dynamically
               advertise on this {0}. This list can only be specified in
-              custom advertisement mode.""".format(resource_str))
+              custom advertisement mode.""".format(resource_str),
+  )
 
   parser.add_argument(
       '--set-advertisement-ranges',
@@ -362,8 +561,10 @@ def AddReplaceCustomAdvertisementArgs(parser, resource_str):
               use `--set-advertisement-ranges=192.168.10.0/24`.  To store a
               description with the range, use
               `--set-advertisement-ranges=192.168.10.0/24=my-networks`. This
-              list can only be specified in custom advertisement mode."""
-      .format(resource_str))
+              list can only be specified in custom advertisement mode.""".format(
+          resource_str
+      ),
+  )
 
 
 def AddIncrementalCustomAdvertisementArgs(parser, resource_str):
@@ -374,22 +575,27 @@ def AddIncrementalCustomAdvertisementArgs(parser, resource_str):
   incremental_args.add_argument(
       '--add-advertisement-groups',
       type=arg_parsers.ArgList(
-          choices=_GROUP_CHOICES, element_type=lambda group: group.upper()),
+          choices=_GROUP_CHOICES, element_type=lambda group: group.upper()
+      ),
       metavar='GROUP',
       help="""A list of pre-defined groups of IP ranges to dynamically advertise
               on this {0}. This list is appended to any existing advertisements.
-              This field can only be specified in custom advertisement mode."""
-      .format(resource_str))
+              This field can only be specified in custom advertisement mode.""".format(
+          resource_str
+      ),
+  )
 
   incremental_args.add_argument(
       '--remove-advertisement-groups',
       type=arg_parsers.ArgList(
-          choices=_GROUP_CHOICES, element_type=lambda group: group.upper()),
+          choices=_GROUP_CHOICES, element_type=lambda group: group.upper()
+      ),
       metavar='GROUP',
       help="""A list of pre-defined groups of IP ranges to remove from dynamic
               advertisement on this {0}. Each group in the list must exist in
               the current set of custom advertisements. This field can only be
-              specified in custom advertisement mode.""".format(resource_str))
+              specified in custom advertisement mode.""".format(resource_str),
+  )
 
   incremental_args.add_argument(
       '--add-advertisement-ranges',
@@ -415,7 +621,9 @@ def AddIncrementalCustomAdvertisementArgs(parser, resource_str):
               dynamic advertisement on this {0}. Each IP range in the list must
               exist in the current set of custom advertisements. This field can
               only be specified in custom advertisement mode.""".format(
-                  resource_str))
+          resource_str
+      ),
+  )
 
 
 def AddUpdateCustomLearnedRoutesArgs(parser):
@@ -501,7 +709,8 @@ def AddGetNatMappingInfoArgs(parser):
   parser.add_argument(
       '--nat-name',
       required=False,
-      help='The NAT name to filter out NAT mapping information')
+      help='The NAT name to filter out NAT mapping information',
+  )
 
 
 def AddGetNatIpInfoArgs(parser):
@@ -510,7 +719,8 @@ def AddGetNatIpInfoArgs(parser):
   parser.add_argument(
       '--nat-name',
       required=False,
-      help='The NAT name to filter out NAT IP information')
+      help='The NAT name to filter out NAT IP information',
+  )
 
 
 def AddEncryptedInterconnectRouter(parser):
@@ -520,5 +730,8 @@ def AddEncryptedInterconnectRouter(parser):
       required=False,
       action='store_true',
       default=None,
-      help='Indicates if a router is dedicated for use with encrypted '
-      'interconnect attachments (VLAN attachments).')
+      help=(
+          'Indicates if a router is dedicated for use with encrypted '
+          'interconnect attachments (VLAN attachments).'
+      ),
+  )

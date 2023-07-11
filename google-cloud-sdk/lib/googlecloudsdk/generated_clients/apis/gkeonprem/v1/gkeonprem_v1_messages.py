@@ -1646,6 +1646,33 @@ class BareMetalStandaloneIslandModeCidrConfig(_messages.Message):
   serviceAddressCidrBlocks = _messages.StringField(2, repeated=True)
 
 
+class BareMetalStandaloneKubeletConfig(_messages.Message):
+  r"""KubeletConfig defines the modifiable kubelet configurations for
+  baremetal machines. Note: this list includes fields supported in GKE (see
+  https://cloud.google.com/kubernetes-engine/docs/how-to/node-system-
+  config#kubelet-options).
+
+  Fields:
+    registryBurst: The maximum size of bursty pulls, temporarily allows pulls
+      to burst to this number, while still not exceeding registry_pull_qps.
+      The value must not be a negative number. Updating this field may impact
+      scalability by changing the amount of traffic produced by image pulls.
+      Defaults to 10.
+    registryPullQps: The limit of registry pulls per second. Setting this
+      value to 0 means no limit. Updating this field may impact scalability by
+      changing the amount of traffic produced by image pulls. Defaults to 5.
+    serializeImagePullsDisabled: Prevents the Kubelet from pulling multiple
+      images at a time. We recommend *not* changing the default value on nodes
+      that run docker daemon with version < 1.9 or an Another Union File
+      System (Aufs) storage backend. Issue
+      https://github.com/kubernetes/kubernetes/issues/10959 has more details.
+  """
+
+  registryBurst = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  registryPullQps = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  serializeImagePullsDisabled = _messages.BooleanField(3)
+
+
 class BareMetalStandaloneLoadBalancerAddressPool(_messages.Message):
   r"""Represents an IP pool used by the load balancer.
 
@@ -1797,6 +1824,263 @@ class BareMetalStandaloneNodeAccessConfig(_messages.Message):
   loginUser = _messages.StringField(1)
 
 
+class BareMetalStandaloneNodeConfig(_messages.Message):
+  r"""BareMetalStandaloneNodeConfig lists machine addresses to access Nodes.
+
+  Messages:
+    LabelsValue: The labels assigned to this node. An object containing a list
+      of key/value pairs. The labels here, unioned with the labels set on
+      BareMetalStandaloneNodePoolConfig are the set of labels that will be
+      applied to the node. If there are any conflicts, the
+      BareMetalStandaloneNodeConfig labels take precedence. Example: { "name":
+      "wrench", "mass": "1.3kg", "count": "3" }.
+
+  Fields:
+    labels: The labels assigned to this node. An object containing a list of
+      key/value pairs. The labels here, unioned with the labels set on
+      BareMetalStandaloneNodePoolConfig are the set of labels that will be
+      applied to the node. If there are any conflicts, the
+      BareMetalStandaloneNodeConfig labels take precedence. Example: { "name":
+      "wrench", "mass": "1.3kg", "count": "3" }.
+    nodeIp: The default IPv4 address for SSH access and Kubernetes node.
+      Example: 192.168.0.1
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels assigned to this node. An object containing a list of
+    key/value pairs. The labels here, unioned with the labels set on
+    BareMetalStandaloneNodePoolConfig are the set of labels that will be
+    applied to the node. If there are any conflicts, the
+    BareMetalStandaloneNodeConfig labels take precedence. Example: { "name":
+    "wrench", "mass": "1.3kg", "count": "3" }.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  nodeIp = _messages.StringField(2)
+
+
+class BareMetalStandaloneNodePool(_messages.Message):
+  r"""Resource that represents a bare metal standalone node pool.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the bare metal
+      standalone node pool.
+
+  Messages:
+    AnnotationsValue: Annotations on the bare metal standalone node pool. This
+      field has the same restrictions as Kubernetes annotations. The total
+      size of all keys and values combined is limited to 256k. Key can have 2
+      segments: prefix (optional) and name (required), separated by a slash
+      (/). Prefix must be a DNS subdomain. Name must be 63 characters or less,
+      begin and end with alphanumerics, with dashes (-), underscores (_), dots
+      (.), and alphanumerics between.
+
+  Fields:
+    annotations: Annotations on the bare metal standalone node pool. This
+      field has the same restrictions as Kubernetes annotations. The total
+      size of all keys and values combined is limited to 256k. Key can have 2
+      segments: prefix (optional) and name (required), separated by a slash
+      (/). Prefix must be a DNS subdomain. Name must be 63 characters or less,
+      begin and end with alphanumerics, with dashes (-), underscores (_), dots
+      (.), and alphanumerics between.
+    createTime: Output only. The time at which this bare metal standalone node
+      pool was created.
+    deleteTime: Output only. The time at which this bare metal standalone node
+      pool was deleted. If the resource is not deleted, this must be empty
+    displayName: The display name for the bare metal standalone node pool.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the
+      client has an up-to-date value before proceeding. Allows clients to
+      perform consistent read-modify-writes through optimistic concurrency
+      control.
+    name: Immutable. The bare metal standalone node pool resource name.
+    nodePoolConfig: Required. Node pool configuration.
+    reconciling: Output only. If set, there are currently changes in flight to
+      the bare metal standalone node pool.
+    state: Output only. The current state of the bare metal standalone node
+      pool.
+    status: Output only. ResourceStatus representing the detailed node pool
+      status.
+    uid: Output only. The unique identifier of the bare metal standalone node
+      pool.
+    updateTime: Output only. The time at which this bare metal standalone node
+      pool was last updated.
+    upgradePolicy: The worker node pool upgrade config.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the bare metal standalone node pool.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      PROVISIONING: The PROVISIONING state indicates the bare metal standalone
+        node pool is being created.
+      RUNNING: The RUNNING state indicates the bare metal standalone node pool
+        has been created and is fully usable.
+      RECONCILING: The RECONCILING state indicates that the bare metal
+        standalone node pool is being updated. It remains available, but
+        potentially with degraded performance.
+      STOPPING: The STOPPING state indicates the bare metal standalone node
+        pool is being deleted.
+      ERROR: The ERROR state indicates the bare metal standalone node pool is
+        in a broken unrecoverable state.
+      DEGRADED: The DEGRADED state indicates the bare metal standalone node
+        pool requires user action to restore full functionality.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    RUNNING = 2
+    RECONCILING = 3
+    STOPPING = 4
+    ERROR = 5
+    DEGRADED = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Annotations on the bare metal standalone node pool. This field has the
+    same restrictions as Kubernetes annotations. The total size of all keys
+    and values combined is limited to 256k. Key can have 2 segments: prefix
+    (optional) and name (required), separated by a slash (/). Prefix must be a
+    DNS subdomain. Name must be 63 characters or less, begin and end with
+    alphanumerics, with dashes (-), underscores (_), dots (.), and
+    alphanumerics between.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  name = _messages.StringField(6)
+  nodePoolConfig = _messages.MessageField('BareMetalStandaloneNodePoolConfig', 7)
+  reconciling = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  status = _messages.MessageField('ResourceStatus', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  upgradePolicy = _messages.MessageField('BareMetalStandaloneNodePoolUpgradePolicy', 13)
+
+
+class BareMetalStandaloneNodePoolConfig(_messages.Message):
+  r"""BareMetalStandaloneNodePoolConfig describes the configuration of all
+  nodes within a given bare metal standalone node pool.
+
+  Enums:
+    OperatingSystemValueValuesEnum: Specifies the nodes operating system
+      (default: LINUX).
+
+  Messages:
+    LabelsValue: The labels assigned to nodes of this node pool. An object
+      containing a list of key/value pairs. Example: { "name": "wrench",
+      "mass": "1.3kg", "count": "3" }.
+
+  Fields:
+    kubeletConfig: The modifiable kubelet configurations for the baremetal
+      machines.
+    labels: The labels assigned to nodes of this node pool. An object
+      containing a list of key/value pairs. Example: { "name": "wrench",
+      "mass": "1.3kg", "count": "3" }.
+    nodeConfigs: Required. The list of machine addresses in the bare metal
+      standalone node pool.
+    operatingSystem: Specifies the nodes operating system (default: LINUX).
+    taints: The initial taints assigned to nodes of this node pool.
+  """
+
+  class OperatingSystemValueValuesEnum(_messages.Enum):
+    r"""Specifies the nodes operating system (default: LINUX).
+
+    Values:
+      OPERATING_SYSTEM_UNSPECIFIED: No operating system runtime selected.
+      LINUX: Linux operating system.
+    """
+    OPERATING_SYSTEM_UNSPECIFIED = 0
+    LINUX = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels assigned to nodes of this node pool. An object containing a
+    list of key/value pairs. Example: { "name": "wrench", "mass": "1.3kg",
+    "count": "3" }.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  kubeletConfig = _messages.MessageField('BareMetalStandaloneKubeletConfig', 1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  nodeConfigs = _messages.MessageField('BareMetalStandaloneNodeConfig', 3, repeated=True)
+  operatingSystem = _messages.EnumField('OperatingSystemValueValuesEnum', 4)
+  taints = _messages.MessageField('NodeTaint', 5, repeated=True)
+
+
+class BareMetalStandaloneNodePoolUpgradePolicy(_messages.Message):
+  r"""BareMetalStandaloneNodePoolUpgradePolicy defines the node pool upgrade
+  policy.
+
+  Fields:
+    parallelUpgradeConfig: The parallel upgrade settings for worker node
+      pools.
+  """
+
+  parallelUpgradeConfig = _messages.MessageField('BareMetalStandaloneParallelUpgradeConfig', 1)
+
+
 class BareMetalStandaloneOsEnvironmentConfig(_messages.Message):
   r"""Specifies operating system operation settings for cluster provisioning.
 
@@ -1806,6 +2090,22 @@ class BareMetalStandaloneOsEnvironmentConfig(_messages.Message):
   """
 
   packageRepoExcluded = _messages.BooleanField(1)
+
+
+class BareMetalStandaloneParallelUpgradeConfig(_messages.Message):
+  r"""BareMetalStandaloneParallelUpgradeConfig defines the parallel upgrade
+  settings for worker node pools.
+
+  Fields:
+    concurrentNodes: Required. The maximum number of nodes that can be
+      upgraded at once.
+    minimumAvailableNodes: The minimum number of nodes that should be healthy
+      and available during an upgrade. If set to the default value of 0, it is
+      possible that none of the nodes will be available during an upgrade.
+  """
+
+  concurrentNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minimumAvailableNodes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class BareMetalStandalonePortConfig(_messages.Message):
@@ -1931,6 +2231,7 @@ class BareMetalVersionInfo(_messages.Message):
   r"""Contains information about a specific Anthos on bare metal version.
 
   Fields:
+    dependencies: The list of upgrade dependencies for this version.
     hasDependencies: If set, the cluster dependencies (e.g. the admin cluster,
       other user clusters managed by the same admin cluster, version skew
       policy, etc) must be upgraded before this version can be installed or
@@ -1938,8 +2239,9 @@ class BareMetalVersionInfo(_messages.Message):
     version: Version number e.g. 1.13.1.
   """
 
-  hasDependencies = _messages.BooleanField(1)
-  version = _messages.StringField(2)
+  dependencies = _messages.MessageField('UpgradeDependency', 1, repeated=True)
+  hasDependencies = _messages.BooleanField(2)
+  version = _messages.StringField(3)
 
 
 class BareMetalVipConfig(_messages.Message):
@@ -2074,8 +2376,7 @@ class EnrollBareMetalAdminClusterRequest(_messages.Message):
     bareMetalAdminClusterId: User provided OnePlatform identifier that is used
       as part of the resource name. This must be unique among all GKE on-prem
       clusters within a project and location and will return a 409 if the
-      cluster already exists. This value must be up to 40 characters and
-      follow RFC-1123 (https://tools.ietf.org/html/rfc1123) format.
+      cluster already exists. (https://tools.ietf.org/html/rfc1123) format.
     membership: Required. This is the full resource name of this admin
       cluster's fleet membership.
   """
@@ -2097,12 +2398,11 @@ class EnrollBareMetalClusterRequest(_messages.Message):
     bareMetalClusterId: User provided OnePlatform identifier that is used as
       part of the resource name. This must be unique among all bare metal
       clusters within a project and location and will return a 409 if the
-      cluster already exists. This value must be up to 40 characters and
-      follow RFC-1123 (https://tools.ietf.org/html/rfc1123) format.
-    localName: The object name of the bare metal cluster custom resource on
-      the associated admin cluster. This field is used to support conflicting
-      resource names when enrolling existing clusters to the API. When not
-      provided, this field will resolve to the bare_metal_cluster_id.
+      cluster already exists. (https://tools.ietf.org/html/rfc1123) format.
+    localName: Optional. The object name of the bare metal cluster custom
+      resource on the associated admin cluster. This field is used to support
+      conflicting resource names when enrolling existing clusters to the API.
+      When not provided, this field will resolve to the bare_metal_cluster_id.
       Otherwise, it must match the object name of the bare metal cluster
       custom resource. It is not modifiable outside / beyond the enrollment
       operation.
@@ -2119,8 +2419,7 @@ class EnrollBareMetalNodePoolRequest(_messages.Message):
 
   Fields:
     bareMetalNodePoolId: User provided OnePlatform identifier that is used as
-      part of the resource name. This value must be up to 40 characters and
-      follow RFC-1123 (https://tools.ietf.org/html/rfc1123) format.
+      part of the resource name. (https://tools.ietf.org/html/rfc1123) format.
     validateOnly: If set, only validate the request, but do not actually
       enroll the node pool.
   """
@@ -2137,8 +2436,7 @@ class EnrollBareMetalStandaloneClusterRequest(_messages.Message):
     bareMetalStandaloneClusterId: User provided OnePlatform identifier that is
       used as part of the resource name. This must be unique among all GKE on-
       prem clusters within a project and location and will return a 409 if the
-      cluster already exists. This value must be up to 40 characters and
-      follow RFC-1123 (https://tools.ietf.org/html/rfc1123) format.
+      cluster already exists. (https://tools.ietf.org/html/rfc1123) format.
     membership: Required. This is the full resource name of this bare metal
       standalone cluster's fleet membership.
   """
@@ -2153,9 +2451,8 @@ class EnrollBareMetalStandaloneNodePoolRequest(_messages.Message):
 
   Fields:
     bareMetalStandaloneNodePoolId: User provided OnePlatform identifier that
-      is used as part of the resource name. This value must be up to 40
-      characters and follow RFC-1123 (https://tools.ietf.org/html/rfc1123)
-      format.
+      is used as part of the resource name.
+      (https://tools.ietf.org/html/rfc1123) format.
     validateOnly: If set, only validate the request, but do not actually
       enroll the node pool.
   """
@@ -2174,8 +2471,7 @@ class EnrollVmwareAdminClusterRequest(_messages.Message):
     vmwareAdminClusterId: User provided OnePlatform identifier that is used as
       part of the resource name. This must be unique among all GKE on-prem
       clusters within a project and location and will return a 409 if the
-      cluster already exists. This value must be up to 40 characters and
-      follow RFC-1123 (https://tools.ietf.org/html/rfc1123) format.
+      cluster already exists. (https://tools.ietf.org/html/rfc1123) format.
   """
 
   membership = _messages.StringField(1)
@@ -2192,19 +2488,18 @@ class EnrollVmwareClusterRequest(_messages.Message):
       cluster's fleet membership. In the future, references to other resource
       types might be allowed if admin clusters are modeled as their own
       resources.
-    localName: The object name of the VMware OnPremUserCluster custom resource
-      on the associated admin cluster. This field is used to support
-      conflicting resource names when enrolling existing clusters to the API.
-      When not provided, this field will resolve to the vmware_cluster_id.
-      Otherwise, it must match the object name of the VMware OnPremUserCluster
-      custom resource. It is not modifiable outside / beyond the enrollment
-      operation.
+    localName: Optional. The object name of the VMware OnPremUserCluster
+      custom resource on the associated admin cluster. This field is used to
+      support conflicting resource names when enrolling existing clusters to
+      the API. When not provided, this field will resolve to the
+      vmware_cluster_id. Otherwise, it must match the object name of the
+      VMware OnPremUserCluster custom resource. It is not modifiable outside /
+      beyond the enrollment operation.
     validateOnly: Validate the request without actually doing any updates.
     vmwareClusterId: User provided OnePlatform identifier that is used as part
       of the resource name. This must be unique among all GKE on-prem clusters
       within a project and location and will return a 409 if the cluster
-      already exists. This value must be up to 40 characters and follow
-      RFC-1123 (https://tools.ietf.org/html/rfc1123) format.
+      already exists. (https://tools.ietf.org/html/rfc1123) format.
   """
 
   adminClusterMembership = _messages.StringField(1)
@@ -3210,6 +3505,63 @@ class GkeonpremProjectsLocationsBareMetalClustersUnenrollRequest(_messages.Messa
   validateOnly = _messages.BooleanField(5)
 
 
+class GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandaloneNodePoolsCreateRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandalo
+  neNodePoolsCreateRequest object.
+
+  Fields:
+    bareMetalStandaloneNodePool: A BareMetalStandaloneNodePool resource to be
+      passed as the request body.
+    bareMetalStandaloneNodePoolId: The ID to use for the node pool, which will
+      become the final component of the node pool's resource name. This value
+      must be up to 63 characters, and valid characters are /a-z-/. The value
+      must not be permitted to be a UUID (or UUID-like: anything matching
+      /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i).
+    parent: Required. The parent resource where this node pool will be
+      created. projects/{project}/locations/{location}/bareMetalStandaloneClus
+      ters/{cluster}
+    validateOnly: If set, only validate the request, but do not actually
+      create the node pool.
+  """
+
+  bareMetalStandaloneNodePool = _messages.MessageField('BareMetalStandaloneNodePool', 1)
+  bareMetalStandaloneNodePoolId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandaloneNodePoolsDeleteRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandalo
+  neNodePoolsDeleteRequest object.
+
+  Fields:
+    allowMissing: If set to true, and the bare metal standalone node pool is
+      not found, the request will succeed but no action will be taken on the
+      server and return a completed LRO.
+    etag: The current etag of the BareMetalStandaloneNodePool. If an etag is
+      provided and does not match the current etag of the node pool, deletion
+      will be blocked and an ABORTED error will be returned.
+    ignoreErrors: If set to true, the deletion of a bare metal standalone node
+      pool resource will succeed even if errors occur during deletion. This
+      parameter can be used when you want to delete GCP's node pool resource
+      and you've already deleted the on-prem admin cluster that hosted your
+      node pool. WARNING: Using this parameter when your user cluster still
+      exists may result in a deleted GCP node pool but an existing on-prem
+      node pool.
+    name: Required. The name of the node pool to delete. Format: projects/{pro
+      ject}/locations/{location}/bareMetalStandaloneClusters/{cluster}/bareMet
+      alStandaloneNodePools/{nodepool}
+    validateOnly: If set, only validate the request, but do not actually
+      delete the node pool.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  ignoreErrors = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
+
+
 class GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandaloneNodePoolsEnrollRequest(_messages.Message):
   r"""A GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandalo
   neNodePoolsEnrollRequest object.
@@ -3225,6 +3577,93 @@ class GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandaloneNo
 
   enrollBareMetalStandaloneNodePoolRequest = _messages.MessageField('EnrollBareMetalStandaloneNodePoolRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandaloneNodePoolsGetRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandalo
+  neNodePoolsGetRequest object.
+
+  Fields:
+    name: Required. The name of the bare metal standalone node pool to
+      retrieve. projects/{project}/locations/{location}/bareMetalStandaloneClu
+      sters/{cluster}/bareMetalStandaloneNodePools/{nodepool}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandaloneNodePoolsListRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandalo
+  neNodePoolsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of node pools to return. The service may
+      return fewer than this value. If unspecified, at most 50 node pools will
+      be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: A page token, received from a previous
+      `ListBareMetalStandaloneNodePools` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListBareMetaStandaloneNodePools` must match the call that provided the
+      page token.
+    parent: Required. The parent, which owns this collection of node pools.
+      Format: projects/{project}/locations/{location}/bareMetalStandaloneClust
+      ers/{bareMetalStandaloneCluster}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandaloneNodePoolsPatchRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandalo
+  neNodePoolsPatchRequest object.
+
+  Fields:
+    allowMissing: If set to true, and the bare metal standalone node pool is
+      not found, the request will create a new bare metal standalone node pool
+      with the provided configuration. The user must have both create and
+      update permission to call Update with allow_missing set to true.
+    bareMetalStandaloneNodePool: A BareMetalStandaloneNodePool resource to be
+      passed as the request body.
+    name: Immutable. The bare metal standalone node pool resource name.
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the BareMetalStandaloneNodePool resource by the update.
+      The fields specified in the update_mask are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+    validateOnly: Validate the request without actually doing any updates.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  bareMetalStandaloneNodePool = _messages.MessageField('BareMetalStandaloneNodePool', 2)
+  name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandaloneNodePoolsUnenrollRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalStandaloneClustersBareMetalStandalo
+  neNodePoolsUnenrollRequest object.
+
+  Fields:
+    allowMissing: If set to true, and the bare metal standalone node pool is
+      not found, the request will succeed but no action will be taken on the
+      server and return a completed LRO.
+    etag: The current etag of the bare metal standalone node pool. If an etag
+      is provided and does not match the current etag of node pool, deletion
+      will be blocked and an ABORTED error will be returned.
+    name: Required. The name of the node pool to unenroll. Format: projects/{p
+      roject}/locations/{location}/bareMetalStandaloneClusters/{cluster}/bareM
+      etalStandaloneNodePools/{nodepool}
+    validateOnly: If set, only validate the request, but do not actually
+      unenroll the node pool.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
 
 
 class GkeonpremProjectsLocationsBareMetalStandaloneClustersEnrollRequest(_messages.Message):
@@ -4382,6 +4821,22 @@ class ListBareMetalStandaloneClustersResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListBareMetalStandaloneNodePoolsResponse(_messages.Message):
+  r"""Response message for listing bare metal standalone node pools.
+
+  Fields:
+    bareMetalStandaloneNodePools: The node pools from the specified parent
+      resource.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached.
+  """
+
+  bareMetalStandaloneNodePools = _messages.MessageField('BareMetalStandaloneNodePool', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -4535,6 +4990,60 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class Metric(_messages.Message):
+  r"""Progress metric is (string, int|float|string) pair.
+
+  Enums:
+    MetricValueValuesEnum: Required. The metric name.
+
+  Fields:
+    doubleValue: For metrics with floating point value.
+    intValue: For metrics with integer value.
+    metric: Required. The metric name.
+    stringValue: For metrics with custom values (ratios, visual progress,
+      etc.).
+  """
+
+  class MetricValueValuesEnum(_messages.Enum):
+    r"""Required. The metric name.
+
+    Values:
+      METRIC_ID_UNSPECIFIED: Not set.
+      NODES_TOTAL: The total number of nodes being actuated.
+      NODES_DRAINING: The number of nodes draining.
+      NODES_UPGRADING: The number of nodes actively upgrading.
+      NODES_PENDING_UPGRADE: The number of nodes to be upgraded.
+      NODES_UPGRADED: The number of nodes upgraded.
+      NODES_FAILED: The number of nodes to fail actuation.
+      NODES_HEALTHY: The number of nodes healthy.
+      NODES_RECONCILING: The number of nodes reconciling.
+      NODES_IN_MAINTENANCE: The number of nodes in maintenance mode.
+      PREFLIGHTS_COMPLETED: The number of completed preflight checks.
+      PREFLIGHTS_RUNNING: The number of preflight checks running.
+      PREFLIGHTS_FAILED: The number of preflight checks failed.
+      PREFLIGHTS_TOTAL: The total number of preflight checks.
+    """
+    METRIC_ID_UNSPECIFIED = 0
+    NODES_TOTAL = 1
+    NODES_DRAINING = 2
+    NODES_UPGRADING = 3
+    NODES_PENDING_UPGRADE = 4
+    NODES_UPGRADED = 5
+    NODES_FAILED = 6
+    NODES_HEALTHY = 7
+    NODES_RECONCILING = 8
+    NODES_IN_MAINTENANCE = 9
+    PREFLIGHTS_COMPLETED = 10
+    PREFLIGHTS_RUNNING = 11
+    PREFLIGHTS_FAILED = 12
+    PREFLIGHTS_TOTAL = 13
+
+  doubleValue = _messages.FloatField(1)
+  intValue = _messages.IntegerField(2)
+  metric = _messages.EnumField('MetricValueValuesEnum', 3)
+  stringValue = _messages.StringField(4)
 
 
 class NodeTaint(_messages.Message):
@@ -4698,6 +5207,7 @@ class OperationMetadata(_messages.Message):
       occur temporarily during self-managed cluster upgrades.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
+    progress: Output only. Detailed progress information for the operation.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
       successfully been cancelled have [Operation.error] value with a
@@ -4719,22 +5229,91 @@ class OperationMetadata(_messages.Message):
       DELETE: The resource is being deleted.
       UPDATE: The resource is being updated.
       UPGRADE: The resource is being upgraded.
+      PLATFORM_UPGRADE: The platform is being upgraded.
     """
     OPERATION_TYPE_UNSPECIFIED = 0
     CREATE = 1
     DELETE = 2
     UPDATE = 3
     UPGRADE = 4
+    PLATFORM_UPGRADE = 5
 
   apiVersion = _messages.StringField(1)
   controlPlaneDisconnected = _messages.BooleanField(2)
   createTime = _messages.StringField(3)
   endTime = _messages.StringField(4)
-  requestedCancellation = _messages.BooleanField(5)
-  statusMessage = _messages.StringField(6)
-  target = _messages.StringField(7)
-  type = _messages.EnumField('TypeValueValuesEnum', 8)
-  verb = _messages.StringField(9)
+  progress = _messages.MessageField('OperationProgress', 5)
+  requestedCancellation = _messages.BooleanField(6)
+  statusMessage = _messages.StringField(7)
+  target = _messages.StringField(8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  verb = _messages.StringField(10)
+
+
+class OperationProgress(_messages.Message):
+  r"""Information about operation progress. LINT.IfChange
+
+  Fields:
+    stages: The stages of the operation.
+  """
+
+  stages = _messages.MessageField('OperationStage', 1, repeated=True)
+
+
+class OperationStage(_messages.Message):
+  r"""Information about a particular stage of an operation.
+
+  Enums:
+    StageValueValuesEnum: The high-level stage of the operation.
+    StateValueValuesEnum: Output only. State of the stage.
+
+  Fields:
+    endTime: Time the stage ended.
+    metrics: Progress metric bundle.
+    stage: The high-level stage of the operation.
+    startTime: Time the stage started.
+    state: Output only. State of the stage.
+  """
+
+  class StageValueValuesEnum(_messages.Enum):
+    r"""The high-level stage of the operation.
+
+    Values:
+      STAGE_UNSPECIFIED: Not set.
+      PREFLIGHT_CHECK: Preflight checks are running.
+      CONFIGURE: Resource is being configured.
+      DEPLOY: Resource is being deployed.
+      HEALTH_CHECK: Waiting for the resource to become healthy.
+      UPDATE: Resource is being updated.
+    """
+    STAGE_UNSPECIFIED = 0
+    PREFLIGHT_CHECK = 1
+    CONFIGURE = 2
+    DEPLOY = 3
+    HEALTH_CHECK = 4
+    UPDATE = 5
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the stage.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      PENDING: The stage is pending.
+      RUNNING: The stage is running
+      SUCCEEDED: The stage has completed successfully.
+      FAILED: The stage has failed.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    SUCCEEDED = 3
+    FAILED = 4
+
+  endTime = _messages.StringField(1)
+  metrics = _messages.MessageField('Metric', 2, repeated=True)
+  stage = _messages.EnumField('StageValueValuesEnum', 3)
+  startTime = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class Policy(_messages.Message):
@@ -5060,6 +5639,24 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class UpgradeDependency(_messages.Message):
+  r"""UpgradeDependency represents a dependency when upgrading a resource.
+
+  Fields:
+    currentVersion: Current version of the dependency e.g. 1.15.0.
+    localName: Local name of the dependency.
+    resourceName: Resource name of the dependency.
+    targetVersion: Target version of the dependency e.g. 1.16.1. This is the
+      version the dependency needs to be upgraded to before a resource can be
+      upgraded.
+  """
+
+  currentVersion = _messages.StringField(1)
+  localName = _messages.StringField(2)
+  resourceName = _messages.StringField(3)
+  targetVersion = _messages.StringField(4)
 
 
 class ValidationCheck(_messages.Message):
@@ -5736,9 +6333,12 @@ class VmwareControlPlaneVsphereConfig(_messages.Message):
 
   Fields:
     datastore: The Vsphere datastore used by the control plane Node.
+    storagePolicyName: The Vsphere storage policy used by the control plane
+      Node.
   """
 
   datastore = _messages.StringField(1)
+  storagePolicyName = _messages.StringField(2)
 
 
 class VmwareDataplaneV2Config(_messages.Message):
@@ -6194,6 +6794,8 @@ class VmwareVCenterConfig(_messages.Message):
     datastore: The name of the vCenter datastore for the user cluster.
     folder: The name of the vCenter folder for the user cluster.
     resourcePool: The name of the vCenter resource pool for the user cluster.
+    storagePolicyName: The name of the vCenter storage policy for the user
+      cluster.
   """
 
   address = _messages.StringField(1)
@@ -6203,6 +6805,7 @@ class VmwareVCenterConfig(_messages.Message):
   datastore = _messages.StringField(5)
   folder = _messages.StringField(6)
   resourcePool = _messages.StringField(7)
+  storagePolicyName = _messages.StringField(8)
 
 
 class VmwareVersionInfo(_messages.Message):
@@ -6244,11 +6847,14 @@ class VmwareVsphereConfig(_messages.Message):
   Fields:
     datastore: The name of the vCenter datastore. Inherited from the user
       cluster.
+    storagePolicyName: The name of the vCenter storage policy. Inherited from
+      the user cluster.
     tags: Tags to apply to VMs.
   """
 
   datastore = _messages.StringField(1)
-  tags = _messages.MessageField('VmwareVsphereTag', 2, repeated=True)
+  storagePolicyName = _messages.StringField(2)
+  tags = _messages.MessageField('VmwareVsphereTag', 3, repeated=True)
 
 
 class VmwareVsphereTag(_messages.Message):

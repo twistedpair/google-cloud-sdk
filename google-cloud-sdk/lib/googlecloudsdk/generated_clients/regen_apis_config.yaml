@@ -173,6 +173,10 @@ apis:
     v1:
       discovery_doc: assuredworkloads_v1.json
       default: true
+  authztoolkit:
+    v1alpha:
+      discovery_doc: authztoolkit_v1alpha.json
+      default: true
   batch:
     v1alpha:
       discovery_doc: batch_v1alpha.json
@@ -486,10 +490,19 @@ apis:
     v1alpha1:
       discovery_doc: containeranalysis_v1alpha1.json
       default: true
+      resources:
+        projects.resources:
+          path: projects/{projectsId}/resources/{resourcesId}
     v1beta1:
       discovery_doc: containeranalysis_v1beta1.json
+      resources:
+        projects.resources:
+          path: projects/{projectsId}/resources/{resourcesId}
     v1:
       discovery_doc: containeranalysis_v1.json
+      resources:
+        projects.resources:
+          path: projects/{projectsId}/resources/{resourcesId}
   datacatalog:
     v1alpha3:
       discovery_doc: datacatalog_v1alpha3.json
@@ -1026,6 +1039,12 @@ apis:
     v2:
       discovery_doc: orgpolicy_v2.json
       default: true
+      unelidable_request_methods:
+      - orgpolicy.organizations.customConstraints.patch
+  parallelstore:
+    v1alpha:
+      discovery_doc: parallelstore_v1alpha.json
+      default: true
   policytroubleshooter:
     v1beta:
       enable_mtls: false
@@ -1546,6 +1565,10 @@ canonical_surfaces:
   assuredworkloads:
     name: assuredworkloads
     command: assured
+  authztoolkit:
+    name: authztoolkit
+    command: authz-toolkit
+    hidden: true
   baremetalsolution:
     name: baremetalsolution
     command: bms

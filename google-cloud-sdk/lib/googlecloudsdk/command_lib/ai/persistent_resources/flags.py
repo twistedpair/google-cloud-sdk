@@ -81,22 +81,25 @@ _RESOURCE_POOL_SPEC = base.Argument(
       *min-replica-count*::: (Optional) The minimum number of replicas that
         autoscaling will down-size to for this resource pool. Both
         min-replica-count and max-replica-count are required to enable
-        autoscaling on this resource pool.
+        autoscaling on this resource pool. The value for this parameter must be
+        at least 1.
       *max-replica-count*::: (Optional) The maximum number of replicas that
         autoscaling will create for this resource pool. Both min-replica-count
         and max-replica-count are required to enable autoscaling on this
-        resource pool.
-      *accelerator-type*::: The type of GPU to attach to the machines.
+        resource pool. The maximum value for this parameter is 1000.
+      *accelerator-type*::: (Optional) The type of GPU to attach to the
+        machines.
         see https://cloud.google.com/vertex-ai/docs/training/configure-compute#specifying_gpus
         for more requirements. This field corresponds to the `machineSpec.acceleratorType`
         field in `ResourcePool` API message.
-      *accelerator-count*::: The number of GPUs for each VM in the resource
-        pool to use. The default the value if 1. This field corresponds to the
-        `machineSpec.acceleratorCount` field in `ResourcePool` API message.
-      *disk-type*::: The type of disk to use for each machine's boot disk in
+      *accelerator-count*::: (Required with accelerator-type) The number of GPUs
+        for each VM in the resource pool to use. The default the value if 1.
+        This field corresponds to the `machineSpec.acceleratorCount` field in
+        `ResourcePool` API message.
+      *disk-type*::: (Optional) The type of disk to use for each machine's boot disk in
         the resource pool. The default is `pd-standard`. This field corresponds
         to the `diskSpec.bootDiskType` field in `ResourcePool` API message.
-      *disk-size*::: The disk size in Gb for each machine's boot disk in the
+      *disk-size*::: (Optional) The disk size in Gb for each machine's boot disk in the
         resource pool. The default is `100`. This field corresponds to
         the `diskSpec.bootDiskSizeGb` field in `ResourcePool` API message.
 
@@ -104,6 +107,15 @@ _RESOURCE_POOL_SPEC = base.Argument(
       ::::
       Example:
       --worker-pool-spec=replica-count=1,machine-type=n1-highmem-2
+      """))
+
+ENABLE_CUSTOM_SERVICE_ACCOUNT = base.Argument(
+    '--enable-custom-service-account',
+    action='store_true',
+    required=False,
+    help=textwrap.dedent("""\
+      Whether or not to use a custom user-managed service account with this
+      Persistent Resource.
       """))
 
 
@@ -115,14 +127,22 @@ def AddCreatePersistentResourceFlags(parser):
       prompt_func=region_util.GetPromptForRegionFunc(
           constants.SUPPORTED_TRAINING_REGIONS))
   shared_flags.NETWORK.AddToParser(parser)
+  ENABLE_CUSTOM_SERVICE_ACCOUNT.AddToParser(parser)
   # TODO(b/262780738): Unimplemented
   # shared_flags.TRAINING_SERVICE_ACCOUNT.AddToParser(parser)
-  # shared_flags.AddKmsKeyResourceArg(parser, 'persistent resource')
+  shared_flags.AddKmsKeyResourceArg(parser, 'persistent resource')
 
   labels_util.AddCreateLabelsFlags(parser)
 
   shared_flags.GetDisplayNameArg('Persistent Resource',
                                  required=False).AddToParser(parser)
+
+  resource_id_flag = base.Argument(
+      '--persistent-resource-id',
+      required=True,
+      default=None,
+      help='User-specified ID of the Persistent Resource.')
+  resource_id_flag.AddToParser(parser)
 
   resource_pool_spec_group = base.ArgumentGroup(
       help='resource pool specification.', required=True

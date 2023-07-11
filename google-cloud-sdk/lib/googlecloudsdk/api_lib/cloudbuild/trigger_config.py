@@ -262,24 +262,20 @@ def AddSubstitutions(argument_group):
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       help="""\
-Parameters to be substituted in the build specification.
+Parameters to be substituted in the build specification. For example:
 
-For example (using some nonsensical substitution keys; all keys must begin with
-an underscore):
-
-  $ gcloud builds triggers create ... --config config.yaml
-      --substitutions _FAVORITE_COLOR=blue,_NUM_CANDIES=10
+  $ {command} ... --substitutions _FAVORITE_COLOR=blue,_NUM_CANDIES=10
 
 This will result in a build where every occurrence of ```${_FAVORITE_COLOR}```
 in certain fields is replaced by "blue", and similarly for ```${_NUM_CANDIES}```
 and "10".
 
-Only the following built-in variables can be specified with the
-`--substitutions` flag: REPO_NAME, BRANCH_NAME, TAG_NAME, REVISION_ID,
-COMMIT_SHA, SHORT_SHA.
+Substitutions can be applied to user-defined variables (starting with an
+underscore) and to the following built-in variables: REPO_NAME, BRANCH_NAME,
+TAG_NAME, REVISION_ID, COMMIT_SHA, SHORT_SHA.
 
 For more details, see:
-https://cloud.google.com/cloud-build/docs/api/build-requests#substitutions
+https://cloud.google.com/build/docs/configuring-builds/substitute-variable-values
 """)
 
 

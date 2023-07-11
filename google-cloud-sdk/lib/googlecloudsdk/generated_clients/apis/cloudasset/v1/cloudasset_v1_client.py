@@ -476,7 +476,7 @@ class CloudassetV1(base_api.BaseApiClient):
         method_id='cloudasset.analyzeIamPolicy',
         ordered_params=['scope'],
         path_params=['scope'],
-        query_params=['analysisQuery_accessSelector_permissions', 'analysisQuery_accessSelector_roles', 'analysisQuery_conditionContext_accessTime', 'analysisQuery_identitySelector_identity', 'analysisQuery_options_analyzeServiceAccountImpersonation', 'analysisQuery_options_expandGroups', 'analysisQuery_options_expandResources', 'analysisQuery_options_expandRoles', 'analysisQuery_options_includeDenyPolicyAnalysis', 'analysisQuery_options_outputGroupEdges', 'analysisQuery_options_outputResourceEdges', 'analysisQuery_resourceSelector_fullResourceName', 'executionTimeout', 'savedAnalysisQuery'],
+        query_params=['analysisQuery_accessSelector_permissions', 'analysisQuery_accessSelector_roles', 'analysisQuery_conditionContext_accessTime', 'analysisQuery_identitySelector_identity', 'analysisQuery_options_analyzeServiceAccountImpersonation', 'analysisQuery_options_expandGroups', 'analysisQuery_options_expandResources', 'analysisQuery_options_expandRoles', 'analysisQuery_options_outputGroupEdges', 'analysisQuery_options_outputResourceEdges', 'analysisQuery_resourceSelector_fullResourceName', 'executionTimeout', 'savedAnalysisQuery'],
         relative_path='v1/{+scope}:analyzeIamPolicy',
         request_field='',
         request_type_name='CloudassetAnalyzeIamPolicyRequest',

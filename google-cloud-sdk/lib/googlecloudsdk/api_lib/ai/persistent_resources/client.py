@@ -53,10 +53,13 @@ class PersistentResourcesClient(object):
   def Create(self,
              parent,
              resource_pools,
+             persistent_resource_id,
              display_name=None,
              kms_key_name=None,
              labels=None,
-             network=None):
+             network=None,
+             enable_custom_service_account=False,
+             service_account=None):
     """Constructs a request and sends it to the endpoint to create a persistent resource.
 
     Args:
@@ -64,12 +67,18 @@ class PersistentResourcesClient(object):
       create.
       resource_pools: The PersistentResource message instance for the
       creation request.
+      persistent_resource_id: The PersistentResource id for the creation
+      request.
       display_name: str, The display name of the persistent resource to create.
       kms_key_name: A customer-managed encryption key to use for the persistent
       resource.
       labels: LabelValues, map-like user-defined metadata to organize the
       resource.
       network: Network to peer with the PersistentResource
+      enable_custom_service_account: Whether or not to enable this Persistent
+        Resource to use a custom service account.
+      service_account: A service account (email address string) to use for
+        creating the Persistent Resource.
 
     Returns:
       A PersistentResource message instance created.
@@ -87,6 +96,13 @@ class PersistentResourcesClient(object):
     if network:
       persistent_resource.network = network
 
+    if enable_custom_service_account:
+      persistent_resource.resourceRuntimeSpec = (
+          self.GetMessage('ResourceRuntimeSpec')(
+              serviceAccountSpec=self.GetMessage('ServiceAccountSpec')(
+                  enableCustomServiceAccount=True,
+                  serviceAccount=service_account)))
+
     if self._version == constants.ALPHA_VERSION:
       raise errors.ArgumentError('Persistent Resource is unsupported in Alpha.')
     elif self._version == constants.BETA_VERSION:
@@ -94,6 +110,7 @@ class PersistentResourcesClient(object):
           self._messages.AiplatformProjectsLocationsPersistentResourcesCreateRequest(
               parent=parent,
               googleCloudAiplatformV1beta1PersistentResource=persistent_resource,
+              persistentResourceId=persistent_resource_id,
           )
       )
     else:

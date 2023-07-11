@@ -201,6 +201,14 @@ def AddTLSInspectionPolicy(
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddNoTLSInspectionPolicyArg(
+    parser, help_text="Remove TLS inspection policy from this association."
+):
+  parser.add_argument(
+      "--no-tls-inspection-policy", action="store_true", help=help_text
+  )
+
+
 def MakeGetUriFunc(release_track):
   return (
       lambda x: activation_api.GetEffectiveApiEndpoint(release_track) + x.name

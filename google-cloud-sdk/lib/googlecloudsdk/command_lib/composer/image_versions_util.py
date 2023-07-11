@@ -200,6 +200,30 @@ def IsVersionComposer25Compatible(image_version):
   return False
 
 
+def IsVersionAirflowCommandsApiCompatible(image_version):
+  """Checks if given `version` is compatible with Composer Airflow Commands API.
+
+  Args:
+    image_version: image version str that includes Composer version.
+
+  Returns:
+    True if Composer version is compatible with Aiflow Commands API,
+    otherwise False.
+  """
+
+  if image_version:
+    version_item = _ImageVersionItem(image_version)
+    if version_item and version_item.composer_ver:
+      composer_version = version_item.composer_ver
+      return IsVersionInRange(
+          composer_version,
+          flags.MIN_COMPOSER_RUN_AIRFLOW_CLI_VERSION,
+          None,
+          True,
+      )
+  return False
+
+
 def IsVersionTriggererCompatible(image_version):
   """Checks if given `version` is compatible with triggerer .
 

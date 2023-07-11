@@ -817,6 +817,9 @@ class Instance(_messages.Message):
     nodeCount: Required. Number of nodes in the Memcached instance.
     parameters: User defined parameters to apply to the memcached process on
       each node.
+    reservedIpRangeId: Optional. Contains the id of allocated IP address
+      ranges associated with the private service access connection for
+      example, "test-default" associated with IP range 10.0.0.0/29.
     state: Output only. The state of this Memcached instance.
     updateTime: Output only. The time the instance was updated.
     zones: Zones in which Memcached nodes should be provisioned. Memcached
@@ -900,9 +903,10 @@ class Instance(_messages.Message):
   nodeConfig = _messages.MessageField('NodeConfig', 13)
   nodeCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
   parameters = _messages.MessageField('MemcacheParameters', 15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  updateTime = _messages.StringField(17)
-  zones = _messages.StringField(18, repeated=True)
+  reservedIpRangeId = _messages.StringField(16, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  updateTime = _messages.StringField(18)
+  zones = _messages.StringField(19, repeated=True)
 
 
 class InstanceMessage(_messages.Message):

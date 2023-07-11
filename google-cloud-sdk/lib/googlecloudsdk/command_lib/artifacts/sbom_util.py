@@ -892,6 +892,37 @@ def WriteReferenceOccurrence(
   return occ.name
 
 
+def ExportSbom(args):
+  """Export SBOM files for a given AR image.
+
+  Args:
+    args: User input arguments.
+  """
+  if not args.uri:
+    raise ar_exceptions.InvalidInputValueError(
+        '--uri is required.',
+    )
+
+  uri = _RemovePrefix(args.uri, 'https://')
+  if not _IsARDockerImage(uri):
+    raise ar_exceptions.InvalidInputValueError(
+        '{} is not an Artifact Registry image.'.format(uri)
+    )
+
+  artifact = _GetARDockerImage(uri)
+  project = util.GetProject(args)
+  resp = ca_requests.ExportSbomV1beta1(
+      project, 'https://{}'.format(artifact.resource_uri)
+  )
+  log.status.Print(
+      'Exporting the SBOM file for resource {}. Discovery occurrence ID: {}'
+      .format(
+          artifact.resource_uri,
+          resp.discoveryOccurrenceId,
+      )
+  )
+
+
 class SbomReference(object):
   """Holder for SBOM reference.
 

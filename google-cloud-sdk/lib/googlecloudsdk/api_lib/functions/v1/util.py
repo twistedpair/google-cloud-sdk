@@ -23,7 +23,6 @@ from __future__ import unicode_literals
 import argparse
 import functools
 import json
-import os
 import re
 
 from apitools.base.py import exceptions as apitools_exceptions
@@ -281,28 +280,6 @@ def ValidateRuntimeOrRaise(client, runtime, region):
       if runtime_info and runtime_info.warnings
       else None
   )
-
-
-def ValidateDirectoryExistsOrRaiseFunctionError(directory):
-  """Checks if a source directory exists.
-
-  Args:
-    directory: A string: a local path to directory provided by user.
-
-  Returns:
-    The argument provided, if found valid.
-  Raises:
-    ArgumentTypeError: If the user provided a directory which is not valid.
-  """
-  if not os.path.exists(directory):
-    raise exceptions.FunctionsError(
-        'argument `--source`: Provided directory does not exist'
-    )
-  if not os.path.isdir(directory):
-    raise exceptions.FunctionsError(
-        'argument `--source`: Provided path does not point to a directory'
-    )
-  return directory
 
 
 def ValidatePathOrRaise(path):

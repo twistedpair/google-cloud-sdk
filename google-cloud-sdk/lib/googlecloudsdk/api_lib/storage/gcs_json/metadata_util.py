@@ -33,6 +33,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.core import properties
 
 
 # Similar to CORS above, we need a sentinel value allowing us to specify
@@ -276,10 +277,69 @@ def get_object_resource_from_metadata(metadata):
   )
 
 
-def _get_list_with_added_and_removed_acl_grants(acl_list,
-                                                resource_args,
-                                                is_bucket=False,
-                                                is_default_object_acl=False):
+def _get_matching_grant_identifier_to_remove_for_shim(
+    existing_grant, grant_identifiers
+):
+  """Shim-only support for case-insensitive matching on non-entity metadata.
+
+  Ports the logic here:
+  https://github.com/GoogleCloudPlatform/gsutil/blob/0d9d0175b2b10430471c7b744646e56210f991d3/gslib/utils/acl_helper.py#L291
+
+  Args:
+    existing_grant (BucketAccessControl|ObjectAccessControl): A grant currently
+      in a resource's access control list.
+    grant_identifiers (Iterable[str]): User input specifying the grants to
+      remove.
+
+  Returns:
+    A string matching existing_grant in grant_identifiers if one exists.
+      Otherwise, None. Note that this involves preserving the original case of
+      the identifier, despite the fact that this function performs a
+      case-insensitive comparison.
+  """
+  # Making this mapping here is inefficient (O(n^2)), but it allows us to
+  # compartmentalize shim logic. I/O time is likely our main bottleneck anyway.
+  normalized_identifier_to_original = {
+      identifier.lower(): identifier for identifier in grant_identifiers
+  }
+
+  if existing_grant.entityId:
+    normalized_entity_id = existing_grant.entityId.lower()
+    if normalized_entity_id in normalized_identifier_to_original:
+      return normalized_identifier_to_original[normalized_entity_id]
+
+  if existing_grant.email:
+    normalized_email = existing_grant.email.lower()
+    if normalized_email in normalized_identifier_to_original:
+      return normalized_identifier_to_original[normalized_email]
+
+  if existing_grant.domain:
+    normalized_domain = existing_grant.domain.lower()
+    if normalized_domain in normalized_identifier_to_original:
+      return normalized_identifier_to_original[normalized_domain]
+
+  if existing_grant.projectTeam:
+    normalized_identifier = (
+        '{}-{}'.format(
+            existing_grant.projectTeam.team,
+            existing_grant.projectTeam.projectNumber,
+        )
+    ).lower()
+    if normalized_identifier in normalized_identifier_to_original:
+      return normalized_identifier_to_original[normalized_identifier]
+
+  if existing_grant.entity:
+    normalized_entity = existing_grant.entity.lower()
+    if (
+        normalized_entity in normalized_identifier_to_original
+        and normalized_entity in ['allusers', 'allauthenticatedusers']
+    ):
+      return normalized_identifier_to_original[normalized_entity]
+
+
+def _get_list_with_added_and_removed_acl_grants(
+    acl_list, resource_args, is_bucket=False, is_default_object_acl=False
+):
   """Returns shallow copy of ACL policy object with requested changes.
 
   Args:
@@ -294,21 +354,38 @@ def _get_list_with_added_and_removed_acl_grants(acl_list,
   Returns:
     list: Shallow copy of acl_list with added and removed grants.
   """
-
   new_acl_list = []
   if is_default_object_acl:
-    acl_grants_to_remove = set(
-        resource_args.default_object_acl_grants_to_remove or [])
+    acl_identifiers_to_remove = set(
+        resource_args.default_object_acl_grants_to_remove or []
+    )
     acl_grants_to_add = resource_args.default_object_acl_grants_to_add or []
   else:
-    acl_grants_to_remove = set(resource_args.acl_grants_to_remove or [])
+    acl_identifiers_to_remove = set(resource_args.acl_grants_to_remove or [])
     acl_grants_to_add = resource_args.acl_grants_to_add or []
 
-  found_match = {entity: False for entity in acl_grants_to_remove}
+  acl_identifiers_to_add = set(grant['entity'] for grant in acl_grants_to_add)
+
+  found_match = {identifier: False for identifier in acl_identifiers_to_remove}
   for existing_grant in acl_list:
-    if existing_grant.entity in acl_grants_to_remove:
-      found_match[existing_grant.entity] = True
+    if properties.VALUES.storage.run_by_gsutil_shim.GetBool():
+      matched_identifier = _get_matching_grant_identifier_to_remove_for_shim(
+          existing_grant, acl_identifiers_to_remove
+      )
+    elif existing_grant.entity in acl_identifiers_to_remove:
+      matched_identifier = existing_grant.entity
     else:
+      matched_identifier = None
+
+    if matched_identifier in found_match:  # Grant should be removed.
+      found_match[matched_identifier] = True
+
+    # Gsutil's equivalent of this check involves checking more metadata fields:
+    # https://github.com/GoogleCloudPlatform/gsutil/blob/0d9d0175b2b10430471c7b744646e56210f991d3/gslib/utils/acl_helper.py#L158
+    # The shim handles creating entity strings and the case-insensitivity of
+    # comparisons with the "all(Authenticated)Users" groups.
+    elif existing_grant.entity not in acl_identifiers_to_add:
+      # Grant is not being updated, so we add it as-is to new ACLs.
       new_acl_list.append(existing_grant)
 
   unmatched_entities = [k for k, v in found_match.items() if not v]

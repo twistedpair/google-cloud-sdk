@@ -1030,6 +1030,36 @@ class SasportalV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def MigrateOrganization(self, request, global_params=None):
+      r"""Migrates a SAS organization to the cloud.
+
+      This will create GCP projects for each deployment and associate them. The
+      SAS Organization is linked to the gcp project that called the command.
+      go/sas-legacy-customer-migration.
+
+      Args:
+        request: (SasPortalMigrateOrganizationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (SasPortalOperation) The response message.
+      """
+      config = self.GetMethodConfig('MigrateOrganization')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    MigrateOrganization.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sasportal.customers.migrateOrganization',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1alpha1/customers:migrateOrganization',
+        request_field='<request>',
+        request_type_name='SasPortalMigrateOrganizationRequest',
+        response_type_name='SasPortalOperation',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an existing customer.
 

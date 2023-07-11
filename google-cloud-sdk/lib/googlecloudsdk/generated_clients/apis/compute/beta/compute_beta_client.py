@@ -8037,6 +8037,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetMacsecConfig(self, request, global_params=None):
+      r"""Returns the interconnectMacsecConfig for the specified Interconnect.
+
+      Args:
+        request: (ComputeInterconnectsGetMacsecConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectsGetMacsecConfigResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetMacsecConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetMacsecConfig.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnects.getMacsecConfig',
+        ordered_params=['project', 'interconnect'],
+        path_params=['interconnect', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnects/{interconnect}/getMacsecConfig',
+        request_field='',
+        request_type_name='ComputeInterconnectsGetMacsecConfigRequest',
+        response_type_name='InterconnectsGetMacsecConfigResponse',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates an Interconnect in the specified project using the data included in the request.
 
@@ -14655,6 +14681,32 @@ class ComputeBeta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AttachNetworkEndpoints(self, request, global_params=None):
+      r"""Attach a list of network endpoints to the specified network endpoint group.
+
+      Args:
+        request: (ComputeRegionNetworkEndpointGroupsAttachNetworkEndpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AttachNetworkEndpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AttachNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkEndpointGroups.attachNetworkEndpoints',
+        ordered_params=['project', 'region', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}/attachNetworkEndpoints',
+        request_field='regionNetworkEndpointGroupsAttachEndpointsRequest',
+        request_type_name='ComputeRegionNetworkEndpointGroupsAttachNetworkEndpointsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified network endpoint group. Note that the NEG cannot be deleted if it is configured as a backend of a backend service.
 
@@ -14677,6 +14729,32 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}',
         request_field='',
         request_type_name='ComputeRegionNetworkEndpointGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def DetachNetworkEndpoints(self, request, global_params=None):
+      r"""Detach the network endpoint from the specified network endpoint group.
+
+      Args:
+        request: (ComputeRegionNetworkEndpointGroupsDetachNetworkEndpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DetachNetworkEndpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DetachNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkEndpointGroups.detachNetworkEndpoints',
+        ordered_params=['project', 'region', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}/detachNetworkEndpoints',
+        request_field='regionNetworkEndpointGroupsDetachEndpointsRequest',
+        request_type_name='ComputeRegionNetworkEndpointGroupsDetachNetworkEndpointsRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -14756,6 +14834,32 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRegionNetworkEndpointGroupsListRequest',
         response_type_name='NetworkEndpointGroupList',
+        supports_download=False,
+    )
+
+    def ListNetworkEndpoints(self, request, global_params=None):
+      r"""Lists the network endpoints in the specified network endpoint group.
+
+      Args:
+        request: (ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkEndpointGroupsListNetworkEndpoints) The response message.
+      """
+      config = self.GetMethodConfig('ListNetworkEndpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkEndpointGroups.listNetworkEndpoints',
+        ordered_params=['project', 'region', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}/listNetworkEndpoints',
+        request_field='',
+        request_type_name='ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest',
+        response_type_name='NetworkEndpointGroupsListNetworkEndpoints',
         supports_download=False,
     )
 

@@ -47,7 +47,9 @@ class RevisionPrinter(cp.CustomPrinterBase):
         k8s_util.GetLabels(record.labels),
         ' ',
         self.TransformSpec(record),
-        k8s_util.FormatReadyMessage(record)])
+        k8s_util.FormatReadyMessage(record),
+        RevisionPrinter.CurrentMinInstances(record),
+    ])
     return fmt
 
   @staticmethod
@@ -75,7 +77,8 @@ class RevisionPrinter(cp.CustomPrinterBase):
   @staticmethod
   def GetCpuAllocation(record):
     cpu_throttled = record.annotations.get(
-        container_resource.CPU_THROTTLE_ANNOTATION)
+        container_resource.CPU_THROTTLE_ANNOTATION
+    )
     if not cpu_throttled:
       return ''
     elif cpu_throttled.lower() == 'false':
@@ -134,4 +137,13 @@ class RevisionPrinter(cp.CustomPrinterBase):
         ('Session Affinity', RevisionPrinter.GetSessionAffinity(record)),
         ('Startup Probe', k8s_util.GetStartupProbe(record)),
         ('Liveness Probe', k8s_util.GetLivenessProbe(record)),
+    ])
+
+  @staticmethod
+  def CurrentMinInstances(record):
+    return cp.Labeled([
+        (
+            'Current Min Instances',
+            getattr(record.status, 'desiredReplicas', None),
+        ),
     ])

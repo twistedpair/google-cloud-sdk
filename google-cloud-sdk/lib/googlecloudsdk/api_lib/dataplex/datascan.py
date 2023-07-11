@@ -65,7 +65,31 @@ def GenerateDataProfileSpec(args):
           module.GoogleCloudDataplexV1DataProfileSpec,
       )
   else:
-    dataprofilespec = module.GoogleCloudDataplexV1DataProfileSpec()
+    exclude_fields, include_fields, sampling_percent, row_filter = [None] * 4
+    if hasattr(args, 'exclude-fields') and args.IsSpecified('exclude_fields'):
+      exclude_fields = (
+          module.GoogleCloudDataplexV1DataProfileSpecSelectedFields(
+              fieldNames=args.exclude_fields.split(',')
+          )
+      )
+    if hasattr(args, 'include-fields') and args.IsSpecified('include_fields'):
+      include_fields = (
+          module.GoogleCloudDataplexV1DataProfileSpecSelectedFields(
+              fieldNames=args.include_fields.split(',')
+          )
+      )
+    if hasattr(args, 'sampling-percent') and args.IsSpecified(
+        'sampling_percent'
+    ):
+      sampling_percent = float(args.sampling_percent)
+    if hasattr(args, 'row-filter') and args.IsSpecified('row_filter'):
+      row_filter = args.row_filter
+    dataprofilespec = module.GoogleCloudDataplexV1DataProfileSpec(
+        excludeFields=exclude_fields,
+        includeFields=include_fields,
+        samplingPercent=sampling_percent,
+        rowFilter=row_filter,
+    )
   return dataprofilespec
 
 
@@ -110,16 +134,22 @@ def GenerateDatascanForCreateRequest(args):
       executionSpec=GenerateExecutionSpec(args),
   )
   if args.scan_type == 'PROFILE':
-    if args.IsSpecified('data_quality_spec_file'):
+    if hasattr(args, 'data_quality_spec_file') and args.IsSpecified(
+        'data_quality_spec_file'
+    ):
       raise ValueError(
           'Data Quality Spec file specified for Data Profile Scan.'
       )
-    elif args.IsSpecified('data_profile_spec_file'):
-      request.dataProfileSpec = GenerateDataProfileSpec(args)
     else:
-      request.dataProfileSpec = module.GoogleCloudDataplexV1DataProfileSpec()
+      request.dataProfileSpec = GenerateDataProfileSpec(args)
   elif args.scan_type == 'QUALITY':
-    if args.IsSpecified('data_quality_spec_file'):
+    if hasattr(args, 'data_profile_spec_file') and args.IsSpecified(
+        'data_profile_spec_file'
+    ):
+      raise ValueError(
+          'Data Profile Spec file specified for Data Quality Scan.'
+      )
+    elif args.IsSpecified('data_quality_spec_file'):
       request.dataQualitySpec = GenerateDataQualitySpec(args)
     else:
       raise ValueError(

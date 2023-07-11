@@ -1672,12 +1672,14 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
       N1_HIGHCPU_32: Highcpu machine with 32 CPUs.
       E2_HIGHCPU_8: Highcpu e2 machine with 8 CPUs.
       E2_HIGHCPU_32: Highcpu e2 machine with 32 CPUs.
+      E2_MEDIUM: E2 machine with 1 CPU.
     """
     UNSPECIFIED = 0
     N1_HIGHCPU_8 = 1
     N1_HIGHCPU_32 = 2
     E2_HIGHCPU_8 = 3
     E2_HIGHCPU_32 = 4
+    E2_MEDIUM = 5
 
   class RequestedVerifyOptionValueValuesEnum(_messages.Enum):
     r"""Requested verifiability options.
@@ -2917,6 +2919,7 @@ class Discovered(_messages.Message):
     continuousAnalysis: Whether the resource is continuously analyzed.
     lastAnalysisTime: The last time continuous analysis was done for this
       resource. Deprecated, do not use.
+    sbomStatus: The status of an SBOM generation.
   """
 
   class AnalysisStatusValueValuesEnum(_messages.Enum):
@@ -2958,6 +2961,7 @@ class Discovered(_messages.Message):
   analysisStatusError = _messages.MessageField('Status', 4)
   continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 5)
   lastAnalysisTime = _messages.StringField(6)
+  sbomStatus = _messages.MessageField('SBOMStatus', 7)
 
 
 class Discovery(_messages.Message):
@@ -5334,6 +5338,34 @@ class SBOMReferenceOccurrence(_messages.Message):
   payload = _messages.MessageField('SbomReferenceIntotoPayload', 1)
   payloadType = _messages.StringField(2)
   signatures = _messages.MessageField('EnvelopeSignature', 3, repeated=True)
+
+
+class SBOMStatus(_messages.Message):
+  r"""The status of an SBOM generation.
+
+  Enums:
+    SbomStateValueValuesEnum: The progress of the SBOM generation.
+
+  Fields:
+    error: If there was an error generating an SBOM, this will indicate what
+      that error was.
+    sbomState: The progress of the SBOM generation.
+  """
+
+  class SbomStateValueValuesEnum(_messages.Enum):
+    r"""The progress of the SBOM generation.
+
+    Values:
+      SBOM_STATE_UNSPECIFIED: Default unknown state.
+      PENDING: SBOM scanning is pending.
+      COMPLETE: SBOM scanning has completed.
+    """
+    SBOM_STATE_UNSPECIFIED = 0
+    PENDING = 1
+    COMPLETE = 2
+
+  error = _messages.StringField(1)
+  sbomState = _messages.EnumField('SbomStateValueValuesEnum', 2)
 
 
 class SbomReferenceIntotoPayload(_messages.Message):

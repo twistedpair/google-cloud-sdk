@@ -1836,6 +1836,7 @@ class GoogleAppsCloudidentityDevicesV1Device(_messages.Message):
     enabledUsbDebugging: Output only. Whether USB debugging is enabled on
       device.
     encryptionState: Output only. Device encryption state.
+    hostname: Host name of the device.
     imei: Output only. IMEI number of device if GSM device; empty otherwise.
     kernelVersion: Output only. Kernel version of the device.
     lastSyncTime: Most recent time when device synced with this service.
@@ -1961,22 +1962,23 @@ class GoogleAppsCloudidentityDevicesV1Device(_messages.Message):
   enabledDeveloperOptions = _messages.BooleanField(11)
   enabledUsbDebugging = _messages.BooleanField(12)
   encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 13)
-  imei = _messages.StringField(14)
-  kernelVersion = _messages.StringField(15)
-  lastSyncTime = _messages.StringField(16)
-  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 17)
-  manufacturer = _messages.StringField(18)
-  meid = _messages.StringField(19)
-  model = _messages.StringField(20)
-  name = _messages.StringField(21)
-  networkOperator = _messages.StringField(22)
-  osVersion = _messages.StringField(23)
-  otherAccounts = _messages.StringField(24, repeated=True)
-  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 25)
-  releaseVersion = _messages.StringField(26)
-  securityPatchTime = _messages.StringField(27)
-  serialNumber = _messages.StringField(28)
-  wifiMacAddresses = _messages.StringField(29, repeated=True)
+  hostname = _messages.StringField(14)
+  imei = _messages.StringField(15)
+  kernelVersion = _messages.StringField(16)
+  lastSyncTime = _messages.StringField(17)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 18)
+  manufacturer = _messages.StringField(19)
+  meid = _messages.StringField(20)
+  model = _messages.StringField(21)
+  name = _messages.StringField(22)
+  networkOperator = _messages.StringField(23)
+  osVersion = _messages.StringField(24)
+  otherAccounts = _messages.StringField(25, repeated=True)
+  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 26)
+  releaseVersion = _messages.StringField(27)
+  securityPatchTime = _messages.StringField(28)
+  serialNumber = _messages.StringField(29)
+  wifiMacAddresses = _messages.StringField(30, repeated=True)
 
 
 class GoogleAppsCloudidentityDevicesV1DeviceUser(_messages.Message):

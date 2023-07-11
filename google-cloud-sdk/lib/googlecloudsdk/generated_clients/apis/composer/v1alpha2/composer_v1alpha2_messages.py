@@ -645,6 +645,29 @@ class ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest(_messages.M
   stopAirflowCommandRequest = _messages.MessageField('StopAirflowCommandRequest', 2)
 
 
+class ComposerProjectsLocationsEnvironmentsWorkloadsListRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsWorkloadsListRequest object.
+
+  Fields:
+    filter: Optional. The list filter. Currently only supports equality on the
+      type field. The value of a field specified in the filter expression must
+      be one ComposerWorkloadType enum option. It's possible to get multiple
+      types using "OR" operator, e.g.: "type=SCHEDULER OR type=CELERY_WORKER".
+      If not specified, all items are returned.
+    pageSize: Optional. The maximum number of environments to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The environment name to get workloads for, in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
   r"""A ComposerProjectsLocationsImageVersionsListRequest object.
 
@@ -711,6 +734,86 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class ComposerWorkload(_messages.Message):
+  r"""Information about a single workload.
+
+  Enums:
+    TypeValueValuesEnum: Type of a workload.
+
+  Fields:
+    name: Name of a workload.
+    status: Output only. Status of a workload.
+    type: Type of a workload.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of a workload.
+
+    Values:
+      COMPOSER_WORKLOAD_TYPE_UNSPECIFIED: Not able to determine the type of
+        the workload.
+      CELERY_WORKER: Celery worker.
+      KUBERNETES_WORKER: Kubernetes worker.
+      KUBERNETES_OPERATOR_POD: Workload created by Kubernetes Pod Operator.
+      SCHEDULER: Airflow scheduler.
+      DAG_PROCESSOR: Airflow Dag processor.
+      TRIGGERER: Airflow triggerer.
+      WEB_SERVER: Airflow web server UI.
+      REDIS: Redis.
+    """
+    COMPOSER_WORKLOAD_TYPE_UNSPECIFIED = 0
+    CELERY_WORKER = 1
+    KUBERNETES_WORKER = 2
+    KUBERNETES_OPERATOR_POD = 3
+    SCHEDULER = 4
+    DAG_PROCESSOR = 5
+    TRIGGERER = 6
+    WEB_SERVER = 7
+    REDIS = 8
+
+  name = _messages.StringField(1)
+  status = _messages.MessageField('ComposerWorkloadStatus', 2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class ComposerWorkloadStatus(_messages.Message):
+  r"""Workload status.
+
+  Enums:
+    StateValueValuesEnum: Output only. Workload state.
+
+  Fields:
+    detailedStatusMessage: Output only. Detailed message of the status.
+    state: Output only. Workload state.
+    statusMessage: Output only. Text to provide more descriptive status.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Workload state.
+
+    Values:
+      COMPOSER_WORKLOAD_STATE_UNSPECIFIED: Not able to determine the status of
+        the workload.
+      PENDING: Workload is in pending state and has not yet started.
+      OK: Workload is running fine.
+      WARNING: Workload is running but there are some non-critical problems.
+      ERROR: Workload is not running due to an error.
+      SUCCEEDED: Workload has finished execution with success.
+      FAILED: Workload has finished execution with failure.
+    """
+    COMPOSER_WORKLOAD_STATE_UNSPECIFIED = 0
+    PENDING = 1
+    OK = 2
+    WARNING = 3
+    ERROR = 4
+    SUCCEEDED = 5
+    FAILED = 6
+
+  detailedStatusMessage = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  statusMessage = _messages.StringField(3)
 
 
 class Dag(_messages.Message):
@@ -1465,6 +1568,19 @@ class ListTasksResponse(_messages.Message):
   tasks = _messages.MessageField('Task', 2, repeated=True)
 
 
+class ListWorkloadsResponse(_messages.Message):
+  r"""Response to ListWorkloadsRequest.
+
+  Fields:
+    nextPageToken: The page token used to query for the next page if one
+      exists.
+    workloads: The list of environment workloads.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workloads = _messages.MessageField('ComposerWorkload', 2, repeated=True)
+
+
 class LoadSnapshotRequest(_messages.Message):
   r"""Request to load a snapshot into a Cloud Composer environment.
 
@@ -1580,7 +1696,7 @@ class NodeConfig(_messages.Message):
       case of overlap, IPs from this range will not be accessible in the
       user's VPC network. Cannot be updated. If not specified, the default
       value of '100.64.128.0/20' is used. This field is supported for Cloud
-      Composer environments in versions composer-2.5.*-airflow-*.*.*.
+      Composer environments in versions composer-2.50.*-airflow-*.*.*.
     composerNetworkAttachment: Optional. Network Attachment that Cloud
       Composer environment is connected to, which provides connectivity with a
       user's VPC network. Takes precedence over network and subnetwork
@@ -1590,7 +1706,7 @@ class NodeConfig(_messages.Message):
       disabled. Network attachment must be provided in format projects/{projec
       t}/regions/{region}/networkAttachments/{networkAttachment}. This field
       is supported for Cloud Composer environments in versions
-      composer-2.5.*-airflow-*.*.*.
+      composer-2.50.*-airflow-*.*.*.
     diskSizeGb: Optional. The disk size in GB used for node VMs. Minimum size
       is 30GB. If unspecified, defaults to 100GB. Cannot be updated. This
       field is supported for Cloud Composer environments in versions
@@ -1953,7 +2069,7 @@ class PrivateEnvironmentConfig(_messages.Message):
       `NodeConfig.composer_network_attachment` field are specified). If
       `false`, the builds also have access to the internet. This field is
       supported for Cloud Composer environments in versions
-      composer-2.5.*-airflow-*.*.* and newer.
+      composer-2.50.*-airflow-*.*.* and newer.
     enablePrivateEnvironment: Optional. If `true`, a Private IP Cloud Composer
       environment is created. If this field is set to true,
       `IPAllocationPolicy.use_ip_aliases` must be set to true for Cloud
@@ -2079,7 +2195,7 @@ class SoftwareConfig(_messages.Message):
     WebServerPluginsModeValueValuesEnum: Optional. Whether or not the web
       server uses custom plugins. If unspecified, the field defaults to
       `PLUGINS_ENABLED`. This field is supported for Cloud Composer
-      environments in versions composer-2.5.*-airflow-2.*.*.
+      environments in versions composer-2.50.*-airflow-2.*.*.
 
   Messages:
     AirflowConfigOverridesValue: Optional. Apache Airflow configuration
@@ -2179,7 +2295,7 @@ class SoftwareConfig(_messages.Message):
     webServerPluginsMode: Optional. Whether or not the web server uses custom
       plugins. If unspecified, the field defaults to `PLUGINS_ENABLED`. This
       field is supported for Cloud Composer environments in versions
-      composer-2.5.*-airflow-2.*.*.
+      composer-2.50.*-airflow-2.*.*.
   """
 
   class AirflowExecutorTypeValueValuesEnum(_messages.Enum):
@@ -2202,7 +2318,7 @@ class SoftwareConfig(_messages.Message):
     r"""Optional. Whether or not the web server uses custom plugins. If
     unspecified, the field defaults to `PLUGINS_ENABLED`. This field is
     supported for Cloud Composer environments in versions
-    composer-2.5.*-airflow-2.*.*.
+    composer-2.50.*-airflow-2.*.*.
 
     Values:
       WEB_SERVER_PLUGINS_MODE_UNSPECIFIED: Default mode.
@@ -2824,7 +2940,7 @@ class WorkloadsConfig(_messages.Message):
   Fields:
     dagProcessor: Optional. Resources used by Airflow DAG processors. This
       field is supported for Cloud Composer environments in versions
-      composer-2.5.*-airflow-*.*.*.
+      composer-2.50.*-airflow-*.*.*.
     scheduler: Optional. Resources used by Airflow scheduler.
     schedulerCpu: Optional. CPU request and limit for Airflow scheduler.
     triggerer: Optional. Resources used by Airflow triggerers.

@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.container.bare_metal import cluster_flags
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -41,7 +42,9 @@ def GetNodePoolResourceSpec():
   )
 
 
-def AddNodePoolResourceArg(parser, verb, positional=True):
+def AddNodePoolResourceArg(
+    parser: parser_arguments.ArgumentInterceptor, verb, positional=True
+):
   """Adds a resource argument for a Bare Metal node pool.
 
   Args:
@@ -58,7 +61,7 @@ def AddNodePoolResourceArg(parser, verb, positional=True):
   ).AddToParser(parser)
 
 
-def AddAllowMissingNodePool(parser):
+def AddAllowMissingNodePool(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for the node pool operation to return success and perform no action when there is no matching node pool.
 
   Args:
@@ -75,7 +78,7 @@ def AddAllowMissingNodePool(parser):
 
 
 # TODO(b/257292798): Move to a shared location.
-def AddAllowMissingUpdateNodePool(parser):
+def AddAllowMissingUpdateNodePool(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag to enable allow missing in an update node pool request.
 
   If set to true, and the Bare Metal Node Pool is not found, the request will
@@ -97,7 +100,7 @@ def AddAllowMissingUpdateNodePool(parser):
   )
 
 
-def AddNodePoolDisplayName(parser):
+def AddNodePoolDisplayName(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag to specify the display name of the node pool.
 
   Args:
@@ -108,7 +111,7 @@ def AddNodePoolDisplayName(parser):
   )
 
 
-def AddNodePoolAnnotations(parser):
+def AddNodePoolAnnotations(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag to specify node pool annotations."""
   parser.add_argument(
       '--annotations',
@@ -118,7 +121,9 @@ def AddNodePoolAnnotations(parser):
   )
 
 
-def AddNodePoolConfig(parser, is_update=False):
+def AddNodePoolConfig(
+    parser: parser_arguments.ArgumentInterceptor, is_update=False
+):
   """Adds a command group to set the node pool config.
 
   Args:
@@ -283,7 +288,7 @@ def _AddBareMetalKubeletConfig(
   )
 
 
-def AddIgnoreErrors(parser):
+def AddIgnoreErrors(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for ignore_errors field.
 
   Args:
@@ -299,7 +304,7 @@ def AddIgnoreErrors(parser):
   )
 
 
-def AddValidationOnly(parser):
+def AddValidationOnly(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag to only validate the request without performing the operation.
 
   Args:

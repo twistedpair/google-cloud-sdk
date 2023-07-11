@@ -267,19 +267,55 @@ class ConfigProjectsLocationsDeploymentsDeleteRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ConfigProjectsLocationsDeploymentsExportLockRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsDeploymentsExportLockRequest object.
+
+  Fields:
+    name: Required. The name of the deployment in the format:
+      'projects/{project_id}/locations/{location}/deployments/{deployment}'.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ConfigProjectsLocationsDeploymentsExportStateRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsDeploymentsExportStateRequest object.
+
+  Fields:
+    exportDeploymentStatefileRequest: A ExportDeploymentStatefileRequest
+      resource to be passed as the request body.
+    parent: Required. The parent in whose context the statefile is listed. The
+      parent value is in the format:
+      'projects/{project_id}/locations/{location}/deployments/{deployment}'.
+  """
+
+  exportDeploymentStatefileRequest = _messages.MessageField('ExportDeploymentStatefileRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class ConfigProjectsLocationsDeploymentsGetIamPolicyRequest(_messages.Message):
   r"""A ConfigProjectsLocationsDeploymentsGetIamPolicyRequest object.
 
   Fields:
-    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
-      request body.
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See [Resource
       names](https://cloud.google.com/apis/design/resource_names) for the
       appropriate value for this field.
   """
 
-  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
 
 
@@ -292,6 +328,21 @@ class ConfigProjectsLocationsDeploymentsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ConfigProjectsLocationsDeploymentsImportStateRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsDeploymentsImportStateRequest object.
+
+  Fields:
+    importStatefileRequest: A ImportStatefileRequest resource to be passed as
+      the request body.
+    parent: Required. The parent in whose context the statefile is listed. The
+      parent value is in the format:
+      'projects/{project_id}/locations/{location}/deployments/{deployment}'.
+  """
+
+  importStatefileRequest = _messages.MessageField('ImportStatefileRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class ConfigProjectsLocationsDeploymentsListRequest(_messages.Message):
@@ -328,6 +379,20 @@ class ConfigProjectsLocationsDeploymentsListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class ConfigProjectsLocationsDeploymentsLockRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsDeploymentsLockRequest object.
+
+  Fields:
+    lockDeploymentRequest: A LockDeploymentRequest resource to be passed as
+      the request body.
+    name: Required. The name of the deployment in the format:
+      'projects/{project_id}/locations/{location}/deployments/{deployment}'.
+  """
+
+  lockDeploymentRequest = _messages.MessageField('LockDeploymentRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ConfigProjectsLocationsDeploymentsPatchRequest(_messages.Message):
   r"""A ConfigProjectsLocationsDeploymentsPatchRequest object.
 
@@ -357,6 +422,21 @@ class ConfigProjectsLocationsDeploymentsPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class ConfigProjectsLocationsDeploymentsRevisionsExportStateRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsDeploymentsRevisionsExportStateRequest object.
+
+  Fields:
+    exportRevisionStatefileRequest: A ExportRevisionStatefileRequest resource
+      to be passed as the request body.
+    parent: Required. The parent in whose context the statefile is listed. The
+      parent value is in the format: 'projects/{project_id}/locations/{locatio
+      n}/deployments/{deployment}/revisions/{revision}'.
+  """
+
+  exportRevisionStatefileRequest = _messages.MessageField('ExportRevisionStatefileRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class ConfigProjectsLocationsDeploymentsRevisionsGetRequest(_messages.Message):
@@ -405,6 +485,51 @@ class ConfigProjectsLocationsDeploymentsRevisionsListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class ConfigProjectsLocationsDeploymentsRevisionsResourcesGetRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsDeploymentsRevisionsResourcesGetRequest object.
+
+  Fields:
+    name: Required. The name of the Resource in the format: 'projects/{project
+      _id}/locations/{location}/deployments/{deployment}/revisions/{revision}/
+      resource/{resource}'.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ConfigProjectsLocationsDeploymentsRevisionsResourcesListRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsDeploymentsRevisionsResourcesListRequest
+  object.
+
+  Fields:
+    filter: Lists the Resources that match the filter expression. A filter
+      expression filters the resources listed in the response. The expression
+      must be of the form '{field} {operator} {value}' where operators: '<',
+      '>', '<=', '>=', '!=', '=', ':' are supported (colon ':' represents a
+      HAS operator which is roughly synonymous with equality). {field} can
+      refer to a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: - Filter by name: name =
+      "projects/foo/locations/us-
+      central1/deployments/dep/revisions/bar/resources/baz
+    orderBy: Field to use to sort the list.
+    pageSize: When requesting a 'page' of resources, 'page_size' specifies
+      number of resources to return. If unspecified or set to 0, all resources
+      will be returned.
+    pageToken: Token returned by previous call to 'ListResources' which
+      specifies the position in the list from where to continue listing the
+      resources.
+    parent: Required. The parent in whose context the Resources are listed.
+      The parent value is in the format: 'projects/{project_id}/locations/{loc
+      ation}/deployments/{deployment}/revisions/{revision}'.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class ConfigProjectsLocationsDeploymentsSetIamPolicyRequest(_messages.Message):
   r"""A ConfigProjectsLocationsDeploymentsSetIamPolicyRequest object.
 
@@ -435,6 +560,20 @@ class ConfigProjectsLocationsDeploymentsTestIamPermissionsRequest(_messages.Mess
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class ConfigProjectsLocationsDeploymentsUnlockRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsDeploymentsUnlockRequest object.
+
+  Fields:
+    name: Required. The name of the deployment in the format:
+      'projects/{project_id}/locations/{location}/deployments/{deployment}'.
+    unlockDeploymentRequest: A UnlockDeploymentRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  unlockDeploymentRequest = _messages.MessageField('UnlockDeploymentRequest', 2)
 
 
 class ConfigProjectsLocationsGetRequest(_messages.Message):
@@ -528,8 +667,8 @@ class Deployment(_messages.Message):
     LabelsValue: User-defined metadata for the deployment.
 
   Fields:
-    artifactsGcsBucket: User-defined location of Cloud Build logs, artifacts,
-      and Terraform state files in Google Cloud Storage. Format:
+    artifactsGcsBucket: Optional. User-defined location of Cloud Build logs,
+      artifacts, and Terraform state files in Google Cloud Storage. Format:
       `gs://{bucket}/{folder}` A default bucket will be bootstrapped if the
       field is not set or empty Default Bucket Format: `gs://--blueprint-
       config` Constraints: - The bucket needs to be in the same project as the
@@ -558,8 +697,8 @@ class Deployment(_messages.Message):
       revisions/{revision}`
     name: Resource name of the deployment. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}`
-    serviceAccount: User-specified Service Account (SA) credentials to be used
-      when actuating resources. Format:
+    serviceAccount: Optional. User-specified Service Account (SA) credentials
+      to be used when actuating resources. Format:
       `projects/{projectID}/serviceAccounts/{serviceAccount}` The default
       Cloud Build SA will be used initially if this field is not set during
       deployment creation; however, once users start to use their own SA to
@@ -573,8 +712,8 @@ class Deployment(_messages.Message):
       Terraform deployment. It has a size limit of 10, i.e. only top 10 errors
       will be summarized here.
     updateTime: Output only. Time the deployment was last modified.
-    workerPool: The User-specified Worker Pool resource in which the Cloud
-      Build job will execute. Format
+    workerPool: Optional. The User-specified Worker Pool resource in which the
+      Cloud Build job will execute. Format
       projects/{project}/locations/{location}/workerPools/{workerPoolId} If
       this field is unspecified, the default Cloud Build worker pool will be
       used.
@@ -701,6 +840,10 @@ class DeploymentOperationMetadata(_messages.Message):
       RUNNING_TF_PLAN: This is when terraform plan is called
       RUNNING_TF_APPLY: This is when terraform apply is called
       RUNNING_TF_DESTROY: This is when terraform destroy is called
+      RUNNING_TF_VALIDATE: For unlocking deployment; This is when validate is
+        called
+      UNLOCKING_DEPLOYMENT: For unlocking deployment; This is when deployment
+        is unlocked
     """
     DEPLOYMENT_STEP_UNSPECIFIED = 0
     PREPARING_STORAGE_BUCKET = 1
@@ -709,6 +852,8 @@ class DeploymentOperationMetadata(_messages.Message):
     RUNNING_TF_PLAN = 4
     RUNNING_TF_APPLY = 5
     RUNNING_TF_DESTROY = 6
+    RUNNING_TF_VALIDATE = 7
+    UNLOCKING_DEPLOYMENT = 8
 
   applyResults = _messages.MessageField('ApplyResults', 1)
   build = _messages.StringField(2)
@@ -721,6 +866,20 @@ class Empty(_messages.Message):
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+  """
+
+
+
+class ExportDeploymentStatefileRequest(_messages.Message):
+  r"""A request to export a state file passed to a 'ExportDeploymentStatefile'
+  call.
+  """
+
+
+
+class ExportRevisionStatefileRequest(_messages.Message):
+  r"""A request to export a state file passed to a 'ExportRevisionStatefile'
+  call.
   """
 
 
@@ -761,52 +920,31 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class GetIamPolicyRequest(_messages.Message):
-  r"""Request message for `GetIamPolicy` method.
-
-  Fields:
-    options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
-      `GetIamPolicy`.
-  """
-
-  options = _messages.MessageField('GetPolicyOptions', 1)
-
-
-class GetPolicyOptions(_messages.Message):
-  r"""Encapsulates settings provided to GetIamPolicy.
-
-  Fields:
-    requestedPolicyVersion: Optional. The maximum policy version that will be
-      used to format the policy. Valid values are 0, 1, and 3. Requests
-      specifying an invalid value will be rejected. Requests for policies with
-      any conditional role bindings must specify version 3. Policies with no
-      conditional role bindings may specify any valid value or leave the field
-      unset. The policy in the response might use the policy version that you
-      specified, or it might use a lower policy version. For example, if you
-      specify version 3, but the policy has no conditional role bindings, the
-      response uses version 1. To learn which resources support conditions in
-      their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-  """
-
-  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
 class GitSource(_messages.Message):
   r"""A set of files in a Git repository.
 
   Fields:
-    directory: Subdirectory inside the repository. Example: 'staging/my-
-      package'
-    ref: Git branch or tag.
-    repo: Repository URL. Example:
+    directory: Optional. Subdirectory inside the repository. Example:
+      'staging/my-package'
+    ref: Optional. Git branch or tag.
+    repo: Optional. Repository URL. Example:
       'https://github.com/kubernetes/examples.git'
   """
 
   directory = _messages.StringField(1)
   ref = _messages.StringField(2)
   repo = _messages.StringField(3)
+
+
+class ImportStatefileRequest(_messages.Message):
+  r"""A request to import a state file passed to a 'ImportStatefile' call.
+
+  Fields:
+    lockId: Required. Lock ID of the lock file to verify person importing owns
+      lock.
+  """
+
+  lockId = _messages.IntegerField(1)
 
 
 class ListDeploymentsResponse(_messages.Message):
@@ -847,6 +985,22 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListResourcesResponse(_messages.Message):
+  r"""A response to a 'ListResources' call. Contains a list of Resources.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      'ListResources' method. The value of an empty string means that there
+      are no more resources to return.
+    resources: List of Resourcess.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resources = _messages.MessageField('Resource', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListRevisionsResponse(_messages.Message):
@@ -943,6 +1097,41 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LockDeploymentRequest(_messages.Message):
+  r"""A request to lock a deployment passed to a 'LockDeployment' call."""
+
+
+class LockDeploymentResponse(_messages.Message):
+  r"""A response to a 'LockDeployment' call. Contains a lock ID.
+
+  Fields:
+    lockId: Lock ID of the lock file.
+  """
+
+  lockId = _messages.IntegerField(1)
+
+
+class LockInfo(_messages.Message):
+  r"""Lock information.
+
+  Fields:
+    createTime: Time that the lock was taken.
+    info: Extra information to store with the lock, provided by the caller.
+    lockId: Unique ID for the lock to be overridden with generation ID in the
+      backend.
+    operation: Terraform operation, provided by the caller.
+    version: Terraform version
+    who: user@hostname when available
+  """
+
+  createTime = _messages.StringField(1)
+  info = _messages.StringField(2)
+  lockId = _messages.IntegerField(3)
+  operation = _messages.StringField(4)
+  version = _messages.StringField(5)
+  who = _messages.StringField(6)
 
 
 class Operation(_messages.Message):
@@ -1161,6 +1350,127 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class Resource(_messages.Message):
+  r"""A child resource of a Revision generated by a 'CreateDeployment' or
+  'UpdateDeployment' call. Each Resource represents a resource actuated in a
+  given Revision.
+
+  Enums:
+    IntentValueValuesEnum: Output only. Intent of the resource.
+    StateValueValuesEnum: Output only. Current state of the resource.
+
+  Messages:
+    CaiAssetsValue: Output only. Map of Cloud Asset Inventory (CAI) type to
+      CAI information like ID. CAI type format follows
+      https://cloud.google.com/asset-inventory/docs/supported-asset-types
+
+  Fields:
+    caiAssets: Output only. Map of Cloud Asset Inventory (CAI) type to CAI
+      information like ID. CAI type format follows
+      https://cloud.google.com/asset-inventory/docs/supported-asset-types
+    intent: Output only. Intent of the resource.
+    name: Output only. Resource name of the Resource. Format: `projects/{proje
+      ct}/locations/{location}/deployments/{deployment}/revisions/{revision}/r
+      esources/{resource}`
+    state: Output only. Current state of the resource.
+    terraformInfo: Output only. Terraform specific information.
+  """
+
+  class IntentValueValuesEnum(_messages.Enum):
+    r"""Output only. Intent of the resource.
+
+    Values:
+      INTENT_UNSPECIFIED: The default value. This value is used if the intent
+        is omitted.
+      CREATE: Resource expected to be created.
+      UPDATE: Resource expected to be updated.
+      DELETE: Resource expected to be deleted.
+      RECREATE: Resource expected to be recreated.
+      UNCHANGED: Resource expected to be untouched.
+    """
+    INTENT_UNSPECIFIED = 0
+    CREATE = 1
+    UPDATE = 2
+    DELETE = 3
+    RECREATE = 4
+    UNCHANGED = 5
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the resource.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      PLANNED: Resource has been planned for reconcile.
+      IN_PROGRESS: Resource is actively reconciling into the intended state.
+      RECONCILED: Resource has reconciled to intended state.
+      FAILED: Resource failed to reconcile.
+    """
+    STATE_UNSPECIFIED = 0
+    PLANNED = 1
+    IN_PROGRESS = 2
+    RECONCILED = 3
+    FAILED = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CaiAssetsValue(_messages.Message):
+    r"""Output only. Map of Cloud Asset Inventory (CAI) type to CAI
+    information like ID. CAI type format follows
+    https://cloud.google.com/asset-inventory/docs/supported-asset-types
+
+    Messages:
+      AdditionalProperty: An additional property for a CaiAssetsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type CaiAssetsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CaiAssetsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ResourceCAIInfo attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ResourceCAIInfo', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  caiAssets = _messages.MessageField('CaiAssetsValue', 1)
+  intent = _messages.EnumField('IntentValueValuesEnum', 2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  terraformInfo = _messages.MessageField('ResourceTerraformInfo', 5)
+
+
+class ResourceCAIInfo(_messages.Message):
+  r"""CAI information of a Resource.
+
+  Fields:
+    fullResourceName: CAI resource name of form
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+  """
+
+  fullResourceName = _messages.StringField(1)
+
+
+class ResourceTerraformInfo(_messages.Message):
+  r"""Terraform information of a Resource.
+
+  Fields:
+    address: TF Resource address that uniquely identifies this resource within
+      config
+    id: ID attribute of the TF resource
+    type: TF resource type for this resource
+  """
+
+  address = _messages.StringField(1)
+  id = _messages.StringField(2)
+  type = _messages.StringField(3)
+
+
 class Revision(_messages.Message):
   r"""A child resource of a Deployment generated by a 'CreateDeployment' or
   'UpdateDeployment' call. Each Revision contains artifacts pertaining to a
@@ -1183,11 +1493,12 @@ class Revision(_messages.Message):
     errorLogs: Output only. Link to tf-error.ndjson file, which contains the
       full list of the errors encountered while deleting a Terraform
       deployment. Format: `gs://{bucket}/{object}`.
-    importExistingResources: By default, Cloud Config Manager will return a
-      failure when Terraform encounters a 409 code (resource conflict error)
-      during actuation. If this flag is set to true, Cloud Config Manager will
-      instead attempt to automatically import the resource into the Terraform
-      state (for supported resource types) and continue actuation.
+    importExistingResources: Output only. By default, Cloud Config Manager
+      will return a failure when Terraform encounters a 409 code (resource
+      conflict error) during actuation. If this flag is set to true, Cloud
+      Config Manager will instead attempt to automatically import the resource
+      into the Terraform state (for supported resource types) and continue
+      actuation.
     logs: Output only. Location of Revision operation logs in
       `gs://{bucket}/{object}` format.
     name: Resource name of the revision. Format:
@@ -1358,6 +1669,17 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class Statefile(_messages.Message):
+  r"""Contains a signed Cloud Storage URL.
+
+  Fields:
+    signedUri: Output only. Cloud Storage Signed URL used for accessing the
+      state file.
+  """
+
+  signedUri = _messages.StringField(1)
+
+
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -1517,6 +1839,20 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class UnlockDeploymentRequest(_messages.Message):
+  r"""A request to unlock a state file passed to a 'UnlockDeployment' call.
+
+  Fields:
+    disableValidateAndUpdate: Optional. If this flag is set to true, the
+      unlock mechanism will only unlock the deployment instead of validating
+      the state file and triggering an update deployment workflow.
+    lockId: Required. Lock ID of the lock file to be unlocked.
+  """
+
+  disableValidateAndUpdate = _messages.BooleanField(1)
+  lockId = _messages.IntegerField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.container.gkeonprem import flags
@@ -82,7 +83,7 @@ def GetOperationResourceSpec():
   )
 
 
-def AddOperationResourceArg(parser, verb):
+def AddOperationResourceArg(parser: parser_arguments.ArgumentInterceptor, verb):
   """Adds a resource argument for operation in VMware.
 
   Args:
@@ -119,7 +120,7 @@ def GetLocationResourceSpec():
   )
 
 
-def AddLocationResourceArg(parser, verb):
+def AddLocationResourceArg(parser: parser_arguments.ArgumentInterceptor, verb):
   """Adds a resource argument for Google Cloud location.
 
   Args:
@@ -152,7 +153,11 @@ def GetClusterResourceSpec():
 
 
 def AddClusterResourceArg(
-    parser, verb, positional=True, required=True, flag_name_overrides=None
+    parser: parser_arguments.ArgumentInterceptor,
+    verb,
+    positional=True,
+    required=True,
+    flag_name_overrides=None,
 ):
   """Adds a resource argument for an Anthos cluster on VMware.
 
@@ -204,7 +209,11 @@ def GetAdminClusterResourceSpec():
 
 
 def AddAdminClusterResourceArg(
-    parser, verb, positional=True, required=True, flag_name_overrides=None
+    parser: parser_arguments.ArgumentInterceptor,
+    verb,
+    positional=True,
+    required=True,
+    flag_name_overrides=None,
 ):
   """Adds a resource argument for an Anthos on VMware admin cluster.
 
@@ -269,7 +278,7 @@ def GetAdminClusterMembershipResourceSpec():
 
 
 def AddAdminClusterMembershipResourceArg(
-    parser, positional=True, required=True
+    parser: parser_arguments.ArgumentInterceptor, positional=True, required=True
 ):
   """Adds a resource argument for a VMware admin cluster membership.
 
@@ -325,7 +334,9 @@ def GetNodePoolResourceSpec():
   )
 
 
-def AddNodePoolResourceArg(parser, verb, positional=True):
+def AddNodePoolResourceArg(
+    parser: parser_arguments.ArgumentInterceptor, verb, positional=True
+):
   """Adds a resource argument for a VMware node pool.
 
   Args:
@@ -342,7 +353,7 @@ def AddNodePoolResourceArg(parser, verb, positional=True):
   ).AddToParser(parser)
 
 
-def AddForceUnenrollCluster(parser):
+def AddForceUnenrollCluster(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for force unenroll operation when there are existing node pools.
 
   Args:
@@ -358,7 +369,7 @@ def AddForceUnenrollCluster(parser):
   )
 
 
-def AddForceDeleteCluster(parser):
+def AddForceDeleteCluster(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for force delete cluster operation when there are existing node pools.
 
   Args:
@@ -374,7 +385,7 @@ def AddForceDeleteCluster(parser):
   )
 
 
-def AddAllowMissingDeleteNodePool(parser):
+def AddAllowMissingDeleteNodePool(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for delete node pool operation to return success and perform no action when there is no matching node pool.
 
   Args:
@@ -390,7 +401,9 @@ def AddAllowMissingDeleteNodePool(parser):
   )
 
 
-def AddAllowMissingUnenrollNodePool(parser):
+def AddAllowMissingUnenrollNodePool(
+    parser: parser_arguments.ArgumentInterceptor,
+):
   """Adds a flag for unenroll node pool operation to return success and perform no action when there is no matching node pool.
 
   Args:
@@ -406,7 +419,7 @@ def AddAllowMissingUnenrollNodePool(parser):
   )
 
 
-def AddAllowMissingDeleteCluster(parser):
+def AddAllowMissingDeleteCluster(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for delete cluster operation to return success and perform no action when there is no matching cluster.
 
   Args:
@@ -422,7 +435,7 @@ def AddAllowMissingDeleteCluster(parser):
   )
 
 
-def AddAllowMissingUpdateCluster(parser):
+def AddAllowMissingUpdateCluster(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag to enable allow missing in an update cluster request.
 
   If set to true, and the cluster is not found, the request will
@@ -445,7 +458,9 @@ def AddAllowMissingUpdateCluster(parser):
   )
 
 
-def AddAllowMissingUnenrollCluster(parser):
+def AddAllowMissingUnenrollCluster(
+    parser: parser_arguments.ArgumentInterceptor,
+):
   """Adds a flag to enable allow missing in an unenroll cluster request.
 
   If set, and the Anthos on VMware cluster is not found, the request will
@@ -465,7 +480,9 @@ def AddAllowMissingUnenrollCluster(parser):
   )
 
 
-def AddValidationOnly(parser, hidden=False):
+def AddValidationOnly(
+    parser: parser_arguments.ArgumentInterceptor, hidden=False
+):
   """Adds a flag to only validate the request without performing the operation.
 
   Args:
@@ -653,7 +670,9 @@ def _AddNodeLabels(vmware_node_config_group):
   )
 
 
-def AddVmwareNodeConfig(parser, for_update=False):
+def AddVmwareNodeConfig(
+    parser: parser_arguments.ArgumentInterceptor, for_update=False
+):
   """Adds flags to specify the configuration of the node pool.
 
   Args:
@@ -676,7 +695,9 @@ def AddVmwareNodeConfig(parser, for_update=False):
   _AddEnableLoadBalancer(vmware_node_config_group, for_update=for_update)
 
 
-def AddVmwareNodePoolAutoscalingConfig(parser, for_update=False):
+def AddVmwareNodePoolAutoscalingConfig(
+    parser: parser_arguments.ArgumentInterceptor, for_update=False
+):
   """Adds a flag to specify the node pool autoscaling config.
 
   Args:
@@ -700,7 +721,7 @@ def AddVmwareNodePoolAutoscalingConfig(parser, for_update=False):
   )
 
 
-def AddVersion(parser, required=False):
+def AddVersion(parser: parser_arguments.ArgumentInterceptor, required=False):
   """Adds a flag to specify the Anthos cluster on VMware version.
 
   Args:
@@ -898,7 +919,9 @@ def _AddVmwareVipConfig(vmware_load_balancer_config_group, for_update=False):
   )
 
 
-def AddVmwareLoadBalancerConfig(parser, for_update=False):
+def AddVmwareLoadBalancerConfig(
+    parser: parser_arguments.ArgumentInterceptor, for_update=False
+):
   """Adds a command group to set the load balancer config.
 
   Args:
@@ -923,7 +946,7 @@ def AddVmwareLoadBalancerConfig(parser, for_update=False):
   _AddManualLbConfig(lb_config_mutex_group, for_update=for_update)
 
 
-def AddDescription(parser):
+def AddDescription(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag to specify the description of the resource.
 
   Args:
@@ -934,7 +957,7 @@ def AddDescription(parser):
   )
 
 
-def AddNodePoolDisplayName(parser):
+def AddNodePoolDisplayName(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag to specify the display name of the node pool.
 
   Args:
@@ -945,7 +968,7 @@ def AddNodePoolDisplayName(parser):
   )
 
 
-def AddNodePoolAnnotations(parser):
+def AddNodePoolAnnotations(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag to specify node pool annotations."""
   parser.add_argument(
       '--annotations',
@@ -1001,7 +1024,9 @@ def _AddPodAddressCidrBlocks(vmware_network_config_group, for_update=False):
   )
 
 
-def AddVmwareNetworkConfig(parser, for_update=False):
+def AddVmwareNetworkConfig(
+    parser: parser_arguments.ArgumentInterceptor, for_update=False
+):
   """Adds network config related flags.
 
   Args:
@@ -1026,7 +1051,7 @@ def AddVmwareNetworkConfig(parser, for_update=False):
     _AddVmwareControlPlaneV2Config(vmware_network_config_group)
 
 
-def AddConfigType(parser):
+def AddConfigType(parser: parser_arguments.ArgumentInterceptor):
   """Adds flags to specify version config type.
 
   Args:
@@ -1300,7 +1325,7 @@ def _AddVmwareHostConfig(vmware_network_config_group, for_update=False):
   )
 
 
-def AddRequiredPlatformVersion(parser):
+def AddRequiredPlatformVersion(parser: parser_arguments.ArgumentInterceptor):
   """Adds flags to specify required platform version.
 
   Args:
@@ -1319,7 +1344,9 @@ def AddRequiredPlatformVersion(parser):
   )
 
 
-def AddClusterAnnotations(parser, for_update=False):
+def AddClusterAnnotations(
+    parser: parser_arguments.ArgumentInterceptor, for_update=False
+):
   """Adds a flag to specify cluster annotations.
 
   Args:
@@ -1347,7 +1374,9 @@ def AddClusterAnnotations(parser, for_update=False):
     )
 
 
-def AddVmwareControlPlaneNodeConfig(parser, for_update=False):
+def AddVmwareControlPlaneNodeConfig(
+    parser: parser_arguments.ArgumentInterceptor, for_update=False
+):
   """Adds flags to specify VMware user cluster control plane node configurations.
 
   Args:
@@ -1426,7 +1455,9 @@ def _AddVmwareAutoResizeConfig(
     )
 
 
-def AddVmwareAAGConfig(parser, for_update=False):
+def AddVmwareAAGConfig(
+    parser: parser_arguments.ArgumentInterceptor, for_update=False
+):
   """Adds flags to specify VMware user cluster node pool anti-affinity group configurations.
 
   Args:
@@ -1462,7 +1493,9 @@ def AddVmwareAAGConfig(parser, for_update=False):
     )
 
 
-def AddVmwareStorageConfig(parser, for_update=False):
+def AddVmwareStorageConfig(
+    parser: parser_arguments.ArgumentInterceptor, for_update=False
+):
   """Adds flags to specify VMware storage configurations.
 
   Args:
@@ -1536,7 +1569,9 @@ def _AddAdvancedNetworking(vmware_dataplane_v2_config_group, for_update=False):
   )
 
 
-def AddVmwareDataplaneV2Config(parser, for_update=False):
+def AddVmwareDataplaneV2Config(
+    parser: parser_arguments.ArgumentInterceptor, for_update=False
+):
   """Adds flags to specify configurations for Dataplane V2, which is optimized dataplane for Kubernetes networking.
 
   Args:
@@ -1555,7 +1590,9 @@ def AddVmwareDataplaneV2Config(parser, for_update=False):
   )
 
 
-def AddEnableVmwareTracking(parser, for_update=False):
+def AddEnableVmwareTracking(
+    parser: parser_arguments.ArgumentInterceptor, for_update=False
+):
   """Adds flags to specify vmware tracking configurations.
 
   Args:
@@ -1573,7 +1610,9 @@ def AddEnableVmwareTracking(parser, for_update=False):
   )
 
 
-def AddVmwareAutoRepairConfig(parser, for_update=False):
+def AddVmwareAutoRepairConfig(
+    parser: parser_arguments.ArgumentInterceptor, for_update=False
+):
   """Adds flags to specify auto-repair configurations.
 
   Args:
@@ -1606,7 +1645,7 @@ def AddVmwareAutoRepairConfig(parser, for_update=False):
     )
 
 
-def AddAuthorization(parser):
+def AddAuthorization(parser: parser_arguments.ArgumentInterceptor):
   """Adds flags to specify applied and managed RBAC policy.
 
   Args:
@@ -1637,7 +1676,7 @@ Examples:
   )
 
 
-def AddUpdateAnnotations(parser):
+def AddUpdateAnnotations(parser: parser_arguments.ArgumentInterceptor):
   """Adds flags to update annotations.
 
   Args:
@@ -1674,7 +1713,7 @@ def AddUpdateAnnotations(parser):
   )
 
 
-def AddIgnoreErrors(parser):
+def AddIgnoreErrors(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for ignore_errors field.
 
   Args:
@@ -1734,7 +1773,7 @@ $ gcloud {command}
   )
 
 
-def AddNodePoolIgnoreErrors(parser):
+def AddNodePoolIgnoreErrors(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for ignore_errors field.
 
   Args:
@@ -1750,7 +1789,7 @@ def AddNodePoolIgnoreErrors(parser):
   )
 
 
-def AddEnableControlPlaneV2(parser):
+def AddEnableControlPlaneV2(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for enabling_control_plane_v2 field.
 
   Args:
@@ -1771,7 +1810,7 @@ def AddEnableControlPlaneV2(parser):
   )
 
 
-def AddNodePoolVersion(parser):
+def AddNodePoolVersion(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for on_prem_version field.
 
   Args:
@@ -1787,7 +1826,7 @@ def AddNodePoolVersion(parser):
   )
 
 
-def AddUserClusterLocalName(parser):
+def AddUserClusterLocalName(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for local_name field.
 
   Args:
@@ -1808,7 +1847,7 @@ It is not modifiable outside / beyond the  enrollment operation.
   )
 
 
-def AddNodePoolUpgradePolicy(parser):
+def AddNodePoolUpgradePolicy(parser: parser_arguments.ArgumentInterceptor):
   """Upgrade policy of the node pool."""
   help_text = """Upgrade policy of the node pool.
 

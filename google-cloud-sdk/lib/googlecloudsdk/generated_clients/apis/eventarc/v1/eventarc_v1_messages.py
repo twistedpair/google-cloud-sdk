@@ -276,6 +276,9 @@ class Destination(_messages.Message):
     gke: A GKE service capable of receiving events. The service should be
       running in the same project as the trigger.
     httpEndpoint: An HTTP endpoint destination described by an URI.
+    networkConfig: Optional. Network config is used to configure how Eventarc
+      resolves and connect to a destination. This should only be used with
+      HttpEndpoint destination type.
     workflow: The resource name of the Workflow whose Executions are triggered
       by the events. The Workflow resource should be deployed in the same
       project as the trigger. Format:
@@ -286,7 +289,8 @@ class Destination(_messages.Message):
   cloudRun = _messages.MessageField('CloudRun', 2)
   gke = _messages.MessageField('GKE', 3)
   httpEndpoint = _messages.MessageField('HttpEndpoint', 4)
-  workflow = _messages.StringField(5)
+  networkConfig = _messages.MessageField('NetworkConfig', 5)
+  workflow = _messages.StringField(6)
 
 
 class Empty(_messages.Message):
@@ -1354,6 +1358,19 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class NetworkConfig(_messages.Message):
+  r"""Represents a network config to be used for destination resolution and
+  connectivity.
+
+  Fields:
+    networkAttachment: Required. Name of the NetworkAttachment that allows
+      access to the destination VPC. Format: `projects/{PROJECT_ID}/regions/{R
+      EGION}/networkAttachments/{NETWORK_ATTACHMENT_NAME}`
+  """
+
+  networkAttachment = _messages.StringField(1)
 
 
 class OperationMetadata(_messages.Message):

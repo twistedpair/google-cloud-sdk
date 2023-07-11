@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.container.gkeonprem import flags
@@ -50,7 +51,7 @@ def GetLocationResourceSpec():
   )
 
 
-def AddLocationResourceArg(parser, verb):
+def AddLocationResourceArg(parser: parser_arguments.ArgumentInterceptor, verb):
   """Adds a resource argument for Google Cloud location.
 
   Args:
@@ -145,7 +146,7 @@ def AddAdminClusterResourceArg(
   ).AddToParser(parser)
 
 
-def AddForceCluster(parser):
+def AddForceCluster(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for force cluster operation when there are existing node pools.
 
   Args:
@@ -161,7 +162,7 @@ def AddForceCluster(parser):
   )
 
 
-def AddAllowMissingCluster(parser):
+def AddAllowMissingCluster(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for the cluster operation to return success and perform no action when there is no matching cluster.
 
   Args:
@@ -177,7 +178,7 @@ def AddAllowMissingCluster(parser):
   )
 
 
-def AddAllowMissingUpdateCluster(parser):
+def AddAllowMissingUpdateCluster(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag to enable allow missing in an update cluster request.
 
   If set to true, and the cluster is not found, the request will
@@ -199,7 +200,7 @@ def AddAllowMissingUpdateCluster(parser):
   )
 
 
-def AddValidationOnly(parser):
+def AddValidationOnly(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag to only validate the request without performing the operation.
 
   Args:
@@ -215,7 +216,7 @@ def AddValidationOnly(parser):
   )
 
 
-def AddConfigType(parser):
+def AddConfigType(parser: parser_arguments.ArgumentInterceptor):
   """Adds flags to specify version config type.
 
   Args:
@@ -264,7 +265,7 @@ def AddConfigType(parser):
   parser.set_defaults(admin_cluster_membership_location='global')
 
 
-def AddAdminConfigType(parser):
+def AddAdminConfigType(parser: parser_arguments.ArgumentInterceptor):
   """Adds flags to specify admin cluster version config type.
 
   Args:
@@ -294,7 +295,7 @@ def AddAdminConfigType(parser):
   arg_parser.AddToParser(parser)
 
 
-def AddVersion(parser, is_update=False):
+def AddVersion(parser: parser_arguments.ArgumentInterceptor, is_update=False):
   """Adds a flag to specify the Anthos cluster on bare metal version.
 
   Args:
@@ -375,7 +376,9 @@ def _AddIslandModeCIDRConfig(bare_metal_network_config_group, is_update=False):
     )
 
 
-def AddNetworkConfig(parser, is_update=False):
+def AddNetworkConfig(
+    parser: parser_arguments.ArgumentInterceptor, is_update=False
+):
   """Adds network config related flags.
 
   Args:
@@ -631,7 +634,9 @@ def _AddLoadBalancerPortConfig(bare_metal_load_balancer_config_group):
   )
 
 
-def AddLoadBalancerConfig(parser, is_update=False):
+def AddLoadBalancerConfig(
+    parser: parser_arguments.ArgumentInterceptor, is_update=False
+):
   """Adds a command group to set the load balancer config.
 
   Args:
@@ -724,7 +729,7 @@ def _AddLVPNodeMountsConfig(bare_metal_storage_config_group):
   )
 
 
-def AddStorageConfig(parser):
+def AddStorageConfig(parser: parser_arguments.ArgumentInterceptor):
   """Adds a command group to set the storage config.
 
   Args:
@@ -859,11 +864,14 @@ def _AddControlPlaneNodePoolConfig(
     is_update: bool, whether the flag is for update command or not.
   """
   required = not is_update
-  bare_metal_control_plane_node_pool_config_group = bare_metal_control_plane_config_group.add_group(
-      help=(
-          'Anthos on bare metal cluster control plane node pool configuration.'
-      ),
-      required=required,
+  bare_metal_control_plane_node_pool_config_group = (
+      bare_metal_control_plane_config_group.add_group(
+          help=(
+              'Anthos on bare metal cluster control plane node pool'
+              ' configuration.'
+          ),
+          required=required,
+      )
   )
   _AddNodePoolConfig(bare_metal_control_plane_node_pool_config_group, is_update)
 
@@ -882,7 +890,9 @@ def _AddControlPlaneAPIServerArgs(bare_metal_control_plane_config_group):
   )
 
 
-def AddControlPlaneConfig(parser, is_update=False):
+def AddControlPlaneConfig(
+    parser: parser_arguments.ArgumentInterceptor, is_update=False
+):
   """Adds a command group to set the control plane config.
 
   Args:
@@ -900,7 +910,7 @@ def AddControlPlaneConfig(parser, is_update=False):
   _AddControlPlaneAPIServerArgs(bare_metal_control_plane_config_group)
 
 
-def AddDescription(parser):
+def AddDescription(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag to specify the description of the resource.
 
   Args:
@@ -911,7 +921,7 @@ def AddDescription(parser):
   )
 
 
-def AddAnnotations(parser):
+def AddAnnotations(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag to specify cluster annotations.
 
   Args:
@@ -930,6 +940,7 @@ def _AddURIConfig(bare_metal_proxy_config_group, is_update=False):
 
   Args:
     bare_metal_proxy_config_group: The parent group to add the flag to.
+    is_update: bool, whether the flag is for update command or not.
   """
   required = not is_update
   bare_metal_proxy_config_group.add_argument(
@@ -954,11 +965,14 @@ def _AddNoProxyConfig(bare_metal_proxy_config_group):
   )
 
 
-def AddProxyConfig(parser, is_update=False):
+def AddProxyConfig(
+    parser: parser_arguments.ArgumentInterceptor, is_update=False
+):
   """Adds a command group to set the proxy config.
 
   Args:
     parser: The argparse parser to add the flag to.
+    is_update: bool, whether the flag is for update command or not.
   """
   bare_metal_proxy_config_group = parser.add_group(
       help='Anthos on bare metal cluster proxy configuration.',
@@ -967,7 +981,7 @@ def AddProxyConfig(parser, is_update=False):
   _AddNoProxyConfig(bare_metal_proxy_config_group)
 
 
-def AddClusterOperationsConfig(parser):
+def AddClusterOperationsConfig(parser: parser_arguments.ArgumentInterceptor):
   """Adds a command group to set the cluster operations config.
 
   Args:
@@ -987,7 +1001,9 @@ def AddClusterOperationsConfig(parser):
   )
 
 
-def AddMaintenanceConfig(parser, is_update=False):
+def AddMaintenanceConfig(
+    parser: parser_arguments.ArgumentInterceptor, is_update=False
+):
   """Adds a command group to set the maintenance config.
 
   Args:
@@ -1036,7 +1052,7 @@ def _AddContainerRuntime(bare_metal_workload_node_config_group):
   )
 
 
-def AddWorkloadNodeConfig(parser):
+def AddWorkloadNodeConfig(parser: parser_arguments.ArgumentInterceptor):
   """Adds a command group to set the workload node config.
 
   Args:
@@ -1072,7 +1088,9 @@ def _AddAuthorization(bare_metal_security_config_group, is_update=False):
   )
 
 
-def AddSecurityConfig(parser, is_update=False):
+def AddSecurityConfig(
+    parser: parser_arguments.ArgumentInterceptor, is_update=False
+):
   """Adds a command group to set the security config.
 
   Args:
@@ -1086,7 +1104,7 @@ def AddSecurityConfig(parser, is_update=False):
   _AddAuthorization(bare_metal_security_config_group, is_update)
 
 
-def AddNodeAccessConfig(parser):
+def AddNodeAccessConfig(parser: parser_arguments.ArgumentInterceptor):
   """Adds a command group to set the node access config.
 
   Args:
@@ -1115,7 +1133,7 @@ def GetOperationResourceSpec():
   )
 
 
-def AddOperationResourceArg(parser, verb):
+def AddOperationResourceArg(parser: parser_arguments.ArgumentInterceptor, verb):
   """Adds a resource argument for operation in bare metal.
 
   Args:
@@ -1194,7 +1212,9 @@ def AddAdminClusterMembershipResourceArg(
   ).AddToParser(parser)
 
 
-def AddAdminLoadBalancerConfig(parser, is_update=False):
+def AddAdminLoadBalancerConfig(
+    parser: parser_arguments.ArgumentInterceptor, is_update=False
+):
   """Adds a command group to set the load balancer config.
 
   Args:
@@ -1274,7 +1294,7 @@ def _AddAdminManualLBConfig(bare_metal_admin_load_balancer_config_group):
   )
 
 
-def AddAdminWorkloadNodeConfig(parser):
+def AddAdminWorkloadNodeConfig(parser: parser_arguments.ArgumentInterceptor):
   """Adds a command group to set the workload node config.
 
   Args:
@@ -1287,7 +1307,7 @@ def AddAdminWorkloadNodeConfig(parser):
   _AddMaxPodsPerNode(bare_metal_workload_node_config_group)
 
 
-def AddIgnoreErrors(parser):
+def AddIgnoreErrors(parser: parser_arguments.ArgumentInterceptor):
   """Adds a flag for ignore_errors field.
 
   Args:

@@ -39,11 +39,76 @@ class ConfigV1alpha2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_deployments_revisions_resources = self.ProjectsLocationsDeploymentsRevisionsResourcesService(self)
     self.projects_locations_deployments_revisions = self.ProjectsLocationsDeploymentsRevisionsService(self)
     self.projects_locations_deployments = self.ProjectsLocationsDeploymentsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsDeploymentsRevisionsResourcesService(base_api.BaseApiService):
+    """Service class for the projects_locations_deployments_revisions_resources resource."""
+
+    _NAME = 'projects_locations_deployments_revisions_resources'
+
+    def __init__(self, client):
+      super(ConfigV1alpha2.ProjectsLocationsDeploymentsRevisionsResourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Resource.
+
+      Args:
+        request: (ConfigProjectsLocationsDeploymentsRevisionsResourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Resource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}/revisions/{revisionsId}/resources/{resourcesId}',
+        http_method='GET',
+        method_id='config.projects.locations.deployments.revisions.resources.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}',
+        request_field='',
+        request_type_name='ConfigProjectsLocationsDeploymentsRevisionsResourcesGetRequest',
+        response_type_name='Resource',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Resources in a given revision.
+
+      Args:
+        request: (ConfigProjectsLocationsDeploymentsRevisionsResourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListResourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}/revisions/{revisionsId}/resources',
+        http_method='GET',
+        method_id='config.projects.locations.deployments.revisions.resources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/resources',
+        request_field='',
+        request_type_name='ConfigProjectsLocationsDeploymentsRevisionsResourcesListRequest',
+        response_type_name='ListResourcesResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsDeploymentsRevisionsService(base_api.BaseApiService):
     """Service class for the projects_locations_deployments_revisions resource."""
@@ -54,6 +119,33 @@ class ConfigV1alpha2(base_api.BaseApiClient):
       super(ConfigV1alpha2.ProjectsLocationsDeploymentsRevisionsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def ExportState(self, request, global_params=None):
+      r"""Export state file from a given revision or deployment.
+
+      Args:
+        request: (ConfigProjectsLocationsDeploymentsRevisionsExportStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Statefile) The response message.
+      """
+      config = self.GetMethodConfig('ExportState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportState.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}/revisions/{revisionsId}:exportState',
+        http_method='POST',
+        method_id='config.projects.locations.deployments.revisions.exportState',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha2/{+parent}:exportState',
+        request_field='exportRevisionStatefileRequest',
+        request_type_name='ConfigProjectsLocationsDeploymentsRevisionsExportStateRequest',
+        response_type_name='Statefile',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Gets details of a single Revision.
@@ -173,6 +265,60 @@ class ConfigV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExportLock(self, request, global_params=None):
+      r"""Export lock info on locked state.
+
+      Args:
+        request: (ConfigProjectsLocationsDeploymentsExportLockRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LockInfo) The response message.
+      """
+      config = self.GetMethodConfig('ExportLock')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportLock.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}:exportLock',
+        http_method='GET',
+        method_id='config.projects.locations.deployments.exportLock',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}:exportLock',
+        request_field='',
+        request_type_name='ConfigProjectsLocationsDeploymentsExportLockRequest',
+        response_type_name='LockInfo',
+        supports_download=False,
+    )
+
+    def ExportState(self, request, global_params=None):
+      r"""Export state file from a given deployment.
+
+      Args:
+        request: (ConfigProjectsLocationsDeploymentsExportStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Statefile) The response message.
+      """
+      config = self.GetMethodConfig('ExportState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportState.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}:exportState',
+        http_method='POST',
+        method_id='config.projects.locations.deployments.exportState',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha2/{+parent}:exportState',
+        request_field='exportDeploymentStatefileRequest',
+        request_type_name='ConfigProjectsLocationsDeploymentsExportStateRequest',
+        response_type_name='Statefile',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Deployment.
 
@@ -215,15 +361,42 @@ class ConfigV1alpha2(base_api.BaseApiClient):
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}:getIamPolicy',
-        http_method='POST',
+        http_method='GET',
         method_id='config.projects.locations.deployments.getIamPolicy',
         ordered_params=['resource'],
         path_params=['resource'],
-        query_params=[],
+        query_params=['options_requestedPolicyVersion'],
         relative_path='v1alpha2/{+resource}:getIamPolicy',
-        request_field='getIamPolicyRequest',
+        request_field='',
         request_type_name='ConfigProjectsLocationsDeploymentsGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def ImportState(self, request, global_params=None):
+      r"""Import state file in a given deployment.
+
+      Args:
+        request: (ConfigProjectsLocationsDeploymentsImportStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Statefile) The response message.
+      """
+      config = self.GetMethodConfig('ImportState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImportState.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}:importState',
+        http_method='POST',
+        method_id='config.projects.locations.deployments.importState',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha2/{+parent}:importState',
+        request_field='importStatefileRequest',
+        request_type_name='ConfigProjectsLocationsDeploymentsImportStateRequest',
+        response_type_name='Statefile',
         supports_download=False,
     )
 
@@ -251,6 +424,33 @@ class ConfigV1alpha2(base_api.BaseApiClient):
         request_field='',
         request_type_name='ConfigProjectsLocationsDeploymentsListRequest',
         response_type_name='ListDeploymentsResponse',
+        supports_download=False,
+    )
+
+    def Lock(self, request, global_params=None):
+      r"""Lock deployment.
+
+      Args:
+        request: (ConfigProjectsLocationsDeploymentsLockRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LockDeploymentResponse) The response message.
+      """
+      config = self.GetMethodConfig('Lock')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Lock.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}:lock',
+        http_method='POST',
+        method_id='config.projects.locations.deployments.lock',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}:lock',
+        request_field='lockDeploymentRequest',
+        request_type_name='ConfigProjectsLocationsDeploymentsLockRequest',
+        response_type_name='LockDeploymentResponse',
         supports_download=False,
     )
 
@@ -332,6 +532,33 @@ class ConfigV1alpha2(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='ConfigProjectsLocationsDeploymentsTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Unlock(self, request, global_params=None):
+      r"""Unlock deployment.
+
+      Args:
+        request: (ConfigProjectsLocationsDeploymentsUnlockRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Unlock')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Unlock.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}:unlock',
+        http_method='POST',
+        method_id='config.projects.locations.deployments.unlock',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}:unlock',
+        request_field='unlockDeploymentRequest',
+        request_type_name='ConfigProjectsLocationsDeploymentsUnlockRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

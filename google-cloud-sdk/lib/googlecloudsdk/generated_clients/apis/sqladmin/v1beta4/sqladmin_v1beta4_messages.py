@@ -2635,6 +2635,8 @@ class Settings(_messages.Message):
     recreateReplicasOnPrimaryCrash: Specifies if replicas should automatically
       be recreated on a MySQL primary instance crashes when it is operating in
       low durability mode.
+    replicationLagMaxSeconds: Optional. Configuration value for recreation of
+      replica after certain replication lag
     replicationType: The type of replication this instance uses. This can be
       either `ASYNCHRONOUS` or `SYNCHRONOUS`. (Deprecated) This property was
       only applicable to First Generation instances.
@@ -2825,14 +2827,15 @@ class Settings(_messages.Message):
   passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 25)
   pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 26)
   recreateReplicasOnPrimaryCrash = _messages.BooleanField(27)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 28)
-  settingsVersion = _messages.IntegerField(29)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 30)
-  storageAutoResize = _messages.BooleanField(31)
-  storageAutoResizeLimit = _messages.IntegerField(32)
-  tier = _messages.StringField(33)
-  timeZone = _messages.StringField(34)
-  userLabels = _messages.MessageField('UserLabelsValue', 35)
+  replicationLagMaxSeconds = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 29)
+  settingsVersion = _messages.IntegerField(30)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 31)
+  storageAutoResize = _messages.BooleanField(32)
+  storageAutoResizeLimit = _messages.IntegerField(33)
+  tier = _messages.StringField(34)
+  timeZone = _messages.StringField(35)
+  userLabels = _messages.MessageField('UserLabelsValue', 36)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -3090,6 +3093,9 @@ class SqlExternalSyncSettingError(_messages.Message):
         contains invalid file information.
       UNSUPPORTED_DATABASE_SETTINGS: The source instance has unsupported
         database settings for migration.
+      MYSQL_PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE: The replication user is
+        missing parallel import specific privileges. (e.g. LOCK TABLES) for
+        MySQL.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3125,6 +3131,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     INSUFFICIENT_GCS_PERMISSIONS = 31
     INVALID_FILE_INFO = 32
     UNSUPPORTED_DATABASE_SETTINGS = 33
+    MYSQL_PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE = 34
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

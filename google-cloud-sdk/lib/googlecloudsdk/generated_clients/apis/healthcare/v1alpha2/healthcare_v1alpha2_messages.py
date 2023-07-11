@@ -978,6 +978,12 @@ class DicomStore(_messages.Message):
       id}`.
     notificationConfig: Notification destination for new DICOM instances.
       Supplied by the client.
+    streamConfigs: Optional. A list of streaming configs used to configure the
+      destination of streaming exports for every DICOM instance insertion in
+      this DICOM store. After a new config is added to `stream_configs`, DICOM
+      instance insertions are streamed to the new destination. When a config
+      is removed from `stream_configs`, the server stops streaming to that
+      destination. Each config must contain a unique destination.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1014,6 +1020,7 @@ class DicomStore(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 1)
   name = _messages.StringField(2)
   notificationConfig = _messages.MessageField('NotificationConfig', 3)
+  streamConfigs = _messages.MessageField('GoogleCloudHealthcareV1alpha2DicomStreamConfig', 4, repeated=True)
 
 
 class Empty(_messages.Message):
@@ -1922,6 +1929,26 @@ class GoogleCloudHealthcareV1alpha2DicomGcsSource(_messages.Message):
   """
 
   uri = _messages.StringField(1)
+
+
+class GoogleCloudHealthcareV1alpha2DicomStreamConfig(_messages.Message):
+  r"""StreamConfig specifies configuration for a streaming DICOM export.
+
+  Fields:
+    bigqueryDestination: Results are appended to this table. The server
+      creates a new table in the given BigQuery dataset if the specified table
+      does not exist. To enable the Cloud Healthcare API to write to your
+      BigQuery table, you must give the Cloud Healthcare API service account
+      the bigquery.dataEditor role. The service account is:
+      `service-{PROJECT_NUMBER}@gcp-sa-healthcare.iam.gserviceaccount.com`.
+      The PROJECT_NUMBER identifies the project that the DICOM store resides
+      in. To get the project number, go to the Cloud Console Dashboard. It is
+      recommended to not have a custom schema in the destination table which
+      could conflict with the schema created by the Cloud Healthcare API.
+      Instance deletions are not applied to the destination table.
+  """
+
+  bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2DicomBigQueryDestination', 1)
 
 
 class GoogleCloudHealthcareV1alpha2FhirBigQueryDestination(_messages.Message):

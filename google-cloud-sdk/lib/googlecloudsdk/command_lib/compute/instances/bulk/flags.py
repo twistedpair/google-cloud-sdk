@@ -342,6 +342,7 @@ def AddCommonBulkInsertArgs(
     support_enable_target_shape=False,
     add_zone_region_flags=True,
     support_confidential_compute_type=False,
+    support_confidential_compute_type_tdx=False,
     support_no_address_in_networking=False,
     support_max_count_per_zone=False,
     support_network_queue_count=False,
@@ -449,8 +450,9 @@ def AddCommonBulkInsertArgs(
   instances_flags.AddMinCpuPlatformArgs(parser, release_track)
   instances_flags.AddPublicDnsArgs(parser, instance=True)
   instances_flags.AddConfidentialComputeArgs(
-      parser, support_confidential_compute_type
-  )
+      parser,
+      support_confidential_compute_type,
+      support_confidential_compute_type_tdx)
   instances_flags.AddPostKeyRevocationActionTypeArgs(parser)
   AddBulkCreateArgs(
       parser,

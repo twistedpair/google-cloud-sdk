@@ -51,6 +51,7 @@ class RecommenderV1beta1(base_api.BaseApiClient):
     self.folders_locations_recommenders = self.FoldersLocationsRecommendersService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
+    self.insightTypes = self.InsightTypesService(self)
     self.organizations_locations_insightTypes_insights = self.OrganizationsLocationsInsightTypesInsightsService(self)
     self.organizations_locations_insightTypes = self.OrganizationsLocationsInsightTypesService(self)
     self.organizations_locations_recommenders_recommendations = self.OrganizationsLocationsRecommendersRecommendationsService(self)
@@ -63,6 +64,7 @@ class RecommenderV1beta1(base_api.BaseApiClient):
     self.projects_locations_recommenders = self.ProjectsLocationsRecommendersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+    self.recommenders = self.RecommendersService(self)
 
   class BillingAccountsLocationsInsightTypesInsightsService(base_api.BaseApiService):
     """Service class for the billingAccounts_locations_insightTypes_insights resource."""
@@ -777,6 +779,42 @@ class RecommenderV1beta1(base_api.BaseApiClient):
       super(RecommenderV1beta1.FoldersService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class InsightTypesService(base_api.BaseApiService):
+    """Service class for the insightTypes resource."""
+
+    _NAME = 'insightTypes'
+
+    def __init__(self, client):
+      super(RecommenderV1beta1.InsightTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists available InsightTypes. No IAM permissions are required.
+
+      Args:
+        request: (RecommenderInsightTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1ListInsightTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='recommender.insightTypes.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/insightTypes',
+        request_field='',
+        request_type_name='RecommenderInsightTypesListRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1ListInsightTypesResponse',
+        supports_download=False,
+    )
 
   class OrganizationsLocationsInsightTypesInsightsService(base_api.BaseApiService):
     """Service class for the organizations_locations_insightTypes_insights resource."""
@@ -1599,3 +1637,39 @@ class RecommenderV1beta1(base_api.BaseApiClient):
       super(RecommenderV1beta1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class RecommendersService(base_api.BaseApiService):
+    """Service class for the recommenders resource."""
+
+    _NAME = 'recommenders'
+
+    def __init__(self, client):
+      super(RecommenderV1beta1.RecommendersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all available Recommenders. No IAM permissions are required.
+
+      Args:
+        request: (RecommenderRecommendersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1ListRecommendersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='recommender.recommenders.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/recommenders',
+        request_field='',
+        request_type_name='RecommenderRecommendersListRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1ListRecommendersResponse',
+        supports_download=False,
+    )

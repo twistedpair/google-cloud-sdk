@@ -2769,14 +2769,21 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
   Fields:
     bytesLimitPerFile: Max number of bytes to scan from a file. If a scanned
       file's size is bigger than this value then the rest of the bytes are
-      omitted. Only one of bytes_limit_per_file and
-      bytes_limit_per_file_percent can be specified. Cannot be set if de-
-      identification is requested.
+      omitted. Only one of `bytes_limit_per_file` and
+      `bytes_limit_per_file_percent` can be specified. This field can't be set
+      if de-identification is requested. For certain file types, setting this
+      field has no effect. For more information, see [Limits on bytes scanned
+      per file](https://cloud.google.com/dlp/docs/supported-file-types#max-
+      byte-size-per-file).
     bytesLimitPerFilePercent: Max percentage of bytes to scan from a file. The
       rest are omitted. The number of bytes scanned is rounded down. Must be
       between 0 and 100, inclusively. Both 0 and 100 means no limit. Defaults
       to 0. Only one of bytes_limit_per_file and bytes_limit_per_file_percent
-      can be specified. Cannot be set if de-identification is requested.
+      can be specified. This field can't be set if de-identification is
+      requested. For certain file types, setting this field has no effect. For
+      more information, see [Limits on bytes scanned per
+      file](https://cloud.google.com/dlp/docs/supported-file-types#max-byte-
+      size-per-file).
     fileSet: The set of one or more files to scan.
     fileTypes: List of file type groups to include in the scan. If empty, all
       files are scanned and available data format processors are applied. In
@@ -2799,7 +2806,7 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
       BINARY_FILE: Includes all file extensions not covered by another entry.
         Binary scanning attempts to convert the content of the file to utf_8
         to scan the file. If you wish to avoid this fall back, specify one or
-        more of the other FileType's in your storage scan.
+        more of the other file types in your storage scan.
       TEXT_FILE: Included file extensions: asc,asp, aspx, brf, c, cc,cfm, cgi,
         cpp, csv, cxx, c++, cs, css, dart, dat, dot, eml,, epbub, ged, go, h,
         hh, hpp, hxx, h++, hs, html, htm, mkd, markdown, m, ml, mli, perl, pl,
@@ -2807,20 +2814,28 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
         scala, sh, sql, swift, tex, shtml, shtm, xhtml, lhs, ics, ini, java,
         js, json, kix, kml, ocaml, md, txt, text, tsv, vb, vcard, vcs, wml,
         xcodeproj, xml, xsl, xsd, yml, yaml.
-      IMAGE: Included file extensions: bmp, gif, jpg, jpeg, jpe, png.
-        bytes_limit_per_file has no effect on image files. Image inspection is
-        restricted to 'global', 'us', 'asia', and 'europe'.
-      WORD: Word files >30 MB will be scanned as binary files. Included file
-        extensions: docx, dotx, docm, dotm
-      PDF: PDF files >30 MB will be scanned as binary files. Included file
-        extensions: pdf
+      IMAGE: Included file extensions: bmp, gif, jpg, jpeg, jpe, png. Setting
+        bytes_limit_per_file or bytes_limit_per_file_percent has no effect on
+        image files. Image inspection is restricted to the `global`, `us`,
+        `asia`, and `europe` regions.
+      WORD: Microsoft Word files larger than 30 MB will be scanned as binary
+        files. Included file extensions: docx, dotx, docm, dotm. Setting
+        `bytes_limit_per_file` or `bytes_limit_per_file_percent` has no effect
+        on Word files.
+      PDF: PDF files larger than 30 MB will be scanned as binary files.
+        Included file extensions: pdf. Setting `bytes_limit_per_file` or
+        `bytes_limit_per_file_percent` has no effect on PDF files.
       AVRO: Included file extensions: avro
       CSV: Included file extensions: csv
       TSV: Included file extensions: tsv
-      POWERPOINT: Powerpoint files >30 MB will be scanned as binary files.
-        Included file extensions: pptx, pptm, potx, potm, pot
-      EXCEL: Excel files >30 MB will be scanned as binary files. Included file
-        extensions: xlsx, xlsm, xltx, xltm
+      POWERPOINT: Microsoft PowerPoint files larger than 30 MB will be scanned
+        as binary files. Included file extensions: pptx, pptm, potx, potm,
+        pot. Setting `bytes_limit_per_file` or `bytes_limit_per_file_percent`
+        has no effect on PowerPoint files.
+      EXCEL: Microsoft Excel files larger than 30 MB will be scanned as binary
+        files. Included file extensions: xlsx, xlsm, xltx, xltm. Setting
+        `bytes_limit_per_file` or `bytes_limit_per_file_percent` has no effect
+        on Excel files.
     """
     FILE_TYPE_UNSPECIFIED = 0
     BINARY_FILE = 1
@@ -2922,6 +2937,172 @@ class GooglePrivacyDlpV2Color(_messages.Message):
   blue = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   green = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   red = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GooglePrivacyDlpV2ColumnDataProfile(_messages.Message):
+  r"""The profile for a scanned column within a table.
+
+  Enums:
+    ColumnTypeValueValuesEnum: The data type of a given column.
+    EstimatedNullPercentageValueValuesEnum: Approximate percentage of entries
+      being null in the column.
+    EstimatedUniquenessScoreValueValuesEnum: Approximate uniqueness of the
+      column.
+    PolicyStateValueValuesEnum: Indicates if a policy tag has been applied to
+      the column.
+    StateValueValuesEnum: State of a profile.
+
+  Fields:
+    column: The name of the column.
+    columnInfoType: If it's been determined this column can be identified as a
+      single type, this will be set. Otherwise the column either has
+      unidentifiable content or mixed types.
+    columnType: The data type of a given column.
+    dataRiskLevel: The data risk level for this column.
+    datasetId: The BigQuery dataset ID.
+    datasetLocation: The BigQuery location where the dataset's data is stored.
+      See https://cloud.google.com/bigquery/docs/locations for supported
+      locations.
+    datasetProjectId: The Google Cloud project ID that owns the BigQuery
+      dataset.
+    estimatedNullPercentage: Approximate percentage of entries being null in
+      the column.
+    estimatedUniquenessScore: Approximate uniqueness of the column.
+    freeTextScore: The likelihood that this column contains free-form text. A
+      value close to 1 may indicate the column is likely to contain free-form
+      or natural language text. Range in 0-1.
+    name: The name of the profile.
+    otherMatches: Other types found within this column. List will be un-
+      ordered.
+    policyState: Indicates if a policy tag has been applied to the column.
+    profileLastGenerated: The last time the profile was generated.
+    profileStatus: Success or error status from the most recent profile
+      generation attempt. May be empty if the profile is still being
+      generated.
+    sensitivityScore: The sensitivity of this column.
+    state: State of a profile.
+    tableDataProfile: The resource name to the table data profile.
+    tableFullResource: The resource name of the table this column is within.
+    tableId: The BigQuery table ID.
+  """
+
+  class ColumnTypeValueValuesEnum(_messages.Enum):
+    r"""The data type of a given column.
+
+    Values:
+      COLUMN_DATA_TYPE_UNSPECIFIED: Invalid type.
+      TYPE_INT64: Encoded as a string in decimal format.
+      TYPE_BOOL: Encoded as a boolean "false" or "true".
+      TYPE_FLOAT64: Encoded as a number, or string "NaN", "Infinity" or
+        "-Infinity".
+      TYPE_STRING: Encoded as a string value.
+      TYPE_BYTES: Encoded as a base64 string per RFC 4648, section 4.
+      TYPE_TIMESTAMP: Encoded as an RFC 3339 timestamp with mandatory "Z" time
+        zone string: 1985-04-12T23:20:50.52Z
+      TYPE_DATE: Encoded as RFC 3339 full-date format string: 1985-04-12
+      TYPE_TIME: Encoded as RFC 3339 partial-time format string: 23:20:50.52
+      TYPE_DATETIME: Encoded as RFC 3339 full-date "T" partial-time:
+        1985-04-12T23:20:50.52
+      TYPE_GEOGRAPHY: Encoded as WKT
+      TYPE_NUMERIC: Encoded as a decimal string.
+      TYPE_RECORD: Container of ordered fields, each with a type and field
+        name.
+      TYPE_BIGNUMERIC: Decimal type.
+      TYPE_JSON: Json type.
+    """
+    COLUMN_DATA_TYPE_UNSPECIFIED = 0
+    TYPE_INT64 = 1
+    TYPE_BOOL = 2
+    TYPE_FLOAT64 = 3
+    TYPE_STRING = 4
+    TYPE_BYTES = 5
+    TYPE_TIMESTAMP = 6
+    TYPE_DATE = 7
+    TYPE_TIME = 8
+    TYPE_DATETIME = 9
+    TYPE_GEOGRAPHY = 10
+    TYPE_NUMERIC = 11
+    TYPE_RECORD = 12
+    TYPE_BIGNUMERIC = 13
+    TYPE_JSON = 14
+
+  class EstimatedNullPercentageValueValuesEnum(_messages.Enum):
+    r"""Approximate percentage of entries being null in the column.
+
+    Values:
+      NULL_PERCENTAGE_LEVEL_UNSPECIFIED: Unused.
+      NULL_PERCENTAGE_VERY_LOW: Very few null entries.
+      NULL_PERCENTAGE_LOW: Some null entries.
+      NULL_PERCENTAGE_MEDIUM: <no description>
+      NULL_PERCENTAGE_HIGH: A lot of null entries.
+    """
+    NULL_PERCENTAGE_LEVEL_UNSPECIFIED = 0
+    NULL_PERCENTAGE_VERY_LOW = 1
+    NULL_PERCENTAGE_LOW = 2
+    NULL_PERCENTAGE_MEDIUM = 3
+    NULL_PERCENTAGE_HIGH = 4
+
+  class EstimatedUniquenessScoreValueValuesEnum(_messages.Enum):
+    r"""Approximate uniqueness of the column.
+
+    Values:
+      UNIQUENESS_SCORE_LEVEL_UNSPECIFIED: Some columns do not have estimated
+        uniqueness. Possible reasons include having too few values.
+      UNIQUENESS_SCORE_LOW: Low uniqueness, possibly a boolean, enum or
+        similiarly typed column.
+      UNIQUENESS_SCORE_MEDIUM: Medium uniqueness.
+      UNIQUENESS_SCORE_HIGH: High uniqueness, possibly a column of free text
+        or unique identifiers.
+    """
+    UNIQUENESS_SCORE_LEVEL_UNSPECIFIED = 0
+    UNIQUENESS_SCORE_LOW = 1
+    UNIQUENESS_SCORE_MEDIUM = 2
+    UNIQUENESS_SCORE_HIGH = 3
+
+  class PolicyStateValueValuesEnum(_messages.Enum):
+    r"""Indicates if a policy tag has been applied to the column.
+
+    Values:
+      COLUMN_POLICY_STATE_UNSPECIFIED: No policy tags.
+      COLUMN_POLICY_TAGGED: Column has policy tag applied.
+    """
+    COLUMN_POLICY_STATE_UNSPECIFIED = 0
+    COLUMN_POLICY_TAGGED = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of a profile.
+
+    Values:
+      STATE_UNSPECIFIED: Unused.
+      RUNNING: The profile is currently running. Once a profile has finished
+        it will transition to DONE.
+      DONE: The profile is no longer generating. If profile_status.status.code
+        is 0, the profile succeeded, otherwise, it failed.
+    """
+    STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    DONE = 2
+
+  column = _messages.StringField(1)
+  columnInfoType = _messages.MessageField('GooglePrivacyDlpV2InfoTypeSummary', 2)
+  columnType = _messages.EnumField('ColumnTypeValueValuesEnum', 3)
+  dataRiskLevel = _messages.MessageField('GooglePrivacyDlpV2DataRiskLevel', 4)
+  datasetId = _messages.StringField(5)
+  datasetLocation = _messages.StringField(6)
+  datasetProjectId = _messages.StringField(7)
+  estimatedNullPercentage = _messages.EnumField('EstimatedNullPercentageValueValuesEnum', 8)
+  estimatedUniquenessScore = _messages.EnumField('EstimatedUniquenessScoreValueValuesEnum', 9)
+  freeTextScore = _messages.FloatField(10)
+  name = _messages.StringField(11)
+  otherMatches = _messages.MessageField('GooglePrivacyDlpV2OtherInfoTypeSummary', 12, repeated=True)
+  policyState = _messages.EnumField('PolicyStateValueValuesEnum', 13)
+  profileLastGenerated = _messages.StringField(14)
+  profileStatus = _messages.MessageField('GooglePrivacyDlpV2ProfileStatus', 15)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  tableDataProfile = _messages.StringField(18)
+  tableFullResource = _messages.StringField(19)
+  tableId = _messages.StringField(20)
 
 
 class GooglePrivacyDlpV2Condition(_messages.Message):
@@ -3431,6 +3612,19 @@ class GooglePrivacyDlpV2DataProfileAction(_messages.Message):
   pubSubNotification = _messages.MessageField('GooglePrivacyDlpV2PubSubNotification', 2)
 
 
+class GooglePrivacyDlpV2DataProfileBigQueryRowSchema(_messages.Message):
+  r"""The schema of data to be saved to the BigQuery when the
+  `DataProfileAction` is enabled.
+
+  Fields:
+    columnProfile: Column data profile column
+    tableProfile: Table data profile column
+  """
+
+  columnProfile = _messages.MessageField('GooglePrivacyDlpV2ColumnDataProfile', 1)
+  tableProfile = _messages.MessageField('GooglePrivacyDlpV2TableDataProfile', 2)
+
+
 class GooglePrivacyDlpV2DataProfileConfigSnapshot(_messages.Message):
   r"""Snapshot of the configurations used to generate the profile.
 
@@ -3714,7 +3908,7 @@ class GooglePrivacyDlpV2Deidentify(_messages.Message):
       BINARY_FILE: Includes all file extensions not covered by another entry.
         Binary scanning attempts to convert the content of the file to utf_8
         to scan the file. If you wish to avoid this fall back, specify one or
-        more of the other FileType's in your storage scan.
+        more of the other file types in your storage scan.
       TEXT_FILE: Included file extensions: asc,asp, aspx, brf, c, cc,cfm, cgi,
         cpp, csv, cxx, c++, cs, css, dart, dat, dot, eml,, epbub, ged, go, h,
         hh, hpp, hxx, h++, hs, html, htm, mkd, markdown, m, ml, mli, perl, pl,
@@ -3722,20 +3916,28 @@ class GooglePrivacyDlpV2Deidentify(_messages.Message):
         scala, sh, sql, swift, tex, shtml, shtm, xhtml, lhs, ics, ini, java,
         js, json, kix, kml, ocaml, md, txt, text, tsv, vb, vcard, vcs, wml,
         xcodeproj, xml, xsl, xsd, yml, yaml.
-      IMAGE: Included file extensions: bmp, gif, jpg, jpeg, jpe, png.
-        bytes_limit_per_file has no effect on image files. Image inspection is
-        restricted to 'global', 'us', 'asia', and 'europe'.
-      WORD: Word files >30 MB will be scanned as binary files. Included file
-        extensions: docx, dotx, docm, dotm
-      PDF: PDF files >30 MB will be scanned as binary files. Included file
-        extensions: pdf
+      IMAGE: Included file extensions: bmp, gif, jpg, jpeg, jpe, png. Setting
+        bytes_limit_per_file or bytes_limit_per_file_percent has no effect on
+        image files. Image inspection is restricted to the `global`, `us`,
+        `asia`, and `europe` regions.
+      WORD: Microsoft Word files larger than 30 MB will be scanned as binary
+        files. Included file extensions: docx, dotx, docm, dotm. Setting
+        `bytes_limit_per_file` or `bytes_limit_per_file_percent` has no effect
+        on Word files.
+      PDF: PDF files larger than 30 MB will be scanned as binary files.
+        Included file extensions: pdf. Setting `bytes_limit_per_file` or
+        `bytes_limit_per_file_percent` has no effect on PDF files.
       AVRO: Included file extensions: avro
       CSV: Included file extensions: csv
       TSV: Included file extensions: tsv
-      POWERPOINT: Powerpoint files >30 MB will be scanned as binary files.
-        Included file extensions: pptx, pptm, potx, potm, pot
-      EXCEL: Excel files >30 MB will be scanned as binary files. Included file
-        extensions: xlsx, xlsm, xltx, xltm
+      POWERPOINT: Microsoft PowerPoint files larger than 30 MB will be scanned
+        as binary files. Included file extensions: pptx, pptm, potx, potm,
+        pot. Setting `bytes_limit_per_file` or `bytes_limit_per_file_percent`
+        has no effect on PowerPoint files.
+      EXCEL: Microsoft Excel files larger than 30 MB will be scanned as binary
+        files. Included file extensions: xlsx, xlsm, xltx, xltm. Setting
+        `bytes_limit_per_file` or `bytes_limit_per_file_percent` has no effect
+        on Excel files.
     """
     FILE_TYPE_UNSPECIFIED = 0
     BINARY_FILE = 1
@@ -6032,8 +6234,8 @@ class GooglePrivacyDlpV2ProfileStatus(_messages.Message):
   r"""A GooglePrivacyDlpV2ProfileStatus object.
 
   Fields:
-    status: Profiling status code and optional message. status.code will be 0
-      (default value) for OK.
+    status: Profiling status code and optional message. The `status.code`
+      value is 0 (default value) for OK.
     timestamp: Time when the profile generation status was updated
   """
 

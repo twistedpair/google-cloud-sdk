@@ -1137,6 +1137,8 @@ class _SectionApiEndpointOverrides(_Section):
         'artifactregistry', command='gcloud artifacts')
     self.assuredworkloads = self._Add(
         'assuredworkloads', command='gcloud assured')
+    self.authztoolkit = self._Add(
+        'authztoolkit', command='gcloud authz-toolkit', hidden=True)
     self.baremetalsolution = self._Add(
         'baremetalsolution', command='gcloud bms')
     self.batch = self._Add('batch', command='gcloud batch', hidden=True)

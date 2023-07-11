@@ -6,6 +6,196 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 438.0.0 (2023-07-11)
+
+### Breaking Changes
+
+*   **(AI)** Modified `gcloud ai index-endpoints create` to create public endpoint by default. Set `--network` flag to create private endpoint.
+*   **(Cloud IAM)** Make `--web-sso-response-type` and `--web-sso-assertion-claims-behavior`flag
+    required in  `gcloud iam workforce-pools providers create-oidc`.
+*   **(Stackdriver Debugger)** Deleted `gcloud deploy`. Cloud Debugger is deprecated and was shut
+    down May 31, 2023. For more information, see
+    <https://cloud.google.com/debugger/docs/deprecations>.
+
+
+### Artifact Registry
+
+* Added `artifacts repositories set-cleanup-policies`.
+* Added `artifacts repositories list-cleanup-policies`.
+* Added `artifacts repositories delete-cleanup-policies`.
+
+### Backup For GKE
+
+*   Added the following flags to
+`gcloud container backup-restore restore-plans create` and
+`gcloud container backup-restore restore-plans update` to expand
+cluster resource restore scope options:
+    * `--cluster-resource-scope-all-group-kinds`
+    * `--cluster-resource-scope-selected-group-kinds`
+    * `--cluster-resource-scope-excluded-group-kinds`
+    * `--cluster-resource-scope-no-group-kinds`
+*   Deprecated `--cluster-resource-restore-scope`.
+Use `--cluster-resource-selected-group-kinds` instead.
+* Added the following flags to
+`gcloud container backup-restore restore-plans create` and
+`gcloud container backup-restore restore-plans update` to expand
+namespaced resourced restore scope options:
+    * `--no-namespaces`
+    * `--excluded-namespaces`
+
+### Cloud Build
+
+*   Add E2_MEDIUM machine type.
+*   Promoted `gcloud builds connections` and `gcloud builds repositories` to GA.
+*   Promoted `gcloud builds triggers create gitlab` to GA.
+
+### Cloud Datastore Emulator
+
+* Released Cloud Datastore emulator v2.3.1
+  * Fixed bug which caused /reset to never return a response.
+
+### Cloud Functions
+
+* Added warning and prompting to `gcloud functions get-iam-policy` and `gcloud functions remove-iam-policy-binding` about needing to bind the `roles/run.invoker` role for 2nd gen functions.
+
+### Cloud Healthcare
+
+* Added `--stream-configs` flag to the following commands:
+  * `gcloud beta healthcare dicom-stores create`
+  * `gcloud beta healthcare dicom-stores update`
+
+### Cloud IAM
+
+*   Added `--client-secret-value` flag to
+    `gcloud iam workforce-pools providers create-oidc` and
+    `gcloud iam workforce-pools providers update-oidc` which allow user to setup
+    client secret for authorization code flow.
+*   Added `--clear-client-secret` flag to
+    `gcloud iam workforce-pools providers update-oidc` which allow user to clear
+    client secret setup for authorization code flow.
+*   Added `code` as value for `--web-sso-response-type` flag to
+    `gcloud iam workforce-pools providers create-oidc` and
+    `gcloud iam workforce-pools providers update-oidc` which allow user to setup
+    authorization code flow.
+*   Added `merge-user-info-over-id-token-claims` as value for
+    `--web-sso-assertion-claims-behavior` flag to
+    `gcloud iam workforce-pools providers create-oidc` and
+    `gcloud iam workforce-pools providers update-oidc` which allow user to
+    merge the UserInfo Endpoint Claims with ID Token Claims, preferring
+    UserInfo Claim Values for the same Claim Name.
+
+### Cloud Pub/Sub
+
+*   Promoted `--cloud-storage-bucket`, `--cloud-storage-file-prefix`,
+    `--cloud-storage-file-suffix`, `--cloud-storage-max-bytes`,
+    `--cloud-storage-max-duration`, `--cloud-storage-output-format` and
+    `--cloud-storage-write-metadata` flags of
+    `gcloud pubsub subscriptions create` to GA. Adds the ability to set Cloud
+    Storage configuration options in Cloud Pub/Sub subscriptions. For more
+    information, see the <https://cloud.google.com/pubsub/docs/cloudstorage>.
+*   Promoted `--cloud-storage-bucket`, `--cloud-storage-file-prefix`,
+    `--cloud-storage-file-suffix`, `--cloud-storage-max-bytes`,
+    `--cloud-storage-max-duration`, `--cloud-storage-output-format`,
+    `--cloud-storage-write-metadata`, and `--clear-cloud-storage-config` flags
+    of `gcloud pubsub subscriptions update` to GA. Adds the ability to update
+    Cloud Storage configuration options in Cloud Pub/Sub subscriptions. For more
+    information, see the <https://cloud.google.com/pubsub/docs/cloudstorage>.
+
+### Cloud SQL
+
+* Added `gcloud sql operations cancel` to cancel an operation running on a
+Cloud SQL instance.
+* Added `edition` and `enable-data-cache` flags to
+`gcloud sql instances create` and `gcloud sql instances patch` to support
+Edition and Data Cache.
+* Added `show-edition` flag to `gcloud sql instances list` and
+`gcloud sql tiers list` to display Edition.
+
+* Added `--password-policy-disallow-compromised-credentials` flag to `gcloud sql instances create` and
+  `gcloud sql instances patch` for ALPHA and BETA.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.25.
+* Fix a bug preventing nested directory symlinks from being preserved when
+  uploading a directory recursively.
+
+### Cloud Workstations
+
+* Updated `--machine-type` flag for `configs` command to accept any string.
+
+### Compute Engine
+
+* Added `23.04` to allowed list of values for `--version` of `gcloud beta compute instances ops-agents policies [create|update]`.
+* Promote `--instance-kms-key` flag of `gcloud compute instance create` to GA.
+* Promoted `--preference` flag of `gcloud compute backend-services add-backend` and `gcloud compute backend-services update-backend` to beta.
+* Added `--allow-cidr-routes-overlap` flag to
+`gcloud beta compute networks subnets update` command.
+* Added `SEV_SNP_CAPABLE` to the list of `guestOsFeatures`.
+* Added support for clearing fields to `gcloud beta compute security-policies remove-user-defined-field` and `gcloud beta compute security-policies rules update`.
+
+### GKE Hub
+
+* Modified `gcloud container fleet memberships register` command to validate that the `--manifest-output-file` flag is only used with the `--install-connect-agent` flag.
+
+### Kpt
+
+* Updated kpt in Google Cloud CLI from 1.0.0-beta.35 to 1.0.0-beta.37.
+
+### Kubernetes Engine
+
+* Added new `kubedns` option to `--cluster-dns` to allow KubeDNS to be explicitly specified as the cluster DNS provider.
+* Added `GcsFuseCsiDriver` option to `--addons` flag of `gcloud container clusters create` to enable the Cloud Storage FUSE Container Storage Interface (CSI) Driver.
+* Added `GcsFuseCsiDriver` option to `--update-addons` flag of `gcloud container clusters update` to enable/disable the Cloud Storage FUSE Container Storage Interface (CSI) Driver.
+* Updated default kubectl from 1.25.9 to 1.25.11.
+* Additional kubectl versions:
+  * kubectl.1.21 (1.21.14)
+  * kubectl.1.22 (1.22.17)
+  * kubectl.1.23 (1.23.17)
+  * kubectl.1.24 (1.24.15)
+  * kubectl.1.25 (1.25.11)
+  * kubectl.1.26 (1.26.6)
+  * kubectl.1.27 (1.27.3)
+
+### Network Connectivity
+
+*   Added `gcloud network-connectivity hubs add-iam-policy-binding`, `gcloud network-connectivity hubs remove-iam-policy-binding`, `gcloud network-connectivity hubs get-iam-policy`, and `gcloud network-connectivity hubs set-iam-policy` commands.
+*   Added `gcloud network-connectivity hubs list-spokes` command which supports listing all spokes associated with a hub.
+*   Added `gcloud network-connectivity hubs route-tables` command group which supports listing and describing route tables.
+*   Added `gcloud network-connectivity hubs route-tables routes` command group which supports listing and describing routes.
+*   Added `gcloud network-connectivity spokes accept` and `gcloud network-connectivity spokes reject` commands.
+*   Added `--global` flag to `gcloud network-connectivity spokes delete`, `gcloud network-connectivity spokes describe`, and `gcloud network-connectivity spokes list` commands.
+*   Added `gcloud network-connectivity spokes linked-vpc-network` command group which supports creating and updating VPC spokes.
+
+### Network Security
+
+* Added `gcloud network-security firewall-endpoint-associations update` to alpha and beta. This command updates the labels and TLS inspection policy of Cloud Firewall Plus associations.
+
+### Network Services
+
+* Promoted `gcloud network-services service-lb-policies` to beta.
+
+### Recaptcha
+
+* Added `--skip-billing-check` to `recaptcha keys migrate`. If usage is under
+the free quota, the billing check can be safely skipped.
+
+### Recommender
+
+* Added `list insight-types` to beta for recommender surface.
+* Added `list recommenders` to beta for recommender surface.
+* Updated `list insights` to use beta `list insight-types` command.
+* Updated `list recommendations` to use beta `list recommenders` command.
+
+### Security Command Center
+
+* Updated `gcloud scc findings` documentation to fix an invalid finding id used in examples.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
 ## 437.0.1 (2023-06-30)
 
 ### Cloud Storage

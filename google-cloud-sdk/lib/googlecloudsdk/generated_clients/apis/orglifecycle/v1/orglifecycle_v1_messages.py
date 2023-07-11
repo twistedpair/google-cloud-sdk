@@ -151,18 +151,24 @@ class ManagedOrganization(_messages.Message):
   r"""This organization managed by GCP resellers.
 
   Fields:
-    admins: List of organization admins.
+    admins: Optional. List of organization admins.
     createTime: Output only. Timestamp when the organization was created.
-    displayName: The display name of the organization.
     name: Output only. The resource name of the managed organization. Format:
       organizations/{organization_id}/locations/{location}/managedOrganization
       s/{managed_organization_id}
+    organizationDisplayName: Required. The display name of the
+      cloudresourcemanager.googleapis.com/Organization created on behalf of
+      the customer.
+    organizationNumber: Output only. System generated ID for the
+      cloudresourcemanager.googleapis.com/Organization created on behalf of
+      the customer.
   """
 
   admins = _messages.MessageField('OrganizationAdmin', 1, repeated=True)
   createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
+  name = _messages.StringField(3)
+  organizationDisplayName = _messages.StringField(4)
+  organizationNumber = _messages.IntegerField(5)
 
 
 class Operation(_messages.Message):
@@ -308,7 +314,7 @@ class OrganizationAdmin(_messages.Message):
   roles/resourcemanager.organizationAdmin
 
   Fields:
-    member: Valid IAM principles. See member field under
+    member: Required. Valid IAM principles. See member field under
       https://cloud.google.com/iam/docs/reference/sts/rest/v1/Binding
   """
 
@@ -352,24 +358,19 @@ class OrglifecycleOrganizationsLocationsManagedOrganizationsCreateRequest(_messa
   Fields:
     managedOrganization: A ManagedOrganization resource to be passed as the
       request body.
+    managedOrganizationId: Required. User specified Managed Organization ID.
+      This has to be unique under parent:
+      organizations/{organization_id}/locations/{location} It must be 6 to 30
+      lowercase ASCII letters, digits, or hyphens. It must start with a
+      letter.Trailing hyphens are prohibited. Example: tokyo-rain-123
     parent: Required. The parent resource where this ManagedOrganization will
-      be created. Must be in the format: organizations/{organization_id}.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      be created. Must be in the format:
+      organizations/{organization_id}/locations/{location}.
   """
 
   managedOrganization = _messages.MessageField('ManagedOrganization', 1)
-  parent = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
+  managedOrganizationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class OrglifecycleOrganizationsLocationsManagedOrganizationsDeleteRequest(_messages.Message):
@@ -380,21 +381,9 @@ class OrglifecycleOrganizationsLocationsManagedOrganizationsDeleteRequest(_messa
     name: Required. The name of the ManagedOrganization to delete. Format: org
       anizations/{organization_id}/locations/*/managedOrganizations/{managed_o
       rganization_id}
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
 
 
 class OrglifecycleOrganizationsLocationsManagedOrganizationsGetRequest(_messages.Message):
@@ -415,11 +404,12 @@ class OrglifecycleOrganizationsLocationsManagedOrganizationsListRequest(_message
   object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
     parent: Required. Parent value for ListManagedOrganizationsRequest
   """
 
@@ -440,17 +430,6 @@ class OrglifecycleOrganizationsLocationsManagedOrganizationsPatchRequest(_messag
     name: Output only. The resource name of the managed organization. Format:
       organizations/{organization_id}/locations/{location}/managedOrganization
       s/{managed_organization_id}
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the ManagedOrganization resource by the update. The list
       of fields to update. Supported field: ManagedOrganization.admins;
@@ -459,8 +438,7 @@ class OrglifecycleOrganizationsLocationsManagedOrganizationsPatchRequest(_messag
 
   managedOrganization = _messages.MessageField('ManagedOrganization', 1)
   name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
+  updateMask = _messages.StringField(3)
 
 
 class OrglifecycleOrganizationsLocationsOperationsCancelRequest(_messages.Message):

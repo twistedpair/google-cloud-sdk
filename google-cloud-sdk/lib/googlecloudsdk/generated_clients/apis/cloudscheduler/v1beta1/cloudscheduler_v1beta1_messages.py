@@ -820,39 +820,39 @@ class PubsubMessage(_messages.Message):
   limits.
 
   Messages:
-    AttributesValue: Attributes for this message. If this field is empty, the
-      message must contain non-empty data. This can be used to filter messages
-      on the subscription.
+    AttributesValue: Optional. Attributes for this message. If this field is
+      empty, the message must contain non-empty data. This can be used to
+      filter messages on the subscription.
 
   Fields:
-    attributes: Attributes for this message. If this field is empty, the
-      message must contain non-empty data. This can be used to filter messages
-      on the subscription.
-    data: The message data field. If this field is empty, the message must
-      contain at least one attribute.
-    messageId: ID of this message, assigned by the server when the message is
-      published. Guaranteed to be unique within the topic. This value may be
-      read by a subscriber that receives a `PubsubMessage` via a `Pull` call
-      or a push delivery. It must not be populated by the publisher in a
-      `Publish` call.
-    orderingKey: If non-empty, identifies related messages for which publish
-      order should be respected. If a `Subscription` has
+    attributes: Optional. Attributes for this message. If this field is empty,
+      the message must contain non-empty data. This can be used to filter
+      messages on the subscription.
+    data: Optional. The message data field. If this field is empty, the
+      message must contain at least one attribute.
+    messageId: Optional. ID of this message, assigned by the server when the
+      message is published. Guaranteed to be unique within the topic. This
+      value may be read by a subscriber that receives a `PubsubMessage` via a
+      `Pull` call or a push delivery. It must not be populated by the
+      publisher in a `Publish` call.
+    orderingKey: Optional. If non-empty, identifies related messages for which
+      publish order should be respected. If a `Subscription` has
       `enable_message_ordering` set to `true`, messages published with the
       same non-empty `ordering_key` value will be delivered to subscribers in
       the order in which they are received by the Pub/Sub system. All
       `PubsubMessage`s published in a given `PublishRequest` must specify the
       same `ordering_key` value. For more information, see [ordering
       messages](https://cloud.google.com/pubsub/docs/ordering).
-    publishTime: The time at which the message was published, populated by the
-      server when it receives the `Publish` call. It must not be populated by
-      the publisher in a `Publish` call.
+    publishTime: Optional. The time at which the message was published,
+      populated by the server when it receives the `Publish` call. It must not
+      be populated by the publisher in a `Publish` call.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributesValue(_messages.Message):
-    r"""Attributes for this message. If this field is empty, the message must
-    contain non-empty data. This can be used to filter messages on the
-    subscription.
+    r"""Optional. Attributes for this message. If this field is empty, the
+    message must contain non-empty data. This can be used to filter messages
+    on the subscription.
 
     Messages:
       AdditionalProperty: An additional property for a AttributesValue object.

@@ -165,21 +165,7 @@ def AddMachineTypeFlag(parser, use_default=True):
   that the workstations created under this configuration will run on."""
   parser.add_argument(
       '--machine-type',
-      choices=[
-          'e2-standard-2',
-          'e2-standard-4',
-          'e2-standard-8',
-          'e2-standard-16',
-          'e2-standard-32',
-          'n2-standard-8',
-          'n1-standard-4',
-          't2d-standard-6',
-          'n2d-standard-2',
-          'n2d-standard-4',
-          'n2d-standard-8',
-          'n2d-standard-16',
-          'n2d-standard-32',
-      ],
+      type=str,
       default='e2-standard-4' if use_default else None,
       help=help_text,
   )

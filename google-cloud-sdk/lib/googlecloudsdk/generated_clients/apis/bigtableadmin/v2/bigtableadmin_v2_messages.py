@@ -168,7 +168,7 @@ class Backup(_messages.Message):
     endTime: Output only. `end_time` is the time that the backup was finished.
       The row data in the backup will be no newer than this timestamp.
     expireTime: Required. The expiration time of the backup, with microseconds
-      granularity that must be at least 6 hours and at most 30 days from the
+      granularity that must be at least 6 hours and at most 90 days from the
       time the request is received. Once the `expire_time` has passed, Cloud
       Bigtable will delete the backup and free the resources used by the
       backup.
@@ -1058,20 +1058,20 @@ class BigtableadminProjectsInstancesTablesViewsCreateRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
-class BigtableadminProjectsInstancesTablesViewsGetIamPolicyRequest(_messages.Message):
-  r"""A BigtableadminProjectsInstancesTablesViewsGetIamPolicyRequest object.
+class BigtableadminProjectsInstancesTablesViewsDeleteRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesViewsDeleteRequest object.
 
   Fields:
-    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
+    etag: Optional. The current etag of the view. If an etag is provided and
+      does not match the current etag of the view, deletion will be blocked
+      and an ABORTED error will be returned.
+    name: Required. The unique name of the view to be deleted. Values are of
+      the form
+      `projects/{project}/instances/{instance}/tables/{table}/views/{view}`.
   """
 
-  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class BigtableadminProjectsInstancesTablesViewsPatchRequest(_messages.Message):
@@ -1092,39 +1092,6 @@ class BigtableadminProjectsInstancesTablesViewsPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   view = _messages.MessageField('View', 3)
-
-
-class BigtableadminProjectsInstancesTablesViewsSetIamPolicyRequest(_messages.Message):
-  r"""A BigtableadminProjectsInstancesTablesViewsSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class BigtableadminProjectsInstancesTablesViewsTestIamPermissionsRequest(_messages.Message):
-  r"""A BigtableadminProjectsInstancesTablesViewsTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class BigtableadminProjectsInstancesTestIamPermissionsRequest(_messages.Message):

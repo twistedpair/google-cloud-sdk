@@ -473,6 +473,7 @@ class CloudSqlSettings(_messages.Message):
       POSTGRES_12: PostgreSQL 12.
       POSTGRES_13: PostgreSQL 13.
       POSTGRES_14: PostgreSQL 14.
+      POSTGRES_15: PostgreSQL 15.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_6 = 1
@@ -484,6 +485,7 @@ class CloudSqlSettings(_messages.Message):
     POSTGRES_12 = 7
     POSTGRES_13 = 8
     POSTGRES_14 = 9
+    POSTGRES_15 = 10
 
   class EditionValueValuesEnum(_messages.Enum):
     r"""Optional. The edition of the given Cloud SQL instance.
@@ -1390,6 +1392,8 @@ class DatamigrationProjectsLocationsConversionWorkspacesDeleteRequest(_messages.
   object.
 
   Fields:
+    force: Force delete the conversion workspace, even if there's a running
+      migration that is using the workspace.
     name: Required. Name of the conversion workspace resource to delete.
     requestId: A unique ID used to identify the request. If the server
       receives two requests with the same ID, then the second request is
@@ -1398,8 +1402,9 @@ class DatamigrationProjectsLocationsConversionWorkspacesDeleteRequest(_messages.
       and hyphens (-). The maximum length is 40 characters.
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class DatamigrationProjectsLocationsConversionWorkspacesDescribeConversionWorkspaceRevisionsRequest(_messages.Message):
@@ -1775,6 +1780,22 @@ class DatamigrationProjectsLocationsMigrationJobsGenerateSshScriptRequest(_messa
   """
 
   generateSshScriptRequest = _messages.MessageField('GenerateSshScriptRequest', 1)
+  migrationJob = _messages.StringField(2, required=True)
+
+
+class DatamigrationProjectsLocationsMigrationJobsGenerateTcpProxyScriptRequest(_messages.Message):
+  r"""A
+  DatamigrationProjectsLocationsMigrationJobsGenerateTcpProxyScriptRequest
+  object.
+
+  Fields:
+    generateTcpProxyScriptRequest: A GenerateTcpProxyScriptRequest resource to
+      be passed as the request body.
+    migrationJob: Name of the migration job resource to generate the TCP Proxy
+      script.
+  """
+
+  generateTcpProxyScriptRequest = _messages.MessageField('GenerateTcpProxyScriptRequest', 1)
   migrationJob = _messages.StringField(2, required=True)
 
 
@@ -2643,6 +2664,30 @@ class GenerateSshScriptRequest(_messages.Message):
   vmSelectionConfig = _messages.MessageField('VmSelectionConfig', 4)
 
 
+class GenerateTcpProxyScriptRequest(_messages.Message):
+  r"""Request message for 'GenerateTcpProxyScript' request.
+
+  Fields:
+    vmMachineType: Required. The type of the Compute instance that will host
+      the proxy.
+    vmName: Required. The name of the Compute instance that will host the
+      proxy.
+    vmSubnet: Required. The name of the subnet the Compute instance will use
+      for private connectivity. Must be supplied in the form of
+      projects/{project}/regions/{region}/subnetworks/{subnetwork}. Note: the
+      region for the subnet must match the Compute instance region.
+    vmZone: Optional. The Google Cloud Platform zone to create the VM in. The
+      fully qualified name of the zone must be specified, including the region
+      name, for example "us-central1-b". If not specified, uses the "-b" zone
+      of the destination Connection Profile's region.
+  """
+
+  vmMachineType = _messages.StringField(1)
+  vmName = _messages.StringField(2)
+  vmSubnet = _messages.StringField(3)
+  vmZone = _messages.StringField(4)
+
+
 class GoogleCloudClouddmsV1OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -3215,6 +3260,8 @@ class MigrationJobVerificationError(_messages.Message):
       SOURCE_SIZE_EXCEEDS_THRESHOLD: The source DB size in Bytes exceeds a
         certain threshold. The migration might require an increase of quota,
         or might not be supported.
+      EXISTING_CONFLICTING_DATABASES: The destination DB contains existing
+        databases that are conflicting with those in the source DB.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3241,6 +3288,7 @@ class MigrationJobVerificationError(_messages.Message):
     UNSUPPORTED_DATABASE_FDW_CONFIG = 22
     ERROR_RDBMS = 23
     SOURCE_SIZE_EXCEEDS_THRESHOLD = 24
+    EXISTING_CONFLICTING_DATABASES = 25
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)
@@ -4476,6 +4524,16 @@ class TableEntity(_messages.Message):
   customFeatures = _messages.MessageField('CustomFeaturesValue', 4)
   indices = _messages.MessageField('IndexEntity', 5, repeated=True)
   triggers = _messages.MessageField('TriggerEntity', 6, repeated=True)
+
+
+class TcpProxyScript(_messages.Message):
+  r"""Response message for 'GenerateTcpProxyScript' request.
+
+  Fields:
+    script: The TCP Proxy configuration script.
+  """
+
+  script = _messages.StringField(1)
 
 
 class TestIamPermissionsRequest(_messages.Message):

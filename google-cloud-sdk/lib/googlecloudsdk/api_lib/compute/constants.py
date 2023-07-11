@@ -19,8 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-
+import enum
 import six
+
 
 BYTES_IN_ONE_MB = 2 ** 20
 BYTES_IN_ONE_GB = 2 ** 30
@@ -70,8 +71,16 @@ MAX_RESULTS_PER_PAGE = 500
 DEFAULT_ACCESS_CONFIG_NAME = 'external-nat'
 DEFAULT_IPV6_ACCESS_CONFIG_NAME = 'external-v6-access-config'
 
+CONFIDENTIAL_VM_TYPES = enum.Enum(
+    'CONFIDENTIAL_VM_TYPES', ['SEV', 'SEV_SNP', 'TDX']
+)
+
 DEFAULT_MACHINE_TYPE = 'n1-standard-1'
-DEFAULT_MACHINE_TYPE_FOR_CONFIDENTIAL_VMS = 'n2d-standard-2'
+DEFAULT_MACHINE_TYPE_FOR_CONFIDENTIAL_VMS = {
+    CONFIDENTIAL_VM_TYPES.SEV: 'n2d-standard-2',
+    CONFIDENTIAL_VM_TYPES.SEV_SNP: 'n2d-standard-2',
+    CONFIDENTIAL_VM_TYPES.TDX: 'c3-standard-4',
+}
 DEFAULT_NETWORK = 'default'
 DEFAULT_NETWORK_INTERFACE = 'nic0'
 NETWORK_TIER_CHOICES_FOR_INSTANCE = (
@@ -82,7 +91,11 @@ NETWORK_INTERFACE_IPV6_NETWORK_TIER_CHOICES = ('PREMIUM',)
 ADV_NETWORK_TIER_CHOICES = ['DEFAULT', 'TIER_1']
 
 DEFAULT_IMAGE_FAMILY = 'debian-11'
-DEFAULT_IMAGE_FAMILY_FOR_CONFIDENTIAL_VMS = 'ubuntu-1804-lts'
+DEFAULT_IMAGE_FAMILY_FOR_CONFIDENTIAL_VMS = {
+    CONFIDENTIAL_VM_TYPES.SEV: 'ubuntu-1804-lts',
+    CONFIDENTIAL_VM_TYPES.SEV_SNP: 'ubuntu-1804-lts',
+    CONFIDENTIAL_VM_TYPES.TDX: 'ubuntu-2304-amd64',
+}
 
 ImageAlias = collections.namedtuple(
     'ImageAlias', ['project', 'name_prefix', 'family'])

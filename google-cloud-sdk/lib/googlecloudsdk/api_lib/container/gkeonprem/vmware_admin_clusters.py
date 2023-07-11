@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Generator
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
@@ -36,7 +38,7 @@ class AdminClustersClient(client.ClientBase):
 
   def Enroll(
       self, args, membership=None, vmware_admin_cluster_id=None, parent=None
-  ):
+  ) -> messages.Operation:
     """Enrolls an admin cluster to Anthos on VMware."""
     kwargs = {
         'membership': (
@@ -58,7 +60,7 @@ class AdminClustersClient(client.ClientBase):
     )
     return self._service.Enroll(req)
 
-  def Unenroll(self, args: parser_extensions.Namespace):
+  def Unenroll(self, args: parser_extensions.Namespace) -> messages.Operation:
     """Unenrolls an Anthos on VMware admin cluster."""
     kwargs = {
         'name': self._admin_cluster_name(args),
@@ -70,7 +72,9 @@ class AdminClustersClient(client.ClientBase):
     )
     return self._service.Unenroll(req)
 
-  def List(self, args: parser_extensions.Namespace):
+  def List(
+      self, args: parser_extensions.Namespace
+  ) -> Generator[messages.VmwareAdminCluster, None, None]:
     """Lists Admin Clusters in the GKE On-Prem VMware API."""
     if (
         'location' not in args.GetSpecifiedArgsDict()
@@ -93,7 +97,9 @@ class AdminClustersClient(client.ClientBase):
         batch_size_attribute='pageSize',
     )
 
-  def Update(self, args: parser_extensions.Namespace, cluster_ref=None):
+  def Update(
+      self, args: parser_extensions.Namespace, cluster_ref=None
+  ) -> messages.Operation:
     """Updates an admin cluster to Anthos on VMware."""
     kwargs = {
         'name': (

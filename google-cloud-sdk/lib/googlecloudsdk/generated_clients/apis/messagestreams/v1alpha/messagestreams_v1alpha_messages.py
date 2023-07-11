@@ -13,6 +13,17 @@ from apitools.base.py import extra_types
 package = 'messagestreams'
 
 
+class AuthenticationConfig(_messages.Message):
+  r"""Represents a config used to authenticate message requests.
+
+  Fields:
+    googleOidc: This authenticate method will apply Google OIDC tokens signed
+      by a GCP service account to the requests.
+  """
+
+  googleOidc = _messages.MessageField('GoogleOidc', 1)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -41,6 +52,11 @@ class Destination(_messages.Message):
   r"""Represents a target of an invocation over HTTP.
 
   Fields:
+    authenticationConfig: Optional. An authentication config used to
+      authenticate message requests, such that destinations can verify the
+      source. For example, this can be used with private GCP destinations that
+      require GCP crendential to access like Cloud Run. This field is optional
+      and should be set only by users interested in authenticated push.
     cloudFunction: The Cloud Function resource name. Only Cloud Functions V2
       is supported. Format:
       `projects/{project}/locations/{location}/functions/{function}`
@@ -51,10 +67,11 @@ class Destination(_messages.Message):
       Streams resolves and connect to a destination.
   """
 
-  cloudFunction = _messages.StringField(1)
-  cloudRun = _messages.MessageField('CloudRun', 2)
-  httpEndpoint = _messages.MessageField('HttpEndpoint', 3)
-  networkConfig = _messages.MessageField('NetworkConfig', 4)
+  authenticationConfig = _messages.MessageField('AuthenticationConfig', 1)
+  cloudFunction = _messages.StringField(2)
+  cloudRun = _messages.MessageField('CloudRun', 3)
+  httpEndpoint = _messages.MessageField('HttpEndpoint', 4)
+  networkConfig = _messages.MessageField('NetworkConfig', 5)
 
 
 class Empty(_messages.Message):
@@ -64,6 +81,30 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class GoogleOidc(_messages.Message):
+  r"""Represents a config used to authenticate with a Google OIDC token using
+  a GCP service account. Use this authentication method to invoke your Cloud
+  Run and Cloud Functions destinations or HTTP endpoints that support Google
+  OIDC.
+
+  Fields:
+    audience: Optional. Audience to be used to generate the OIDC Token. The
+      audience claim identifies the recipient that the JWT is intended for. If
+      unspecified, the destination URI will be used.
+    serviceAccount: Required. Service account email used to generate the OIDC
+      Token. The principal who calls this API must have
+      `iam.serviceAccounts.actAs` permission in the service account. See
+      https://cloud.google.com/iam/docs/understanding-service-
+      accounts?hl=en#sa_common for more information. Stream service account
+      must have `iam.serviceAccounts.getOpenIdToken` permission (included in
+      the `roles/roles/iam.serviceAccountOpenIdTokenCreator` role) to allow
+      Message Stream to create OIDC tokens for authenticated requests.
+  """
+
+  audience = _messages.StringField(1)
+  serviceAccount = _messages.StringField(2)
 
 
 class HttpEndpoint(_messages.Message):
@@ -700,6 +741,7 @@ class Stream(_messages.Message):
       `projects/{project}/locations/{location}/streams/{stream}` format.
     serviceAccount: Required. The IAM service account email associated with
       the stream. The service account represents the identity of the stream.
+      If not provided, the stream runs as the Message Streams' Service Agent.
       The principal who calls this API must have `iam.serviceAccounts.actAs`
       permission in the service account. See
       https://cloud.google.com/iam/docs/understanding-service-

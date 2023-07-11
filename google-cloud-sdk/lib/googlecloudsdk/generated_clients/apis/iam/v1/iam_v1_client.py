@@ -40,6 +40,7 @@ class IamV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.iamPolicies = self.IamPoliciesService(self)
+    self.locations_workforcePools_installedApps = self.LocationsWorkforcePoolsInstalledAppsService(self)
     self.locations_workforcePools_operations = self.LocationsWorkforcePoolsOperationsService(self)
     self.locations_workforcePools_providers_keys_operations = self.LocationsWorkforcePoolsProvidersKeysOperationsService(self)
     self.locations_workforcePools_providers_keys = self.LocationsWorkforcePoolsProvidersKeysService(self)
@@ -52,6 +53,8 @@ class IamV1(base_api.BaseApiClient):
     self.organizations_roles = self.OrganizationsRolesService(self)
     self.organizations = self.OrganizationsService(self)
     self.permissions = self.PermissionsService(self)
+    self.projects_locations_oauthClients_credentials = self.ProjectsLocationsOauthClientsCredentialsService(self)
+    self.projects_locations_oauthClients = self.ProjectsLocationsOauthClientsService(self)
     self.projects_locations_workloadIdentityPools_namespaces_managedIdentities_operations = self.ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesOperationsService(self)
     self.projects_locations_workloadIdentityPools_namespaces_managedIdentities_workloadSources_operations = self.ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesOperationsService(self)
     self.projects_locations_workloadIdentityPools_namespaces_managedIdentities_workloadSources = self.ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesService(self)
@@ -133,6 +136,178 @@ class IamV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='QueryAuditableServicesRequest',
         response_type_name='QueryAuditableServicesResponse',
+        supports_download=False,
+    )
+
+  class LocationsWorkforcePoolsInstalledAppsService(base_api.BaseApiService):
+    """Service class for the locations_workforcePools_installedApps resource."""
+
+    _NAME = 'locations_workforcePools_installedApps'
+
+    def __init__(self, client):
+      super(IamV1.LocationsWorkforcePoolsInstalledAppsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new WorkforcePoolInstalledApp in a WorkforcePool. You cannot reuse the name of a deleted workforce pool installed app until 30 days after deletion.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsInstalledAppsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkforcePoolInstalledApp) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/installedApps',
+        http_method='POST',
+        method_id='iam.locations.workforcePools.installedApps.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['workforcePoolInstalledAppId'],
+        relative_path='v1/{+parent}/installedApps',
+        request_field='workforcePoolInstalledApp',
+        request_type_name='IamLocationsWorkforcePoolsInstalledAppsCreateRequest',
+        response_type_name='WorkforcePoolInstalledApp',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a WorkforcePoolInstalledApp. You can undelete a workforce pool installed app for 30 days. After 30 days, deletion is permanent. You cannot update deleted workforce pool installed apps. However, you can view and list them.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsInstalledAppsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkforcePoolInstalledApp) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/installedApps/{installedAppsId}',
+        http_method='DELETE',
+        method_id='iam.locations.workforcePools.installedApps.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamLocationsWorkforcePoolsInstalledAppsDeleteRequest',
+        response_type_name='WorkforcePoolInstalledApp',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an individual WorkforcePoolInstalledApp.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsInstalledAppsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkforcePoolInstalledApp) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/installedApps/{installedAppsId}',
+        http_method='GET',
+        method_id='iam.locations.workforcePools.installedApps.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamLocationsWorkforcePoolsInstalledAppsGetRequest',
+        response_type_name='WorkforcePoolInstalledApp',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all non-deleted WorkforcePoolInstalledApps in a WorkforcePool][google.iam.admin.v1.WorkforcePool]. If `show_deleted` is set to `true`, then deleted installed apps are also listed.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsInstalledAppsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkforcePoolInstalledAppsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/installedApps',
+        http_method='GET',
+        method_id='iam.locations.workforcePools.installedApps.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        relative_path='v1/{+parent}/installedApps',
+        request_field='',
+        request_type_name='IamLocationsWorkforcePoolsInstalledAppsListRequest',
+        response_type_name='ListWorkforcePoolInstalledAppsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing WorkforcePoolInstalledApp.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsInstalledAppsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkforcePoolInstalledApp) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/installedApps/{installedAppsId}',
+        http_method='PATCH',
+        method_id='iam.locations.workforcePools.installedApps.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='workforcePoolInstalledApp',
+        request_type_name='IamLocationsWorkforcePoolsInstalledAppsPatchRequest',
+        response_type_name='WorkforcePoolInstalledApp',
+        supports_download=False,
+    )
+
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a WorkforcePoolInstalledApp, as long as it was deleted fewer than 30 days ago.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsInstalledAppsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkforcePoolInstalledApp) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/installedApps/{installedAppsId}:undelete',
+        http_method='POST',
+        method_id='iam.locations.workforcePools.installedApps.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:undelete',
+        request_field='undeleteWorkforcePoolInstalledAppRequest',
+        request_type_name='IamLocationsWorkforcePoolsInstalledAppsUndeleteRequest',
+        response_type_name='WorkforcePoolInstalledApp',
         supports_download=False,
     )
 
@@ -1143,6 +1318,323 @@ class IamV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='QueryTestablePermissionsRequest',
         response_type_name='QueryTestablePermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOauthClientsCredentialsService(base_api.BaseApiService):
+    """Service class for the projects_locations_oauthClients_credentials resource."""
+
+    _NAME = 'projects_locations_oauthClients_credentials'
+
+    def __init__(self, client):
+      super(IamV1.ProjectsLocationsOauthClientsCredentialsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new OauthClientCredential.
+
+      Args:
+        request: (IamProjectsLocationsOauthClientsCredentialsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OauthClientCredential) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/oauthClients/{oauthClientsId}/credentials',
+        http_method='POST',
+        method_id='iam.projects.locations.oauthClients.credentials.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['oauthClientCredentialId'],
+        relative_path='v1/{+parent}/credentials',
+        request_field='oauthClientCredential',
+        request_type_name='IamProjectsLocationsOauthClientsCredentialsCreateRequest',
+        response_type_name='OauthClientCredential',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a OauthClientCredential. Before deleting an oauth client credential, it should first be disabled.
+
+      Args:
+        request: (IamProjectsLocationsOauthClientsCredentialsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OauthClientCredential) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/oauthClients/{oauthClientsId}/credentials/{credentialsId}',
+        http_method='DELETE',
+        method_id='iam.projects.locations.oauthClients.credentials.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamProjectsLocationsOauthClientsCredentialsDeleteRequest',
+        response_type_name='OauthClientCredential',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an individual OauthClientCredential.
+
+      Args:
+        request: (IamProjectsLocationsOauthClientsCredentialsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OauthClientCredential) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/oauthClients/{oauthClientsId}/credentials/{credentialsId}',
+        http_method='GET',
+        method_id='iam.projects.locations.oauthClients.credentials.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamProjectsLocationsOauthClientsCredentialsGetRequest',
+        response_type_name='OauthClientCredential',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all OauthClientCredentialss in a OauthClient.
+
+      Args:
+        request: (IamProjectsLocationsOauthClientsCredentialsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOauthClientCredentialsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/oauthClients/{oauthClientsId}/credentials',
+        http_method='GET',
+        method_id='iam.projects.locations.oauthClients.credentials.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/credentials',
+        request_field='',
+        request_type_name='IamProjectsLocationsOauthClientsCredentialsListRequest',
+        response_type_name='ListOauthClientCredentialsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing OauthClientCredential.
+
+      Args:
+        request: (IamProjectsLocationsOauthClientsCredentialsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OauthClientCredential) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/oauthClients/{oauthClientsId}/credentials/{credentialsId}',
+        http_method='PATCH',
+        method_id='iam.projects.locations.oauthClients.credentials.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='oauthClientCredential',
+        request_type_name='IamProjectsLocationsOauthClientsCredentialsPatchRequest',
+        response_type_name='OauthClientCredential',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOauthClientsService(base_api.BaseApiService):
+    """Service class for the projects_locations_oauthClients resource."""
+
+    _NAME = 'projects_locations_oauthClients'
+
+    def __init__(self, client):
+      super(IamV1.ProjectsLocationsOauthClientsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new OauthClient. You cannot reuse the name of a deleted oauth client until 30 days after deletion.
+
+      Args:
+        request: (IamProjectsLocationsOauthClientsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OauthClient) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/oauthClients',
+        http_method='POST',
+        method_id='iam.projects.locations.oauthClients.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['oauthClientId'],
+        relative_path='v1/{+parent}/oauthClients',
+        request_field='oauthClient',
+        request_type_name='IamProjectsLocationsOauthClientsCreateRequest',
+        response_type_name='OauthClient',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a OauthClient. You cannot use a deleted oauth client. However, deletion does not revoke access tokens that have already been issued; they continue to grant access. Deletion does revoke refresh tokens that have already been issued; They cannot be used to renew an access token. If the oauth client is undeleted, and the refresh tokens are not expired, they are valid for token exchange again. You can undelete an oauth client for 30 days. After 30 days, deletion is permanent. You cannot update deleted oauth clients. However, you can view and list them.
+
+      Args:
+        request: (IamProjectsLocationsOauthClientsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OauthClient) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/oauthClients/{oauthClientsId}',
+        http_method='DELETE',
+        method_id='iam.projects.locations.oauthClients.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamProjectsLocationsOauthClientsDeleteRequest',
+        response_type_name='OauthClient',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an individual OauthClient.
+
+      Args:
+        request: (IamProjectsLocationsOauthClientsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OauthClient) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/oauthClients/{oauthClientsId}',
+        http_method='GET',
+        method_id='iam.projects.locations.oauthClients.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamProjectsLocationsOauthClientsGetRequest',
+        response_type_name='OauthClient',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all non-deleted OauthClientss in a project. If `show_deleted` is set to `true`, then deleted oauth clients are also listed.
+
+      Args:
+        request: (IamProjectsLocationsOauthClientsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOauthClientsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/oauthClients',
+        http_method='GET',
+        method_id='iam.projects.locations.oauthClients.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        relative_path='v1/{+parent}/oauthClients',
+        request_field='',
+        request_type_name='IamProjectsLocationsOauthClientsListRequest',
+        response_type_name='ListOauthClientsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing OauthClient.
+
+      Args:
+        request: (IamProjectsLocationsOauthClientsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OauthClient) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/oauthClients/{oauthClientsId}',
+        http_method='PATCH',
+        method_id='iam.projects.locations.oauthClients.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='oauthClient',
+        request_type_name='IamProjectsLocationsOauthClientsPatchRequest',
+        response_type_name='OauthClient',
+        supports_download=False,
+    )
+
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a OauthClient, as long as it was deleted fewer than 30 days ago.
+
+      Args:
+        request: (IamProjectsLocationsOauthClientsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OauthClient) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/oauthClients/{oauthClientsId}:undelete',
+        http_method='POST',
+        method_id='iam.projects.locations.oauthClients.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:undelete',
+        request_field='undeleteOauthClientRequest',
+        request_type_name='IamProjectsLocationsOauthClientsUndeleteRequest',
+        response_type_name='OauthClient',
         supports_download=False,
     )
 

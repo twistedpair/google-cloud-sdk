@@ -2817,15 +2817,16 @@ class ExecutionConfig(_messages.Message):
       execution.
 
   Fields:
-    idleTtl: Optional. The duration to keep the session alive while it's
-      idling. Exceeding this threshold causes the session to terminate. This
-      field cannot be set on a batch workload. Minimum value is 10 minutes;
-      maximum value is 14 days (see JSON representation of Duration
-      (https://developers.google.com/protocol-buffers/docs/proto3#json)).
-      Defaults to 4 hours if not set. If both ttl and idle_ttl are specified,
-      the conditions are treated as OR conditions: the workload will be
-      terminated when it has been idle for idle_ttl or when ttl has been
-      exceed, whichever occurs first.
+    idleTtl: Optional. Applies to sessions only. The duration to keep the
+      session alive while it's idling. Exceeding this threshold causes the
+      session to terminate. This field cannot be set on a batch workload.
+      Minimum value is 10 minutes; maximum value is 14 days (see JSON
+      representation of Duration (https://developers.google.com/protocol-
+      buffers/docs/proto3#json)). Defaults to 4 hours if not set. If both ttl
+      and idle_ttl are specified for an interactive session, the conditions
+      are treated as OR conditions: the workload will be terminated when it
+      has been idle for idle_ttl or when ttl has been exceeded, whichever
+      occurs first.
     kmsKey: Optional. The Cloud KMS key to use for encryption.
     networkTags: Optional. Tags used for network traffic control.
     networkUri: Optional. Network URI to connect workload to.
@@ -2845,9 +2846,10 @@ class ExecutionConfig(_messages.Message):
       terminated without waiting for ongoing work to finish. If ttl is not
       specified for a batch workload, the workload will be allowed to run
       until it exits naturally (or runs forever without exiting). If ttl is
-      not specified for an interactive session, it defaults to 24h. Minimum
-      value is 10 minutes; maximum value is 14 days (see JSON representation
-      of Duration (https://developers.google.com/protocol-
+      not specified for an interactive session, it defaults to 24h. If ttl is
+      not specified for a batch that uses 2.1+ runtime version, it defaults to
+      4h. Minimum value is 10 minutes; maximum value is 14 days (see JSON
+      representation of Duration (https://developers.google.com/protocol-
       buffers/docs/proto3#json)). If both ttl and idle_ttl are specified (for
       an interactive session), the conditions are treated as OR conditions:
       the workload will be terminated when it has been idle for idle_ttl or
@@ -2989,8 +2991,8 @@ class GceClusterConfig(_messages.Message):
       for a cluster.
 
   Messages:
-    MetadataValue: The Compute Engine metadata entries to add to all instances
-      (see Project and instance metadata
+    MetadataValue: Optional. The Compute Engine metadata entries to add to all
+      instances (see Project and instance metadata
       (https://cloud.google.com/compute/docs/storing-retrieving-
       metadata#project_and_instance_metadata)).
 
@@ -3005,8 +3007,8 @@ class GceClusterConfig(_messages.Message):
       enabled for subnetwork enabled networks, and all off-cluster
       dependencies must be configured to be accessible without external IP
       addresses.
-    metadata: The Compute Engine metadata entries to add to all instances (see
-      Project and instance metadata
+    metadata: Optional. The Compute Engine metadata entries to add to all
+      instances (see Project and instance metadata
       (https://cloud.google.com/compute/docs/storing-retrieving-
       metadata#project_and_instance_metadata)).
     networkUri: Optional. The Compute Engine network to be used for machine
@@ -3084,8 +3086,8 @@ class GceClusterConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""The Compute Engine metadata entries to add to all instances (see
-    Project and instance metadata
+    r"""Optional. The Compute Engine metadata entries to add to all instances
+    (see Project and instance metadata
     (https://cloud.google.com/compute/docs/storing-retrieving-
     metadata#project_and_instance_metadata)).
 
@@ -4202,6 +4204,7 @@ class JupyterConfig(_messages.Message):
     KernelValueValuesEnum: Optional. Kernel
 
   Fields:
+    displayName: Optional. Display name, shown in the Jupyter kernelspec card.
     kernel: Optional. Kernel
   """
 
@@ -4217,7 +4220,8 @@ class JupyterConfig(_messages.Message):
     PYTHON = 1
     SCALA = 2
 
-  kernel = _messages.EnumField('KernelValueValuesEnum', 1)
+  displayName = _messages.StringField(1)
+  kernel = _messages.EnumField('KernelValueValuesEnum', 2)
 
 
 class KerberosConfig(_messages.Message):
@@ -4550,7 +4554,7 @@ class ListSessionsResponse(_messages.Message):
   Fields:
     nextPageToken: A token, which can be sent as page_token to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    sessions: The sessions from the specified collection.
+    sessions: Output only. The sessions from the specified collection.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -5588,6 +5592,16 @@ class PyFlinkJob(_messages.Message):
   savepointUri = _messages.StringField(10)
 
 
+class PyPiRepositoryConfig(_messages.Message):
+  r"""Configuration for PyPi repository
+
+  Fields:
+    pypiRepository: Optional. PyPi repository address
+  """
+
+  pypiRepository = _messages.StringField(1)
+
+
 class PySparkBatch(_messages.Message):
   r"""A configuration for running an Apache PySpark (https://spark.apache.org/
   docs/latest/api/python/getting_started/quickstart.html) batch workload.
@@ -5751,6 +5765,16 @@ class RepairClusterRequest(_messages.Message):
   requestId = _messages.StringField(5)
 
 
+class RepositoryConfig(_messages.Message):
+  r"""Configuration for dependency repositories
+
+  Fields:
+    pypiRepositoryConfig: Optional. Configuration for PyPi repository.
+  """
+
+  pypiRepositoryConfig = _messages.MessageField('PyPiRepositoryConfig', 1)
+
+
 class ReservationAffinity(_messages.Message):
   r"""Reservation Affinity for consuming Zonal reservation.
 
@@ -5833,6 +5857,7 @@ class RuntimeConfig(_messages.Message):
       used.
     properties: Optional. A mapping of property names to values, which are
       used to configure workload execution.
+    repositoryConfig: Optional. Dependency repository configuration.
     version: Optional. Version of the batch runtime.
   """
 
@@ -5864,7 +5889,8 @@ class RuntimeConfig(_messages.Message):
   authenticationConfig = _messages.MessageField('AuthenticationConfig', 1)
   containerImage = _messages.StringField(2)
   properties = _messages.MessageField('PropertiesValue', 3)
-  version = _messages.StringField(4)
+  repositoryConfig = _messages.MessageField('RepositoryConfig', 4)
+  version = _messages.StringField(5)
 
 
 class RuntimeInfo(_messages.Message):
@@ -5875,9 +5901,14 @@ class RuntimeInfo(_messages.Message):
       interfaces and APIs) to their URIs.
 
   Fields:
-    approximateUsage: Output only. Approximate workload resource usage
-      calculated after workload finishes (see Dataproc Serverless pricing
-      (https://cloud.google.com/dataproc-serverless/pricing)).
+    approximateUsage: Output only. Approximate workload resource usage,
+      calculated when the workload completes (see Dataproc Serverless pricing
+      (https://cloud.google.com/dataproc-serverless/pricing)).Note: This
+      metric calculation may change in the future, for example, to capture
+      cumulative workload resource consumption during workload execution (see
+      the Dataproc Serverless release notes
+      (https://cloud.google.com/dataproc-serverless/docs/release-notes) for
+      announcements, changes, fixes and other Dataproc developments).
     currentUsage: Output only. Snapshot of current workload resource usage.
     diagnosticOutputUri: Output only. A URI pointing to the location of the
       diagnostics tarball.
@@ -5965,7 +5996,12 @@ class Session(_messages.Message):
     name: Required. The resource name of the session.
     runtimeConfig: Optional. Runtime configuration for the session execution.
     runtimeInfo: Output only. Runtime information about session execution.
-    sessionTemplateConfig: Optional. Session template config for the session.
+    sessionTemplate: Optional. The session template used by the session.Only
+      resource names including project ID and location are valid.Example: * ht
+      tps://www.googleapis.com/compute/v1/projects/[project_id]/locations/[dat
+      aproc_region]/sessionTemplates/[template_id] * projects/[project_id]/loc
+      ations/[dataproc_region]/sessionTemplates/[template_id]Note that the
+      template must be in the same project and Dataproc region.
     spark: Optional. Spark engine config.
     state: Output only. A state of the session.
     stateHistory: Output only. Historical state information for the session.
@@ -6032,7 +6068,7 @@ class Session(_messages.Message):
   name = _messages.StringField(6)
   runtimeConfig = _messages.MessageField('RuntimeConfig', 7)
   runtimeInfo = _messages.MessageField('RuntimeInfo', 8)
-  sessionTemplateConfig = _messages.MessageField('SessionTemplateConfig', 9)
+  sessionTemplate = _messages.StringField(9)
   spark = _messages.MessageField('SparkConfig', 10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
   stateHistory = _messages.MessageField('SessionStateHistory', 12, repeated=True)
@@ -6163,6 +6199,7 @@ class SessionTemplate(_messages.Message):
     createTime: Output only. The time when the template was created.
     creator: Output only. The email address of the user who created the
       template.
+    description: Optional. Brief description of the template.
     environmentConfig: Optional. Environment configuration for session
       execution.
     jupyterSession: Optional. Jupyter session config.
@@ -6209,28 +6246,14 @@ class SessionTemplate(_messages.Message):
 
   createTime = _messages.StringField(1)
   creator = _messages.StringField(2)
-  environmentConfig = _messages.MessageField('EnvironmentConfig', 3)
-  jupyterSession = _messages.MessageField('JupyterConfig', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  runtimeConfig = _messages.MessageField('RuntimeConfig', 7)
-  spark = _messages.MessageField('SparkConfig', 8)
-  updateTime = _messages.StringField(9)
-
-
-class SessionTemplateConfig(_messages.Message):
-  r"""Session Template config associated with the session.
-
-  Fields:
-    templateUri: Optional. The session template used by the session.Only
-      resource names including projectid and location (region) are valid.
-      Example: https://www.googleapis.com/compute/v1/projects/[project_id]/loc
-      ations/[dataproc_region]/sessionTemplates/[template_id] projects/[projec
-      t_id]/locations/[dataproc_region]/sessionTemplates/[template_id]Note
-      that the template must be in the same project and Dataproc region.
-  """
-
-  templateUri = _messages.StringField(1)
+  description = _messages.StringField(3)
+  environmentConfig = _messages.MessageField('EnvironmentConfig', 4)
+  jupyterSession = _messages.MessageField('JupyterConfig', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  runtimeConfig = _messages.MessageField('RuntimeConfig', 8)
+  spark = _messages.MessageField('SparkConfig', 9)
+  updateTime = _messages.StringField(10)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -7159,7 +7182,7 @@ class UsageMetrics(_messages.Message):
 
 
 class UsageSnapshot(_messages.Message):
-  r"""The usage snaphot represents the resources consumed by a workload at a
+  r"""The usage snapshot represents the resources consumed by a workload at a
   specified time.
 
   Fields:

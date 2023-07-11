@@ -176,6 +176,52 @@ class FirestoreProjectsDatabasesImportDocumentsRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class GoogleFirestoreAdminV1RestoreDatabaseMetadata(_messages.Message):
+  r"""Metadata for the long-running operation from the RestoreDatabase
+  request.
+
+  Enums:
+    OperationStateValueValuesEnum: The operation state of the restore.
+
+  Fields:
+    backup: The name of the backup restoring from.
+    database: The name of the database being restored to.
+    endTime: The time the restore finished, unset for ongoing restores.
+    operationState: The operation state of the restore.
+    startTime: The time the restore was started.
+  """
+
+  class OperationStateValueValuesEnum(_messages.Enum):
+    r"""The operation state of the restore.
+
+    Values:
+      OPERATION_STATE_UNSPECIFIED: Unspecified.
+      INITIALIZING: Request is being prepared for processing.
+      PROCESSING: Request is actively being processed.
+      CANCELLING: Request is in the process of being cancelled after user
+        called google.longrunning.Operations.CancelOperation on the operation.
+      FINALIZING: Request has been processed and is in its finalization stage.
+      SUCCESSFUL: Request has completed successfully.
+      FAILED: Request has finished being processed, but encountered an error.
+      CANCELLED: Request has finished being cancelled after user called
+        google.longrunning.Operations.CancelOperation.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    INITIALIZING = 1
+    PROCESSING = 2
+    CANCELLING = 3
+    FINALIZING = 4
+    SUCCESSFUL = 5
+    FAILED = 6
+    CANCELLED = 7
+
+  backup = _messages.StringField(1)
+  database = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  operationState = _messages.EnumField('OperationStateValueValuesEnum', 4)
+  startTime = _messages.StringField(5)
+
+
 class GoogleFirestoreAdminV1UpdateDatabaseMetadata(_messages.Message):
   r"""Metadata related to the update database operation."""
 

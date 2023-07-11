@@ -308,6 +308,32 @@ def IPV4Argument(value):
   return value
 
 
+def IsValidIPV4Range(value):
+  """Accepts an ipv4 range in string form and returns True if valid."""
+  parts = value.split('/')
+  if len(parts) != 2:
+    return False
+  address, mask = parts[0], parts[1]
+
+  if not IsValidIPV4(address):
+    return False
+
+  try:
+    return 0 < int(mask) <= 32
+  except ValueError:
+    return False
+
+
+def IPV4RangeArgument(value):
+  """Argparse argument type that checks for a valid ipv4 range."""
+  if not IsValidIPV4Range(value):
+    raise argparse.ArgumentTypeError(
+        "invalid ipv4 range value: '{0}'".format(value)
+    )
+
+  return value
+
+
 def IsValidIPV6(ip):
   """Accepts an ipv6 address in string form and returns True if valid."""
   try:
@@ -321,6 +347,14 @@ def IPV6Argument(value):
   """Argparse argument type that checks for a valid ipv6 address."""
   if not IsValidIPV6(value):
     raise argparse.ArgumentTypeError("invalid ipv6 value: '{0}'".format(value))
+
+  return value
+
+
+def IPArgument(value):
+  """Argparse argument type that checks for a valid ipv4 or ipv6 address."""
+  if not IsValidIPV4(value) and not IsValidIPV6(value):
+    raise argparse.ArgumentTypeError("invalid ip value: '{0}'".format(value))
 
   return value
 

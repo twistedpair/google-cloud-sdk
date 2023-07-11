@@ -50,6 +50,20 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListWorkflowRevisionsResponse(_messages.Message):
+  r"""Response for the ListWorkflowRevisions method.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    workflows: The revisions of the workflow, ordered in reverse chronological
+      order.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workflows = _messages.MessageField('Workflow', 2, repeated=True)
+
+
 class ListWorkflowsResponse(_messages.Message):
   r"""Response for the ListWorkflows method.
 
@@ -725,6 +739,24 @@ class WorkflowsProjectsLocationsWorkflowsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class WorkflowsProjectsLocationsWorkflowsListRevisionsRequest(_messages.Message):
+  r"""A WorkflowsProjectsLocationsWorkflowsListRevisionsRequest object.
+
+  Fields:
+    name: Required. Workflow from which the revisions should be listed.
+      Format: projects/{project}/locations/{location}/workflows/{workflow}
+    pageSize: The maximum number of revisions to return per page. If a value
+      is not specified, a default value of 20 is used. The maximum permitted
+      value is 100 and values greater than 100 coerced down to 100.
+    pageToken: The page token, received from a previous ListWorkflowRevisions
+      call. Provide this to retrieve the subsequent page.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class WorkflowsProjectsLocationsWorkflowsPatchRequest(_messages.Message):

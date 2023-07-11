@@ -102,7 +102,7 @@ def ParseVexFile(filename, uri):
             )
         )
         notes.append(note)
-  return notes
+  return notes, uri_with_digest
 
 
 def _Validate(vex):

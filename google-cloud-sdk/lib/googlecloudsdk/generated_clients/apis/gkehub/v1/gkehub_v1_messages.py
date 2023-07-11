@@ -412,35 +412,6 @@ class ClusterUpgradeIgnoredMembership(_messages.Message):
   reason = _messages.StringField(2)
 
 
-class ClusterUpgradeMembershipGKEUpgradeState(_messages.Message):
-  r"""ScopeGKEUpgradeState is a GKEUpgrade and its state per-membership.
-
-  Fields:
-    status: Status of the upgrade.
-    upgrade: Which upgrade to track the state.
-  """
-
-  status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 1)
-  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 2)
-
-
-class ClusterUpgradeMembershipState(_messages.Message):
-  r"""Per-membership state for this feature.
-
-  Fields:
-    ignored: Whether this membership is ignored by the feature. For example,
-      manually upgraded clusters can be ignored if they are newer than the
-      default versions of its release channel.
-    scopes: Fully qualified scope names that this clusters is bound to which
-      also have rollout sequencing enabled.
-    upgrades: Actual upgrade state against desired.
-  """
-
-  ignored = _messages.MessageField('ClusterUpgradeIgnoredMembership', 1)
-  scopes = _messages.StringField(2, repeated=True)
-  upgrades = _messages.MessageField('ClusterUpgradeMembershipGKEUpgradeState', 3, repeated=True)
-
-
 class ClusterUpgradePostConditions(_messages.Message):
   r"""Post conditional checks after an upgrade has been applied on all
   eligible clusters.
@@ -492,84 +463,6 @@ class ClusterUpgradeScopeGKEUpgradeState(_messages.Message):
   stats = _messages.MessageField('StatsValue', 1)
   status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 2)
   upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 3)
-
-
-class ClusterUpgradeScopeSpec(_messages.Message):
-  r"""**ClusterUpgrade**: The configuration for the scope-level ClusterUpgrade
-  feature.
-
-  Fields:
-    gkeUpgradeOverrides: Allow users to override some properties of each GKE
-      upgrade.
-    postConditions: Required. Post conditions to evaluate to mark an upgrade
-      COMPLETE. Required.
-    upstreamScopes: This scope consumes upgrades that have COMPLETE status
-      code in the upstream scopes. See UpgradeStatus.Code for code
-      definitions. The scope name should be in the form:
-      `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
-      is a valid Scope in this project. {p} WILL match the Feature's project.
-      This is defined as repeated for future proof reasons. Initial
-      implementation will enforce at most one upstream scope.
-  """
-
-  gkeUpgradeOverrides = _messages.MessageField('ClusterUpgradeGKEUpgradeOverride', 1, repeated=True)
-  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 2)
-  upstreamScopes = _messages.StringField(3, repeated=True)
-
-
-class ClusterUpgradeScopeState(_messages.Message):
-  r"""**ClusterUpgrade**: The state for the scope-level ClusterUpgrade
-  feature.
-
-  Messages:
-    IgnoredValue: A list of memberships ignored by the feature. For example,
-      manually upgraded clusters can be ignored if they are newer than the
-      default versions of its release channel. The membership resource is in
-      the format: `projects/{p}/locations/{l}/membership/{m}`.
-
-  Fields:
-    downstreamScopes: This scopes whose upstream_scopes contain the current
-      scope. The scope name should be in the form:
-      `projects/{p}/locations/gloobal/scopes/{s}` Where {p} is the project,
-      {s} is a valid Scope in this project. {p} WILL match the Feature's
-      project.
-    gkeState: Feature state for GKE clusters.
-    ignored: A list of memberships ignored by the feature. For example,
-      manually upgraded clusters can be ignored if they are newer than the
-      default versions of its release channel. The membership resource is in
-      the format: `projects/{p}/locations/{l}/membership/{m}`.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class IgnoredValue(_messages.Message):
-    r"""A list of memberships ignored by the feature. For example, manually
-    upgraded clusters can be ignored if they are newer than the default
-    versions of its release channel. The membership resource is in the format:
-    `projects/{p}/locations/{l}/membership/{m}`.
-
-    Messages:
-      AdditionalProperty: An additional property for a IgnoredValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type IgnoredValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a IgnoredValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A ClusterUpgradeIgnoredMembership attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('ClusterUpgradeIgnoredMembership', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  downstreamScopes = _messages.StringField(1, repeated=True)
-  gkeState = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureState', 2)
-  ignored = _messages.MessageField('IgnoredValue', 3)
 
 
 class ClusterUpgradeUpgradeStatus(_messages.Message):
@@ -796,37 +689,37 @@ class ConfigManagementConfigSync(_messages.Message):
       false which disallows vertical scaling. This field is deprecated.
     enabled: Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
-      will be applied if exist. If set to false and Managed Config Sync is
-      disabled, all other ConfigSync fields will be ignored, ConfigSync
-      resources will be deleted. Setting this field to false while enabling
-      Managed Config Sync is invalid. If omitted, ConfigSync resources will be
-      managed if: * the git or oci field is present; or * Managed Config Sync
-      is enabled (i.e., managed.enabled is true).
+      will be applied if exist. If set to false, all other ConfigSync fields
+      will be ignored, ConfigSync resources will be deleted. If omitted,
+      ConfigSync resources will be managed depends on the presence of the git
+      or oci field.
     git: Git repo configuration for the cluster.
-    managed: Configuration for Managed Config Sync.
-    metricsGcpServiceAccountEmail: The Email of the GCP Service Account (GSA)
-      used for exporting Config Sync metrics to Cloud Monitoring and Cloud
-      Monarch when Workload Identity is enabled. The GSA should have the
-      Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role. The
-      Kubernetes ServiceAccount `default` in the namespace `config-management-
-      monitoring` should be binded to the GSA. This field is required when
-      Managed Config Sync is enabled.
+    metricsGcpServiceAccountEmail: The Email of the Google Cloud Service
+      Account (GSA) used for exporting Config Sync metrics to Cloud Monitoring
+      and Cloud Monarch when Workload Identity is enabled. The GSA should have
+      the Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role.
+      The Kubernetes ServiceAccount `default` in the namespace `config-
+      management-monitoring` should be binded to the GSA. This field is
+      required when automatic Feature management is enabled.
     oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. If set to `false`, disables the Config Sync admission
       webhook and does not prevent drifts.
     sourceFormat: Specifies whether the Config Sync Repo is in "hierarchical"
       or "unstructured" mode.
+    stopSyncing: Set to true to stop syncing configs for a single cluster when
+      automatic Feature management is enabled. Default to false. The field
+      will be ignored when automatic Feature management is disabled.
   """
 
   allowVerticalScale = _messages.BooleanField(1)
   enabled = _messages.BooleanField(2)
   git = _messages.MessageField('ConfigManagementGitConfig', 3)
-  managed = _messages.MessageField('ConfigManagementManaged', 4)
-  metricsGcpServiceAccountEmail = _messages.StringField(5)
-  oci = _messages.MessageField('ConfigManagementOciConfig', 6)
-  preventDrift = _messages.BooleanField(7)
-  sourceFormat = _messages.StringField(8)
+  metricsGcpServiceAccountEmail = _messages.StringField(4)
+  oci = _messages.MessageField('ConfigManagementOciConfig', 5)
+  preventDrift = _messages.BooleanField(6)
+  sourceFormat = _messages.StringField(7)
+  stopSyncing = _messages.BooleanField(8)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -1093,8 +986,8 @@ class ConfigManagementGitConfig(_messages.Message):
   r"""Git repo configuration for a single cluster.
 
   Fields:
-    gcpServiceAccountEmail: The GCP Service Account Email used for auth when
-      secret_type is gcpServiceAccount.
+    gcpServiceAccountEmail: The Google Cloud Service Account Email used for
+      auth when secret_type is gcpServiceAccount.
     httpsProxy: URL for the HTTPS proxy to be used when communicating with the
       Git repo.
     policyDir: The path within the Git repository that represents the top
@@ -1230,25 +1123,12 @@ class ConfigManagementInstallError(_messages.Message):
   errorMessage = _messages.StringField(1)
 
 
-class ConfigManagementManaged(_messages.Message):
-  r"""Configuration for Managed Config Sync.
-
-  Fields:
-    enabled: Set to true to enable Managed Config Sync. Defaults to false
-      which disables Managed Config Sync. Setting this field to true when
-      configSync.enabled is false is invalid.
-    stopSyncing: Set to true to stop syncing configs for a single cluster.
-      Default to false. If set to true, Managed Config Sync will not upgrade
-      Config Sync.
-  """
-
-  enabled = _messages.BooleanField(1)
-  stopSyncing = _messages.BooleanField(2)
-
-
 class ConfigManagementMembershipSpec(_messages.Message):
   r"""**Anthos Config Management**: Configuration for a single cluster.
   Intended to parallel the ConfigManagement CR.
+
+  Enums:
+    ManagementValueValuesEnum: Enables automatic Feature management.
 
   Fields:
     cluster: The user-specified cluster name used by Config Sync cluster-name-
@@ -1260,15 +1140,30 @@ class ConfigManagementMembershipSpec(_messages.Message):
       annotation or ClusterSelector.
     configSync: Config Sync configuration for the cluster.
     hierarchyController: Hierarchy Controller configuration for the cluster.
+    management: Enables automatic Feature management.
     policyController: Policy Controller configuration for the cluster.
     version: Version of ACM installed.
   """
 
+  class ManagementValueValuesEnum(_messages.Enum):
+    r"""Enables automatic Feature management.
+
+    Values:
+      MANAGEMENT_UNSPECIFIED: Unspecified
+      MANAGEMENT_AUTOMATIC: Google will manage the Feature for the cluster.
+      MANAGEMENT_MANUAL: User will manually manage the Feature for the
+        cluster.
+    """
+    MANAGEMENT_UNSPECIFIED = 0
+    MANAGEMENT_AUTOMATIC = 1
+    MANAGEMENT_MANUAL = 2
+
   cluster = _messages.StringField(1)
   configSync = _messages.MessageField('ConfigManagementConfigSync', 2)
   hierarchyController = _messages.MessageField('ConfigManagementHierarchyControllerConfig', 3)
-  policyController = _messages.MessageField('ConfigManagementPolicyController', 4)
-  version = _messages.StringField(5)
+  management = _messages.EnumField('ManagementValueValuesEnum', 4)
+  policyController = _messages.MessageField('ConfigManagementPolicyController', 5)
+  version = _messages.StringField(6)
 
 
 class ConfigManagementMembershipState(_messages.Message):
@@ -1299,8 +1194,8 @@ class ConfigManagementOciConfig(_messages.Message):
   r"""OCI repo configuration for a single cluster
 
   Fields:
-    gcpServiceAccountEmail: The GCP Service Account Email used for auth when
-      secret_type is gcpServiceAccount.
+    gcpServiceAccountEmail: The Google Cloud Service Account Email used for
+      auth when secret_type is gcpServiceAccount.
     policyDir: The absolute path of the directory that contains the local
       resources. Default: the root directory of the image.
     secretType: Type of secret configured for access to the Git repo.
@@ -1369,6 +1264,7 @@ class ConfigManagementPolicyController(_messages.Message):
       evaluated.
     templateLibraryInstalled: Installs the default template library along with
       Policy Controller.
+    updateTime: Output only. Last time this membership spec was updated.
   """
 
   auditIntervalSeconds = _messages.IntegerField(1)
@@ -1379,6 +1275,7 @@ class ConfigManagementPolicyController(_messages.Message):
   mutationEnabled = _messages.BooleanField(6)
   referentialRulesEnabled = _messages.BooleanField(7)
   templateLibraryInstalled = _messages.BooleanField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ConfigManagementPolicyControllerMigration(_messages.Message):
@@ -1388,6 +1285,7 @@ class ConfigManagementPolicyControllerMigration(_messages.Message):
     StageValueValuesEnum: Stage of the migration.
 
   Fields:
+    copyTime: Last time this membership spec was copied to PoCo feature.
     stage: Stage of the migration.
   """
 
@@ -1405,7 +1303,8 @@ class ConfigManagementPolicyControllerMigration(_messages.Message):
     ACM_MANAGED = 1
     POCO_MANAGED = 2
 
-  stage = _messages.EnumField('StageValueValuesEnum', 1)
+  copyTime = _messages.StringField(1)
+  stage = _messages.EnumField('StageValueValuesEnum', 2)
 
 
 class ConfigManagementPolicyControllerMonitoring(_messages.Message):
@@ -2060,6 +1959,115 @@ class FeatureState(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class Fleet(_messages.Message):
+  r"""Fleet contains the Fleet-wide metadata and configuration.
+
+  Enums:
+    SamenessModeValueValuesEnum: Optional. The sameness mode this fleet is
+      using.
+
+  Messages:
+    LabelsValue: Optional. Labels for this Fleet.
+
+  Fields:
+    createTime: Output only. When the Fleet was created.
+    deleteTime: Output only. When the Fleet was deleted.
+    displayName: Optional. A user-assigned display name of the Fleet. When
+      present, it must be between 4 to 30 characters. Allowed characters are:
+      lowercase and uppercase letters, numbers, hyphen, single-quote, double-
+      quote, space, and exclamation point. Example: `Production Fleet`
+    labels: Optional. Labels for this Fleet.
+    name: Output only. The full, unique resource name of this fleet in the
+      format of `projects/{project}/locations/{location}/fleets/{fleet}`. Each
+      Google Cloud project can have at most one fleet resource, named
+      "default".
+    samenessMode: Optional. The sameness mode this fleet is using.
+    state: Output only. State of the namespace resource.
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all Fleet resources. If a Fleet resource is deleted and another
+      resource with the same name is created, it gets a different uid.
+    updateTime: Output only. When the Fleet was last updated.
+  """
+
+  class SamenessModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The sameness mode this fleet is using.
+
+    Values:
+      SAMENESS_MODE_UNSPECIFIED: Unknown mode, will default to
+        ALL_CLUSTER_NAMESPACES.
+      ALL_CLUSTER_NAMESPACES: All cluster namespaces are considered the same
+        (default).
+      MAPPED_FLEET_NAMESPACES: Restrict sameness to cluster namespaces that
+        are active-fleet namespaces on the membership.
+    """
+    SAMENESS_MODE_UNSPECIFIED = 0
+    ALL_CLUSTER_NAMESPACES = 1
+    MAPPED_FLEET_NAMESPACES = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels for this Fleet.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  samenessMode = _messages.EnumField('SamenessModeValueValuesEnum', 6)
+  state = _messages.MessageField('FleetLifecycleState', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class FleetLifecycleState(_messages.Message):
+  r"""FleetLifecycleState describes the state of a Fleet resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the Fleet resource.
+
+  Fields:
+    code: Output only. The current state of the Fleet resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the Fleet resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The fleet is being created.
+      READY: The fleet active.
+      DELETING: The fleet is being deleted.
+      UPDATING: The fleet is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
 class FleetObservabilityFeatureError(_messages.Message):
   r"""All error details of the fleet observability feature.
 
@@ -2075,8 +2083,14 @@ class FleetObservabilityFeatureError(_messages.Message):
 class FleetObservabilityFeatureSpec(_messages.Message):
   r"""**Fleet Observability**: The Hub-wide input for the FleetObservability
   feature.
+
+  Fields:
+    loggingConfig: Specified if fleet logging feature is enabled for the
+      entire fleet. If UNSPECIFIED, fleet logging feature is disabled for the
+      entire fleet.
   """
 
+  loggingConfig = _messages.MessageField('FleetObservabilityLoggingConfig', 1)
 
 
 class FleetObservabilityFeatureState(_messages.Message):
@@ -2146,6 +2160,20 @@ class FleetObservabilityFleetObservabilityMonitoringState(_messages.Message):
   state = _messages.MessageField('FleetObservabilityFleetObservabilityBaseFeatureState', 1)
 
 
+class FleetObservabilityLoggingConfig(_messages.Message):
+  r"""LoggingConfig defines the configuration for different types of logs.
+
+  Fields:
+    defaultConfig: Specified if applying the default routing config to logs
+      not specified in other configs.
+    fleetScopeLogsConfig: Specified if applying the routing config to all logs
+      for all fleet scopes.
+  """
+
+  defaultConfig = _messages.MessageField('FleetObservabilityRoutingConfig', 1)
+  fleetScopeLogsConfig = _messages.MessageField('FleetObservabilityRoutingConfig', 2)
+
+
 class FleetObservabilityMembershipSpec(_messages.Message):
   r"""**FleetObservability**: The membership-specific input for
   FleetObservability feature.
@@ -2158,6 +2186,31 @@ class FleetObservabilityMembershipState(_messages.Message):
   fleetobservability.
   """
 
+
+
+class FleetObservabilityRoutingConfig(_messages.Message):
+  r"""RoutingConfig configures the behaviour of fleet logging feature.
+
+  Enums:
+    ModeValueValuesEnum: mode configures the logs routing mode.
+
+  Fields:
+    mode: mode configures the logs routing mode.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""mode configures the logs routing mode.
+
+    Values:
+      MODE_UNSPECIFIED: If UNSPECIFIED, fleet logging feature is disabled.
+      COPY: logs will be copied to the destination project.
+      MOVE: logs will be moved to the destination project.
+    """
+    MODE_UNSPECIFIED = 0
+    COPY = 1
+    MOVE = 2
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
 
 
 class GenerateConnectManifestResponse(_messages.Message):
@@ -2200,6 +2253,27 @@ class GkeCluster(_messages.Message):
 
   clusterMissing = _messages.BooleanField(1)
   resourceLink = _messages.StringField(2)
+
+
+class GkehubOrganizationsLocationsFleetsListRequest(_messages.Message):
+  r"""A GkehubOrganizationsLocationsFleetsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of fleets to return. The service
+      may return fewer than this value. If unspecified, at most 200 fleets
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. A page token, received from a previous `ListFleets`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListFleets` must match the call that
+      provided the page token.
+    parent: Required. The organization or project to list for Fleets under, in
+      the format `organizations/*/locations/*` or `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class GkehubProjectsLocationsFeaturesCreateRequest(_messages.Message):
@@ -2379,6 +2453,79 @@ class GkehubProjectsLocationsFeaturesTestIamPermissionsRequest(_messages.Message
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class GkehubProjectsLocationsFleetsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetsCreateRequest object.
+
+  Fields:
+    fleet: A Fleet resource to be passed as the request body.
+    parent: Required. The parent (project and location) where the Fleet will
+      be created. Specified in the format `projects/*/locations/*`.
+  """
+
+  fleet = _messages.MessageField('Fleet', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class GkehubProjectsLocationsFleetsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetsDeleteRequest object.
+
+  Fields:
+    name: Required. The Fleet resource name in the format
+      `projects/*/locations/*/fleets/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsFleetsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetsGetRequest object.
+
+  Fields:
+    name: Required. The Fleet resource name in the format
+      `projects/*/locations/*/fleets/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsFleetsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of fleets to return. The service
+      may return fewer than this value. If unspecified, at most 200 fleets
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. A page token, received from a previous `ListFleets`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListFleets` must match the call that
+      provided the page token.
+    parent: Required. The organization or project to list for Fleets under, in
+      the format `organizations/*/locations/*` or `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsFleetsPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetsPatchRequest object.
+
+  Fields:
+    fleet: A Fleet resource to be passed as the request body.
+    name: Output only. The full, unique resource name of this fleet in the
+      format of `projects/{project}/locations/{location}/fleets/{fleet}`. Each
+      Google Cloud project can have at most one fleet resource, named
+      "default".
+    updateMask: Required. The fields to be updated;
+  """
+
+  fleet = _messages.MessageField('Fleet', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class GkehubProjectsLocationsGetRequest(_messages.Message):
@@ -2856,6 +3003,181 @@ class GkehubProjectsLocationsScopesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class GkehubProjectsLocationsScopesNamespacesCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesCreateRequest object.
+
+  Fields:
+    namespace: A Namespace resource to be passed as the request body.
+    parent: Required. The parent (project and location) where the Namespace
+      will be created. Specified in the format
+      `projects/*/locations/*/scopes/*`.
+    scopeNamespaceId: Required. Client chosen ID for the Namespace.
+      `namespace_id` must be a valid RFC 1123 compliant DNS label: 1. At most
+      63 characters in length 2. It must consist of lower case alphanumeric
+      characters or `-` 3. It must start and end with an alphanumeric
+      character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+  """
+
+  namespace = _messages.MessageField('Namespace', 1)
+  parent = _messages.StringField(2, required=True)
+  scopeNamespaceId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsScopesNamespacesDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesDeleteRequest object.
+
+  Fields:
+    name: Required. The Namespace resource name in the format
+      `projects/*/locations/*/scopes/*/namespaces/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesNamespacesGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesGetRequest object.
+
+  Fields:
+    name: Required. The Namespace resource name in the format
+      `projects/*/locations/*/scopes/*/namespaces/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesNamespacesListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListFeatures`
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format
+      `projects/*/locations/*/scopes/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsScopesNamespacesPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesNamespacesPatchRequest object.
+
+  Fields:
+    name: The resource name for the namespace
+      `projects/{project}/locations/{location}/namespaces/{namespace}`
+    namespace: A Namespace resource to be passed as the request body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  namespace = _messages.MessageField('Namespace', 2)
+  updateMask = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsScopesPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesPatchRequest object.
+
+  Fields:
+    name: The resource name for the scope
+      `projects/{project}/locations/{location}/scopes/{scope}`
+    scope: A Scope resource to be passed as the request body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  scope = _messages.MessageField('Scope', 2)
+  updateMask = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsScopesRbacrolebindingsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesRbacrolebindingsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent (project and location) where the
+      RBACRoleBinding will be created. Specified in the format
+      `projects/*/locations/*/scopes/*`.
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    rbacrolebindingId: Required. Client chosen ID for the RBACRoleBinding.
+      `rbacrolebinding_id` must be a valid RFC 1123 compliant DNS label: 1. At
+      most 63 characters in length 2. It must consist of lower case
+      alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  rbacrolebindingId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsScopesRbacrolebindingsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesRbacrolebindingsDeleteRequest object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/scopes/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesRbacrolebindingsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesRbacrolebindingsGetRequest object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/scopes/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesRbacrolebindingsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesRbacrolebindingsListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to
+      `ListScopeRBACRoleBindings` which specifies the position in the list
+      from where to continue listing the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format
+      `projects/*/locations/*/scopes/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsScopesRbacrolebindingsPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesRbacrolebindingsPatchRequest object.
+
+  Fields:
+    name: The resource name for the rbacrolebinding `projects/{project}/locati
+      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
+      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
+      bacrolebindings/{rbacrolebinding}`
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  updateMask = _messages.StringField(3)
+
+
 class GkehubProjectsLocationsScopesSetIamPolicyRequest(_messages.Message):
   r"""A GkehubProjectsLocationsScopesSetIamPolicyRequest object.
 
@@ -3323,6 +3645,20 @@ class ListFeaturesResponse(_messages.Message):
   resources = _messages.MessageField('Feature', 2, repeated=True)
 
 
+class ListFleetsResponse(_messages.Message):
+  r"""Response message for the `GkeHub.ListFleetsResponse` method.
+
+  Fields:
+    fleets: The list of matching fleets.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. The
+      token is only valid for 1h.
+  """
+
+  fleets = _messages.MessageField('Fleet', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -3411,6 +3747,34 @@ class ListReferencesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   references = _messages.MessageField('Reference', 2, repeated=True)
+
+
+class ListScopeNamespacesResponse(_messages.Message):
+  r"""List of fleet namespaces.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListNamespaces` method. The value of an empty string means that there
+      are no more resources to return.
+    scopeNamespaces: The list of fleet namespaces
+  """
+
+  nextPageToken = _messages.StringField(1)
+  scopeNamespaces = _messages.MessageField('Namespace', 2, repeated=True)
+
+
+class ListScopeRBACRoleBindingsResponse(_messages.Message):
+  r"""List of Scope RBACRoleBindings.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListScopeRBACRoleBindings` method. The value of an empty string means
+      that there are no more resources to return.
+    rbacrolebindings: The list of Scope RBACRoleBindings.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  rbacrolebindings = _messages.MessageField('RBACRoleBinding', 2, repeated=True)
 
 
 class ListScopesResponse(_messages.Message):
@@ -3631,11 +3995,15 @@ class MembershipBinding(_messages.Message):
   r"""MembershipBinding is a subresource of a Membership, representing what
   Fleet Scopes (or other, future Fleet resources) a Membership is bound to.
 
+  Messages:
+    LabelsValue: Optional. Labels for this MembershipBinding.
+
   Fields:
     createTime: Output only. When the membership binding was created.
     deleteTime: Output only. When the membership binding was deleted.
     fleet: Whether the membershipbinding is Fleet-wide; true means that this
       Membership should be bound to all Namespaces in this entire Fleet.
+    labels: Optional. Labels for this MembershipBinding.
     name: The resource name for the membershipbinding itself `projects/{projec
       t}/locations/{location}/memberships/{membership}/bindings/{membershipbin
       ding}`
@@ -3649,14 +4017,39 @@ class MembershipBinding(_messages.Message):
     updateTime: Output only. When the membership binding was last updated.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels for this MembershipBinding.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   fleet = _messages.BooleanField(3)
-  name = _messages.StringField(4)
-  scope = _messages.StringField(5)
-  state = _messages.MessageField('MembershipBindingLifecycleState', 6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  scope = _messages.StringField(6)
+  state = _messages.MessageField('MembershipBindingLifecycleState', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class MembershipBindingLifecycleState(_messages.Message):
@@ -3746,20 +4139,22 @@ class MembershipFeatureSpec(_messages.Message):
 
   Fields:
     configmanagement: Config Management-specific spec.
-    fleetInherited: True if value of `feature_spec` was inherited from a
-      fleet-level default.
     fleetobservability: Fleet observability membership spec
     helloworld: Hello World-specific spec.
     identityservice: Identity Service-specific spec.
     mesh: Anthos Service Mesh-specific spec
+    origin: Whether this per-Membership spec was inherited from a fleet-level
+      default. This field can be updated by users by either overriding a
+      Membership config (updated to USER implicitly) or setting to FLEET
+      explicitly.
   """
 
   configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 1)
-  fleetInherited = _messages.BooleanField(2)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 3)
-  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 4)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 5)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 6)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 2)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 3)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 4)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 5)
+  origin = _messages.MessageField('Origin', 6)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -3768,7 +4163,6 @@ class MembershipFeatureState(_messages.Message):
 
   Fields:
     appdevexperience: Appdevexperience specific state.
-    clusterupgrade: ClusterUpgrade state.
     configmanagement: Config Management-specific state.
     fleetobservability: Fleet observability membership state.
     helloworld: Hello World-specific state.
@@ -3778,13 +4172,12 @@ class MembershipFeatureState(_messages.Message):
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
-  clusterupgrade = _messages.MessageField('ClusterUpgradeMembershipState', 2)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 3)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 4)
-  helloworld = _messages.MessageField('HelloWorldMembershipState', 5)
-  identityservice = _messages.MessageField('IdentityServiceMembershipState', 6)
-  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 7)
-  state = _messages.MessageField('FeatureState', 8)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 2)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 3)
+  helloworld = _messages.MessageField('HelloWorldMembershipState', 4)
+  identityservice = _messages.MessageField('IdentityServiceMembershipState', 5)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 6)
+  state = _messages.MessageField('FeatureState', 7)
 
 
 class MembershipState(_messages.Message):
@@ -3881,6 +4274,132 @@ class MultiClusterIngressFeatureSpec(_messages.Message):
   """
 
   configMembership = _messages.StringField(1)
+
+
+class Namespace(_messages.Message):
+  r"""Namespace represents a namespace across the Fleet
+
+  Messages:
+    LabelsValue: Optional. Labels for this Namespace.
+    NamespaceLabelsValue: Optional. Namespace-level cluster namespace labels.
+      These labels are applied to the related namespace of the member clusters
+      bound to the parent Scope. Scope-level labels (`namespace_labels` in the
+      Fleet Scope resource) take precedence over Namespace-level labels if
+      they share a key. Keys and values must be Kubernetes-conformant.
+
+  Fields:
+    createTime: Output only. When the namespace was created.
+    deleteTime: Output only. When the namespace was deleted.
+    labels: Optional. Labels for this Namespace.
+    name: The resource name for the namespace
+      `projects/{project}/locations/{location}/namespaces/{namespace}`
+    namespaceLabels: Optional. Namespace-level cluster namespace labels. These
+      labels are applied to the related namespace of the member clusters bound
+      to the parent Scope. Scope-level labels (`namespace_labels` in the Fleet
+      Scope resource) take precedence over Namespace-level labels if they
+      share a key. Keys and values must be Kubernetes-conformant.
+    scope: Required. Scope associated with the namespace
+    state: Output only. State of the namespace resource.
+    tenancyProject: Tenancy Project associated with the namespace
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all namespace resources. If a namespace resource is deleted and
+      another resource with the same name is created, it gets a different uid.
+    updateTime: Output only. When the namespace was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels for this Namespace.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NamespaceLabelsValue(_messages.Message):
+    r"""Optional. Namespace-level cluster namespace labels. These labels are
+    applied to the related namespace of the member clusters bound to the
+    parent Scope. Scope-level labels (`namespace_labels` in the Fleet Scope
+    resource) take precedence over Namespace-level labels if they share a key.
+    Keys and values must be Kubernetes-conformant.
+
+    Messages:
+      AdditionalProperty: An additional property for a NamespaceLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type NamespaceLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NamespaceLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  namespaceLabels = _messages.MessageField('NamespaceLabelsValue', 5)
+  scope = _messages.StringField(6)
+  state = _messages.MessageField('NamespaceLifecycleState', 7)
+  tenancyProject = _messages.IntegerField(8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class NamespaceLifecycleState(_messages.Message):
+  r"""NamespaceLifecycleState describes the state of a Namespace resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the Namespace
+      resource.
+
+  Fields:
+    code: Output only. The current state of the Namespace resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the Namespace resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The namespace is being created.
+      READY: The namespace active.
+      DELETING: The namespace is being deleted.
+      UPDATING: The namespace is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
 class OnPremCluster(_messages.Message):
@@ -4059,6 +4578,31 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class Origin(_messages.Message):
+  r"""Origin defines where this MembershipFeatureSpec originated from.
+
+  Enums:
+    TypeValueValuesEnum: Type specifies which type of origin is set.
+
+  Fields:
+    type: Type specifies which type of origin is set.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type specifies which type of origin is set.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unknown or not set.
+      FLEET: Per-Membership spec was inherited from the fleet-level default.
+      USER: Per-Membership spec was inherited from a user specification.
+    """
+    TYPE_UNSPECIFIED = 0
+    FLEET = 1
+    USER = 2
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -4143,6 +4687,99 @@ class Policy(_messages.Message):
   etag = _messages.BytesField(3)
   rules = _messages.MessageField('Rule', 4, repeated=True)
   version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class RBACRoleBinding(_messages.Message):
+  r"""RBACRoleBinding represents a rbacrolebinding across the Fleet
+
+  Messages:
+    LabelsValue: Optional. Labels for this RBACRolebinding.
+
+  Fields:
+    createTime: Output only. When the rbacrolebinding was created.
+    deleteTime: Output only. When the rbacrolebinding was deleted.
+    group: group is the group, as seen by the kubernetes cluster.
+    labels: Optional. Labels for this RBACRolebinding.
+    name: The resource name for the rbacrolebinding `projects/{project}/locati
+      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
+      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
+      bacrolebindings/{rbacrolebinding}`
+    role: Required. Role to bind to the principal
+    state: Output only. State of the rbacrolebinding resource.
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all rbacrolebinding resources. If a rbacrolebinding resource is
+      deleted and another resource with the same name is created, it gets a
+      different uid.
+    updateTime: Output only. When the rbacrolebinding was last updated.
+    user: user is the name of the user as seen by the kubernetes cluster,
+      example "alice" or "alice@domain.tld"
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels for this RBACRolebinding.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  group = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  role = _messages.MessageField('Role', 6)
+  state = _messages.MessageField('RBACRoleBindingLifecycleState', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+  user = _messages.StringField(10)
+
+
+class RBACRoleBindingLifecycleState(_messages.Message):
+  r"""RBACRoleBindingLifecycleState describes the state of a RbacRoleBinding
+  resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the rbacrolebinding
+      resource.
+
+  Fields:
+    code: Output only. The current state of the rbacrolebinding resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the rbacrolebinding resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The rbacrolebinding is being created.
+      READY: The rbacrolebinding active.
+      DELETING: The rbacrolebinding is being deleted.
+      UPDATING: The rbacrolebinding is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
 class Reference(_messages.Message):
@@ -4244,6 +4881,37 @@ class ResourceOptions(_messages.Message):
   v1beta1Crd = _messages.BooleanField(3)
 
 
+class Role(_messages.Message):
+  r"""Role is the type for Kubernetes roles
+
+  Enums:
+    PredefinedRoleValueValuesEnum: predefined_role is the Kubernetes default
+      role to use
+
+  Fields:
+    predefinedRole: predefined_role is the Kubernetes default role to use
+  """
+
+  class PredefinedRoleValueValuesEnum(_messages.Enum):
+    r"""predefined_role is the Kubernetes default role to use
+
+    Values:
+      UNKNOWN: UNKNOWN
+      ADMIN: ADMIN has EDIT and RBAC permissions
+      EDIT: EDIT can edit all resources except RBAC
+      VIEW: VIEW can only read resources
+      ANTHOS_SUPPORT: ANTHOS_SUPPORT gives Google Support read-only access to
+        a number of cluster resources.
+    """
+    UNKNOWN = 0
+    ADMIN = 1
+    EDIT = 2
+    VIEW = 3
+    ANTHOS_SUPPORT = 4
+
+  predefinedRole = _messages.EnumField('PredefinedRoleValueValuesEnum', 1)
+
+
 class Rule(_messages.Message):
   r"""A rule to be applied in a Policy.
 
@@ -4300,12 +4968,28 @@ class Rule(_messages.Message):
 class Scope(_messages.Message):
   r"""Scope represents a Scope in a Fleet.
 
+  Messages:
+    LabelsValue: Optional. Labels for this Scope.
+    NamespaceLabelsValue: Optional. Scope-level cluster namespace labels. For
+      the member clusters bound to the Scope, these labels are applied to each
+      namespace under the Scope. Scope-level labels take precedence over
+      Namespace-level labels (`namespace_labels` in the Fleet Namespace
+      resource) if they share a key. Keys and values must be Kubernetes-
+      conformant.
+
   Fields:
     allMemberships: If true, all Memberships in the Fleet bind to this Scope.
     createTime: Output only. When the scope was created.
     deleteTime: Output only. When the scope was deleted.
+    labels: Optional. Labels for this Scope.
     name: The resource name for the scope
       `projects/{project}/locations/{location}/scopes/{scope}`
+    namespaceLabels: Optional. Scope-level cluster namespace labels. For the
+      member clusters bound to the Scope, these labels are applied to each
+      namespace under the Scope. Scope-level labels take precedence over
+      Namespace-level labels (`namespace_labels` in the Fleet Namespace
+      resource) if they share a key. Keys and values must be Kubernetes-
+      conformant.
     state: Output only. State of the scope resource.
     uid: Output only. Google-generated UUID for this resource. This is unique
       across all scope resources. If a scope resource is deleted and another
@@ -4313,39 +4997,90 @@ class Scope(_messages.Message):
     updateTime: Output only. When the scope was last updated.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels for this Scope.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NamespaceLabelsValue(_messages.Message):
+    r"""Optional. Scope-level cluster namespace labels. For the member
+    clusters bound to the Scope, these labels are applied to each namespace
+    under the Scope. Scope-level labels take precedence over Namespace-level
+    labels (`namespace_labels` in the Fleet Namespace resource) if they share
+    a key. Keys and values must be Kubernetes-conformant.
+
+    Messages:
+      AdditionalProperty: An additional property for a NamespaceLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type NamespaceLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NamespaceLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   allMemberships = _messages.BooleanField(1)
   createTime = _messages.StringField(2)
   deleteTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  state = _messages.MessageField('ScopeLifecycleState', 5)
-  uid = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  namespaceLabels = _messages.MessageField('NamespaceLabelsValue', 6)
+  state = _messages.MessageField('ScopeLifecycleState', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ScopeFeatureSpec(_messages.Message):
   r"""ScopeFeatureSpec contains feature specs for a fleet scope.
 
   Fields:
-    clusterupgrade: Spec for the ClusterUpgrade feature at the scope level
     helloworld: Spec for the HelloWorld feature at the scope level
   """
 
-  clusterupgrade = _messages.MessageField('ClusterUpgradeScopeSpec', 1)
-  helloworld = _messages.MessageField('HelloWorldScopeSpec', 2)
+  helloworld = _messages.MessageField('HelloWorldScopeSpec', 1)
 
 
 class ScopeFeatureState(_messages.Message):
   r"""ScopeFeatureState contains Scope-wide Feature status information.
 
   Fields:
-    clusterupgrade: State for the ClusterUpgrade feature at the scope level
     helloworld: State for the HelloWorld feature at the scope level
     state: Output only. The "running state" of the Feature in this Scope.
   """
 
-  clusterupgrade = _messages.MessageField('ClusterUpgradeScopeState', 1)
-  helloworld = _messages.MessageField('HelloWorldScopeState', 2)
-  state = _messages.MessageField('FeatureState', 3)
+  helloworld = _messages.MessageField('HelloWorldScopeState', 1)
+  state = _messages.MessageField('FeatureState', 2)
 
 
 class ScopeLifecycleState(_messages.Message):

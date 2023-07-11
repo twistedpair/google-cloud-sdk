@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage.s3_xml import client as s3_xml_client
 from googlecloudsdk.command_lib.storage import storage_url
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
@@ -38,9 +37,3 @@ class XmlClient(s3_xml_client.S3XmlClient):
     self.endpoint_url = storage.gs_xml_endpoint_url.Get()
 
     self.client = self.create_client()
-    log.warning(
-        'You are authenticating with an HMAC key, which forces gcloud storage '
-        'to communicate using the XML API. Outside of core transfer '
-        'functionality, commands may not be supported or only partially work.'
-    )
-

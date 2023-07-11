@@ -19,9 +19,15 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.container.backup_restore import util as api_util
-from googlecloudsdk.calliope.exceptions import InvalidArgumentException
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.core.console import console_io
+
+CLUSTER_RESOURCE_RESTORE_SCOPE = 'cluster_resource_restore_scope'
+CLUSTER_RESOURCE_SELECTED_GROUP_KINDS = 'cluster_resource_selected_group_kinds'
+CLUSTER_RESOURCE_EXCLUDED_GROUP_KINDS = 'cluster_resource_excluded_group_kinds'
+CLUSTER_RESOURCE_ALL_GROUP_KINDS = 'cluster_resource_all_group_kinds'
+CLUSTER_RESOURCE_NO_GROUP_KINDS = 'cluster_resource_no_group_kinds'
 
 
 def AddForceToDeleteRequest(ref, args, request):
@@ -34,14 +40,14 @@ def AddForceToDeleteRequest(ref, args, request):
   return request
 
 
-def ParseClusterResourceRestoreScope(cluster_resource_restore_scope):
-  """Process cluster-resource-restore-scope flag."""
-  if not cluster_resource_restore_scope:
+def ParseGroupKinds(group_kinds, flag='--cluster-resource-restore-scope'):
+  """Process list of group kinds."""
+  if not group_kinds:
     return None
   message = api_util.GetMessagesModule()
-  crrs = message.ClusterResourceRestoreScope()
+  gks = []
   try:
-    for resource in cluster_resource_restore_scope:
+    for resource in group_kinds:
       group_kind = resource.split('/')
       if len(group_kind) == 1:
         group = ''
@@ -49,60 +55,118 @@ def ParseClusterResourceRestoreScope(cluster_resource_restore_scope):
       elif len(group_kind) == 2:
         group, kind = group_kind
       else:
-        raise InvalidArgumentException(
-            '--cluster-resource-restore-scope',
+        raise exceptions.InvalidArgumentException(
+            flag,
             'Cluster resource restore scope is invalid.',
         )
       if not kind:
-        raise InvalidArgumentException(
-            '--cluster-resource-restore-scope',
+        raise exceptions.InvalidArgumentException(
+            flag,
             'Cluster resource restore scope kind is empty.')
       gk = message.GroupKind()
       gk.resourceGroup = group
       gk.resourceKind = kind
-      crrs.selectedGroupKinds.append(gk)
-    return crrs
+      gks.append(gk)
+    return gks
   except ValueError:
-    raise InvalidArgumentException(
-        '--cluster-resource-restore-scope',
+    raise exceptions.InvalidArgumentException(
+        flag,
         'Cluster resource restore scope is invalid.')
 
 
-def ProcessClusterResourceRestoreScope(cluster_resource_restore_scope):
-  return ParseClusterResourceRestoreScope(cluster_resource_restore_scope)
+def ProcessClusterResourceRestoreScope(group_kinds):
+  message = api_util.GetMessagesModule()
+  crrs = message.ClusterResourceRestoreScope()
+  crrs.selectedGroupKinds.extend(ParseGroupKinds(group_kinds))
+  return crrs
+
+
+def ProcessSelectedGroupKinds(group_kinds):
+  message = api_util.GetMessagesModule()
+  crrs = message.ClusterResourceRestoreScope()
+  crrs.selectedGroupKinds.extend(
+      ParseGroupKinds(
+          group_kinds, '--cluster-resource-scope-selected-group-kinds'
+      )
+  )
+  return crrs
+
+
+def ProcessExcludedGroupKinds(group_kinds):
+  message = api_util.GetMessagesModule()
+  crrs = message.ClusterResourceRestoreScope()
+  crrs.excludedGroupKinds.extend(
+      ParseGroupKinds(
+          group_kinds, '--cluster-resource-scope-excluded-group-kinds'
+      )
+  )
+  return crrs
+
+
+def ProcessAllGroupKinds(all_group_kinds):
+  message = api_util.GetMessagesModule()
+  crrs = message.ClusterResourceRestoreScope()
+  crrs.allGroupKinds = all_group_kinds
+  return crrs
+
+
+def ProcessNoGroupKinds(no_group_kinds):
+  message = api_util.GetMessagesModule()
+  crrs = message.ClusterResourceRestoreScope()
+  crrs.noGroupKinds = no_group_kinds
+  return crrs
 
 
 def ProcessAllNamespaces(all_namespaces):
   if not all_namespaces:
-    raise InvalidArgumentException('--all-namespaces',
-                                   'All namespaces can only be true.')
+    raise exceptions.InvalidArgumentException(
+        '--all-namespaces',
+        'All namespaces can only be true.')
   return all_namespaces
+
+
+def ProcessNoNamespaces(no_namespaces):
+  if not no_namespaces:
+    raise exceptions.InvalidArgumentException(
+        '--no-namespaces',
+        'No namespaces can only be true.')
+  return no_namespaces
 
 
 def ProcessSelectedNamespaces(selected_namespaces):
   if not selected_namespaces:
-    raise InvalidArgumentException('--selected-namespaces',
-                                   'Selected namespaces must not be empty.')
+    raise exceptions.InvalidArgumentException(
+        '--selected-namespaces',
+        'Selected namespaces must not be empty.')
   return selected_namespaces
+
+
+def ProcessExcludedNamespaces(excluded_namespaces):
+  if not excluded_namespaces:
+    raise exceptions.InvalidArgumentException(
+        '--excluded-namespaces',
+        'Excluded namespaces must not be empty.')
+  return excluded_namespaces
 
 
 def ProcessSelectedApplications(selected_applications):
   """Processes selected-applications flag."""
   if not selected_applications:
-    raise InvalidArgumentException('--selected-applications',
-                                   'Selected applications must not be empty.')
+    raise exceptions.InvalidArgumentException(
+        '--selected-applications',
+        'Selected applications must not be empty.')
   message = api_util.GetMessagesModule()
   sa = message.NamespacedNames()
   try:
     for namespaced_name in selected_applications.split(','):
       namespace, name = namespaced_name.split('/')
       if not namespace:
-        raise InvalidArgumentException(
+        raise exceptions.InvalidArgumentException(
             '--selected-applications',
             'Namespace of selected application {0} is empty.'.format(
                 namespaced_name))
       if not name:
-        raise InvalidArgumentException(
+        raise exceptions.InvalidArgumentException(
             '--selected-applications',
             'Name of selected application {0} is empty.'.format(
                 namespaced_name))
@@ -112,7 +176,7 @@ def ProcessSelectedApplications(selected_applications):
       sa.namespacedNames.append(nn)
     return sa
   except ValueError:
-    raise InvalidArgumentException(
+    raise exceptions.InvalidArgumentException(
         '--selected-applications',
         'Selected applications {0} is invalid.'.format(selected_applications))
 
@@ -153,21 +217,64 @@ def PreprocessUpdateRestorePlan(ref, args, request):
   """Preprocess request for updating restore plan."""
   del ref
 
-  if args.IsSpecified('cluster_resource_restore_scope'):
+  # Guarded by argparser group with mutex=true.
+  if hasattr(args, CLUSTER_RESOURCE_RESTORE_SCOPE) and args.IsSpecified(
+      CLUSTER_RESOURCE_RESTORE_SCOPE
+  ):
     request.restorePlan.restoreConfig.clusterResourceRestoreScope = (
-        ParseClusterResourceRestoreScope(args.cluster_resource_restore_scope)
+        ProcessClusterResourceRestoreScope(args.cluster_resource_restore_scope)
+    )
+  if hasattr(
+      args, CLUSTER_RESOURCE_SELECTED_GROUP_KINDS
+  ) and args.IsSpecified(CLUSTER_RESOURCE_SELECTED_GROUP_KINDS):
+    request.restorePlan.restoreConfig.clusterResourceRestoreScope = (
+        ProcessSelectedGroupKinds(args.cluster_resource_selected_group_kinds)
+    )
+  if hasattr(
+      args, CLUSTER_RESOURCE_EXCLUDED_GROUP_KINDS
+  ) and args.IsSpecified(CLUSTER_RESOURCE_EXCLUDED_GROUP_KINDS):
+    request.restorePlan.restoreConfig.clusterResourceRestoreScope = (
+        ProcessExcludedGroupKinds(args.cluster_resource_excluded_group_kinds)
+    )
+  if hasattr(args, CLUSTER_RESOURCE_ALL_GROUP_KINDS) and args.IsSpecified(
+      CLUSTER_RESOURCE_ALL_GROUP_KINDS
+  ):
+    request.restorePlan.restoreConfig.clusterResourceRestoreScope = (
+        ProcessAllGroupKinds(args.cluster_resource_all_group_kinds)
+    )
+  if hasattr(args, CLUSTER_RESOURCE_NO_GROUP_KINDS) and args.IsSpecified(
+      CLUSTER_RESOURCE_NO_GROUP_KINDS
+  ):
+    request.restorePlan.restoreConfig.clusterResourceRestoreScope = (
+        ProcessNoGroupKinds(args.cluster_resource_no_group_kinds)
     )
 
   # Guarded by argparser group with mutex=true.
   if args.IsSpecified('all_namespaces'):
+    request.restorePlan.restoreConfig.noNamespaces = None
     request.restorePlan.restoreConfig.selectedNamespaces = None
+    request.restorePlan.restoreConfig.excludedNamespaces = None
+    request.restorePlan.restoreConfig.selectedApplications = None
+  if args.IsSpecified('no_namespaces'):
+    request.restorePlan.restoreConfig.allNamespaces = None
+    request.restorePlan.restoreConfig.selectedNamespaces = None
+    request.restorePlan.restoreConfig.excludedNamespaces = None
     request.restorePlan.restoreConfig.selectedApplications = None
   if args.IsSpecified('selected_namespaces'):
     request.restorePlan.restoreConfig.allNamespaces = None
+    request.restorePlan.restoreConfig.noNamespaces = None
+    request.restorePlan.restoreConfig.excludedNamespaces = None
+    request.restorePlan.restoreConfig.selectedApplications = None
+  if args.IsSpecified('excluded_namespaces'):
+    request.restorePlan.restoreConfig.allNamespaces = None
+    request.restorePlan.restoreConfig.noNamespaces = None
+    request.restorePlan.restoreConfig.selectedNamespaces = None
     request.restorePlan.restoreConfig.selectedApplications = None
   if args.IsSpecified('selected_applications'):
     request.restorePlan.restoreConfig.allNamespaces = None
+    request.restorePlan.restoreConfig.noNamespaces = None
     request.restorePlan.restoreConfig.selectedNamespaces = None
+    request.restorePlan.restoreConfig.excludedNamespaces = None
 
   if args.IsSpecified('substitution_rules_file'):
     request.restorePlan.restoreConfig.substitutionRules = (
@@ -178,8 +285,14 @@ def PreprocessUpdateRestorePlan(ref, args, request):
   for mask in request.updateMask.split(','):
     if mask.startswith('restoreConfig.selectedNamespaces'):
       mask = 'restoreConfig.selectedNamespaces'
+    elif mask.startswith('restoreConfig.excludedNamespaces'):
+      mask = 'restoreConfig.excludedNamespaces'
     elif mask.startswith('restoreConfig.selectedApplications'):
       mask = 'restoreConfig.selectedApplications'
+    elif mask.startswith('restoreConfig.noNamespaces'):
+      mask = 'restoreConfig.noNamespaces'
+    elif mask.startswith('restoreConfig.allNamespaces'):
+      mask = 'restoreConfig.allNamespaces'
     # Other masks are unchanged
     new_masks.append(mask)
   request.updateMask = ','.join(new_masks)

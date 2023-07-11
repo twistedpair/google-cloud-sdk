@@ -116,6 +116,42 @@ metadata_from_file:
     Same as `--metadata` except the value for the entry will be read from a local file.
     Example: `--metadata-from-file='key1=value1.txt'`
 
+update_metadata:
+  arg_name: update-metadata
+  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+  required: false
+  metavar: KEY=VALUE
+  help_text: |
+    List of comma-separated metadata key-value pairs for the Cloud TPU VM node. If a key exists, its
+    value is modified. Otherwise, a new key-value pair is created.
+
+clear_metadata:
+  arg_name: clear-metadata
+  type: bool
+  default: false
+  required: false
+  help_text: |
+    Remove all metadata. If `--update-metadata` is also specified then `--clear-metadata` is applied
+    first.
+
+    For example, to remove all metadata:
+
+      $ {command} --clear-metadata
+
+    To remove all existing metadata and create two new metadata key-value pairs, 'foo=bar' and
+    'baz=qux':
+
+      $ {command} --clear-metadata --update-metadata foo=bar,baz=qux
+
+remove_metadata:
+  arg_name: remove-metadata
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  required: false
+  metavar: KEY
+  help_text: |
+    List of comma-separated metadata keys to remove. If a key does not exist it is silently ignored.
+    If `--update-metadata` is also specified then `--update-metadata` is applied first.
+
 topology:
   arg_name: topology
   help_text: |

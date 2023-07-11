@@ -846,6 +846,33 @@ class ArtifactregistryV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def BatchDelete(self, request, global_params=None):
+      r"""Deletes multiple versions across a repository. The returned operation will complete once the versions have been deleted.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsBatchDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BatchDelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchDelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/versions:batchDelete',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.packages.versions.batchDelete',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/versions:batchDelete',
+        request_field='batchDeleteVersionsRequest',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsBatchDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a version and all of its content. The returned operation will complete once the version has been deleted.
 

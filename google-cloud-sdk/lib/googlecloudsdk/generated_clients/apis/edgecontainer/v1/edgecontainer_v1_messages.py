@@ -51,7 +51,7 @@ class CloudVpn(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""A Google Distributed Cloud Edge Kubernetes cluster.
+  r"""A Google Distributed Cloud Edge Kubernetes cluster. Next: 24
 
   Messages:
     LabelsValue: Labels associated with this resource.

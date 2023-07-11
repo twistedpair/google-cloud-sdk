@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
 import os
 
 from googlecloudsdk.command_lib.storage import errors
@@ -28,7 +29,6 @@ from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.cache import function_result_cache
 from googlecloudsdk.core.util import files
-
 import six
 
 
@@ -47,21 +47,22 @@ def cached_read_yaml_json_file(file_path):
       as a dict.
   """
   expanded_file_path = os.path.realpath(os.path.expanduser(file_path))
+  current_error_string = 'Found invalid JSON/YAML file {}'.format(file_path)
+
   try:
-    # Since json is a subset of yaml, parse file as yaml.
     parsed = yaml.load(files.ReadFileContents(expanded_file_path))
     if isinstance(parsed, dict) or isinstance(parsed, list):
       return parsed
   except yaml.YAMLParseError as e:
-    raise errors.InvalidUrlError(
-        'Found invalid JSON/YAML file {}\n\nOriginal Error: {}'.format(
-            file_path, six.text_type(e)
-        )
-    )
+    current_error_string += '\n\nYAML Error: {}'.format(six.text_type(e))
 
-  raise errors.InvalidUrlError(
-      'Found invalid JSON/YAML file {}'.format(file_path)
-  )
+  with files.FileReader(expanded_file_path) as file_reader:
+    try:
+      return json.load(file_reader)
+    except json.JSONDecodeError as e:
+      current_error_string += '\n\nJSON Error: {}'.format(six.text_type(e))
+
+  raise errors.InvalidUrlError(current_error_string)
 
 
 def get_updated_custom_fields(

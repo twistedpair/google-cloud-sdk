@@ -333,6 +333,21 @@ class JsonClient(cloud_api.CloudApi):
       return projection_enum.full
     return projection_enum.noAcl
 
+  def _get_source_path(self, source_resource):
+    """Get source path from source_resource.
+
+    Args:
+      source_resource (FileObjectResource|None): Contains the
+        source StorageUrl. Can be None if source is pure stream.
+
+    Returns:
+      (str|None) Source path.
+    """
+    if source_resource:
+      return source_resource.storage_url.versionless_url_string
+
+    return None
+
   @error_util.catch_http_error_raise_gcs_api_error()
   def create_bucket(self,
                     bucket_resource,
@@ -783,14 +798,19 @@ class JsonClient(cloud_api.CloudApi):
         num_retries=properties.VALUES.storage.max_retries.GetInt(),
         client=self.client)
 
+    if end_byte is None:
+      calculated_end_byte = cloud_resource.size - 1
+    else:
+      calculated_end_byte = end_byte
+
     self._stream_response_handler.update_destination_info(
         stream=download_stream,
-        size=(end_byte - start_byte +
-              1 if end_byte is not None else cloud_resource.size),
+        size=calculated_end_byte - start_byte + 1,
         digesters=digesters,
         download_strategy=download_strategy,
         processed_bytes=start_byte,
-        progress_callback=progress_callback)
+        progress_callback=progress_callback,
+    )
 
     if self._download_http_client is None:
       self._download_http_client = transports.GetApitoolsTransport(
@@ -1021,12 +1041,10 @@ class JsonClient(cloud_api.CloudApi):
               ' Set log_http_show_request_body property to True to print the'
               ' body of this request.'))
 
-    if source_resource:
-      source_path = source_resource.storage_url.versionless_url_string
-    else:
-      source_path = None
+    source_path = self._get_source_path(source_resource)
     should_gzip_in_flight = gzip_util.should_gzip_in_flight(
         request_config.gzip_settings, source_path)
+
     if should_gzip_in_flight:
       log.info(
           'Using compressed transport encoding for {}.'.format(source_path))

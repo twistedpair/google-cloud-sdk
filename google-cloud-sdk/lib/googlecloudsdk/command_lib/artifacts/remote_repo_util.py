@@ -87,6 +87,13 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
           messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryCustomRepository()
       )
       remote_cfg.mavenRepository.customRepository.uri = remote_input
+    elif _IsARRemote(remote_input):  # input is ArtifactRegistryRepository
+      remote_cfg.mavenRepository.artifactRegistryRepository = (
+          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryArtifactRegistryRepository()
+      )
+      remote_cfg.mavenRepository.artifactRegistryRepository.repository = (
+          remote_input
+      )
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_input)
 
@@ -102,6 +109,13 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
           messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryCustomRepository()
       )
       remote_cfg.dockerRepository.customRepository.uri = remote_input
+    elif _IsARRemote(remote_input):  # input is ArtifactRegistryRepository
+      remote_cfg.dockerRepository.artifactRegistryRepository = (
+          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryArtifactRegistryRepository()
+      )
+      remote_cfg.dockerRepository.artifactRegistryRepository.repository = (
+          remote_input
+      )
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_input)
 
@@ -117,6 +131,13 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
           messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryCustomRepository()
       )
       remote_cfg.npmRepository.customRepository.uri = remote_input
+    elif _IsARRemote(remote_input):  # input is ArtifactRegistryRepository
+      remote_cfg.npmRepository.artifactRegistryRepository = (
+          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryArtifactRegistryRepository()
+      )
+      remote_cfg.npmRepository.artifactRegistryRepository.repository = (
+          remote_input
+      )
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_input)
 
@@ -132,6 +153,13 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
           messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryCustomRepository()
       )
       remote_cfg.pythonRepository.customRepository.uri = remote_input
+    elif _IsARRemote(remote_input):  # input is ArtifactRegistryRepository
+      remote_cfg.pythonRepository.artifactRegistryRepository = (
+          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryArtifactRegistryRepository()
+      )
+      remote_cfg.pythonRepository.artifactRegistryRepository.repository = (
+          remote_input
+      )
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_input)
 
@@ -158,6 +186,18 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
       remote_cfg.aptRepository.customRepository.uri = _OsPackageUri(
           remote_base, remote_path
       )
+    elif _IsARRemote(remote_base):  # input is ArtifactRegistryRepository
+      if remote_path:
+        raise ar_exceptions.InvalidInputValueError(
+            "--remote-apt-repo-path is not supported for Artifact Registry"
+            " Repository upstream."
+        )
+      remote_cfg.aptRepository.artifactRegistryRepository = (
+          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryArtifactRegistryRepository()
+      )
+      remote_cfg.aptRepository.artifactRegistryRepository.repository = (
+          remote_base
+      )
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_base)
 
@@ -183,6 +223,18 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
       )
       remote_cfg.yumRepository.customRepository.uri = _OsPackageUri(
           remote_base, remote_path
+      )
+    elif _IsARRemote(remote_base):  # input is ArtifactRegistryRepository
+      if remote_path:
+        raise ar_exceptions.InvalidInputValueError(
+            "--remote-yum-repo-path is not supported for Artifact Registry"
+            " Repository upstream."
+        )
+      remote_cfg.yumRepository.artifactRegistryRepository = (
+          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryArtifactRegistryRepository()
+      )
+      remote_cfg.yumRepository.artifactRegistryRepository.repository = (
+          remote_base
       )
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_base)
@@ -322,6 +374,10 @@ def _IsRemoteURI(remote_input: str) -> bool:
   return remote_input.startswith("https://") or remote_input.startswith(
       "http://"
   )
+
+
+def _IsARRemote(remote_input: str) -> bool:
+  return remote_input.startswith("projects/")
 
 
 def _RaiseRemoteRepoUpstreamError(facade: str, remote_input: str):

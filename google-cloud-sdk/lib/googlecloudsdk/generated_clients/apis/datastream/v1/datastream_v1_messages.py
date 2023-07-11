@@ -1240,7 +1240,9 @@ class MysqlColumn(_messages.Message):
     length: Column length.
     nullable: Whether or not the column can accept a null value.
     ordinalPosition: The ordinal position of the column in the table.
+    precision: Column precision.
     primaryKey: Whether or not the column represents a primary key.
+    scale: Column scale.
   """
 
   collation = _messages.StringField(1)
@@ -1249,7 +1251,9 @@ class MysqlColumn(_messages.Message):
   length = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   nullable = _messages.BooleanField(5)
   ordinalPosition = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  primaryKey = _messages.BooleanField(7)
+  precision = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  primaryKey = _messages.BooleanField(8)
+  scale = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class MysqlDatabase(_messages.Message):
@@ -1904,7 +1908,9 @@ class SingleTargetDataset(_messages.Message):
   r"""A single target dataset to which all data will be streamed.
 
   Fields:
-    datasetId: The dataset ID of the target dataset.
+    datasetId: The dataset ID of the target dataset. DatasetIds allowed
+      characters: https://cloud.google.com/bigquery/docs/reference/rest/v2/dat
+      asets#datasetreference.
   """
 
   datasetId = _messages.StringField(1)

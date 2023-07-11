@@ -328,6 +328,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
       ISR_REGIONS: Assured Workloads for Israel
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
+      IL5: Information protection as per DoD IL5 requirements.
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -345,6 +346,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
     ISR_REGIONS = 13
     ISR_REGIONS_AND_SUPPORT = 14
     CA_PROTECTED_B = 15
+    IL5 = 16
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -452,8 +454,6 @@ class GoogleCloudAssuredworkloadsV1beta1Violation(_messages.Message):
       Format: projects/{project_number}/policies/{constraint_name}
       folders/{folder_id}/policies/{constraint_name}
       organizations/{organization_id}/policies/{constraint_name}
-    orgPolicyConstraint: Output only. Immutable. The org-policy-constraint
-      that was incorrectly changed, which resulted in this violation.
     remediation: Output only. Compliance violation remediation
     resolveTime: Output only. Time of the event which fixed the Violation. If
       the violation is ACTIVE this will be empty.
@@ -485,11 +485,10 @@ class GoogleCloudAssuredworkloadsV1beta1Violation(_messages.Message):
   exceptionAuditLogLink = _messages.StringField(7)
   name = _messages.StringField(8)
   nonCompliantOrgPolicy = _messages.StringField(9)
-  orgPolicyConstraint = _messages.StringField(10)
-  remediation = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1ViolationRemediation', 11)
-  resolveTime = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  updateTime = _messages.StringField(14)
+  remediation = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1ViolationRemediation', 10)
+  resolveTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class GoogleCloudAssuredworkloadsV1beta1ViolationRemediation(_messages.Message):
@@ -692,6 +691,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       ISR_REGIONS: Assured Workloads for Israel
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
+      IL5: Information protection as per DoD IL5 requirements.
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -709,6 +709,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     ISR_REGIONS = 13
     ISR_REGIONS_AND_SUPPORT = 14
     CA_PROTECTED_B = 15
+    IL5 = 16
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given
@@ -831,9 +832,9 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceStatus(_messages.Messa
   r"""Represents the Compliance Status of this workload
 
   Fields:
-    acknowledgedViolationCount: Count of active Violations which are
-      acknowledged in the Workload.
-    activeViolationCount: Count of active Violations which haven't been
+    acknowledgedViolationCount: Number of current orgPolicy violations which
+      are acknowledged.
+    activeViolationCount: Number of current orgPolicy violations which are not
       acknowledged.
   """
 

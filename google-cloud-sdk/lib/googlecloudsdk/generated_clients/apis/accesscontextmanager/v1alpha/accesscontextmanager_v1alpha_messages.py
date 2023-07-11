@@ -979,7 +979,7 @@ class Condition(_messages.Message):
       accepted but "192.0.2.1/24" is not. Similarly, for IPv6, "2001:db8::/32"
       is accepted whereas "2001:db8::1/32" is not. The originating IP of a
       request must be in one of the listed subnets in order for this Condition
-      to be true. If empty, all IP addresses are allowed.
+      to be true. If this field is empty, all IP addresses are allowed.
     members: The request must be made by one of the provided user or service
       accounts. Groups are not supported. Syntax: `user:{emailid}`
       `serviceAccount:{emailid}` If not specified, a request may come from any
@@ -1109,7 +1109,7 @@ class EgressFrom(_messages.Message):
 
   Fields:
     identities: A list of identities that are allowed access through this
-      [EgressPolicy]. Should be in the format of email address. The email
+      EgressPolicy. Should be in the format of email address. The email
       address should represent individual user or service account only.
     identityType: Specifies the type of identities that are allowed access to
       outside the perimeter. If left unspecified, then members of `identities`
@@ -1190,15 +1190,17 @@ class EgressPolicy(_messages.Message):
 
 
 class EgressSource(_messages.Message):
-  r"""The source that EgressPolicy authorizes access from.
+  r"""The source that EgressPolicy authorizes access from inside the
+  ServicePerimeter to somewhere outside the ServicePerimeter boundaries.
 
   Fields:
-    accessLevel: An AccessLevel resource name that allow resources outside the
-      ServicePerimeters to be accessed from the inside. AccessLevels listed
-      must be in the same policy as this ServicePerimeter. Referencing a
-      nonexistent AccessLevel will cause an error. If no AccessLevel names are
-      listed, only resources within the perimeter can be accessed via Google
-      Cloud calls with request origins within the perimeter. Example:
+    accessLevel: An AccessLevel resource name that allows protected resources
+      inside the ServicePerimeters to access outside the ServicePerimeter
+      boundaries. AccessLevels listed must be in the same policy as this
+      ServicePerimeter. Referencing a nonexistent AccessLevel will cause an
+      error. If an AccessLevel name is not specified, only resources within
+      the perimeter can be accessed through Google Cloud calls with request
+      origins within the perimeter. Example:
       `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
       specified for `access_level`, then all EgressSources will be allowed.
   """
@@ -1409,22 +1411,23 @@ class IngressSource(_messages.Message):
   r"""The source that IngressPolicy authorizes access from.
 
   Fields:
-    accessLevel: An AccessLevel resource name that allow resources within the
+    accessLevel: An AccessLevel resource name that allows resources within the
       ServicePerimeters to be accessed from the internet. AccessLevels listed
       must be in the same policy as this ServicePerimeter. Referencing a
-      nonexistent AccessLevel will cause an error. If no AccessLevel names are
-      listed, resources within the perimeter can only be accessed via Google
-      Cloud calls with request origins within the perimeter. Example:
+      nonexistent AccessLevel will cause an error. If an AccessLevel
+      AccessLevel name is not specified, resources within the perimeter can
+      only be accessed through Google Cloud calls with request origins within
+      the perimeter. Example:
       `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
       specified for `access_level`, then all IngressSources will be allowed.
     resource: A Google Cloud resource that is allowed to ingress the
       perimeter. Requests from these resources are allowed to access perimeter
       data. Only projects and VPCs are allowed. Project format:
-      `projects/{project_number}`. VPC network format:
-      `//compute.googleapis.com/projects/{PROJECT_ID}/global/networks/{NAME}`.
-      The resource might be in any Google Cloud organization, not just the
-      organization that the perimeter is defined in. `*` is not allowed, the
-      case of allowing all Google Cloud resources only is not supported.
+      `projects/{project_number}`. VPC network format: `//compute.googleapis.c
+      om/projects/{PROJECT_ID}/global/networks/{NETWORK_NAME}`. The resource
+      might be in any Google Cloud organization, not just the organization
+      that the perimeter is defined in. `*` is not allowed, the case of
+      allowing all Google Cloud resources only is not supported.
   """
 
   accessLevel = _messages.StringField(1)
@@ -1912,7 +1915,7 @@ class ServicePerimeterConfig(_messages.Message):
       `AccessLevels` listed must be in the same policy as this
       `ServicePerimeter`. Referencing a nonexistent `AccessLevel` is a syntax
       error. If no `AccessLevel` names are listed, resources within the
-      perimeter can only be accessed via Google Cloud calls with request
+      perimeter can only be accessed through Google Cloud calls with request
       origins within the perimeter. Example:
       `"accessPolicies/MY_POLICY/accessLevels/MY_LEVEL"`. For Service
       Perimeter Bridge, must be empty.
@@ -1926,8 +1929,8 @@ class ServicePerimeterConfig(_messages.Message):
       empty for a perimeter bridge.
     resources: A list Google Cloud resources that are inside of the service
       perimeter. Only projects and VPCs are allowed. Project format:
-      `projects/{project_number}`. VPC network format:
-      `//compute.googleapis.com/projects/{PROJECT_ID}/global/networks/{NAME}`.
+      `projects/{project_number}`. VPC network format: `//compute.googleapis.c
+      om/projects/{PROJECT_ID}/global/networks/{NETWORK_NAME}`.
     restrictedServices: Google Cloud services that are subject to the Service
       Perimeter restrictions. For example, if `storage.googleapis.com` is
       specified, access to the storage buckets inside the perimeter must meet
@@ -2117,31 +2120,30 @@ class VpcAccessibleServices(_messages.Message):
 
 
 class VpcNetworkSource(_messages.Message):
-  r"""The network source of the request. Could be from a project or an IP
-  range with a Vpc Network.
+  r"""The originating network source in Google Cloud.
 
   Fields:
-    vpcSubnetwork: Sub networks within a VPC network.
+    vpcSubnetwork: Sub-segment ranges of a VPC network.
   """
 
   vpcSubnetwork = _messages.MessageField('VpcSubNetwork', 1)
 
 
 class VpcSubNetwork(_messages.Message):
-  r"""Subnet(s) inside of a Vpc Network.
+  r"""Sub-segment ranges inside of a VPC Network.
 
   Fields:
-    network: Required. Network name to be allowed by this Access Level.
-      Networks of foreign organizations requires `compute.network.get`
-      permission to be granted to caller. Format:
-      `//compute.googleapis.com/projects/{PROJECT_ID}/global/networks/{NAME}`
-      Example: `//compute.googleapis.com/projects/my-
-      project/global/networks/network-1`
-    vpcIpSubnetworks: CIDR block IP subnetwork specification. Must be IPv4.
-      Note that for a CIDR IP address block, the specified IP address portion
-      must be properly truncated (i.e. all the host bits must be zero) or the
-      input is considered malformed. For example, "192.0.2.0/24" is accepted
-      but "192.0.2.1/24" is not. If empty, all IP addresses are allowed.
+    network: Required. Network name. If the network is not part of the
+      organization, the `compute.network.get` permission must be granted to
+      the caller. Format: `//compute.googleapis.com/projects/{PROJECT_ID}/glob
+      al/networks/{NETWORK_NAME}` Example:
+      `//compute.googleapis.com/projects/my-project/global/networks/network-1`
+    vpcIpSubnetworks: CIDR block IP subnetwork specification. The IP address
+      must be an IPv4 address and can be a public or private IP address. Note
+      that for a CIDR IP address block, the specified IP address portion must
+      be properly truncated (i.e. all the host bits must be zero) or the input
+      is considered malformed. For example, "192.0.2.0/24" is accepted but
+      "192.0.2.1/24" is not. If empty, all IP addresses are allowed.
   """
 
   network = _messages.StringField(1)

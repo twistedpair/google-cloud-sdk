@@ -729,6 +729,7 @@ class Function(_messages.Message):
     labels: Labels associated with this Cloud Function.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
+    satisfiesPzs: Output only. Reserved for future use.
     serviceConfig: Describes the Service being deployed. Currently deploys
       services to Cloud Run (fully managed).
     state: Output only. State of the function.
@@ -802,12 +803,13 @@ class Function(_messages.Message):
   kmsKeyName = _messages.StringField(6)
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
-  serviceConfig = _messages.MessageField('ServiceConfig', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2alphaStateMessage', 11, repeated=True)
-  updateTime = _messages.StringField(12)
-  upgradeInfo = _messages.MessageField('UpgradeInfo', 13)
-  url = _messages.StringField(14)
+  satisfiesPzs = _messages.BooleanField(9)
+  serviceConfig = _messages.MessageField('ServiceConfig', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2alphaStateMessage', 12, repeated=True)
+  updateTime = _messages.StringField(13)
+  upgradeInfo = _messages.MessageField('UpgradeInfo', 14)
+  url = _messages.StringField(15)
 
 
 class GenerateDownloadUrlRequest(_messages.Message):
@@ -1796,8 +1798,6 @@ class RepoSource(_messages.Message):
       This must be a relative path. If a step's `dir` is specified and is an
       absolute path, this value is ignored for that step's execution. eg.
       helloworld (no leading slash allowed)
-    invertRegex: Only trigger a build if the revision regex does NOT match the
-      revision regex.
     projectId: ID of the project that owns the Cloud Source Repository. If
       omitted, the project ID requesting the build is assumed.
     repoName: Name of the Cloud Source Repository.
@@ -1809,10 +1809,9 @@ class RepoSource(_messages.Message):
   branchName = _messages.StringField(1)
   commitSha = _messages.StringField(2)
   dir = _messages.StringField(3)
-  invertRegex = _messages.BooleanField(4)
-  projectId = _messages.StringField(5)
-  repoName = _messages.StringField(6)
-  tagName = _messages.StringField(7)
+  projectId = _messages.StringField(4)
+  repoName = _messages.StringField(5)
+  tagName = _messages.StringField(6)
 
 
 class RollbackFunctionUpgradeTrafficRequest(_messages.Message):

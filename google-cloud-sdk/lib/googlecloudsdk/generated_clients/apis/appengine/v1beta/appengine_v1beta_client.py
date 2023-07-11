@@ -50,7 +50,6 @@ class AppengineV1beta(base_api.BaseApiClient):
     self.apps_services_versions = self.AppsServicesVersionsService(self)
     self.apps_services = self.AppsServicesService(self)
     self.apps = self.AppsService(self)
-    self.projects_locations_applications = self.ProjectsLocationsApplicationsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -1087,7 +1086,7 @@ class AppengineV1beta(base_api.BaseApiClient):
       r"""Creates an App Engine application for a Google Cloud Platform project. Required fields: id - The ID of the target Cloud Platform project. location - The region (https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.For more information about App Engine applications, see Managing Projects, Applications, and Billing (https://cloud.google.com/appengine/docs/standard/python/console/).
 
       Args:
-        request: (AppengineAppsCreateRequest) input message
+        request: (Application) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1101,10 +1100,10 @@ class AppengineV1beta(base_api.BaseApiClient):
         method_id='appengine.apps.create',
         ordered_params=[],
         path_params=[],
-        query_params=['parent'],
+        query_params=[],
         relative_path='v1beta/apps',
-        request_field='application',
-        request_type_name='AppengineAppsCreateRequest',
+        request_field='<request>',
+        request_type_name='Application',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -1186,97 +1185,6 @@ class AppengineV1beta(base_api.BaseApiClient):
         relative_path='v1beta/{+name}:repair',
         request_field='repairApplicationRequest',
         request_type_name='AppengineAppsRepairRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsApplicationsService(base_api.BaseApiService):
-    """Service class for the projects_locations_applications resource."""
-
-    _NAME = 'projects_locations_applications'
-
-    def __init__(self, client):
-      super(AppengineV1beta.ProjectsLocationsApplicationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates an App Engine application for a Google Cloud Platform project. Required fields: id - The ID of the target Cloud Platform project. location - The region (https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.For more information about App Engine applications, see Managing Projects, Applications, and Billing (https://cloud.google.com/appengine/docs/standard/python/console/).
-
-      Args:
-        request: (AppengineProjectsLocationsApplicationsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/applications',
-        http_method='POST',
-        method_id='appengine.projects.locations.applications.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1beta/{+parent}/applications',
-        request_field='application',
-        request_type_name='AppengineProjectsLocationsApplicationsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets information about an application.
-
-      Args:
-        request: (AppengineProjectsLocationsApplicationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Application) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}',
-        http_method='GET',
-        method_id='appengine.projects.locations.applications.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta/{+name}',
-        request_field='',
-        request_type_name='AppengineProjectsLocationsApplicationsGetRequest',
-        response_type_name='Application',
-        supports_download=False,
-    )
-
-    def Repair(self, request, global_params=None):
-      r"""Recreates the required App Engine features for the specified App Engine application, for example a Cloud Storage bucket or App Engine service account. Use this method if you receive an error message about a missing feature, for example, Error retrieving the App Engine service account. If you have deleted your App Engine service account, this will not be able to recreate it. Instead, you should attempt to use the IAM undelete API if possible at https://cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params=%7B"name"%3A"projects%2F-%2FserviceAccounts%2Funique_id"%2C"resource"%3A%7B%7D%7D . If the deletion was recent, the numeric ID can be found in the Cloud Console Activity Log.
-
-      Args:
-        request: (AppengineProjectsLocationsApplicationsRepairRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Repair')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Repair.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}:repair',
-        http_method='POST',
-        method_id='appengine.projects.locations.applications.repair',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta/{+name}:repair',
-        request_field='repairApplicationRequest',
-        request_type_name='AppengineProjectsLocationsApplicationsRepairRequest',
         response_type_name='Operation',
         supports_download=False,
     )

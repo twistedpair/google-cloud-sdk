@@ -9455,9 +9455,14 @@ class GoogleCloudDialogflowV2AutomatedAgentConfig(_messages.Message):
       For CX agents, use format `projects//locations//agents//environments/`.
       If environment is not specified, the default `draft` environment is
       used.
+    sessionTtl: Optional. Sets Dialogflow CX session life time. By default, a
+      Dialogflow CX session remains active and its data is stored for 30
+      minutes after the last request is sent for the session. This value
+      should be no longer than 1 day.
   """
 
   agent = _messages.StringField(1)
+  sessionTtl = _messages.StringField(2)
 
 
 class GoogleCloudDialogflowV2AutomatedAgentReply(_messages.Message):
@@ -10441,7 +10446,7 @@ class GoogleCloudDialogflowV2Document(_messages.Message):
       status can be tracked in `latest_reload_status`. If a reload fails, we
       will keep the document unchanged. If a reload fails with internal
       errors, the system will try to reload the document on the next day. If a
-      reload fails with non-retriable errors (e.g. PERMISION_DENIED), the
+      reload fails with non-retriable errors (e.g. PERMISSION_DENIED), the
       system will not try to reload the document anymore. You need to manually
       reload the document successfully by calling `ReloadDocument` and clear
       the errors.
@@ -11670,8 +11675,8 @@ class GoogleCloudDialogflowV2ImportDocumentsRequest(_messages.Message):
   Fields:
     documentTemplate: Required. Document template used for importing all the
       documents.
-    gcsSource: The Google Cloud Storage location for the documents. The path
-      can include a wildcard. These URIs may have the forms `gs:///`.
+    gcsSource: Optional. The Google Cloud Storage location for the documents.
+      The path can include a wildcard. These URIs may have the forms `gs:///`.
       `gs:////*.`.
     importGcsCustomMetadata: Whether to import custom metadata from Google
       Cloud Storage. Only valid when the document source is Google Cloud
@@ -14125,6 +14130,8 @@ class GoogleCloudDialogflowV2SuggestConversationSummaryRequest(_messages.Message
   r"""The request message for Conversations.SuggestConversationSummary.
 
   Fields:
+    assistQueryParams: Parameters for a human assist query. Only used for
+      POC/demo purpose.
     contextSize: Max number of messages prior to and including
       [latest_message] to use as context when compiling the suggestion. By
       default 500 and at most 1000.
@@ -14134,8 +14141,9 @@ class GoogleCloudDialogflowV2SuggestConversationSummaryRequest(_messages.Message
       `projects//locations//conversations//messages/`.
   """
 
-  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  latestMessage = _messages.StringField(2)
+  assistQueryParams = _messages.MessageField('GoogleCloudDialogflowV2AssistQueryParameters', 1)
+  contextSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  latestMessage = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowV2SuggestConversationSummaryResponse(_messages.Message):
@@ -17234,6 +17242,8 @@ class GoogleCloudDialogflowV2beta1SuggestionResult(_messages.Message):
       ARTICLE_SUGGESTION.
     suggestDialogflowAssistsResponse: SuggestDialogflowAssistsResponse if
       request is for DIALOGFLOW_ASSIST.
+    suggestEntityExtractionResponse: SuggestDialogflowAssistsResponse if
+      request is for ENTITY_EXTRACTION.
     suggestFaqAnswersResponse: SuggestFaqAnswersResponse if request is for
       FAQ_ANSWER.
     suggestSmartRepliesResponse: SuggestSmartRepliesResponse if request is for
@@ -17243,8 +17253,9 @@ class GoogleCloudDialogflowV2beta1SuggestionResult(_messages.Message):
   error = _messages.MessageField('GoogleRpcStatus', 1)
   suggestArticlesResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestArticlesResponse', 2)
   suggestDialogflowAssistsResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestDialogflowAssistsResponse', 3)
-  suggestFaqAnswersResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestFaqAnswersResponse', 4)
-  suggestSmartRepliesResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestSmartRepliesResponse', 5)
+  suggestEntityExtractionResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestDialogflowAssistsResponse', 4)
+  suggestFaqAnswersResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestFaqAnswersResponse', 5)
+  suggestSmartRepliesResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestSmartRepliesResponse', 6)
 
 
 class GoogleCloudDialogflowV2beta1WebhookRequest(_messages.Message):

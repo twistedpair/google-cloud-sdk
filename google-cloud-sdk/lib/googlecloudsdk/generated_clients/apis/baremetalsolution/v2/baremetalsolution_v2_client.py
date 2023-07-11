@@ -39,7 +39,6 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_locations_instanceProvisioningSettings = self.ProjectsLocationsInstanceProvisioningSettingsService(self)
     self.projects_locations_instanceQuotas = self.ProjectsLocationsInstanceQuotasService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_networkQuotas = self.ProjectsLocationsNetworkQuotasService(self)
@@ -56,43 +55,6 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     self.projects_locations_volumes = self.ProjectsLocationsVolumesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class ProjectsLocationsInstanceProvisioningSettingsService(base_api.BaseApiService):
-    """Service class for the projects_locations_instanceProvisioningSettings resource."""
-
-    _NAME = 'projects_locations_instanceProvisioningSettings'
-
-    def __init__(self, client):
-      super(BaremetalsolutionV2.ProjectsLocationsInstanceProvisioningSettingsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Fetch(self, request, global_params=None):
-      r"""Get instance provisioning settings for a given project. This is hidden method used by UI only.
-
-      Args:
-        request: (BaremetalsolutionProjectsLocationsInstanceProvisioningSettingsFetchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (FetchInstanceProvisioningSettingsResponse) The response message.
-      """
-      config = self.GetMethodConfig('Fetch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Fetch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instanceProvisioningSettings:fetch',
-        http_method='GET',
-        method_id='baremetalsolution.projects.locations.instanceProvisioningSettings.fetch',
-        ordered_params=['location'],
-        path_params=['location'],
-        query_params=[],
-        relative_path='v2/{+location}/instanceProvisioningSettings:fetch',
-        request_field='',
-        request_type_name='BaremetalsolutionProjectsLocationsInstanceProvisioningSettingsFetchRequest',
-        response_type_name='FetchInstanceProvisioningSettingsResponse',
-        supports_download=False,
-    )
 
   class ProjectsLocationsInstanceQuotasService(base_api.BaseApiService):
     """Service class for the projects_locations_instanceQuotas resource."""

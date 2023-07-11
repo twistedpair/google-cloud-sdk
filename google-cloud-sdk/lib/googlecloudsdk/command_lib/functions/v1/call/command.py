@@ -18,22 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import json
-
 from googlecloudsdk.api_lib.functions.v1 import util
-from googlecloudsdk.calliope import exceptions
-
-import six
 
 
 def Run(args):
   """Call a v1 Google Cloud Function."""
-  if args.data:
-    try:
-      json.loads(args.data)
-    except ValueError as e:
-      raise exceptions.InvalidArgumentException(
-          '--data', 'Is not a valid JSON: ' + six.text_type(e))
   client = util.GetApiClientInstance()
   function_ref = args.CONCEPTS.name.Parse()
   # Do not retry calling function - most likely user want to know that the

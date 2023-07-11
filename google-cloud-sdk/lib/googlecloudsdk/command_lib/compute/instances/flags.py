@@ -2781,7 +2781,10 @@ def AddShieldedInstanceIntegrityPolicyArgs(parser):
       help=help_text)
 
 
-def AddConfidentialComputeArgs(parser, support_confidential_compute_type=False):
+def AddConfidentialComputeArgs(
+    parser,
+    support_confidential_compute_type=False,
+    support_confidential_compute_type_tdx=False) -> None:
   """Adds flags for confidential compute for instance."""
   parser.add_argument(
       '--confidential-compute',
@@ -2794,19 +2797,35 @@ def AddConfidentialComputeArgs(parser, support_confidential_compute_type=False):
       virtualization feature for running confidential instances.
       """)
   if support_confidential_compute_type:
-    parser.add_argument(
-        '--confidential-compute-type',
-        dest='confidential_compute_type',
-        choices={
-            'SEV': 'Secure Encrypted Virtualization',
-            'SEV_SNP': 'Secure Encrypted Virtualization - Secure Nested Paging '
-        },
-        help="""\
+    choices = {
+        'SEV': 'Secure Encrypted Virtualization',
+        'SEV_SNP': 'Secure Encrypted Virtualization - Secure Nested Paging'
+    }
+    help_text = """\
         The instance boots with Confidential Computing enabled. Confidential
         Computing can be based on Secure Encrypted Virtualization (SEV) or Secure
         Encrypted Virtualization - Secure Nested Paging (SEV-SNP), both of which
         are AMD virtualization features for running confidential instances.
-        """)
+        """
+
+    # TODO(b/280820350): unhide when TDX enters private preview
+    # It is set in:
+    # - third_party/py/googlecloudsdk/surface/compute/instances/..
+    #    - create_with_container.py
+    #    - create.py
+    # along with tests that depend on it
+    if support_confidential_compute_type_tdx:
+      choices['TDX'] = 'Trust Domain eXtension'
+      help_text = ''.join((help_text, ("""\
+        Trust Domain eXtension based on Intel virtualization features for
+        running confidential instances is also supported.
+        """)))
+
+    parser.add_argument(
+        '--confidential-compute-type',
+        dest='confidential_compute_type',
+        choices=choices,
+        help=help_text)
 
 
 def AddHostnameArg(parser):

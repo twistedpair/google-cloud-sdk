@@ -267,9 +267,13 @@ class FileWildcardIterator(WildcardIterator):
       # For pattern like foo/bar/**, glob returns first path as 'foo/bar/'
       # even when foo/bar does not exist. So we skip non-existing paths.
       # Glob also returns intermediate directories if called with **. We skip
-      # them to be consistent with CloudWildcardIterator.
-      if self._path.endswith('**') and (not os.path.exists(path)
-                                        or os.path.isdir(path)):
+      # them to be consistent with CloudWildcardIterator. Preserved directory
+      # symlinks, however, should not be skipped.
+      if (
+          self._path.endswith('**')
+          and not (is_symlink and self._preserve_symlinks)
+          and (not os.path.exists(path) or os.path.isdir(path))
+      ):
         continue
 
       file_url = storage_url.FileUrl(path)
