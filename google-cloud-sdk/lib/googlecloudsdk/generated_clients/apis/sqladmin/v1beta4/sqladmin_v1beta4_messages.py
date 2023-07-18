@@ -353,9 +353,9 @@ class CloneContext(_messages.Message):
     pitrTimestampMs: Reserved for future use.
     pointInTime: Timestamp, if specified, identifies the time to which the
       source instance is cloned.
-    preferredZone: (Point-in-time recovery for PostgreSQL only) Clone to an
-      instance in the specified zone. If no zone is specified, clone to the
-      same zone as the source instance.
+    preferredZone: Optional. (Point-in-time recovery for PostgreSQL only)
+      Clone to an instance in the specified zone. If no zone is specified,
+      clone to the same zone as the source instance.
   """
 
   allocatedIpRange = _messages.StringField(1)
@@ -1261,13 +1261,15 @@ class ExportContext(_messages.Message):
       r"""Type of this bak file will be export, FULL or DIFF, SQL Server only
 
       Values:
-        BAK_TYPE_UNSPECIFIED: default type.
+        BAK_TYPE_UNSPECIFIED: Default type.
         FULL: Full backup.
         DIFF: Differential backup.
+        TLOG: SQL Server Transaction Log
       """
       BAK_TYPE_UNSPECIFIED = 0
       FULL = 1
       DIFF = 2
+      TLOG = 3
 
     bakType = _messages.EnumField('BakTypeValueValuesEnum', 1)
     copyOnly = _messages.BooleanField(2)
@@ -1634,6 +1636,10 @@ class ImportContext(_messages.Message):
         bring database online without downloading Bak content only one of
         "no_recovery" and "recovery_only" can be true otherwise error will
         return. Applies only to Cloud SQL for SQL Server.
+      stopAt: Optional. StopAt keyword for transaction log import, Applies to
+        Cloud SQL for SQL Server only
+      stopAtMark: Optional. StopAtMark keyword for transaction log import,
+        Applies to Cloud SQL for SQL Server only
       striped: Whether or not the backup set being restored is striped.
         Applies only to Cloud SQL for SQL Server.
     """
@@ -1642,13 +1648,15 @@ class ImportContext(_messages.Message):
       r"""Type of the bak content, FULL or DIFF.
 
       Values:
-        BAK_TYPE_UNSPECIFIED: default type.
+        BAK_TYPE_UNSPECIFIED: Default type.
         FULL: Full backup.
         DIFF: Differential backup.
+        TLOG: SQL Server Transaction Log
       """
       BAK_TYPE_UNSPECIFIED = 0
       FULL = 1
       DIFF = 2
+      TLOG = 3
 
     class EncryptionOptionsValue(_messages.Message):
       r"""A EncryptionOptionsValue object.
@@ -1671,7 +1679,9 @@ class ImportContext(_messages.Message):
     encryptionOptions = _messages.MessageField('EncryptionOptionsValue', 2)
     noRecovery = _messages.BooleanField(3)
     recoveryOnly = _messages.BooleanField(4)
-    striped = _messages.BooleanField(5)
+    stopAt = _messages.StringField(5)
+    stopAtMark = _messages.StringField(6)
+    striped = _messages.BooleanField(7)
 
   class CsvImportOptionsValue(_messages.Message):
     r"""Options for importing data as CSV.
@@ -2444,6 +2454,9 @@ class ReplicaConfiguration(_messages.Message):
   r"""Read-replica configuration for connecting to the primary instance.
 
   Fields:
+    cascadableReplica: Optional. Specifies if a SQL Server replica is a
+      cascadable replica. A cascadable replica is a SQL Server cross region
+      replica that supports replica(s) under it.
     failoverTarget: Specifies if the replica is the failover target. If the
       field is set to `true` the replica will be designated as a failover
       replica. In case the primary instance fails, the replica instance will
@@ -2459,9 +2472,10 @@ class ReplicaConfiguration(_messages.Message):
       a file named `master.info` in the data directory.
   """
 
-  failoverTarget = _messages.BooleanField(1)
-  kind = _messages.StringField(2)
-  mysqlReplicaConfiguration = _messages.MessageField('MySqlReplicaConfiguration', 3)
+  cascadableReplica = _messages.BooleanField(1)
+  failoverTarget = _messages.BooleanField(2)
+  kind = _messages.StringField(3)
+  mysqlReplicaConfiguration = _messages.MessageField('MySqlReplicaConfiguration', 4)
 
 
 class Reschedule(_messages.Message):

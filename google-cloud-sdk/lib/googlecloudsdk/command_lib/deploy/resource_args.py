@@ -30,16 +30,19 @@ def DeliveryPipelineAttributeConfig():
       name='delivery-pipeline',
       fallthroughs=[
           deps.PropertyFallthrough(
-              properties.FromString('deploy/delivery_pipeline'))
+              properties.FromString('deploy/delivery_pipeline')
+          )
       ],
-      help_text='The delivery pipeline associated with the {resource}. '
-      ' Alternatively, set the property [deploy/delivery-pipeline].')
+      help_text=(
+          'The delivery pipeline associated with the {resource}. '
+          ' Alternatively, set the property [deploy/delivery-pipeline].'
+      ),
+  )
 
 
-def AddReleaseResourceArg(parser,
-                          help_text=None,
-                          positional=False,
-                          required=True):
+def AddReleaseResourceArg(
+    parser, help_text=None, positional=False, required=True
+):
   """Add --release resource argument to the parser.
 
   Args:
@@ -84,8 +87,11 @@ def LocationAttributeConfig():
       fallthroughs=[
           deps.PropertyFallthrough(properties.FromString('deploy/region'))
       ],
-      help_text='The Cloud region for the {resource}. '
-      ' Alternatively, set the property [deploy/region].')
+      help_text=(
+          'The Cloud region for the {resource}. '
+          ' Alternatively, set the property [deploy/region].'
+      ),
+  )
 
 
 def AddLocationResourceArg(parser):
@@ -130,10 +136,9 @@ def GetTargetResourceSpec():
       disable_auto_completers=False)
 
 
-def AddTargetResourceArg(parser,
-                         help_text=None,
-                         positional=False,
-                         required=True):
+def AddTargetResourceArg(
+    parser, help_text=None, positional=False, required=True
+):
   """Add target resource argument to the parser.
 
   Args:
@@ -152,10 +157,9 @@ def AddTargetResourceArg(parser,
       plural=False).AddToParser(parser)
 
 
-def AddDeliveryPipelineResourceArg(parser,
-                                   help_text=None,
-                                   positional=False,
-                                   required=True):
+def AddDeliveryPipelineResourceArg(
+    parser, help_text=None, positional=False, required=True
+):
   """Adds --delivery-pipeline resource argument to the parser.
 
   Args:
@@ -204,10 +208,9 @@ def GetRolloutResourceSpec():
       disable_auto_completers=False)
 
 
-def AddRolloutResourceArg(parser,
-                          help_text=None,
-                          positional=False,
-                          required=True):
+def AddRolloutResourceArg(
+    parser, help_text=None, positional=False, required=True
+):
   """Add --rollout resource argument to the parser.
 
   Args:

@@ -72,6 +72,7 @@ class BareMetalAdminCluster(_messages.Message):
       alphanumerics between.
     bareMetalVersion: The Anthos clusters on bare metal version for the bare
       metal admin cluster.
+    binaryAuthorization: Binary Authorization related configurations.
     clusterOperations: Cluster operations configuration.
     controlPlane: Control plane configuration.
     createTime: Output only. The time at which this bare metal admin cluster
@@ -179,32 +180,33 @@ class BareMetalAdminCluster(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   bareMetalVersion = _messages.StringField(2)
-  clusterOperations = _messages.MessageField('BareMetalAdminClusterOperationsConfig', 3)
-  controlPlane = _messages.MessageField('BareMetalAdminControlPlaneConfig', 4)
-  createTime = _messages.StringField(5)
-  deleteTime = _messages.StringField(6)
-  description = _messages.StringField(7)
-  endpoint = _messages.StringField(8)
-  etag = _messages.StringField(9)
-  fleet = _messages.MessageField('Fleet', 10)
-  loadBalancer = _messages.MessageField('BareMetalAdminLoadBalancerConfig', 11)
-  localName = _messages.StringField(12)
-  maintenanceConfig = _messages.MessageField('BareMetalAdminMaintenanceConfig', 13)
-  maintenanceStatus = _messages.MessageField('BareMetalAdminMaintenanceStatus', 14)
-  name = _messages.StringField(15)
-  networkConfig = _messages.MessageField('BareMetalAdminNetworkConfig', 16)
-  nodeAccessConfig = _messages.MessageField('BareMetalAdminNodeAccessConfig', 17)
-  nodeConfig = _messages.MessageField('BareMetalAdminWorkloadNodeConfig', 18)
-  osEnvironmentConfig = _messages.MessageField('BareMetalAdminOsEnvironmentConfig', 19)
-  proxy = _messages.MessageField('BareMetalAdminProxyConfig', 20)
-  reconciling = _messages.BooleanField(21)
-  securityConfig = _messages.MessageField('BareMetalAdminSecurityConfig', 22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  status = _messages.MessageField('ResourceStatus', 24)
-  storage = _messages.MessageField('BareMetalAdminStorageConfig', 25)
-  uid = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
-  validationCheck = _messages.MessageField('ValidationCheck', 28)
+  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 3)
+  clusterOperations = _messages.MessageField('BareMetalAdminClusterOperationsConfig', 4)
+  controlPlane = _messages.MessageField('BareMetalAdminControlPlaneConfig', 5)
+  createTime = _messages.StringField(6)
+  deleteTime = _messages.StringField(7)
+  description = _messages.StringField(8)
+  endpoint = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  fleet = _messages.MessageField('Fleet', 11)
+  loadBalancer = _messages.MessageField('BareMetalAdminLoadBalancerConfig', 12)
+  localName = _messages.StringField(13)
+  maintenanceConfig = _messages.MessageField('BareMetalAdminMaintenanceConfig', 14)
+  maintenanceStatus = _messages.MessageField('BareMetalAdminMaintenanceStatus', 15)
+  name = _messages.StringField(16)
+  networkConfig = _messages.MessageField('BareMetalAdminNetworkConfig', 17)
+  nodeAccessConfig = _messages.MessageField('BareMetalAdminNodeAccessConfig', 18)
+  nodeConfig = _messages.MessageField('BareMetalAdminWorkloadNodeConfig', 19)
+  osEnvironmentConfig = _messages.MessageField('BareMetalAdminOsEnvironmentConfig', 20)
+  proxy = _messages.MessageField('BareMetalAdminProxyConfig', 21)
+  reconciling = _messages.BooleanField(22)
+  securityConfig = _messages.MessageField('BareMetalAdminSecurityConfig', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  status = _messages.MessageField('ResourceStatus', 25)
+  storage = _messages.MessageField('BareMetalAdminStorageConfig', 26)
+  uid = _messages.StringField(27)
+  updateTime = _messages.StringField(28)
+  validationCheck = _messages.MessageField('ValidationCheck', 29)
 
 
 class BareMetalAdminClusterOperationsConfig(_messages.Message):
@@ -568,6 +570,7 @@ class BareMetalCluster(_messages.Message):
       alphanumerics between.
     bareMetalVersion: Required. The Anthos clusters on bare metal version for
       your user cluster.
+    binaryAuthorization: Binary Authorization related configurations.
     clusterOperations: Cluster operations configuration.
     controlPlane: Required. Control plane configuration.
     createTime: Output only. The time when the bare metal user cluster was
@@ -675,32 +678,33 @@ class BareMetalCluster(_messages.Message):
   adminClusterName = _messages.StringField(2)
   annotations = _messages.MessageField('AnnotationsValue', 3)
   bareMetalVersion = _messages.StringField(4)
-  clusterOperations = _messages.MessageField('BareMetalClusterOperationsConfig', 5)
-  controlPlane = _messages.MessageField('BareMetalControlPlaneConfig', 6)
-  createTime = _messages.StringField(7)
-  deleteTime = _messages.StringField(8)
-  description = _messages.StringField(9)
-  endpoint = _messages.StringField(10)
-  etag = _messages.StringField(11)
-  fleet = _messages.MessageField('Fleet', 12)
-  loadBalancer = _messages.MessageField('BareMetalLoadBalancerConfig', 13)
-  localName = _messages.StringField(14)
-  maintenanceConfig = _messages.MessageField('BareMetalMaintenanceConfig', 15)
-  maintenanceStatus = _messages.MessageField('BareMetalMaintenanceStatus', 16)
-  name = _messages.StringField(17)
-  networkConfig = _messages.MessageField('BareMetalNetworkConfig', 18)
-  nodeAccessConfig = _messages.MessageField('BareMetalNodeAccessConfig', 19)
-  nodeConfig = _messages.MessageField('BareMetalWorkloadNodeConfig', 20)
-  osEnvironmentConfig = _messages.MessageField('BareMetalOsEnvironmentConfig', 21)
-  proxy = _messages.MessageField('BareMetalProxyConfig', 22)
-  reconciling = _messages.BooleanField(23)
-  securityConfig = _messages.MessageField('BareMetalSecurityConfig', 24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  status = _messages.MessageField('ResourceStatus', 26)
-  storage = _messages.MessageField('BareMetalStorageConfig', 27)
-  uid = _messages.StringField(28)
-  updateTime = _messages.StringField(29)
-  validationCheck = _messages.MessageField('ValidationCheck', 30)
+  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 5)
+  clusterOperations = _messages.MessageField('BareMetalClusterOperationsConfig', 6)
+  controlPlane = _messages.MessageField('BareMetalControlPlaneConfig', 7)
+  createTime = _messages.StringField(8)
+  deleteTime = _messages.StringField(9)
+  description = _messages.StringField(10)
+  endpoint = _messages.StringField(11)
+  etag = _messages.StringField(12)
+  fleet = _messages.MessageField('Fleet', 13)
+  loadBalancer = _messages.MessageField('BareMetalLoadBalancerConfig', 14)
+  localName = _messages.StringField(15)
+  maintenanceConfig = _messages.MessageField('BareMetalMaintenanceConfig', 16)
+  maintenanceStatus = _messages.MessageField('BareMetalMaintenanceStatus', 17)
+  name = _messages.StringField(18)
+  networkConfig = _messages.MessageField('BareMetalNetworkConfig', 19)
+  nodeAccessConfig = _messages.MessageField('BareMetalNodeAccessConfig', 20)
+  nodeConfig = _messages.MessageField('BareMetalWorkloadNodeConfig', 21)
+  osEnvironmentConfig = _messages.MessageField('BareMetalOsEnvironmentConfig', 22)
+  proxy = _messages.MessageField('BareMetalProxyConfig', 23)
+  reconciling = _messages.BooleanField(24)
+  securityConfig = _messages.MessageField('BareMetalSecurityConfig', 25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  status = _messages.MessageField('ResourceStatus', 27)
+  storage = _messages.MessageField('BareMetalStorageConfig', 28)
+  uid = _messages.StringField(29)
+  updateTime = _messages.StringField(30)
+  validationCheck = _messages.MessageField('ValidationCheck', 31)
 
 
 class BareMetalClusterOperationsConfig(_messages.Message):
@@ -1270,8 +1274,7 @@ class BareMetalParallelUpgradeConfig(_messages.Message):
   worker node pools.
 
   Fields:
-    concurrentNodes: Required. The maximum number of nodes that can be
-      upgraded at once. Defaults to 1.
+    concurrentNodes: The maximum number of nodes that can be upgraded at once.
     minimumAvailableNodes: The minimum number of nodes that should be healthy
       and available during an upgrade. If set to the default value of 0, it is
       possible that none of the nodes will be available during an upgrade.
@@ -1420,6 +1423,7 @@ class BareMetalStandaloneCluster(_messages.Message):
       (.), and alphanumerics between.
     bareMetalVersion: Required. The Anthos clusters on bare metal version for
       your standalone cluster.
+    binaryAuthorization: Binary Authorization related configurations.
     clusterOperations: Cluster operations configuration.
     controlPlane: Required. Control plane configuration.
     createTime: Output only. The time when the bare metal standalone cluster
@@ -1540,33 +1544,34 @@ class BareMetalStandaloneCluster(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   bareMetalVersion = _messages.StringField(2)
-  clusterOperations = _messages.MessageField('BareMetalStandaloneClusterOperationsConfig', 3)
-  controlPlane = _messages.MessageField('BareMetalStandaloneControlPlaneConfig', 4)
-  createTime = _messages.StringField(5)
-  deleteTime = _messages.StringField(6)
-  description = _messages.StringField(7)
-  endpoint = _messages.StringField(8)
-  etag = _messages.StringField(9)
-  fleet = _messages.MessageField('Fleet', 10)
-  loadBalancer = _messages.MessageField('BareMetalStandaloneLoadBalancerConfig', 11)
-  localName = _messages.StringField(12)
-  maintenanceConfig = _messages.MessageField('BareMetalStandaloneMaintenanceConfig', 13)
-  maintenanceStatus = _messages.MessageField('BareMetalStandaloneMaintenanceStatus', 14)
-  name = _messages.StringField(15)
-  networkConfig = _messages.MessageField('BareMetalStandaloneNetworkConfig', 16)
-  nodeAccessConfig = _messages.MessageField('BareMetalStandaloneNodeAccessConfig', 17)
-  nodeConfig = _messages.MessageField('BareMetalStandaloneWorkloadNodeConfig', 18)
-  osEnvironmentConfig = _messages.MessageField('BareMetalStandaloneOsEnvironmentConfig', 19)
-  profile = _messages.EnumField('ProfileValueValuesEnum', 20)
-  proxy = _messages.MessageField('BareMetalStandaloneProxyConfig', 21)
-  reconciling = _messages.BooleanField(22)
-  securityConfig = _messages.MessageField('BareMetalStandaloneSecurityConfig', 23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  status = _messages.MessageField('ResourceStatus', 25)
-  storage = _messages.MessageField('BareMetalStandaloneStorageConfig', 26)
-  uid = _messages.StringField(27)
-  updateTime = _messages.StringField(28)
-  validationCheck = _messages.MessageField('ValidationCheck', 29)
+  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 3)
+  clusterOperations = _messages.MessageField('BareMetalStandaloneClusterOperationsConfig', 4)
+  controlPlane = _messages.MessageField('BareMetalStandaloneControlPlaneConfig', 5)
+  createTime = _messages.StringField(6)
+  deleteTime = _messages.StringField(7)
+  description = _messages.StringField(8)
+  endpoint = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  fleet = _messages.MessageField('Fleet', 11)
+  loadBalancer = _messages.MessageField('BareMetalStandaloneLoadBalancerConfig', 12)
+  localName = _messages.StringField(13)
+  maintenanceConfig = _messages.MessageField('BareMetalStandaloneMaintenanceConfig', 14)
+  maintenanceStatus = _messages.MessageField('BareMetalStandaloneMaintenanceStatus', 15)
+  name = _messages.StringField(16)
+  networkConfig = _messages.MessageField('BareMetalStandaloneNetworkConfig', 17)
+  nodeAccessConfig = _messages.MessageField('BareMetalStandaloneNodeAccessConfig', 18)
+  nodeConfig = _messages.MessageField('BareMetalStandaloneWorkloadNodeConfig', 19)
+  osEnvironmentConfig = _messages.MessageField('BareMetalStandaloneOsEnvironmentConfig', 20)
+  profile = _messages.EnumField('ProfileValueValuesEnum', 21)
+  proxy = _messages.MessageField('BareMetalStandaloneProxyConfig', 22)
+  reconciling = _messages.BooleanField(23)
+  securityConfig = _messages.MessageField('BareMetalStandaloneSecurityConfig', 24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  status = _messages.MessageField('ResourceStatus', 26)
+  storage = _messages.MessageField('BareMetalStandaloneStorageConfig', 27)
+  uid = _messages.StringField(28)
+  updateTime = _messages.StringField(29)
+  validationCheck = _messages.MessageField('ValidationCheck', 30)
 
 
 class BareMetalStandaloneClusterOperationsConfig(_messages.Message):
@@ -2097,8 +2102,7 @@ class BareMetalStandaloneParallelUpgradeConfig(_messages.Message):
   settings for worker node pools.
 
   Fields:
-    concurrentNodes: Required. The maximum number of nodes that can be
-      upgraded at once.
+    concurrentNodes: The maximum number of nodes that can be upgraded at once.
     minimumAvailableNodes: The minimum number of nodes that should be healthy
       and available during an upgrade. If set to the default value of 0, it is
       possible that none of the nodes will be available during an upgrade.
@@ -2283,6 +2287,35 @@ class BareMetalWorkloadNodeConfig(_messages.Message):
 
   containerRuntime = _messages.EnumField('ContainerRuntimeValueValuesEnum', 1)
   maxPodsPerNode = _messages.IntegerField(2)
+
+
+class BinaryAuthorization(_messages.Message):
+  r"""Configuration for Binary Authorization.
+
+  Enums:
+    EvaluationModeValueValuesEnum: Mode of operation for binauthz policy
+      evaluation. If unspecified, defaults to DISABLED.
+
+  Fields:
+    evaluationMode: Mode of operation for binauthz policy evaluation. If
+      unspecified, defaults to DISABLED.
+  """
+
+  class EvaluationModeValueValuesEnum(_messages.Enum):
+    r"""Mode of operation for binauthz policy evaluation. If unspecified,
+    defaults to DISABLED.
+
+    Values:
+      EVALUATION_MODE_UNSPECIFIED: Default value
+      DISABLED: Disable BinaryAuthorization
+      PROJECT_SINGLETON_POLICY_ENFORCE: Enforce Kubernetes admission requests
+        with BinaryAuthorization using the project's singleton policy.
+    """
+    EVALUATION_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    PROJECT_SINGLETON_POLICY_ENFORCE = 2
+
+  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 1)
 
 
 class Binding(_messages.Message):
@@ -5955,10 +5988,13 @@ class VmwareAdminControlPlaneNodeConfig(_messages.Message):
     cpus: The number of vCPUs for the control-plane node of the admin cluster.
     memory: The number of mebibytes of memory for the control-plane node of
       the admin cluster.
+    replicas: The number of control plane nodes for this VMware admin cluster.
+      (default: 1 replica).
   """
 
   cpus = _messages.IntegerField(1)
   memory = _messages.IntegerField(2)
+  replicas = _messages.IntegerField(3)
 
 
 class VmwareAdminF5BigIpConfig(_messages.Message):
@@ -5976,6 +6012,17 @@ class VmwareAdminF5BigIpConfig(_messages.Message):
   address = _messages.StringField(1)
   partition = _messages.StringField(2)
   snatPool = _messages.StringField(3)
+
+
+class VmwareAdminHAControlPlaneConfig(_messages.Message):
+  r"""Specifies HA admin control plane config.
+
+  Fields:
+    controlPlaneIpBlock: Static IP addresses for the admin control plane
+      nodes.
+  """
+
+  controlPlaneIpBlock = _messages.MessageField('VmwareIpBlock', 1)
 
 
 class VmwareAdminLoadBalancerConfig(_messages.Message):
@@ -6034,6 +6081,7 @@ class VmwareAdminNetworkConfig(_messages.Message):
 
   Fields:
     dhcpIpConfig: Configuration settings for a DHCP IP configuration.
+    haControlPlaneConfig: Configuration for HA admin cluster control plane.
     hostConfig: Represents common network settings irrespective of the host's
       IP address.
     podAddressCidrBlocks: Required. All pods in the cluster are assigned an
@@ -6047,11 +6095,12 @@ class VmwareAdminNetworkConfig(_messages.Message):
   """
 
   dhcpIpConfig = _messages.MessageField('VmwareDhcpIpConfig', 1)
-  hostConfig = _messages.MessageField('VmwareHostConfig', 2)
-  podAddressCidrBlocks = _messages.StringField(3, repeated=True)
-  serviceAddressCidrBlocks = _messages.StringField(4, repeated=True)
-  staticIpConfig = _messages.MessageField('VmwareStaticIpConfig', 5)
-  vcenterNetwork = _messages.StringField(6)
+  haControlPlaneConfig = _messages.MessageField('VmwareAdminHAControlPlaneConfig', 2)
+  hostConfig = _messages.MessageField('VmwareHostConfig', 3)
+  podAddressCidrBlocks = _messages.StringField(4, repeated=True)
+  serviceAddressCidrBlocks = _messages.StringField(5, repeated=True)
+  staticIpConfig = _messages.MessageField('VmwareStaticIpConfig', 6)
+  vcenterNetwork = _messages.StringField(7)
 
 
 class VmwareAdminVCenterConfig(_messages.Message):
@@ -6308,7 +6357,7 @@ class VmwareControlPlaneNodeConfig(_messages.Message):
       a control plane for this VMware user cluster (default: 8192 MB memory).
     replicas: The number of control plane nodes for this VMware user cluster.
       (default: 1 replica).
-    vsphereConfig: Output only. Vsphere-specific config.
+    vsphereConfig: Vsphere-specific config.
   """
 
   autoResizeConfig = _messages.MessageField('VmwareAutoResizeConfig', 1)
@@ -6546,7 +6595,7 @@ class VmwareNodeConfig(_messages.Message):
     memoryMb: The megabytes of memory for each node in the node pool.
     replicas: The number of nodes in the node pool.
     taints: The initial taints assigned to nodes of this node pool.
-    vsphereConfig: Output only. Specifies the vSphere config for node pool.
+    vsphereConfig: Specifies the vSphere config for node pool.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

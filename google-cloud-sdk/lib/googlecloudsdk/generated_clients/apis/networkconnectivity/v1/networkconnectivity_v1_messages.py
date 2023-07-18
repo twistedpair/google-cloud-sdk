@@ -621,7 +621,7 @@ class Group(_messages.Message):
       ACCEPTING: The resource's accept operation is in progress.
       REJECTING: The resource's reject operation is in progress.
       UPDATING: The resource's update operation is in progress.
-      INACTIVE: The resource is inactive
+      INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
     """
@@ -731,7 +731,7 @@ class Hub(_messages.Message):
       ACCEPTING: The resource's accept operation is in progress.
       REJECTING: The resource's reject operation is in progress.
       UPDATING: The resource's update operation is in progress.
-      INACTIVE: The resource is inactive
+      INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
     """
@@ -2089,6 +2089,9 @@ class NetworkconnectivityProjectsLocationsServiceClassesDeleteRequest(_messages.
   object.
 
   Fields:
+    etag: Optional. The etag is computed by the server, and may be sent on
+      update and delete requests to ensure the client has an up-to-date value
+      before proceeding.
     name: Required. The name of the ServiceClass to delete.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -2103,8 +2106,9 @@ class NetworkconnectivityProjectsLocationsServiceClassesDeleteRequest(_messages.
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class NetworkconnectivityProjectsLocationsServiceClassesGetIamPolicyRequest(_messages.Message):
@@ -2266,6 +2270,9 @@ class NetworkconnectivityProjectsLocationsServiceConnectionMapsDeleteRequest(_me
   object.
 
   Fields:
+    etag: Optional. The etag is computed by the server, and may be sent on
+      update and delete requests to ensure the client has an up-to-date value
+      before proceeding.
     name: Required. The name of the ServiceConnectionMap to delete.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -2280,8 +2287,9 @@ class NetworkconnectivityProjectsLocationsServiceConnectionMapsDeleteRequest(_me
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class NetworkconnectivityProjectsLocationsServiceConnectionMapsGetIamPolicyRequest(_messages.Message):
@@ -2450,6 +2458,9 @@ class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesDeleteRequest
   object.
 
   Fields:
+    etag: Optional. The etag is computed by the server, and may be sent on
+      update and delete requests to ensure the client has an up-to-date value
+      before proceeding.
     name: Required. The name of the ServiceConnectionPolicy to delete.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -2464,8 +2475,9 @@ class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesDeleteRequest
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesGetIamPolicyRequest(_messages.Message):
@@ -2637,6 +2649,9 @@ class NetworkconnectivityProjectsLocationsServiceConnectionTokensDeleteRequest(_
   object.
 
   Fields:
+    etag: Optional. The etag is computed by the server, and may be sent on
+      update and delete requests to ensure the client has an up-to-date value
+      before proceeding.
     name: Required. The name of the ServiceConnectionToken to delete.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -2651,8 +2666,9 @@ class NetworkconnectivityProjectsLocationsServiceConnectionTokensDeleteRequest(_
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class NetworkconnectivityProjectsLocationsServiceConnectionTokensGetRequest(_messages.Message):
@@ -3275,7 +3291,7 @@ class Route(_messages.Message):
       ACCEPTING: The resource's accept operation is in progress.
       REJECTING: The resource's reject operation is in progress.
       UPDATING: The resource's update operation is in progress.
-      INACTIVE: The resource is inactive
+      INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
     """
@@ -3389,7 +3405,7 @@ class RouteTable(_messages.Message):
       ACCEPTING: The resource's accept operation is in progress.
       REJECTING: The resource's reject operation is in progress.
       UPDATING: The resource's update operation is in progress.
-      INACTIVE: The resource is inactive
+      INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
     """
@@ -3474,7 +3490,7 @@ class RoutingVPC(_messages.Message):
 
 
 class ServiceClass(_messages.Message):
-  r"""The ServiceClass resource. Next id: 8
+  r"""The ServiceClass resource. Next id: 9
 
   Messages:
     LabelsValue: User-defined labels.
@@ -3482,6 +3498,9 @@ class ServiceClass(_messages.Message):
   Fields:
     createTime: Output only. Time when the ServiceClass was created.
     description: A description of this resource.
+    etag: Optional. The etag is computed by the server, and may be sent on
+      update and delete requests to ensure the client has an up-to-date value
+      before proceeding.
     labels: User-defined labels.
     name: Immutable. The name of a ServiceClass resource. Format:
       projects/{project}/locations/{location}/serviceClasses/{service_class}
@@ -3520,15 +3539,16 @@ class ServiceClass(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  serviceClass = _messages.StringField(5)
-  serviceConnectionMaps = _messages.StringField(6, repeated=True)
-  updateTime = _messages.StringField(7)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  serviceClass = _messages.StringField(6)
+  serviceConnectionMaps = _messages.StringField(7, repeated=True)
+  updateTime = _messages.StringField(8)
 
 
 class ServiceConnectionMap(_messages.Message):
-  r"""The ServiceConnectionMap resource. Next id: 14
+  r"""The ServiceConnectionMap resource. Next id: 15
 
   Enums:
     InfrastructureValueValuesEnum: Output only. The infrastructure used for
@@ -3543,6 +3563,9 @@ class ServiceConnectionMap(_messages.Message):
       side.
     createTime: Output only. Time when the ServiceConnectionMap was created.
     description: A description of this resource.
+    etag: Optional. The etag is computed by the server, and may be sent on
+      update and delete requests to ensure the client has an up-to-date value
+      before proceeding.
     infrastructure: Output only. The infrastructure used for connections
       between consumers/producers.
     labels: User-defined labels.
@@ -3602,18 +3625,19 @@ class ServiceConnectionMap(_messages.Message):
   consumerPscConnections = _messages.MessageField('ConsumerPscConnection', 2, repeated=True)
   createTime = _messages.StringField(3)
   description = _messages.StringField(4)
-  infrastructure = _messages.EnumField('InfrastructureValueValuesEnum', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  producerPscConfigs = _messages.MessageField('ProducerPscConfig', 8, repeated=True)
-  serviceClass = _messages.StringField(9)
-  serviceClassUri = _messages.StringField(10)
-  token = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  etag = _messages.StringField(5)
+  infrastructure = _messages.EnumField('InfrastructureValueValuesEnum', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  producerPscConfigs = _messages.MessageField('ProducerPscConfig', 9, repeated=True)
+  serviceClass = _messages.StringField(10)
+  serviceClassUri = _messages.StringField(11)
+  token = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class ServiceConnectionPolicy(_messages.Message):
-  r"""The ServiceConnectionPolicy resource. Next id: 11
+  r"""The ServiceConnectionPolicy resource. Next id: 12
 
   Enums:
     InfrastructureValueValuesEnum: Output only. The type of underlying
@@ -3625,6 +3649,9 @@ class ServiceConnectionPolicy(_messages.Message):
   Fields:
     createTime: Output only. Time when the ServiceConnectionMap was created.
     description: A description of this resource.
+    etag: Optional. The etag is computed by the server, and may be sent on
+      update and delete requests to ensure the client has an up-to-date value
+      before proceeding.
     infrastructure: Output only. The type of underlying resources used to
       create the connection.
     labels: User-defined labels.
@@ -3685,18 +3712,19 @@ class ServiceConnectionPolicy(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  infrastructure = _messages.EnumField('InfrastructureValueValuesEnum', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  network = _messages.StringField(6)
-  pscConfig = _messages.MessageField('PscConfig', 7)
-  pscConnections = _messages.MessageField('PscConnection', 8, repeated=True)
-  serviceClass = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  etag = _messages.StringField(3)
+  infrastructure = _messages.EnumField('InfrastructureValueValuesEnum', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  pscConfig = _messages.MessageField('PscConfig', 8)
+  pscConnections = _messages.MessageField('PscConnection', 9, repeated=True)
+  serviceClass = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class ServiceConnectionToken(_messages.Message):
-  r"""The ServiceConnectionToken resource. Next id: 9
+  r"""The ServiceConnectionToken resource. Next id: 10
 
   Messages:
     LabelsValue: User-defined labels.
@@ -3704,6 +3732,9 @@ class ServiceConnectionToken(_messages.Message):
   Fields:
     createTime: Output only. Time when the ServiceConnectionToken was created.
     description: A description of this resource.
+    etag: Optional. The etag is computed by the server, and may be sent on
+      update and delete requests to ensure the client has an up-to-date value
+      before proceeding.
     expireTime: Output only. The time to which this token is valid.
     labels: User-defined labels.
     name: Immutable. The name of a ServiceConnectionToken. Format: projects/{p
@@ -3742,12 +3773,13 @@ class ServiceConnectionToken(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  expireTime = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  network = _messages.StringField(6)
-  token = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  etag = _messages.StringField(3)
+  expireTime = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  token = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -3798,12 +3830,12 @@ class Spoke(_messages.Message):
       the spoke.
     linkedRouterApplianceInstances: Router appliance instances that are
       associated with the spoke.
-    linkedVpcNetwork: VPC network that is associated with to the spoke.
+    linkedVpcNetwork: Optional. VPC network that is associated with the spoke.
     linkedVpnTunnels: VPN tunnels that are associated with the spoke.
     name: Immutable. The name of the spoke. Spoke names must be unique. They
       use the following form:
       `projects/{project_number}/locations/{region}/spokes/{spoke_id}`
-    reasons: The reasons for current state of the spoke.
+    reasons: Output only. The reasons for current state of the spoke.
     spokeType: Output only. The type of resource associated with the spoke.
     state: Output only. The current lifecycle state of this spoke.
     uniqueId: Output only. The Google-generated UUID for the spoke. This value
@@ -3842,7 +3874,7 @@ class Spoke(_messages.Message):
       ACCEPTING: The resource's accept operation is in progress.
       REJECTING: The resource's reject operation is in progress.
       UPDATING: The resource's update operation is in progress.
-      INACTIVE: The resource is inactive
+      INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
     """
@@ -3927,7 +3959,7 @@ class SpokeStateCount(_messages.Message):
       ACCEPTING: The resource's accept operation is in progress.
       REJECTING: The resource's reject operation is in progress.
       UPDATING: The resource's update operation is in progress.
-      INACTIVE: The resource is inactive
+      INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
     """

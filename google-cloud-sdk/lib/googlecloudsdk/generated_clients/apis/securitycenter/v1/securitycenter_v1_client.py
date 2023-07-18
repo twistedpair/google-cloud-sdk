@@ -1094,6 +1094,33 @@ class SecuritycenterV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Simulate(self, request, global_params=None):
+      r"""Simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+
+      Args:
+        request: (SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesSimulateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SimulateSecurityHealthAnalyticsCustomModuleResponse) The response message.
+      """
+      config = self.GetMethodConfig('Simulate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Simulate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/securityHealthAnalyticsSettings/customModules:simulate',
+        http_method='POST',
+        method_id='securitycenter.folders.securityHealthAnalyticsSettings.customModules.simulate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/customModules:simulate',
+        request_field='simulateSecurityHealthAnalyticsCustomModuleRequest',
+        request_type_name='SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesSimulateRequest',
+        response_type_name='SimulateSecurityHealthAnalyticsCustomModuleResponse',
+        supports_download=False,
+    )
+
     def Test(self, request, global_params=None):
       r"""Tests a specified or given SecurityHealthAnalyticsCustomModule.
 
@@ -2601,6 +2628,33 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule',
         request_type_name='SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesPatchRequest',
         response_type_name='GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule',
+        supports_download=False,
+    )
+
+    def Simulate(self, request, global_params=None):
+      r"""Simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+
+      Args:
+        request: (SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesSimulateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SimulateSecurityHealthAnalyticsCustomModuleResponse) The response message.
+      """
+      config = self.GetMethodConfig('Simulate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Simulate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityHealthAnalyticsSettings/customModules:simulate',
+        http_method='POST',
+        method_id='securitycenter.organizations.securityHealthAnalyticsSettings.customModules.simulate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/customModules:simulate',
+        request_field='simulateSecurityHealthAnalyticsCustomModuleRequest',
+        request_type_name='SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesSimulateRequest',
+        response_type_name='SimulateSecurityHealthAnalyticsCustomModuleResponse',
         supports_download=False,
     )
 
@@ -4209,6 +4263,33 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule',
         request_type_name='SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesPatchRequest',
         response_type_name='GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule',
+        supports_download=False,
+    )
+
+    def Simulate(self, request, global_params=None):
+      r"""Simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+
+      Args:
+        request: (SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesSimulateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SimulateSecurityHealthAnalyticsCustomModuleResponse) The response message.
+      """
+      config = self.GetMethodConfig('Simulate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Simulate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/securityHealthAnalyticsSettings/customModules:simulate',
+        http_method='POST',
+        method_id='securitycenter.projects.securityHealthAnalyticsSettings.customModules.simulate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/customModules:simulate',
+        request_field='simulateSecurityHealthAnalyticsCustomModuleRequest',
+        request_type_name='SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesSimulateRequest',
+        response_type_name='SimulateSecurityHealthAnalyticsCustomModuleResponse',
         supports_download=False,
     )
 

@@ -1028,12 +1028,13 @@ class QueuedResource(_messages.Message):
 
   Fields:
     bestEffort: The BestEffort tier.
-    guaranteed: The Guaranteed tier
+    guaranteed: The Guaranteed tier.
     name: Output only. Immutable. The name of the QueuedResource.
     queueingPolicy: The queueing policy of the QueuedRequest.
     reservationName: Name of the reservation in which the resource should be
       provisioned. Format:
       projects/{project}/locations/{zone}/reservations/{reservation}
+    spot: Optional. The Spot tier.
     state: Output only. State of the QueuedResource request.
     tpu: Defines a TPU resource.
     trafficConfig: Network traffic configuration.
@@ -1044,9 +1045,10 @@ class QueuedResource(_messages.Message):
   name = _messages.StringField(3)
   queueingPolicy = _messages.MessageField('QueueingPolicy', 4)
   reservationName = _messages.StringField(5)
-  state = _messages.MessageField('QueuedResourceState', 6)
-  tpu = _messages.MessageField('Tpu', 7)
-  trafficConfig = _messages.MessageField('TrafficConfig', 8)
+  spot = _messages.MessageField('Spot', 6)
+  state = _messages.MessageField('QueuedResourceState', 7)
+  tpu = _messages.MessageField('Tpu', 8)
+  trafficConfig = _messages.MessageField('TrafficConfig', 9)
 
 
 class QueuedResourceState(_messages.Message):
@@ -1301,6 +1303,10 @@ class SliceToSliceAdjacencyList(_messages.Message):
   """
 
   srcTraffic = _messages.MessageField('SrcSliceTraffic', 1, repeated=True)
+
+
+class Spot(_messages.Message):
+  r"""Spot tier definition."""
 
 
 class SrcSliceTraffic(_messages.Message):

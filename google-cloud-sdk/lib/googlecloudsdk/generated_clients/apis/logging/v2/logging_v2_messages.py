@@ -35,7 +35,7 @@ class AlertingQueryStep(_messages.Message):
   Fields:
     booleanCondition: A test representing the boolean value of a column.
     partitionColumns: Optional. The list of columns to GROUP BY in the
-      generated SQL.
+      generated SQL. NOTE: partition columns are not yet supported.
     stringCondition: A test representing a comparison against a string.
     thresholdCondition: A test representing a comparison against a threshold.
   """
@@ -93,7 +93,8 @@ class BooleanTest(_messages.Message):
     trigger: Optional. The number/percent of rows that must match in order for
       the result set (partition set) to be considered in violation. If
       unspecified, then the result set (partition set) will be in violation if
-      a single row matches.
+      a single row matches.NOTE: Triggers are not yet supported for
+      BooleanTest.
   """
 
   booleanColumn = _messages.StringField(1)
@@ -111,8 +112,11 @@ class Breakdown(_messages.Message):
   these measures will contain a subset of the values in "foo".
 
   Enums:
-    SortOrderValueValuesEnum: Optional. The sort order. If limit is not zero,
-      this may not be set to SORT_ORDER_NONE.
+    SortOrderValueValuesEnum: Optional. The ordering that defines the behavior
+      of limit. If limit is not zero, this may not be set to
+      SORT_ORDER_NONE.Note that this will not control the ordering of the rows
+      in the result table in any useful way. Use the top-level sort ordering
+      for that purpose.
 
   Fields:
     column: Required. The name of the column containing the breakdown values.
@@ -127,13 +131,17 @@ class Breakdown(_messages.Message):
     sortAggregation: Optional. The aggregation to apply to the measure values
       when choosing which breakdowns to generate. If sort_order is
       SORT_ORDER_NONE, this is not used.
-    sortOrder: Optional. The sort order. If limit is not zero, this may not be
-      set to SORT_ORDER_NONE.
+    sortOrder: Optional. The ordering that defines the behavior of limit. If
+      limit is not zero, this may not be set to SORT_ORDER_NONE.Note that this
+      will not control the ordering of the rows in the result table in any
+      useful way. Use the top-level sort ordering for that purpose.
   """
 
   class SortOrderValueValuesEnum(_messages.Enum):
-    r"""Optional. The sort order. If limit is not zero, this may not be set to
-    SORT_ORDER_NONE.
+    r"""Optional. The ordering that defines the behavior of limit. If limit is
+    not zero, this may not be set to SORT_ORDER_NONE.Note that this will not
+    control the ordering of the rows in the result table in any useful way.
+    Use the top-level sort ordering for that purpose.
 
     Values:
       SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
@@ -229,22 +237,48 @@ class ChartingQueryStep(_messages.Message):
   r"""A query step defined as a set of charting configuration options. This
   may not be used as the first step in a query.
 
+  Enums:
+    SortOrderValueValuesEnum: Optional. The sort order that controls the final
+      results.
+
   Fields:
-    breakdowns: The breakdowns for the measures of the chart. A breakdown
-      turns a single measure into multiple effective measures, each one
-      associated with a single value from the breakdown column.
-    dimensions: The dimension columns. How many dimensions to choose and how
-      they're configured will depend on the chart type. A dimension is the
-      labels for the data; e.g., the X axis for a line graph or the segment
-      labels for a pie chart.
-    measures: The measures to be displayed within the chart. A measure is a
-      data set to be displayed; e.g., a line on a line graph, a set of bars on
-      a bar graph, or the segment widths on a pie chart.
+    breakdowns: Optional. The breakdowns for the measures of the chart. A
+      breakdown turns a single measure into multiple effective measures, each
+      one associated with a single value from the breakdown column.
+    dimensions: Required. The dimension columns. How many dimensions to choose
+      and how they're configured will depend on the chart type. A dimension is
+      the labels for the data; e.g., the X axis for a line graph or the
+      segment labels for a pie chart.
+    measures: Required. The measures to be displayed within the chart. A
+      measure is a data set to be displayed; e.g., a line on a line graph, a
+      set of bars on a bar graph, or the segment widths on a pie chart.
+    sortColumn: Optional. The column name to sort the results on. This may be
+      set to one of the dimension columns or left empty, which is equivalent.
+      If no breakdowns are requested, it may be set to any measure column; if
+      breakdowns are requested, sorting by measures is not supported. If
+      sort_order is SORT_ORDER_NONE, this value is not used.
+    sortOrder: Optional. The sort order that controls the final results.
   """
+
+  class SortOrderValueValuesEnum(_messages.Enum):
+    r"""Optional. The sort order that controls the final results.
+
+    Values:
+      SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
+      SORT_ORDER_NONE: No sorting will be applied.
+      SORT_ORDER_ASCENDING: The lowest-valued entries will be selected.
+      SORT_ORDER_DESCENDING: The highest-valued entries will be selected.
+    """
+    SORT_ORDER_UNSPECIFIED = 0
+    SORT_ORDER_NONE = 1
+    SORT_ORDER_ASCENDING = 2
+    SORT_ORDER_DESCENDING = 3
 
   breakdowns = _messages.MessageField('Breakdown', 1, repeated=True)
   dimensions = _messages.MessageField('Dimension', 2, repeated=True)
   measures = _messages.MessageField('Measure', 3, repeated=True)
+  sortColumn = _messages.StringField(4)
+  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 5)
 
 
 class CmekSettings(_messages.Message):
@@ -438,8 +472,11 @@ class Dimension(_messages.Message):
   containing the cross-product of the defined dimensions.
 
   Enums:
-    SortOrderValueValuesEnum: Optional. The sort order. If limit is not zero,
-      this may not be set to SORT_ORDER_NONE.
+    SortOrderValueValuesEnum: Optional. The ordering that defines the behavior
+      of limit. If limit is not zero, this may not be set to
+      SORT_ORDER_NONE.Note that this will not control the ordering of the rows
+      in the result table in any useful way. Use the top-level sort ordering
+      for that purpose.
 
   Fields:
     column: Required. The column name within the output of the previous step
@@ -451,14 +488,18 @@ class Dimension(_messages.Message):
       dimension column or any measure column. If the field is empty, it will
       sort on the dimension column. If sort_order is SORT_ORDER_NONE, this
       value is not used.
-    sortOrder: Optional. The sort order. If limit is not zero, this may not be
-      set to SORT_ORDER_NONE.
+    sortOrder: Optional. The ordering that defines the behavior of limit. If
+      limit is not zero, this may not be set to SORT_ORDER_NONE.Note that this
+      will not control the ordering of the rows in the result table in any
+      useful way. Use the top-level sort ordering for that purpose.
     timeBinSize: Optional. Used for a Timestamp column.
   """
 
   class SortOrderValueValuesEnum(_messages.Enum):
-    r"""Optional. The sort order. If limit is not zero, this may not be set to
-    SORT_ORDER_NONE.
+    r"""Optional. The ordering that defines the behavior of limit. If limit is
+    not zero, this may not be set to SORT_ORDER_NONE.Note that this will not
+    control the ordering of the rows in the result table in any useful way.
+    Use the top-level sort ordering for that purpose.
 
     Values:
       SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
@@ -5997,8 +6038,7 @@ class Measure(_messages.Message):
 
   Fields:
     aggregation: The aggregation to apply to the input column. Required if
-      binning is enabled on the dimension. If binning is not enabled, this
-      value is ignored.
+      binning is enabled on the dimension.
     column: Required. The column name within the output of the previous step
       to use. May be the same column as the dimension. May be left empty if
       the aggregation is set to "count" (but not "count-distinct" or "count-
@@ -6976,7 +7016,8 @@ class QueryStepAggregation(_messages.Message):
       distinct" - Generates COUNT(DISTINCT). "count-distinct-approx" -
       Generates APPROX_COUNT_DISTINCT(). "max" - Generates MAX(). Applies only
       to numeric values. "min" - Generates MIN(). Applies only to numeric
-      values. "sum" - Generates SUM(). Applies only to numeric values.
+      values. "sum" - Generates SUM(). Applies only to numeric values. "none",
+      "" - Equivalent to no aggregation.
   """
 
   parameters = _messages.MessageField('Parameter', 1, repeated=True)
@@ -7439,7 +7480,8 @@ class StringArrayValue(_messages.Message):
 
 
 class StringTest(_messages.Message):
-  r"""A test that compares a string column against a string to match.
+  r"""A test that compares a string column against a string to match. NOTE:
+  StringTest is not yet supported.
 
   Enums:
     ComparisonValueValuesEnum: Required. The comparison operator to use.
@@ -7605,7 +7647,8 @@ class TailLogEntriesResponse(_messages.Message):
 
 
 class ThresholdTest(_messages.Message):
-  r"""A test that compares some LHS against a threshold.
+  r"""A test that compares some LHS against a threshold. NOTE: Only
+  RowCountThreshold is currently supported.
 
   Enums:
     ComparisonValueValuesEnum: Required. The comparison to be applied in the

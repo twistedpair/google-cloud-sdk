@@ -28,6 +28,7 @@ from googlecloudsdk.calliope.concepts import util as resource_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.command_lib.util.apis import update_args
+from googlecloudsdk.command_lib.util.apis import update_resource_args
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
@@ -343,7 +344,7 @@ class Argument(YAMLArgument):
 
   def _GenerateUpdateFlags(self, message):
     """Creates update flags generator using aptiools message."""
-    return update_args.UpdateArgumentGenerator.FromArgData(self, message)
+    return update_args.UpdateBasicArgumentGenerator.FromArgData(self, message)
 
   def _ParseUpdateArgsFromNamespace(self, namespace, message):
     """Parses update flags and returns modified apitools message field."""
@@ -434,6 +435,7 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
         'required': data.get('required', True),
         'repeated': data.get('repeated', False),
         'request_api_version': api_version,
+        'clearable': data.get('clearable', False),
     }
 
     if 'resources' in data['resource_spec']:
@@ -446,7 +448,7 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
                display_name_hook=None, request_id_field=None,
                resource_method_params=None, parse_resource_into_request=True,
                use_relative_name=True, override_resource_collection=False,
-               required=True, repeated=False, **unused_kwargs):
+               required=True, repeated=False, clearable=False, **unused_kwargs):
     self.flag_name_override = arg_name
     self.group_help = group_help
     self.is_positional = is_positional
@@ -463,6 +465,7 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
     self.override_resource_collection = override_resource_collection
     self.required = required
     self.repeated = repeated
+    self.clearable = clearable
 
     # All resource spec types have these values
     self.name = data['name']
@@ -499,7 +502,7 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
       The parsed resource ref or None if no resource arg was generated for this
       method.
     """
-    anchor = self._GetAnchorArgName(method)
+    anchor = self.GetAnchorArgName(method)
 
     # If surrounding argument group is not required, only parse argument
     # if the anchor is specified. Otherwise, user will receive some unncessary
@@ -527,7 +530,7 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
     count = 2 if self.repeated else 1
     return text.Pluralize(count, name, plural_name)
 
-  def _GetAnchorArgName(self, method=None):
+  def GetAnchorArgName(self, method=None):
     """Get the anchor argument name for the resource spec."""
     resource_spec = self._GenerateResourceSpec(
         method and method.resource_argument_collection)
@@ -556,7 +559,9 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
   def _GetResourceMap(self, ref):
     message_resource_map = {}
     for message_field_name, param_str in self.resource_method_params.items():
-      if isinstance(ref, list):
+      if ref is None:
+        values = None
+      elif isinstance(ref, list):
         values = [util.FormatResourceAttrStr(param_str, r) for r in ref]
       else:
         values = util.FormatResourceAttrStr(param_str, ref)
@@ -582,7 +587,8 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
     return command_level_fallthroughs
 
   def _GenerateConceptParser(self, method, resource_spec, attribute_names,
-                             repeated=False, shared_resource_flags=None):
+                             repeated=False, shared_resource_flags=None,
+                             anchor_arg_name=None):
     """Generates a ConceptParser from YAMLConceptArgument.
 
     Args:
@@ -591,6 +597,7 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
       attribute_names: names of resource attributes
       repeated: bool, whether or not the resource arg should be plural
       shared_resource_flags: [string], list of flags being generated elsewhere
+      anchor_arg_name: string | None, anchor arg name
 
     Returns:
       ConceptParser that will be added to the parser.
@@ -603,7 +610,8 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
         for n in ignored_fields if n in attribute_names
     }
 
-    anchor_arg_name = self._GetAnchorArgName(method)
+    if not anchor_arg_name:
+      anchor_arg_name = self.GetAnchorArgName(method)
 
     command_level_fallthroughs = {}
     arg_fallthroughs = self.command_level_fallthroughs.copy()
@@ -717,18 +725,58 @@ class YAMLResourceArgument(YAMLConceptArgument):
 
     return True
 
-  def Generate(self, method, message, shared_resource_flags=None):
+  def _GenerateUpdateFlags(self, method, shared_resource_flags=None):
+    """Creates update flags generator using aptiools message."""
+    return update_resource_args.UpdateResourceArgumentGenerator.FromArgData(
+        self, method, shared_resource_flags)
+
+  def _ParseUpdateArgsFromNamespace(self, method, namespace, message):
+    """Parses update flags and returns modified apitools message field."""
+    return self._GenerateUpdateFlags(method).Parse(namespace, message)
+
+  def GenerateResourceArg(
+      self, method, anchor_arg_name=None, shared_resource_flags=None):
     resource_spec = self._GenerateResourceSpec(
         method and method.resource_argument_collection)
 
     return self._GenerateConceptParser(
         method, resource_spec, self.attribute_names,
-        self.repeated, shared_resource_flags)
+        self.repeated, shared_resource_flags, anchor_arg_name)
+
+  def Generate(self, method, unused_message, shared_resource_flags=None):
+    """Generates and returns resource argument.
+
+    Args:
+      method: registry.APIMethod, used to generate other arguments.
+      unused_message: The API message, None for non-resource args.
+      shared_resource_flags: [string], list of flags being generated elsewhere.
+
+    Returns:
+      Resource argument.
+    """
+    if self.clearable:
+      return self._GenerateUpdateFlags(method, shared_resource_flags).Generate()
+
+    return self.GenerateResourceArg(
+        method, shared_resource_flags=shared_resource_flags)
 
   def Parse(self, method, message, namespace, group_required=True):
-    ref = self.ParseResourceArg(method, namespace, group_required)
-    if not self.parse_resource_into_request or not ref:
-      return message
+    """Sets the argument message value, if any, from the parsed args.
+
+    Args:
+      method: registry.APIMethod, used to parse other arguments.
+      message: The API message, None for non-resource args.
+      namespace: The parsed command line argument namespace.
+      group_required: bool, whether parent argument group is required.
+        Unused here.
+    """
+    if self.clearable:
+      ref = self._ParseUpdateArgsFromNamespace(method, namespace, message)
+    else:
+      ref = self.ParseResourceArg(method, namespace, group_required)
+
+    if not self.parse_resource_into_request or (not ref and not self.clearable):
+      return
 
     # For each method path field, get the value from the resource reference.
     arg_utils.ParseResourceIntoMessage(

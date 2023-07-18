@@ -1030,9 +1030,9 @@ class ExecuteSqlRequest(_messages.Message):
 
   Fields:
     dataBoostEnabled: If this is for a partitioned query and this field is set
-      to `true`, the request will be executed via Spanner independent compute
-      resources. If the field is set to `true` but the request does not set
-      `partition_token`, the API will return an `INVALID_ARGUMENT` error.
+      to `true`, the request is executed with Spanner Data Boost independent
+      compute resources. If the field is set to `true` but the request does
+      not set `partition_token`, the API returns an `INVALID_ARGUMENT` error.
     directedReadOptions: Directed read options for this request.
     paramTypes: It is not always possible for Cloud Spanner to infer the right
       SQL type from a JSON value. For example, values of type `BYTES` and
@@ -3186,9 +3186,9 @@ class ReadRequest(_messages.Message):
     columns: Required. The columns of table to be returned for each row
       matching this request.
     dataBoostEnabled: If this is for a partitioned read and this field is set
-      to `true`, the request will be executed via Spanner independent compute
-      resources. If the field is set to `true` but the request does not set
-      `partition_token`, the API will return an `INVALID_ARGUMENT` error.
+      to `true`, the request is executed with Spanner Data Boost independent
+      compute resources. If the field is set to `true` but the request does
+      not set `partition_token`, the API returns an `INVALID_ARGUMENT` error.
     directedReadOptions: Directed read options for this request.
     index: If non-empty, the name of an index on table. This index is used
       instead of the table primary key when interpreting key_set and sorting
@@ -5820,11 +5820,15 @@ class Type(_messages.Message):
         of this type should be treated as PostgreSQL JSONB values. Currently
         this annotation is always needed for JSON when a client interacts with
         PostgreSQL-enabled Spanner databases.
+      PG_OID: PostgreSQL compatible OID type. This annotation can be used by a
+        client interacting with PostgreSQL-enabled Spanner database to specify
+        that a value should be treated using the semantics of the OID type.
     """
     TYPE_ANNOTATION_CODE_UNSPECIFIED = 0
     INT32 = 1
     PG_NUMERIC = 2
     PG_JSONB = 3
+    PG_OID = 4
 
   arrayElementType = _messages.MessageField('Type', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)

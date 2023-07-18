@@ -661,7 +661,16 @@ def AddTriggerFlagGroup(parser):
       help="""\
       The Eventarc matching criteria for the trigger in path pattern format.
       The criteria can be specified as a single comma-separated argument or as
-      multiple arguments. This is only relevant when `--gen2` is provided.""",
+      multiple arguments. This is only relevant when `--gen2` is provided.
+
+      The provided attribute/value pair will be used with the
+      `match-path-pattern` operator to configure the trigger, see
+      https://cloud.google.com/eventarc/docs/reference/rest/v1/projects.locations.triggers#eventfilter
+      and http://cloud/eventarc/docs/path-patterns for more details about on
+      how to construct path patterns.
+
+      For example, to filter on events for Compute Engine VMs in a given zone:
+      `--trigger-event-filters-path-pattern=resourceName='/projects/*/zones/us-central1-a/instances/*'""",
   )
 
   trigger_provider_spec_group = trigger_group.add_argument_group()

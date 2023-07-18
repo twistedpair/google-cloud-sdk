@@ -113,7 +113,7 @@ class Application(_messages.Message):
 
 
 class ApplicationStatus(_messages.Message):
-  r"""Status of the application. Next tag: 7
+  r"""Status of the application.
 
   Messages:
     AnnotationsValue: Unstructured key value map that may be set by external
@@ -122,7 +122,8 @@ class ApplicationStatus(_messages.Message):
       annotations' namespacing, limits, and rules. More info:
       http://kubernetes.io/docs/user-guide/annotations
     ResourcesValue: The map of resource status where the key is the name of
-      resources and the value is the resource status.
+      resources and the value is the resource status. Deprecated: use
+      resource_statuses instead.
 
   Fields:
     annotations: Unstructured key value map that may be set by external tools
@@ -139,8 +140,11 @@ class ApplicationStatus(_messages.Message):
       us`
     reconciling: Output only. Indicates whether the resource's reconciliation
       is still in progress.
+    resourceStatuses: Output only. The status of the resources in this
+      application.
     resources: The map of resource status where the key is the name of
-      resources and the value is the resource status.
+      resources and the value is the resource status. Deprecated: use
+      resource_statuses instead.
     updateTime: Output only. Time at which the status was last updated.
   """
 
@@ -176,7 +180,8 @@ class ApplicationStatus(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourcesValue(_messages.Message):
     r"""The map of resource status where the key is the name of resources and
-    the value is the resource status.
+    the value is the resource status. Deprecated: use resource_statuses
+    instead.
 
     Messages:
       AdditionalProperty: An additional property for a ResourcesValue object.
@@ -204,8 +209,9 @@ class ApplicationStatus(_messages.Message):
   etag = _messages.StringField(4)
   name = _messages.StringField(5)
   reconciling = _messages.BooleanField(6)
-  resources = _messages.MessageField('ResourcesValue', 7)
-  updateTime = _messages.StringField(8)
+  resourceStatuses = _messages.MessageField('ResourceStatus', 7, repeated=True)
+  resources = _messages.MessageField('ResourcesValue', 8)
+  updateTime = _messages.StringField(9)
 
 
 class Binding(_messages.Message):
@@ -1237,20 +1243,32 @@ class ResourceStatus(_messages.Message):
   Enums:
     StateValueValuesEnum: The enum state of the resource.
 
+  Messages:
+    ExtraDetailsValue: Extra details of the resource that are needed for the
+      users to make use of the resources, such as IP Address of GCLB.
+
   Fields:
-    bindingStatus: The binding status related to this resource.
+    bindingStatus: The binding status related to this resource. Deprecated:
+      it's not implemented.
     consoleLink: Pantheon link for the resource. For example, the custom
       domain will link to the GCLB page.
     diverged: Indicates that a child component of this resource has been
-      altered and may not match the expected state.
-    firebaseHostingDetails: Details for Firebase Hosting resource.
+      altered and may not match the expected state. Deprecated: it's not
+      implemented.
+    extraDetails: Extra details of the resource that are needed for the users
+      to make use of the resources, such as IP Address of GCLB.
+    firebaseHostingDetails: Details for Firebase Hosting resource. Deprecated:
+      use extra_details instead.
+    id: ID of the resource.
     reason: The reason why this resource is in the current state.
     resourceComponentStatuses: Repeated field with status per component
       created for this resource.
     resourceName: Name of the resource, pulled from the Application Config.
-    routerDetails: Detail Status of Router resource.
+      Deprecated: use the id field instead.
+    routerDetails: Detail Status of Router resource. Deprecated: use
+      extra_details instead.
     state: The enum state of the resource.
-    type: Type of resource.
+    type: Type of resource. Deprecated: use the id field instead.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1278,16 +1296,44 @@ class ResourceStatus(_messages.Message):
     NOT_READY = 5
     NOT_DEPLOYED = 6
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtraDetailsValue(_messages.Message):
+    r"""Extra details of the resource that are needed for the users to make
+    use of the resources, such as IP Address of GCLB.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtraDetailsValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtraDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   bindingStatus = _messages.MessageField('BindingStatus', 1, repeated=True)
   consoleLink = _messages.StringField(2)
   diverged = _messages.BooleanField(3)
-  firebaseHostingDetails = _messages.MessageField('FirebaseHostingStatus', 4)
-  reason = _messages.StringField(5)
-  resourceComponentStatuses = _messages.MessageField('ResourceComponentStatus', 6, repeated=True)
-  resourceName = _messages.StringField(7)
-  routerDetails = _messages.MessageField('RouterStatus', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  type = _messages.StringField(10)
+  extraDetails = _messages.MessageField('ExtraDetailsValue', 4)
+  firebaseHostingDetails = _messages.MessageField('FirebaseHostingStatus', 5)
+  id = _messages.MessageField('ResourceID', 6)
+  reason = _messages.StringField(7)
+  resourceComponentStatuses = _messages.MessageField('ResourceComponentStatus', 8, repeated=True)
+  resourceName = _messages.StringField(9)
+  routerDetails = _messages.MessageField('RouterStatus', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  type = _messages.StringField(12)
 
 
 class Route(_messages.Message):

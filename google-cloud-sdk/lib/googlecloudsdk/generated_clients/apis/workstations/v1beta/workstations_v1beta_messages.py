@@ -172,7 +172,7 @@ class Container(_messages.Message):
       images). If using a private image, the `host.gceInstance.serviceAccount`
       field must be specified in the workstation configuration and must have
       permission to pull the specified image. Otherwise, the image must be
-      publicly accessible.s
+      publicly accessible.
     runAsUser: If set, overrides the USER specified in the image with the
       given uid.
     workingDir: If set, overrides the default DIR specified by the image.
@@ -299,6 +299,8 @@ class GceInstance(_messages.Message):
       `restricted.googleapis.com` for Container Registry and Artifact
       Registry, make sure that you set up DNS records for domains `*.gcr.io`
       and `*.pkg.dev`. Defaults to false (VMs have public IP addresses).
+    enableNestedVirtualization: Whether to enable nested virtualization on
+      instances.
     machineType: The type of machine to use for VM instances-for example,
       `e2-standard-4`. For more information about machine types that Cloud
       Workstations supports, see the list of [available machine
@@ -335,12 +337,13 @@ class GceInstance(_messages.Message):
   bootDiskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   confidentialInstanceConfig = _messages.MessageField('GceConfidentialInstanceConfig', 3)
   disablePublicIpAddresses = _messages.BooleanField(4)
-  machineType = _messages.StringField(5)
-  poolSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  pooledInstances = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  serviceAccount = _messages.StringField(8)
-  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 9)
-  tags = _messages.StringField(10, repeated=True)
+  enableNestedVirtualization = _messages.BooleanField(5)
+  machineType = _messages.StringField(6)
+  poolSize = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  pooledInstances = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  serviceAccount = _messages.StringField(9)
+  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 10)
+  tags = _messages.StringField(11, repeated=True)
 
 
 class GceRegionalPersistentDisk(_messages.Message):
@@ -1271,9 +1274,9 @@ class WorkstationConfig(_messages.Message):
     container: Container that runs upon startup for each workstation using
       this workstation configuration.
     createTime: Output only. Time when this resource was created.
-    degraded: Output only. Whether this resource is in degraded mode, in which
-      case it may require user action to restore full functionality. Details
-      can be found in the `conditions` field.
+    degraded: Output only. Whether this resource is degraded, in which case it
+      may require user action to restore full functionality. See also the
+      `conditions` field.
     deleteTime: Output only. Time when this resource was soft-deleted.
     displayName: Human-readable name for this resource.
     enableAuditAgent: Whether to enable Linux `auditd` logging on the

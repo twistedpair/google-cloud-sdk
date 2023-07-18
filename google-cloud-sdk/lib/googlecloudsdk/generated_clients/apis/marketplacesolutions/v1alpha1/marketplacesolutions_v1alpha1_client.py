@@ -39,6 +39,7 @@ class MarketplacesolutionsV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.operations = self.OperationsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_powerImages = self.ProjectsLocationsPowerImagesService(self)
     self.projects_locations_powerInstances = self.ProjectsLocationsPowerInstancesService(self)
@@ -47,6 +48,124 @@ class MarketplacesolutionsV1alpha1(base_api.BaseApiClient):
     self.projects_locations_powerVolumes = self.ProjectsLocationsPowerVolumesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class OperationsService(base_api.BaseApiService):
+    """Service class for the operations resource."""
+
+    _NAME = 'operations'
+
+    def __init__(self, client):
+      super(MarketplacesolutionsV1alpha1.OperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (MarketplacesolutionsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='marketplacesolutions.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='MarketplacesolutionsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (MarketplacesolutionsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='marketplacesolutions.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='MarketplacesolutionsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (MarketplacesolutionsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/operations/{operationsId}',
+        http_method='GET',
+        method_id='marketplacesolutions.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='MarketplacesolutionsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (MarketplacesolutionsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/operations',
+        http_method='GET',
+        method_id='marketplacesolutions.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='MarketplacesolutionsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
@@ -57,60 +176,6 @@ class MarketplacesolutionsV1alpha1(base_api.BaseApiClient):
       super(MarketplacesolutionsV1alpha1.ProjectsLocationsOperationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-
-      Args:
-        request: (MarketplacesolutionsProjectsLocationsOperationsCancelRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Cancel')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method='POST',
-        method_id='marketplacesolutions.projects.locations.operations.cancel',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:cancel',
-        request_field='cancelOperationRequest',
-        request_type_name='MarketplacesolutionsProjectsLocationsOperationsCancelRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
-
-      Args:
-        request: (MarketplacesolutionsProjectsLocationsOperationsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method='DELETE',
-        method_id='marketplacesolutions.projects.locations.operations.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='MarketplacesolutionsProjectsLocationsOperationsDeleteRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
 
     def Get(self, request, global_params=None):
       r"""Get details about an operation.
@@ -136,33 +201,6 @@ class MarketplacesolutionsV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='MarketplacesolutionsProjectsLocationsOperationsGetRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-      Args:
-        request: (MarketplacesolutionsProjectsLocationsOperationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListOperationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method='GET',
-        method_id='marketplacesolutions.projects.locations.operations.list',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+name}/operations',
-        request_field='',
-        request_type_name='MarketplacesolutionsProjectsLocationsOperationsListRequest',
-        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
@@ -240,6 +278,87 @@ class MarketplacesolutionsV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def ApplyPowerAction(self, request, global_params=None):
+      r"""Performs one of several power-related actions on an instance.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerInstancesApplyPowerActionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ApplyPowerAction')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ApplyPowerAction.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerInstances/{powerInstancesId}:applyPowerAction',
+        http_method='POST',
+        method_id='marketplacesolutions.projects.locations.powerInstances.applyPowerAction',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:applyPowerAction',
+        request_field='applyPowerInstancePowerActionRequest',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerInstancesApplyPowerActionRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Create a Power instance.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerInstancesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerInstances',
+        http_method='POST',
+        method_id='marketplacesolutions.projects.locations.powerInstances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['powerInstanceId'],
+        relative_path='v1alpha1/{+parent}/powerInstances',
+        request_field='powerInstance',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerInstancesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a Power instance.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerInstancesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerInstances/{powerInstancesId}',
+        http_method='DELETE',
+        method_id='marketplacesolutions.projects.locations.powerInstances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerInstancesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Get details about a single server from Power.
 
@@ -291,6 +410,60 @@ class MarketplacesolutionsV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='MarketplacesolutionsProjectsLocationsPowerInstancesListRequest',
         response_type_name='ListPowerInstancesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a Power instance.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerInstancesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerInstances/{powerInstancesId}',
+        http_method='PATCH',
+        method_id='marketplacesolutions.projects.locations.powerInstances.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='powerInstance',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerInstancesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Reset(self, request, global_params=None):
+      r"""Reset a running instance's state.
+
+      Args:
+        request: (MarketplacesolutionsProjectsLocationsPowerInstancesResetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Reset')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reset.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/powerInstances/{powerInstancesId}:reset',
+        http_method='POST',
+        method_id='marketplacesolutions.projects.locations.powerInstances.reset',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:reset',
+        request_field='resetPowerInstanceRequest',
+        request_type_name='MarketplacesolutionsProjectsLocationsPowerInstancesResetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

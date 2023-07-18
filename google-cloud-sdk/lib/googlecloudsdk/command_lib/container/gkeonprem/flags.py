@@ -85,3 +85,13 @@ def AddAdminClusterMembershipResourceArg(
   ).AddToParser(parser)
 
   parser.set_defaults(admin_cluster_membership_location='global')
+
+
+def AddBinauthzEvaluationMode(parser):
+  parser.add_argument(
+      '--binauthz-evaluation-mode',
+      choices=['DISABLED', 'PROJECT_SINGLETON_POLICY_ENFORCE'],
+      default=None,
+      help='Set Binary Authorization evaluation mode for this cluster.',
+      hidden=True,
+  )

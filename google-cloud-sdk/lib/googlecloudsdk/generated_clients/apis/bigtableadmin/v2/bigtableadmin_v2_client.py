@@ -861,6 +861,60 @@ class BigtableadminV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets information from a specified view.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (View) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/views/{viewsId}',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.tables.views.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesTablesViewsGetRequest',
+        response_type_name='View',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all views from a specific table.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesViewsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/views',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.tables.views.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'view'],
+        relative_path='v2/{+parent}/views',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesTablesViewsListRequest',
+        response_type_name='ListViewsResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates a View in a table.
 

@@ -72,6 +72,9 @@ class Cluster(_messages.Message):
   r"""A cluster instance.
 
   Enums:
+    AuthorizationModeValueValuesEnum: Optional. The authorization mode of the
+      Redis cluster. If not provided, auth feature is disabled for the
+      cluster.
     StateValueValuesEnum: Output only. The current state of this cluster. Can
       be CREATING, READY, UPDATING, DELETING and SUSPENDED
     TransitEncryptionModeValueValuesEnum: Optional. The in-transit encryption
@@ -79,19 +82,21 @@ class Cluster(_messages.Message):
       cluster.
 
   Fields:
+    authorizationMode: Optional. The authorization mode of the Redis cluster.
+      If not provided, auth feature is disabled for the cluster.
     createTime: Output only. The timestamp associated with the cluster
       creation request.
     discoveryEndpoints: Output only. Endpoints created on each given network,
-      for Redis clients to connect to the cluster. Currently only one endpoint
-      is supported.
+      for Redis clients to connect to the cluster. Currently only one
+      discovery endpoint is supported.
     displayName: Optional. An arbitrary and optional user-provided name for
       the cluster.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
     pscConfigs: Required. Each PscConfig configures the consumer network where
-      one IP address will be designated to the cluster for client access.
-      Currently, only one PscConfig is supported.
+      IPs will be designated to the cluster for client access through Private
+      Service Connect Automation. Currently, only one PscConfig is supported.
     replicaCount: Optional. The number of replica nodes per shard.
     shardCount: Required. Number of shards for the Redis cluster.
     sizeGb: Output only. Redis memory size in GB for the entire cluster.
@@ -101,6 +106,19 @@ class Cluster(_messages.Message):
       cluster. If not provided, encryption is disabled for the cluster.
     uid: Output only. System assigned, unique identifier for the cluster.
   """
+
+  class AuthorizationModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The authorization mode of the Redis cluster. If not
+    provided, auth feature is disabled for the cluster.
+
+    Values:
+      AUTH_MODE_UNSPECIFIED: Not set.
+      AUTH_MODE_IAM_AUTH: IAM basic authorization mode
+      AUTH_MODE_DISABLED: Authorization disabled mode
+    """
+    AUTH_MODE_UNSPECIFIED = 0
+    AUTH_MODE_IAM_AUTH = 1
+    AUTH_MODE_DISABLED = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of this cluster. Can be CREATING,
@@ -133,17 +151,18 @@ class Cluster(_messages.Message):
     TRANSIT_ENCRYPTION_MODE_DISABLED = 1
     TRANSIT_ENCRYPTION_MODE_SERVER_AUTHENTICATION = 2
 
-  createTime = _messages.StringField(1)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 2, repeated=True)
-  displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  pscConfigs = _messages.MessageField('PscConfig', 5, repeated=True)
-  replicaCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 10)
-  uid = _messages.StringField(11)
+  authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 3, repeated=True)
+  displayName = _messages.StringField(4)
+  name = _messages.StringField(5)
+  pscConfigs = _messages.MessageField('PscConfig', 6, repeated=True)
+  replicaCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 11)
+  uid = _messages.StringField(12)
 
 
 class DiscoveryEndpoint(_messages.Message):
@@ -1156,20 +1175,15 @@ class PersistenceConfig(_messages.Message):
 
 
 class PscConfig(_messages.Message):
-  r"""Configuration of the project and the network for resources of a PSC
-  endpoint to be created.
+  r"""A PscConfig object.
 
   Fields:
-    network: Required. The consumer network where the IP address will be
-      reserved, in the form of
-      projects/{network_host_project_id}/global/networks/{network_id}.
-    projectId: Output only. The project where a PSC forwarding rule is
-      created, binding to the discovery endpoint's IP address and targeting
-      the PSC service attachment of the cluster.
+    network: Required. The consumer network where the IP address of the
+      discovery endpoint will be reserved, in the form of
+      projects/{network_host_project}/global/networks/{network_id}.
   """
 
   network = _messages.StringField(1)
-  projectId = _messages.StringField(2)
 
 
 class ReconciliationOperationMetadata(_messages.Message):

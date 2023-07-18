@@ -13,6 +13,56 @@ from apitools.base.py import extra_types
 package = 'telcoautomation'
 
 
+class ApproveBlueprintRequest(_messages.Message):
+  r"""Request for approving a blueprint revision"""
+
+
+class Blueprint(_messages.Message):
+  r"""A collection of kubernetes yaml files to define a TNA component
+
+  Enums:
+    ApprovalStateValueValuesEnum: Output only. Approval state of the blueprint
+      (DRAFT, PROPOSED, APPROVED)
+
+  Fields:
+    approvalState: Output only. Approval state of the blueprint (DRAFT,
+      PROPOSED, APPROVED)
+    name: The name of the blueprint.
+    revisionCreateTime: Output only. The timestamp that the revision was
+      created.
+    revisionId: Output only. Immutable. The revision ID of the blueprint. A
+      new revision is committed whenever a change is approved. The format is a
+      string.
+    sourceBlueprint: Required. Immutable. The blueprint from which this
+      blueprint was created
+  """
+
+  class ApprovalStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Approval state of the blueprint (DRAFT, PROPOSED,
+    APPROVED)
+
+    Values:
+      APPROVAL_STATE_UNSPECIFIED: Unspecified state
+      DRAFT: A blueprint starts in DRAFT state. All edits are made in DRAFT
+        state
+      PROPOSED: When the edits are ready for review, blueprint moves to
+        PROPOSED state
+      APPROVED: When the edit is Approved, the blueprint moves to APPROVED
+        state and a revision is committed. If the edit is Rejected, then the
+        state moves back to DRAFT.
+    """
+    APPROVAL_STATE_UNSPECIFIED = 0
+    DRAFT = 1
+    PROPOSED = 2
+    APPROVED = 3
+
+  approvalState = _messages.EnumField('ApprovalStateValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  revisionCreateTime = _messages.StringField(3)
+  revisionId = _messages.StringField(4)
+  sourceBlueprint = _messages.StringField(5)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -33,6 +83,49 @@ class CidrBlock(_messages.Message):
   displayName = _messages.StringField(2)
 
 
+class Deployment(_messages.Message):
+  r"""A collection of kubernetes yaml files which are deployment on an
+  Orchestration Cluster.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the deployment (DRAFT,
+      DEPLOYED).
+
+  Fields:
+    name: The name of the deployment.
+    revisionCreateTime: Output only. Revision create time stamp.
+    revisionId: Output only. Immutable. The revision ID of the deployment. A
+      new revision is committed whenever a change is approved.
+    sourceBlueprintRevision: Required. Immutable. The blueprint revision from
+      which this deployment was created.
+    state: Output only. State of the deployment (DRAFT, DEPLOYED).
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the deployment (DRAFT, DEPLOYED).
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      DRAFT: A deployment starts in DRAFT state. All edits are made in DRAFT
+        state. A deployment opened for editing after deploying will be in
+        draft state, while its prevision revision will be its current deployed
+        version.
+      DEPLOYED: When the edit is deployed, the deployment moves to DEPLOYED
+        state and a revision is committed. This revision will represent the
+        latest view of what is deployed until the deployment is modified and
+        approved again, which will create a new revision.
+    """
+    STATE_UNSPECIFIED = 0
+    DRAFT = 1
+    DEPLOYED = 2
+
+  name = _messages.StringField(1)
+  revisionCreateTime = _messages.StringField(2)
+  revisionId = _messages.StringField(3)
+  sourceBlueprintRevision = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
 class EdgeSlm(_messages.Message):
   r"""Message describing EdgeTnaComponent object. The applications installed
   by TNA on edge are bundled as a single control plane resource :
@@ -40,6 +133,8 @@ class EdgeSlm(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. State of the EdgeSlm resource
+    WorkloadClusterTypeValueValuesEnum: Optional. Type of workload cluster for
+      which an EdgeSLM resource is created.
 
   Messages:
     LabelsValue: Labels as key value pairs. The key and value should contain
@@ -57,6 +152,8 @@ class EdgeSlm(_messages.Message):
     state: Output only. State of the EdgeSlm resource
     tnaVersion: Output only. Provides the active TNA version for this resource
     updateTime: Output only. [Output only] Update time stamp
+    workloadClusterType: Optional. Type of workload cluster for which an
+      EdgeSLM resource is created.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -75,6 +172,19 @@ class EdgeSlm(_messages.Message):
     ACTIVE = 2
     DELETING = 3
     FAILED = 4
+
+  class WorkloadClusterTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of workload cluster for which an EdgeSLM resource is
+    created.
+
+    Values:
+      WORKLOAD_CLUSTER_TYPE_UNSPECIFIED: Unspecified workload cluster.
+      GDCE: Workload cluster is a GDCE cluster.
+      GKE: Workload cluster is a GKE cluster.
+    """
+    WORKLOAD_CLUSTER_TYPE_UNSPECIFIED = 0
+    GDCE = 1
+    GKE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -108,6 +218,7 @@ class EdgeSlm(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 5)
   tnaVersion = _messages.StringField(6)
   updateTime = _messages.StringField(7)
+  workloadClusterType = _messages.EnumField('WorkloadClusterTypeValueValuesEnum', 8)
 
 
 class Empty(_messages.Message):
@@ -164,6 +275,32 @@ class FullManagementConfig(_messages.Message):
   subnet = _messages.StringField(8)
 
 
+class ListBlueprintsResponse(_messages.Message):
+  r"""List of latest approved blueprints
+
+  Fields:
+    blueprints: The latest approved revisions of the blueprints
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  blueprints = _messages.MessageField('Blueprint', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListDeploymentsResponse(_messages.Message):
+  r"""List of latest approved deployments.
+
+  Fields:
+    deployments: The latest approved revisions of the deployments.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  deployments = _messages.MessageField('Deployment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListEdgeSlmsResponse(_messages.Message):
   r"""Message for response to listing EdgeSlms.
 
@@ -218,6 +355,20 @@ class ListOrchestrationClustersResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   orchestrationClusters = _messages.MessageField('OrchestrationCluster', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListPublicBlueprintsResponse(_messages.Message):
+  r"""Message for the response to list all the blueprints from the public
+  catalog.
+
+  Fields:
+    nextPageToken: Output only. A token identifying a page of results the
+      server should return.
+    publicBlueprints: The List of blueprints in the public catalog.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  publicBlueprints = _messages.MessageField('PublicBlueprint', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -529,6 +680,36 @@ class OrchestrationCluster(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 5)
   tnaVersion = _messages.StringField(6)
   updateTime = _messages.StringField(7)
+
+
+class ProposeBlueprintRequest(_messages.Message):
+  r"""Request for proposing a change for a blueprint"""
+
+
+class PublicBlueprint(_messages.Message):
+  r"""Message for blueprint from the public catalog.
+
+  Fields:
+    branch: Branch in the repo where the blueprint is available.
+    commitId: A commit ID which can be used as a version identifier.
+    description: The description of the public blueprint.
+    displayName: The name which will be displayed in the UI.
+    id: Unique ID for this blueprint.
+    path: Directory in the repo where the blueprint is available.
+    repo: The repository of the blueprint.
+  """
+
+  branch = _messages.StringField(1)
+  commitId = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  id = _messages.StringField(5)
+  path = _messages.StringField(6)
+  repo = _messages.StringField(7)
+
+
+class RejectBlueprintRequest(_messages.Message):
+  r"""Request for rejecting a proposed change in blueprint"""
 
 
 class StandardManagementConfig(_messages.Message):
@@ -878,6 +1059,144 @@ class TelcoautomationProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsApproveRequest(_messages.Message):
+  r"""A TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsApprove
+  Request object.
+
+  Fields:
+    approveBlueprintRequest: A ApproveBlueprintRequest resource to be passed
+      as the request body.
+    name: Required. The name of the blueprint to approve. The blueprint must
+      be in Proposed state. A new revision is committed on approval
+  """
+
+  approveBlueprintRequest = _messages.MessageField('ApproveBlueprintRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsCreateRequest(_messages.Message):
+  r"""A
+  TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsCreateRequest
+  object.
+
+  Fields:
+    blueprint: A Blueprint resource to be passed as the request body.
+    blueprintId: The blueprint name
+    parent: Required. The parent resource name
+    requestId: Idempotent request UUID
+  """
+
+  blueprint = _messages.MessageField('Blueprint', 1)
+  blueprintId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteRequest(_messages.Message):
+  r"""A
+  TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The blueprint name
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteRevisionRequest(_messages.Message):
+  r"""A TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteR
+  evisionRequest object.
+
+  Fields:
+    name: Required. The name of the blueprint revision in the form
+      {blueprint}@{revision}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsGetRequest(_messages.Message):
+  r"""A
+  TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsGetRequest
+  object.
+
+  Fields:
+    name: Required. Case 1: If the name provided in the request is
+      {blueprint}@{revision}, then the specified revision is returned Case 2:
+      If the name provided in the request is {blueprint}, then the current
+      state of the blueprint is returned
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsListRequest(_messages.Message):
+  r"""A
+  TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsListRequest
+  object.
+
+  Fields:
+    filter: Filter. Example "name=gdce"
+    pageSize: The maximum number of revisions to return per page
+    pageToken: The page token, received from a previous ListBlueprintRevisions
+      call Provide this to retrieve the subsequent page.
+    parent: Required. The orchestration cluster managing the blueprints
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsPatchRequest(_messages.Message):
+  r"""A
+  TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsPatchRequest
+  object.
+
+  Fields:
+    blueprint: A Blueprint resource to be passed as the request body.
+    name: The name of the blueprint.
+    requestId: Idempotent request UUID
+    updateMask: The list of fields to update
+  """
+
+  blueprint = _messages.MessageField('Blueprint', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsProposeRequest(_messages.Message):
+  r"""A TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsPropose
+  Request object.
+
+  Fields:
+    name: Required. The name of the blueprint being proposed
+    proposeBlueprintRequest: A ProposeBlueprintRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  proposeBlueprintRequest = _messages.MessageField('ProposeBlueprintRequest', 2)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsRejectRequest(_messages.Message):
+  r"""A
+  TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsRejectRequest
+  object.
+
+  Fields:
+    name: Required. The name of the blueprint being rejected
+    rejectBlueprintRequest: A RejectBlueprintRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rejectBlueprintRequest = _messages.MessageField('RejectBlueprintRequest', 2)
+
+
 class TelcoautomationProjectsLocationsOrchestrationClustersCreateRequest(_messages.Message):
   r"""A TelcoautomationProjectsLocationsOrchestrationClustersCreateRequest
   object.
@@ -929,6 +1248,99 @@ class TelcoautomationProjectsLocationsOrchestrationClustersDeleteRequest(_messag
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsCreateRequest(_messages.Message):
+  r"""A TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsCreate
+  Request object.
+
+  Fields:
+    deployment: A Deployment resource to be passed as the request body.
+    deploymentId: Optional. The deployment name.
+    parent: Required. The parent resource name.
+    requestId: Optional. Idempotent request UUID.
+  """
+
+  deployment = _messages.MessageField('Deployment', 1)
+  deploymentId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDeleteRequest(_messages.Message):
+  r"""A TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDelete
+  Request object.
+
+  Fields:
+    name: Required. The deployment name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDeleteRevisionRequest(_messages.Message):
+  r"""A TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDelete
+  RevisionRequest object.
+
+  Fields:
+    name: Required. The name of the deployment revision in the form
+      {deployment}@{revision}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsGetRequest(_messages.Message):
+  r"""A
+  TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsGetRequest
+  object.
+
+  Fields:
+    name: Required. Case 1: If the name provided in the request is
+      {deployment}@{revision}, then the specified revision is returned. Case
+      2: If the name provided in the request is {deployment}, then the current
+      state of the deployment is returned.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsListRequest(_messages.Message):
+  r"""A
+  TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter. Example "name=gdce".
+    pageSize: Optional. The maximum number of revisions to return per page.
+    pageToken: Optional. The page token, received from a previous
+      ListDeploymentRevisions call Provide this to retrieve the subsequent
+      page.
+    parent: Required. The orchestration cluster managing the deployments.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsPatchRequest(_messages.Message):
+  r"""A
+  TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsPatchRequest
+  object.
+
+  Fields:
+    deployment: A Deployment resource to be passed as the request body.
+    name: The name of the deployment.
+    requestId: Optional. Idempotent request UUID.
+    updateMask: Required. The list of fields to update.
+  """
+
+  deployment = _messages.MessageField('Deployment', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class TelcoautomationProjectsLocationsOrchestrationClustersGetRequest(_messages.Message):
@@ -992,6 +1404,22 @@ class TelcoautomationProjectsLocationsOrchestrationClustersPatchRequest(_message
   orchestrationCluster = _messages.MessageField('OrchestrationCluster', 2)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class TelcoautomationProjectsLocationsPublicBlueprintsListRequest(_messages.Message):
+  r"""A TelcoautomationProjectsLocationsPublicBlueprintsListRequest object.
+
+  Fields:
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListPublicBlueprintsRequest
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 encoding.AddCustomJsonFieldMapping(

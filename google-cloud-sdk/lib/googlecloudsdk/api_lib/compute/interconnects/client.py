@@ -80,7 +80,7 @@ class Interconnect(object):
                     customerName=customer_name,
                     remoteLocation=remote_location)))
 
-  def _MakeCreateRequestTupleAlpha(
+  def _MakeCreateRequestTupleAlphaBeta(
       self,
       description,
       location,
@@ -155,12 +155,13 @@ class Interconnect(object):
                     **kwargs),
                 project=self.ref.project))
 
-  def _MakePatchRequestTupleAlpha(self, description, location,
-                                  interconnect_type, requested_link_count,
-                                  link_type, admin_enabled, noc_contact_email,
-                                  labels, label_fingerprint, macsec_enabled,
-                                  macsec):
-    """Make a tuple for interconnect alpha patch request."""
+  def _MakePatchRequestTupleAlphaBeta(self, description, location,
+                                      interconnect_type, requested_link_count,
+                                      link_type, admin_enabled,
+                                      noc_contact_email, labels,
+                                      label_fingerprint, macsec_enabled,
+                                      macsec):
+    """Make a tuple for interconnect alpha / beta patch request."""
     kwargs = {}
     if labels is not None:
       kwargs['labels'] = labels
@@ -239,7 +240,7 @@ class Interconnect(object):
       return resources[0]
     return requests
 
-  def CreateAlpha(
+  def CreateAlphaBeta(
       self,
       description='',
       location=None,
@@ -255,7 +256,7 @@ class Interconnect(object):
   ):
     """Create an interconnect."""
     requests = [
-        self._MakeCreateRequestTupleAlpha(
+        self._MakeCreateRequestTupleAlphaBeta(
             description,
             location,
             interconnect_type,
@@ -323,27 +324,27 @@ class Interconnect(object):
       return resources[0]
     return requests
 
-  def PatchAlpha(self,
-                 description='',
-                 location=None,
-                 interconnect_type=None,
-                 requested_link_count=None,
-                 link_type=None,
-                 admin_enabled=False,
-                 noc_contact_email=None,
-                 only_generate_request=False,
-                 labels=None,
-                 label_fingerprint=None,
-                 macsec_enabled=None,
-                 macsec=None):
+  def PatchAlphaBeta(self,
+                     description='',
+                     location=None,
+                     interconnect_type=None,
+                     requested_link_count=None,
+                     link_type=None,
+                     admin_enabled=False,
+                     noc_contact_email=None,
+                     only_generate_request=False,
+                     labels=None,
+                     label_fingerprint=None,
+                     macsec_enabled=None,
+                     macsec=None):
     """Patch an interconnect."""
     requests = [
-        self._MakePatchRequestTupleAlpha(description, location,
-                                         interconnect_type,
-                                         requested_link_count, link_type,
-                                         admin_enabled, noc_contact_email,
-                                         labels, label_fingerprint,
-                                         macsec_enabled, macsec)
+        self._MakePatchRequestTupleAlphaBeta(description, location,
+                                             interconnect_type,
+                                             requested_link_count, link_type,
+                                             admin_enabled, noc_contact_email,
+                                             labels, label_fingerprint,
+                                             macsec_enabled, macsec)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)

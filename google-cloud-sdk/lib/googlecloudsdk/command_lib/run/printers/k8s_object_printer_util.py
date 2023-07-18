@@ -98,26 +98,27 @@ def GetCloudSqlInstances(record):
   return instances.replace(',', ', ')
 
 
-def GetVpcConnector(record):
-  """Returns the values of the vpc-access-connector and vpc-access-egress.
-
-  Args:
-    record: A dictionary-like object containing the VPC_ACCESS_ANNOTATION and
-    EGRESS_SETTINGS_ANNOTATION keys.
-  """
-  return cp.Labeled([
-      ('Name', record.get(container_resource.VPC_ACCESS_ANNOTATION, '')),
-      ('Egress', record.get(container_resource.EGRESS_SETTINGS_ANNOTATION, ''))
-  ])
-
-
 def GetVpcNetwork(record):
-  """Returns the values of the network and subnetwork in network-interfaces annotation.
+  """Returns the VPC Network setting.
+
+  Either the values of the vpc-access-connector and vpc-access-egress, or the
+  values of the network and subnetwork in network-interfaces annotation and
+  vpc-access-egress.
 
   Args:
     record: A dictionary-like object containing the VPC_ACCESS_ANNOTATION and
-    EGRESS_SETTINGS_ANNOTATION keys.
+      EGRESS_SETTINGS_ANNOTATION keys.
   """
+  connector = record.get(container_resource.VPC_ACCESS_ANNOTATION, '')
+  if connector:
+    return cp.Labeled([
+        ('Connector', connector),
+        (
+            'Egress',
+            record.get(container_resource.EGRESS_SETTINGS_ANNOTATION, ''),
+        ),
+    ])
+  # Direct VPC case if annoation exists.
   original_value = record.get(k8s_object.NETWORK_INTERFACES_ANNOTATION, '')
   if not original_value:
     return ''
@@ -125,7 +126,11 @@ def GetVpcNetwork(record):
     network_interface = json.loads(original_value)[0]
     return cp.Labeled([
         ('Network', network_interface.get('network', '')),
-        ('Subnet', network_interface.get('subnetwork', ''))
+        ('Subnet', network_interface.get('subnetwork', '')),
+        (
+            'Egress',
+            record.get(container_resource.EGRESS_SETTINGS_ANNOTATION, ''),
+        ),
     ])
   except Exception:  # pylint: disable=broad-except
     return ''

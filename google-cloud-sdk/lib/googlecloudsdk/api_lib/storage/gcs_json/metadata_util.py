@@ -582,14 +582,8 @@ def get_cleared_bucket_fields(request_config):
     # Empty JSON object similar to CLEAR flag.
     cleared_fields.append('lifecycle')
 
-  if (
-      resource_args.log_bucket
-      == resource_args.log_object_prefix
-      == user_request_args_factory.CLEAR
-  ):
+  if resource_args.log_bucket == user_request_args_factory.CLEAR:
     cleared_fields.append('logging')
-  elif resource_args.log_bucket == user_request_args_factory.CLEAR:
-    cleared_fields.append('logging.logBucket')
   elif resource_args.log_object_prefix == user_request_args_factory.CLEAR:
     cleared_fields.append('logging.logObjectPrefix')
 

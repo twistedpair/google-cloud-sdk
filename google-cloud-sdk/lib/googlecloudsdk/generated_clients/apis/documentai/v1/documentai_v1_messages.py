@@ -2923,6 +2923,7 @@ class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):
       ProcessResponse.document output. Only supports top-level document and
       pages field, so it must be in the form of `{document_field_name}` or
       `pages.{page_field_name}`.
+    gcsDocument: A raw document on Google Cloud Storage.
     inlineDocument: An inline document proto.
     processOptions: Inference-time options for the process API
     rawDocument: A raw document content (bytes).
@@ -2931,10 +2932,11 @@ class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):
   """
 
   fieldMask = _messages.StringField(1)
-  inlineDocument = _messages.MessageField('GoogleCloudDocumentaiV1Document', 2)
-  processOptions = _messages.MessageField('GoogleCloudDocumentaiV1ProcessOptions', 3)
-  rawDocument = _messages.MessageField('GoogleCloudDocumentaiV1RawDocument', 4)
-  skipHumanReview = _messages.BooleanField(5)
+  gcsDocument = _messages.MessageField('GoogleCloudDocumentaiV1GcsDocument', 2)
+  inlineDocument = _messages.MessageField('GoogleCloudDocumentaiV1Document', 3)
+  processOptions = _messages.MessageField('GoogleCloudDocumentaiV1ProcessOptions', 4)
+  rawDocument = _messages.MessageField('GoogleCloudDocumentaiV1RawDocument', 5)
+  skipHumanReview = _messages.BooleanField(6)
 
 
 class GoogleCloudDocumentaiV1ProcessResponse(_messages.Message):
@@ -5554,6 +5556,40 @@ class GoogleCloudDocumentaiV1beta2Vertex(_messages.Message):
   y = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudDocumentaiV1beta3BatchDeleteDocumentsMetadata(_messages.Message):
+  r"""A GoogleCloudDocumentaiV1beta3BatchDeleteDocumentsMetadata object.
+
+  Fields:
+    commonMetadata: The basic metadata of the long running operation.
+    errorDocumentCount: Total number of documents that failed to be deleted in
+      storage.
+    individualBatchDeleteStatuses: The list of response details of each
+      document.
+    totalDocumentCount: Total number of documents deleting from dataset.
+  """
+
+  commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
+  errorDocumentCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  individualBatchDeleteStatuses = _messages.MessageField('GoogleCloudDocumentaiV1beta3BatchDeleteDocumentsMetadataIndividualBatchDeleteStatus', 3, repeated=True)
+  totalDocumentCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDocumentaiV1beta3BatchDeleteDocumentsMetadataIndividualBatchDeleteStatus(_messages.Message):
+  r"""The status of each individual document in the batch delete process.
+
+  Fields:
+    documentId: The document id of the document.
+    status: The status of deleting the document in storage.
+  """
+
+  documentId = _messages.MessageField('GoogleCloudDocumentaiV1beta3DocumentId', 1)
+  status = _messages.MessageField('GoogleRpcStatus', 2)
+
+
+class GoogleCloudDocumentaiV1beta3BatchDeleteDocumentsResponse(_messages.Message):
+  r"""Response of the delete documents operation."""
+
+
 class GoogleCloudDocumentaiV1beta3BatchProcessMetadata(_messages.Message):
   r"""The long-running operation metadata for BatchProcessDocuments.
 
@@ -5799,6 +5835,45 @@ class GoogleCloudDocumentaiV1beta3DisableProcessorResponse(_messages.Message):
 
 
 
+class GoogleCloudDocumentaiV1beta3DocumentId(_messages.Message):
+  r"""Document Identifier.
+
+  Fields:
+    gcsManagedDocId: A document id within user-managed Cloud Storage.
+    revisionRef: Points to a specific revision of the document if set.
+    unmanagedDocId: A document id within unmanaged dataset.
+  """
+
+  gcsManagedDocId = _messages.MessageField('GoogleCloudDocumentaiV1beta3DocumentIdGCSManagedDocumentId', 1)
+  revisionRef = _messages.MessageField('GoogleCloudDocumentaiV1beta3RevisionRef', 2)
+  unmanagedDocId = _messages.MessageField('GoogleCloudDocumentaiV1beta3DocumentIdUnmanagedDocumentId', 3)
+
+
+class GoogleCloudDocumentaiV1beta3DocumentIdGCSManagedDocumentId(_messages.Message):
+  r"""Identifies a document uniquely within the scope of a dataset in the
+  user-managed Cloud Storage option.
+
+  Fields:
+    cwDocId: Id of the document (indexed) managed by Content Warehouse.
+    gcsUri: Required. The Cloud Storage URI where the actual document is
+      stored.
+  """
+
+  cwDocId = _messages.StringField(1)
+  gcsUri = _messages.StringField(2)
+
+
+class GoogleCloudDocumentaiV1beta3DocumentIdUnmanagedDocumentId(_messages.Message):
+  r"""Identifies a document uniquely within the scope of a dataset in
+  unmanaged option.
+
+  Fields:
+    docId: Required. The id of the document.
+  """
+
+  docId = _messages.StringField(1)
+
+
 class GoogleCloudDocumentaiV1beta3EnableProcessorMetadata(_messages.Message):
   r"""The long-running operation metadata for the EnableProcessor method.
 
@@ -5887,6 +5962,58 @@ class GoogleCloudDocumentaiV1beta3HumanReviewStatus(_messages.Message):
   humanReviewOperation = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
   stateMessage = _messages.StringField(3)
+
+
+class GoogleCloudDocumentaiV1beta3ImportDocumentsMetadata(_messages.Message):
+  r"""Metadata of the import document operation.
+
+  Fields:
+    commonMetadata: The basic metadata of the long running operation.
+    importConfigValidationResults: Validation statuses of the batch documents
+      import config.
+    individualImportStatuses: The list of response details of each document.
+    totalDocumentCount: Total number of the documents that are qualified for
+      importing.
+  """
+
+  commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
+  importConfigValidationResults = _messages.MessageField('GoogleCloudDocumentaiV1beta3ImportDocumentsMetadataImportConfigValidationResult', 2, repeated=True)
+  individualImportStatuses = _messages.MessageField('GoogleCloudDocumentaiV1beta3ImportDocumentsMetadataIndividualImportStatus', 3, repeated=True)
+  totalDocumentCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDocumentaiV1beta3ImportDocumentsMetadataImportConfigValidationResult(_messages.Message):
+  r"""The validation status of each import config. Status is set to errors if
+  there is no documents to import in the import_config, or OK if the operation
+  will try to proceed at least one document.
+
+  Fields:
+    inputGcsSource: The source Cloud Storage URI specified in the import
+      config.
+    status: The validation status of import config.
+  """
+
+  inputGcsSource = _messages.StringField(1)
+  status = _messages.MessageField('GoogleRpcStatus', 2)
+
+
+class GoogleCloudDocumentaiV1beta3ImportDocumentsMetadataIndividualImportStatus(_messages.Message):
+  r"""The status of each individual document in the import process.
+
+  Fields:
+    inputGcsSource: The source Cloud Storage URI of the document.
+    outputDocumentId: The document id of imported document if it was
+      successful, otherwise empty.
+    status: The status of the importing of the document.
+  """
+
+  inputGcsSource = _messages.StringField(1)
+  outputDocumentId = _messages.MessageField('GoogleCloudDocumentaiV1beta3DocumentId', 2)
+  status = _messages.MessageField('GoogleRpcStatus', 3)
+
+
+class GoogleCloudDocumentaiV1beta3ImportDocumentsResponse(_messages.Message):
+  r"""Response of the import document operation."""
 
 
 class GoogleCloudDocumentaiV1beta3ImportProcessorVersionMetadata(_messages.Message):
@@ -5981,6 +6108,41 @@ class GoogleCloudDocumentaiV1beta3ReviewDocumentResponse(_messages.Message):
   gcsDestination = _messages.StringField(1)
   rejectionReason = _messages.StringField(2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
+class GoogleCloudDocumentaiV1beta3RevisionRef(_messages.Message):
+  r"""The revision reference specifies which revision on the document to read.
+
+  Enums:
+    RevisionCaseValueValuesEnum: Reads the revision by the predefined case.
+
+  Fields:
+    latestProcessorVersion: Reads the revision generated by the processor
+      version. The format takes the full resource name of processor version. `
+      projects/{project}/locations/{location}/processors/{processor}/processor
+      Versions/{processorVersion}`
+    revisionCase: Reads the revision by the predefined case.
+    revisionId: Reads the revision given by the id.
+  """
+
+  class RevisionCaseValueValuesEnum(_messages.Enum):
+    r"""Reads the revision by the predefined case.
+
+    Values:
+      REVISION_CASE_UNSPECIFIED: Unspecified case, fallback to read the
+        LATEST_HUMAN_REVIEW.
+      LATEST_HUMAN_REVIEW: The latest revision made by a human.
+      LATEST_TIMESTAMP: The latest revision based on timestamp.
+      BASE_OCR_REVISION: The first (OCR) revision.
+    """
+    REVISION_CASE_UNSPECIFIED = 0
+    LATEST_HUMAN_REVIEW = 1
+    LATEST_TIMESTAMP = 2
+    BASE_OCR_REVISION = 3
+
+  latestProcessorVersion = _messages.StringField(1)
+  revisionCase = _messages.EnumField('RevisionCaseValueValuesEnum', 2)
+  revisionId = _messages.StringField(3)
 
 
 class GoogleCloudDocumentaiV1beta3SetDefaultProcessorVersionMetadata(_messages.Message):

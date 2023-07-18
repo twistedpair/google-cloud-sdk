@@ -485,12 +485,14 @@ class GoogleCloudAssuredworkloadsV1ViolationRemediation(_messages.Message):
         for list org policy which have denied values in the monitoring rule
       REMEDIATION_RESTRICT_CMEK_CRYPTO_KEY_PROJECTS_ORG_POLICY_VIOLATION:
         Remediation type for gcp.restrictCmekCryptoKeyProjects
+      REMEDIATION_RESOURCE_VIOLATION: Remediation type for resource violation.
     """
     REMEDIATION_TYPE_UNSPECIFIED = 0
     REMEDIATION_BOOLEAN_ORG_POLICY_VIOLATION = 1
     REMEDIATION_LIST_ALLOWED_VALUES_ORG_POLICY_VIOLATION = 2
     REMEDIATION_LIST_DENIED_VALUES_ORG_POLICY_VIOLATION = 3
     REMEDIATION_RESTRICT_CMEK_CRYPTO_KEY_PROJECTS_ORG_POLICY_VIOLATION = 4
+    REMEDIATION_RESOURCE_VIOLATION = 5
 
   compliantValues = _messages.StringField(1, repeated=True)
   instructions = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationRemediationInstructions', 2)

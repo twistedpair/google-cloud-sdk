@@ -3205,8 +3205,9 @@ class ExportSBOMResponse(_messages.Message):
   r"""The response from a call to ExportSBOM
 
   Fields:
-    discoveryOccurrenceId: The id of the discovery occurrence that can be used
-      to track the progression of the SBOM export.
+    discoveryOccurrenceId: The name of the discovery occurrence in the form
+      "projects/{project_id}/occurrences/{OCCURRENCE_ID} It can be used to
+      track the progression of the SBOM export.
   """
 
   discoveryOccurrenceId = _messages.StringField(1)
@@ -3890,17 +3891,20 @@ class InToto(_messages.Message):
 
 
 class InTotoSlsaProvenanceV1(_messages.Message):
-  r"""Keep in sync with schema at https://github.com/slsa-
-  framework/slsa/blob/main/docs/provenance/schema/v1/provenance.proto Builder
-  renamed to ProvenanceBuilder because of Java conflicts.
+  r"""A InTotoSlsaProvenanceV1 object.
 
   Fields:
-    buildDefinition: A BuildDefinition attribute.
-    runDetails: A RunDetails attribute.
+    _type: InToto spec defined at https://github.com/in-
+      toto/attestation/tree/main/spec#statement
+    predicate: A SlsaProvenanceV1 attribute.
+    predicateType: A string attribute.
+    subject: A Subject attribute.
   """
 
-  buildDefinition = _messages.MessageField('BuildDefinition', 1)
-  runDetails = _messages.MessageField('RunDetails', 2)
+  _type = _messages.StringField(1)
+  predicate = _messages.MessageField('SlsaProvenanceV1', 2)
+  predicateType = _messages.StringField(3)
+  subject = _messages.MessageField('Subject', 4, repeated=True)
 
 
 class Installation(_messages.Message):
@@ -5512,6 +5516,20 @@ class SigningKey(_messages.Message):
   keyScheme = _messages.StringField(2)
   keyType = _messages.StringField(3)
   publicKeyValue = _messages.StringField(4)
+
+
+class SlsaProvenanceV1(_messages.Message):
+  r"""Keep in sync with schema at https://github.com/slsa-
+  framework/slsa/blob/main/docs/provenance/schema/v1/provenance.proto Builder
+  renamed to ProvenanceBuilder because of Java conflicts.
+
+  Fields:
+    buildDefinition: A BuildDefinition attribute.
+    runDetails: A RunDetails attribute.
+  """
+
+  buildDefinition = _messages.MessageField('BuildDefinition', 1)
+  runDetails = _messages.MessageField('RunDetails', 2)
 
 
 class Source(_messages.Message):

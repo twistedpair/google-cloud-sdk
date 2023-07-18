@@ -42,7 +42,7 @@ def GetProjectIDNumberFlag(verb):
       help='ID or number for the project you want to {0}.'.format(verb))
 
 
-def GetRecommendFlag():
+def GetRecommendFlag(action):
   return base.Argument(
       '--recommend',
       metavar='RECOMMEND',
@@ -51,9 +51,9 @@ def GetRecommendFlag():
       hidden=True,
       required=False,
       help=(
-          'Shows warning if project deletion is HIGH-RISK based on '
+          'Shows warning if {} is HIGH-RISK based on '
           'Active Assist recommendations. Disabled by default.'
-      ),
+      ).format(action),
   )
 
 
@@ -66,8 +66,9 @@ def ProjectAttributeConfig():
 def GetProjectResourceSpec():
   return concepts.ResourceSpec(
       'cloudresourcemanager.projects',
-      resource_name='project_id',
-      projectId=ProjectAttributeConfig())
+      resource_name='project',
+      projectId=ProjectAttributeConfig(),
+  )
 
 
 def GetProjectResourceArg(verb):

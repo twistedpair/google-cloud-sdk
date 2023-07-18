@@ -2278,9 +2278,8 @@ class Bucket(proto.Message):
             {projectIdentifier} can be the project ID or
             project number.
         metageneration (int):
-            Output only. The metadata generation of this bucket.
-            Attempting to set or update this field will result in a
-            [FieldViolation][google.rpc.BadRequest.FieldViolation].
+            Output only. The metadata generation of this
+            bucket.
         location (str):
             Immutable. The location of the bucket. Object data for
             objects in the bucket resides in physical storage within
@@ -2321,16 +2320,13 @@ class Bucket(proto.Message):
             [https://developers.google.com/storage/docs/lifecycle]Lifecycle
             Management] for more information.
         create_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. The creation time of the bucket. Attempting to
-            set or update this field will result in a
-            [FieldViolation][google.rpc.BadRequest.FieldViolation].
+            Output only. The creation time of the bucket.
         cors (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.Cors]):
             The bucket's [https://www.w3.org/TR/cors/][Cross-Origin
             Resource Sharing] (CORS) config.
         update_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. The modification time of the bucket. Attempting
-            to set or update this field will result in a
-            [FieldViolation][google.rpc.BadRequest.FieldViolation].
+            Output only. The modification time of the
+            bucket.
         default_event_based_hold (bool):
             The default value for event-based hold on
             newly created objects in this bucket.
@@ -3329,26 +3325,22 @@ class Object(proto.Message):
             be performed if the etag matches that of the
             live object.
         generation (int):
-            Immutable. The content generation of this object. Used for
-            object versioning. Attempting to set or update this field
-            will result in a
-            [FieldViolation][google.rpc.BadRequest.FieldViolation].
+            Immutable. The content generation of this
+            object. Used for object versioning.
         metageneration (int):
-            Output only. The version of the metadata for this generation
-            of this object. Used for preconditions and for detecting
-            changes in metadata. A metageneration number is only
-            meaningful in the context of a particular generation of a
-            particular object. Attempting to set or update this field
-            will result in a
-            [FieldViolation][google.rpc.BadRequest.FieldViolation].
+            Output only. The version of the metadata for
+            this generation of this object. Used for
+            preconditions and for detecting changes in
+            metadata. A metageneration number is only
+            meaningful in the context of a particular
+            generation of a particular object.
         storage_class (str):
             Storage class of the object.
         size (int):
             Output only. Content-Length of the object data in bytes,
             matching
             [https://tools.ietf.org/html/rfc7230#section-3.3.2][RFC 7230
-            $3.3.2]. Attempting to set or update this field will result
-            in a [FieldViolation][google.rpc.BadRequest.FieldViolation].
+            $3.3.2].
         content_encoding (str):
             Content-Encoding of the object data, matching
             [https://tools.ietf.org/html/rfc7231#section-3.1.2.2][RFC
@@ -3372,49 +3364,42 @@ class Object(proto.Message):
             [https://tools.ietf.org/html/rfc7231#section-3.1.3.2][RFC
             7231 $3.1.3.2].
         delete_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. If this object is noncurrent, this is the time
-            when the object became noncurrent. Attempting to set or
-            update this field will result in a
-            [FieldViolation][google.rpc.BadRequest.FieldViolation].
+            Output only. If this object is noncurrent,
+            this is the time when the object became
+            noncurrent.
         content_type (str):
             Content-Type of the object data, matching
             [https://tools.ietf.org/html/rfc7231#section-3.1.1.5][RFC
             7231 $3.1.1.5]. If an object is stored without a
             Content-Type, it is served as ``application/octet-stream``.
         create_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. The creation time of the object. Attempting to
-            set or update this field will result in a
-            [FieldViolation][google.rpc.BadRequest.FieldViolation].
+            Output only. The creation time of the object.
         component_count (int):
-            Output only. Number of underlying components that make up
-            this object. Components are accumulated by compose
-            operations. Attempting to set or update this field will
-            result in a
-            [FieldViolation][google.rpc.BadRequest.FieldViolation].
+            Output only. Number of underlying components
+            that make up this object. Components are
+            accumulated by compose operations.
         checksums (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ObjectChecksums):
             Output only. Hashes for the data part of this
             object. This field is used for output only and
             will be silently ignored if provided in
             requests.
         update_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. The modification time of the object metadata.
-            Set initially to object creation time and then updated
-            whenever any metadata of the object changes. This includes
-            changes made by a requester, such as modifying custom
-            metadata, as well as changes made by Cloud Storage on behalf
-            of a requester, such as changing the storage class based on
-            an Object Lifecycle Configuration. Attempting to set or
-            update this field will result in a
-            [FieldViolation][google.rpc.BadRequest.FieldViolation].
+            Output only. The modification time of the
+            object metadata. Set initially to object
+            creation time and then updated whenever any
+            metadata of the object changes. This includes
+            changes made by a requester, such as modifying
+            custom metadata, as well as changes made by
+            Cloud Storage on behalf of a requester, such as
+            changing the storage class based on an Object
+            Lifecycle Configuration.
         kms_key (str):
             Cloud KMS Key used to encrypt this object, if
             the object is encrypted by such a key.
         update_storage_class_time (google.protobuf.timestamp_pb2.Timestamp):
             Output only. The time at which the object's storage class
             was last changed. When the object is initially created, it
-            will be set to time_created. Attempting to set or update
-            this field will result in a
-            [FieldViolation][google.rpc.BadRequest.FieldViolation].
+            will be set to time_created.
         temporary_hold (bool):
             Whether an object is under temporary hold.
             While this flag is set to true, the object is
@@ -3453,10 +3438,8 @@ class Object(proto.Message):
 
             This field is a member of `oneof`_ ``_event_based_hold``.
         owner (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Owner):
-            Output only. The owner of the object. This will always be
-            the uploader of the object. Attempting to set or update this
-            field will result in a
-            [FieldViolation][google.rpc.BadRequest.FieldViolation].
+            Output only. The owner of the object. This
+            will always be the uploader of the object.
         customer_encryption (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CustomerEncryption):
             Metadata of Customer-Supplied Encryption Key,
             if the object is encrypted by such a key.

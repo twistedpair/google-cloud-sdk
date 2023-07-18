@@ -151,8 +151,8 @@ def AddMaxWait(
 
 
 def AddTLSInspectionPolicy(
-    parser,
     release_track,
+    parser,
     help_text="Path to TLS Inspection Policy configuration to use for intercepting TLS-encrypted traffic in this network.",
 ):
   """Adds TLS Inspection Policy resource."""

@@ -1434,9 +1434,10 @@ class ContinuousBackupConfig(_messages.Message):
       backups with a customer-managed encryption key (CMEK). When this field
       is not specified, the backup will then use default encryption scheme to
       protect the user data.
-    recoveryWindowDays: The number of days backups and logs will be retained,
-      which determines the window of time that data is recoverable for. If not
-      set, it defaults to 14 days.
+    recoveryWindowDays: The number of days that are eligible to restore from
+      using PITR. To support the entire recovery window, backups and logs are
+      retained for one day more than the recovery window. If not set, defaults
+      to 14 days.
   """
 
   enabled = _messages.BooleanField(1)
@@ -1606,12 +1607,16 @@ class GenerateClientCertificateRequest(_messages.Message):
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
+    useMetadataExchange: Optional. An optional hint to the endpoint to
+      generate a client ceritificate that can be used by AlloyDB connectors to
+      exchange additional metadata with the server after TLS handshake.
   """
 
   certDuration = _messages.StringField(1)
   pemCsr = _messages.StringField(2)
   publicKey = _messages.StringField(3)
   requestId = _messages.StringField(4)
+  useMetadataExchange = _messages.BooleanField(5)
 
 
 class GenerateClientCertificateResponse(_messages.Message):
@@ -1628,6 +1633,71 @@ class GenerateClientCertificateResponse(_messages.Message):
   caCert = _messages.StringField(1)
   pemCertificate = _messages.StringField(2)
   pemCertificateChain = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudAlloydbConnectorsV1alphaMetadataExchangeRequest(_messages.Message):
+  r"""Message used by AlloyDB connectors to exchange client and connection
+  metadata with the server after a successful TLS handshake. This metadata
+  includes an IAM token, which is used to authenticate users based on their
+  IAM identity. The sole purpose of this message is for the use of AlloyDB
+  connectors. Clients should not rely on this message directly as there can be
+  breaking changes in the future.
+
+  Enums:
+    AuthTypeValueValuesEnum: Authentication type.
+
+  Fields:
+    authType: Authentication type.
+    oauth2Token: IAM token used for both IAM user authentiation and
+      `alloydb.instances.connect` permission check.
+    userAgent: Optional. Connector information.
+  """
+
+  class AuthTypeValueValuesEnum(_messages.Enum):
+    r"""Authentication type.
+
+    Values:
+      AUTH_TYPE_UNSPECIFIED: Authentication type is unspecified and DB_NATIVE
+        is used by default
+      DB_NATIVE: Database native authentication (user/password)
+      AUTO_IAM: Automatic IAM authentication
+    """
+    AUTH_TYPE_UNSPECIFIED = 0
+    DB_NATIVE = 1
+    AUTO_IAM = 2
+
+  authType = _messages.EnumField('AuthTypeValueValuesEnum', 1)
+  oauth2Token = _messages.StringField(2)
+  userAgent = _messages.StringField(3)
+
+
+class GoogleCloudAlloydbConnectorsV1alphaMetadataExchangeResponse(_messages.Message):
+  r"""Message for response to metadata exchange request. The sole purpose of
+  this message is for the use of AlloyDB connectors. Clients should not rely
+  on this message directly as there can be breaking changes in the future.
+
+  Enums:
+    ResponseCodeValueValuesEnum: Response code.
+
+  Fields:
+    error: Optional. Error message.
+    responseCode: Response code.
+  """
+
+  class ResponseCodeValueValuesEnum(_messages.Enum):
+    r"""Response code.
+
+    Values:
+      RESPONSE_CODE_UNSPECIFIED: Unknown response code
+      OK: Success
+      ERROR: Failure
+    """
+    RESPONSE_CODE_UNSPECIFIED = 0
+    OK = 1
+    ERROR = 2
+
+  error = _messages.StringField(1)
+  responseCode = _messages.EnumField('ResponseCodeValueValuesEnum', 2)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):

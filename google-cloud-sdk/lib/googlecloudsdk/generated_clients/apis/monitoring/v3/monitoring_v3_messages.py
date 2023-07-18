@@ -359,7 +359,10 @@ class AlertPolicy(_messages.Message):
       entries. Each key and value is limited to 63 Unicode characters or 128
       bytes, whichever is smaller. Labels and values can contain only
       lowercase letters, numerals, underscores, and dashes. Keys must begin
-      with a letter.
+      with a letter.Note that Prometheus and are valid Prometheus label names
+      (https://prometheus.io/docs/concepts/data_model/#metric-names-and-
+      labels). This means that they cannot be stored as is in user labels,
+      because Prometheus labels may contain upper-case letters.
 
   Fields:
     alertStrategy: Control over how this alert policy's notification channels
@@ -371,13 +374,19 @@ class AlertPolicy(_messages.Message):
       combined by AND or OR according to the combiner field. If the combined
       conditions evaluate to true, then an incident is created. A policy can
       have from one to six conditions. If condition_time_series_query_language
-      is present, it must be the only condition.
+      is present, it must be the only condition. If
+      condition_monitoring_query_language is present, it must be the only
+      condition.
     creationRecord: A read-only record of the creation of the alerting policy.
       If provided in a call to create or update, this field will be ignored.
     displayName: A short name or phrase used to identify the policy in
       dashboards, notifications, and incidents. To avoid confusion, don't use
       the same display name for multiple policies in the same project. The
-      name is limited to 512 Unicode characters.
+      name is limited to 512 Unicode characters.The convention for the
+      display_name of a PrometheusQueryLanguageCondition is "/", where the and
+      should be taken from the corresponding Prometheus configuration file.
+      This convention is not enforced. In any case the display_name is not a
+      unique key of the AlertPolicy.
     documentation: Documentation that is included with notifications and
       incidents related to this policy. Best practice is for the documentation
       to include information to help responders understand, mitigate,
@@ -411,10 +420,13 @@ class AlertPolicy(_messages.Message):
       entries. Each key and value is limited to 63 Unicode characters or 128
       bytes, whichever is smaller. Labels and values can contain only
       lowercase letters, numerals, underscores, and dashes. Keys must begin
-      with a letter.
-    validity: Read-only description of how the alert policy is invalid. OK if
-      the alert policy is valid. If not OK, the alert policy will not generate
-      incidents.
+      with a letter.Note that Prometheus and are valid Prometheus label names
+      (https://prometheus.io/docs/concepts/data_model/#metric-names-and-
+      labels). This means that they cannot be stored as is in user labels,
+      because Prometheus labels may contain upper-case letters.
+    validity: Read-only description of how the alert policy is invalid. This
+      field is only set when the alert policy is invalid. An invalid alert
+      policy will not generate incidents.
   """
 
   class CombinerValueValuesEnum(_messages.Enum):
@@ -446,7 +458,11 @@ class AlertPolicy(_messages.Message):
     the AlertPolicy objects.The field can contain up to 64 entries. Each key
     and value is limited to 63 Unicode characters or 128 bytes, whichever is
     smaller. Labels and values can contain only lowercase letters, numerals,
-    underscores, and dashes. Keys must begin with a letter.
+    underscores, and dashes. Keys must begin with a letter.Note that
+    Prometheus and are valid Prometheus label names
+    (https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels).
+    This means that they cannot be stored as is in user labels, because
+    Prometheus labels may contain upper-case letters.
 
     Messages:
       AdditionalProperty: An additional property for a UserLabelsValue object.
@@ -489,13 +505,16 @@ class AlertStrategy(_messages.Message):
   Fields:
     autoClose: If an alert policy that was active has no data for this long,
       any open incidents will close
+    notificationChannelStrategy: Control how notifications will be sent out,
+      on a per-channel basis.
     notificationRateLimit: Required for alert policies with a LogMatch
       condition.This limit is not implemented for alert policies that are not
       log-based.
   """
 
   autoClose = _messages.StringField(1)
-  notificationRateLimit = _messages.MessageField('NotificationRateLimit', 2)
+  notificationChannelStrategy = _messages.MessageField('NotificationChannelStrategy', 2, repeated=True)
+  notificationRateLimit = _messages.MessageField('NotificationRateLimit', 3)
 
 
 class AppEngine(_messages.Message):
@@ -842,6 +861,8 @@ class Condition(_messages.Message):
       given constraints. If set, no other conditions can be present.
     conditionMonitoringQueryLanguage: A condition that uses the Monitoring
       Query Language to define alerts.
+    conditionPrometheusQueryLanguage: A condition that uses the Prometheus
+      query language to define alerts.
     conditionThreshold: A condition that compares a time series against a
       threshold.
     displayName: A short name or phrase used to identify the condition in
@@ -867,9 +888,10 @@ class Condition(_messages.Message):
   conditionAbsent = _messages.MessageField('MetricAbsence', 1)
   conditionMatchedLog = _messages.MessageField('LogMatch', 2)
   conditionMonitoringQueryLanguage = _messages.MessageField('MonitoringQueryLanguageCondition', 3)
-  conditionThreshold = _messages.MessageField('MetricThreshold', 4)
-  displayName = _messages.StringField(5)
-  name = _messages.StringField(6)
+  conditionPrometheusQueryLanguage = _messages.MessageField('PrometheusQueryLanguageCondition', 4)
+  conditionThreshold = _messages.MessageField('MetricThreshold', 5)
+  displayName = _messages.StringField(6)
+  name = _messages.StringField(7)
 
 
 class ContentMatcher(_messages.Message):
@@ -1107,10 +1129,23 @@ class Documentation(_messages.Message):
     mimeType: The format of the content field. Presently, only the value
       "text/markdown" is supported. See Markdown
       (https://en.wikipedia.org/wiki/Markdown) for more information.
+    subject: Optional. The subject line of the notification. The subject line
+      may not exceed 10,240 bytes. In notifications generated by this policy,
+      the contents of the subject line after variable expansion will be
+      truncated to 255 bytes or shorter at the latest UTF-8 character
+      boundary. The 255-byte limit is recommended by this thread
+      (https://stackoverflow.com/questions/1592291/what-is-the-email-subject-
+      length-limit). It is both the limit imposed by some third-party
+      ticketing products and it is common to define textual fields in
+      databases as VARCHAR(255).The contents of the subject line can be
+      templatized by using variables
+      (https://cloud.google.com/monitoring/alerts/doc-variables). If this
+      field is missing or empty, a default subject line will be generated.
   """
 
   content = _messages.StringField(1)
   mimeType = _messages.StringField(2)
+  subject = _messages.StringField(3)
 
 
 class DroppedLabels(_messages.Message):
@@ -1260,7 +1295,7 @@ class Exponential(_messages.Message):
   proportional to the value of the lower bound. Each bucket represents a
   constant relative uncertainty on a specific value in the bucket.There are
   num_finite_buckets + 2 (= N) buckets. Bucket i has the following
-  boundaries:Upper bound (0 <= i < N-1): scale * (growth_factor ^ i). Lower
+  boundaries:Upper bound (0 <= i < N-1): scale * (growth_factor ^ i).Lower
   bound (1 <= i < N): scale * (growth_factor ^ (i - 1)).
 
   Fields:
@@ -1596,6 +1631,11 @@ class HttpCheck(_messages.Message):
       content_type is TYPE_UNSPECIFIED. 4. Request method is POST and a
       "Content-Type" header is provided via headers field. The content_type
       field should be used instead.
+    customContentType: A user provided content type header to use for the
+      check. The invalid configurations outlined in the content_type field
+      apply to custom_content_type, as well as the following: 1. content_type
+      is URL_ENCODED and custom_content_type is set. 2. content_type is
+      USER_PROVIDED and custom_content_type is not set.
     headers: The list of headers to send as part of the Uptime check request.
       If two headers have the same key and different values, they should be
       entered as a single header, with the value being a comma-separated list
@@ -1641,9 +1681,13 @@ class HttpCheck(_messages.Message):
       TYPE_UNSPECIFIED: No content type specified.
       URL_ENCODED: body is in URL-encoded form. Equivalent to setting the
         Content-Type to application/x-www-form-urlencoded in the HTTP request.
+      USER_PROVIDED: body is in custom_content_type form. Equivalent to
+        setting the Content-Type to the contents of custom_content_type in the
+        HTTP request.
     """
     TYPE_UNSPECIFIED = 0
     URL_ENCODED = 1
+    USER_PROVIDED = 2
 
   class RequestMethodValueValuesEnum(_messages.Enum):
     r"""The HTTP request method to use for the check. If set to
@@ -1693,14 +1737,15 @@ class HttpCheck(_messages.Message):
   authInfo = _messages.MessageField('BasicAuthentication', 2)
   body = _messages.BytesField(3)
   contentType = _messages.EnumField('ContentTypeValueValuesEnum', 4)
-  headers = _messages.MessageField('HeadersValue', 5)
-  maskHeaders = _messages.BooleanField(6)
-  path = _messages.StringField(7)
-  pingConfig = _messages.MessageField('PingConfig', 8)
-  port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  requestMethod = _messages.EnumField('RequestMethodValueValuesEnum', 10)
-  useSsl = _messages.BooleanField(11)
-  validateSsl = _messages.BooleanField(12)
+  customContentType = _messages.StringField(5)
+  headers = _messages.MessageField('HeadersValue', 6)
+  maskHeaders = _messages.BooleanField(7)
+  path = _messages.StringField(8)
+  pingConfig = _messages.MessageField('PingConfig', 9)
+  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  requestMethod = _messages.EnumField('RequestMethodValueValuesEnum', 11)
+  useSsl = _messages.BooleanField(12)
+  validateSsl = _messages.BooleanField(13)
 
 
 class InternalChecker(_messages.Message):
@@ -1884,7 +1929,7 @@ class Linear(_messages.Message):
   (except overflow and underflow). Each bucket represents a constant absolute
   uncertainty on the specific value in the bucket.There are num_finite_buckets
   + 2 (= N) buckets. Bucket i has the following boundaries:Upper bound (0 <= i
-  < N-1): offset + (width * i). Lower bound (1 <= i < N): offset + (width * (i
+  < N-1): offset + (width * i).Lower bound (1 <= i < N): offset + (width * (i
   - 1)).
 
   Fields:
@@ -4569,7 +4614,8 @@ class MonitoringProjectsMetricDescriptorsListRequest(_messages.Message):
       (https://cloud.google.com/monitoring/api/v3#project_name) on which to
       execute the request. The format is: projects/[PROJECT_ID_OR_NUMBER]
     pageSize: A positive number that is the maximum number of results to
-      return.
+      return. The default and maximum value is 10,000. If a page_size <= 0 or
+      > 10,000 is submitted, will instead return a maximum of 10,000 results.
     pageToken: If this field is not empty then it must contain the
       nextPageToken value returned by a previous call to this method. Using
       this field causes the method to return additional results from the
@@ -6292,6 +6338,24 @@ class NotificationChannelDescriptor(_messages.Message):
   type = _messages.StringField(7)
 
 
+class NotificationChannelStrategy(_messages.Message):
+  r"""Control over how the notification channels in notification_channels are
+  notified when this alert fires, on a per-channel basis.
+
+  Fields:
+    notificationChannelNames: The full REST resource name for the notification
+      channels that these settings apply to. Each of these correspond to the
+      name field in one of the NotificationChannel objects referenced in the
+      notification_channels field of this AlertPolicy. The format is:
+      projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID]
+    renotifyInterval: The frequency at which to send reminder notifications
+      for open incidents.
+  """
+
+  notificationChannelNames = _messages.StringField(1, repeated=True)
+  renotifyInterval = _messages.StringField(2)
+
+
 class NotificationRateLimit(_messages.Message):
   r"""Control over the rate of notifications sent to this alert policy's
   notification channels.
@@ -6454,6 +6518,118 @@ class PointData(_messages.Message):
 
   timeInterval = _messages.MessageField('TimeInterval', 1)
   values = _messages.MessageField('TypedValue', 2, repeated=True)
+
+
+class PrometheusQueryLanguageCondition(_messages.Message):
+  r"""A condition type that allows alert policies to be defined using
+  Prometheus Query Language (PromQL)
+  (https://prometheus.io/docs/prometheus/latest/querying/basics/).The
+  PrometheusQueryLanguageCondition message contains information from a
+  Prometheus alerting rule and its associated rule group.A Prometheus alerting
+  rule is described here (https://prometheus.io/docs/prometheus/latest/configu
+  ration/alerting_rules/). The semantics of a Prometheus alerting rule is
+  described here (https://prometheus.io/docs/prometheus/latest/configuration/r
+  ecording_rules/#rule).A Prometheus rule group is described here (https://pro
+  metheus.io/docs/prometheus/latest/configuration/recording_rules/). The
+  semantics of a Prometheus rule group is described here (https://prometheus.i
+  o/docs/prometheus/latest/configuration/recording_rules/#rule_group).Because
+  Cloud Alerting has no representation of a Prometheus rule group resource, we
+  must embed the information of the parent rule group inside each of the
+  conditions that refer to it. We must also update the contents of all
+  Prometheus alerts in case the information of their rule group changes.The
+  PrometheusQueryLanguageCondition protocol buffer combines the information of
+  the corresponding rule group and alerting rule. The structure of the
+  PrometheusQueryLanguageCondition protocol buffer does NOT mimic the
+  structure of the Prometheus rule group and alerting rule YAML declarations.
+  The PrometheusQueryLanguageCondition protocol buffer may change in the
+  future to support future rule group and/or alerting rule features. There are
+  no new such features at the present time (2023-06-26).
+
+  Messages:
+    LabelsValue: Optional. Labels to add to or overwrite in the PromQL query
+      result. Label names must be valid
+      (https://prometheus.io/docs/concepts/data_model/#metric-names-and-
+      labels). Label values can be templatized by using variables
+      (https://cloud.google.com/monitoring/alerts/doc-variables). The only
+      available variable names are the names of the labels in the PromQL
+      result, including "__name__" and "value". "labels" may be empty.
+
+  Fields:
+    alertRule: Optional. The alerting rule name of this alert in the
+      corresponding Prometheus configuration file.Some external tools may
+      require this field to be populated correctly in order to refer to the
+      original Prometheus configuration file. The rule group name and the
+      alert name are necessary to update the relevant AlertPolicies in case
+      the definition of the rule group changes in the future.This field is
+      optional. If this field is not empty, then it must be a valid Prometheus
+      label name (https://prometheus.io/docs/concepts/data_model/#metric-
+      names-and-labels).
+    duration: Optional. Alerts are considered firing once their PromQL
+      expression was evaluated to be "true" for this long. Alerts whose PromQL
+      expression was not evaluated to be "true" for long enough are considered
+      pending. The default value is zero. Must be zero or positive.
+    evaluationInterval: Required. How often this rule should be evaluated.
+      Must be a positive multiple of 30 seconds or missing. The default value
+      is 30 seconds. If this PrometheusQueryLanguageCondition was generated
+      from a Prometheus alerting rule, then this value should be taken from
+      the enclosing rule group.
+    labels: Optional. Labels to add to or overwrite in the PromQL query
+      result. Label names must be valid
+      (https://prometheus.io/docs/concepts/data_model/#metric-names-and-
+      labels). Label values can be templatized by using variables
+      (https://cloud.google.com/monitoring/alerts/doc-variables). The only
+      available variable names are the names of the labels in the PromQL
+      result, including "__name__" and "value". "labels" may be empty.
+    query: Required. The PromQL expression to evaluate. Every evaluation cycle
+      this expression is evaluated at the current time, and all resultant time
+      series become pending/firing alerts. This field must not be empty.
+    ruleGroup: Optional. The rule group name of this alert in the
+      corresponding Prometheus configuration file.Some external tools may
+      require this field to be populated correctly in order to refer to the
+      original Prometheus configuration file. The rule group name and the
+      alert name are necessary to update the relevant AlertPolicies in case
+      the definition of the rule group changes in the future.This field is
+      optional. If this field is not empty, then it must be a valid Prometheus
+      label name (https://prometheus.io/docs/concepts/data_model/#metric-
+      names-and-labels).
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels to add to or overwrite in the PromQL query result.
+    Label names must be valid
+    (https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels).
+    Label values can be templatized by using variables
+    (https://cloud.google.com/monitoring/alerts/doc-variables). The only
+    available variable names are the names of the labels in the PromQL result,
+    including "__name__" and "value". "labels" may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  alertRule = _messages.StringField(1)
+  duration = _messages.StringField(2)
+  evaluationInterval = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  query = _messages.StringField(5)
+  ruleGroup = _messages.StringField(6)
 
 
 class QueryTimeSeriesRequest(_messages.Message):
@@ -7266,6 +7442,8 @@ class Type(_messages.Message):
     SyntaxValueValuesEnum: The source syntax.
 
   Fields:
+    edition: The source edition string, only valid when syntax is
+      SYNTAX_EDITIONS.
     fields: The list of fields.
     name: The fully qualified message name.
     oneofs: The list of types appearing in oneof definitions in this type.
@@ -7280,16 +7458,19 @@ class Type(_messages.Message):
     Values:
       SYNTAX_PROTO2: Syntax proto2.
       SYNTAX_PROTO3: Syntax proto3.
+      SYNTAX_EDITIONS: Syntax editions.
     """
     SYNTAX_PROTO2 = 0
     SYNTAX_PROTO3 = 1
+    SYNTAX_EDITIONS = 2
 
-  fields = _messages.MessageField('Field', 1, repeated=True)
-  name = _messages.StringField(2)
-  oneofs = _messages.StringField(3, repeated=True)
-  options = _messages.MessageField('Option', 4, repeated=True)
-  sourceContext = _messages.MessageField('SourceContext', 5)
-  syntax = _messages.EnumField('SyntaxValueValuesEnum', 6)
+  edition = _messages.StringField(1)
+  fields = _messages.MessageField('Field', 2, repeated=True)
+  name = _messages.StringField(3)
+  oneofs = _messages.StringField(4, repeated=True)
+  options = _messages.MessageField('Option', 5, repeated=True)
+  sourceContext = _messages.MessageField('SourceContext', 6)
+  syntax = _messages.EnumField('SyntaxValueValuesEnum', 7)
 
 
 class TypedValue(_messages.Message):
@@ -7417,12 +7598,21 @@ class UptimeCheckConfig(_messages.Message):
         of South America.
       ASIA_PACIFIC: Allows checks to run from locations within the Asia
         Pacific area (ex: Singapore).
+      USA_OREGON: Allows checks to run from locations within the western
+        United States of America
+      USA_IOWA: Allows checks to run from locations within the central United
+        States of America
+      USA_VIRGINIA: Allows checks to run from locations within the eastern
+        United States of America
     """
     REGION_UNSPECIFIED = 0
     USA = 1
     EUROPE = 2
     SOUTH_AMERICA = 3
     ASIA_PACIFIC = 4
+    USA_OREGON = 5
+    USA_IOWA = 6
+    USA_VIRGINIA = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
@@ -7503,12 +7693,21 @@ class UptimeCheckIp(_messages.Message):
         of South America.
       ASIA_PACIFIC: Allows checks to run from locations within the Asia
         Pacific area (ex: Singapore).
+      USA_OREGON: Allows checks to run from locations within the western
+        United States of America
+      USA_IOWA: Allows checks to run from locations within the central United
+        States of America
+      USA_VIRGINIA: Allows checks to run from locations within the eastern
+        United States of America
     """
     REGION_UNSPECIFIED = 0
     USA = 1
     EUROPE = 2
     SOUTH_AMERICA = 3
     ASIA_PACIFIC = 4
+    USA_OREGON = 5
+    USA_IOWA = 6
+    USA_VIRGINIA = 7
 
   ipAddress = _messages.StringField(1)
   location = _messages.StringField(2)

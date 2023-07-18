@@ -81,6 +81,33 @@ def convert_to_json_parsable_type(value):
   return value
 
 
+def get_parsable_display_dict_for_resource(
+    resource, display_titles_and_defaults
+):
+  """Makes a resource better for returning from describe and list commands.
+
+  Parsable = standardizes field keys across providers.
+  Display = Removes complex nested objects and makes other string tweaks.
+
+  Args:
+    resource (resource_reference.Resource): Resource to format.
+    display_titles_and_defaults (namedtuple): Contains names of fields for
+      display.
+
+  Returns:
+    Dictionary representing input resource with optimizations described above.
+  """
+  # Avoid printing all the attributes of StorageUrl.
+  result = {'storage_url': resource.storage_url.url_string}
+  result.update(
+      {
+          field: convert_to_json_parsable_type(getattr(resource, field, None))
+          for field in display_titles_and_defaults._fields
+      }
+  )
+  return result
+
+
 def convert_datetime_object_to_utc(datetime_object):
   """Converts datetime object to UTC and returns it."""
   # Can't use CloudSDK core.util.times.FormatDateTime because of:

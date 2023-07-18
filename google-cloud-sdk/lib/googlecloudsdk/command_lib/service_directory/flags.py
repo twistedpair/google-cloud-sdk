@@ -118,16 +118,5 @@ def AddEndpointFilterFlag(parser):
       help="""\
         Apply a Boolean filter EXPRESSION to each endpoint in the service.
         If the expression evaluates True, then that endpoint is listed.
-        """).AddToParser(parser)
-
-
-def AddPolicyFlag(parser):
-  """Adds policy flags for service-directory commands."""
-  return base.Argument(
-      '--policy-from-file',
-      type=arg_parsers.YAMLFileContents(),
-      required=True,
-      help="""\
-        Provide the policy yaml file that specifies name, namespace(optional)
-        and resource policies.
-        """).AddToParser(parser)
+        """,
+  ).AddToParser(parser)

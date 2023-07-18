@@ -221,7 +221,7 @@ class BasicInfo(object):
     fallback_locale = '; '.join(env_vars)
 
     try:
-      return locale.getdefaultlocale()
+      return locale.getlocale()
     except ValueError:
       return fallback_locale
 

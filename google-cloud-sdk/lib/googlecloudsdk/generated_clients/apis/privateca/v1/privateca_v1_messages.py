@@ -576,13 +576,30 @@ class CertificateConfig(_messages.Message):
       self-signed CertificateAuthority or CertificateAuthority CSR.
     subjectConfig: Required. Specifies some of the values in a certificate
       that are related to the subject.
+    subjectKeyId: Optional. When specified this provides a custom SKI to be
+      used in the certificate. This should only be used to maintain a SKI of
+      an existing CA originally created outside CAS, which was not generated
+      using method (1) described in RFC 5280 section 4.2.1.2.
     x509Config: Required. Describes how some of the technical X.509 fields in
       a certificate should be populated.
   """
 
   publicKey = _messages.MessageField('PublicKey', 1)
   subjectConfig = _messages.MessageField('SubjectConfig', 2)
-  x509Config = _messages.MessageField('X509Parameters', 3)
+  subjectKeyId = _messages.MessageField('CertificateConfigKeyId', 3)
+  x509Config = _messages.MessageField('X509Parameters', 4)
+
+
+class CertificateConfigKeyId(_messages.Message):
+  r"""A KeyId identifies a specific public key, usually by hashing the public
+  key.
+
+  Fields:
+    keyId: Optional. The value of this KeyId encoded in lowercase hexadecimal.
+      This is most likely the 160 bit SHA-1 hash of the public key.
+  """
+
+  keyId = _messages.StringField(1)
 
 
 class CertificateDescription(_messages.Message):

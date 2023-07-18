@@ -15,6 +15,409 @@ from apitools.base.py import extra_types
 package = 'bigquery'
 
 
+class AggregateClassificationMetrics(_messages.Message):
+  r"""Aggregate metrics for classification/classifier models. For multi-class
+  models, the metrics are either macro-averaged or micro-averaged. When macro-
+  averaged, the metrics are calculated for each label and then an unweighted
+  average is taken of those values. When micro-averaged, the metric is
+  calculated globally by counting the total number of correctly predicted
+  rows.
+
+  Fields:
+    accuracy: Accuracy is the fraction of predictions given the correct label.
+      For multiclass this is a micro-averaged metric.
+    f1Score: The F1 score is an average of recall and precision. For
+      multiclass this is a macro-averaged metric.
+    logLoss: Logarithmic Loss. For multiclass this is a macro-averaged metric.
+    precision: Precision is the fraction of actual positive predictions that
+      had positive actual labels. For multiclass this is a macro-averaged
+      metric treating each class as a binary classifier.
+    recall: Recall is the fraction of actual positive labels that were given a
+      positive prediction. For multiclass this is a macro-averaged metric.
+    rocAuc: Area Under a ROC Curve. For multiclass this is a macro-averaged
+      metric.
+    threshold: Threshold at which the metrics are computed. For binary
+      classification models this is the positive class threshold. For multi-
+      class classfication models this is the confidence threshold.
+  """
+
+  accuracy = _messages.FloatField(1)
+  f1Score = _messages.FloatField(2)
+  logLoss = _messages.FloatField(3)
+  precision = _messages.FloatField(4)
+  recall = _messages.FloatField(5)
+  rocAuc = _messages.FloatField(6)
+  threshold = _messages.FloatField(7)
+
+
+class Argument(_messages.Message):
+  r"""Input/output argument of a function or a stored procedure.
+
+  Enums:
+    ArgumentKindValueValuesEnum: Optional. Defaults to FIXED_TYPE.
+    ModeValueValuesEnum: Optional. Specifies whether the argument is input or
+      output. Can be set for procedures only.
+
+  Fields:
+    argumentKind: Optional. Defaults to FIXED_TYPE.
+    dataType: Required unless argument_kind = ANY_TYPE.
+    mode: Optional. Specifies whether the argument is input or output. Can be
+      set for procedures only.
+    name: Optional. The name of this argument. Can be absent for function
+      return argument.
+  """
+
+  class ArgumentKindValueValuesEnum(_messages.Enum):
+    r"""Optional. Defaults to FIXED_TYPE.
+
+    Values:
+      ARGUMENT_KIND_UNSPECIFIED: <no description>
+      FIXED_TYPE: The argument is a variable with fully specified type, which
+        can be a struct or an array, but not a table.
+      ANY_TYPE: The argument is any type, including struct or array, but not a
+        table. To be added: FIXED_TABLE, ANY_TABLE
+    """
+    ARGUMENT_KIND_UNSPECIFIED = 0
+    FIXED_TYPE = 1
+    ANY_TYPE = 2
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies whether the argument is input or output. Can be
+    set for procedures only.
+
+    Values:
+      MODE_UNSPECIFIED: <no description>
+      IN: The argument is input-only.
+      OUT: The argument is output-only.
+      INOUT: The argument is both an input and an output.
+    """
+    MODE_UNSPECIFIED = 0
+    IN = 1
+    OUT = 2
+    INOUT = 3
+
+  argumentKind = _messages.EnumField('ArgumentKindValueValuesEnum', 1)
+  dataType = _messages.MessageField('StandardSqlDataType', 2)
+  mode = _messages.EnumField('ModeValueValuesEnum', 3)
+  name = _messages.StringField(4)
+
+
+class ArimaCoefficients(_messages.Message):
+  r"""Arima coefficients.
+
+  Fields:
+    autoRegressiveCoefficients: Auto-regressive coefficients, an array of
+      double.
+    interceptCoefficient: Intercept coefficient, just a double not an array.
+    movingAverageCoefficients: Moving-average coefficients, an array of
+      double.
+  """
+
+  autoRegressiveCoefficients = _messages.FloatField(1, repeated=True)
+  interceptCoefficient = _messages.FloatField(2)
+  movingAverageCoefficients = _messages.FloatField(3, repeated=True)
+
+
+class ArimaFittingMetrics(_messages.Message):
+  r"""ARIMA model fitting metrics.
+
+  Fields:
+    aic: AIC.
+    logLikelihood: Log-likelihood.
+    variance: Variance.
+  """
+
+  aic = _messages.FloatField(1)
+  logLikelihood = _messages.FloatField(2)
+  variance = _messages.FloatField(3)
+
+
+class ArimaForecastingMetrics(_messages.Message):
+  r"""Model evaluation metrics for ARIMA forecasting models.
+
+  Enums:
+    SeasonalPeriodsValueListEntryValuesEnum:
+
+  Fields:
+    arimaFittingMetrics: Arima model fitting metrics.
+    arimaSingleModelForecastingMetrics: Repeated as there can be many metric
+      sets (one for each model) in auto-arima and the large-scale case.
+    hasDrift: Whether Arima model fitted with drift or not. It is always false
+      when d is not 1.
+    nonSeasonalOrder: Non-seasonal order.
+    seasonalPeriods: Seasonal periods. Repeated because multiple periods are
+      supported for one time series.
+    timeSeriesId: Id to differentiate different time series for the large-
+      scale case.
+  """
+
+  class SeasonalPeriodsValueListEntryValuesEnum(_messages.Enum):
+    r"""SeasonalPeriodsValueListEntryValuesEnum enum type.
+
+    Values:
+      SEASONAL_PERIOD_TYPE_UNSPECIFIED: Unspecified seasonal period.
+      NO_SEASONALITY: No seasonality
+      DAILY: Daily period, 24 hours.
+      WEEKLY: Weekly period, 7 days.
+      MONTHLY: Monthly period, 30 days or irregular.
+      QUARTERLY: Quarterly period, 90 days or irregular.
+      YEARLY: Yearly period, 365 days or irregular.
+    """
+    SEASONAL_PERIOD_TYPE_UNSPECIFIED = 0
+    NO_SEASONALITY = 1
+    DAILY = 2
+    WEEKLY = 3
+    MONTHLY = 4
+    QUARTERLY = 5
+    YEARLY = 6
+
+  arimaFittingMetrics = _messages.MessageField('ArimaFittingMetrics', 1, repeated=True)
+  arimaSingleModelForecastingMetrics = _messages.MessageField('ArimaSingleModelForecastingMetrics', 2, repeated=True)
+  hasDrift = _messages.BooleanField(3, repeated=True)
+  nonSeasonalOrder = _messages.MessageField('ArimaOrder', 4, repeated=True)
+  seasonalPeriods = _messages.EnumField('SeasonalPeriodsValueListEntryValuesEnum', 5, repeated=True)
+  timeSeriesId = _messages.StringField(6, repeated=True)
+
+
+class ArimaModelInfo(_messages.Message):
+  r"""Arima model information.
+
+  Enums:
+    SeasonalPeriodsValueListEntryValuesEnum:
+
+  Fields:
+    arimaCoefficients: Arima coefficients.
+    arimaFittingMetrics: Arima fitting metrics.
+    hasDrift: Whether Arima model fitted with drift or not. It is always false
+      when d is not 1.
+    hasHolidayEffect: If true, holiday_effect is a part of time series
+      decomposition result.
+    hasSpikesAndDips: If true, spikes_and_dips is a part of time series
+      decomposition result.
+    hasStepChanges: If true, step_changes is a part of time series
+      decomposition result.
+    nonSeasonalOrder: Non-seasonal order.
+    seasonalPeriods: Seasonal periods. Repeated because multiple periods are
+      supported for one time series.
+    timeSeriesId: The time_series_id value for this time series. It will be
+      one of the unique values from the time_series_id_column specified during
+      ARIMA model training. Only present when time_series_id_column training
+      option was used.
+    timeSeriesIds: The tuple of time_series_ids identifying this time series.
+      It will be one of the unique tuples of values present in the
+      time_series_id_columns specified during ARIMA model training. Only
+      present when time_series_id_columns training option was used and the
+      order of values here are same as the order of time_series_id_columns.
+  """
+
+  class SeasonalPeriodsValueListEntryValuesEnum(_messages.Enum):
+    r"""SeasonalPeriodsValueListEntryValuesEnum enum type.
+
+    Values:
+      SEASONAL_PERIOD_TYPE_UNSPECIFIED: Unspecified seasonal period.
+      NO_SEASONALITY: No seasonality
+      DAILY: Daily period, 24 hours.
+      WEEKLY: Weekly period, 7 days.
+      MONTHLY: Monthly period, 30 days or irregular.
+      QUARTERLY: Quarterly period, 90 days or irregular.
+      YEARLY: Yearly period, 365 days or irregular.
+    """
+    SEASONAL_PERIOD_TYPE_UNSPECIFIED = 0
+    NO_SEASONALITY = 1
+    DAILY = 2
+    WEEKLY = 3
+    MONTHLY = 4
+    QUARTERLY = 5
+    YEARLY = 6
+
+  arimaCoefficients = _messages.MessageField('ArimaCoefficients', 1)
+  arimaFittingMetrics = _messages.MessageField('ArimaFittingMetrics', 2)
+  hasDrift = _messages.BooleanField(3)
+  hasHolidayEffect = _messages.BooleanField(4)
+  hasSpikesAndDips = _messages.BooleanField(5)
+  hasStepChanges = _messages.BooleanField(6)
+  nonSeasonalOrder = _messages.MessageField('ArimaOrder', 7)
+  seasonalPeriods = _messages.EnumField('SeasonalPeriodsValueListEntryValuesEnum', 8, repeated=True)
+  timeSeriesId = _messages.StringField(9)
+  timeSeriesIds = _messages.StringField(10, repeated=True)
+
+
+class ArimaOrder(_messages.Message):
+  r"""Arima order, can be used for both non-seasonal and seasonal parts.
+
+  Fields:
+    d: Order of the differencing part.
+    p: Order of the autoregressive part.
+    q: Order of the moving-average part.
+  """
+
+  d = _messages.IntegerField(1)
+  p = _messages.IntegerField(2)
+  q = _messages.IntegerField(3)
+
+
+class ArimaResult(_messages.Message):
+  r"""(Auto-)arima fitting result. Wrap everything in ArimaResult for easier
+  refactoring if we want to use model-specific iteration results.
+
+  Enums:
+    SeasonalPeriodsValueListEntryValuesEnum:
+
+  Fields:
+    arimaModelInfo: This message is repeated because there are multiple arima
+      models fitted in auto-arima. For non-auto-arima model, its size is one.
+    seasonalPeriods: Seasonal periods. Repeated because multiple periods are
+      supported for one time series.
+  """
+
+  class SeasonalPeriodsValueListEntryValuesEnum(_messages.Enum):
+    r"""SeasonalPeriodsValueListEntryValuesEnum enum type.
+
+    Values:
+      SEASONAL_PERIOD_TYPE_UNSPECIFIED: Unspecified seasonal period.
+      NO_SEASONALITY: No seasonality
+      DAILY: Daily period, 24 hours.
+      WEEKLY: Weekly period, 7 days.
+      MONTHLY: Monthly period, 30 days or irregular.
+      QUARTERLY: Quarterly period, 90 days or irregular.
+      YEARLY: Yearly period, 365 days or irregular.
+    """
+    SEASONAL_PERIOD_TYPE_UNSPECIFIED = 0
+    NO_SEASONALITY = 1
+    DAILY = 2
+    WEEKLY = 3
+    MONTHLY = 4
+    QUARTERLY = 5
+    YEARLY = 6
+
+  arimaModelInfo = _messages.MessageField('ArimaModelInfo', 1, repeated=True)
+  seasonalPeriods = _messages.EnumField('SeasonalPeriodsValueListEntryValuesEnum', 2, repeated=True)
+
+
+class ArimaSingleModelForecastingMetrics(_messages.Message):
+  r"""Model evaluation metrics for a single ARIMA forecasting model.
+
+  Enums:
+    SeasonalPeriodsValueListEntryValuesEnum:
+
+  Fields:
+    arimaFittingMetrics: Arima fitting metrics.
+    hasDrift: Is arima model fitted with drift or not. It is always false when
+      d is not 1.
+    hasHolidayEffect: If true, holiday_effect is a part of time series
+      decomposition result.
+    hasSpikesAndDips: If true, spikes_and_dips is a part of time series
+      decomposition result.
+    hasStepChanges: If true, step_changes is a part of time series
+      decomposition result.
+    nonSeasonalOrder: Non-seasonal order.
+    seasonalPeriods: Seasonal periods. Repeated because multiple periods are
+      supported for one time series.
+    timeSeriesId: The time_series_id value for this time series. It will be
+      one of the unique values from the time_series_id_column specified during
+      ARIMA model training. Only present when time_series_id_column training
+      option was used.
+    timeSeriesIds: The tuple of time_series_ids identifying this time series.
+      It will be one of the unique tuples of values present in the
+      time_series_id_columns specified during ARIMA model training. Only
+      present when time_series_id_columns training option was used and the
+      order of values here are same as the order of time_series_id_columns.
+  """
+
+  class SeasonalPeriodsValueListEntryValuesEnum(_messages.Enum):
+    r"""SeasonalPeriodsValueListEntryValuesEnum enum type.
+
+    Values:
+      SEASONAL_PERIOD_TYPE_UNSPECIFIED: Unspecified seasonal period.
+      NO_SEASONALITY: No seasonality
+      DAILY: Daily period, 24 hours.
+      WEEKLY: Weekly period, 7 days.
+      MONTHLY: Monthly period, 30 days or irregular.
+      QUARTERLY: Quarterly period, 90 days or irregular.
+      YEARLY: Yearly period, 365 days or irregular.
+    """
+    SEASONAL_PERIOD_TYPE_UNSPECIFIED = 0
+    NO_SEASONALITY = 1
+    DAILY = 2
+    WEEKLY = 3
+    MONTHLY = 4
+    QUARTERLY = 5
+    YEARLY = 6
+
+  arimaFittingMetrics = _messages.MessageField('ArimaFittingMetrics', 1)
+  hasDrift = _messages.BooleanField(2)
+  hasHolidayEffect = _messages.BooleanField(3)
+  hasSpikesAndDips = _messages.BooleanField(4)
+  hasStepChanges = _messages.BooleanField(5)
+  nonSeasonalOrder = _messages.MessageField('ArimaOrder', 6)
+  seasonalPeriods = _messages.EnumField('SeasonalPeriodsValueListEntryValuesEnum', 7, repeated=True)
+  timeSeriesId = _messages.StringField(8)
+  timeSeriesIds = _messages.StringField(9, repeated=True)
+
+
+class AuditConfig(_messages.Message):
+  r"""Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConfig must have one or more
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
+
+  Fields:
+    auditLogConfigs: The configuration for logging of each type of permission.
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
+  """
+
+  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
+  service = _messages.StringField(2)
+
+
+class AuditLogConfig(_messages.Message):
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of Binding.members.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    r"""The log type that this config enables.
+
+    Values:
+      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
+      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
+      DATA_WRITE: Data writes. Example: CloudSQL Users create
+      DATA_READ: Data reads. Example: CloudSQL Users list
+    """
+    LOG_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    DATA_WRITE = 2
+    DATA_READ = 3
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
 class AvroOptions(_messages.Message):
   r"""A AvroOptions object.
 
@@ -187,6 +590,30 @@ class BigqueryJobsCancelRequest(_messages.Message):
   projectId = _messages.StringField(3, required=True)
 
 
+class BigqueryJobsDeleteRequest(_messages.Message):
+  r"""A BigqueryJobsDeleteRequest object.
+
+  Fields:
+    jobId: Required. Job ID of the job for which metadata is to be deleted. If
+      this is a parent job which has child jobs, the metadata from all child
+      jobs will be deleted as well. Direct deletion of the metadata of child
+      jobs is not allowed.
+    location: The geographic location of the job. Required. See details at:
+      https://cloud.google.com/bigquery/docs/locations#specifying_your_locatio
+      n.
+    projectId: Required. Project ID of the job for which metadata is to be
+      deleted.
+  """
+
+  jobId = _messages.StringField(1, required=True)
+  location = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
+
+
+class BigqueryJobsDeleteResponse(_messages.Message):
+  r"""An empty BigqueryJobsDelete response."""
+
+
 class BigqueryJobsGetQueryResultsRequest(_messages.Message):
   r"""A BigqueryJobsGetQueryResultsRequest object.
 
@@ -314,6 +741,72 @@ class BigqueryJobsQueryRequest(_messages.Message):
   queryRequest = _messages.MessageField('QueryRequest', 2)
 
 
+class BigqueryModelsDeleteRequest(_messages.Message):
+  r"""A BigqueryModelsDeleteRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of the model to delete.
+    modelId: Required. Model ID of the model to delete.
+    projectId: Required. Project ID of the model to delete.
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  modelId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+
+
+class BigqueryModelsDeleteResponse(_messages.Message):
+  r"""An empty BigqueryModelsDelete response."""
+
+
+class BigqueryModelsGetRequest(_messages.Message):
+  r"""A BigqueryModelsGetRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of the requested model.
+    modelId: Required. Model ID of the requested model.
+    projectId: Required. Project ID of the requested model.
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  modelId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+
+
+class BigqueryModelsListRequest(_messages.Message):
+  r"""A BigqueryModelsListRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of the models to list.
+    maxResults: The maximum number of results to return in a single response
+      page. Leverage the page tokens to iterate through the entire collection.
+    pageToken: Page token, returned by a previous call to request the next
+      page of results
+    projectId: Required. Project ID of the models to list.
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  pageToken = _messages.StringField(3)
+  projectId = _messages.StringField(4, required=True)
+
+
+class BigqueryModelsPatchRequest(_messages.Message):
+  r"""A BigqueryModelsPatchRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of the model to patch.
+    model: A Model resource to be passed as the request body.
+    modelId: Required. Model ID of the model to patch.
+    projectId: Required. Project ID of the model to patch.
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  model = _messages.MessageField('Model', 2)
+  modelId = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4, required=True)
+
+
 class BigqueryProjectsGetServiceAccountRequest(_messages.Message):
   r"""A BigqueryProjectsGetServiceAccountRequest object.
 
@@ -335,6 +828,168 @@ class BigqueryProjectsListRequest(_messages.Message):
 
   maxResults = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
   pageToken = _messages.StringField(2)
+
+
+class BigqueryRoutinesDeleteRequest(_messages.Message):
+  r"""A BigqueryRoutinesDeleteRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of the routine to delete
+    projectId: Required. Project ID of the routine to delete
+    routineId: Required. Routine ID of the routine to delete
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  routineId = _messages.StringField(3, required=True)
+
+
+class BigqueryRoutinesDeleteResponse(_messages.Message):
+  r"""An empty BigqueryRoutinesDelete response."""
+
+
+class BigqueryRoutinesGetRequest(_messages.Message):
+  r"""A BigqueryRoutinesGetRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of the requested routine
+    projectId: Required. Project ID of the requested routine
+    readMask: If set, only the Routine fields in the field mask are returned
+      in the response. If unset, all Routine fields are returned.
+    routineId: Required. Routine ID of the requested routine
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  readMask = _messages.StringField(3)
+  routineId = _messages.StringField(4, required=True)
+
+
+class BigqueryRoutinesInsertRequest(_messages.Message):
+  r"""A BigqueryRoutinesInsertRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of the new routine
+    projectId: Required. Project ID of the new routine
+    routine: A Routine resource to be passed as the request body.
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  routine = _messages.MessageField('Routine', 3)
+
+
+class BigqueryRoutinesListRequest(_messages.Message):
+  r"""A BigqueryRoutinesListRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of the routines to list
+    filter: If set, then only the Routines matching this filter are returned.
+      The supported format is `routineType:{RoutineType}`, where
+      `{RoutineType}` is a RoutineType enum. For example:
+      `routineType:SCALAR_FUNCTION`.
+    maxResults: The maximum number of results to return in a single response
+      page. Leverage the page tokens to iterate through the entire collection.
+    pageToken: Page token, returned by a previous call, to request the next
+      page of results
+    projectId: Required. Project ID of the routines to list
+    readMask: If set, then only the Routine fields in the field mask, as well
+      as project_id, dataset_id and routine_id, are returned in the response.
+      If unset, then the following Routine fields are returned: etag,
+      project_id, dataset_id, routine_id, routine_type, creation_time,
+      last_modified_time, and language.
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  filter = _messages.StringField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+  pageToken = _messages.StringField(4)
+  projectId = _messages.StringField(5, required=True)
+  readMask = _messages.StringField(6)
+
+
+class BigqueryRoutinesUpdateRequest(_messages.Message):
+  r"""A BigqueryRoutinesUpdateRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of the routine to update
+    projectId: Required. Project ID of the routine to update
+    routine: A Routine resource to be passed as the request body.
+    routineId: Required. Routine ID of the routine to update
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  routine = _messages.MessageField('Routine', 3)
+  routineId = _messages.StringField(4, required=True)
+
+
+class BigqueryRowAccessPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A BigqueryRowAccessPoliciesGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class BigqueryRowAccessPoliciesListRequest(_messages.Message):
+  r"""A BigqueryRowAccessPoliciesListRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of row access policies to list.
+    pageSize: The maximum number of results to return in a single response
+      page. Leverage the page tokens to iterate through the entire collection.
+    pageToken: Page token, returned by a previous call, to request the next
+      page of results.
+    projectId: Required. Project ID of the row access policies to list.
+    tableId: Required. Table ID of the table to list row access policies.
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  projectId = _messages.StringField(4, required=True)
+  tableId = _messages.StringField(5, required=True)
+
+
+class BigqueryRowAccessPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A BigqueryRowAccessPoliciesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class BigqueryRowAccessPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A BigqueryRowAccessPoliciesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class BigqueryTabledataInsertAllRequest(_messages.Message):
@@ -394,6 +1049,22 @@ class BigqueryTablesDeleteRequest(_messages.Message):
 
 class BigqueryTablesDeleteResponse(_messages.Message):
   r"""An empty BigqueryTablesDelete response."""
+
+
+class BigqueryTablesGetIamPolicyRequest(_messages.Message):
+  r"""A BigqueryTablesGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class BigqueryTablesGetRequest(_messages.Message):
@@ -494,6 +1165,38 @@ class BigqueryTablesPatchRequest(_messages.Message):
   projectId = _messages.StringField(3, required=True)
   table = _messages.MessageField('Table', 4)
   tableId = _messages.StringField(5, required=True)
+
+
+class BigqueryTablesSetIamPolicyRequest(_messages.Message):
+  r"""A BigqueryTablesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class BigqueryTablesTestIamPermissionsRequest(_messages.Message):
+  r"""A BigqueryTablesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class BigqueryTablesUpdateRequest(_messages.Message):
@@ -620,6 +1323,111 @@ class BigtableOptions(_messages.Message):
   readRowkeyAsString = _messages.BooleanField(3)
 
 
+class BinaryClassificationMetrics(_messages.Message):
+  r"""Evaluation metrics for binary classification/classifier models.
+
+  Fields:
+    aggregateClassificationMetrics: Aggregate classification metrics.
+    binaryConfusionMatrixList: Binary confusion matrix at multiple thresholds.
+    negativeLabel: Label representing the negative class.
+    positiveLabel: Label representing the positive class.
+  """
+
+  aggregateClassificationMetrics = _messages.MessageField('AggregateClassificationMetrics', 1)
+  binaryConfusionMatrixList = _messages.MessageField('BinaryConfusionMatrix', 2, repeated=True)
+  negativeLabel = _messages.StringField(3)
+  positiveLabel = _messages.StringField(4)
+
+
+class BinaryConfusionMatrix(_messages.Message):
+  r"""Confusion matrix for binary classification models.
+
+  Fields:
+    accuracy: The fraction of predictions given the correct label.
+    f1Score: The equally weighted average of recall and precision.
+    falseNegatives: Number of false samples predicted as false.
+    falsePositives: Number of false samples predicted as true.
+    positiveClassThreshold: Threshold value used when computing each of the
+      following metric.
+    precision: The fraction of actual positive predictions that had positive
+      actual labels.
+    recall: The fraction of actual positive labels that were given a positive
+      prediction.
+    trueNegatives: Number of true samples predicted as false.
+    truePositives: Number of true samples predicted as true.
+  """
+
+  accuracy = _messages.FloatField(1)
+  f1Score = _messages.FloatField(2)
+  falseNegatives = _messages.IntegerField(3)
+  falsePositives = _messages.IntegerField(4)
+  positiveClassThreshold = _messages.FloatField(5)
+  precision = _messages.FloatField(6)
+  recall = _messages.FloatField(7)
+  trueNegatives = _messages.IntegerField(8)
+  truePositives = _messages.IntegerField(9)
+
+
+class Binding(_messages.Message):
+  r"""Associates `members`, or principals, with a `role`.
+
+  Fields:
+    condition: The condition that is associated with this binding. If the
+      condition evaluates to `true`, then this binding applies to the current
+      request. If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    members: Specifies the principals requesting access for a Google Cloud
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding. *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+  """
+
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
+
+
 class BqmlIterationResult(_messages.Message):
   r"""A BqmlIterationResult object.
 
@@ -710,6 +1518,32 @@ class BqmlTrainingRun(_messages.Message):
   trainingOptions = _messages.MessageField('TrainingOptionsValue', 4)
 
 
+class CategoricalValue(_messages.Message):
+  r"""Representative value of a categorical feature.
+
+  Fields:
+    categoryCounts: Counts of all categories for the categorical feature. If
+      there are more than ten categories, we return top ten (by count) and
+      return one more CategoryCount with category "_OTHER_" and count as
+      aggregate counts of remaining categories.
+  """
+
+  categoryCounts = _messages.MessageField('CategoryCount', 1, repeated=True)
+
+
+class CategoryCount(_messages.Message):
+  r"""Represents the count of a single category within the cluster.
+
+  Fields:
+    category: The name of category.
+    count: The count of training samples matching the category within the
+      cluster.
+  """
+
+  category = _messages.StringField(1)
+  count = _messages.IntegerField(2)
+
+
 class CloneDefinition(_messages.Message):
   r"""A CloneDefinition object.
 
@@ -724,6 +1558,36 @@ class CloneDefinition(_messages.Message):
   cloneTime = _message_types.DateTimeField(2)
 
 
+class Cluster(_messages.Message):
+  r"""Message containing the information about one cluster.
+
+  Fields:
+    centroidId: Centroid id.
+    count: Count of training data rows that were assigned to this cluster.
+    featureValues: Values of highly variant features for this cluster.
+  """
+
+  centroidId = _messages.IntegerField(1)
+  count = _messages.IntegerField(2)
+  featureValues = _messages.MessageField('FeatureValue', 3, repeated=True)
+
+
+class ClusterInfo(_messages.Message):
+  r"""Information about a single cluster for clustering model.
+
+  Fields:
+    centroidId: Centroid id.
+    clusterRadius: Cluster radius, the average distance from centroid to each
+      point assigned to the cluster.
+    clusterSize: Cluster size, the total number of points assigned to the
+      cluster.
+  """
+
+  centroidId = _messages.IntegerField(1)
+  clusterRadius = _messages.FloatField(2)
+  clusterSize = _messages.IntegerField(3)
+
+
 class Clustering(_messages.Message):
   r"""A Clustering object.
 
@@ -736,6 +1600,34 @@ class Clustering(_messages.Message):
   """
 
   fields = _messages.StringField(1, repeated=True)
+
+
+class ClusteringMetrics(_messages.Message):
+  r"""Evaluation metrics for clustering models.
+
+  Fields:
+    clusters: Information for all clusters.
+    daviesBouldinIndex: Davies-Bouldin index.
+    meanSquaredDistance: Mean of squared distances between each sample to its
+      cluster centroid.
+  """
+
+  clusters = _messages.MessageField('Cluster', 1, repeated=True)
+  daviesBouldinIndex = _messages.FloatField(2)
+  meanSquaredDistance = _messages.FloatField(3)
+
+
+class ConfusionMatrix(_messages.Message):
+  r"""Confusion matrix for multi-class classification models.
+
+  Fields:
+    confidenceThreshold: Confidence threshold used when computing the entries
+      of the confusion matrix.
+    rows: One row per actual label.
+  """
+
+  confidenceThreshold = _messages.FloatField(1)
+  rows = _messages.MessageField('Row', 2, repeated=True)
 
 
 class ConnectionProperty(_messages.Message):
@@ -822,6 +1714,21 @@ class DataMaskingStatistics(_messages.Message):
   """
 
   dataMaskingApplied = _messages.BooleanField(1, default=False)
+
+
+class DataSplitResult(_messages.Message):
+  r"""Data split result. This contains references to the training and
+  evaluation data tables that were used to train the model.
+
+  Fields:
+    evaluationTable: Table reference of the evaluation data after split.
+    testTable: Table reference of the test data after split.
+    trainingTable: Table reference of the training data after split.
+  """
+
+  evaluationTable = _messages.MessageField('TableReference', 1)
+  testTable = _messages.MessageField('TableReference', 2)
+  trainingTable = _messages.MessageField('TableReference', 3)
 
 
 class Dataset(_messages.Message):
@@ -1026,28 +1933,29 @@ class Dataset(_messages.Message):
 class DatasetAccessEntry(_messages.Message):
   r"""A DatasetAccessEntry object.
 
-  Messages:
-    TargetTypesValueListEntry: A TargetTypesValueListEntry object.
+  Enums:
+    TargetTypesValueListEntryValuesEnum:
 
   Fields:
     dataset: [Required] The dataset this entry applies to.
-    target_types: A TargetTypesValueListEntry attribute.
+    targetTypes: A TargetTypesValueListEntryValuesEnum attribute.
   """
 
-  class TargetTypesValueListEntry(_messages.Message):
-    r"""A TargetTypesValueListEntry object.
+  class TargetTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""TargetTypesValueListEntryValuesEnum enum type.
 
-    Fields:
-      targetType: [Required] Which resources in the dataset this entry applies
-        to. Currently, only views are supported, but additional target types
-        may be added in the future. Possible values: VIEWS: This entry applies
-        to all views in the dataset.
+    Values:
+      TARGET_TYPE_UNSPECIFIED: Do not use. You must set a target type
+        explicitly.
+      VIEWS: This entry applies to views in the dataset.
+      ROUTINES: This entry applies to routines in the dataset.
     """
-
-    targetType = _messages.StringField(1)
+    TARGET_TYPE_UNSPECIFIED = 0
+    VIEWS = 1
+    ROUTINES = 2
 
   dataset = _messages.MessageField('DatasetReference', 1)
-  target_types = _messages.MessageField('TargetTypesValueListEntry', 2, repeated=True)
+  targetTypes = _messages.EnumField('TargetTypesValueListEntryValuesEnum', 2, repeated=True)
 
 
 class DatasetList(_messages.Message):
@@ -1200,6 +2108,17 @@ class DestinationTableProperties(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
 
 
+class DimensionalityReductionMetrics(_messages.Message):
+  r"""Model evaluation metrics for dimensionality reduction models.
+
+  Fields:
+    totalExplainedVarianceRatio: Total percentage of variance explained by the
+      selected principal components.
+  """
+
+  totalExplainedVarianceRatio = _messages.FloatField(1)
+
+
 class DmlStatistics(_messages.Message):
   r"""A DmlStatistics object.
 
@@ -1217,6 +2136,40 @@ class DmlStatistics(_messages.Message):
   updatedRowCount = _messages.IntegerField(3)
 
 
+class DoubleCandidates(_messages.Message):
+  r"""Discrete candidates of a double hyperparameter.
+
+  Fields:
+    candidates: Candidates for the double parameter in increasing order.
+  """
+
+  candidates = _messages.FloatField(1, repeated=True)
+
+
+class DoubleHparamSearchSpace(_messages.Message):
+  r"""Search space for a double hyperparameter.
+
+  Fields:
+    candidates: Candidates of the double hyperparameter.
+    range: Range of the double hyperparameter.
+  """
+
+  candidates = _messages.MessageField('DoubleCandidates', 1)
+  range = _messages.MessageField('DoubleRange', 2)
+
+
+class DoubleRange(_messages.Message):
+  r"""Range of a double hyperparameter.
+
+  Fields:
+    max: Max value of the double parameter.
+    min: Min value of the double parameter.
+  """
+
+  max = _messages.FloatField(1)
+  min = _messages.FloatField(2)
+
+
 class EncryptionConfiguration(_messages.Message):
   r"""A EncryptionConfiguration object.
 
@@ -1227,6 +2180,20 @@ class EncryptionConfiguration(_messages.Message):
   """
 
   kmsKeyName = _messages.StringField(1)
+
+
+class Entry(_messages.Message):
+  r"""A single entry in the confusion matrix.
+
+  Fields:
+    itemCount: Number of items being predicted as this label.
+    predictedLabel: The predicted label. For confidence_threshold > 0, we will
+      also add an entry indicating the number of items under the confidence
+      threshold.
+  """
+
+  itemCount = _messages.IntegerField(1)
+  predictedLabel = _messages.StringField(2)
 
 
 class ErrorProto(_messages.Message):
@@ -1244,6 +2211,35 @@ class ErrorProto(_messages.Message):
   location = _messages.StringField(2)
   message = _messages.StringField(3)
   reason = _messages.StringField(4)
+
+
+class EvaluationMetrics(_messages.Message):
+  r"""Evaluation metrics of a model. These are either computed on all training
+  data or just the eval data based on whether eval data was used during
+  training. These are not present for imported models.
+
+  Fields:
+    arimaForecastingMetrics: Populated for ARIMA models.
+    binaryClassificationMetrics: Populated for binary
+      classification/classifier models.
+    clusteringMetrics: Populated for clustering models.
+    dimensionalityReductionMetrics: Evaluation metrics when the model is a
+      dimensionality reduction model, which currently includes PCA.
+    multiClassClassificationMetrics: Populated for multi-class
+      classification/classifier models.
+    rankingMetrics: Populated for implicit feedback type matrix factorization
+      models.
+    regressionMetrics: Populated for regression models and explicit feedback
+      type matrix factorization models.
+  """
+
+  arimaForecastingMetrics = _messages.MessageField('ArimaForecastingMetrics', 1)
+  binaryClassificationMetrics = _messages.MessageField('BinaryClassificationMetrics', 2)
+  clusteringMetrics = _messages.MessageField('ClusteringMetrics', 3)
+  dimensionalityReductionMetrics = _messages.MessageField('DimensionalityReductionMetrics', 4)
+  multiClassClassificationMetrics = _messages.MessageField('MultiClassClassificationMetrics', 5)
+  rankingMetrics = _messages.MessageField('RankingMetrics', 6)
+  regressionMetrics = _messages.MessageField('RegressionMetrics', 7)
 
 
 class ExplainQueryStage(_messages.Message):
@@ -1334,6 +2330,56 @@ class ExplainQueryStep(_messages.Message):
 
   kind = _messages.StringField(1)
   substeps = _messages.StringField(2, repeated=True)
+
+
+class Explanation(_messages.Message):
+  r"""Explanation for a single feature.
+
+  Fields:
+    attribution: Attribution of feature.
+    featureName: The full feature name. For non-numerical features, will be
+      formatted like `.`. Overall size of feature name will always be
+      truncated to first 120 characters.
+  """
+
+  attribution = _messages.FloatField(1)
+  featureName = _messages.StringField(2)
+
+
+class Expr(_messages.Message):
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
+
+  Fields:
+    description: Optional. Description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class ExternalDataConfiguration(_messages.Message):
@@ -1446,6 +2492,53 @@ class ExternalDataConfiguration(_messages.Message):
   sourceUris = _messages.StringField(20, repeated=True)
 
 
+class FeatureValue(_messages.Message):
+  r"""Representative value of a single feature within the cluster.
+
+  Fields:
+    categoricalValue: The categorical feature value.
+    featureColumn: The feature column name.
+    numericalValue: The numerical feature value. This is the centroid value
+      for this feature.
+  """
+
+  categoricalValue = _messages.MessageField('CategoricalValue', 1)
+  featureColumn = _messages.StringField(2)
+  numericalValue = _messages.FloatField(3)
+
+
+class GetIamPolicyRequest(_messages.Message):
+  r"""Request message for `GetIamPolicy` method.
+
+  Fields:
+    options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
+      `GetIamPolicy`.
+  """
+
+  options = _messages.MessageField('GetPolicyOptions', 1)
+
+
+class GetPolicyOptions(_messages.Message):
+  r"""Encapsulates settings provided to GetIamPolicy.
+
+  Fields:
+    requestedPolicyVersion: Optional. The maximum policy version that will be
+      used to format the policy. Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected. Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset. The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1. To learn which resources support conditions in
+      their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+  """
+
+  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class GetQueryResultsResponse(_messages.Message):
   r"""A GetQueryResultsResponse object.
 
@@ -1505,6 +2598,22 @@ class GetServiceAccountResponse(_messages.Message):
 
   email = _messages.StringField(1)
   kind = _messages.StringField(2, default='bigquery#getServiceAccountResponse')
+
+
+class GlobalExplanation(_messages.Message):
+  r"""Global explanations containing the top most important features after
+  training.
+
+  Fields:
+    classLabel: Class label for this set of global explanations. Will be
+      empty/null for binary logistic and linear regression models. Sorted
+      alphabetically in descending order.
+    explanations: A list of the top global explanations. Sorted by absolute
+      value of attribution in descending order.
+  """
+
+  classLabel = _messages.StringField(1)
+  explanations = _messages.MessageField('Explanation', 2, repeated=True)
 
 
 class GoogleSheetsOptions(_messages.Message):
@@ -1573,6 +2682,121 @@ class HivePartitioningOptions(_messages.Message):
   sourceUriPrefix = _messages.StringField(4)
 
 
+class HparamSearchSpaces(_messages.Message):
+  r"""Hyperparameter search spaces. These should be a subset of
+  training_options.
+
+  Fields:
+    activationFn: Activation functions of neural network models.
+    batchSize: Mini batch sample size.
+    boosterType: Booster type for boosted tree models.
+    colsampleBylevel: Subsample ratio of columns for each level for boosted
+      tree models.
+    colsampleBynode: Subsample ratio of columns for each node(split) for
+      boosted tree models.
+    colsampleBytree: Subsample ratio of columns when constructing each tree
+      for boosted tree models.
+    dartNormalizeType: Dart normalization type for boosted tree models.
+    dropout: Dropout probability for dnn model training and boosted tree
+      models using dart booster.
+    hiddenUnits: Hidden units for neural network models.
+    l1Reg: L1 regularization coefficient.
+    l2Reg: L2 regularization coefficient.
+    learnRate: Learning rate of training jobs.
+    maxTreeDepth: Maximum depth of a tree for boosted tree models.
+    minSplitLoss: Minimum split loss for boosted tree models.
+    minTreeChildWeight: Minimum sum of instance weight needed in a child for
+      boosted tree models.
+    numClusters: Number of clusters for k-means.
+    numFactors: Number of latent factors to train on.
+    numParallelTree: Number of parallel trees for boosted tree models.
+    optimizer: Optimizer of TF models.
+    subsample: Subsample the training data to grow tree to prevent overfitting
+      for boosted tree models.
+    treeMethod: Tree construction algorithm for boosted tree models.
+    walsAlpha: Hyperparameter for matrix factoration when implicit feedback
+      type is specified.
+  """
+
+  activationFn = _messages.MessageField('StringHparamSearchSpace', 1)
+  batchSize = _messages.MessageField('IntHparamSearchSpace', 2)
+  boosterType = _messages.MessageField('StringHparamSearchSpace', 3)
+  colsampleBylevel = _messages.MessageField('DoubleHparamSearchSpace', 4)
+  colsampleBynode = _messages.MessageField('DoubleHparamSearchSpace', 5)
+  colsampleBytree = _messages.MessageField('DoubleHparamSearchSpace', 6)
+  dartNormalizeType = _messages.MessageField('StringHparamSearchSpace', 7)
+  dropout = _messages.MessageField('DoubleHparamSearchSpace', 8)
+  hiddenUnits = _messages.MessageField('IntArrayHparamSearchSpace', 9)
+  l1Reg = _messages.MessageField('DoubleHparamSearchSpace', 10)
+  l2Reg = _messages.MessageField('DoubleHparamSearchSpace', 11)
+  learnRate = _messages.MessageField('DoubleHparamSearchSpace', 12)
+  maxTreeDepth = _messages.MessageField('IntHparamSearchSpace', 13)
+  minSplitLoss = _messages.MessageField('DoubleHparamSearchSpace', 14)
+  minTreeChildWeight = _messages.MessageField('IntHparamSearchSpace', 15)
+  numClusters = _messages.MessageField('IntHparamSearchSpace', 16)
+  numFactors = _messages.MessageField('IntHparamSearchSpace', 17)
+  numParallelTree = _messages.MessageField('IntHparamSearchSpace', 18)
+  optimizer = _messages.MessageField('StringHparamSearchSpace', 19)
+  subsample = _messages.MessageField('DoubleHparamSearchSpace', 20)
+  treeMethod = _messages.MessageField('StringHparamSearchSpace', 21)
+  walsAlpha = _messages.MessageField('DoubleHparamSearchSpace', 22)
+
+
+class HparamTuningTrial(_messages.Message):
+  r"""Training info of a trial in [hyperparameter tuning](/bigquery-
+  ml/docs/reference/standard-sql/bigqueryml-syntax-hp-tuning-overview) models.
+
+  Enums:
+    StatusValueValuesEnum: The status of the trial.
+
+  Fields:
+    endTimeMs: Ending time of the trial.
+    errorMessage: Error message for FAILED and INFEASIBLE trial.
+    evalLoss: Loss computed on the eval data at the end of trial.
+    evaluationMetrics: Evaluation metrics of this trial calculated on the test
+      data. Empty in Job API.
+    hparamTuningEvaluationMetrics: Hyperparameter tuning evaluation metrics of
+      this trial calculated on the eval data. Unlike evaluation_metrics, only
+      the fields corresponding to the hparam_tuning_objectives are set.
+    hparams: The hyperprameters selected for this trial.
+    startTimeMs: Starting time of the trial.
+    status: The status of the trial.
+    trainingLoss: Loss computed on the training data at the end of trial.
+    trialId: 1-based index of the trial.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""The status of the trial.
+
+    Values:
+      TRIAL_STATUS_UNSPECIFIED: <no description>
+      NOT_STARTED: Scheduled but not started.
+      RUNNING: Running state.
+      SUCCEEDED: The trial succeeded.
+      FAILED: The trial failed.
+      INFEASIBLE: The trial is infeasible due to the invalid params.
+      STOPPED_EARLY: Trial stopped early because it's not promising.
+    """
+    TRIAL_STATUS_UNSPECIFIED = 0
+    NOT_STARTED = 1
+    RUNNING = 2
+    SUCCEEDED = 3
+    FAILED = 4
+    INFEASIBLE = 5
+    STOPPED_EARLY = 6
+
+  endTimeMs = _messages.IntegerField(1)
+  errorMessage = _messages.StringField(2)
+  evalLoss = _messages.FloatField(3)
+  evaluationMetrics = _messages.MessageField('EvaluationMetrics', 4)
+  hparamTuningEvaluationMetrics = _messages.MessageField('EvaluationMetrics', 5)
+  hparams = _messages.MessageField('TrainingOptions', 6)
+  startTimeMs = _messages.IntegerField(7)
+  status = _messages.EnumField('StatusValueValuesEnum', 8)
+  trainingLoss = _messages.FloatField(9)
+  trialId = _messages.IntegerField(10)
+
+
 class IndexUnusedReason(_messages.Message):
   r"""A IndexUnusedReason object.
 
@@ -1591,6 +2815,60 @@ class IndexUnusedReason(_messages.Message):
   code = _messages.StringField(2, default='$(reason.code)')
   index_name = _messages.StringField(3, default='$(reason.index_name)')
   message = _messages.StringField(4, default='$(reason.message)')
+
+
+class IntArray(_messages.Message):
+  r"""An array of int.
+
+  Fields:
+    elements: Elements in the int array.
+  """
+
+  elements = _messages.IntegerField(1, repeated=True)
+
+
+class IntArrayHparamSearchSpace(_messages.Message):
+  r"""Search space for int array.
+
+  Fields:
+    candidates: Candidates for the int array parameter.
+  """
+
+  candidates = _messages.MessageField('IntArray', 1, repeated=True)
+
+
+class IntCandidates(_messages.Message):
+  r"""Discrete candidates of an int hyperparameter.
+
+  Fields:
+    candidates: Candidates for the int parameter in increasing order.
+  """
+
+  candidates = _messages.IntegerField(1, repeated=True)
+
+
+class IntHparamSearchSpace(_messages.Message):
+  r"""Search space for an int hyperparameter.
+
+  Fields:
+    candidates: Candidates of the int hyperparameter.
+    range: Range of the int hyperparameter.
+  """
+
+  candidates = _messages.MessageField('IntCandidates', 1)
+  range = _messages.MessageField('IntRange', 2)
+
+
+class IntRange(_messages.Message):
+  r"""Range of an int hyperparameter.
+
+  Fields:
+    max: Max value of the int parameter.
+    min: Min value of the int parameter.
+  """
+
+  max = _messages.IntegerField(1)
+  min = _messages.IntegerField(2)
 
 
 class IterationResult(_messages.Message):
@@ -2573,6 +3851,60 @@ class JsonOptions(_messages.Message):
 JsonValue = extra_types.JsonValue
 
 
+class ListModelsResponse(_messages.Message):
+  r"""A ListModelsResponse object.
+
+  Fields:
+    models: Models in the requested dataset. Only the following fields are
+      populated: model_reference, model_type, creation_time,
+      last_modified_time and labels.
+    nextPageToken: A token to request the next page of results.
+  """
+
+  models = _messages.MessageField('Model', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListRoutinesResponse(_messages.Message):
+  r"""A ListRoutinesResponse object.
+
+  Fields:
+    nextPageToken: A token to request the next page of results.
+    routines: Routines in the requested dataset. Unless read_mask is set in
+      the request, only the following fields are populated: etag, project_id,
+      dataset_id, routine_id, routine_type, creation_time, last_modified_time,
+      language, and remote_function_options.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  routines = _messages.MessageField('Routine', 2, repeated=True)
+
+
+class ListRowAccessPoliciesResponse(_messages.Message):
+  r"""Response message for the ListRowAccessPolicies method.
+
+  Fields:
+    nextPageToken: A token to request the next page of results.
+    rowAccessPolicies: Row access policies on the requested table.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  rowAccessPolicies = _messages.MessageField('RowAccessPolicy', 2, repeated=True)
+
+
+class LocationMetadata(_messages.Message):
+  r"""BigQuery-specific metadata about a location. This will be set on
+  google.cloud.location.Location.metadata in Cloud Location API responses.
+
+  Fields:
+    legacyLocationId: The legacy BigQuery location ID, e.g. "EU" for the
+      "europe" location. This is for any API consumers that need the legacy
+      "US" and "EU" locations.
+  """
+
+  legacyLocationId = _messages.StringField(1)
+
+
 class MaterializedViewDefinition(_messages.Message):
   r"""A MaterializedViewDefinition object.
 
@@ -2612,6 +3944,183 @@ class MlStatistics(_messages.Message):
 
   iterationResults = _messages.MessageField('IterationResult', 1, repeated=True)
   maxIterations = _messages.IntegerField(2)
+
+
+class Model(_messages.Message):
+  r"""A Model object.
+
+  Enums:
+    ModelTypeValueValuesEnum: Output only. Type of the model resource.
+
+  Messages:
+    LabelsValue: The labels associated with this model. You can use these to
+      organize and group your models. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter
+      and each label in the list must have a different key.
+
+  Fields:
+    bestTrialId: The best trial_id across all training runs.
+    creationTime: Output only. The time when this model was created, in
+      millisecs since the epoch.
+    defaultTrialId: Output only. The default trial_id to use in TVFs when the
+      trial_id is not passed in. For single-objective [hyperparameter
+      tuning](/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-hp-
+      tuning-overview) models, this is the best trial ID. For multi-objective
+      [hyperparameter tuning](/bigquery-ml/docs/reference/standard-
+      sql/bigqueryml-syntax-hp-tuning-overview) models, this is the smallest
+      trial ID among all Pareto optimal trials.
+    description: Optional. A user-friendly description of this model.
+    encryptionConfiguration: Custom encryption configuration (e.g., Cloud KMS
+      keys). This shows the encryption configuration of the model data while
+      stored in BigQuery storage. This field can be used with PatchModel to
+      update encryption key for an already encrypted model.
+    etag: Output only. A hash of this resource.
+    expirationTime: Optional. The time when this model expires, in
+      milliseconds since the epoch. If not present, the model will persist
+      indefinitely. Expired models will be deleted and their storage
+      reclaimed. The defaultTableExpirationMs property of the encapsulating
+      dataset can be used to set a default expirationTime on newly created
+      models.
+    featureColumns: Output only. Input feature columns for the model
+      inference. If the model is trained with TRANSFORM clause, these are the
+      input of the TRANSFORM clause.
+    friendlyName: Optional. A descriptive name for this model.
+    hparamSearchSpaces: Output only. All hyperparameter search spaces in this
+      model.
+    hparamTrials: Output only. Trials of a [hyperparameter tuning](/bigquery-
+      ml/docs/reference/standard-sql/bigqueryml-syntax-hp-tuning-overview)
+      model sorted by trial_id.
+    labelColumns: Output only. Label columns that were used to train this
+      model. The output of the model will have a "predicted_" prefix to these
+      columns.
+    labels: The labels associated with this model. You can use these to
+      organize and group your models. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter
+      and each label in the list must have a different key.
+    lastModifiedTime: Output only. The time when this model was last modified,
+      in millisecs since the epoch.
+    location: Output only. The geographic location where the model resides.
+      This value is inherited from the dataset.
+    modelReference: Required. Unique identifier for this model.
+    modelType: Output only. Type of the model resource.
+    optimalTrialIds: Output only. For single-objective [hyperparameter
+      tuning](/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-hp-
+      tuning-overview) models, it only contains the best trial. For multi-
+      objective [hyperparameter tuning](/bigquery-ml/docs/reference/standard-
+      sql/bigqueryml-syntax-hp-tuning-overview) models, it contains all Pareto
+      optimal trials sorted by trial_id.
+    remoteModelInfo: Output only. Remote model info
+    trainingRuns: Information for all training runs in increasing order of
+      start_time.
+  """
+
+  class ModelTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of the model resource.
+
+    Values:
+      MODEL_TYPE_UNSPECIFIED: <no description>
+      LINEAR_REGRESSION: Linear regression model.
+      LOGISTIC_REGRESSION: Logistic regression based classification model.
+      KMEANS: K-means clustering model.
+      MATRIX_FACTORIZATION: Matrix factorization model.
+      DNN_CLASSIFIER: DNN classifier model.
+      TENSORFLOW: An imported TensorFlow model.
+      DNN_REGRESSOR: DNN regressor model.
+      XGBOOST: An imported XGBoost model.
+      BOOSTED_TREE_REGRESSOR: Boosted tree regressor model.
+      BOOSTED_TREE_CLASSIFIER: Boosted tree classifier model.
+      ARIMA: ARIMA model.
+      AUTOML_REGRESSOR: AutoML Tables regression model.
+      AUTOML_CLASSIFIER: AutoML Tables classification model.
+      PCA: Prinpical Component Analysis model.
+      DNN_LINEAR_COMBINED_CLASSIFIER: Wide-and-deep classifier model.
+      DNN_LINEAR_COMBINED_REGRESSOR: Wide-and-deep regressor model.
+      AUTOENCODER: Autoencoder model.
+      ARIMA_PLUS: New name for the ARIMA model.
+      ARIMA_PLUS_XREG: ARIMA with external regressors.
+      RANDOM_FOREST_REGRESSOR: Random forest regressor model.
+      RANDOM_FOREST_CLASSIFIER: Random forest classifier model.
+      TENSORFLOW_LITE: An imported TensorFlow Lite model.
+      ONNX: An imported ONNX model.
+    """
+    MODEL_TYPE_UNSPECIFIED = 0
+    LINEAR_REGRESSION = 1
+    LOGISTIC_REGRESSION = 2
+    KMEANS = 3
+    MATRIX_FACTORIZATION = 4
+    DNN_CLASSIFIER = 5
+    TENSORFLOW = 6
+    DNN_REGRESSOR = 7
+    XGBOOST = 8
+    BOOSTED_TREE_REGRESSOR = 9
+    BOOSTED_TREE_CLASSIFIER = 10
+    ARIMA = 11
+    AUTOML_REGRESSOR = 12
+    AUTOML_CLASSIFIER = 13
+    PCA = 14
+    DNN_LINEAR_COMBINED_CLASSIFIER = 15
+    DNN_LINEAR_COMBINED_REGRESSOR = 16
+    AUTOENCODER = 17
+    ARIMA_PLUS = 18
+    ARIMA_PLUS_XREG = 19
+    RANDOM_FOREST_REGRESSOR = 20
+    RANDOM_FOREST_CLASSIFIER = 21
+    TENSORFLOW_LITE = 22
+    ONNX = 23
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels associated with this model. You can use these to organize
+    and group your models. Label keys and values can be no longer than 63
+    characters, can only contain lowercase letters, numeric characters,
+    underscores and dashes. International characters are allowed. Label values
+    are optional. Label keys must start with a letter and each label in the
+    list must have a different key.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  bestTrialId = _messages.IntegerField(1)
+  creationTime = _messages.IntegerField(2)
+  defaultTrialId = _messages.IntegerField(3)
+  description = _messages.StringField(4)
+  encryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 5)
+  etag = _messages.StringField(6)
+  expirationTime = _messages.IntegerField(7)
+  featureColumns = _messages.MessageField('StandardSqlField', 8, repeated=True)
+  friendlyName = _messages.StringField(9)
+  hparamSearchSpaces = _messages.MessageField('HparamSearchSpaces', 10)
+  hparamTrials = _messages.MessageField('HparamTuningTrial', 11, repeated=True)
+  labelColumns = _messages.MessageField('StandardSqlField', 12, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 13)
+  lastModifiedTime = _messages.IntegerField(14)
+  location = _messages.StringField(15)
+  modelReference = _messages.MessageField('ModelReference', 16)
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 17)
+  optimalTrialIds = _messages.IntegerField(18, repeated=True)
+  remoteModelInfo = _messages.MessageField('RemoteModelInfo', 19)
+  trainingRuns = _messages.MessageField('TrainingRun', 20, repeated=True)
 
 
 class ModelDefinition(_messages.Message):
@@ -2669,6 +4178,18 @@ class ModelReference(_messages.Message):
   projectId = _messages.StringField(3)
 
 
+class MultiClassClassificationMetrics(_messages.Message):
+  r"""Evaluation metrics for multi-class classification/classifier models.
+
+  Fields:
+    aggregateClassificationMetrics: Aggregate classification metrics.
+    confusionMatrixList: Confusion matrix at different thresholds.
+  """
+
+  aggregateClassificationMetrics = _messages.MessageField('AggregateClassificationMetrics', 1)
+  confusionMatrixList = _messages.MessageField('ConfusionMatrix', 2, repeated=True)
+
+
 class ParquetOptions(_messages.Message):
   r"""A ParquetOptions object.
 
@@ -2681,6 +4202,104 @@ class ParquetOptions(_messages.Message):
 
   enableListInference = _messages.BooleanField(1)
   enumAsString = _messages.BooleanField(2)
+
+
+class Policy(_messages.Message):
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources. A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
+  version: 3 For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
+
+  Fields:
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy. **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations: * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy that includes conditions **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost. If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset. To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+  """
+
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class PrincipalComponentInfo(_messages.Message):
+  r"""Principal component infos, used only for eigen decomposition based
+  models, e.g., PCA. Ordered by explained_variance in the descending order.
+
+  Fields:
+    cumulativeExplainedVarianceRatio: The explained_variance is pre-ordered in
+      the descending order to compute the cumulative explained variance ratio.
+    explainedVariance: Explained variance by this principal component, which
+      is simply the eigenvalue.
+    explainedVarianceRatio: Explained_variance over the total explained
+      variance.
+    principalComponentId: Id of the principal component.
+  """
+
+  cumulativeExplainedVarianceRatio = _messages.FloatField(1)
+  explainedVariance = _messages.FloatField(2)
+  explainedVarianceRatio = _messages.FloatField(3)
+  principalComponentId = _messages.IntegerField(4)
 
 
 class ProjectList(_messages.Message):
@@ -3080,6 +4699,289 @@ class RangePartitioning(_messages.Message):
   range = _messages.MessageField('RangeValue', 2)
 
 
+class RankingMetrics(_messages.Message):
+  r"""Evaluation metrics used by weighted-ALS models specified by
+  feedback_type=implicit.
+
+  Fields:
+    averageRank: Determines the goodness of a ranking by computing the
+      percentile rank from the predicted confidence and dividing it by the
+      original rank.
+    meanAveragePrecision: Calculates a precision per user for all the items by
+      ranking them and then averages all the precisions across all the users.
+    meanSquaredError: Similar to the mean squared error computed in regression
+      and explicit recommendation models except instead of computing the
+      rating directly, the output from evaluate is computed against a
+      preference which is 1 or 0 depending on if the rating exists or not.
+    normalizedDiscountedCumulativeGain: A metric to determine the goodness of
+      a ranking calculated from the predicted confidence by comparing it to an
+      ideal rank measured by the original ratings.
+  """
+
+  averageRank = _messages.FloatField(1)
+  meanAveragePrecision = _messages.FloatField(2)
+  meanSquaredError = _messages.FloatField(3)
+  normalizedDiscountedCumulativeGain = _messages.FloatField(4)
+
+
+class RegressionMetrics(_messages.Message):
+  r"""Evaluation metrics for regression and explicit feedback type matrix
+  factorization models.
+
+  Fields:
+    meanAbsoluteError: Mean absolute error.
+    meanSquaredError: Mean squared error.
+    meanSquaredLogError: Mean squared log error.
+    medianAbsoluteError: Median absolute error.
+    rSquared: R^2 score. This corresponds to r2_score in ML.EVALUATE.
+  """
+
+  meanAbsoluteError = _messages.FloatField(1)
+  meanSquaredError = _messages.FloatField(2)
+  meanSquaredLogError = _messages.FloatField(3)
+  medianAbsoluteError = _messages.FloatField(4)
+  rSquared = _messages.FloatField(5)
+
+
+class RemoteFunctionOptions(_messages.Message):
+  r"""Options for a remote user-defined function.
+
+  Messages:
+    UserDefinedContextValue: User-defined context as a set of key/value pairs,
+      which will be sent as function invocation context together with batched
+      arguments in the requests to the remote service. The total number of
+      bytes of keys and values must be less than 8KB.
+
+  Fields:
+    connection: Fully qualified name of the user-provided connection object
+      which holds the authentication information to send requests to the
+      remote service. Format: ```"projects/{projectId}/locations/{locationId}/
+      connections/{connectionId}"```
+    endpoint: Endpoint of the user-provided remote service, e.g.
+      ```https://us-east1-my_gcf_project.cloudfunctions.net/remote_add```
+    maxBatchingRows: Max number of rows in each batch sent to the remote
+      service. If absent or if 0, BigQuery dynamically decides the number of
+      rows in a batch.
+    userDefinedContext: User-defined context as a set of key/value pairs,
+      which will be sent as function invocation context together with batched
+      arguments in the requests to the remote service. The total number of
+      bytes of keys and values must be less than 8KB.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UserDefinedContextValue(_messages.Message):
+    r"""User-defined context as a set of key/value pairs, which will be sent
+    as function invocation context together with batched arguments in the
+    requests to the remote service. The total number of bytes of keys and
+    values must be less than 8KB.
+
+    Messages:
+      AdditionalProperty: An additional property for a UserDefinedContextValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        UserDefinedContextValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UserDefinedContextValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  connection = _messages.StringField(1)
+  endpoint = _messages.StringField(2)
+  maxBatchingRows = _messages.IntegerField(3)
+  userDefinedContext = _messages.MessageField('UserDefinedContextValue', 4)
+
+
+class RemoteModelInfo(_messages.Message):
+  r"""Remote Model Info
+
+  Enums:
+    RemoteServiceTypeValueValuesEnum: Output only. The remote service type for
+      remote model.
+
+  Fields:
+    connection: Output only. Fully qualified name of the user-provided
+      connection object of the remote model. Format: ```"projects/{project_id}
+      /locations/{location_id}/connections/{connection_id}"```
+    endpoint: Output only. The endpoint for remote model.
+    maxBatchingRows: Output only. Max number of rows in each batch sent to the
+      remote service. If unset, the number of rows in each batch is set
+      dynamically.
+    remoteServiceType: Output only. The remote service type for remote model.
+  """
+
+  class RemoteServiceTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The remote service type for remote model.
+
+    Values:
+      REMOTE_SERVICE_TYPE_UNSPECIFIED: Unspecified remote service type.
+      CLOUD_AI_TRANSLATE_V3: V3 Cloud AI Translation API. See more details at
+        [Cloud Translation API]
+        (https://cloud.google.com/translate/docs/reference/rest).
+      CLOUD_AI_VISION_V1: V1 Cloud AI Vision API See more details at [Cloud
+        Vision API] (https://cloud.google.com/vision/docs/reference/rest).
+      CLOUD_AI_NATURAL_LANGUAGE_V1: V1 Cloud AI Natural Language API. See more
+        details at [REST Resource:
+        documents](https://cloud.google.com/natural-
+        language/docs/reference/rest/v1/documents).
+    """
+    REMOTE_SERVICE_TYPE_UNSPECIFIED = 0
+    CLOUD_AI_TRANSLATE_V3 = 1
+    CLOUD_AI_VISION_V1 = 2
+    CLOUD_AI_NATURAL_LANGUAGE_V1 = 3
+
+  connection = _messages.StringField(1)
+  endpoint = _messages.StringField(2)
+  maxBatchingRows = _messages.IntegerField(3)
+  remoteServiceType = _messages.EnumField('RemoteServiceTypeValueValuesEnum', 4)
+
+
+class Routine(_messages.Message):
+  r"""A user-defined function or a stored procedure.
+
+  Enums:
+    DeterminismLevelValueValuesEnum: Optional. The determinism level of the
+      JavaScript UDF, if defined.
+    LanguageValueValuesEnum: Optional. Defaults to "SQL" if
+      remote_function_options field is absent, not set otherwise.
+    RoutineTypeValueValuesEnum: Required. The type of routine.
+
+  Fields:
+    arguments: Optional.
+    creationTime: Output only. The time when this routine was created, in
+      milliseconds since the epoch.
+    definitionBody: Required. The body of the routine. For functions, this is
+      the expression in the AS clause. If language=SQL, it is the substring
+      inside (but excluding) the parentheses. For example, for the function
+      created with the following statement: `CREATE FUNCTION JoinLines(x
+      string, y string) as (concat(x, "\n", y))` The definition_body is
+      `concat(x, "\n", y)` (\n is not replaced with linebreak). If
+      language=JAVASCRIPT, it is the evaluated string in the AS clause. For
+      example, for the function created with the following statement: `CREATE
+      FUNCTION f() RETURNS STRING LANGUAGE js AS 'return "\n";\n'` The
+      definition_body is `return "\n";\n` Note that both \n are replaced with
+      linebreaks.
+    description: Optional. The description of the routine, if defined.
+    determinismLevel: Optional. The determinism level of the JavaScript UDF,
+      if defined.
+    etag: Output only. A hash of this resource.
+    importedLibraries: Optional. If language = "JAVASCRIPT", this field stores
+      the path of the imported JAVASCRIPT libraries.
+    language: Optional. Defaults to "SQL" if remote_function_options field is
+      absent, not set otherwise.
+    lastModifiedTime: Output only. The time when this routine was last
+      modified, in milliseconds since the epoch.
+    remoteFunctionOptions: Optional. Remote function specific options.
+    returnTableType: Optional. Can be set only if routine_type =
+      "TABLE_VALUED_FUNCTION". If absent, the return table type is inferred
+      from definition_body at query time in each query that references this
+      routine. If present, then the columns in the evaluated table result will
+      be cast to match the column types specified in return table type, at
+      query time.
+    returnType: Optional if language = "SQL"; required otherwise. Cannot be
+      set if routine_type = "TABLE_VALUED_FUNCTION". If absent, the return
+      type is inferred from definition_body at query time in each query that
+      references this routine. If present, then the evaluated result will be
+      cast to the specified returned type at query time. For example, for the
+      functions created with the following statements: * `CREATE FUNCTION
+      Add(x FLOAT64, y FLOAT64) RETURNS FLOAT64 AS (x + y);` * `CREATE
+      FUNCTION Increment(x FLOAT64) AS (Add(x, 1));` * `CREATE FUNCTION
+      Decrement(x FLOAT64) RETURNS FLOAT64 AS (Add(x, -1));` The return_type
+      is `{type_kind: "FLOAT64"}` for `Add` and `Decrement`, and is absent for
+      `Increment` (inferred as FLOAT64 at query time). Suppose the function
+      `Add` is replaced by `CREATE OR REPLACE FUNCTION Add(x INT64, y INT64)
+      AS (x + y);` Then the inferred return type of `Increment` is
+      automatically changed to INT64 at query time, while the return type of
+      `Decrement` remains FLOAT64.
+    routineReference: Required. Reference describing the ID of this routine.
+    routineType: Required. The type of routine.
+    sparkOptions: Optional. Spark specific options.
+    strictMode: Optional. Can be set for procedures only. If true (default),
+      the definition body will be validated in the creation and the updates of
+      the procedure. For procedures with an argument of ANY TYPE, the
+      definition body validtion is not supported at creation/update time, and
+      thus this field must be set to false explicitly.
+  """
+
+  class DeterminismLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. The determinism level of the JavaScript UDF, if defined.
+
+    Values:
+      DETERMINISM_LEVEL_UNSPECIFIED: The determinism of the UDF is
+        unspecified.
+      DETERMINISTIC: The UDF is deterministic, meaning that 2 function calls
+        with the same inputs always produce the same result, even across 2
+        query runs.
+      NOT_DETERMINISTIC: The UDF is not deterministic.
+    """
+    DETERMINISM_LEVEL_UNSPECIFIED = 0
+    DETERMINISTIC = 1
+    NOT_DETERMINISTIC = 2
+
+  class LanguageValueValuesEnum(_messages.Enum):
+    r"""Optional. Defaults to "SQL" if remote_function_options field is
+    absent, not set otherwise.
+
+    Values:
+      LANGUAGE_UNSPECIFIED: <no description>
+      SQL: SQL language.
+      JAVASCRIPT: JavaScript language.
+      PYTHON: Python language.
+      JAVA: Java language.
+      SCALA: Scala language.
+    """
+    LANGUAGE_UNSPECIFIED = 0
+    SQL = 1
+    JAVASCRIPT = 2
+    PYTHON = 3
+    JAVA = 4
+    SCALA = 5
+
+  class RoutineTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of routine.
+
+    Values:
+      ROUTINE_TYPE_UNSPECIFIED: <no description>
+      SCALAR_FUNCTION: Non-built-in persistent scalar function.
+      PROCEDURE: Stored procedure.
+      TABLE_VALUED_FUNCTION: Non-built-in persistent TVF.
+      AGGREGATE_FUNCTION: Non-built-in persistent aggregate function.
+    """
+    ROUTINE_TYPE_UNSPECIFIED = 0
+    SCALAR_FUNCTION = 1
+    PROCEDURE = 2
+    TABLE_VALUED_FUNCTION = 3
+    AGGREGATE_FUNCTION = 4
+
+  arguments = _messages.MessageField('Argument', 1, repeated=True)
+  creationTime = _messages.IntegerField(2)
+  definitionBody = _messages.StringField(3)
+  description = _messages.StringField(4)
+  determinismLevel = _messages.EnumField('DeterminismLevelValueValuesEnum', 5)
+  etag = _messages.StringField(6)
+  importedLibraries = _messages.StringField(7, repeated=True)
+  language = _messages.EnumField('LanguageValueValuesEnum', 8)
+  lastModifiedTime = _messages.IntegerField(9)
+  remoteFunctionOptions = _messages.MessageField('RemoteFunctionOptions', 10)
+  returnTableType = _messages.MessageField('StandardSqlTableType', 11)
+  returnType = _messages.MessageField('StandardSqlDataType', 12)
+  routineReference = _messages.MessageField('RoutineReference', 13)
+  routineType = _messages.EnumField('RoutineTypeValueValuesEnum', 14)
+  sparkOptions = _messages.MessageField('SparkOptions', 15)
+  strictMode = _messages.BooleanField(16)
+
+
 class RoutineReference(_messages.Message):
   r"""A RoutineReference object.
 
@@ -3094,6 +4996,46 @@ class RoutineReference(_messages.Message):
   datasetId = _messages.StringField(1)
   projectId = _messages.StringField(2)
   routineId = _messages.StringField(3)
+
+
+class Row(_messages.Message):
+  r"""A single row in the confusion matrix.
+
+  Fields:
+    actualLabel: The original label of this row.
+    entries: Info describing predicted label distribution.
+  """
+
+  actualLabel = _messages.StringField(1)
+  entries = _messages.MessageField('Entry', 2, repeated=True)
+
+
+class RowAccessPolicy(_messages.Message):
+  r"""Represents access on a subset of rows on the specified table, defined by
+  its filter predicate. Access to the subset of rows is controlled by its IAM
+  policy.
+
+  Fields:
+    creationTime: Output only. The time when this row access policy was
+      created, in milliseconds since the epoch.
+    etag: Output only. A hash of this resource.
+    filterPredicate: Required. A SQL boolean expression that represents the
+      rows defined by this row access policy, similar to the boolean
+      expression in a WHERE clause of a SELECT query on a table. References to
+      other tables, routines, and temporary functions are not supported.
+      Examples: region="EU" date_field = CAST('2019-9-27' as DATE)
+      nullable_field is not NULL numeric_field BETWEEN 1.0 AND 5.0
+    lastModifiedTime: Output only. The time when this row access policy was
+      last modified, in milliseconds since the epoch.
+    rowAccessPolicyReference: Required. Reference describing the ID of this
+      row access policy.
+  """
+
+  creationTime = _messages.StringField(1)
+  etag = _messages.StringField(2)
+  filterPredicate = _messages.StringField(3)
+  lastModifiedTime = _messages.StringField(4)
+  rowAccessPolicyReference = _messages.MessageField('RowAccessPolicyReference', 5)
 
 
 class RowAccessPolicyReference(_messages.Message):
@@ -3187,6 +5129,23 @@ class SessionInfo(_messages.Message):
   sessionId = _messages.StringField(1)
 
 
+class SetIamPolicyRequest(_messages.Message):
+  r"""Request message for `SetIamPolicy` method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the `resource`. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
+    updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
+      modify. Only the fields in the mask will be modified. If no mask is
+      provided, the following default mask is used: `paths: "bindings, etag"`
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  updateMask = _messages.StringField(2)
+
+
 class SnapshotDefinition(_messages.Message):
   r"""A SnapshotDefinition object.
 
@@ -3211,6 +5170,92 @@ class SparkLoggingInfo(_messages.Message):
 
   project_id = _messages.StringField(1)
   resource_type = _messages.StringField(2)
+
+
+class SparkOptions(_messages.Message):
+  r"""Options for a user-defined Spark routine.
+
+  Messages:
+    PropertiesValue: Configuration properties as a set of key/value pairs,
+      which will be passed on to the Spark application. For more information,
+      see [Apache Spark](https://spark.apache.org/docs/latest/index.html) and
+      the [procedure option
+      list](https://cloud.google.com/bigquery/docs/reference/standard-
+      sql/data-definition-language#procedure_option_list).
+
+  Fields:
+    archiveUris: Archive files to be extracted into the working directory of
+      each executor. For more information about Apache Spark, see [Apache
+      Spark](https://spark.apache.org/docs/latest/index.html).
+    connection: Fully qualified name of the user-provided Spark connection
+      object. Format: ```"projects/{project_id}/locations/{location_id}/connec
+      tions/{connection_id}"```
+    containerImage: Custom container image for the runtime environment.
+    fileUris: Files to be placed in the working directory of each executor.
+      For more information about Apache Spark, see [Apache
+      Spark](https://spark.apache.org/docs/latest/index.html).
+    jarUris: JARs to include on the driver and executor CLASSPATH. For more
+      information about Apache Spark, see [Apache
+      Spark](https://spark.apache.org/docs/latest/index.html).
+    mainClass: The fully qualified name of a class in jar_uris, for example,
+      com.example.wordcount. Exactly one of main_class and main_jar_uri field
+      should be set for Java/Scala language type.
+    mainFileUri: The main file/jar URI of the Spark application. Exactly one
+      of the definition_body field and the main_file_uri field must be set for
+      Python. Exactly one of main_class and main_file_uri field should be set
+      for Java/Scala language type.
+    properties: Configuration properties as a set of key/value pairs, which
+      will be passed on to the Spark application. For more information, see
+      [Apache Spark](https://spark.apache.org/docs/latest/index.html) and the
+      [procedure option
+      list](https://cloud.google.com/bigquery/docs/reference/standard-
+      sql/data-definition-language#procedure_option_list).
+    pyFileUris: Python files to be placed on the PYTHONPATH for PySpark
+      application. Supported file types: `.py`, `.egg`, and `.zip`. For more
+      information about Apache Spark, see [Apache
+      Spark](https://spark.apache.org/docs/latest/index.html).
+    runtimeVersion: Runtime version. If not specified, the default runtime
+      version is used.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""Configuration properties as a set of key/value pairs, which will be
+    passed on to the Spark application. For more information, see [Apache
+    Spark](https://spark.apache.org/docs/latest/index.html) and the [procedure
+    option list](https://cloud.google.com/bigquery/docs/reference/standard-
+    sql/data-definition-language#procedure_option_list).
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  archiveUris = _messages.StringField(1, repeated=True)
+  connection = _messages.StringField(2)
+  containerImage = _messages.StringField(3)
+  fileUris = _messages.StringField(4, repeated=True)
+  jarUris = _messages.StringField(5, repeated=True)
+  mainClass = _messages.StringField(6)
+  mainFileUri = _messages.StringField(7)
+  properties = _messages.MessageField('PropertiesValue', 8)
+  pyFileUris = _messages.StringField(9, repeated=True)
+  runtimeVersion = _messages.StringField(10)
 
 
 class SparkStatistics(_messages.Message):
@@ -3298,6 +5343,110 @@ class StandardQueryParameters(_messages.Message):
   userIp = _messages.StringField(8)
 
 
+class StandardSqlDataType(_messages.Message):
+  r"""The data type of a variable such as a function argument. Examples
+  include: * INT64: `{"typeKind": "INT64"}` * ARRAY: { "typeKind": "ARRAY",
+  "arrayElementType": {"typeKind": "STRING"} } * STRUCT>: { "typeKind":
+  "STRUCT", "structType": { "fields": [ { "name": "x", "type": {"typeKind":
+  "STRING"} }, { "name": "y", "type": { "typeKind": "ARRAY",
+  "arrayElementType": {"typeKind": "DATE"} } } ] } }
+
+  Enums:
+    TypeKindValueValuesEnum: Required. The top level type of this field. Can
+      be any GoogleSQL data type (e.g., "INT64", "DATE", "ARRAY").
+
+  Fields:
+    arrayElementType: The type of the array's elements, if type_kind =
+      "ARRAY".
+    structType: The fields of this struct, in order, if type_kind = "STRUCT".
+    typeKind: Required. The top level type of this field. Can be any GoogleSQL
+      data type (e.g., "INT64", "DATE", "ARRAY").
+  """
+
+  class TypeKindValueValuesEnum(_messages.Enum):
+    r"""Required. The top level type of this field. Can be any GoogleSQL data
+    type (e.g., "INT64", "DATE", "ARRAY").
+
+    Values:
+      TYPE_KIND_UNSPECIFIED: Invalid type.
+      INT64: Encoded as a string in decimal format.
+      BOOL: Encoded as a boolean "false" or "true".
+      FLOAT64: Encoded as a number, or string "NaN", "Infinity" or
+        "-Infinity".
+      STRING: Encoded as a string value.
+      BYTES: Encoded as a base64 string per RFC 4648, section 4.
+      TIMESTAMP: Encoded as an RFC 3339 timestamp with mandatory "Z" time zone
+        string: 1985-04-12T23:20:50.52Z
+      DATE: Encoded as RFC 3339 full-date format string: 1985-04-12
+      TIME: Encoded as RFC 3339 partial-time format string: 23:20:50.52
+      DATETIME: Encoded as RFC 3339 full-date "T" partial-time:
+        1985-04-12T23:20:50.52
+      INTERVAL: Encoded as fully qualified 3 part: 0-5 15 2:30:45.6
+      GEOGRAPHY: Encoded as WKT
+      NUMERIC: Encoded as a decimal string.
+      BIGNUMERIC: Encoded as a decimal string.
+      JSON: Encoded as a string.
+      ARRAY: Encoded as a list with types matching Type.array_type.
+      STRUCT: Encoded as a list with fields of type Type.struct_type[i]. List
+        is used because a JSON object cannot have duplicate field names.
+    """
+    TYPE_KIND_UNSPECIFIED = 0
+    INT64 = 1
+    BOOL = 2
+    FLOAT64 = 3
+    STRING = 4
+    BYTES = 5
+    TIMESTAMP = 6
+    DATE = 7
+    TIME = 8
+    DATETIME = 9
+    INTERVAL = 10
+    GEOGRAPHY = 11
+    NUMERIC = 12
+    BIGNUMERIC = 13
+    JSON = 14
+    ARRAY = 15
+    STRUCT = 16
+
+  arrayElementType = _messages.MessageField('StandardSqlDataType', 1)
+  structType = _messages.MessageField('StandardSqlStructType', 2)
+  typeKind = _messages.EnumField('TypeKindValueValuesEnum', 3)
+
+
+class StandardSqlField(_messages.Message):
+  r"""A field or a column.
+
+  Fields:
+    name: Optional. The name of this field. Can be absent for struct fields.
+    type: Optional. The type of this parameter. Absent if not explicitly
+      specified (e.g., CREATE FUNCTION statement can omit the return type; in
+      this case the output parameter does not have this "type" field).
+  """
+
+  name = _messages.StringField(1)
+  type = _messages.MessageField('StandardSqlDataType', 2)
+
+
+class StandardSqlStructType(_messages.Message):
+  r"""A StandardSqlStructType object.
+
+  Fields:
+    fields: A StandardSqlField attribute.
+  """
+
+  fields = _messages.MessageField('StandardSqlField', 1, repeated=True)
+
+
+class StandardSqlTableType(_messages.Message):
+  r"""A table type
+
+  Fields:
+    columns: The columns in this table type
+  """
+
+  columns = _messages.MessageField('StandardSqlField', 1, repeated=True)
+
+
 class Streamingbuffer(_messages.Message):
   r"""A Streamingbuffer object.
 
@@ -3314,6 +5463,16 @@ class Streamingbuffer(_messages.Message):
   estimatedBytes = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
   estimatedRows = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
   oldestEntryTime = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+
+
+class StringHparamSearchSpace(_messages.Message):
+  r"""Search space for string and enum.
+
+  Fields:
+    candidates: Canididates for the string or enum parameter in lower case.
+  """
+
+  candidates = _messages.StringField(1, repeated=True)
 
 
 class Table(_messages.Message):
@@ -3912,6 +6071,30 @@ class TableSchema(_messages.Message):
   fields = _messages.MessageField('TableFieldSchema', 1, repeated=True)
 
 
+class TestIamPermissionsRequest(_messages.Message):
+  r"""Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestIamPermissionsResponse(_messages.Message):
+  r"""Response message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
 class TimePartitioning(_messages.Message):
   r"""A TimePartitioning object.
 
@@ -3935,6 +6118,760 @@ class TimePartitioning(_messages.Message):
   field = _messages.StringField(2)
   requirePartitionFilter = _messages.BooleanField(3)
   type = _messages.StringField(4)
+
+
+class TrainingOptions(_messages.Message):
+  r"""Options used in model training.
+
+  Enums:
+    BoosterTypeValueValuesEnum: Booster type for boosted tree models.
+    ColorSpaceValueValuesEnum: Enums for color space, used for processing
+      images in Object Table. See more details at
+      https://www.tensorflow.org/io/tutorials/colorspace.
+    DartNormalizeTypeValueValuesEnum: Type of normalization algorithm for
+      boosted tree models using dart booster.
+    DataFrequencyValueValuesEnum: The data frequency of a time series.
+    DataSplitMethodValueValuesEnum: The data split type for training and
+      evaluation, e.g. RANDOM.
+    DistanceTypeValueValuesEnum: Distance type for clustering models.
+    FeedbackTypeValueValuesEnum: Feedback type that specifies which algorithm
+      to run for matrix factorization.
+    HolidayRegionValueValuesEnum: The geographical region based on which the
+      holidays are considered in time series modeling. If a valid value is
+      specified, then holiday effects modeling is enabled.
+    HparamTuningObjectivesValueListEntryValuesEnum:
+    KmeansInitializationMethodValueValuesEnum: The method used to initialize
+      the centroids for kmeans algorithm.
+    LearnRateStrategyValueValuesEnum: The strategy to determine learn rate for
+      the current iteration.
+    LossTypeValueValuesEnum: Type of loss function used during training run.
+    ModelRegistryValueValuesEnum: The model registry.
+    OptimizationStrategyValueValuesEnum: Optimization strategy for training
+      linear regression models.
+    PcaSolverValueValuesEnum: The solver for PCA.
+    TreeMethodValueValuesEnum: Tree construction algorithm for boosted tree
+      models.
+
+  Messages:
+    LabelClassWeightsValue: Weights associated with each label class, for
+      rebalancing the training data. Only applicable for classification
+      models.
+
+  Fields:
+    activationFn: Activation function of the neural nets.
+    adjustStepChanges: If true, detect step changes and make data adjustment
+      in the input time series.
+    approxGlobalFeatureContrib: Whether to use approximate feature
+      contribution method in XGBoost model explanation for global explain.
+    autoArima: Whether to enable auto ARIMA or not.
+    autoArimaMaxOrder: The max value of the sum of non-seasonal p and q.
+    autoArimaMinOrder: The min value of the sum of non-seasonal p and q.
+    autoClassWeights: Whether to calculate class weights automatically based
+      on the popularity of each label.
+    batchSize: Batch size for dnn models.
+    boosterType: Booster type for boosted tree models.
+    budgetHours: Budget in hours for AutoML training.
+    calculatePValues: Whether or not p-value test should be computed for this
+      model. Only available for linear and logistic regression models.
+    cleanSpikesAndDips: If true, clean spikes and dips in the input time
+      series.
+    colorSpace: Enums for color space, used for processing images in Object
+      Table. See more details at
+      https://www.tensorflow.org/io/tutorials/colorspace.
+    colsampleBylevel: Subsample ratio of columns for each level for boosted
+      tree models.
+    colsampleBynode: Subsample ratio of columns for each node(split) for
+      boosted tree models.
+    colsampleBytree: Subsample ratio of columns when constructing each tree
+      for boosted tree models.
+    dartNormalizeType: Type of normalization algorithm for boosted tree models
+      using dart booster.
+    dataFrequency: The data frequency of a time series.
+    dataSplitColumn: The column to split data with. This column won't be used
+      as a feature. 1. When data_split_method is CUSTOM, the corresponding
+      column should be boolean. The rows with true value tag are eval data,
+      and the false are training data. 2. When data_split_method is SEQ, the
+      first DATA_SPLIT_EVAL_FRACTION rows (from smallest to largest) in the
+      corresponding column are used as training data, and the rest are eval
+      data. It respects the order in Orderable data types:
+      https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
+      types#data-type-properties
+    dataSplitEvalFraction: The fraction of evaluation data over the whole
+      input data. The rest of data will be used as training data. The format
+      should be double. Accurate to two decimal places. Default value is 0.2.
+    dataSplitMethod: The data split type for training and evaluation, e.g.
+      RANDOM.
+    decomposeTimeSeries: If true, perform decompose time series and save the
+      results.
+    distanceType: Distance type for clustering models.
+    dropout: Dropout probability for dnn models.
+    earlyStop: Whether to stop early when the loss doesn't improve
+      significantly any more (compared to min_relative_progress). Used only
+      for iterative training algorithms.
+    enableGlobalExplain: If true, enable global explanation during training.
+    feedbackType: Feedback type that specifies which algorithm to run for
+      matrix factorization.
+    fitIntercept: Whether the model should include intercept during model
+      training.
+    hiddenUnits: Hidden units for dnn models.
+    holidayRegion: The geographical region based on which the holidays are
+      considered in time series modeling. If a valid value is specified, then
+      holiday effects modeling is enabled.
+    horizon: The number of periods ahead that need to be forecasted.
+    hparamTuningObjectives: The target evaluation metrics to optimize the
+      hyperparameters for.
+    includeDrift: Include drift when fitting an ARIMA model.
+    initialLearnRate: Specifies the initial learning rate for the line search
+      learn rate strategy.
+    inputLabelColumns: Name of input label columns in training data.
+    instanceWeightColumn: Name of the instance weight column for training
+      data. This column isn't be used as a feature.
+    integratedGradientsNumSteps: Number of integral steps for the integrated
+      gradients explain method.
+    itemColumn: Item column specified for matrix factorization models.
+    kmeansInitializationColumn: The column used to provide the initial
+      centroids for kmeans algorithm when kmeans_initialization_method is
+      CUSTOM.
+    kmeansInitializationMethod: The method used to initialize the centroids
+      for kmeans algorithm.
+    l1RegActivation: L1 regularization coefficient to activations.
+    l1Regularization: L1 regularization coefficient.
+    l2Regularization: L2 regularization coefficient.
+    labelClassWeights: Weights associated with each label class, for
+      rebalancing the training data. Only applicable for classification
+      models.
+    learnRate: Learning rate in training. Used only for iterative training
+      algorithms.
+    learnRateStrategy: The strategy to determine learn rate for the current
+      iteration.
+    lossType: Type of loss function used during training run.
+    maxIterations: The maximum number of iterations in training. Used only for
+      iterative training algorithms.
+    maxParallelTrials: Maximum number of trials to run in parallel.
+    maxTimeSeriesLength: Get truncated length by last n points in time series.
+      Use separately from time_series_length_fraction and
+      min_time_series_length.
+    maxTreeDepth: Maximum depth of a tree for boosted tree models.
+    minRelativeProgress: When early_stop is true, stops training when accuracy
+      improvement is less than 'min_relative_progress'. Used only for
+      iterative training algorithms.
+    minSplitLoss: Minimum split loss for boosted tree models.
+    minTimeSeriesLength: Set fast trend ARIMA_PLUS model minimum training
+      length. Use in pair with time_series_length_fraction.
+    minTreeChildWeight: Minimum sum of instance weight needed in a child for
+      boosted tree models.
+    modelRegistry: The model registry.
+    modelUri: Google Cloud Storage URI from which the model was imported. Only
+      applicable for imported models.
+    nonSeasonalOrder: A specification of the non-seasonal part of the ARIMA
+      model: the three components (p, d, q) are the AR order, the degree of
+      differencing, and the MA order.
+    numClusters: Number of clusters for clustering models.
+    numFactors: Num factors specified for matrix factorization models.
+    numParallelTree: Number of parallel trees constructed during each
+      iteration for boosted tree models.
+    numPrincipalComponents: Number of principal components to keep in the PCA
+      model. Must be <= the number of features.
+    numTrials: Number of trials to run this hyperparameter tuning job.
+    optimizationStrategy: Optimization strategy for training linear regression
+      models.
+    optimizer: Optimizer used for training the neural nets.
+    pcaExplainedVarianceRatio: The minimum ratio of cumulative explained
+      variance that needs to be given by the PCA model.
+    pcaSolver: The solver for PCA.
+    sampledShapleyNumPaths: Number of paths for the sampled Shapley explain
+      method.
+    scaleFeatures: If true, scale the feature values by dividing the feature
+      standard deviation. Currently only apply to PCA.
+    standardizeFeatures: Whether to standardize numerical features. Default to
+      true.
+    subsample: Subsample fraction of the training data to grow tree to prevent
+      overfitting for boosted tree models.
+    tfVersion: Based on the selected TF version, the corresponding docker
+      image is used to train external models.
+    timeSeriesDataColumn: Column to be designated as time series data for
+      ARIMA model.
+    timeSeriesIdColumn: The time series id column that was used during ARIMA
+      model training.
+    timeSeriesIdColumns: The time series id columns that were used during
+      ARIMA model training.
+    timeSeriesLengthFraction: Get truncated length by fraction in time series.
+    timeSeriesTimestampColumn: Column to be designated as time series
+      timestamp for ARIMA model.
+    treeMethod: Tree construction algorithm for boosted tree models.
+    trendSmoothingWindowSize: The smoothing window size for the trend
+      component of the time series.
+    userColumn: User column specified for matrix factorization models.
+    vertexAiModelVersionAliases: The version aliases to apply in Vertex AI
+      model registry. Always overwrite if the version aliases exists in a
+      existing model.
+    walsAlpha: Hyperparameter for matrix factoration when implicit feedback
+      type is specified.
+    warmStart: Whether to train a model from the last checkpoint.
+    xgboostVersion: User-selected XGBoost versions for training of XGBoost
+      models.
+  """
+
+  class BoosterTypeValueValuesEnum(_messages.Enum):
+    r"""Booster type for boosted tree models.
+
+    Values:
+      BOOSTER_TYPE_UNSPECIFIED: Unspecified booster type.
+      GBTREE: Gbtree booster.
+      DART: Dart booster.
+    """
+    BOOSTER_TYPE_UNSPECIFIED = 0
+    GBTREE = 1
+    DART = 2
+
+  class ColorSpaceValueValuesEnum(_messages.Enum):
+    r"""Enums for color space, used for processing images in Object Table. See
+    more details at https://www.tensorflow.org/io/tutorials/colorspace.
+
+    Values:
+      COLOR_SPACE_UNSPECIFIED: Unspecified color space
+      RGB: RGB
+      HSV: HSV
+      YIQ: YIQ
+      YUV: YUV
+      GRAYSCALE: GRAYSCALE
+    """
+    COLOR_SPACE_UNSPECIFIED = 0
+    RGB = 1
+    HSV = 2
+    YIQ = 3
+    YUV = 4
+    GRAYSCALE = 5
+
+  class DartNormalizeTypeValueValuesEnum(_messages.Enum):
+    r"""Type of normalization algorithm for boosted tree models using dart
+    booster.
+
+    Values:
+      DART_NORMALIZE_TYPE_UNSPECIFIED: Unspecified dart normalize type.
+      TREE: New trees have the same weight of each of dropped trees.
+      FOREST: New trees have the same weight of sum of dropped trees.
+    """
+    DART_NORMALIZE_TYPE_UNSPECIFIED = 0
+    TREE = 1
+    FOREST = 2
+
+  class DataFrequencyValueValuesEnum(_messages.Enum):
+    r"""The data frequency of a time series.
+
+    Values:
+      DATA_FREQUENCY_UNSPECIFIED: <no description>
+      AUTO_FREQUENCY: Automatically inferred from timestamps.
+      YEARLY: Yearly data.
+      QUARTERLY: Quarterly data.
+      MONTHLY: Monthly data.
+      WEEKLY: Weekly data.
+      DAILY: Daily data.
+      HOURLY: Hourly data.
+      PER_MINUTE: Per-minute data.
+    """
+    DATA_FREQUENCY_UNSPECIFIED = 0
+    AUTO_FREQUENCY = 1
+    YEARLY = 2
+    QUARTERLY = 3
+    MONTHLY = 4
+    WEEKLY = 5
+    DAILY = 6
+    HOURLY = 7
+    PER_MINUTE = 8
+
+  class DataSplitMethodValueValuesEnum(_messages.Enum):
+    r"""The data split type for training and evaluation, e.g. RANDOM.
+
+    Values:
+      DATA_SPLIT_METHOD_UNSPECIFIED: <no description>
+      RANDOM: Splits data randomly.
+      CUSTOM: Splits data with the user provided tags.
+      SEQUENTIAL: Splits data sequentially.
+      NO_SPLIT: Data split will be skipped.
+      AUTO_SPLIT: Splits data automatically: Uses NO_SPLIT if the data size is
+        small. Otherwise uses RANDOM.
+    """
+    DATA_SPLIT_METHOD_UNSPECIFIED = 0
+    RANDOM = 1
+    CUSTOM = 2
+    SEQUENTIAL = 3
+    NO_SPLIT = 4
+    AUTO_SPLIT = 5
+
+  class DistanceTypeValueValuesEnum(_messages.Enum):
+    r"""Distance type for clustering models.
+
+    Values:
+      DISTANCE_TYPE_UNSPECIFIED: <no description>
+      EUCLIDEAN: Eculidean distance.
+      COSINE: Cosine distance.
+    """
+    DISTANCE_TYPE_UNSPECIFIED = 0
+    EUCLIDEAN = 1
+    COSINE = 2
+
+  class FeedbackTypeValueValuesEnum(_messages.Enum):
+    r"""Feedback type that specifies which algorithm to run for matrix
+    factorization.
+
+    Values:
+      FEEDBACK_TYPE_UNSPECIFIED: <no description>
+      IMPLICIT: Use weighted-als for implicit feedback problems.
+      EXPLICIT: Use nonweighted-als for explicit feedback problems.
+    """
+    FEEDBACK_TYPE_UNSPECIFIED = 0
+    IMPLICIT = 1
+    EXPLICIT = 2
+
+  class HolidayRegionValueValuesEnum(_messages.Enum):
+    r"""The geographical region based on which the holidays are considered in
+    time series modeling. If a valid value is specified, then holiday effects
+    modeling is enabled.
+
+    Values:
+      HOLIDAY_REGION_UNSPECIFIED: Holiday region unspecified.
+      GLOBAL: Global.
+      NA: North America.
+      JAPAC: Japan and Asia Pacific: Korea, Greater China, India, Australia,
+        and New Zealand.
+      EMEA: Europe, the Middle East and Africa.
+      LAC: Latin America and the Caribbean.
+      AE: United Arab Emirates
+      AR: Argentina
+      AT: Austria
+      AU: Australia
+      BE: Belgium
+      BR: Brazil
+      CA: Canada
+      CH: Switzerland
+      CL: Chile
+      CN: China
+      CO: Colombia
+      CS: Czechoslovakia
+      CZ: Czech Republic
+      DE: Germany
+      DK: Denmark
+      DZ: Algeria
+      EC: Ecuador
+      EE: Estonia
+      EG: Egypt
+      ES: Spain
+      FI: Finland
+      FR: France
+      GB: Great Britain (United Kingdom)
+      GR: Greece
+      HK: Hong Kong
+      HU: Hungary
+      ID: Indonesia
+      IE: Ireland
+      IL: Israel
+      IN: India
+      IR: Iran
+      IT: Italy
+      JP: Japan
+      KR: Korea (South)
+      LV: Latvia
+      MA: Morocco
+      MX: Mexico
+      MY: Malaysia
+      NG: Nigeria
+      NL: Netherlands
+      NO: Norway
+      NZ: New Zealand
+      PE: Peru
+      PH: Philippines
+      PK: Pakistan
+      PL: Poland
+      PT: Portugal
+      RO: Romania
+      RS: Serbia
+      RU: Russian Federation
+      SA: Saudi Arabia
+      SE: Sweden
+      SG: Singapore
+      SI: Slovenia
+      SK: Slovakia
+      TH: Thailand
+      TR: Turkey
+      TW: Taiwan
+      UA: Ukraine
+      US: United States
+      VE: Venezuela
+      VN: Viet Nam
+      ZA: South Africa
+    """
+    HOLIDAY_REGION_UNSPECIFIED = 0
+    GLOBAL = 1
+    NA = 2
+    JAPAC = 3
+    EMEA = 4
+    LAC = 5
+    AE = 6
+    AR = 7
+    AT = 8
+    AU = 9
+    BE = 10
+    BR = 11
+    CA = 12
+    CH = 13
+    CL = 14
+    CN = 15
+    CO = 16
+    CS = 17
+    CZ = 18
+    DE = 19
+    DK = 20
+    DZ = 21
+    EC = 22
+    EE = 23
+    EG = 24
+    ES = 25
+    FI = 26
+    FR = 27
+    GB = 28
+    GR = 29
+    HK = 30
+    HU = 31
+    ID = 32
+    IE = 33
+    IL = 34
+    IN = 35
+    IR = 36
+    IT = 37
+    JP = 38
+    KR = 39
+    LV = 40
+    MA = 41
+    MX = 42
+    MY = 43
+    NG = 44
+    NL = 45
+    NO = 46
+    NZ = 47
+    PE = 48
+    PH = 49
+    PK = 50
+    PL = 51
+    PT = 52
+    RO = 53
+    RS = 54
+    RU = 55
+    SA = 56
+    SE = 57
+    SG = 58
+    SI = 59
+    SK = 60
+    TH = 61
+    TR = 62
+    TW = 63
+    UA = 64
+    US = 65
+    VE = 66
+    VN = 67
+    ZA = 68
+
+  class HparamTuningObjectivesValueListEntryValuesEnum(_messages.Enum):
+    r"""HparamTuningObjectivesValueListEntryValuesEnum enum type.
+
+    Values:
+      HPARAM_TUNING_OBJECTIVE_UNSPECIFIED: Unspecified evaluation metric.
+      MEAN_ABSOLUTE_ERROR: Mean absolute error. mean_absolute_error =
+        AVG(ABS(label - predicted))
+      MEAN_SQUARED_ERROR: Mean squared error. mean_squared_error =
+        AVG(POW(label - predicted, 2))
+      MEAN_SQUARED_LOG_ERROR: Mean squared log error. mean_squared_log_error =
+        AVG(POW(LN(1 + label) - LN(1 + predicted), 2))
+      MEDIAN_ABSOLUTE_ERROR: Mean absolute error. median_absolute_error =
+        APPROX_QUANTILES(absolute_error, 2)[OFFSET(1)]
+      R_SQUARED: R^2 score. This corresponds to r2_score in ML.EVALUATE.
+        r_squared = 1 - SUM(squared_error)/(COUNT(label)*VAR_POP(label))
+      EXPLAINED_VARIANCE: Explained variance. explained_variance = 1 -
+        VAR_POP(label_error)/VAR_POP(label)
+      PRECISION: Precision is the fraction of actual positive predictions that
+        had positive actual labels. For multiclass this is a macro-averaged
+        metric treating each class as a binary classifier.
+      RECALL: Recall is the fraction of actual positive labels that were given
+        a positive prediction. For multiclass this is a macro-averaged metric.
+      ACCURACY: Accuracy is the fraction of predictions given the correct
+        label. For multiclass this is a globally micro-averaged metric.
+      F1_SCORE: The F1 score is an average of recall and precision. For
+        multiclass this is a macro-averaged metric.
+      LOG_LOSS: Logorithmic Loss. For multiclass this is a macro-averaged
+        metric.
+      ROC_AUC: Area Under an ROC Curve. For multiclass this is a macro-
+        averaged metric.
+      DAVIES_BOULDIN_INDEX: Davies-Bouldin Index.
+      MEAN_AVERAGE_PRECISION: Mean Average Precision.
+      NORMALIZED_DISCOUNTED_CUMULATIVE_GAIN: Normalized Discounted Cumulative
+        Gain.
+      AVERAGE_RANK: Average Rank.
+    """
+    HPARAM_TUNING_OBJECTIVE_UNSPECIFIED = 0
+    MEAN_ABSOLUTE_ERROR = 1
+    MEAN_SQUARED_ERROR = 2
+    MEAN_SQUARED_LOG_ERROR = 3
+    MEDIAN_ABSOLUTE_ERROR = 4
+    R_SQUARED = 5
+    EXPLAINED_VARIANCE = 6
+    PRECISION = 7
+    RECALL = 8
+    ACCURACY = 9
+    F1_SCORE = 10
+    LOG_LOSS = 11
+    ROC_AUC = 12
+    DAVIES_BOULDIN_INDEX = 13
+    MEAN_AVERAGE_PRECISION = 14
+    NORMALIZED_DISCOUNTED_CUMULATIVE_GAIN = 15
+    AVERAGE_RANK = 16
+
+  class KmeansInitializationMethodValueValuesEnum(_messages.Enum):
+    r"""The method used to initialize the centroids for kmeans algorithm.
+
+    Values:
+      KMEANS_INITIALIZATION_METHOD_UNSPECIFIED: Unspecified initialization
+        method.
+      RANDOM: Initializes the centroids randomly.
+      CUSTOM: Initializes the centroids using data specified in
+        kmeans_initialization_column.
+      KMEANS_PLUS_PLUS: Initializes with kmeans++.
+    """
+    KMEANS_INITIALIZATION_METHOD_UNSPECIFIED = 0
+    RANDOM = 1
+    CUSTOM = 2
+    KMEANS_PLUS_PLUS = 3
+
+  class LearnRateStrategyValueValuesEnum(_messages.Enum):
+    r"""The strategy to determine learn rate for the current iteration.
+
+    Values:
+      LEARN_RATE_STRATEGY_UNSPECIFIED: <no description>
+      LINE_SEARCH: Use line search to determine learning rate.
+      CONSTANT: Use a constant learning rate.
+    """
+    LEARN_RATE_STRATEGY_UNSPECIFIED = 0
+    LINE_SEARCH = 1
+    CONSTANT = 2
+
+  class LossTypeValueValuesEnum(_messages.Enum):
+    r"""Type of loss function used during training run.
+
+    Values:
+      LOSS_TYPE_UNSPECIFIED: <no description>
+      MEAN_SQUARED_LOSS: Mean squared loss, used for linear regression.
+      MEAN_LOG_LOSS: Mean log loss, used for logistic regression.
+    """
+    LOSS_TYPE_UNSPECIFIED = 0
+    MEAN_SQUARED_LOSS = 1
+    MEAN_LOG_LOSS = 2
+
+  class ModelRegistryValueValuesEnum(_messages.Enum):
+    r"""The model registry.
+
+    Values:
+      MODEL_REGISTRY_UNSPECIFIED: <no description>
+      VERTEX_AI: Vertex AI.
+    """
+    MODEL_REGISTRY_UNSPECIFIED = 0
+    VERTEX_AI = 1
+
+  class OptimizationStrategyValueValuesEnum(_messages.Enum):
+    r"""Optimization strategy for training linear regression models.
+
+    Values:
+      OPTIMIZATION_STRATEGY_UNSPECIFIED: <no description>
+      BATCH_GRADIENT_DESCENT: Uses an iterative batch gradient descent
+        algorithm.
+      NORMAL_EQUATION: Uses a normal equation to solve linear regression
+        problem.
+    """
+    OPTIMIZATION_STRATEGY_UNSPECIFIED = 0
+    BATCH_GRADIENT_DESCENT = 1
+    NORMAL_EQUATION = 2
+
+  class PcaSolverValueValuesEnum(_messages.Enum):
+    r"""The solver for PCA.
+
+    Values:
+      UNSPECIFIED: <no description>
+      FULL: Full eigen-decoposition.
+      RANDOMIZED: Randomized SVD.
+      AUTO: Auto.
+    """
+    UNSPECIFIED = 0
+    FULL = 1
+    RANDOMIZED = 2
+    AUTO = 3
+
+  class TreeMethodValueValuesEnum(_messages.Enum):
+    r"""Tree construction algorithm for boosted tree models.
+
+    Values:
+      TREE_METHOD_UNSPECIFIED: Unspecified tree method.
+      AUTO: Use heuristic to choose the fastest method.
+      EXACT: Exact greedy algorithm.
+      APPROX: Approximate greedy algorithm using quantile sketch and gradient
+        histogram.
+      HIST: Fast histogram optimized approximate greedy algorithm.
+    """
+    TREE_METHOD_UNSPECIFIED = 0
+    AUTO = 1
+    EXACT = 2
+    APPROX = 3
+    HIST = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelClassWeightsValue(_messages.Message):
+    r"""Weights associated with each label class, for rebalancing the training
+    data. Only applicable for classification models.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelClassWeightsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        LabelClassWeightsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelClassWeightsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A number attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.FloatField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  activationFn = _messages.StringField(1)
+  adjustStepChanges = _messages.BooleanField(2)
+  approxGlobalFeatureContrib = _messages.BooleanField(3)
+  autoArima = _messages.BooleanField(4)
+  autoArimaMaxOrder = _messages.IntegerField(5)
+  autoArimaMinOrder = _messages.IntegerField(6)
+  autoClassWeights = _messages.BooleanField(7)
+  batchSize = _messages.IntegerField(8)
+  boosterType = _messages.EnumField('BoosterTypeValueValuesEnum', 9)
+  budgetHours = _messages.FloatField(10)
+  calculatePValues = _messages.BooleanField(11)
+  cleanSpikesAndDips = _messages.BooleanField(12)
+  colorSpace = _messages.EnumField('ColorSpaceValueValuesEnum', 13)
+  colsampleBylevel = _messages.FloatField(14)
+  colsampleBynode = _messages.FloatField(15)
+  colsampleBytree = _messages.FloatField(16)
+  dartNormalizeType = _messages.EnumField('DartNormalizeTypeValueValuesEnum', 17)
+  dataFrequency = _messages.EnumField('DataFrequencyValueValuesEnum', 18)
+  dataSplitColumn = _messages.StringField(19)
+  dataSplitEvalFraction = _messages.FloatField(20)
+  dataSplitMethod = _messages.EnumField('DataSplitMethodValueValuesEnum', 21)
+  decomposeTimeSeries = _messages.BooleanField(22)
+  distanceType = _messages.EnumField('DistanceTypeValueValuesEnum', 23)
+  dropout = _messages.FloatField(24)
+  earlyStop = _messages.BooleanField(25)
+  enableGlobalExplain = _messages.BooleanField(26)
+  feedbackType = _messages.EnumField('FeedbackTypeValueValuesEnum', 27)
+  fitIntercept = _messages.BooleanField(28)
+  hiddenUnits = _messages.IntegerField(29, repeated=True)
+  holidayRegion = _messages.EnumField('HolidayRegionValueValuesEnum', 30)
+  horizon = _messages.IntegerField(31)
+  hparamTuningObjectives = _messages.EnumField('HparamTuningObjectivesValueListEntryValuesEnum', 32, repeated=True)
+  includeDrift = _messages.BooleanField(33)
+  initialLearnRate = _messages.FloatField(34)
+  inputLabelColumns = _messages.StringField(35, repeated=True)
+  instanceWeightColumn = _messages.StringField(36)
+  integratedGradientsNumSteps = _messages.IntegerField(37)
+  itemColumn = _messages.StringField(38)
+  kmeansInitializationColumn = _messages.StringField(39)
+  kmeansInitializationMethod = _messages.EnumField('KmeansInitializationMethodValueValuesEnum', 40)
+  l1RegActivation = _messages.FloatField(41)
+  l1Regularization = _messages.FloatField(42)
+  l2Regularization = _messages.FloatField(43)
+  labelClassWeights = _messages.MessageField('LabelClassWeightsValue', 44)
+  learnRate = _messages.FloatField(45)
+  learnRateStrategy = _messages.EnumField('LearnRateStrategyValueValuesEnum', 46)
+  lossType = _messages.EnumField('LossTypeValueValuesEnum', 47)
+  maxIterations = _messages.IntegerField(48)
+  maxParallelTrials = _messages.IntegerField(49)
+  maxTimeSeriesLength = _messages.IntegerField(50)
+  maxTreeDepth = _messages.IntegerField(51)
+  minRelativeProgress = _messages.FloatField(52)
+  minSplitLoss = _messages.FloatField(53)
+  minTimeSeriesLength = _messages.IntegerField(54)
+  minTreeChildWeight = _messages.IntegerField(55)
+  modelRegistry = _messages.EnumField('ModelRegistryValueValuesEnum', 56)
+  modelUri = _messages.StringField(57)
+  nonSeasonalOrder = _messages.MessageField('ArimaOrder', 58)
+  numClusters = _messages.IntegerField(59)
+  numFactors = _messages.IntegerField(60)
+  numParallelTree = _messages.IntegerField(61)
+  numPrincipalComponents = _messages.IntegerField(62)
+  numTrials = _messages.IntegerField(63)
+  optimizationStrategy = _messages.EnumField('OptimizationStrategyValueValuesEnum', 64)
+  optimizer = _messages.StringField(65)
+  pcaExplainedVarianceRatio = _messages.FloatField(66)
+  pcaSolver = _messages.EnumField('PcaSolverValueValuesEnum', 67)
+  sampledShapleyNumPaths = _messages.IntegerField(68)
+  scaleFeatures = _messages.BooleanField(69)
+  standardizeFeatures = _messages.BooleanField(70)
+  subsample = _messages.FloatField(71)
+  tfVersion = _messages.StringField(72)
+  timeSeriesDataColumn = _messages.StringField(73)
+  timeSeriesIdColumn = _messages.StringField(74)
+  timeSeriesIdColumns = _messages.StringField(75, repeated=True)
+  timeSeriesLengthFraction = _messages.FloatField(76)
+  timeSeriesTimestampColumn = _messages.StringField(77)
+  treeMethod = _messages.EnumField('TreeMethodValueValuesEnum', 78)
+  trendSmoothingWindowSize = _messages.IntegerField(79)
+  userColumn = _messages.StringField(80)
+  vertexAiModelVersionAliases = _messages.StringField(81, repeated=True)
+  walsAlpha = _messages.FloatField(82)
+  warmStart = _messages.BooleanField(83)
+  xgboostVersion = _messages.StringField(84)
+
+
+class TrainingRun(_messages.Message):
+  r"""Information about a single training query run for the model.
+
+  Fields:
+    classLevelGlobalExplanations: Output only. Global explanation contains the
+      explanation of top features on the class level. Applies to
+      classification models only.
+    dataSplitResult: Output only. Data split result of the training run. Only
+      set when the input data is actually split.
+    evaluationMetrics: Output only. The evaluation metrics over training/eval
+      data that were computed at the end of training.
+    modelLevelGlobalExplanation: Output only. Global explanation contains the
+      explanation of top features on the model level. Applies to both
+      regression and classification models.
+    results: Output only. Output of each iteration run, results.size() <=
+      max_iterations.
+    startTime: Output only. The start time of this training run.
+    trainingOptions: Output only. Options that were used for this training
+      run, includes user specified and default options that were used.
+    trainingStartTime: Output only. The start time of this training run, in
+      milliseconds since epoch.
+    vertexAiModelId: The model id in the [Vertex AI Model
+      Registry](https://cloud.google.com/vertex-ai/docs/model-
+      registry/introduction) for this training run.
+    vertexAiModelVersion: Output only. The model version in the [Vertex AI
+      Model Registry](https://cloud.google.com/vertex-ai/docs/model-
+      registry/introduction) for this training run.
+  """
+
+  classLevelGlobalExplanations = _messages.MessageField('GlobalExplanation', 1, repeated=True)
+  dataSplitResult = _messages.MessageField('DataSplitResult', 2)
+  evaluationMetrics = _messages.MessageField('EvaluationMetrics', 3)
+  modelLevelGlobalExplanation = _messages.MessageField('GlobalExplanation', 4)
+  results = _messages.MessageField('IterationResult', 5, repeated=True)
+  startTime = _messages.StringField(6)
+  trainingOptions = _messages.MessageField('TrainingOptions', 7)
+  trainingStartTime = _messages.IntegerField(8)
+  vertexAiModelId = _messages.StringField(9)
+  vertexAiModelVersion = _messages.StringField(10)
 
 
 class TransactionInfo(_messages.Message):

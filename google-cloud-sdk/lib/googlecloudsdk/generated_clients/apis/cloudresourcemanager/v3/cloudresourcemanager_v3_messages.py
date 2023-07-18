@@ -983,7 +983,8 @@ class CloudresourcemanagerTagValuesListRequest(_messages.Message):
       unspecified, the server will use 100 as the default.
     pageToken: Optional. A pagination token returned from a previous call to
       `ListTagValues` that indicates where this listing should continue from.
-    parent: Required.
+    parent: Required. Resource name for the parent of the TagValues to be
+      listed, in the format `tagKeys/123` or `tagValues/123`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

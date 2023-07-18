@@ -1048,6 +1048,7 @@ class _BareMetalClusterClient(client.ClientBase):
         'nodeConfig': self._workload_node_config(args),
         'securityConfig': self._security_config(args),
         'nodeAccessConfig': self._node_access_config(args),
+        'binaryAuthorization': self._binary_authorization(args),
     }
 
     if any(kwargs.values()):

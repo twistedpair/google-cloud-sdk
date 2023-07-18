@@ -824,7 +824,7 @@ class BuildBazelRemoteExecutionV2RequestMetadata(_messages.Message):
   call using the canonical proto serialization: * name:
   `build.bazel.remote.execution.v2.requestmetadata-bin` * contents: the base64
   encoded binary `RequestMetadata` message. Note: the gRPC library serializes
-  binary headers encoded in base 64 by default
+  binary headers encoded in base64 by default
   (https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md#requests).
   Therefore, if the gRPC library is used to pass/retrieve this metadata, the
   user may ignore the base64 encoding and assume it is simply serialized as a
@@ -1213,7 +1213,11 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
 class GoogleDevtoolsRemotebuildbotResourceUsage(_messages.Message):
   r"""ResourceUsage is the system resource usage of the host machine.
 
+  Enums:
+    BotStateValueValuesEnum:
+
   Fields:
+    botState: A BotStateValueValuesEnum attribute.
     cpuUsedPercent: A number attribute.
     diskUsage: A GoogleDevtoolsRemotebuildbotResourceUsageStat attribute.
     memoryUsage: A GoogleDevtoolsRemotebuildbotResourceUsageStat attribute.
@@ -1221,10 +1225,23 @@ class GoogleDevtoolsRemotebuildbotResourceUsage(_messages.Message):
       attribute.
   """
 
-  cpuUsedPercent = _messages.FloatField(1)
-  diskUsage = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageStat', 2)
-  memoryUsage = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageStat', 3)
-  totalDiskIoStats = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageIOStats', 4)
+  class BotStateValueValuesEnum(_messages.Enum):
+    r"""BotStateValueValuesEnum enum type.
+
+    Values:
+      UNSPECIFIED: <no description>
+      IDLE: <no description>
+      BUSY: <no description>
+    """
+    UNSPECIFIED = 0
+    IDLE = 1
+    BUSY = 2
+
+  botState = _messages.EnumField('BotStateValueValuesEnum', 1)
+  cpuUsedPercent = _messages.FloatField(2)
+  diskUsage = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageStat', 3)
+  memoryUsage = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageStat', 4)
+  totalDiskIoStats = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageIOStats', 5)
 
 
 class GoogleDevtoolsRemotebuildbotResourceUsageIOStats(_messages.Message):

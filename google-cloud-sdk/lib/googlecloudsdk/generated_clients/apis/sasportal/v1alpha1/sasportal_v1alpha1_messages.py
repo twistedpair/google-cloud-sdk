@@ -41,6 +41,18 @@ class SasPortalChannelWithScore(_messages.Message):
   score = _messages.FloatField(2)
 
 
+class SasPortalCheckHasProvisionedDeploymentResponse(_messages.Message):
+  r"""Response for [CheckHasProvisionedDeployment].
+  [spectrum.sas.portal.v1alpha1.Provisioning.CheckHasProvisionedDeployment].
+
+  Fields:
+    hasProvisionedDeployment: Whether a SAS deployment for the authentication
+      context exists.
+  """
+
+  hasProvisionedDeployment = _messages.BooleanField(1)
+
+
 class SasPortalCreateSignedDeviceRequest(_messages.Message):
   r"""Request for CreateSignedDevice.
 
@@ -401,6 +413,7 @@ class SasPortalEmpty(_messages.Message):
   """
 
 
+
 class SasPortalFrequencyRange(_messages.Message):
   r"""Frequency range from `low_frequency` to `high_frequency`.
 
@@ -583,7 +596,6 @@ class SasPortalListNodesResponse(_messages.Message):
 
 class SasPortalMigrateOrganizationMetadata(_messages.Message):
   r"""Long-running operation metadata message returned by the
-
   MigrateOrganization.
 
   Enums:
@@ -594,9 +606,7 @@ class SasPortalMigrateOrganizationMetadata(_messages.Message):
   """
 
   class OperationStateValueValuesEnum(_messages.Enum):
-    r"""Output only.
-
-    Current operation state
+    r"""Output only. Current operation state
 
     Values:
       OPERATION_STATE_UNSPECIFIED: Unspecified.
@@ -616,11 +626,10 @@ class SasPortalMigrateOrganizationMetadata(_messages.Message):
 
 class SasPortalMigrateOrganizationRequest(_messages.Message):
   r"""Request for [MigrateOrganization].
-
-  [spectrum.sas.portal.v1alpha1.Provisioning.MigrateOrganization]. GCP Project,
-  Organization Info, and caller's GAIA ID should be retrieved from the RPC
-  handler, and used to check authorization on SAS Portal organization and to
-  create GCP Projects.
+  [spectrum.sas.portal.v1alpha1.Provisioning.MigrateOrganization]. GCP
+  Project, Organization Info, and caller's GAIA ID should be retrieved from
+  the RPC handler, and used to check authorization on SAS Portal organization
+  and to create GCP Projects.
 
   Fields:
     organizationId: Required. Id of the SAS organization to be migrated.
@@ -631,7 +640,6 @@ class SasPortalMigrateOrganizationRequest(_messages.Message):
 
 class SasPortalMigrateOrganizationResponse(_messages.Message):
   r"""Response for [MigrateOrganization].
-
   [spectrum.sas.portal.v1alpha1.Provisioning.MigrateOrganization].
 
   Fields:
@@ -640,9 +648,7 @@ class SasPortalMigrateOrganizationResponse(_messages.Message):
       exist.
   """
 
-  deploymentAssociation = _messages.MessageField(
-      'SasPortalDeploymentAssociation', 1, repeated=True
-  )
+  deploymentAssociation = _messages.MessageField('SasPortalDeploymentAssociation', 1, repeated=True)
 
 
 class SasPortalMoveDeploymentRequest(_messages.Message):
@@ -855,11 +861,10 @@ class SasPortalPolicy(_messages.Message):
 
 class SasPortalProvisionDeploymentRequest(_messages.Message):
   r"""Request for [ProvisionDeployment].
-
-  [spectrum.sas.portal.v1alpha1.Provisioning.ProvisionDeployment]. GCP Project,
-  Organization Info, and caller's GAIA ID should be retrieved from the RPC
-  handler, and used as inputs to create a new SAS organization (if not exists)
-  and a new SAS deployment.
+  [spectrum.sas.portal.v1alpha1.Provisioning.ProvisionDeployment]. GCP
+  Project, Organization Info, and caller's GAIA ID should be retrieved from
+  the RPC handler, and used as inputs to create a new SAS organization (if not
+  exists) and a new SAS deployment.
 
   Fields:
     newDeploymentDisplayName: Optional. If this field is set, and a new SAS
@@ -1023,6 +1028,10 @@ class SasPortalValidateInstallerRequest(_messages.Message):
 
 class SasPortalValidateInstallerResponse(_messages.Message):
   r"""Response for ValidateInstaller."""
+
+
+class SasportalCustomersCheckHasProvisionedDeploymentRequest(_messages.Message):
+  r"""A SasportalCustomersCheckHasProvisionedDeploymentRequest object."""
 
 
 class SasportalCustomersDeploymentsCreateRequest(_messages.Message):

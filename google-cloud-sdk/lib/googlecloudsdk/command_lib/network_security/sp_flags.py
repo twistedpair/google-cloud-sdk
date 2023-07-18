@@ -94,7 +94,7 @@ def AddSecurityProfileResource(parser, release_track):
       ),
       locationsId=concepts.ResourceParameterAttributeConfig(
           "location",
-          "location of the {resource} Global|Region.",
+          "location of the {resource} - Global.",
           parameter_name="locationsId",
       ),
       securityProfilesId=concepts.ResourceParameterAttributeConfig(

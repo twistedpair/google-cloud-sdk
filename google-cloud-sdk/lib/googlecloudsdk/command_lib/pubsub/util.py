@@ -122,11 +122,11 @@ def TopicUriFunc(topic):
   return ParseTopic(name).SelfLink()
 
 
-def ParsePushConfig(args, client=None, enable_no_wrapper_support=False):
+def ParsePushConfig(args, client=None):
   """Parses configs of push subscription from args."""
   push_endpoint = args.push_endpoint
   if push_endpoint is None:
-    if enable_no_wrapper_support and HasNoWrapper(args):
+    if HasNoWrapper(args):
       raise InvalidArgumentError(
           'argument --push-no-wrapper: --push-endpoint must be specified.'
       )
@@ -143,11 +143,9 @@ def ParsePushConfig(args, client=None, enable_no_wrapper_support=False):
         serviceAccountEmail=service_account_email, audience=audience)
 
   no_wrapper = None
-  if enable_no_wrapper_support:
-    has_no_wrapper = HasNoWrapper(args)
-    if has_no_wrapper:
-      write_metadata = getattr(args, 'push_no_wrapper_write_metadata', False)
-      no_wrapper = client.messages.NoWrapper(writeMetadata=write_metadata)
+  if HasNoWrapper(args):
+    write_metadata = getattr(args, 'push_no_wrapper_write_metadata', False)
+    no_wrapper = client.messages.NoWrapper(writeMetadata=write_metadata)
 
   return client.messages.PushConfig(
       pushEndpoint=push_endpoint, oidcToken=oidc_token, noWrapper=no_wrapper)

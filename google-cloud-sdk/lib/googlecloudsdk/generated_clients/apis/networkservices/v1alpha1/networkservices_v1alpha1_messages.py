@@ -1174,9 +1174,10 @@ class ExtensionChainExtension(_messages.Message):
     service: Required. The reference to the service that will run the
       extension. Must be a reference to a Backend Service (https://cloud.googl
       e.com/compute/docs/reference/rest/v1/backendServices).
-    supportedEvents: Required. A set of events during request or response
+    supportedEvents: Optional. A set of events during request or response
       processing for which this extension should be called. Note that usage of
-      this field is only allowed for LbTrafficExtension resource.
+      this field is only allowed and is required for LbTrafficExtension
+      resource.
     timeout: Required. Specifies the timeout for each individual message on
       the stream. The timeout must be between 10-1000 milliseconds.
   """
@@ -1228,6 +1229,8 @@ class Gateway(_messages.Message):
   Gateways to dictate how requests should be routed by this Gateway.
 
   Enums:
+    IpVersionValueValuesEnum: Optional. The IP Version that will be used by
+      this gateway. Valid options are IPV4 or IPV6. Default is IPV4.
     TypeValueValuesEnum: Immutable. The type of the customer managed gateway.
       This field is required. If unspecified, an error is returned.
 
@@ -1236,10 +1239,11 @@ class Gateway(_messages.Message):
       resource.
 
   Fields:
-    addresses: Optional. Zero or one IPv4-address on which the Gateway will
-      receive the traffic. When no address is provided, an IP from the
+    addresses: Optional. Zero or one IPv4 or IPv6 address on which the Gateway
+      will receive the traffic. When no address is provided, an IP from the
       subnetwork is allocated This field only applies to gateways of type
-      'SECURE_WEB_GATEWAY'. Gateways of type 'OPEN_MESH' listen on 0.0.0.0.
+      'SECURE_WEB_GATEWAY'. Gateways of type 'OPEN_MESH' listen on 0.0.0.0 for
+      IPv4 and :: for IPv6.
     authorizationPolicy: Optional. A fully-qualified AuthorizationPolicy URL
       reference. Specifies how traffic is authorized. If empty, authorization
       checks are disabled.
@@ -1255,6 +1259,8 @@ class Gateway(_messages.Message):
       inbound (VM to Proxy) initiated connections. For example:
       `projects/*/locations/*/gatewaySecurityPolicies/swg-policy`. This policy
       is specific to gateways of type 'SECURE_WEB_GATEWAY'.
+    ipVersion: Optional. The IP Version that will be used by this gateway.
+      Valid options are IPV4 or IPV6. Default is IPV4.
     labels: Optional. Set of label tags associated with the Gateway resource.
     name: Required. Name of the Gateway resource. It matches pattern
       `projects/*/locations/*/gateways/`.
@@ -1265,7 +1271,8 @@ class Gateway(_messages.Message):
     ports: Required. One or more port numbers (1-65535), on which the Gateway
       will receive traffic. The proxy binds to the specified ports. Gateways
       of type 'SECURE_WEB_GATEWAY' are limited to 1 port. Gateways of type
-      'OPEN_MESH' listen on 0.0.0.0 and support multiple ports.
+      'OPEN_MESH' listen on 0.0.0.0 for IPv4 and :: for IPv6 and support
+      multiple ports.
     scope: Optional. Scope determines how configuration across multiple
       Gateway instances are merged. The configuration for multiple Gateway
       instances with the same scope will be merged as presented as a single
@@ -1288,6 +1295,19 @@ class Gateway(_messages.Message):
       required. If unspecified, an error is returned.
     updateTime: Output only. The timestamp when the resource was updated.
   """
+
+  class IpVersionValueValuesEnum(_messages.Enum):
+    r"""Optional. The IP Version that will be used by this gateway. Valid
+    options are IPV4 or IPV6. Default is IPV4.
+
+    Values:
+      IP_VERSION_UNSPECIFIED: The type when IP version is not specified.
+      IPV4: The type for IP version 4.
+      IPV6: The type for IP version 6.
+    """
+    IP_VERSION_UNSPECIFIED = 0
+    IPV4 = 1
+    IPV6 = 2
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Immutable. The type of the customer managed gateway. This field is
@@ -1335,17 +1355,18 @@ class Gateway(_messages.Message):
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
   gatewaySecurityPolicy = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  ports = _messages.IntegerField(10, repeated=True, variant=_messages.Variant.INT32)
-  scope = _messages.StringField(11)
-  securityPolicy = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  serverTlsPolicy = _messages.StringField(14)
-  subnetwork = _messages.StringField(15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
-  updateTime = _messages.StringField(17)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  ports = _messages.IntegerField(11, repeated=True, variant=_messages.Variant.INT32)
+  scope = _messages.StringField(12)
+  securityPolicy = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  serverTlsPolicy = _messages.StringField(15)
+  subnetwork = _messages.StringField(16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  updateTime = _messages.StringField(18)
 
 
 class GrpcRoute(_messages.Message):
@@ -6410,6 +6431,7 @@ class ServiceLbPolicy(_messages.Message):
     createTime: Output only. The timestamp when this resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    failoverConfig: Optional. Configuration related to health based failover.
     labels: Optional. Set of label tags associated with the ServiceLbPolicy
       resource.
     loadBalancingAlgorithm: Optional. The type of load balancing algorithm to
@@ -6474,10 +6496,11 @@ class ServiceLbPolicy(_messages.Message):
   autoCapacityDrain = _messages.MessageField('ServiceLbPolicyAutoCapacityDrain', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  loadBalancingAlgorithm = _messages.EnumField('LoadBalancingAlgorithmValueValuesEnum', 5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  failoverConfig = _messages.MessageField('ServiceLbPolicyFailoverConfig', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  loadBalancingAlgorithm = _messages.EnumField('LoadBalancingAlgorithmValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class ServiceLbPolicyAutoCapacityDrain(_messages.Message):
@@ -6493,6 +6516,23 @@ class ServiceLbPolicyAutoCapacityDrain(_messages.Message):
   """
 
   enable = _messages.BooleanField(1)
+
+
+class ServiceLbPolicyFailoverConfig(_messages.Message):
+  r"""Option to specify health based failover behavior. This is not related to
+  Network load balancer FailoverPolicy.
+
+  Fields:
+    failoverHealthThreshold: Optional. The percentage threshold that a load
+      balancer will begin to send traffic to failover backends. If the
+      percentage of endpoints in a MIG/NEG is smaller than this value, traffic
+      would be sent to failover backends if possible. This field should be set
+      to a value between 1 and 99. The default value is 50 for Global external
+      HTTP(S) load balancer (classic) and Proxyless service mesh, and 70 for
+      others.
+  """
+
+  failoverHealthThreshold = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class ServiceObserver(_messages.Message):

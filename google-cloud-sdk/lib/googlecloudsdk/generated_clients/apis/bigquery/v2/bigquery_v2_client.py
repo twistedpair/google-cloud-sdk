@@ -12,7 +12,7 @@ class BigqueryV2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = 'https://bigquery.googleapis.com/bigquery/v2/'
-  MTLS_BASE_URL = ''
+  MTLS_BASE_URL = 'https://bigquery.mtls.googleapis.com/bigquery/v2/'
 
   _PACKAGE = 'bigquery'
   _SCOPES = ['https://www.googleapis.com/auth/bigquery', 'https://www.googleapis.com/auth/bigquery.insertdata', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only', 'https://www.googleapis.com/auth/devstorage.full_control', 'https://www.googleapis.com/auth/devstorage.read_only', 'https://www.googleapis.com/auth/devstorage.read_write']
@@ -41,7 +41,10 @@ class BigqueryV2(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.datasets = self.DatasetsService(self)
     self.jobs = self.JobsService(self)
+    self.models = self.ModelsService(self)
     self.projects = self.ProjectsService(self)
+    self.routines = self.RoutinesService(self)
+    self.rowAccessPolicies = self.RowAccessPoliciesService(self)
     self.tabledata = self.TabledataService(self)
     self.tables = self.TablesService(self)
 
@@ -255,6 +258,33 @@ class BigqueryV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Delete(self, request, global_params=None):
+      r"""Requests the deletion of the metadata of a job. This call returns when the job's metadata is deleted.
+
+      Args:
+        request: (BigqueryJobsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BigqueryJobsDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/jobs/{jobsId}/delete',
+        http_method='DELETE',
+        method_id='bigquery.jobs.delete',
+        ordered_params=['projectId', 'jobId'],
+        path_params=['jobId', 'projectId'],
+        query_params=['location'],
+        relative_path='projects/{+projectId}/jobs/{+jobId}/delete',
+        request_field='',
+        request_type_name='BigqueryJobsDeleteRequest',
+        response_type_name='BigqueryJobsDeleteResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Returns information about a specific job. Job information is available for a six month period after creation. Requires that you're the person who ran the job, or have the Is Owner project role.
 
@@ -389,6 +419,124 @@ class BigqueryV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ModelsService(base_api.BaseApiService):
+    """Service class for the models resource."""
+
+    _NAME = 'models'
+
+    def __init__(self, client):
+      super(BigqueryV2.ModelsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the model specified by modelId from the dataset.
+
+      Args:
+        request: (BigqueryModelsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BigqueryModelsDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/models/{modelsId}',
+        http_method='DELETE',
+        method_id='bigquery.models.delete',
+        ordered_params=['projectId', 'datasetId', 'modelId'],
+        path_params=['datasetId', 'modelId', 'projectId'],
+        query_params=[],
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/models/{+modelId}',
+        request_field='',
+        request_type_name='BigqueryModelsDeleteRequest',
+        response_type_name='BigqueryModelsDeleteResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified model resource by model ID.
+
+      Args:
+        request: (BigqueryModelsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Model) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/models/{modelsId}',
+        http_method='GET',
+        method_id='bigquery.models.get',
+        ordered_params=['projectId', 'datasetId', 'modelId'],
+        path_params=['datasetId', 'modelId', 'projectId'],
+        query_params=[],
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/models/{+modelId}',
+        request_field='',
+        request_type_name='BigqueryModelsGetRequest',
+        response_type_name='Model',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all models in the specified dataset. Requires the READER dataset role. After retrieving the list of models, you can get information about a particular model by calling the models.get method.
+
+      Args:
+        request: (BigqueryModelsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListModelsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/models',
+        http_method='GET',
+        method_id='bigquery.models.list',
+        ordered_params=['projectId', 'datasetId'],
+        path_params=['datasetId', 'projectId'],
+        query_params=['maxResults', 'pageToken'],
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/models',
+        request_field='',
+        request_type_name='BigqueryModelsListRequest',
+        response_type_name='ListModelsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patch specific fields in the specified model.
+
+      Args:
+        request: (BigqueryModelsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Model) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/models/{modelsId}',
+        http_method='PATCH',
+        method_id='bigquery.models.patch',
+        ordered_params=['projectId', 'datasetId', 'modelId'],
+        path_params=['datasetId', 'modelId', 'projectId'],
+        query_params=[],
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/models/{+modelId}',
+        request_field='model',
+        request_type_name='BigqueryModelsPatchRequest',
+        response_type_name='Model',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -448,6 +596,269 @@ class BigqueryV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='BigqueryProjectsListRequest',
         response_type_name='ProjectList',
+        supports_download=False,
+    )
+
+  class RoutinesService(base_api.BaseApiService):
+    """Service class for the routines resource."""
+
+    _NAME = 'routines'
+
+    def __init__(self, client):
+      super(BigqueryV2.RoutinesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the routine specified by routineId from the dataset.
+
+      Args:
+        request: (BigqueryRoutinesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BigqueryRoutinesDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}',
+        http_method='DELETE',
+        method_id='bigquery.routines.delete',
+        ordered_params=['projectId', 'datasetId', 'routineId'],
+        path_params=['datasetId', 'projectId', 'routineId'],
+        query_params=[],
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/routines/{+routineId}',
+        request_field='',
+        request_type_name='BigqueryRoutinesDeleteRequest',
+        response_type_name='BigqueryRoutinesDeleteResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified routine resource by routine ID.
+
+      Args:
+        request: (BigqueryRoutinesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Routine) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}',
+        http_method='GET',
+        method_id='bigquery.routines.get',
+        ordered_params=['projectId', 'datasetId', 'routineId'],
+        path_params=['datasetId', 'projectId', 'routineId'],
+        query_params=['readMask'],
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/routines/{+routineId}',
+        request_field='',
+        request_type_name='BigqueryRoutinesGetRequest',
+        response_type_name='Routine',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new routine in the dataset.
+
+      Args:
+        request: (BigqueryRoutinesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Routine) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/routines',
+        http_method='POST',
+        method_id='bigquery.routines.insert',
+        ordered_params=['projectId', 'datasetId'],
+        path_params=['datasetId', 'projectId'],
+        query_params=[],
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/routines',
+        request_field='routine',
+        request_type_name='BigqueryRoutinesInsertRequest',
+        response_type_name='Routine',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all routines in the specified dataset. Requires the READER dataset role.
+
+      Args:
+        request: (BigqueryRoutinesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRoutinesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/routines',
+        http_method='GET',
+        method_id='bigquery.routines.list',
+        ordered_params=['projectId', 'datasetId'],
+        path_params=['datasetId', 'projectId'],
+        query_params=['filter', 'maxResults', 'pageToken', 'readMask'],
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/routines',
+        request_field='',
+        request_type_name='BigqueryRoutinesListRequest',
+        response_type_name='ListRoutinesResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates information in an existing routine. The update method replaces the entire Routine resource.
+
+      Args:
+        request: (BigqueryRoutinesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Routine) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}',
+        http_method='PUT',
+        method_id='bigquery.routines.update',
+        ordered_params=['projectId', 'datasetId', 'routineId'],
+        path_params=['datasetId', 'projectId', 'routineId'],
+        query_params=[],
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/routines/{+routineId}',
+        request_field='routine',
+        request_type_name='BigqueryRoutinesUpdateRequest',
+        response_type_name='Routine',
+        supports_download=False,
+    )
+
+  class RowAccessPoliciesService(base_api.BaseApiService):
+    """Service class for the rowAccessPolicies resource."""
+
+    _NAME = 'rowAccessPolicies'
+
+    def __init__(self, client):
+      super(BigqueryV2.RowAccessPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (BigqueryRowAccessPoliciesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies/{rowAccessPoliciesId}:getIamPolicy',
+        http_method='POST',
+        method_id='bigquery.rowAccessPolicies.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='BigqueryRowAccessPoliciesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all row access policies on the specified table.
+
+      Args:
+        request: (BigqueryRowAccessPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRowAccessPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies',
+        http_method='GET',
+        method_id='bigquery.rowAccessPolicies.list',
+        ordered_params=['projectId', 'datasetId', 'tableId'],
+        path_params=['datasetId', 'projectId', 'tableId'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/tables/{+tableId}/rowAccessPolicies',
+        request_field='',
+        request_type_name='BigqueryRowAccessPoliciesListRequest',
+        response_type_name='ListRowAccessPoliciesResponse',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (BigqueryRowAccessPoliciesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies/{rowAccessPoliciesId}:setIamPolicy',
+        http_method='POST',
+        method_id='bigquery.rowAccessPolicies.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='BigqueryRowAccessPoliciesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (BigqueryRowAccessPoliciesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies/{rowAccessPoliciesId}:testIamPermissions',
+        http_method='POST',
+        method_id='bigquery.rowAccessPolicies.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='BigqueryRowAccessPoliciesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -575,6 +986,33 @@ class BigqueryV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (BigqueryTablesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}:getIamPolicy',
+        http_method='POST',
+        method_id='bigquery.tables.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='BigqueryTablesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a new, empty table in the dataset.
 
@@ -650,6 +1088,60 @@ class BigqueryV2(base_api.BaseApiClient):
         request_field='table',
         request_type_name='BigqueryTablesPatchRequest',
         response_type_name='Table',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (BigqueryTablesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}:setIamPolicy',
+        http_method='POST',
+        method_id='bigquery.tables.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='BigqueryTablesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (BigqueryTablesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}:testIamPermissions',
+        http_method='POST',
+        method_id='bigquery.tables.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='BigqueryTablesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

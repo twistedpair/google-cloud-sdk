@@ -241,6 +241,9 @@ apis:
     v1alpha2:
       discovery_doc: config_v1alpha2.json
       default: true
+    v1:
+      discovery_doc: config_v1.json
+      default: false
   certificatemanager:
     v1:
       discovery_doc: certificatemanager_v1.json
@@ -1031,6 +1034,8 @@ apis:
       default: true
     v1beta1:
       discovery_doc: notebooks_v1beta1.json
+    v2:
+      discovery_doc: notebooks_v2.json
   orglifecycle:
     v1:
       discovery_doc: orglifecycle_v1.json
@@ -1381,6 +1386,8 @@ apis:
       discovery_doc: bigquery_v2.json
       mtls_endpoint_override: https://bigquery.mtls.googleapis.com/bigquery/v2/
       resources:
+        datasets:
+          path: projects/{projectId}/datasets/{datasetId}
         tabledata:
           path: projects/{projectId}/datasets/{datasetId}/tables/{tableId}
           enable_uri_parsing: false
@@ -1525,6 +1532,10 @@ apis:
     v1alpha:
       discovery_doc: apphub_v1alpha.json
       default: true
+  faultinjectiontesting:
+    v1alpha1:
+      discovery_doc: faultinjectiontesting_v1alpha1.json
+      default: true
 canonical_surfaces:
   accessapproval:
     name: accessapproval
@@ -1654,9 +1665,9 @@ canonical_surfaces:
       'Overrides API endpoint for `gcloud compute` command group. '
       'For Private Service Connect usage, see '
       'https://cloud.google.com/vpc/docs/configure-private-service-connect-apis#using-endpoints'
-  configmanager:
+  inframanager:
     name: config
-    command: config-manager
+    command: infra-manager
   container:
     name: container
     command: container
@@ -1720,6 +1731,9 @@ canonical_surfaces:
   events:
     name: events
     command: events
+  faultinjectiontesting:
+    name: faultinjectiontesting
+    command: fault-injection
   file:
     name: file
     command: filestore
@@ -1841,6 +1855,9 @@ canonical_surfaces:
     hidden: true
   oslogin:
     name: oslogin
+    hidden: true
+  parallelstore:
+    name: parallelstore
     hidden: true
   policyanalyzer:
     name: policyanalyzer

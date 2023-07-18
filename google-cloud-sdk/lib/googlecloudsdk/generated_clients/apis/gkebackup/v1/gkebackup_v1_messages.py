@@ -82,7 +82,7 @@ class Backup(_messages.Message):
   r"""Represents a request to perform a single point-in-time capture of some
   portion of the state of a GKE cluster, the record of the backup operation
   itself, and an anchor for the underlying artifacts that comprise the Backup
-  (the config backup and VolumeBackups). Next id: 28
+  (the config backup and VolumeBackups). Next id: 29
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the Backup
@@ -133,6 +133,10 @@ class Backup(_messages.Message):
       of True means that the Backup was created manually.
     name: Output only. The fully qualified name of the Backup.
       `projects/*/locations/*/backupPlans/*/backups/*`
+    permissiveMode: Output only. If false, Backup will fail when Backup for
+      GKE detects Kubernetes configuration that is non-standard or requires
+      additional setup to restore. Inherited from the parent BackupPlan's
+      permissive_mode value.
     podCount: Output only. The total number of Kubernetes Pods contained in
       the Backup.
     resourceCount: Output only. The total number of Kubernetes resources
@@ -224,18 +228,19 @@ class Backup(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 13)
   manual = _messages.BooleanField(14)
   name = _messages.StringField(15)
-  podCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  resourceCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  retainDays = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  retainExpireTime = _messages.StringField(19)
-  selectedApplications = _messages.MessageField('NamespacedNames', 20)
-  selectedNamespaces = _messages.MessageField('Namespaces', 21)
-  sizeBytes = _messages.IntegerField(22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  stateReason = _messages.StringField(24)
-  uid = _messages.StringField(25)
-  updateTime = _messages.StringField(26)
-  volumeCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  permissiveMode = _messages.BooleanField(16)
+  podCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  resourceCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  retainDays = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  retainExpireTime = _messages.StringField(20)
+  selectedApplications = _messages.MessageField('NamespacedNames', 21)
+  selectedNamespaces = _messages.MessageField('Namespaces', 22)
+  sizeBytes = _messages.IntegerField(23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  stateReason = _messages.StringField(25)
+  uid = _messages.StringField(26)
+  updateTime = _messages.StringField(27)
+  volumeCount = _messages.IntegerField(28, variant=_messages.Variant.INT32)
 
 
 class BackupConfig(_messages.Message):
@@ -254,6 +259,9 @@ class BackupConfig(_messages.Message):
     includeVolumeData: This flag specifies whether volume data should be
       backed up when PVCs are included in the scope of a Backup. Default:
       False
+    permissiveMode: Optional. If false, Backups will fail when Backup for GKE
+      detects Kubernetes configuration that is non-standard or requires
+      additional setup to restore. Default: False
     selectedApplications: If set, include just the resources referenced by the
       listed ProtectedApplications.
     selectedNamespaces: If set, include just the resources in the listed
@@ -264,8 +272,9 @@ class BackupConfig(_messages.Message):
   encryptionKey = _messages.MessageField('EncryptionKey', 2)
   includeSecrets = _messages.BooleanField(3)
   includeVolumeData = _messages.BooleanField(4)
-  selectedApplications = _messages.MessageField('NamespacedNames', 5)
-  selectedNamespaces = _messages.MessageField('Namespaces', 6)
+  permissiveMode = _messages.BooleanField(5)
+  selectedApplications = _messages.MessageField('NamespacedNames', 6)
+  selectedNamespaces = _messages.MessageField('Namespaces', 7)
 
 
 class BackupPlan(_messages.Message):

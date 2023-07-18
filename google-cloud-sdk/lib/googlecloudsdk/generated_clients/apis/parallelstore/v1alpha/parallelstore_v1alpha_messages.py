@@ -54,8 +54,8 @@ class Instance(_messages.Message):
 
   Fields:
     accessPoints: Output only. List of access_points
-    capacityGib: Required. Storage capacity of Parallelstore instance in
-      Gibibytes (GiB).
+    capacityGib: Required. Immutable. Storage capacity of Parallelstore
+      instance in Gibibytes (GiB).
     createTime: Output only. The time when the instance was created.
     daosVersion: Output only. The version of DAOS software running in the
       instance
@@ -277,12 +277,12 @@ class NetworkConfig(_messages.Message):
   r"""Network configuration for the instance.
 
   Fields:
-    networkName: Optional. The name of the Google Compute Engine [VPC
-      network](https://cloud.google.com/vpc/docs/vpc) to which the instance is
-      connected.
-    reservedIpRange: Optional. Optional, the name of an allocated IP address
-      range associated with private service access. If no range name is
-      provided all ranges will be considered.
+    networkName: Optional. Immutable. The name of the Google Compute Engine
+      [VPC network](https://cloud.google.com/vpc/docs/vpc) to which the
+      instance is connected.
+    reservedIpRange: Optional. Immutable. Optional, the name of an allocated
+      IP address range associated with private service access. If no range
+      name is provided all ranges will be considered.
   """
 
   networkName = _messages.StringField(1)

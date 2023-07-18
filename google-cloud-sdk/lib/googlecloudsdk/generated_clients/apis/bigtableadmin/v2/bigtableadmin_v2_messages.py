@@ -1074,6 +1074,88 @@ class BigtableadminProjectsInstancesTablesViewsDeleteRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class BigtableadminProjectsInstancesTablesViewsGetRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesViewsGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: The resource_view to be applied to the returned
+      views' fields. Default to BASIC.
+
+  Fields:
+    name: Required. The unique name of the requested view. Values are of the
+      form
+      `projects/{project}/instances/{instance}/tables/{table}/views/{view}`.
+    view: The resource_view to be applied to the returned views' fields.
+      Default to BASIC.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The resource_view to be applied to the returned views' fields. Default
+    to BASIC.
+
+    Values:
+      RESPONSE_VIEW_UNSPECIFIED: Uses the default view for each method as
+        documented in the request
+      NAME_ONLY: Only populates `name`.
+      BASIC: Only populates the view's basic metadata. This includes: name,
+        view_type, delete_protection.
+      FULL: Populates every fields
+    """
+    RESPONSE_VIEW_UNSPECIFIED = 0
+    NAME_ONLY = 1
+    BASIC = 2
+    FULL = 3
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class BigtableadminProjectsInstancesTablesViewsListRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesViewsListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: The resource_view to be applied to the returned
+      views' fields. Default to NAME_ONLY.
+
+  Fields:
+    pageSize: Maximum number of results per page. A page_size of zero lets the
+      server choose the number of items to return. A page_size which is
+      strictly positive will return at most that many items. A negative
+      page_size will cause an error. Following the first request, subsequent
+      paginated calls are not required to pass a page_size. If a page_size is
+      set in subsequent calls, it must match the page_size given in the first
+      request.
+    pageToken: The value of `next_page_token` returned by a previous call.
+    parent: Required. The unique name of the table for which views should be
+      listed. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
+    view: The resource_view to be applied to the returned views' fields.
+      Default to NAME_ONLY.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The resource_view to be applied to the returned views' fields. Default
+    to NAME_ONLY.
+
+    Values:
+      RESPONSE_VIEW_UNSPECIFIED: Uses the default view for each method as
+        documented in the request
+      NAME_ONLY: Only populates `name`.
+      BASIC: Only populates the view's basic metadata. This includes: name,
+        view_type, delete_protection.
+      FULL: Populates every fields
+    """
+    RESPONSE_VIEW_UNSPECIFIED = 0
+    NAME_ONLY = 1
+    BASIC = 2
+    FULL = 3
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
 class BigtableadminProjectsInstancesTablesViewsPatchRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesViewsPatchRequest object.
 
@@ -1804,6 +1886,21 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class FamilySubsets(_messages.Message):
+  r"""Subsets of a column family that are included in this View.
+
+  Fields:
+    qualifierPrefixes: Prefixes for qualifiers to be included in the View.
+      Every qualifier starting with one of these prefixes is included in the
+      View. To provide access to all qualifiers, include the empty string as a
+      prefix ("").
+    qualifiers: Individual exact column qualifiers to be included in the View.
+  """
+
+  qualifierPrefixes = _messages.BytesField(1, repeated=True)
+  qualifiers = _messages.BytesField(2, repeated=True)
+
+
 class GcRule(_messages.Message):
   r"""Rule for determining which cells to delete during garbage collection.
 
@@ -2156,6 +2253,21 @@ class ListTablesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   tables = _messages.MessageField('Table', 2, repeated=True)
+
+
+class ListViewsResponse(_messages.Message):
+  r"""Response message for
+  google.bigtable.admin.v2.BigtableTableAdmin.ListViews
+
+  Fields:
+    nextPageToken: Set if not all tables could be returned in a single
+      response. Pass this value to `page_token` in another request to get the
+      next page of results.
+    views: The views present in the requested table.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  views = _messages.MessageField('View', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -2861,6 +2973,50 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class SubsetView(_messages.Message):
+  r"""Defines a simple view that is a subset of the underlying Table.
+
+  Messages:
+    FamilySubsetsValue: Map from column family name to the columns in this
+      family to be included in the view.
+
+  Fields:
+    familySubsets: Map from column family name to the columns in this family
+      to be included in the view.
+    rowPrefixes: Row prefixes to be included in the View. To provide access to
+      all rows, include the empty string as a prefix ("").
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FamilySubsetsValue(_messages.Message):
+    r"""Map from column family name to the columns in this family to be
+    included in the view.
+
+    Messages:
+      AdditionalProperty: An additional property for a FamilySubsetsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type FamilySubsetsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FamilySubsetsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A FamilySubsets attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('FamilySubsets', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  familySubsets = _messages.MessageField('FamilySubsetsValue', 1)
+  rowPrefixes = _messages.BytesField(2, repeated=True)
+
+
 class Table(_messages.Message):
   r"""A collection of user data indexed by row, column, and timestamp. Each
   table is served using the resources of its parent cluster.
@@ -3216,10 +3372,12 @@ class View(_messages.Message):
       a View has this bit set.
     name: The name of the view. Values are of the form
       `projects/{project}/instances/{instance}/tables/{table}/views/{view}`
+    subsetView: A view permitting access to an explicit subset of a Table.
   """
 
   deletionProtection = _messages.BooleanField(1)
   name = _messages.StringField(2)
+  subsetView = _messages.MessageField('SubsetView', 3)
 
 
 encoding.AddCustomJsonFieldMapping(

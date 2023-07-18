@@ -189,7 +189,7 @@ class OsconfigV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Get the OS policy asssignment report for the specified Compute Engine VM instance.
+      r"""Get the OS policy assignment report for the specified Compute Engine VM instance.
 
       Args:
         request: (OsconfigProjectsLocationsInstancesOsPolicyAssignmentsReportsGetRequest) input message
@@ -216,7 +216,7 @@ class OsconfigV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List OS policy asssignment reports for all Compute Engine VM instances in the specified zone.
+      r"""List OS policy assignment reports for all Compute Engine VM instances in the specified zone.
 
       Args:
         request: (OsconfigProjectsLocationsInstancesOsPolicyAssignmentsReportsListRequest) input message

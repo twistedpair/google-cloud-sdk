@@ -91,7 +91,8 @@ def _GetClientInstance(api_name, api_version, http_timeout_sec=None):
 
 
 def ExecuteSql(sql, query_mode, session_ref, read_only_options=None,
-               enable_partitioned_dml=False, http_timeout_sec=None):
+               request_options=None, enable_partitioned_dml=False,
+               http_timeout_sec=None):
   """Execute an SQL command.
 
   Args:
@@ -102,6 +103,7 @@ def ExecuteSql(sql, query_mode, session_ref, read_only_options=None,
       not exist.
     read_only_options: The ReadOnly message for a read-only request. It is
       ignored in a DML request.
+    request_options: The RequestOptions message that contains the priority.
     enable_partitioned_dml: Boolean, whether partitioned dml is enabled.
     http_timeout_sec: int, Maximum time in seconds to wait for the SQL query to
       complete.
@@ -114,7 +116,13 @@ def ExecuteSql(sql, query_mode, session_ref, read_only_options=None,
   _RegisterCustomMessageCodec(msgs)
 
   execute_sql_request = _GetQueryRequest(
-      sql, query_mode, session_ref, read_only_options, enable_partitioned_dml)
+      sql,
+      query_mode,
+      session_ref,
+      read_only_options,
+      request_options,
+      enable_partitioned_dml,
+  )
   req = msgs.SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest(
       session=session_ref.RelativeName(), executeSqlRequest=execute_sql_request)
   resp = client.projects_instances_databases_sessions.ExecuteSql(req)
@@ -146,6 +154,7 @@ def _GetQueryRequest(sql,
                      query_mode,
                      session_ref=None,
                      read_only_options=None,
+                     request_options=None,
                      enable_partitioned_dml=False):
   """Formats the request based on whether the statement contains DML.
 
@@ -156,6 +165,7 @@ def _GetQueryRequest(sql,
     session_ref: Reference to the session.
     read_only_options: The ReadOnly message for a read-only request. It is
       ignored in a DML request.
+    request_options: The RequestOptions message that contains the priority.
     enable_partitioned_dml: Boolean, whether partitioned dml is enabled.
 
   Returns:
@@ -174,6 +184,7 @@ def _GetQueryRequest(sql,
     transaction = msgs.TransactionSelector(singleUse=transaction_options)
   return msgs.ExecuteSqlRequest(
       sql=sql,
+      requestOptions=request_options,
       queryMode=msgs.ExecuteSqlRequest.QueryModeValueValuesEnum(query_mode),
       transaction=transaction)
 

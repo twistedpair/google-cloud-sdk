@@ -51,6 +51,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     self.projects_locations_privateClouds_clusters = self.ProjectsLocationsPrivateCloudsClustersService(self)
     self.projects_locations_privateClouds_externalAddresses = self.ProjectsLocationsPrivateCloudsExternalAddressesService(self)
     self.projects_locations_privateClouds_hcxActivationKeys = self.ProjectsLocationsPrivateCloudsHcxActivationKeysService(self)
+    self.projects_locations_privateClouds_identitySources = self.ProjectsLocationsPrivateCloudsIdentitySourcesService(self)
     self.projects_locations_privateClouds_loggingServers = self.ProjectsLocationsPrivateCloudsLoggingServersService(self)
     self.projects_locations_privateClouds_managementDnsZoneBindings = self.ProjectsLocationsPrivateCloudsManagementDnsZoneBindingsService(self)
     self.projects_locations_privateClouds_subnets = self.ProjectsLocationsPrivateCloudsSubnetsService(self)
@@ -1423,6 +1424,151 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsPrivateCloudsIdentitySourcesService(base_api.BaseApiService):
+    """Service class for the projects_locations_privateClouds_identitySources resource."""
+
+    _NAME = 'projects_locations_privateClouds_identitySources'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsPrivateCloudsIdentitySourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new identity source in a given private cloud.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/identitySources',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.privateClouds.identitySources.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['identitySourceId', 'requestId', 'validateOnly'],
+        relative_path='v1/{+parent}/identitySources',
+        request_field='identitySource',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a `IdentitySource` resource.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/identitySources/{identitySourcesId}',
+        http_method='DELETE',
+        method_id='vmwareengine.projects.locations.privateClouds.identitySources.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the `IdentitySource` resource by its resource name.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IdentitySource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/identitySources/{identitySourcesId}',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.identitySources.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesGetRequest',
+        response_type_name='IdentitySource',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists identity sources in the private cloud.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListIdentitySourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/identitySources',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.identitySources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/identitySources',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesListRequest',
+        response_type_name='ListIdentitySourcesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Modifies a `IdentitySource` resource.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/identitySources/{identitySourcesId}',
+        http_method='PATCH',
+        method_id='vmwareengine.projects.locations.privateClouds.identitySources.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='identitySource',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsPrivateCloudsLoggingServersService(base_api.BaseApiService):
     """Service class for the projects_locations_privateClouds_loggingServers resource."""
 
@@ -1717,16 +1863,14 @@ class VmwareengineV1(base_api.BaseApiClient):
       r"""Retries to create a `ManagementDnsZoneBinding` resource that is in failed state.
 
       Args:
-        request:
-          (VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsRepairRequest)
-          input message
+        request: (VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsRepairRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Repair')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     Repair.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/managementDnsZoneBindings/{managementDnsZoneBindingsId}:repair',
@@ -1844,7 +1988,7 @@ class VmwareengineV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new `PrivateCloud` resource in a given project and location. Private clouds can only be created in zones, regional private clouds are not supported. Creating a private cloud also creates a [management cluster](https://cloud.google.com/vmware-engine/docs/concepts-vmware-components) for that private cloud.
+      r"""Creates a new `PrivateCloud` resource in a given project and location. Private clouds of type `STANDARD` and `TIME_LIMITED` are zonal resources, `STRETCHED` private clouds are regional. Creating a private cloud also creates a [management cluster](https://cloud.google.com/vmware-engine/docs/concepts-vmware-components) for that private cloud.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsCreateRequest) input message

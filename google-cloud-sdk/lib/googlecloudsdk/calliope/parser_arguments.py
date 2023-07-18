@@ -436,7 +436,9 @@ class ArgumentInterceptor(Argument):
       raise parser_errors.ArgumentException(
           'parser.add_group(): description or title kwargs not supported '
           '-- use help=... instead.')
-    new_parser = self.parser.add_argument_group()
+    # Look up the method on the parent class in case we're dealing with an
+    # argparse._ArgumentGroup. See b/289307337#comment3 for explanation.
+    new_parser = super(type(self.parser), self.parser).add_argument_group()  # pylint: disable=bad-super-call
     group = ArgumentInterceptor(parser=new_parser,
                                 is_global=self.is_global,
                                 cli_generator=self.cli_generator,

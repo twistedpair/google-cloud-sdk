@@ -801,18 +801,11 @@ class FirestoreProjectsDatabasesBackupSchedulesListRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesBackupSchedulesListRequest object.
 
   Fields:
-    pageSize: Number of backup schedules to be returned in the response. The
-      service may return fewer than this value and if left unspecified,
-      defaults to the server's maximum allowed page size.
-    pageToken: If non-empty, `page_token` should contain a next_page_token
-      from a previous ListBackupSchedulesResponse to the same `parent`.
     parent: Required. The parent database. Format is
       `projects/{project}/databases/{database}`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  parent = _messages.StringField(1, required=True)
 
 
 class FirestoreProjectsDatabasesBackupSchedulesPatchRequest(_messages.Message):
@@ -1391,19 +1384,10 @@ class FirestoreProjectsDatabasesListRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesListRequest object.
 
   Fields:
-    pageSize: The maximum number of database to return. The service may return
-      fewer than this value. If unspecified, the server will use a sensible
-      default.
-    pageToken: A page token, received from a previous `ListDatabasesRequest`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListDatabases` must match the call that
-      provided the page token.
     parent: Required. A parent name of the form `projects/{project_id}`
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  parent = _messages.StringField(1, required=True)
 
 
 class FirestoreProjectsDatabasesOperationsCancelRequest(_messages.Message):
@@ -1513,20 +1497,13 @@ class FirestoreProjectsLocationsBackupsListRequest(_messages.Message):
   r"""A FirestoreProjectsLocationsBackupsListRequest object.
 
   Fields:
-    pageSize: Number of backups to be returned in the response. The service
-      may return fewer than this value and if left unspecified, defaults to
-      the server's maximum allowed page size.
-    pageToken: If non-empty, `page_token` should contain a next_page_token
-      from a previous ListBackupsResponse to the same `parent`.
     parent: Required. The location to list backups from. Format is
       `projects/{project}/locations/{location}`. Use `{location} = '-'` to
       list backups from all locations for the given project. This allows
       listing backups from a single location or from all locations.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  parent = _messages.StringField(1, required=True)
 
 
 class FirestoreProjectsLocationsGetRequest(_messages.Message):

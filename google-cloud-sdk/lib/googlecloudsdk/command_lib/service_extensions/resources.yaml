@@ -1,0 +1,47 @@
+project:
+  name: project
+  collection: networkservices.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: |
+      The project Id.
+    property: core/project
+
+location:
+  name: location
+  collection: networkservices.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      Cloud region in which the resource is located.
+
+lbTrafficExtension:
+  name: LB Traffic Extension
+  collection: networkservices.projects.locations.lbTrafficExtensions
+  request_id_field: lbTrafficExtensionId
+  attributes:
+  - *project
+  - *location
+  - &lbTrafficExtension:
+    parameter_name: lbTrafficExtensionsId
+    attribute_name: lb_traffic_extension
+    help: |
+      Id of the LB Traffic Extension.
+
+lbServiceSteeringExtension:
+  name: LB Service Steering Extension
+  collection: networkservices.projects.locations.lbServiceSteeringExtensions
+  request_id_field: lbServiceSteeringExtensionId
+  attributes:
+  - *project
+  - *location
+  - &lbServiceSteeringExtension:
+    parameter_name: lbServiceSteeringExtensionsId
+    attribute_name: lb_service_steering_extension
+    help: |
+      Id of the LB Service Steering Extension.

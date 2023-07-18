@@ -447,7 +447,6 @@ def add_raw_display_flag(parser):
   parser.add_argument(
       '--raw',
       action='store_true',
-      hidden=True,
       help=(
           'Shows metadata in the format returned by the API instead of'
           ' standardizing it.'

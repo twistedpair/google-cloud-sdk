@@ -110,7 +110,7 @@ def _ValidateHardwareInResourcePoolSpecArgs(resource_pool_specs, version):
             'MachineSpec', version).AcceleratorTypeValueValuesEnum
         valid_types = [
             type for type in type_enum.names()
-            if type.startswith('NVIDIA') or type.startswith('TPU')
+            if type.startswith('NVIDIA')
         ]
         if accelerator_type not in valid_types:
           raise exceptions.InvalidArgumentException(
@@ -157,13 +157,13 @@ def _ValidateResourcePoolSpecsFromConfig(resource_pools, version):
           'Field [bootDiskType] required as [bootDiskSizeGb] is specified'
           'in config.')
 
-    accelerator_type = spec.machineSpec.acceleratorType
-    if accelerator_type:
+    if spec.machineSpec.acceleratorType:
+      accelerator_type = str(spec.machineSpec.acceleratorType.name)
       type_enum = api_util.GetMessage(
           'MachineSpec', version).AcceleratorTypeValueValuesEnum
       valid_types = [
           type for type in type_enum.names()
-          if type.startswith('NVIDIA') or type.startswith('TPU')
+          if type.startswith('NVIDIA')
       ]
       if accelerator_type not in valid_types:
         raise exceptions.InvalidArgumentException(

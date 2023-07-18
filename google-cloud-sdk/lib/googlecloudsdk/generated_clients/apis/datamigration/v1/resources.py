@@ -63,6 +63,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CONVERSIONWORKSPACES_MAPPINGRULES = (
+      'projects.locations.conversionWorkspaces.mappingRules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'conversionWorkspaces/{conversionWorkspacesId}/mappingRules/'
+              '{mappingRulesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MIGRATIONJOBS = (
       'projects.locations.migrationJobs',
       '{+name}',

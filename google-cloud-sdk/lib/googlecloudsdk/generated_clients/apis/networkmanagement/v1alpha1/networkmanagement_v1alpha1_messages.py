@@ -76,6 +76,11 @@ class AbortInfo(_messages.Message):
         initiated by the node and managed by the Konnectivity proxy.
       RESOURCE_CONFIG_NOT_FOUND: Aborted because expected resource
         configuration was missing.
+      GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT: Aborted because a PSC
+        endpoint selection for the Google-managed service is ambiguous
+        (several PSC endpoints satisfy test input).
+      SOURCE_PSC_CLOUD_SQL_UNSUPPORTED: Aborted because tests with a PSC-based
+        Cloud SQL instance as a source are not supported.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -96,6 +101,8 @@ class AbortInfo(_messages.Message):
     MISMATCHED_IP_VERSION = 16
     GKE_KONNECTIVITY_PROXY_UNSUPPORTED = 17
     RESOURCE_CONFIG_NOT_FOUND = 18
+    GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 19
+    SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 20
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   projectsMissingPermission = _messages.StringField(2, repeated=True)
@@ -1032,8 +1039,11 @@ class Endpoint(_messages.Message):
       get)
     cloudSqlInstance: A [Cloud SQL](https://cloud.google.com/sql) instance
       URI.
-    forwardingRule: Forwarding rule URI. Forwarding rules are frontends for
-      load balancers, PSC endpoints and Protocol Forwarding. Format:
+    forwardingRule: A forwarding rule and its corresponding IP address
+      represent the frontend configuration of a Google Cloud load balancer.
+      Forwarding rules are also used for protocol forwarding, Private Service
+      Connect and other network services to provide forwarding information in
+      the control plane. Format:
       projects/{project}/global/forwardingRules/{id} or
       projects/{project}/regions/{region}/forwardingRules/{id}
     forwardingRuleTarget: Output only. Specifies the type of the target of the
@@ -1260,6 +1270,10 @@ class FirewallInfo(_messages.Message):
         details, see [Network firewall
         policies](https://cloud.google.com/vpc/docs/network-firewall-
         policies).
+      NETWORK_REGIONAL_FIREWALL_POLICY_RULE: Regional network firewall policy
+        rule. For details, see [Regional network firewall
+        policies](https://cloud.google.com/firewall/docs/regional-firewall-
+        policies).
     """
     FIREWALL_RULE_TYPE_UNSPECIFIED = 0
     HIERARCHICAL_FIREWALL_POLICY_RULE = 1
@@ -1267,6 +1281,7 @@ class FirewallInfo(_messages.Message):
     IMPLIED_VPC_FIREWALL_RULE = 3
     SERVERLESS_VPC_ACCESS_MANAGED_FIREWALL_RULE = 4
     NETWORK_FIREWALL_POLICY_RULE = 5
+    NETWORK_REGIONAL_FIREWALL_POLICY_RULE = 6
 
   action = _messages.StringField(1)
   direction = _messages.StringField(2)
@@ -1359,6 +1374,46 @@ class GKEMasterInfo(_messages.Message):
   clusterUri = _messages.StringField(2)
   externalIp = _messages.StringField(3)
   internalIp = _messages.StringField(4)
+
+
+class GoogleServiceInfo(_messages.Message):
+  r"""For display only. Details of a Google Service sending packets to a VPC
+  network. Although the source IP might be a publicly routable address, some
+  Google Services use special routes within Google production infrastructure
+  to reach Compute Engine Instances.
+  https://cloud.google.com/vpc/docs/routes#special_return_paths
+
+  Enums:
+    GoogleServiceTypeValueValuesEnum: Recognized type of a Google Service.
+
+  Fields:
+    googleServiceType: Recognized type of a Google Service.
+    sourceIp: Source IP address.
+  """
+
+  class GoogleServiceTypeValueValuesEnum(_messages.Enum):
+    r"""Recognized type of a Google Service.
+
+    Values:
+      GOOGLE_SERVICE_TYPE_UNSPECIFIED: Unspecified Google Service. Includes
+        most of Google APIs and services.
+      IAP: Identity aware proxy. https://cloud.google.com/iap/docs/using-tcp-
+        forwarding
+      GFE_PROXY_OR_HEALTH_CHECK_PROBER: One of two services sharing IP ranges:
+        * Load Balancer proxy * Centralized Health Check prober
+        https://cloud.google.com/load-balancing/docs/firewall-rules
+      CLOUD_DNS: Connectivity from Cloud DNS to forwarding targets or
+        alternate name servers that use private routing.
+        https://cloud.google.com/dns/docs/zones/forwarding-zones#firewall-
+        rules https://cloud.google.com/dns/docs/policies#firewall-rules
+    """
+    GOOGLE_SERVICE_TYPE_UNSPECIFIED = 0
+    IAP = 1
+    GFE_PROXY_OR_HEALTH_CHECK_PROBER = 2
+    CLOUD_DNS = 3
+
+  googleServiceType = _messages.EnumField('GoogleServiceTypeValueValuesEnum', 1)
+  sourceIp = _messages.StringField(2)
 
 
 class InstanceInfo(_messages.Message):
@@ -2807,6 +2862,7 @@ class Step(_messages.Message):
     forwardingRule: Display information of a Compute Engine forwarding rule.
     gkeMaster: Display information of a Google Kubernetes Engine cluster
       master.
+    googleService: Display information of a Google service
     instance: Display information of a Compute Engine instance.
     loadBalancer: Display information of the load balancers.
     network: Display information of a Google Cloud network.
@@ -2829,6 +2885,10 @@ class Step(_messages.Message):
         information.
       START_FROM_INTERNET: Initial state: packet originating from the
         internet. The endpoint information is populated.
+      START_FROM_GOOGLE_SERVICE: Initial state: packet originating from a
+        Google service. Some Google services, such as health check probers or
+        Identity Aware Proxy use special routes, outside VPC routing
+        configuration to reach Compute Engine Instances.
       START_FROM_PRIVATE_NETWORK: Initial state: packet originating from a VPC
         or on-premises network with internal source IP. If the source is a VPC
         network visible to the user, a NetworkInfo is populated with details
@@ -2880,30 +2940,31 @@ class Step(_messages.Message):
     STATE_UNSPECIFIED = 0
     START_FROM_INSTANCE = 1
     START_FROM_INTERNET = 2
-    START_FROM_PRIVATE_NETWORK = 3
-    START_FROM_GKE_MASTER = 4
-    START_FROM_CLOUD_SQL_INSTANCE = 5
-    START_FROM_CLOUD_FUNCTION = 6
-    START_FROM_APP_ENGINE_VERSION = 7
-    START_FROM_CLOUD_RUN_REVISION = 8
-    APPLY_INGRESS_FIREWALL_RULE = 9
-    APPLY_EGRESS_FIREWALL_RULE = 10
-    APPLY_ROUTE = 11
-    APPLY_FORWARDING_RULE = 12
-    SPOOFING_APPROVED = 13
-    ARRIVE_AT_INSTANCE = 14
-    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 15
-    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 16
-    ARRIVE_AT_VPN_GATEWAY = 17
-    ARRIVE_AT_VPN_TUNNEL = 18
-    ARRIVE_AT_VPC_CONNECTOR = 19
-    NAT = 20
-    PROXY_CONNECTION = 21
-    DELIVER = 22
-    DROP = 23
-    FORWARD = 24
-    ABORT = 25
-    VIEWER_PERMISSION_MISSING = 26
+    START_FROM_GOOGLE_SERVICE = 3
+    START_FROM_PRIVATE_NETWORK = 4
+    START_FROM_GKE_MASTER = 5
+    START_FROM_CLOUD_SQL_INSTANCE = 6
+    START_FROM_CLOUD_FUNCTION = 7
+    START_FROM_APP_ENGINE_VERSION = 8
+    START_FROM_CLOUD_RUN_REVISION = 9
+    APPLY_INGRESS_FIREWALL_RULE = 10
+    APPLY_EGRESS_FIREWALL_RULE = 11
+    APPLY_ROUTE = 12
+    APPLY_FORWARDING_RULE = 13
+    SPOOFING_APPROVED = 14
+    ARRIVE_AT_INSTANCE = 15
+    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 16
+    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 17
+    ARRIVE_AT_VPN_GATEWAY = 18
+    ARRIVE_AT_VPN_TUNNEL = 19
+    ARRIVE_AT_VPC_CONNECTOR = 20
+    NAT = 21
+    PROXY_CONNECTION = 22
+    DELIVER = 23
+    DROP = 24
+    FORWARD = 25
+    ABORT = 26
+    VIEWER_PERMISSION_MISSING = 27
 
   abort = _messages.MessageField('AbortInfo', 1)
   appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
@@ -2919,15 +2980,16 @@ class Step(_messages.Message):
   forward = _messages.MessageField('ForwardInfo', 12)
   forwardingRule = _messages.MessageField('ForwardingRuleInfo', 13)
   gkeMaster = _messages.MessageField('GKEMasterInfo', 14)
-  instance = _messages.MessageField('InstanceInfo', 15)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 16)
-  network = _messages.MessageField('NetworkInfo', 17)
-  projectId = _messages.StringField(18)
-  route = _messages.MessageField('RouteInfo', 19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 21)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 22)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 23)
+  googleService = _messages.MessageField('GoogleServiceInfo', 15)
+  instance = _messages.MessageField('InstanceInfo', 16)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 17)
+  network = _messages.MessageField('NetworkInfo', 18)
+  projectId = _messages.StringField(19)
+  route = _messages.MessageField('RouteInfo', 20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 22)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 23)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 24)
 
 
 class TestIamPermissionsRequest(_messages.Message):

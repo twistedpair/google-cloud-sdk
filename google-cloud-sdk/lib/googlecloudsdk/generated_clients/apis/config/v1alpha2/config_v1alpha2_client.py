@@ -265,6 +265,33 @@ class ConfigV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DeleteState(self, request, global_params=None):
+      r"""Delete state file in a given deployment.
+
+      Args:
+        request: (ConfigProjectsLocationsDeploymentsDeleteStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('DeleteState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteState.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}:deleteState',
+        http_method='POST',
+        method_id='config.projects.locations.deployments.deleteState',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}:deleteState',
+        request_field='deleteStatefileRequest',
+        request_type_name='ConfigProjectsLocationsDeploymentsDeleteStateRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
     def ExportLock(self, request, global_params=None):
       r"""Export lock info on locked state.
 
@@ -434,7 +461,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
         request: (ConfigProjectsLocationsDeploymentsLockRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (LockDeploymentResponse) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Lock')
       return self._RunMethod(
@@ -450,7 +477,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
         relative_path='v1alpha2/{+name}:lock',
         request_field='lockDeploymentRequest',
         request_type_name='ConfigProjectsLocationsDeploymentsLockRequest',
-        response_type_name='LockDeploymentResponse',
+        response_type_name='Operation',
         supports_download=False,
     )
 

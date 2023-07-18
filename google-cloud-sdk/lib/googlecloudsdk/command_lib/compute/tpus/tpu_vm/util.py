@@ -122,6 +122,9 @@ def GenerateUpdateMask(api_version='v2'):
     if args.IsSpecified('description'):
       update_mask.add('description')
 
+    if args.IsSpecified('internal_ips'):
+      update_mask.add('network_config.enable_external_ips')
+
     if (args.IsSpecified('update_labels') or
         args.IsSpecified('remove_labels') or args.IsSpecified('clear_labels')):
       labels_diff = labels_util.Diff.FromUpdateArgs(args)

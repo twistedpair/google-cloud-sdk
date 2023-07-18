@@ -451,6 +451,11 @@ class FirewallEndpoint(_messages.Message):
     LabelsValue: Labels as key value pairs
 
   Fields:
+    associatedNetworks: Output only. List of networks that are associated with
+      this endpoint in the local zone. This is a projection of the
+      FirewallEndpointAssociations pointing at this endpoint. A network will
+      only appear in this list after traffic routing is fully configured.
+      Format: projects/{project}/global/networks/{name}.
     createTime: Output only. Create time stamp
     labels: Labels as key value pairs
     name: Output only. name of resource
@@ -500,12 +505,13 @@ class FirewallEndpoint(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  reconciling = _messages.BooleanField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
+  associatedNetworks = _messages.StringField(1, repeated=True)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  reconciling = _messages.BooleanField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class FirewallEndpointAssociation(_messages.Message):
@@ -1131,6 +1137,81 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListPartnerSSEGatewaysResponse(_messages.Message):
+  r"""Message for response to listing PartnerSSEGateways
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    partnerSseGateways: The list of PartnerSSEGateway
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  partnerSseGateways = _messages.MessageField('PartnerSSEGateway', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListPartnerSSERealmsResponse(_messages.Message):
+  r"""Message for response to listing PartnerSSERealms
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    partnerSseRealms: The list of PartnerSSERealm
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  partnerSseRealms = _messages.MessageField('PartnerSSERealm', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListSSEGatewayReferencesResponse(_messages.Message):
+  r"""Message for response to listing SSEGatewayReferences
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    sseGatewayReferences: The list of SSEGatewayReference
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sseGatewayReferences = _messages.MessageField('SSEGatewayReference', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListSSEGatewaysResponse(_messages.Message):
+  r"""Message for response to listing SSEGateways
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    sseGateways: The list of SSEGateway
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sseGateways = _messages.MessageField('SSEGateway', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListSSERealmsResponse(_messages.Message):
+  r"""Message for response to listing SSERealms
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    sseRealms: The list of SSERealm
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sseRealms = _messages.MessageField('SSERealm', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSecurityProfileGroupsResponse(_messages.Message):
@@ -2880,6 +2961,168 @@ class NetworksecurityProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class NetworksecurityProjectsLocationsPartnerSSEGatewaysCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSEGatewaysCreateRequest
+  object.
+
+  Fields:
+    parent: Required. Value for parent.
+    partnerSSEGateway: A PartnerSSEGateway resource to be passed as the
+      request body.
+    partnerSseGatewayId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and partner_sse_gateway_id
+      from the method_signature of Create RPC
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  partnerSSEGateway = _messages.MessageField('PartnerSSEGateway', 2)
+  partnerSseGatewayId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsPartnerSSEGatewaysDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSEGatewaysDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsPartnerSSEGatewaysGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSEGatewaysGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsPartnerSSEGatewaysListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSEGatewaysListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListPartnerSSEGatewaysRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsPartnerSSERealmsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSERealmsCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    partnerSSERealm: A PartnerSSERealm resource to be passed as the request
+      body.
+    partnerSseRealmId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and partner_sse_realm_id
+      from the method_signature of Create RPC
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  partnerSSERealm = _messages.MessageField('PartnerSSERealm', 2)
+  partnerSseRealmId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsPartnerSSERealmsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSERealmsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsPartnerSSERealmsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSERealmsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsPartnerSSERealmsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSERealmsListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListPartnerSSERealmsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class NetworksecurityProjectsLocationsSecurityProfileGroupsCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsSecurityProfileGroupsCreateRequest
   object.
@@ -3197,6 +3440,194 @@ class NetworksecurityProjectsLocationsServerTlsPoliciesTestIamPermissionsRequest
   resource = _messages.StringField(2, required=True)
 
 
+class NetworksecurityProjectsLocationsSseGatewayReferencesGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseGatewayReferencesGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsSseGatewayReferencesListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseGatewayReferencesListRequest
+  object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListSSEGatewayReferencesRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsSseGatewaysCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseGatewaysCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    sSEGateway: A SSEGateway resource to be passed as the request body.
+    sseGatewayId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and sse_gateway_id from the
+      method_signature of Create RPC
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sSEGateway = _messages.MessageField('SSEGateway', 3)
+  sseGatewayId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsSseGatewaysDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseGatewaysDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsSseGatewaysGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseGatewaysGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsSseGatewaysListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseGatewaysListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListSSEGatewaysRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsSseRealmsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseRealmsCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    sSERealm: A SSERealm resource to be passed as the request body.
+    sseRealmId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and sse_realm_id from the
+      method_signature of Create RPC
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sSERealm = _messages.MessageField('SSERealm', 3)
+  sseRealmId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsSseRealmsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseRealmsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsSseRealmsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseRealmsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsSseRealmsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseRealmsListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListSSERealmsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class NetworksecurityProjectsLocationsTlsInspectionPoliciesCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesCreateRequest
   object.
@@ -3503,6 +3934,154 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class PartnerSSEGateway(_messages.Message):
+  r"""Message describing PartnerSSEGateway object
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    bgpPeerRnAsn: Required. ASN of RN BGP peer
+    bgpPeerScAsn: Required. ASN of SC BGP peer
+    cloudRegion: Required. region of the resource
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    name: Immutable. name of resource
+    partnerRnIlbIp: Required. Partner's RN ILB IP
+    partnerScIlbIp: Required. Partner's SC ILB IP
+    partnerSseRealm: Required. name of PartnerSSERealm owning the
+      PartnerSSEGateway
+    partnerVpcSubnetRange: Required. Subnet range of the partner_vpc
+    sseBgpAsn: Output only. [Output Only] ASN of SSE BGP
+    sseBgpIps: Output only. [Output Only] IP of SSE BGP
+    sseGatewayReferenceId: Required. ID of the SSEGatewayReference that pairs
+      with this PartnerSSEGateway
+    sseVpcSubnetRange: Required. Subnet range of the subnet where the partner
+      traffic should be routed to
+    sseVpcTargetIp: Output only. [Output Only] This is the IP where the
+      partner traffic should be routed to.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  bgpPeerRnAsn = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  bgpPeerScAsn = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  cloudRegion = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  partnerRnIlbIp = _messages.StringField(7)
+  partnerScIlbIp = _messages.StringField(8)
+  partnerSseRealm = _messages.StringField(9)
+  partnerVpcSubnetRange = _messages.StringField(10)
+  sseBgpAsn = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  sseBgpIps = _messages.StringField(12, repeated=True)
+  sseGatewayReferenceId = _messages.StringField(13)
+  sseVpcSubnetRange = _messages.StringField(14)
+  sseVpcTargetIp = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+
+
+class PartnerSSERealm(_messages.Message):
+  r"""Message describing PartnerSSERealm object
+
+  Enums:
+    StateValueValuesEnum: Output only. [Output Only] State of the realm. It
+      can be either ATTACHED or UNATTACHED
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Labels as key value pairs
+    name: name of resource
+    pairingKey: Required. value of the key to establish global handshake from
+      SSERealm
+    partnerVpc: Required. VPC owned by the partner to be peered with CDEN
+      sse_vpc in sse_project
+    sseProject: Output only. [Output only] CDEN owned project owning sse_vpc
+    sseVpc: Output only. [Output only] CDEN owned VPC to be peered with
+      partner_vpc
+    state: Output only. [Output Only] State of the realm. It can be either
+      ATTACHED or UNATTACHED
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. [Output Only] State of the realm. It can be either
+    ATTACHED or UNATTACHED
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      ATTACHED: This PartnerSSERealm is attached to a SSERealm. This is the
+        default state when a PartnerSSERealm is successfully created.
+      UNATTACHED: This PartnerSSERealm is not attached to a SSERealm. This is
+        the state when the paired SSERealm is deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ATTACHED = 1
+    UNATTACHED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  pairingKey = _messages.StringField(4)
+  partnerVpc = _messages.StringField(5)
+  sseProject = _messages.StringField(6)
+  sseVpc = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+
+
 class RemoveAddressGroupItemsRequest(_messages.Message):
   r"""Request used by the RemoveAddressGroupItems method.
 
@@ -3542,6 +4121,222 @@ class Rule(_messages.Message):
 
   destinations = _messages.MessageField('Destination', 1, repeated=True)
   sources = _messages.MessageField('Source', 2, repeated=True)
+
+
+class SSEGateway(_messages.Message):
+  r"""Message describing SSEGateway object
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    appTrafficTargetIp: Output only. [Output Only] This is the IP where the
+      app traffic should be routed to.
+    appTrafficVpc: Output only. [Output only] This is the name of the VPC the
+      app_vpc should peer with.
+    appTrafficVpcSubnetRange: Required. Subnet range of the subnet where the
+      app traffic will be routed to
+    appVpc: Required. name of VPC where the app runs
+    cloudRegion: Required. region of the resource
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    name: Immutable. name of resource
+    sseProject: Output only. [Output Only] The project owning app_traffic_vpc
+      and user_traffic_vpc
+    sseRealm: Required. name of SSERealm owning the SSEGateway
+    updateTime: Output only. [Output only] Update time stamp
+    userTrafficTargetIp: Output only. [Output Only] This is the IP where the
+      customer traffic should be routed to.
+    userTrafficVpc: Output only. [Output only] This is the name of the VPC the
+      user_vpc should peer with.
+    userTrafficVpcSubnetRange: Required. Subnet range of the subnet where the
+      customer traffic will be routed to
+    userVpc: Required. name of VPC owned by the customer
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  appTrafficTargetIp = _messages.StringField(1)
+  appTrafficVpc = _messages.StringField(2)
+  appTrafficVpcSubnetRange = _messages.StringField(3)
+  appVpc = _messages.StringField(4)
+  cloudRegion = _messages.StringField(5)
+  createTime = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  sseProject = _messages.StringField(9)
+  sseRealm = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+  userTrafficTargetIp = _messages.StringField(12)
+  userTrafficVpc = _messages.StringField(13)
+  userTrafficVpcSubnetRange = _messages.StringField(14)
+  userVpc = _messages.StringField(15)
+
+
+class SSEGatewayReference(_messages.Message):
+  r"""Message describing SSEGatewayReference object
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    cloudRegion: Required. region where this reference resides
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    name: Immutable. name of resource
+    partnerSseRealm: Required. PartnerSSERealm owning the PartnerSSEGateway
+      that this SSEGateway intends to connect with
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  cloudRegion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  partnerSseRealm = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class SSERealm(_messages.Message):
+  r"""Message describing SSERealm object
+
+  Enums:
+    SseServiceValueValuesEnum: Immutable. SSE service provider
+    StateValueValuesEnum: Output only. [Output only] State of the realm
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    name: Immutable. name of resource. It matches pattern
+      `projects/{project}/locations/global/sseRealms/{sseRealm}`
+    pairingKey: Output only. [Output only] Key to be shared with SSE service
+      provider to establish global handshake
+    sseService: Immutable. SSE service provider
+    state: Output only. [Output only] State of the realm
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class SseServiceValueValuesEnum(_messages.Enum):
+    r"""Immutable. SSE service provider
+
+    Values:
+      SSE_SERVICE_UNSPECIFIED: The default value. This value is used if the
+        state is omitted.
+      PALO_ALTO_PRISMA_ACCESS: [Palo Alto Networks Prisma
+        Access](https://www.paloaltonetworks.com/sase/access).
+    """
+    SSE_SERVICE_UNSPECIFIED = 0
+    PALO_ALTO_PRISMA_ACCESS = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. [Output only] State of the realm
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      ATTACHED: This SSERealm is attached to a PartnerSSERealm.
+      UNATTACHED: This SSERealm is not attached to a PartnerSSERealm.
+      KEY_EXPIRED: This SSERealm is not attached to a PartnerSSERealm, and its
+        pairing key has expired and needs key regeneration.
+    """
+    STATE_UNSPECIFIED = 0
+    ATTACHED = 1
+    UNATTACHED = 2
+    KEY_EXPIRED = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  pairingKey = _messages.MessageField('SSERealmPairingKey', 4)
+  sseService = _messages.EnumField('SseServiceValueValuesEnum', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
+class SSERealmPairingKey(_messages.Message):
+  r"""Key to be shared with SSE service provider to establish global handshake
+
+  Fields:
+    expireTime: Output only. Timestamp in UTC of when this resource is
+      considered expired.
+    key: Output only. The name of the key. It expires 7 days after creation.
+  """
+
+  expireTime = _messages.StringField(1)
+  key = _messages.StringField(2)
 
 
 class SecurityProfile(_messages.Message):
@@ -4079,7 +4874,8 @@ class TlsInspectionPolicy(_messages.Message):
     customTlsFeatures: Optional. List of custom TLS cipher suites selected.
       This field is valid only if the selected tls_feature_profile is CUSTOM.
       The compute.SslPoliciesService.ListAvailableFeatures method returns the
-      set of features that can be specified in this list.
+      set of features that can be specified in this list. Note that Secure Web
+      Proxy does not yet honor this field.
     description: Optional. Free-text description of the resource.
     excludePublicCaSet: Optional. If FALSE (the default), use our default set
       of public CAs in addition to any CAs specified in trust_config. These

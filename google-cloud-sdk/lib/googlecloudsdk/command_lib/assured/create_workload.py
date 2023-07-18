@@ -64,6 +64,7 @@ class CreateWorkload(base.CreateCommand):
           display_name=args.display_name,
           compliance_regime=args.compliance_regime,
           partner=args.partner,
+          partner_permissions=args.partner_permissions,
           billing_account=args.billing_account,
           next_rotation_time=args.next_rotation_time,
           rotation_period=args.rotation_period,

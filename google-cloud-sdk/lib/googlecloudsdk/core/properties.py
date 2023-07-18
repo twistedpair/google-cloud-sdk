@@ -1207,6 +1207,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.eventarcpublishing = self._Add(
         'eventarcpublishing', command='gcloud eventarc publish')
     self.events = self._Add('events', command='gcloud events')
+    self.faultinjectiontesting = self._Add(
+        'faultinjectiontesting', command='gcloud fault-injection')
     self.file = self._Add('file', command='gcloud filestore')
     self.firestore = self._Add('firestore', command='gcloud firestore')
     self.gameservices = self._Add('gameservices', command='gcloud gamer')
@@ -1261,6 +1263,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.orgpolicy = self._Add('orgpolicy', command='gcloud org-policies')
     self.osconfig = self._Add('osconfig', hidden=True)
     self.oslogin = self._Add('oslogin', hidden=True)
+    self.parallelstore = self._Add('parallelstore', hidden=True)
     self.policyanalyzer = self._Add(
         'policyanalyzer', command='policy-intelligence')
     self.policysimulator = self._Add('policysimulator', hidden=True)

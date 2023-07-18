@@ -117,6 +117,7 @@ BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'clear_annotations': 'annotations',
     'remove_annotations': 'annotations',
     'set_annotations': 'annotations',
+    'binauthz_evaluation_mode': 'binary_authorization.evaluation_mode',
 }
 
 BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
@@ -139,12 +140,13 @@ BARE_METAL_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'version': 'bare_metal_version',
     'description': 'description',
     'control_plane_node_configs': 'control_plane.control_plane_node_pool_config.node_pool_config.node_configs',
-    'control_plane_node_configs_from_file':
-        'control_plane.control_plane_node_pool_config.node_pool_config.node_configs',
-    'control_plane_node_labels':
-        'control_plane.control_plane_node_pool_config.node_pool_config.labels',
-    'control_plane_node_taints':
-        'control_plane.control_plane_node_pool_config.node_pool_config.taints',
+    'control_plane_node_configs_from_file': 'control_plane.control_plane_node_pool_config.node_pool_config.node_configs',
+    'control_plane_node_labels': (
+        'control_plane.control_plane_node_pool_config.node_pool_config.labels'
+    ),
+    'control_plane_node_taints': (
+        'control_plane.control_plane_node_pool_config.node_pool_config.taints'
+    ),
     'api_server_args': 'control_plane.api_server_args',
     'uri': 'proxy.uri',
     'no_proxy': 'proxy.no_proxy',
@@ -157,6 +159,7 @@ BARE_METAL_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'island_mode_service_address_cidr_blocks': (
         'network_config.island_mode_cidr.service_address_cidr_blocks'
     ),
+    'binauthz_evaluation_mode': 'binary_authorization.evaluation_mode',
 }
 
 BARE_METAL_STANDALONE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
@@ -189,9 +192,7 @@ BARE_METAL_STANDALONE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'metal_lb_load_balancer_node_configs_from_file': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.node_configs',
     'metal_lb_load_balancer_node_configs': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.node_configs',
     'metal_lb_load_balancer_node_labels': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.labels',
-    'metal_lb_load_balancer_node_taints': (
-        'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.taints'
-    ),
+    'metal_lb_load_balancer_node_taints': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.taints',
     'bgp_lb_address_pools': 'load_balancer.bgp_lb_config.address_pools',
     'bgp_lb_address_pools_from_file': (
         'load_balancer.bgp_lb_config.address_pools'
@@ -199,9 +200,7 @@ BARE_METAL_STANDALONE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'bgp_lb_load_balancer_node_configs_from_file': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.node_configs',
     'bgp_lb_load_balancer_node_configs': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.node_configs',
     'bgp_lb_load_balancer_node_labels': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.labels',
-    'bgp_lb_load_balancer_node_taints': (
-        'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.taints'
-    ),
+    'bgp_lb_load_balancer_node_taints': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.taints',
     'bgp_lb_peer_configs': 'load_balancer.bgp_lb_config.bgp_peer_configs',
     'bgp_lb_peer_configs_from_file': (
         'load_balancer.bgp_lb_config.bgp_peer_configs'
@@ -211,6 +210,23 @@ BARE_METAL_STANDALONE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'clear_annotations': 'annotations',
     'remove_annotations': 'annotations',
     'set_annotations': 'annotations',
+    'binauthz_evaluation_mode': 'binary_authorization.evaluation_mode',
+}
+
+BARE_METAL_STANDALONE_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
+    'node_configs_from_file': 'node_pool_config.node_configs',
+    'node_configs': 'node_pool_config.node_configs',
+    'node_labels': 'node_pool_config.labels',
+    'node_taints': 'node_pool_config.taints',
+    'display_name': 'display_name',
+    'registry_pull_qps': 'node_pool_config.kubelet_config.registry_pull_qps',
+    'registry_burst': 'node_pool_config.kubelet_config.registry_burst',
+    'disable_serialize_image_pulls': (
+        'node_pool_config.kubelet_config.serialize_image_pulls_disabled'
+    ),
+    'enable_serialize_image_pulls': (
+        'node_pool_config.kubelet_config.serialize_image_pulls_disabled'
+    ),
 }
 
 

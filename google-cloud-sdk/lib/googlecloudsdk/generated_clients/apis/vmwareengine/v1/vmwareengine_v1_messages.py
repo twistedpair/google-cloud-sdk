@@ -15,6 +15,10 @@ from apitools.base.py import extra_types
 package = 'vmwareengine'
 
 
+class AnyDomainController(_messages.Message):
+  r"""Message that should be set to indicate use of any domain controller."""
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -325,6 +329,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class Expr(_messages.Message):
@@ -646,6 +651,113 @@ class HcxActivationKey(_messages.Message):
   uid = _messages.StringField(5)
 
 
+class IdentitySource(_messages.Message):
+  r"""The VMware identity source in a private cloud. The identity source
+  defines the Active Directory domain that you can configure and use for
+  authentication. Currently, the only supported identity source type is Active
+  Directory over LDAP.
+
+  Enums:
+    ApplianceTypeValueValuesEnum: Required. The appliance type of identity
+      source. Can be vCenter or NSX-T.
+    ProtocolValueValuesEnum: Required. The LDAP server connection protocol.
+    StateValueValuesEnum: Output only. The state of identity source.
+
+  Fields:
+    anyDomainController: Any domain controller.
+    applianceType: Required. The appliance type of identity source. Can be
+      vCenter or NSX-T.
+    baseGroupsDn: Required. The base distinguished name for groups.
+    baseUsersDn: Required. The base distinguished name for users.
+    createTime: Output only. Creation time of this resource.
+    domain: Required. The domain name of the identity source.
+    domainAlias: Optional. The domain alias of the identity source.
+    domainPassword: Required. Input only. Input only and required. Password of
+      the user in the domain who has a minimum of read-only access to the base
+      distinguished names of users and groups.
+    domainUser: Required. ID of a user in the domain who has a minimum of
+      read-only access to the base distinguished names of users and groups.
+    etag: Optional. Checksum that may be sent on update and delete requests to
+      ensure that the user-provided value is up to date before the server
+      processes a request. The server computes checksums based on the value of
+      other fields in the request.
+    name: Output only. The resource name of this identity source. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/identitySources/my-identity-source`
+    protocol: Required. The LDAP server connection protocol.
+    specificDomainControllers: Specific domain controllers.
+    sslCertificates: Optional. Input only. The root CA certificate files in
+      CER format for the LDAPS server.
+    state: Output only. The state of identity source.
+    uid: Output only. System-generated unique identifier for the resource.
+    updateTime: Output only. Last update time of this resource.
+    vmwareIdentitySource: Output only. The name of the identity source in
+      VMware vCenter.
+  """
+
+  class ApplianceTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The appliance type of identity source. Can be vCenter or
+    NSX-T.
+
+    Values:
+      APPLIANCE_TYPE_UNSPECIFIED: The default value. This value should never
+        be used.
+      VCENTER: A vCenter appliance.
+    """
+    APPLIANCE_TYPE_UNSPECIFIED = 0
+    VCENTER = 1
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""Required. The LDAP server connection protocol.
+
+    Values:
+      PROTOCOL_UNSPECIFIED: The default value. This value should never be
+        used.
+      LDAP: A LDAP protocol.
+      LDAPS: A LDAPS protocol.
+    """
+    PROTOCOL_UNSPECIFIED = 0
+    LDAP = 1
+    LDAPS = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of identity source.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value should never be used.
+      ACTIVE: The identity source is ready.
+      CREATING: The identity source is being created.
+      DELETING: The identity source is being deleted.
+      UPDATING: The identity source is being updated.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    UPDATING = 4
+
+  anyDomainController = _messages.MessageField('AnyDomainController', 1)
+  applianceType = _messages.EnumField('ApplianceTypeValueValuesEnum', 2)
+  baseGroupsDn = _messages.StringField(3)
+  baseUsersDn = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  domain = _messages.StringField(6)
+  domainAlias = _messages.StringField(7)
+  domainPassword = _messages.StringField(8)
+  domainUser = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  name = _messages.StringField(11)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 12)
+  specificDomainControllers = _messages.MessageField('SpecificDomainControllers', 13)
+  sslCertificates = _messages.StringField(14, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
+  vmwareIdentitySource = _messages.StringField(18)
+
+
 class IpRange(_messages.Message):
   r"""An IP range provided in any one of the supported formats.
 
@@ -727,6 +839,22 @@ class ListHcxActivationKeysResponse(_messages.Message):
   """
 
   hcxActivationKeys = _messages.MessageField('HcxActivationKey', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListIdentitySourcesResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListIdentitySources
+
+  Fields:
+    identitySources: A list of private cloud identity sources.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached when making an aggregated
+      query using wildcards.
+  """
+
+  identitySources = _messages.MessageField('IdentitySource', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -1054,6 +1182,10 @@ class LoggingServer(_messages.Message):
 
   Fields:
     createTime: Output only. Creation time of this resource.
+    etag: Optional. Checksum that may be sent on update and delete requests to
+      ensure that the user-provided value is up to date before the server
+      processes a request. The server computes checksums based on the value of
+      other fields in the request.
     hostname: Required. Fully-qualified domain name (FQDN) or IP Address of
       the logging server.
     name: Output only. The resource name of this logging server. Resource
@@ -1098,13 +1230,14 @@ class LoggingServer(_messages.Message):
     VCSA = 2
 
   createTime = _messages.StringField(1)
-  hostname = _messages.StringField(2)
-  name = _messages.StringField(3)
-  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 5)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  etag = _messages.StringField(2)
+  hostname = _messages.StringField(3)
+  name = _messages.StringField(4)
+  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 6)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ManagementCluster(_messages.Message):
@@ -1968,7 +2101,9 @@ class Principal(_messages.Message):
 
 
 class PrivateCloud(_messages.Message):
-  r"""Represents a private cloud resource. Private clouds are zonal resources.
+  r"""Represents a private cloud resource. Private clouds of type `STANDARD`
+  and `TIME_LIMITED` are zonal resources, `STRETCHED` private clouds are
+  regional.
 
   Enums:
     StateValueValuesEnum: Output only. State of the resource. New values may
@@ -2324,6 +2459,20 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class SpecificDomainControllers(_messages.Message):
+  r"""Configuration of specific domain controllers.
+
+  Fields:
+    primaryServerUri: Required. Primary domain controller LDAP server for the
+      domain. Format `ldap://hostname:port` or `ldaps://hostname:port`.
+    secondaryServerUri: Optional. Secondary domain controller LDAP server for
+      the domain. Format `ldap://hostname:port` or `ldaps://hostname:port`.
+  """
+
+  primaryServerUri = _messages.StringField(1)
+  secondaryServerUri = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -4004,6 +4153,182 @@ class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysTestIamPermissi
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesCreateRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesCreateRequest
+  object.
+
+  Fields:
+    identitySource: A IdentitySource resource to be passed as the request
+      body.
+    identitySourceId: Required. The user-provided identifier of the new
+      `IdentitySource`. This identifier must be unique among identity sources
+      within the parent and becomes the final token in the name URI. The
+      identifier must meet the following requirements: * Only contains 1-63
+      alphanumeric characters and hyphens * Begins with an alphabetical
+      character * Ends with a non-hyphen character * Not formatted as a UUID *
+      Complies with [RFC 1034](https://datatracker.ietf.org/doc/html/rfc1034)
+      (section 3.5)
+    parent: Required. The resource name of the private cloud to create a new
+      identity source in. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if the
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. True if you want the request to be validated and
+      not executed; false otherwise.
+  """
+
+  identitySource = _messages.MessageField('IdentitySource', 1)
+  identitySourceId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesDeleteRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. Checksum used to ensure that the user-provided value is up
+      to date before the server processes the request. The server compares
+      provided checksum with the current checksum of the resource. If the
+      user-provided value is out of date, this request returns an `ABORTED`
+      error.
+    name: Required. The resource name of the identity source to delete.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/identitySources/my-identity-source`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if the
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesGetRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the identity source to retrieve.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/identitySources/my-identity-source`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that matches resources returned in
+      the response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The value
+      must be a string, a number, or a boolean. The comparison operator must
+      be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
+      identity sources, you can exclude the ones named `example-identity-
+      source` by specifying `name != "example-identity-source"`. To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (name = "example-identity-source")
+      (domain_name = "example-domain-name") ``` By default, each expression is
+      an `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (name = "example-identity-source-1") AND
+      (createTime > "2021-04-12T08:15:10.40Z") OR (name = "example-identity-
+      source-2") ```
+    orderBy: Optional. Sorts list results by a certain order. By default,
+      returned results are ordered by `name` in ascending order. You can also
+      sort results in descending order based on the `name` value using
+      `orderBy="name desc"`. Currently, only ordering by `name` is supported.
+    pageSize: Optional. The maximum number of identity sources to return in
+      one page. The service may return fewer than this value. The maximum
+      value is coerced to 1000. The default value of this field is 500.
+    pageToken: Optional. A page token, received from a previous
+      `ListIdentitySources` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListIdentitySources` must match the call that provided the page token.
+    parent: Required. The resource name of the private cloud to query for
+      identity sources. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesPatchRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesPatchRequest
+  object.
+
+  Fields:
+    identitySource: A IdentitySource resource to be passed as the request
+      body.
+    name: Output only. The resource name of this identity source. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/identitySources/my-identity-source`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `UpdateIdentitySource` resource by the update. The
+      fields specified in the `updateMask` are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+    validateOnly: Optional. True if you want the request to be validated and
+      not executed; false otherwise.
+  """
+
+  identitySource = _messages.MessageField('IdentitySource', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
 class VmwareengineProjectsLocationsPrivateCloudsListRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsPrivateCloudsListRequest object.
 
@@ -4382,11 +4707,8 @@ class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsPatchRe
   updateMask = _messages.StringField(4)
 
 
-class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsRepairRequest(
-    _messages.Message
-):
+class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsRepairRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsRep
-
   airRequest object.
 
   Fields:
@@ -4401,9 +4723,7 @@ class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsRepairR
   """
 
   name = _messages.StringField(1, required=True)
-  repairManagementDnsZoneBindingRequest = _messages.MessageField(
-      'RepairManagementDnsZoneBindingRequest', 2
-  )
+  repairManagementDnsZoneBindingRequest = _messages.MessageField('RepairManagementDnsZoneBindingRequest', 2)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsPatchRequest(_messages.Message):

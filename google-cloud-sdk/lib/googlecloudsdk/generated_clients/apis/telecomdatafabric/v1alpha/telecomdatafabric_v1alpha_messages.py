@@ -54,6 +54,8 @@ class Deployment(_messages.Message):
     ParametersValue: Key/value pair that will be replaced in the template.
 
   Fields:
+    composerEnv: Output only. Composer environment name which is used to
+      manage and automate the execution of data processing jobs.
     createTime: Output only. [Output only] Create time stamp
     deploymentView: Output only. [Output only] Details about the deployment.
     fabricId: Fabric ID of the Deployment.
@@ -62,16 +64,18 @@ class Deployment(_messages.Message):
     lakeInfo: Input only. LakeInfo supplied by the consumer. TDF would create
       the Lake and Zones. Assets would be attached to the Zone based on the
       asset type.
-    locationId: Location of project where template will be deployed, if not
-      supplied the default is resource's location.
     name: name of resource
     parameters: Key/value pair that will be replaced in the template.
+    processAlertChannel: Optional. The process alert channel to which alerts
+      will be sent. The format must be: projects//notificationChannels/
     projectId: Id of project where template will be deployed, if not supplied
-      the default is resource's project.
+      the default is resource's project. Project format: projects/
     state: Output only. Current state of the Deployment.
     templateGcsPath: Cloud Storage path for custom template of format "gs:///"
     templateId: Id of the template to use for deployment. This resource will
-      be in the format "/projects/*/locations/*/template/"
+      be in the format
+      "projects/*/locations/*/publicTemplates/{public_template}" or format
+      "projects/*/locations/*/templates/{template}"
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -145,20 +149,21 @@ class Deployment(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  deploymentView = _messages.MessageField('DeploymentView', 2)
-  fabricId = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  lake = _messages.MessageField('DeploymentLake', 5)
-  lakeInfo = _messages.MessageField('DeploymentLakeInfo', 6)
-  locationId = _messages.StringField(7)
+  composerEnv = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  deploymentView = _messages.MessageField('DeploymentView', 3)
+  fabricId = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  lake = _messages.MessageField('DeploymentLake', 6)
+  lakeInfo = _messages.MessageField('DeploymentLakeInfo', 7)
   name = _messages.StringField(8)
   parameters = _messages.MessageField('ParametersValue', 9)
-  projectId = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  templateGcsPath = _messages.StringField(12)
-  templateId = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  processAlertChannel = _messages.StringField(10)
+  projectId = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  templateGcsPath = _messages.StringField(13)
+  templateId = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class DeploymentAsset(_messages.Message):
@@ -185,6 +190,8 @@ class DeploymentAsset(_messages.Message):
       subscriptions asset.
     pubsubTopic: PubSubTopic represents the details of pub/sub topic asset.
     type: Asset type defines dataplex zone of this resource.
+    ufdmTable: BigQueryTable represents the details of bigquery table asset
+      for ufdm.
   """
 
   class OwnershipValueValuesEnum(_messages.Enum):
@@ -228,6 +235,7 @@ class DeploymentAsset(_messages.Message):
   pubsubSubscription = _messages.MessageField('DeploymentAssetPubSubSubscription', 7)
   pubsubTopic = _messages.MessageField('DeploymentAssetPubSubTopic', 8)
   type = _messages.EnumField('TypeValueValuesEnum', 9)
+  ufdmTable = _messages.MessageField('DeploymentAssetUfdmTable', 10)
 
 
 class DeploymentAssetBigQueryDataset(_messages.Message):
@@ -252,7 +260,7 @@ class DeploymentAssetBigQueryTable(_messages.Message):
       the table will persist indefinitely. Expired tables will be deleted and
       their storage reclaimed.
     name: BigQuery table name.
-    schema: Json string defining BigQuery table schema.
+    schemaPath: The BigQuery schema file path in the cloud storage.
     timePartitioning: Time partitioning information for the table.
   """
 
@@ -260,8 +268,20 @@ class DeploymentAssetBigQueryTable(_messages.Message):
   dataset = _messages.StringField(2)
   expirationDays = _messages.IntegerField(3)
   name = _messages.StringField(4)
-  schema = _messages.StringField(5)
+  schemaPath = _messages.MessageField('DeploymentAssetBigQueryTableGcsFile', 5)
   timePartitioning = _messages.MessageField('DeploymentAssetBigQueryTableTimePartitioning', 6)
+
+
+class DeploymentAssetBigQueryTableGcsFile(_messages.Message):
+  r"""GcsFile specifies the details of schema file and location in GCS bucket.
+
+  Fields:
+    bucketName: Required. The bucket where schema file is present.
+    fileName: Required. The file name which contains the BigQuery Schema.
+  """
+
+  bucketName = _messages.StringField(1)
+  fileName = _messages.StringField(2)
 
 
 class DeploymentAssetBigQueryTableTimePartitioning(_messages.Message):
@@ -315,6 +335,37 @@ class DeploymentAssetPubSubTopic(_messages.Message):
   """
 
   name = _messages.StringField(1)
+
+
+class DeploymentAssetUfdmTable(_messages.Message):
+  r"""The BigQuery table for UfDM.
+
+  Enums:
+    TypeValueValuesEnum: The type of ufdm schema.
+
+  Fields:
+    dataset: The BigQuery dataset name.
+    name: The name of the BigQuery table.
+    type: The type of ufdm schema.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of ufdm schema.
+
+    Values:
+      TYPE_UNSPECIFIED: Default value. This value is unused.
+      FLOW: type for flow event data.
+      SESSION: type for session event data.
+      HTTP: type for http event data.
+    """
+    TYPE_UNSPECIFIED = 0
+    FLOW = 1
+    SESSION = 2
+    HTTP = 3
+
+  dataset = _messages.StringField(1)
+  name = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class DeploymentLake(_messages.Message):
@@ -401,6 +452,7 @@ class DeploymentProcessDataflowJob(_messages.Message):
     TypeValueValuesEnum: Dataflow job type.
 
   Fields:
+    alerts: A list of alerts that are configured to monitor the dataflow job
     schedule: schedule reprsents configuration to schedule dataflow job.
     templateGcsPath: Cloud Storage bucket path where flex template is present.
     type: Dataflow job type.
@@ -418,9 +470,71 @@ class DeploymentProcessDataflowJob(_messages.Message):
     CLASSIC = 1
     FLEX = 2
 
-  schedule = _messages.StringField(1)
-  templateGcsPath = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  alerts = _messages.MessageField('DeploymentProcessDataflowJobAlert', 1, repeated=True)
+  schedule = _messages.StringField(2)
+  templateGcsPath = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class DeploymentProcessDataflowJobAlert(_messages.Message):
+  r"""The Alert message represents an alert that can be configured to monitor
+  a metric and send notifications if the metric value exceeds a threshold.
+
+  Enums:
+    ComparatorValueValuesEnum: The comparator to use for the alert.
+
+  Fields:
+    absolute: The alert is for a single metric.
+    comparator: The comparator to use for the alert.
+    displayName: The name of the alert policy to use.
+    ratio: The alert is for the ratio of two metrics.
+    threshold: The threshold value for the alert. Integers as well as float
+      values, both are acceptable.
+  """
+
+  class ComparatorValueValuesEnum(_messages.Enum):
+    r"""The comparator to use for the alert.
+
+    Values:
+      COMPARATOR_UNSPECIFIED: Default value. This value is unused.
+      GREATER_THAN: The alert will be triggered if the metric value is greater
+        than the threshold.
+      LESS_THAN: The alert will be triggered if the metric value is less than
+        the threshold.
+    """
+    COMPARATOR_UNSPECIFIED = 0
+    GREATER_THAN = 1
+    LESS_THAN = 2
+
+  absolute = _messages.MessageField('DeploymentProcessDataflowJobAlertAbsolute', 1)
+  comparator = _messages.EnumField('ComparatorValueValuesEnum', 2)
+  displayName = _messages.StringField(3)
+  ratio = _messages.MessageField('DeploymentProcessDataflowJobAlertRatio', 4)
+  threshold = _messages.StringField(5)
+
+
+class DeploymentProcessDataflowJobAlertAbsolute(_messages.Message):
+  r"""Absolute message represents metric that will be used to generate
+  absolute alerts.
+
+  Fields:
+    metric: The name of the metric to monitor.
+  """
+
+  metric = _messages.StringField(1)
+
+
+class DeploymentProcessDataflowJobAlertRatio(_messages.Message):
+  r"""Ratio message represents metrics that will be used to generate ratio
+  alerts.
+
+  Fields:
+    denominatorMetric: The name of the denominator metric.
+    numeratorMetric: The name of the numerator metric.
+  """
+
+  denominatorMetric = _messages.StringField(1)
+  numeratorMetric = _messages.StringField(2)
 
 
 class DeploymentView(_messages.Message):
@@ -444,6 +558,133 @@ class Empty(_messages.Message):
 
 
 
+class Fabric(_messages.Message):
+  r"""Message describing Fabric object.
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the Fabric.
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    deployments: Input only. Deployments to be created in the Fabric resource.
+    labels: Labels as key value pairs
+    name: name of resource
+    processAlertChannel: Optional. The process alert channel to which alerts
+      will be sent. The format must be: projects//notificationChannels/
+    state: Output only. Current state of the Fabric.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the Fabric.
+
+    Values:
+      STATE_UNSPECIFIED: State is not specified.
+      ACTIVE: Resource is active, i.e., ready to use.
+      CREATING: Resource is under creation.
+      DELETING: Resource is under deletion.
+      ACTION_REQUIRED: Resource is active but has unresolved actions.
+      FAILED: Resource encountered an error.
+      MALFORMED: Resource is in inderministic state.
+      SUSPENDED: Resource is suspended and no longer being managed actively.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    ACTION_REQUIRED = 4
+    FAILED = 5
+    MALFORMED = 6
+    SUSPENDED = 7
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  deployments = _messages.MessageField('Deployment', 2, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  processAlertChannel = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
+class FabricOperationData(_messages.Message):
+  r"""FabricOperationData holds the custom fields that are to be added to LRO
+  response metadata.
+
+  Messages:
+    DeploymentStatusValue: Output only. Deployment status map holds the status
+      of all the deployments supposed to be created or deleted in fabric API
+      call. Key is the deployment name, for successful deployment status code
+      is set to OK and for unsuccessful deployment status code is set to error
+      code and add the error message.
+
+  Fields:
+    deploymentStatus: Output only. Deployment status map holds the status of
+      all the deployments supposed to be created or deleted in fabric API
+      call. Key is the deployment name, for successful deployment status code
+      is set to OK and for unsuccessful deployment status code is set to error
+      code and add the error message.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DeploymentStatusValue(_messages.Message):
+    r"""Output only. Deployment status map holds the status of all the
+    deployments supposed to be created or deleted in fabric API call. Key is
+    the deployment name, for successful deployment status code is set to OK
+    and for unsuccessful deployment status code is set to error code and add
+    the error message.
+
+    Messages:
+      AdditionalProperty: An additional property for a DeploymentStatusValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        DeploymentStatusValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DeploymentStatusValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Status attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Status', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  deploymentStatus = _messages.MessageField('DeploymentStatusValue', 1)
+
+
 class ListDeploymentsResponse(_messages.Message):
   r"""Message for response to listing Deployments
 
@@ -455,6 +696,21 @@ class ListDeploymentsResponse(_messages.Message):
   """
 
   deployments = _messages.MessageField('Deployment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListFabricsResponse(_messages.Message):
+  r"""Message for response to listing Fabrics
+
+  Fields:
+    fabrics: The list of Fabric
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  fabrics = _messages.MessageField('Fabric', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -497,6 +753,21 @@ class ListPublicTemplatesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   publicTemplates = _messages.MessageField('PublicTemplate', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListTemplatesResponse(_messages.Message):
+  r"""Message for response to listing Templates
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    templates: The list of PublicTemplate
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  templates = _messages.MessageField('Template', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -695,6 +966,7 @@ class OperationMetadata(_messages.Message):
     apiVersion: Output only. API version used to start the operation.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
+    fabricOperationData: Adds fields specific to fabric resource operation.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have been
       cancelled successfully have Operation.error value with a
@@ -709,10 +981,11 @@ class OperationMetadata(_messages.Message):
   apiVersion = _messages.StringField(1)
   createTime = _messages.StringField(2)
   endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
+  fabricOperationData = _messages.MessageField('FabricOperationData', 4)
+  requestedCancellation = _messages.BooleanField(5)
+  statusMessage = _messages.StringField(6)
+  target = _messages.StringField(7)
+  verb = _messages.StringField(8)
 
 
 class PublicTemplate(_messages.Message):
@@ -964,6 +1237,115 @@ class TelecomdatafabricProjectsLocationsDeploymentsPreviewRequest(_messages.Mess
   parent = _messages.StringField(2, required=True)
 
 
+class TelecomdatafabricProjectsLocationsFabricsCreateRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsFabricsCreateRequest object.
+
+  Fields:
+    fabric: A Fabric resource to be passed as the request body.
+    fabricId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and fabric_id from the method_signature
+      of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  fabric = _messages.MessageField('Fabric', 1)
+  fabricId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class TelecomdatafabricProjectsLocationsFabricsDeleteRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsFabricsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class TelecomdatafabricProjectsLocationsFabricsGetRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsFabricsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TelecomdatafabricProjectsLocationsFabricsListRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsFabricsListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListFabricsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class TelecomdatafabricProjectsLocationsFabricsPatchRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsFabricsPatchRequest object.
+
+  Fields:
+    fabric: A Fabric resource to be passed as the request body.
+    name: name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Fabric resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  fabric = _messages.MessageField('Fabric', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class TelecomdatafabricProjectsLocationsGetRequest(_messages.Message):
   r"""A TelecomdatafabricProjectsLocationsGetRequest object.
 
@@ -1072,6 +1454,48 @@ class TelecomdatafabricProjectsLocationsPublicTemplatesListRequest(_messages.Mes
   parent = _messages.StringField(5, required=True)
 
 
+class TelecomdatafabricProjectsLocationsTemplatesGetRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsTemplatesGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TelecomdatafabricProjectsLocationsTemplatesListRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsTemplatesListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListTemplatesRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class Template(_messages.Message):
+  r"""Message describing Template object
+
+  Fields:
+    name: Output only. name of resource
+    parameters: Output only. Parameters will be used by template during
+      provisioning.
+  """
+
+  name = _messages.StringField(1)
+  parameters = _messages.MessageField('TemplateParameter', 2, repeated=True)
+
+
 class TemplateParameter(_messages.Message):
   r"""Message describing TemplateParameter object.
 
@@ -1081,7 +1505,6 @@ class TemplateParameter(_messages.Message):
     isRequired: True, if parameter is required.
     name: Parameter name.
     oneOf: Select type parameter.
-    regexp: Regex to validate parameter value provided during provisioning.
     trueOrFalse: Boolean type parameter.
   """
 
@@ -1090,8 +1513,7 @@ class TemplateParameter(_messages.Message):
   isRequired = _messages.BooleanField(3)
   name = _messages.StringField(4)
   oneOf = _messages.MessageField('TemplateParameterOneOf', 5)
-  regexp = _messages.StringField(6)
-  trueOrFalse = _messages.MessageField('TemplateParameterBoolean', 7)
+  trueOrFalse = _messages.MessageField('TemplateParameterBoolean', 6)
 
 
 class TemplateParameterBoolean(_messages.Message):

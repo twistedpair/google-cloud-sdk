@@ -1021,7 +1021,7 @@ class Documentation(_messages.Message):
   Example: documentation: summary: > The Google Calendar API gives access to
   most calendar features. pages: - name: Overview content: (== include
   google/foo/overview.md ==) - name: Tutorial content: (== include
-  google/foo/tutorial.md ==) subpages; - name: Java content: (== include
+  google/foo/tutorial.md ==) subpages: - name: Java content: (== include
   google/foo/tutorial_java.md ==) rules: - selector:
   google.calendar.Calendar.Get description: > ... - selector:
   google.calendar.Calendar.Put description: > ... Documentation is provided in
@@ -1057,6 +1057,9 @@ class Documentation(_messages.Message):
     rules: A list of documentation rules that apply to individual API
       elements. **NOTE:** All service configuration rules follow "last one
       wins" order.
+    sectionOverrides: Specifies section and content to override boilerplate
+      content provided by go/api-docgen. Currently overrides following
+      sections: 1. rest.service.client_libraries
     serviceRootUrl: Specifies the service root url if the default one (the
       service name from the yaml file) is not suitable. This can be seen in
       any fully specified service urls as well as sections that show a base
@@ -1071,8 +1074,9 @@ class Documentation(_messages.Message):
   overview = _messages.StringField(2)
   pages = _messages.MessageField('Page', 3, repeated=True)
   rules = _messages.MessageField('DocumentationRule', 4, repeated=True)
-  serviceRootUrl = _messages.StringField(5)
-  summary = _messages.StringField(6)
+  sectionOverrides = _messages.MessageField('Page', 5, repeated=True)
+  serviceRootUrl = _messages.StringField(6)
+  summary = _messages.StringField(7)
 
 
 class DocumentationRule(_messages.Message):

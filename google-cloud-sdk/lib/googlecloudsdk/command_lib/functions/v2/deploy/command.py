@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import argparse
 import re
 
 from apitools.base.py import base_api
@@ -31,7 +30,9 @@ from googlecloudsdk.api_lib.functions.v2 import client as client_v2
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.calliope.arg_parsers import ArgumentTypeError
 from googlecloudsdk.command_lib.eventarc import types as trigger_types
 from googlecloudsdk.command_lib.functions import flags
@@ -159,15 +160,15 @@ _CPU_VALUE_PATTERN = r"""
 
 
 def _GetSourceGCS(messages, source):
-  # type: (_, str) -> cloudfunctions_v2_messages.Source
+  # type: (_, str) -> messages.Source
   """Constructs a `Source` message from a Cloud Storage object.
 
   Args:
-    messages: messages module, the GCFv2 message stubs
-    source: str, the Cloud Storage URL
+    messages: messages module, the GCFv2 message stubs.
+    source: the Cloud Storage URL.
 
   Returns:
-    function_source: cloudfunctions_v2_messages.Source
+    The resulting cloudfunctions_v2_messages.Source.
   """
   match = _GCS_SOURCE_REGEX.match(source)
   if not match:
@@ -181,15 +182,15 @@ def _GetSourceGCS(messages, source):
 
 
 def _GetSourceCSR(messages, source):
-  # type: (_,str) -> cloudfunctions_v2_messages.Source
+  # type: (_, str) -> messages.Source
   """Constructs a `Source` message from a Cloud Source Repository reference.
 
   Args:
-    messages: messages module, the GCFv2 message stubs
-    source: str, the Cloud Source Repository reference
+    messages: messages module, the GCFv2 message stubs.
+    source: the Cloud Source Repository reference.
 
   Returns:
-    function_source: cloudfunctions_v2_messages.Source
+    The resulting cloudfunctions_v2_messages.Source.
   """
   match = _CSR_SOURCE_REGEX.match(source)
 
@@ -225,18 +226,18 @@ def _GetSourceLocal(
     source,
     kms_key=None,
 ):
-  # type: (argparse.Namespace, base_api.BaseApiClient, resources.Resource, str) -> Source # pylint: disable=line-too-long
+  # type: (parser_extensions.Namespace, base_api.BaseApiClient, resources.Resource, str, str | None) -> Source  # pylint: disable=line-too-long
   """Constructs a `Source` message from a local file system path.
 
   Args:
-    args: arguments that this command was invoked with.
-    client: The GCFv2 Base API client
+    args: The arguments that this command was invoked with.
+    client: The GCFv2 Base API client.
     function_ref: The GCFv2 functions resource reference.
-    source: the path
+    source: The source path.
     kms_key: resource name of the customer managed KMS key | None
 
   Returns:
-    cloudfunctions_v2_messages.Source
+    The resulting cloudfunctions_v2_messages.Source.
   """
   messages = client.MESSAGES_MODULE
   with file_utils.TemporaryDirectory() as tmp_dir:
@@ -279,18 +280,20 @@ def _GetSource(
     function_ref,
     existing_function,
 ):
-  # type: (argparse.Namespace, base_api.BaseApiClient, resources.Resource) -> _
+  # type: (parser_extensions.Namespace, base_api.BaseApiClient, resources.Resource, Function) -> tuple[Source | None, frozenset[str]]  # pylint: disable=line-too-long
   """Parses the source bucket and object from the --source flag.
 
   Args:
     args: arguments that this command was invoked with.
     client: The GCFv2 API client
     function_ref: The GCFv2 functions resource reference.
-    existing_function: cloudfunctions_v2alpha_messages.Function | None
+    existing_function: `cloudfunctions_v2_messages.Function | None`,
+      pre-existing function.
 
   Returns:
-    function_source: cloud.functions.v2main.Source | None
-    update_field_set: frozenset, set of update mask fields
+    A tuple `(function_source, update_field_set)` where
+    - `function_source` is the resulting `cloudfunctions_v2_messages.Source`,
+    - `update_field_set` is a set of update mask fields.
   """
   if (
       args.source is None
@@ -320,7 +323,7 @@ def _GetSource(
 
 
 def _GetServiceConfig(args, messages, existing_function):
-  # type: (argparse.Namespace, _, Function) -> (ServiceConfig, frozenset[str])
+  # type: (parser_extensions.Namespace, _, messages.Function) -> tuple[messages.ServiceConfig, frozenset[str]]  # pylint: disable=line-too-long
   """Constructs a ServiceConfig message from the command-line arguments.
 
   Args:
@@ -329,8 +332,10 @@ def _GetServiceConfig(args, messages, existing_function):
     existing_function: the existing function.
 
   Returns:
-    service_config: the resulting ServiceConfig.
-    updated_fields_set: a set of update mask fields.
+    A tuple `(service_config, updated_fields_set)` where
+    - `service_config` is the resulting
+    `cloudfunctions_v2_messages.ServiceConfig`.
+    - `updated_fields_set` is a set of update mask fields.
   """
 
   old_env_vars = {}
@@ -454,7 +459,7 @@ def _GetServiceConfig(args, messages, existing_function):
 
 
 def _ParseMemoryStrToK8sMemory(memory):
-  # type: (str) -> str
+  # type: (str) -> str | None
   """Parses user provided memory to kubernetes expected format.
 
   Ensure --gen2 continues to parse Gen1 --memory passed in arguments. Defaults
@@ -464,7 +469,7 @@ def _ParseMemoryStrToK8sMemory(memory):
   https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/generated.proto
 
   Args:
-    memory: str, input from `args.memory`
+    memory: input from `args.memory`
 
   Returns:
     k8s_memory: str|None, in kubernetes memory format. GCF 2nd Gen control plane
@@ -505,14 +510,14 @@ def _ParseMemoryStrToK8sMemory(memory):
 
 
 def _ValidateK8sCpuStr(cpu):
-  # type: (str) -> str
+  # type: (str) -> str | None
   """Validates user provided cpu to kubernetes expected format.
 
   k8s format:
   https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/generated.proto
 
   Args:
-    cpu: str, input from `args.cpu`
+    cpu: input from `args.cpu`
 
   Returns:
     k8s_cpu: str|None, in kubernetes cpu format.
@@ -547,18 +552,19 @@ def _ValidateK8sCpuStr(cpu):
 
 
 def _GetEventTrigger(args, messages, existing_function):
-  # type: (argparse.Namespace, _, Function) -> (EventTrigger, frozenset[str])
+  # type: (parser_extensions.Namespace, _, messages.Function) -> tuple[messages.EventTrigger, frozenset[str]]  # pylint: disable=line-too-long
   """Constructs an EventTrigger message from the command-line arguments.
 
   Args:
-    args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the GCFv2 message stubs
-    existing_function: cloudfunctions_v2alpha_messages.Function | None
+    args: The arguments that this command was invoked with.
+    messages: messages module, the GCFv2 message stubs.
+    existing_function: The pre-existing function.
 
   Returns:
-    event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
-      events sent from another service
-    updated_fields_set: frozenset, set of update mask fields
+    A tuple `(event_trigger, update_fields_set)` where:
+    - `event_trigger` is a `cloudfunctions_v2_messages.EventTrigger` used to
+    request events sent from another service,
+    - `updated_fields_set` is a set of update mask fields.
   """
   if args.trigger_http:
     event_trigger, updated_fields_set = None, frozenset(
@@ -606,16 +612,16 @@ def _GetEventTrigger(args, messages, existing_function):
 
 
 def _GetEventTriggerForEventType(args, messages):
-  # type: (argparse.Namespace, _) -> cloudfunctions_v2_messages.EventTrigger
+  # type: (parser_extensions.Namespace, _) -> messages.EventTrigger
   """Constructs an EventTrigger message from the command-line arguments.
 
   Args:
-    args: arguments that this command was invoked with.
+    args: The arguments that this command was invoked with.
     messages: messages module, the GCFv2 message stubs.
 
   Returns:
-    event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
-      events sent from another service
+    A `cloudfunctions_v2_messages.EventTrigger`, used to request
+      events sent from another service.
   """
   trigger_event = args.trigger_event
   trigger_resource = args.trigger_resource
@@ -657,16 +663,16 @@ def _GetEventTriggerForEventType(args, messages):
 
 
 def _GetEventTriggerForOther(args, messages):
-  # type: (argparse.Namespace, _) -> cloudfunctions_v2_messages.EventTrigger
-  """Constructs an EventTrigger when using --trigger-bucket/topic/filters.
+  # type: (parser_extensions.Namespace, _) -> messages.EventTrigger
+  """Constructs an EventTrigger when using `--trigger-[bucket|topic|filters]`.
 
   Args:
     args: arguments that this command was invoked with.
     messages: messages module, the GCFv2 message stubs.
 
   Returns:
-    event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
-      events sent from another service
+    A `cloudfunctions_v2_messages.EventTrigger` used to request
+      events sent from another service.
   """
   event_filters = []
   event_type = None
@@ -712,19 +718,18 @@ def _GetEventTriggerForOther(args, messages):
 
 
 def _GetRetry(args, messages, event_trigger):
-  # type: (argparse.Namespace, _, messages.EventTrigger) -> messages.EventTrigger.RetryPolicyValueValuesEnum # pylint: disable=line-too-long
+  # type: (parser_extensions.Namespace, _, messages.EventTrigger) -> tuple[messages.EventTrigger.RetryPolicyValueValuesEnum, frozenset[str]]  # pylint: disable=line-too-long
   """Constructs an RetryPolicy enum from --(no-)retry flag.
 
   Args:
-    args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the GCFv2 message stubs
-    event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
-      events sent from another service
+    args: arguments that this command was invoked with.
+    messages: messages module, the GCFv2 message stubs.
+    event_trigger: trigger used to request events sent from another service.
 
   Returns:
-    EventTrigger.RetryPolicyValueValuesEnum(
-      'RETRY_POLICY_RETRY' | 'RETRY_POLICY_DO_NOT_RETRY')
-    frozenset, set of update mask fields
+    A tuple `(retry_policy, update_fields_set)` where:
+    - `retry_policy` is the retry policy enum value,
+    - `update_fields_set` is the set of update mask fields.
   """
 
   if event_trigger is None:
@@ -742,23 +747,25 @@ def _GetRetry(args, messages, event_trigger):
 
 
 def _BuildFullPubsubTopic(pubsub_topic):
+  # type: (str) -> str
   return 'projects/{}/topics/{}'.format(api_util.GetProject(), pubsub_topic)
 
 
 def _GetBuildConfig(args, client, function_ref, existing_function):
-  # type: (argparse.Namespace, client_v2.FunctionsClient, resources.Resource, Function) -> (BuildConfig, frozenset[str]) # pylint: disable=line-too-long
+  # type: (parser_extensions.Namespace, client_v2.FunctionsClient, resources.Resource, Function) -> tuple[BuildConfig, frozenset[str]]  # pylint: disable=line-too-long
   """Constructs a BuildConfig message from the command-line arguments.
 
   Args:
-    args: argparse.Namespace, arguments that this command was invoked with.
-    client: client_v2.FunctionsClient, The GCFv2 API client
-    function_ref: resources.Resource, The GCFv2 functions resource reference.
-    existing_function: cloudfunctions_v2_messages.Function | None
+    args: arguments that this command was invoked with.
+    client: The GCFv2 API client.
+    function_ref: The GCFv2 functions resource reference.
+    existing_function: `cloudfunctions_v2_messages.Function | None`,
+      pre-existing function.
 
   Returns:
-    build_config: cloudfunctions_v2_messages.BuildConfig, describes the
-      build step for the function
-    updated_fields_set: frozenset[str], set of update mask fields
+    A tuple `(build_config, updated_fields_set)` where:
+    - `build_config` is the resulting `cloudfunctions_v2_messages.BuildConfig`,
+    - `updated_fields_set` is the set of update mask fields.
   """
   function_source, source_updated_fields = _GetSource(
       args,
@@ -824,12 +831,12 @@ def _GetBuildConfig(args, client, function_ref, existing_function):
 
 
 def _GetActiveKmsKey(args, existing_function):
-  # type: (argparse.Namespace) -> str | None
+  # type: (parser_extensions.Namespace, Function) -> str | None
   """Retrives KMS key applicable to the deployment request.
 
   Args:
-    args: argparse.Namespace, arguments that this command was invoked with.
-    existing_function: cloudfunctions_v2alpha_messages.Function | None.
+    args: arguments that this command was invoked with.
+    existing_function: cloudfunctions_v2_messages.Function | None.
 
   Returns:
     Either newly passed or pre-existing KMS key.
@@ -842,16 +849,17 @@ def _GetActiveKmsKey(args, existing_function):
 
 
 def _GetIngressSettings(args, messages):
+  # type: (parser_extensions.Namespace) -> tuple[messages.ServiceConfig.IngressSettingsValueValuesEnum, frozenset[str]]  # pylint: disable=line-too-long
   """Constructs ingress setting enum from command-line arguments.
 
   Args:
-    args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the GCFv2 message stubs
+    args: arguments that this command was invoked with.
+    messages: messages module, the GCFv2 message stubs.
 
   Returns:
-    ingress_settings_enum: ServiceConfig.IngressSettingsValueValuesEnum, the
-      ingress setting enum value
-    updated_fields_set: frozenset[str], set of update mask fields
+    A tuple `(ingress_settings_enum, updated_fields_set)` where:
+    - `ingress_settings_enum` is the ingress setting enum value,
+    - `updated_fields_set` is the set of update mask fields.
   """
   if args.ingress_settings:
     ingress_settings_enum = arg_utils.ChoiceEnumMapper(
@@ -865,30 +873,20 @@ def _GetIngressSettings(args, messages):
 
 
 def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
+  # type: (parser_extensions.Namespace, _, messages.Function) -> tuple[str, messages.ServiceConfig.VpcConnectorEgressSettingsValueValuesEnum, frozenset[str]]  # pylint: disable=line-too-long
   """Constructs vpc connector and egress settings from command-line arguments.
 
   Args:
-    args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the GCFv2 message stubs
-    existing_function: cloudfunctions_v2alpha_messages.Function | None
+    args: The arguments that this command was invoked with.
+    messages: messages module, the GCFv2 message stubs.
+    existing_function: The pre-existing function.
 
   Returns:
-    vpc_connector: str, name of the vpc connector
-    vpc_egress_settings:
-    ServiceConfig.VpcConnectorEgressSettingsValueValuesEnum,
-      the egress settings for the vpc connector
-    vpc_updated_fields_set: frozenset[str], set of update mask fields
+    A tuple `(vpc_connector, egress_settings, updated_fields_set)` where:
+    - `vpc_connector` is the name of the vpc connector,
+    - `egress_settings` is the egress settings for the vpc connector,
+    - `updated_fields_set` is the set of update mask fields.
   """
-
-  egress_settings = None
-  vpc_connector = args.CONCEPTS.vpc_connector.Parse()
-  if args.egress_settings:
-    egress_settings = arg_utils.ChoiceEnumMapper(
-        arg_name='egress_settings',
-        message_enum=messages.ServiceConfig.VpcConnectorEgressSettingsValueValuesEnum,
-        custom_mappings=flags.EGRESS_SETTINGS_MAPPING,
-    ).GetEnumForChoice(args.egress_settings)
-
   if args.clear_vpc_connector:
     return (
         None,
@@ -898,43 +896,40 @@ def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
             'service_config.vpc_connector_egress_settings',
         ]),
     )
-  elif vpc_connector:
-    if args.egress_settings:
-      return (
-          vpc_connector.RelativeName(),
-          egress_settings,
-          frozenset([
-              'service_config.vpc_connector',
-              'service_config.vpc_connector_egress_settings',
-          ]),
-      )
-    else:
-      return (
-          vpc_connector.RelativeName(),
-          None,
-          frozenset(['service_config.vpc_connector']),
-      )
-  elif args.egress_settings:
-    if (
-        existing_function
-        and existing_function.serviceConfig
-        and existing_function.serviceConfig.vpcConnector
-    ):
-      return (
-          existing_function.serviceConfig.vpcConnector,
-          egress_settings,
-          frozenset(['service_config.vpc_connector_egress_settings']),
-      )
-    else:
+
+  update_fields_set = set()
+
+  vpc_connector = None
+  if args.vpc_connector:
+    vpc_connector = args.CONCEPTS.vpc_connector.Parse().RelativeName()
+    update_fields_set.add('service_config.vpc_connector')
+  elif (
+      existing_function
+      and existing_function.serviceConfig
+      and existing_function.serviceConfig.vpcConnector
+  ):
+    vpc_connector = existing_function.serviceConfig.vpcConnector
+
+  egress_settings = None
+  if args.egress_settings:
+    if not vpc_connector:
       raise exceptions.RequiredArgumentException(
           'vpc-connector',
-          'Flag `--vpc-connector` is required for setting `egress-settings`.',
+          'Flag `--vpc-connector` is required for setting `--egress-settings`.',
       )
-  else:
-    return None, None, frozenset()
+
+    egress_settings = arg_utils.ChoiceEnumMapper(
+        arg_name='egress_settings',
+        message_enum=messages.ServiceConfig.VpcConnectorEgressSettingsValueValuesEnum,
+        custom_mappings=flags.EGRESS_SETTINGS_MAPPING,
+    ).GetEnumForChoice(args.egress_settings)
+    update_fields_set.add('service_config.vpc_connector_egress_settings')
+
+  return vpc_connector, egress_settings, frozenset(update_fields_set)
 
 
 def _ValidateV1OnlyFlags(args):
+  # type: (parser_extensions.Namespace) -> None
   """Ensures that only the arguments supported in V2 are passing through."""
   for flag_variable, flag_name in _V1_ONLY_FLAGS:
     if args.IsKnownAndSpecified(flag_variable):
@@ -942,16 +937,18 @@ def _ValidateV1OnlyFlags(args):
 
 
 def _GetLabels(args, messages, existing_function):
+  # type: (parser_extensions.Namespace, _, messages.Function | None) -> tuple[messages.Function.LabelsValue, frozenset[str]]  # pylint: disable=line-too-long
   """Constructs labels from command-line arguments.
 
   Args:
-    args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the GCFv2 message stubs
-    existing_function: cloudfunctions_v2alpha_messages.Function | None
+    args: The arguments that this command was invoked with
+    messages: messages module, the GCFv2 message stubs.
+    existing_function: The pre-existing function.
 
   Returns:
-    labels: Function.LabelsValue, functions labels metadata
-    updated_fields_set: frozenset[str], list of update mask fields
+    A tuple `(labels, updated_fields_set)` where:
+    - `labels` is functions labels metadata,
+    - `updated_fields_set` is the set of update mask fields.
   """
   if existing_function:
     required_labels = {}
@@ -971,18 +968,19 @@ def _GetLabels(args, messages, existing_function):
 
 
 def _SetCmekFields(args, function, existing_function, function_ref):
+  # type: (parser_extensions.Namespace, Function, Function | None, resources.Resource) -> frozenset[str]  # pylint: disable=line-too-long
   """Sets CMEK-related fields on the function.
 
   Args:
-    args: argparse.Namespace, arguments that this command was invoked with.
-    function: cloudfunctions_v2alpha_messages.Function, recently created or
-      updated GCF function.
-    existing_function: pre-existing function
-      (cloudfunctions_v2alpha_messages.Function | None).
+    args: arguments that this command was invoked with.
+    function: `cloudfunctions_v2alpha_messages.Function`, the recently created
+      or updated GCF function.
+    existing_function: `cloudfunctions_v2_messages.Function | None`, the
+      pre-existing function.
     function_ref: resource reference.
 
   Returns:
-    updated_fields_set: frozenset[str], set of update mask fields.
+    A set of update mask fields.
   """
   updated_fields = set()
   function.kmsKeyName = (
@@ -1003,20 +1001,20 @@ def _SetCmekFields(args, function, existing_function, function_ref):
 
 
 def _SetDockerRepositoryConfig(args, function, existing_function, function_ref):
+  # type: (parser_extensions.Namespace, Function, Function | None, resources.Resource) -> frozenset[str]  # pylint: disable=line-too-long
   """Sets user-provided docker repository field on the function.
 
   Args:
-    args: argparse.Namespace, arguments that this command was invoked with
-    function: cloudfunctions_v2alpha_messages.Function, recently created or
-      updated GCF function.
-    existing_function: pre-existing function.
-      (cloudfunctions_v2alpha_messages.Function | None).
+    args: arguments that this command was invoked with
+    function: `cloudfunctions_v2_messages.Function`, recently created or updated
+      GCF function.
+    existing_function: `cloudfunctions_v2_messages.Function | None`,
+      pre-existing function.
     function_ref: resource reference.
 
   Returns:
-    updated_fields_set: frozenset[str], set of update mask fields.
+    A set of update mask fields.
   """
-
   updated_fields = set()
   function.buildConfig.dockerRepository = (
       existing_function.buildConfig.dockerRepository
@@ -1055,51 +1053,19 @@ def _SetDockerRepositoryConfig(args, function, existing_function, function_ref):
   return updated_fields
 
 
-def _SetInvokerPermissions(args, function, is_new_function):
-  """Add the IAM binding for the invoker role on the Cloud Run service, if applicable.
-
-  Args:
-    args: argparse.Namespace, arguments that this command was invoked with
-    function: cloudfunctions_v2alpha_messages.Function, recently created or
-      updated GCF function
-    is_new_function: bool, true if the function is being created
-
-  Returns:
-    None
-  """
-  # This condition will be truthy if the user provided either
-  # `--allow-unauthenticated` or `--no-allow-unauthenticated`. In other
-  # words, it is only falsey when neither of those two flags is provided.
-  if args.IsSpecified('allow_unauthenticated'):
-    allow_unauthenticated = args.allow_unauthenticated
-  else:
-    if not is_new_function:
-      # The function already exists, and the user didn't request any change to
-      # the permissions. There is nothing to do in this case.
-      return
-
-    allow_unauthenticated = console_io.PromptContinue(
-        prompt_string=(
-            'Allow unauthenticated invocations of new function [{}]?'.format(
-                args.NAME
-            )
-        ),
-        default=False,
-    )
-
-  if is_new_function and not allow_unauthenticated:
-    # No permissions to grant nor remove on the new function.
-    return
-
-  run_util.AddOrRemoveInvokerBinding(
-      function,
-      add_binding=allow_unauthenticated,
-      member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
+def _PromptToAllowUnauthenticatedInvocations(name):
+  # type: (str) -> bool
+  """Prompts the user to allow unauthenticated invocations for the given function."""
+  return console_io.PromptContinue(
+      prompt_string=(
+          'Allow unauthenticated invocations of new function [{}]?'.format(name)
+      ),
+      default=False,
   )
 
 
 def _CreateAndWait(gcf_client, function_ref, function):
-  # type: (client_v2.FunctionsClient, resources.Resource, Function) -> None
+  # type: (client_v2.FunctionsClient, resources.Resource, Function) -> None  # pylint: disable=line-too-long
   """Create a function.
 
   This does not include setting the invoker permissions.
@@ -1107,7 +1073,7 @@ def _CreateAndWait(gcf_client, function_ref, function):
   Args:
     gcf_client: The GCFv2 API client.
     function_ref: The GCFv2 functions resource reference.
-    function: The function to create.
+    function: `cloudfunctions_v2_messages.Function`, The function to create.
 
   Returns:
     None
@@ -1130,7 +1096,7 @@ def _CreateAndWait(gcf_client, function_ref, function):
 
 
 def _UpdateAndWait(gcf_client, function_ref, function, updated_fields_set):
-  # type: (client_v2.FunctionsClient, resources.Resource, Function, frozenset[str]) -> None # pylint: disable=line-too-long
+  # type: (client_v2.FunctionsClient, resources.Resource, Function, frozenset[str]) -> None  # pylint: disable=line-too-long
   """Update a function.
 
   This does not include setting the invoker permissions.
@@ -1138,7 +1104,7 @@ def _UpdateAndWait(gcf_client, function_ref, function, updated_fields_set):
   Args:
     gcf_client: The GCFv2 API client.
     function_ref: The GCFv2 functions resource reference.
-    function: The function to update.
+    function: `cloudfunctions_v2_messages.Function`, The function to update.
     updated_fields_set: A set of update mask fields.
 
   Returns:
@@ -1166,6 +1132,7 @@ def _UpdateAndWait(gcf_client, function_ref, function, updated_fields_set):
 
 
 def Run(args, release_track):
+  # type: (parser_extensions.Namespace, calliope_base.ReleaseTrack) -> cloudfunctions_v2_messages.Function  # pylint: disable=line-too-long
   """Runs a function deployment with the given args."""
   client = client_v2.FunctionsClient(release_track=release_track)
   messages = client.messages
@@ -1252,25 +1219,46 @@ def Run(args, release_track):
       args, function, existing_function, function_ref
   )
 
+  api_enablement.PromptToEnableApiIfDisabled('run.googleapis.com')
   api_enablement.PromptToEnableApiIfDisabled('cloudbuild.googleapis.com')
   api_enablement.PromptToEnableApiIfDisabled('artifactregistry.googleapis.com')
-  updated_fields = frozenset.union(
-      trigger_updated_fields,
-      build_updated_fields,
-      service_updated_fields,
-      labels_updated_fields,
-      cmek_updated_fields,
-      docker_repository_updated_fields,
-  )
+
+  allow_unauthenticated = None
+  if args.IsSpecified('allow_unauthenticated'):
+    allow_unauthenticated = args.allow_unauthenticated
+  elif is_new_function and not event_trigger:
+    allow_unauthenticated = _PromptToAllowUnauthenticatedInvocations(args.NAME)
+
   if is_new_function:
     _CreateAndWait(client, function_ref, function)
   else:
+    updated_fields = frozenset.union(
+        trigger_updated_fields,
+        build_updated_fields,
+        service_updated_fields,
+        labels_updated_fields,
+        cmek_updated_fields,
+        docker_repository_updated_fields,
+    )
     _UpdateAndWait(client, function_ref, function, updated_fields)
 
   function = client.GetFunction(function_ref.RelativeName())
 
-  if event_trigger is None:
-    _SetInvokerPermissions(args, function, is_new_function)
+  if (
+      # New functions do not allow unauthenticated invocations by default so we
+      # only ever need to add the permission.
+      is_new_function
+      and allow_unauthenticated
+      # Existing functions' permissions should only change if explicitly
+      # requested.
+      or existing_function
+      and args.IsSpecified('allow_unauthenticated')
+  ):
+    run_util.AddOrRemoveInvokerBinding(
+        function,
+        add_binding=allow_unauthenticated,
+        member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
+    )
 
   log.status.Print(
       'You can view your function in the Cloud Console here: '

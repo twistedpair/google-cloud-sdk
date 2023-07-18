@@ -1018,6 +1018,9 @@ class MultiScopeLister(object):
       entire operation.
     image_zone_flag: Returns the images rolled out to the specific zone. This is
       used for images.list API
+    instance_view_flag: control the retruned view of the instance,
+      either default view or full view of instance/instanceProperities.
+      this is used for instances.List/instanceTemplates.List API
   """
 
   def __init__(
@@ -1030,6 +1033,7 @@ class MultiScopeLister(object):
       allow_partial_server_failure=True,
       return_partial_success=True,
       image_zone_flag=None,
+      instance_view_flag=None,
   ):
     self.client = client
     self.zonal_service = zonal_service
@@ -1039,6 +1043,7 @@ class MultiScopeLister(object):
     self.allow_partial_server_failure = allow_partial_server_failure
     self.return_partial_success = return_partial_success
     self.image_zone_flag = image_zone_flag
+    self.instance_view_flag = instance_view_flag
 
   def __deepcopy__(self, memodict=None):
     return self  # MultiScopeLister is immutable
@@ -1137,6 +1142,10 @@ class MultiScopeLister(object):
                              project=project_ref.project,
                              **input_params)))
 
+    if self.instance_view_flag is not None:
+      for request in requests:
+        if request[1] == 'List':
+          request[2].view = self.instance_view_flag
     errors = []
     response_count = 0
     for item in request_helper.ListJson(

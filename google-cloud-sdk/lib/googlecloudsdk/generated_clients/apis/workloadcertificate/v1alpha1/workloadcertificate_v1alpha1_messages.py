@@ -493,12 +493,16 @@ class WorkloadCertificateFeatureSpec(_messages.Message):
       MODE_UNSPECIFIED: Do not use this value.
       MODE_DISABLED: Workload certificate feature is disabled.
       MODE_ENABLED_WITH_MANAGED_CA: Workload certificate feature is enabled,
-        and the entire certificate provisioning process is managed by Google,
-        including the CA.
+        and the entire certificate provisioning process is managed by Google
+        with managed CAS more secure than the free-tier CAS.
+      MODE_ENABLED_WITH_DEFAULT_CA: Workload certificate feature is enabled,
+        and the entire certificate provisioning process is using the default
+        CA with managed CAS in default version which is free.
     """
     MODE_UNSPECIFIED = 0
     MODE_DISABLED = 1
     MODE_ENABLED_WITH_MANAGED_CA = 2
+    MODE_ENABLED_WITH_DEFAULT_CA = 3
 
   mode = _messages.EnumField('ModeValueValuesEnum', 1)
 
@@ -624,6 +628,25 @@ class WorkloadcertificateProjectsLocationsGlobalGetWorkloadCertificateFeatureReq
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class WorkloadcertificateProjectsLocationsGlobalUpdateWorkloadCertificateFeatureRequest(_messages.Message):
+  r"""A WorkloadcertificateProjectsLocationsGlobalUpdateWorkloadCertificateFea
+  tureRequest object.
+
+  Fields:
+    force: Force WorkloadCertificateFeature disablement. All
+      WorkloadRegistrations in the same fleet will be deleted.
+    name: Required. Name of the `WorkloadCertificateFeature` resource to
+      update. Format: `projects/{project ID or
+      number}/locations/global/workloadCertificateFeature`.
+    workloadCertificateFeature: A WorkloadCertificateFeature resource to be
+      passed as the request body.
+  """
+
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  workloadCertificateFeature = _messages.MessageField('WorkloadCertificateFeature', 3)
 
 
 class WorkloadcertificateProjectsLocationsListRequest(_messages.Message):

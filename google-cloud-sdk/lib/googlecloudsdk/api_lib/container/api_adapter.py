@@ -569,7 +569,7 @@ class CreateClusterOptions(object):
       accelerators=None,
       enable_binauthz=None,
       binauthz_evaluation_mode=None,
-      binauthz_policy=None,
+      binauthz_policy_bindings=None,
       min_cpu_platform=None,
       workload_metadata=None,
       workload_metadata_from_node=None,
@@ -763,7 +763,7 @@ class CreateClusterOptions(object):
     self.accelerators = accelerators
     self.enable_binauthz = enable_binauthz
     self.binauthz_evaluation_mode = binauthz_evaluation_mode
-    self.binauthz_policy = binauthz_policy
+    self.binauthz_policy_bindings = binauthz_policy_bindings
     self.min_cpu_platform = min_cpu_platform
     self.workload_metadata = workload_metadata
     self.workload_metadata_from_node = workload_metadata_from_node
@@ -1809,21 +1809,33 @@ class APIAdapter(object):
           enabled=options.enable_binauthz)
 
     if options.binauthz_evaluation_mode is not None:
-      if options.binauthz_policy is not None:
+      if options.binauthz_policy_bindings is not None:
         cluster.binaryAuthorization = self.messages.BinaryAuthorization(
-            evaluationMode=self.messages.BinaryAuthorization
-            .EvaluationModeValueValuesEnum(options.binauthz_evaluation_mode),
-            policy=options.binauthz_policy)
+            evaluationMode=self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
+                options.binauthz_evaluation_mode
+            ),
+            policyBindings=[
+                self.messages.PolicyBinding(
+                    name=options.binauthz_policy_bindings['name']
+                )
+            ],
+        )
       else:
         cluster.binaryAuthorization = self.messages.BinaryAuthorization(
             evaluationMode=self.messages.BinaryAuthorization
             .EvaluationModeValueValuesEnum(options.binauthz_evaluation_mode))
 
-    # Binauthz policy only makes sense in the context of an evaluation mode.
-    if options.binauthz_policy and not options.binauthz_evaluation_mode:
+    # Policy bindings only makes sense in the context of an evaluation mode.
+    if (
+        options.binauthz_policy_bindings
+        and not options.binauthz_evaluation_mode
+    ):
       raise util.Error(
           PREREQUISITE_OPTION_ERROR_MSG.format(
-              prerequisite='binauthz-evaluation-mode', opt='binauthz-policy'))
+              prerequisite='binauthz-evaluation-mode',
+              opt='binauthz-policy-bindings',
+          )
+      )
 
     if options.maintenance_window is not None:
       cluster.maintenancePolicy = self.messages.MaintenancePolicy(
@@ -2105,7 +2117,7 @@ class APIAdapter(object):
         )
 
     if options.enable_insecure_kubelet_readonly_port is not None:
-      if options.autopilot is None:
+      if not options.autopilot:
         if node_config.kubeletConfig is None:
           node_config.kubeletConfig = self.messages.NodeKubeletConfig()
         node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled = (
@@ -4860,27 +4872,35 @@ class APIAdapter(object):
             update=update))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
-  def ModifyBinaryAuthorization(self, cluster_ref, existing_binauthz_config,
-                                enable_binauthz, binauthz_evaluation_mode,
-                                binauthz_policy):
+  def ModifyBinaryAuthorization(
+      self,
+      cluster_ref,
+      existing_binauthz_config,
+      enable_binauthz,
+      binauthz_evaluation_mode,
+      binauthz_policy_bindings,
+  ):
     """Updates the binary_authorization message."""
 
     # If the --(no-)binauthz-enabled flag is present the evaluation mode and
     # policy fields are set to None (if the user is enabling binauthz and
     # is currently using a platform policy evaluation mode the user is prompted
     # before performing this action). If either the --binauthz-evaluation-mode
-    # or --binauthz-policy flag are passed the enabled field is set to False and
-    # existing fields not overridden by a flag are preserved.
+    # or --binauthz-policy-bindings flags are passed the enabled field is set to
+    # False and existing fields not overridden by a flag are preserved.
     if existing_binauthz_config is not None:
       binary_authorization = self.messages.BinaryAuthorization(
           evaluationMode=existing_binauthz_config.evaluationMode,
-          policy=existing_binauthz_config.policy)
+          policy=existing_binauthz_config.policy,
+          policyBindings=existing_binauthz_config.policyBindings,
+      )
     else:
       binary_authorization = self.messages.BinaryAuthorization()
 
     if enable_binauthz is not None:
-      if enable_binauthz and IsEvaluationModeMonitoring(
-          self.messages, binary_authorization.evaluationMode):
+      if enable_binauthz and BinauthzEvaluationModeRequiresPolicy(
+          self.messages, binary_authorization.evaluationMode
+      ):
         console_io.PromptContinue(
             message='This will cause the current version of Binary Authorization to be downgraded (not recommended).',
             cancel_on_no=True)
@@ -4890,13 +4910,18 @@ class APIAdapter(object):
       if binauthz_evaluation_mode is not None:
         binary_authorization.evaluationMode = self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
             binauthz_evaluation_mode)
-        # Clear the binauthz.policy field if the updated evaluation mode flag is
-        # non-monitoring (and therefore does not require a policy).
-        if not IsEvaluationModeMonitoring(self.messages,
-                                          binary_authorization.evaluationMode):
+        # Clear the policy and policyBindings field if the updated evaluation
+        # mode does not require a policy.
+        if not BinauthzEvaluationModeRequiresPolicy(
+            self.messages, binary_authorization.evaluationMode
+        ):
           binary_authorization.policy = None
-      if binauthz_policy is not None:
-        binary_authorization.policy = binauthz_policy
+          binary_authorization.policyBindings = []
+      if binauthz_policy_bindings is not None:
+        binary_authorization.policy = None
+        binary_authorization.policyBindings = [
+            self.messages.PolicyBinding(name=binauthz_policy_bindings['name'])
+        ]
     update = self.messages.ClusterUpdate(
         desiredBinaryAuthorization=binary_authorization)
     op = self.client.projects_locations_clusters.Update(
@@ -6570,17 +6595,17 @@ def ProjectLocationOperation(project, location, operation):
 
 def GetBinauthzEvaluationModeOptions(messages, release_track):
   """Returns all valid options for --binauthz-evaluation-mode."""
+  # Only expose DISABLED AND PROJECT_SINGLETON_POLICY_ENFORCE evaluation modes
+  # in the GA track.
+  if release_track == base.ReleaseTrack.GA:
+    return ['DISABLED', 'PROJECT_SINGLETON_POLICY_ENFORCE']
   options = list(
       messages.BinaryAuthorization.EvaluationModeValueValuesEnum.to_dict())
   options.remove('EVALUATION_MODE_UNSPECIFIED')
-  # Only expose MONITORING* evaluation modes in the alpha and beta tracks.
-  if release_track == base.ReleaseTrack.GA:
-    options.remove('MONITORING')
-    options.remove('MONITORING_AND_PROJECT_SINGLETON_POLICY_ENFORCE')
   return sorted(options)
 
 
-def IsEvaluationModeMonitoring(messages, evaluation_mode):
+def BinauthzEvaluationModeRequiresPolicy(messages, evaluation_mode):
   evaluation_mode_enum = messages.BinaryAuthorization.EvaluationModeValueValuesEnum
   if evaluation_mode in (evaluation_mode_enum.EVALUATION_MODE_UNSPECIFIED,
                          evaluation_mode_enum.DISABLED,

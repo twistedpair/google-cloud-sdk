@@ -285,8 +285,7 @@ class BatchProjectsLocationsJobsTaskGroupsTasksListRequest(_messages.Message):
   Fields:
     filter: Task filter, null filter matches all Tasks. Filter string should
       be of the format State=TaskStatus.State e.g. State=RUNNING
-    orderBy: Sort results. Supported are "name", "name desc", "create_time",
-      and "create_time desc".
+    orderBy: Not implemented.
     pageSize: Page size.
     pageToken: Page token.
     parent: Required. Name of a TaskGroup from which Tasks are being

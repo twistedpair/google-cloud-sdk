@@ -127,6 +127,23 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CdcStrategy(_messages.Message):
+  r"""The strategy that the stream uses for CDC replication.
+
+  Fields:
+    mostRecentStartPosition: Optional. Start replicating from the most recent
+      position in the source.
+    nextAvailableStartPosition: Optional. Resume replication from the next
+      available position in the source.
+    specificStartPosition: Optional. Start replicating from a specific
+      position in the source.
+  """
+
+  mostRecentStartPosition = _messages.MessageField('MostRecentStartPosition', 1)
+  nextAvailableStartPosition = _messages.MessageField('NextAvailableStartPosition', 2)
+  specificStartPosition = _messages.MessageField('SpecificStartPosition', 3)
+
+
 class ConnectionProfile(_messages.Message):
   r"""A set of reusable connection configurations to be used as a source or
   destination for a stream.
@@ -818,6 +835,20 @@ class DatastreamProjectsLocationsStreamsPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(8)
 
 
+class DatastreamProjectsLocationsStreamsRunRequest(_messages.Message):
+  r"""A DatastreamProjectsLocationsStreamsRunRequest object.
+
+  Fields:
+    name: Required. Name of the stream resource to start, in the format:
+      projects/{project_id}/locations/{location}/streams/{stream_name}
+    runStreamRequest: A RunStreamRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  runStreamRequest = _messages.MessageField('RunStreamRequest', 2)
+
+
 class DestinationConfig(_messages.Message):
   r"""The configuration of the stream destination.
 
@@ -1229,6 +1260,13 @@ class LookupStreamObjectRequest(_messages.Message):
   sourceObjectIdentifier = _messages.MessageField('SourceObjectIdentifier', 1)
 
 
+class MostRecentStartPosition(_messages.Message):
+  r"""CDC strategy to start replicating from the most recent position in the
+  source.
+  """
+
+
+
 class MysqlColumn(_messages.Message):
   r"""MySQL Column.
 
@@ -1266,6 +1304,19 @@ class MysqlDatabase(_messages.Message):
 
   database = _messages.StringField(1)
   mysqlTables = _messages.MessageField('MysqlTable', 2, repeated=True)
+
+
+class MysqlLogPosition(_messages.Message):
+  r"""MySQL log position
+
+  Fields:
+    logFile: The binary log file name.
+    logPosition: The position within the binary log file. Default is head of
+      file.
+  """
+
+  logFile = _messages.StringField(1)
+  logPosition = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class MysqlObjectIdentifier(_messages.Message):
@@ -1367,6 +1418,13 @@ class MysqlTable(_messages.Message):
 
   mysqlColumns = _messages.MessageField('MysqlColumn', 1, repeated=True)
   table = _messages.StringField(2)
+
+
+class NextAvailableStartPosition(_messages.Message):
+  r"""CDC strategy to resume replication from the next available position in
+  the source.
+  """
+
 
 
 class Operation(_messages.Message):
@@ -1904,6 +1962,17 @@ class Route(_messages.Message):
   updateTime = _messages.StringField(7)
 
 
+class RunStreamRequest(_messages.Message):
+  r"""Request message for running a stream.
+
+  Fields:
+    cdcStrategy: Optional. The CDC strategy of the stream. If not set, the
+      system's default value will be used.
+  """
+
+  cdcStrategy = _messages.MessageField('CdcStrategy', 1)
+
+
 class SingleTargetDataset(_messages.Message):
   r"""A single target dataset to which all data will be streamed.
 
@@ -1957,6 +2026,17 @@ class SourceObjectIdentifier(_messages.Message):
   mysqlIdentifier = _messages.MessageField('MysqlObjectIdentifier', 1)
   oracleIdentifier = _messages.MessageField('OracleObjectIdentifier', 2)
   postgresqlIdentifier = _messages.MessageField('PostgresqlObjectIdentifier', 3)
+
+
+class SpecificStartPosition(_messages.Message):
+  r"""CDC strategy to start replicating from a specific position in the
+  source.
+
+  Fields:
+    mysqlLogPosition: MySQL specific log position to start replicating from.
+  """
+
+  mysqlLogPosition = _messages.MessageField('MysqlLogPosition', 1)
 
 
 class StandardQueryParameters(_messages.Message):

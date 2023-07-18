@@ -536,7 +536,8 @@ class GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig(_messages.Message):
       OIDC Claims are included in the `assertion` object used for attribute
       mapping and attribute condition.
     ResponseTypeValueValuesEnum: Required. The Response Type to request for in
-      the OIDC Authorization Request for web sign-in.
+      the OIDC Authorization Request for web sign-in. The `CODE` Response Type
+      is recommended to avoid the Implicit Flow, for security reasons.
 
   Fields:
     additionalScopes: Additional scopes to request for in the OIDC
@@ -549,7 +550,8 @@ class GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig(_messages.Message):
       included in the `assertion` object used for attribute mapping and
       attribute condition.
     responseType: Required. The Response Type to request for in the OIDC
-      Authorization Request for web sign-in.
+      Authorization Request for web sign-in. The `CODE` Response Type is
+      recommended to avoid the Implicit Flow, for security reasons.
   """
 
   class AssertionClaimsBehaviorValueValuesEnum(_messages.Enum):
@@ -561,8 +563,8 @@ class GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig(_messages.Message):
         specified.
       MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS: Merge the UserInfo Endpoint Claims
         with ID Token Claims, preferring UserInfo Claim Values for the same
-        Claim Name. Only possible for flows granting an Access Token, which
-        comprise only the Authorization Code Flow at the moment.
+        Claim Name. This option is available only for the Authorization Code
+        Flow.
       ONLY_ID_TOKEN_CLAIMS: Only include ID Token Claims.
     """
     ASSERTION_CLAIMS_BEHAVIOR_UNSPECIFIED = 0
@@ -571,7 +573,8 @@ class GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig(_messages.Message):
 
   class ResponseTypeValueValuesEnum(_messages.Enum):
     r"""Required. The Response Type to request for in the OIDC Authorization
-    Request for web sign-in.
+    Request for web sign-in. The `CODE` Response Type is recommended to avoid
+    the Implicit Flow, for security reasons.
 
     Values:
       RESPONSE_TYPE_UNSPECIFIED: No Response Type specified.
@@ -4625,6 +4628,8 @@ class WorkforcePool(_messages.Message):
       is re-enabled, existing tokens grant access again.
     displayName: A user-specified display name of the pool in Google Cloud
       Console. Cannot exceed 32 characters.
+    expireTime: Output only. Time after which the workforce pool will be
+      permanently purged and cannot be recovered.
     name: Output only. The resource name of the pool. Format:
       `locations/{location}/workforcePools/{workforce_pool_id}`
     parent: Immutable. The resource name of the parent. Format:
@@ -4660,10 +4665,11 @@ class WorkforcePool(_messages.Message):
   description = _messages.StringField(1)
   disabled = _messages.BooleanField(2)
   displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  parent = _messages.StringField(5)
-  sessionDuration = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
+  expireTime = _messages.StringField(4)
+  name = _messages.StringField(5)
+  parent = _messages.StringField(6)
+  sessionDuration = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class WorkforcePoolInstalledApp(_messages.Message):
@@ -4843,6 +4849,8 @@ class WorkforcePoolProvider(_messages.Message):
       access.
     displayName: A user-specified display name for the provider. Cannot exceed
       32 characters.
+    expireTime: Output only. Time after which the workload pool provider will
+      be permanently purged and cannot be recovered.
     name: Output only. The resource name of the provider. Format: `locations/{
       location}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
     oidc: An OpenId Connect 1.0 identity provider configuration.
@@ -4936,10 +4944,11 @@ class WorkforcePoolProvider(_messages.Message):
   description = _messages.StringField(3)
   disabled = _messages.BooleanField(4)
   displayName = _messages.StringField(5)
-  name = _messages.StringField(6)
-  oidc = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidc', 7)
-  saml = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderSaml', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
+  expireTime = _messages.StringField(6)
+  name = _messages.StringField(7)
+  oidc = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidc', 8)
+  saml = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderSaml', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class WorkforcePoolProviderKey(_messages.Message):
@@ -5007,6 +5016,8 @@ class WorkloadIdentityPool(_messages.Message):
       exchange tokens, or use existing tokens to access resources. If the pool
       is re-enabled, existing tokens grant access again.
     displayName: A display name for the pool. Cannot exceed 32 characters.
+    expireTime: Output only. Time after which the workload identity pool will
+      be permanently purged and cannot be recovered.
     identityMode: Immutable. The identity mode of the pool.
     name: Output only. The resource name of the pool.
     sessionDuration: Overrides the lifespan of access tokens issued when
@@ -5066,10 +5077,11 @@ class WorkloadIdentityPool(_messages.Message):
   description = _messages.StringField(1)
   disabled = _messages.BooleanField(2)
   displayName = _messages.StringField(3)
-  identityMode = _messages.EnumField('IdentityModeValueValuesEnum', 4)
-  name = _messages.StringField(5)
-  sessionDuration = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
+  expireTime = _messages.StringField(4)
+  identityMode = _messages.EnumField('IdentityModeValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  sessionDuration = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class WorkloadIdentityPoolManagedIdentity(_messages.Message):
@@ -5272,6 +5284,8 @@ class WorkloadIdentityPoolProvider(_messages.Message):
       provider to exchange tokens. However, existing tokens still grant
       access.
     displayName: A display name for the provider. Cannot exceed 32 characters.
+    expireTime: Output only. Time after which the workload identity pool
+      provider will be permanently purged and cannot be recovered.
     name: Output only. The resource name of the provider.
     oidc: An OpenId Connect 1.0 identity provider.
     saml: An SAML 2.0 identity provider.
@@ -5367,10 +5381,11 @@ class WorkloadIdentityPoolProvider(_messages.Message):
   description = _messages.StringField(4)
   disabled = _messages.BooleanField(5)
   displayName = _messages.StringField(6)
-  name = _messages.StringField(7)
-  oidc = _messages.MessageField('Oidc', 8)
-  saml = _messages.MessageField('Saml', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  expireTime = _messages.StringField(7)
+  name = _messages.StringField(8)
+  oidc = _messages.MessageField('Oidc', 9)
+  saml = _messages.MessageField('Saml', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class WorkloadIdentityPoolProviderKey(_messages.Message):

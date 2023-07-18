@@ -61,6 +61,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.httpsHealthChecks = self.HttpsHealthChecksService(self)
     self.imageFamilyViews = self.ImageFamilyViewsService(self)
     self.images = self.ImagesService(self)
+    self.instanceGroupManagerResizeRequests = self.InstanceGroupManagerResizeRequestsService(self)
     self.instanceGroupManagers = self.InstanceGroupManagersService(self)
     self.instanceGroups = self.InstanceGroupsService(self)
     self.instanceTemplates = self.InstanceTemplatesService(self)
@@ -4928,6 +4929,120 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeImagesTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class InstanceGroupManagerResizeRequestsService(base_api.BaseApiService):
+    """Service class for the instanceGroupManagerResizeRequests resource."""
+
+    _NAME = 'instanceGroupManagerResizeRequests'
+
+    def __init__(self, client):
+      super(ComputeBeta.InstanceGroupManagerResizeRequestsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.
+
+      Args:
+        request: (ComputeInstanceGroupManagerResizeRequestsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.instanceGroupManagerResizeRequests.delete',
+        ordered_params=['project', 'zone', 'instanceGroupManager', 'resizeRequest'],
+        path_params=['instanceGroupManager', 'project', 'resizeRequest', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeRequests/{resizeRequest}',
+        request_field='',
+        request_type_name='ComputeInstanceGroupManagerResizeRequestsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns all of the details about the specified resize request.
+
+      Args:
+        request: (ComputeInstanceGroupManagerResizeRequestsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceGroupManagerResizeRequest) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instanceGroupManagerResizeRequests.get',
+        ordered_params=['project', 'zone', 'instanceGroupManager', 'resizeRequest'],
+        path_params=['instanceGroupManager', 'project', 'resizeRequest', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeRequests/{resizeRequest}',
+        request_field='',
+        request_type_name='ComputeInstanceGroupManagerResizeRequestsGetRequest',
+        response_type_name='InstanceGroupManagerResizeRequest',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new resize request that starts provisioning VMs immediately or queues VM creation.
+
+      Args:
+        request: (ComputeInstanceGroupManagerResizeRequestsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroupManagerResizeRequests.insert',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeRequests',
+        request_field='instanceGroupManagerResizeRequest',
+        request_type_name='ComputeInstanceGroupManagerResizeRequestsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of resize requests that are contained in the managed instance group.
+
+      Args:
+        request: (ComputeInstanceGroupManagerResizeRequestsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceGroupManagerResizeRequestsListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instanceGroupManagerResizeRequests.list',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeRequests',
+        request_field='',
+        request_type_name='ComputeInstanceGroupManagerResizeRequestsListRequest',
+        response_type_name='InstanceGroupManagerResizeRequestsListResponse',
         supports_download=False,
     )
 
@@ -11594,7 +11709,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def MoveInstance(self, request, global_params=None):
-      r"""Moves an instance and its attached persistent disks from one zone to another. *Note*: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the [known issue](/compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).
+      r"""Moves an instance and its attached persistent disks from one zone to another. *Note*: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the [known issue](/compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior). [Deprecated] This method is deprecated. See [moving instance across zones](/compute/docs/instances/moving-instance-across-zones) instead.
 
       Args:
         request: (ComputeProjectsMoveInstanceRequest) input message

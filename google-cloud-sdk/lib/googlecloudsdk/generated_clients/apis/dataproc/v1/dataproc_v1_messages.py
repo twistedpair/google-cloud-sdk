@@ -7189,15 +7189,23 @@ class UsageSnapshot(_messages.Message):
     milliDcu: Optional. Milli (one-thousandth) Dataproc Compute Units (DCUs)
       (see Dataproc Serverless pricing (https://cloud.google.com/dataproc-
       serverless/pricing)).
+    milliDcuPremium: Optional. Milli (one-thousandth) Dataproc Compute Units
+      (DCUs) charged at premium tier (see Dataproc Serverless pricing
+      (https://cloud.google.com/dataproc-serverless/pricing)).
     shuffleStorageGb: Optional. Shuffle Storage in gigabytes (GB). (see
       Dataproc Serverless pricing (https://cloud.google.com/dataproc-
       serverless/pricing))
+    shuffleStorageGbPremium: Optional. Shuffle Storage in gigabytes (GB)
+      charged at premium tier. (see Dataproc Serverless pricing
+      (https://cloud.google.com/dataproc-serverless/pricing))
     snapshotTime: Optional. The timestamp of the usage snapshot.
   """
 
   milliDcu = _messages.IntegerField(1)
-  shuffleStorageGb = _messages.IntegerField(2)
-  snapshotTime = _messages.StringField(3)
+  milliDcuPremium = _messages.IntegerField(2)
+  shuffleStorageGb = _messages.IntegerField(3)
+  shuffleStorageGbPremium = _messages.IntegerField(4)
+  snapshotTime = _messages.StringField(5)
 
 
 class ValueValidation(_messages.Message):

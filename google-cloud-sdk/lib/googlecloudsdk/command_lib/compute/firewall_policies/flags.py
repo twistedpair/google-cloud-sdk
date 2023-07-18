@@ -505,7 +505,6 @@ def AddTlsInspect(parser):
   parser.add_argument(
       '--tls-inspect',
       required=False,
-      hidden=True,
       action=arg_parsers.StoreTrueFalseAction,
       help=(
           'Use this flag to indicate whether TLS traffic should be inspected '

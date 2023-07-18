@@ -176,8 +176,7 @@ def AddPullFlags(
 
 
 def AddPushConfigFlags(
-    parser, required=False, is_update=False, enable_no_wrapper_support=False
-):
+    parser, required=False, is_update=False):
   """Adds flags for push subscriptions to the parser."""
   parser.add_argument(
       '--push-endpoint', required=required,
@@ -196,40 +195,37 @@ def AddPushConfigFlags(
       help='Audience used in the generated Open ID Connect token for '
       'authenticated push. If not specified, it will be set to the '
       'push-endpoint.')
-  if enable_no_wrapper_support:
-    current_group = parser
-    if is_update:
-      mutual_exclusive_group = current_group.add_mutually_exclusive_group()
-      mutual_exclusive_group.add_argument(
-          '--clear-push-no-wrapper-config',
-          action='store_true',
-          help="""If set, clear the NoWrapper config from the subscription.""",
-      )
-      current_group = mutual_exclusive_group
-    definition_group = current_group.add_group(
-        mutex=False,
-        help='NoWrapper Config Options.',
-        required=False,
-    )
-    definition_group.add_argument(
-        '--push-no-wrapper',
-        help=(
-            'When set, the message data is delivered directly as the HTTP body.'
-        ),
+  current_group = parser
+  if is_update:
+    mutual_exclusive_group = current_group.add_mutually_exclusive_group()
+    mutual_exclusive_group.add_argument(
+        '--clear-push-no-wrapper-config',
         action='store_true',
-        required=True,
+        help="""If set, clear the NoWrapper config from the subscription.""",
     )
-    definition_group.add_argument(
-        '--push-no-wrapper-write-metadata',
-        help=(
-            'When true, writes the Pub/Sub message metadata to'
-            ' `x-goog-pubsub-<KEY>:<VAL>` headers of the HTTP request. Writes'
-            ' the Pub/Sub message attributes to `<KEY>:<VAL>` headers of the'
-            ' HTTP request.'
-        ),
-        action='store_true',
-        required=False,
-    )
+    current_group = mutual_exclusive_group
+  definition_group = current_group.add_group(
+      mutex=False,
+      help='NoWrapper Config Options.',
+      required=False,
+  )
+  definition_group.add_argument(
+      '--push-no-wrapper',
+      help='When set, the message data is delivered directly as the HTTP body.',
+      action='store_true',
+      required=True,
+  )
+  definition_group.add_argument(
+      '--push-no-wrapper-write-metadata',
+      help=(
+          'When true, writes the Pub/Sub message metadata to'
+          ' `x-goog-pubsub-<KEY>:<VAL>` headers of the HTTP request. Writes'
+          ' the Pub/Sub message attributes to `<KEY>:<VAL>` headers of the'
+          ' HTTP request.'
+      ),
+      action='store_true',
+      required=False,
+  )
 
 
 def AddAckDeadlineFlag(parser, required=False):
@@ -429,19 +425,18 @@ def ParseExpirationPeriodWithNeverSentinel(value):
 
 
 def AddSubscriptionSettingsFlags(
-    parser, is_update=False, enable_no_wrapper_support=False,):
+    parser, is_update=False
+):
   """Adds the flags for creating or updating a subscription.
 
   Args:
     parser: The argparse parser.
     is_update: Whether or not this is for the update operation (vs. create).
-    enable_no_wrapper_support: whether or not to add no wrapper flag support.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(
       parser,
       is_update=is_update,
-      enable_no_wrapper_support=enable_no_wrapper_support,
   )
 
   mutex_group = parser.add_mutually_exclusive_group()

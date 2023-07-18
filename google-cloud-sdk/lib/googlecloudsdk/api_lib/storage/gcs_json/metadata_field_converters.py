@@ -199,29 +199,19 @@ def process_log_config(target_bucket, log_bucket, log_object_prefix):
   Returns:
     messages.Bucket.LoggingValue: Apitools log settings object.
   """
-  if (log_bucket == user_request_args_factory.CLEAR and
-      log_object_prefix == user_request_args_factory.CLEAR):
+  if log_bucket in ('', None, user_request_args_factory.CLEAR):
     return None
 
   messages = apis.GetMessagesModule('storage', 'v1')
   logging_value = messages.Bucket.LoggingValue()
-
-  if log_bucket in (None, user_request_args_factory.CLEAR):
-    schemeless_bucket = None
-  else:
-    schemeless_bucket = storage_url.remove_scheme(log_bucket)
-
-  logging_value.logBucket = schemeless_bucket
+  logging_value.logBucket = storage_url.remove_scheme(log_bucket)
 
   if log_object_prefix == user_request_args_factory.CLEAR:
-    schemeless_prefix = None
-  elif log_object_prefix is not None:
-    schemeless_prefix = storage_url.remove_scheme(log_object_prefix)
+    logging_value.logObjectPrefix = None
   else:
-    # Use bucket user is setting logging on as object path prefix.
-    schemeless_prefix = storage_url.remove_scheme(target_bucket)
-
-  logging_value.logObjectPrefix = schemeless_prefix
+    logging_value.logObjectPrefix = storage_url.remove_scheme(
+        log_object_prefix or target_bucket
+    )
   return logging_value
 
 

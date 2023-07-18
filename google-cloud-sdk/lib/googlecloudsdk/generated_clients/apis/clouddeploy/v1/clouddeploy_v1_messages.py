@@ -2580,12 +2580,16 @@ class GatewayServiceMesh(_messages.Message):
     deployment: Required. Name of the Kubernetes Deployment whose traffic is
       managed by the specified HTTPRoute and Service.
     httpRoute: Required. Name of the Gateway API HTTPRoute.
+    routeUpdateWaitTime: Optional. The time to wait for route updates to
+      propagate. The maximum configurable time is 3 hours, in seconds format.
+      If unspecified, there is no wait time.
     service: Required. Name of the Kubernetes Service.
   """
 
   deployment = _messages.StringField(1)
   httpRoute = _messages.StringField(2)
-  service = _messages.StringField(3)
+  routeUpdateWaitTime = _messages.StringField(3)
+  service = _messages.StringField(4)
 
 
 class GkeCluster(_messages.Message):

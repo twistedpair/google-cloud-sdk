@@ -41,3 +41,27 @@ deployment:
     parameter_name: deploymentsId
     attribute_name: deployment
     help: TDF Deployment.
+
+fabric:
+  name: fabric
+  collection: telecomdatafabric.projects.locations.fabrics
+  request_id_field: fabricId
+  attributes:
+  - *project
+  - *location
+  - &fabric
+    parameter_name: fabricsId
+    attribute_name: fabric
+    help: TDF Fabric.
+
+template:
+  name: template
+  collection: telecomdatafabric.projects.locations.templates
+  request_id_field: templateId
+  attributes:
+  - *project
+  - *location
+  - &template
+    parameter_name: templatesId
+    attribute_name: template
+    help: TDF Template.

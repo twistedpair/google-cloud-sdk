@@ -289,6 +289,8 @@ definitions:
       required: {type: boolean}
       # Whether or not the resource arg is plural and should be generated as a list.
       repeated: {type: boolean}
+      # Whether to add clearable update arguments
+      clearable: {type: boolean}
 
   arg:
     required: [help_text]

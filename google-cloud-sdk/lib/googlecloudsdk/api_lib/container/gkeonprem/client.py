@@ -317,3 +317,13 @@ class ClientBase(object):
     if node_pool_ref:
       return node_pool_ref.Parent().RelativeName()
     return None
+
+  def _binary_authorization(self, args: parser_extensions.Namespace):
+    """Parses binary authorization from args and returns its value."""
+    evaluation_mode = self.GetFlag(args, 'binauthz_evaluation_mode')
+    if evaluation_mode is None:
+      return None
+    mode = messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
+        evaluation_mode
+    )
+    return messages.BinaryAuthorization(evaluationMode=mode)

@@ -146,6 +146,8 @@ class GoogleIamV1betaWorkloadIdentityPool(_messages.Message):
       exchange tokens, or use existing tokens to access resources. If the pool
       is re-enabled, existing tokens grant access again.
     displayName: A display name for the pool. Cannot exceed 32 characters.
+    expireTime: Output only. Time after which the workload identity pool will
+      be permanently purged and cannot be recovered.
     name: Output only. The resource name of the pool.
     state: Output only. The state of the pool.
   """
@@ -171,8 +173,9 @@ class GoogleIamV1betaWorkloadIdentityPool(_messages.Message):
   description = _messages.StringField(1)
   disabled = _messages.BooleanField(2)
   displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  expireTime = _messages.StringField(4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class GoogleIamV1betaWorkloadIdentityPoolOperationMetadata(_messages.Message):
@@ -290,6 +293,8 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
       provider to exchange tokens. However, existing tokens still grant
       access.
     displayName: A display name for the provider. Cannot exceed 32 characters.
+    expireTime: Output only. Time after which the workload identity pool
+      provider will be permanently purged and cannot be recovered.
     name: Output only. The resource name of the provider.
     oidc: An OpenId Connect 1.0 identity provider.
     state: Output only. The state of the provider.
@@ -384,9 +389,10 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
   description = _messages.StringField(4)
   disabled = _messages.BooleanField(5)
   displayName = _messages.StringField(6)
-  name = _messages.StringField(7)
-  oidc = _messages.MessageField('GoogleIamV1betaWorkloadIdentityPoolProviderOidc', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
+  expireTime = _messages.StringField(7)
+  name = _messages.StringField(8)
+  oidc = _messages.MessageField('GoogleIamV1betaWorkloadIdentityPoolProviderOidc', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class GoogleIamV1betaWorkloadIdentityPoolProviderAws(_messages.Message):

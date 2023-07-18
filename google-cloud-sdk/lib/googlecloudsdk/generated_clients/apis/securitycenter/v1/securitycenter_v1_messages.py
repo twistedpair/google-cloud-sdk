@@ -53,6 +53,7 @@ class Access(_messages.Message):
       counts/{ACCOUNT}/keys/{key}".
     serviceName: This is the API service that the service account made a call
       to, e.g. "iam.googleapis.com"
+    userAgent: The caller's user agent string associated with the finding.
     userAgentFamily: Type of user agent associated with the finding. For
       example, an operating system shell or an embedded or standalone
       application.
@@ -70,8 +71,9 @@ class Access(_messages.Message):
   serviceAccountDelegationInfo = _messages.MessageField('ServiceAccountDelegationInfo', 6, repeated=True)
   serviceAccountKeyName = _messages.StringField(7)
   serviceName = _messages.StringField(8)
-  userAgentFamily = _messages.StringField(9)
-  userName = _messages.StringField(10)
+  userAgent = _messages.StringField(9)
+  userAgentFamily = _messages.StringField(10)
+  userName = _messages.StringField(11)
 
 
 class AccessReview(_messages.Message):
@@ -788,22 +790,25 @@ class Database(_messages.Message):
   name](https://google.aip.dev/122#full-resource-names) populated because
   these resource types, such as Cloud SQL databases, are not yet supported by
   Cloud Asset Inventory. In these cases only the display name is provided.
-  Some database resources may not have the [full resource
-  name](https://google.aip.dev/122#full-resource-names) populated because
-  these resource types are not yet supported by Cloud Asset Inventory (e.g.
-  Cloud SQL databases). In these cases only the display name will be provided.
 
   Fields:
     displayName: The human-readable name of the database that the user
       connected to.
     grantees: The target usernames, roles, or groups of an SQL privilege
       grant, which is not an IAM policy change.
-    name: The [full resource name](https://google.aip.dev/122#full-resource-
-      names) of the database that the user connected to, if it is supported by
-      Cloud Asset Inventory.
+    name: Some database resources may not have the [full resource
+      name](https://google.aip.dev/122#full-resource-names) populated because
+      these resource types are not yet supported by Cloud Asset Inventory
+      (e.g. Cloud SQL databases). In these cases only the display name will be
+      provided. The [full resource name](https://google.aip.dev/122#full-
+      resource-names) of the database that the user connected to, if it is
+      supported by Cloud Asset Inventory.
     query: The SQL statement that is associated with the database access.
     userName: The username used to connect to the database. The username might
       not be an IAM principal and does not have a set format.
+    version: The version of the database, for example, POSTGRES_14. See [the
+      complete list](https://cloud.google.com/sql/docs/mysql/admin-
+      api/rest/v1/SqlDatabaseVersion).
   """
 
   displayName = _messages.StringField(1)
@@ -811,6 +816,7 @@ class Database(_messages.Message):
   name = _messages.StringField(3)
   query = _messages.StringField(4)
   userName = _messages.StringField(5)
+  version = _messages.StringField(6)
 
 
 class Detection(_messages.Message):
@@ -3367,7 +3373,7 @@ class OrganizationSettings(_messages.Message):
     assetDiscoveryConfig: The configuration used for Asset Discovery runs.
     enableAssetDiscovery: A flag that indicates if Asset Discovery should be
       enabled. If the flag is set to `true`, then discovery of assets will
-      occur. If it is set to `false, all historical assets will remain, but
+      occur. If it is set to `false`, all historical assets will remain, but
       discovery of future assets will not occur.
     name: The relative resource name of the settings. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
@@ -4437,6 +4443,23 @@ class SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesPatchRequ
   googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule = _messages.MessageField('GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesSimulateRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesSimul
+  ateRequest object.
+
+  Fields:
+    parent: Required. The relative resource name of the organization, project,
+      or folder. See: https://cloud.google.com/apis/design/resource_names#rela
+      tive_resource_name An example is: "organizations/{organization_id}".
+    simulateSecurityHealthAnalyticsCustomModuleRequest: A
+      SimulateSecurityHealthAnalyticsCustomModuleRequest resource to be passed
+      as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  simulateSecurityHealthAnalyticsCustomModuleRequest = _messages.MessageField('SimulateSecurityHealthAnalyticsCustomModuleRequest', 2)
 
 
 class SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesTestRequest(_messages.Message):
@@ -5512,6 +5535,23 @@ class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesPat
   googleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule = _messages.MessageField('GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesSimulateRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModule
+  sSimulateRequest object.
+
+  Fields:
+    parent: Required. The relative resource name of the organization, project,
+      or folder. See: https://cloud.google.com/apis/design/resource_names#rela
+      tive_resource_name An example is: "organizations/{organization_id}".
+    simulateSecurityHealthAnalyticsCustomModuleRequest: A
+      SimulateSecurityHealthAnalyticsCustomModuleRequest resource to be passed
+      as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  simulateSecurityHealthAnalyticsCustomModuleRequest = _messages.MessageField('SimulateSecurityHealthAnalyticsCustomModuleRequest', 2)
 
 
 class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesTestRequest(_messages.Message):
@@ -6648,6 +6688,23 @@ class SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesPatchReq
   updateMask = _messages.StringField(3)
 
 
+class SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesSimulateRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesSimu
+  lateRequest object.
+
+  Fields:
+    parent: Required. The relative resource name of the organization, project,
+      or folder. See: https://cloud.google.com/apis/design/resource_names#rela
+      tive_resource_name An example is: "organizations/{organization_id}".
+    simulateSecurityHealthAnalyticsCustomModuleRequest: A
+      SimulateSecurityHealthAnalyticsCustomModuleRequest resource to be passed
+      as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  simulateSecurityHealthAnalyticsCustomModuleRequest = _messages.MessageField('SimulateSecurityHealthAnalyticsCustomModuleRequest', 2)
+
+
 class SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesTestRequest(_messages.Message):
   r"""A SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesTest
   Request object.
@@ -7027,6 +7084,93 @@ class SetMuteRequest(_messages.Message):
     UNDEFINED = 3
 
   mute = _messages.EnumField('MuteValueValuesEnum', 1)
+
+
+class SimulateSecurityHealthAnalyticsCustomModuleRequest(_messages.Message):
+  r"""Request message to simulate a CustomConfig against a given test
+  resource. Maximum size of the request is 4 MB by default.
+
+  Fields:
+    customConfig: Required. The user specified custom configuration to test.
+    resource: Required. Resource data to simulate custom module against.
+  """
+
+  customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 1)
+  resource = _messages.MessageField('SimulatedResource', 2)
+
+
+class SimulateSecurityHealthAnalyticsCustomModuleResponse(_messages.Message):
+  r"""Response message for simulating a SecurityHealthAnalyticsCustomModule
+  against a given resource.
+
+  Fields:
+    result: Result for test case in the corresponding request.
+  """
+
+  result = _messages.MessageField('SimulatedResult', 1)
+
+
+class SimulatedResource(_messages.Message):
+  r"""Manually constructed resource. If the custom module only evaluates
+  against the resource data, the iam_policy_data field can be omitted, and
+  vice versa.
+
+  Messages:
+    ResourceDataValue: Optional. A representation of the GCP resource. Should
+      match the GCP resource JSON format.
+
+  Fields:
+    iamPolicyData: Optional. A representation of the IAM policy.
+    resourceData: Optional. A representation of the GCP resource. Should match
+      the GCP resource JSON format.
+    resourceType: Required. The type of the resource, e.g.
+      `compute.googleapis.com/Disk`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceDataValue(_messages.Message):
+    r"""Optional. A representation of the GCP resource. Should match the GCP
+    resource JSON format.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceDataValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceDataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  iamPolicyData = _messages.MessageField('Policy', 1)
+  resourceData = _messages.MessageField('ResourceDataValue', 2)
+  resourceType = _messages.StringField(3)
+
+
+class SimulatedResult(_messages.Message):
+  r"""Possible test result.
+
+  Fields:
+    error: Error encountered during the test.
+    finding: Finding that would be published for the test case, if a violation
+      is detected.
+    noViolation: Indicates that the test case does not trigger any violation.
+  """
+
+  error = _messages.MessageField('Status', 1)
+  finding = _messages.MessageField('Finding', 2)
+  noViolation = _messages.MessageField('Empty', 3)
 
 
 class Source(_messages.Message):

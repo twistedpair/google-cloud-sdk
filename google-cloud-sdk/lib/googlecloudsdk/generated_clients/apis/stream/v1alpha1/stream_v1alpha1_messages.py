@@ -1515,9 +1515,7 @@ class Reference(_messages.Message):
   Fields:
     createTime: Output only. The creation time.
     details: Details of the reference type with no implied semantics.
-      Cumulative size of the field must not be more than 1KiB. Note: For the
-      Arcus Reference API, you must add the proto you store in this field to
-      http://cs/symbol:cloud.cluster.reference.ReferencePayload
+      Cumulative size of the field must not be more than 1KiB.
     name: Output only. Relative resource name of the reference. Includes
       target resource as a parent and reference uid
       `{target_resource}/references/{reference_id}`. For example,
@@ -1752,7 +1750,7 @@ class StreamContent(_messages.Message):
 
 
 class StreamInstance(_messages.Message):
-  r"""Message describing StreamInstance object Next ID: 14
+  r"""Message describing StreamInstance object Next ID: 16
 
   Messages:
     LabelsValue: Labels as key value pairs
@@ -1770,11 +1768,15 @@ class StreamInstance(_messages.Message):
     contentBuildVersion: The user-specified version tag and build ID of the
       content served.
     createTime: Output only. [Output only] Create time stamp
+    gpuClass: Immutable. The GPU class this instance uses. Default value is
+      "general_purpose".
     labels: Labels as key value pairs
     lifecycleState: Output only. Current status of the instance.
     locationConfigs: Deployment configuration of the instance by locations
       (only regions are supported now). Map keys are regions in the string
       form.
+    mode: Immutable. The XR mode this instance supports. Default value is "ar"
+      which supports both 3D and AR experiences.
     name: name of resource
     realmConfigs: Deployment configuration of the instance in realms. Note
       that this is not defined as a map for enum types (Realm) cannot be used
@@ -1840,13 +1842,15 @@ class StreamInstance(_messages.Message):
   content = _messages.StringField(4)
   contentBuildVersion = _messages.MessageField('BuildVersion', 5)
   createTime = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  lifecycleState = _messages.MessageField('LifecycleState', 8)
-  locationConfigs = _messages.MessageField('LocationConfigsValue', 9)
-  name = _messages.StringField(10)
-  realmConfigs = _messages.MessageField('RealmConfig', 11, repeated=True)
-  streamConfig = _messages.MessageField('StreamConfig', 12)
-  updateTime = _messages.StringField(13)
+  gpuClass = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  lifecycleState = _messages.MessageField('LifecycleState', 9)
+  locationConfigs = _messages.MessageField('LocationConfigsValue', 10)
+  mode = _messages.StringField(11)
+  name = _messages.StringField(12)
+  realmConfigs = _messages.MessageField('RealmConfig', 13, repeated=True)
+  streamConfig = _messages.MessageField('StreamConfig', 14)
+  updateTime = _messages.StringField(15)
 
 
 class StreamProjectsLocationsGetRequest(_messages.Message):

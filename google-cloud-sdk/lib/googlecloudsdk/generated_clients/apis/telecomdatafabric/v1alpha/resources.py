@@ -52,6 +52,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_FABRICS = (
+      'projects.locations.fabrics',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/fabrics/'
+              '{fabricsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -70,6 +81,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/publicTemplates/'
               '{publicTemplatesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_TEMPLATES = (
+      'projects.locations.templates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/templates/'
+              '{templatesId}',
       },
       ['name'],
       True

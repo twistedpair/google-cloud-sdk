@@ -801,6 +801,8 @@ class Instance(_messages.Message):
       type](https://cloud.google.com/compute/docs/machine-types) of this
       instance.
     metadata: Custom metadata to apply to this instance.
+    migrated: Output only. Bool indicating whether this notebook has been
+      migrated to a Workbench Instance
     name: Output only. The name of this notebook instance. Format:
       `projects/{project_id}/locations/{location}/instances/{instance_id}`
     network: The name of the VPC that this instance is in. Format:
@@ -815,6 +817,8 @@ class Instance(_messages.Message):
     postStartupScript: Path to a Bash script that automatically runs after a
       notebook instance fully boots up. The path must be a URL or Cloud
       Storage path (`gs://path-to-file/file-name`).
+    preMigrationCheck: Output only. Check how possible a migration from UmN to
+      WbI is.
     proxyUri: Output only. The proxy endpoint that is used to access the
       Jupyter notebook.
     reservationAffinity: Optional. The optional reservation affinity. Setting
@@ -1007,24 +1011,26 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 16)
   machineType = _messages.StringField(17)
   metadata = _messages.MessageField('MetadataValue', 18)
-  name = _messages.StringField(19)
-  network = _messages.StringField(20)
-  nicType = _messages.EnumField('NicTypeValueValuesEnum', 21)
-  noProxyAccess = _messages.BooleanField(22)
-  noPublicIp = _messages.BooleanField(23)
-  noRemoveDataDisk = _messages.BooleanField(24)
-  postStartupScript = _messages.StringField(25)
-  proxyUri = _messages.StringField(26)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 27)
-  serviceAccount = _messages.StringField(28)
-  serviceAccountScopes = _messages.StringField(29, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 30)
-  state = _messages.EnumField('StateValueValuesEnum', 31)
-  subnet = _messages.StringField(32)
-  tags = _messages.StringField(33, repeated=True)
-  updateTime = _messages.StringField(34)
-  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 35, repeated=True)
-  vmImage = _messages.MessageField('VmImage', 36)
+  migrated = _messages.BooleanField(19)
+  name = _messages.StringField(20)
+  network = _messages.StringField(21)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 22)
+  noProxyAccess = _messages.BooleanField(23)
+  noPublicIp = _messages.BooleanField(24)
+  noRemoveDataDisk = _messages.BooleanField(25)
+  postStartupScript = _messages.StringField(26)
+  preMigrationCheck = _messages.MessageField('PreMigrationCheck', 27)
+  proxyUri = _messages.StringField(28)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 29)
+  serviceAccount = _messages.StringField(30)
+  serviceAccountScopes = _messages.StringField(31, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 32)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  subnet = _messages.StringField(34)
+  tags = _messages.StringField(35, repeated=True)
+  updateTime = _messages.StringField(36)
+  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 37, repeated=True)
+  vmImage = _messages.MessageField('VmImage', 38)
 
 
 class InstanceConfig(_messages.Message):
@@ -2512,6 +2518,37 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class PreMigrationCheck(_messages.Message):
+  r"""PreMigrationCheck checks how feasible a migration from UmN is.
+
+  Enums:
+    ResultValueValuesEnum: Result returns the result of the check.
+
+  Fields:
+    message: Message provides a summary or workaround.
+    result: Result returns the result of the check.
+  """
+
+  class ResultValueValuesEnum(_messages.Enum):
+    r"""Result returns the result of the check.
+
+    Values:
+      RESULT_UNSPECIFIED: Default type.
+      IDENTICAL: UmN can be migrated to WbI as is minus non-relevant parts.
+      PARTIAL: Part of the UmN won't be ported. The migration might default
+        some values.
+      NOT_RECOMMENDED: UmN has too many unsupported options for a migration to
+        WbI.
+    """
+    RESULT_UNSPECIFIED = 0
+    IDENTICAL = 1
+    PARTIAL = 2
+    NOT_RECOMMENDED = 3
+
+  message = _messages.StringField(1)
+  result = _messages.EnumField('ResultValueValuesEnum', 2)
+
+
 class RefreshRuntimeTokenInternalRequest(_messages.Message):
   r"""Request for getting a new access token.
 
@@ -2708,6 +2745,8 @@ class Runtime(_messages.Message):
       be associated with a cluster.
     metrics: Output only. Contains Runtime daemon metrics such as Service
       status and JupyterLab stats.
+    migrated: Output only. Bool indicating whether this notebook has been
+      migrated to a Workbench Instance
     name: Output only. The resource name of the runtime. Format:
       `projects/{project}/locations/{location}/runtimes/{runtimeId}`
     softwareConfig: The config settings for software inside the runtime.
@@ -2798,16 +2837,16 @@ class Runtime(_messages.Message):
   healthState = _messages.EnumField('HealthStateValueValuesEnum', 3)
   labels = _messages.MessageField('LabelsValue', 4)
   metrics = _messages.MessageField('RuntimeMetrics', 5)
-  name = _messages.StringField(6)
-  softwareConfig = _messages.MessageField('RuntimeSoftwareConfig', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
-  virtualMachine = _messages.MessageField('VirtualMachine', 10)
+  migrated = _messages.BooleanField(6)
+  name = _messages.StringField(7)
+  softwareConfig = _messages.MessageField('RuntimeSoftwareConfig', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
+  virtualMachine = _messages.MessageField('VirtualMachine', 11)
 
 
 class RuntimeAcceleratorConfig(_messages.Message):
-  r"""Definition of the types of hardware accelerators that can be used.
-  Definition of the types of hardware accelerators that can be used. See
+  r"""Definition of the types of hardware accelerators that can be used. See
   [Compute Engine AcceleratorTypes](https://cloud.google.com/compute/docs/refe
   rence/beta/acceleratorTypes). Examples: * `nvidia-tesla-k80` * `nvidia-
   tesla-p100` * `nvidia-tesla-v100` * `nvidia-tesla-p4` * `nvidia-tesla-t4` *
@@ -2832,6 +2871,7 @@ class RuntimeAcceleratorConfig(_messages.Message):
       NVIDIA_TESLA_P4: Accelerator type is Nvidia Tesla P4.
       NVIDIA_TESLA_T4: Accelerator type is Nvidia Tesla T4.
       NVIDIA_TESLA_A100: Accelerator type is Nvidia Tesla A100 - 40GB.
+      NVIDIA_L4: Accelerator type is Nvidia L4.
       TPU_V2: (Coming soon) Accelerator type is TPU V2.
       TPU_V3: (Coming soon) Accelerator type is TPU V3.
       NVIDIA_TESLA_T4_VWS: Accelerator type is NVIDIA Tesla T4 Virtual
@@ -2848,11 +2888,12 @@ class RuntimeAcceleratorConfig(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
-    TPU_V2 = 7
-    TPU_V3 = 8
-    NVIDIA_TESLA_T4_VWS = 9
-    NVIDIA_TESLA_P100_VWS = 10
-    NVIDIA_TESLA_P4_VWS = 11
+    NVIDIA_L4 = 7
+    TPU_V2 = 8
+    TPU_V3 = 9
+    NVIDIA_TESLA_T4_VWS = 10
+    NVIDIA_TESLA_P100_VWS = 11
+    NVIDIA_TESLA_P4_VWS = 12
 
   coreCount = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

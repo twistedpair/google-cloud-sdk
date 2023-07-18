@@ -40,8 +40,10 @@ class TelecomdatafabricV1alpha(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_deployments = self.ProjectsLocationsDeploymentsService(self)
+    self.projects_locations_fabrics = self.ProjectsLocationsFabricsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_publicTemplates = self.ProjectsLocationsPublicTemplatesService(self)
+    self.projects_locations_templates = self.ProjectsLocationsTemplatesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -214,6 +216,151 @@ class TelecomdatafabricV1alpha(base_api.BaseApiClient):
         request_field='createDeploymentRequest',
         request_type_name='TelecomdatafabricProjectsLocationsDeploymentsPreviewRequest',
         response_type_name='DeploymentView',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsFabricsService(base_api.BaseApiService):
+    """Service class for the projects_locations_fabrics resource."""
+
+    _NAME = 'projects_locations_fabrics'
+
+    def __init__(self, client):
+      super(TelecomdatafabricV1alpha.ProjectsLocationsFabricsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Fabric in a given project and location.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsFabricsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/fabrics',
+        http_method='POST',
+        method_id='telecomdatafabric.projects.locations.fabrics.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['fabricId', 'requestId'],
+        relative_path='v1alpha/{+parent}/fabrics',
+        request_field='fabric',
+        request_type_name='TelecomdatafabricProjectsLocationsFabricsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Fabric.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsFabricsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/fabrics/{fabricsId}',
+        http_method='DELETE',
+        method_id='telecomdatafabric.projects.locations.fabrics.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='TelecomdatafabricProjectsLocationsFabricsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Fabric.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsFabricsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Fabric) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/fabrics/{fabricsId}',
+        http_method='GET',
+        method_id='telecomdatafabric.projects.locations.fabrics.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='TelecomdatafabricProjectsLocationsFabricsGetRequest',
+        response_type_name='Fabric',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Fabrics in a given project and location.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsFabricsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFabricsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/fabrics',
+        http_method='GET',
+        method_id='telecomdatafabric.projects.locations.fabrics.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/fabrics',
+        request_field='',
+        request_type_name='TelecomdatafabricProjectsLocationsFabricsListRequest',
+        response_type_name='ListFabricsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single Fabric.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsFabricsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/fabrics/{fabricsId}',
+        http_method='PATCH',
+        method_id='telecomdatafabric.projects.locations.fabrics.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='fabric',
+        request_type_name='TelecomdatafabricProjectsLocationsFabricsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -396,6 +543,70 @@ class TelecomdatafabricV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='TelecomdatafabricProjectsLocationsPublicTemplatesListRequest',
         response_type_name='ListPublicTemplatesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsTemplatesService(base_api.BaseApiService):
+    """Service class for the projects_locations_templates resource."""
+
+    _NAME = 'projects_locations_templates'
+
+    def __init__(self, client):
+      super(TelecomdatafabricV1alpha.ProjectsLocationsTemplatesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Template.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsTemplatesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Template) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/templates/{templatesId}',
+        http_method='GET',
+        method_id='telecomdatafabric.projects.locations.templates.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='TelecomdatafabricProjectsLocationsTemplatesGetRequest',
+        response_type_name='Template',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Templates in a given project and location.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsTemplatesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTemplatesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/templates',
+        http_method='GET',
+        method_id='telecomdatafabric.projects.locations.templates.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/templates',
+        request_field='',
+        request_type_name='TelecomdatafabricProjectsLocationsTemplatesListRequest',
+        response_type_name='ListTemplatesResponse',
         supports_download=False,
     )
 

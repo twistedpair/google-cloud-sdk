@@ -934,7 +934,7 @@ specified CPU architecture or a newer one.
 def AddBinauthzFlags(
     parser, release_track=base.ReleaseTrack.GA, hidden=False, autopilot=False
 ):
-  """Adds the --enable-binauthz  and --binauthz-evaluation-mode flags to parser."""
+  """Adds Binary Authorization related flags to parser."""
   messages = apis.GetMessagesModule(
       'container', api_adapter.APIVersionFromReleaseTrack(release_track)
   )
@@ -984,9 +984,15 @@ def AddBinauthzFlags(
         '`projects/{project_number}/platforms/gke/policies/{policy_id}`',
     )
     binauthz_group.add_argument(
-        '--binauthz-policy',
+        '--binauthz-policy-bindings',
+        type=arg_parsers.ArgDict(
+            spec={
+                'name': platform_policy_type,
+            },
+            required_keys=['name'],
+        ),
+        metavar='name=BINAUTHZ_POLICY',
         default=None,
-        type=platform_policy_type,
         help=textwrap.dedent("""\
           The relative resource name of the Binary Authorization policy to audit
           and/or enforce. GKE policies have the following format:
@@ -4772,40 +4778,43 @@ network security, scalability and visibility features.
   )
 
 
-def AddDataplaneV2MetricsFlag(parser, hidden=True):
+def AddDataplaneV2MetricsFlag(parser):
   """Adds --enable-dataplane-v2-metrics and --disable-dataplane-v2-metrics boolean flags to parser."""
 
-  group = parser.add_group(mutex=True, hidden=hidden)
+  group = parser.add_group(mutex=True)
   group.add_argument(
       '--enable-dataplane-v2-metrics',
       action='store_const',
       const=True,
       help="""Exposes advanced datapath flow metrics on node port.""",
-      hidden=hidden,
   )
   group.add_argument(
       '--disable-dataplane-v2-metrics',
       action='store_const',
       const=True,
       help="""Stops exposing advanced datapath flow metrics on node port.""",
-      hidden=hidden,
   )
 
 
-def AddDataplaneV2ObservabilityModeFlag(parser, hidden=True):
+def AddDataplaneV2ObservabilityModeFlag(parser):
   """Adds --dataplane-v2-observability-mode enum flag."""
   help_text = """
-Select Advanced Datapath Observability mode for the cluster. Defaults to `disabled`.
+Select Advanced Datapath Observability mode for the cluster. Defaults to `DISABLED`.
 
-$ {command} --dataplane-v2-observability-mode=DISABLED
-$ {command} --dataplane-v2-observability-mode=INTERNAL_VPC_LB
-$ {command} --dataplane-v2-observability-mode=EXTERNAL_LB
+Advanced Datapath Observability allows for a real-time view into pod-to-pod traffic within your cluster.
+
+Examples:
+
+  $ {command} --dataplane-v2-observability-mode=DISABLED
+
+  $ {command} --dataplane-v2-observability-mode=INTERNAL_VPC_LB
+
+  $ {command} --dataplane-v2-observability-mode=EXTERNAL_LB
 """
   parser.add_argument(
       '--dataplane-v2-observability-mode',
       choices=_DPV2_OBS_MODE,
       help=help_text,
-      hidden=hidden,
   )
 
 

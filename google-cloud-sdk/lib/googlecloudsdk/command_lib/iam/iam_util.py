@@ -1110,8 +1110,10 @@ def GetDetailedHelpForRemoveIamPolicyBinding(collection,
     a dict with boilerplate help text for the remove-iam-policy-binding command
   """
   a = 'an' if use_an else 'a'
-  note = ('See https://cloud.google.com/iam/docs/managing-policies for details'
-          ' of policy role and principal types.')
+  note = (
+      'See https://cloud.google.com/iam/docs/managing-policies for details'
+      ' of policy role and member types.'
+  )
   detailed_help = {
       'brief':
           'Remove IAM policy binding for {0} {1}.'.format(a, collection),

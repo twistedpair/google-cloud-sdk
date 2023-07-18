@@ -91,27 +91,55 @@ class ApplyConversionWorkspaceRequest(_messages.Message):
   r"""Request message for 'ApplyConversionWorkspace' request.
 
   Fields:
-    connectionProfile: Fully qualified (Uri) name of the destination
+    autoCommit: Optional. Specifies whether the conversion workspace is to be
+      committed automatically after the apply.
+    connectionProfile: Optional. Fully qualified (Uri) name of the destination
       connection profile.
+    dryRun: Optional. Only validates the apply process, but doesn't change the
+      destination database. Only works for PostgreSQL destination connection
+      profile.
     filter: Filter which entities to apply. Leaving this field empty will
       apply all of the entities. Supports Google AIP 160 based filtering.
   """
 
-  connectionProfile = _messages.StringField(1)
-  filter = _messages.StringField(2)
+  autoCommit = _messages.BooleanField(1)
+  connectionProfile = _messages.StringField(2)
+  dryRun = _messages.BooleanField(3)
+  filter = _messages.StringField(4)
+
+
+class ApplyHash(_messages.Message):
+  r"""Apply a hash function on the value.
+
+  Fields:
+    uuidFromBytes: Optional. Generate UUID from the data's byte array
+  """
+
+  uuidFromBytes = _messages.MessageField('Empty', 1)
 
 
 class ApplyJobDetails(_messages.Message):
   r"""Details regarding an Apply background job.
 
   Fields:
-    connectionProfile: The connection profile which was used for the apply
-      job.
-    filter: AIP-160 based filter used to specify the entities to apply
+    connectionProfile: Output only. The connection profile which was used for
+      the apply job.
+    filter: Output only. AIP-160 based filter used to specify the entities to
+      apply
   """
 
   connectionProfile = _messages.StringField(1)
   filter = _messages.StringField(2)
+
+
+class AssignSpecificValue(_messages.Message):
+  r"""Set to a specific value (value is converted to fit the target data type)
+
+  Fields:
+    value: Required. Specific value to be assigned
+  """
+
+  value = _messages.StringField(1)
 
 
 class AuditConfig(_messages.Message):
@@ -181,30 +209,32 @@ class BackgroundJobLogEntry(_messages.Message):
   r"""Execution log of a background job.
 
   Enums:
-    CompletionStateValueValuesEnum: Job completion state, i.e. the final state
-      after the job completed.
+    CompletionStateValueValuesEnum: Output only. Job completion state, i.e.
+      the final state after the job completed.
     JobTypeValueValuesEnum: The type of job that was executed.
 
   Fields:
-    applyJobDetails: Apply job details.
-    completionComment: Job completion comment, such as how many entities were
-      seeded, how many warnings were found during conversion, and similar
-      information.
-    completionState: Job completion state, i.e. the final state after the job
-      completed.
-    convertJobDetails: Convert job details.
+    applyJobDetails: Output only. Apply job details.
+    completionComment: Output only. Job completion comment, such as how many
+      entities were seeded, how many warnings were found during conversion,
+      and similar information.
+    completionState: Output only. Job completion state, i.e. the final state
+      after the job completed.
+    convertJobDetails: Output only. Convert job details.
     finishTime: The timestamp when the background job was finished.
     id: The background job log entry ID.
-    importRulesJobDetails: Import rules job details.
+    importRulesJobDetails: Output only. Import rules job details.
     jobType: The type of job that was executed.
-    requestAutocommit: Whether the client requested the conversion workspace
-      to be committed after a successful completion of the job.
-    seedJobDetails: Seed job details.
+    requestAutocommit: Output only. Whether the client requested the
+      conversion workspace to be committed after a successful completion of
+      the job.
+    seedJobDetails: Output only. Seed job details.
     startTime: The timestamp when the background job was started.
   """
 
   class CompletionStateValueValuesEnum(_messages.Enum):
-    r"""Job completion state, i.e. the final state after the job completed.
+    r"""Output only. Job completion state, i.e. the final state after the job
+    completed.
 
     Values:
       JOB_COMPLETION_STATE_UNSPECIFIED: The status is not specified. This
@@ -659,6 +689,57 @@ class CommitConversionWorkspaceRequest(_messages.Message):
   commitName = _messages.StringField(1)
 
 
+class ConditionalColumnSetValue(_messages.Message):
+  r"""Options to configure rule type ConditionalColumnSetValue. The rule is
+  used to transform the data which is being replicated/migrated. The rule
+  filter field can refer to one or more entities. The rule scope can be one
+  of: Column.
+
+  Messages:
+    CustomFeaturesValue: Optional. Custom engine specific features.
+
+  Fields:
+    customFeatures: Optional. Custom engine specific features.
+    sourceNumericFilter: Optional. Optional filter on source column precision
+      and scale. Used for fixed point numbers such as NUMERIC/NUMBER data
+      types.
+    sourceTextFilter: Optional. Optional filter on source column length. Used
+      for text based data types like varchar.
+    valueTransformation: Required. Description of data transformation during
+      migration.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CustomFeaturesValue(_messages.Message):
+    r"""Optional. Custom engine specific features.
+
+    Messages:
+      AdditionalProperty: An additional property for a CustomFeaturesValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CustomFeaturesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  customFeatures = _messages.MessageField('CustomFeaturesValue', 1)
+  sourceNumericFilter = _messages.MessageField('SourceNumericFilter', 2)
+  sourceTextFilter = _messages.MessageField('SourceTextFilter', 3)
+  valueTransformation = _messages.MessageField('ValueTransformation', 4)
+
+
 class ConnectionProfile(_messages.Message):
   r"""A connection profile definition.
 
@@ -848,22 +929,22 @@ class ConversionWorkspace(_messages.Message):
   r"""The main conversion workspace resource entity.
 
   Messages:
-    GlobalSettingsValue: A generic list of settings for the workspace. The
-      settings are database pair dependant and can indicate default behavior
-      for the mapping rules engine or turn on or off specific features. Such
-      examples can be: convert_foreign_key_to_interleave=true,
+    GlobalSettingsValue: Optional. A generic list of settings for the
+      workspace. The settings are database pair dependant and can indicate
+      default behavior for the mapping rules engine or turn on or off specific
+      features. Such examples can be: convert_foreign_key_to_interleave=true,
       skip_triggers=false, ignore_non_table_synonyms=true
 
   Fields:
     createTime: Output only. The timestamp when the workspace resource was
       created.
     destination: Required. The destination engine details.
-    displayName: The display name for the workspace.
-    globalSettings: A generic list of settings for the workspace. The settings
-      are database pair dependant and can indicate default behavior for the
-      mapping rules engine or turn on or off specific features. Such examples
-      can be: convert_foreign_key_to_interleave=true, skip_triggers=false,
-      ignore_non_table_synonyms=true
+    displayName: Optional. The display name for the workspace.
+    globalSettings: Optional. A generic list of settings for the workspace.
+      The settings are database pair dependant and can indicate default
+      behavior for the mapping rules engine or turn on or off specific
+      features. Such examples can be: convert_foreign_key_to_interleave=true,
+      skip_triggers=false, ignore_non_table_synonyms=true
     hasUncommittedChanges: Output only. Whether the workspace has uncommitted
       changes (changes which were made after the workspace was committed).
     latestCommitId: Output only. The latest commit ID.
@@ -878,10 +959,10 @@ class ConversionWorkspace(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class GlobalSettingsValue(_messages.Message):
-    r"""A generic list of settings for the workspace. The settings are
-    database pair dependant and can indicate default behavior for the mapping
-    rules engine or turn on or off specific features. Such examples can be:
-    convert_foreign_key_to_interleave=true, skip_triggers=false,
+    r"""Optional. A generic list of settings for the workspace. The settings
+    are database pair dependant and can indicate default behavior for the
+    mapping rules engine or turn on or off specific features. Such examples
+    can be: convert_foreign_key_to_interleave=true, skip_triggers=false,
     ignore_non_table_synonyms=true
 
     Messages:
@@ -933,24 +1014,47 @@ class ConvertConversionWorkspaceRequest(_messages.Message):
   r"""Request message for 'ConvertConversionWorkspace' request.
 
   Fields:
-    autoCommit: Specifies whether the conversion workspace is to be committed
-      automatically after the conversion.
-    filter: Filter the entities to convert. Leaving this field empty will
-      convert all of the entities. Supports Google AIP-160 style filtering.
+    autoCommit: Optional. Specifies whether the conversion workspace is to be
+      committed automatically after the conversion.
+    convertFullPath: Optional. Automatically convert the full entity path for
+      each entity specified by the filter. For example, if the filter
+      specifies a table, that table schema (and database if there is one) will
+      also be converted.
+    filter: Optional. Filter the entities to convert. Leaving this field empty
+      will convert all of the entities. Supports Google AIP-160 style
+      filtering.
   """
 
   autoCommit = _messages.BooleanField(1)
-  filter = _messages.StringField(2)
+  convertFullPath = _messages.BooleanField(2)
+  filter = _messages.StringField(3)
 
 
 class ConvertJobDetails(_messages.Message):
   r"""Details regarding a Convert background job.
 
   Fields:
-    filter: AIP-160 based filter used to specify the entities to convert
+    filter: Output only. AIP-160 based filter used to specify the entities to
+      convert
   """
 
   filter = _messages.StringField(1)
+
+
+class ConvertRowIdToColumn(_messages.Message):
+  r"""Options to configure rule type ConvertROWIDToColumn. The rule is used to
+  add column rowid to destination tables based on an Oracle rowid
+  function/property. The rule filter field can refer to one or more entities.
+  The rule scope can be one of: Table. This rule requires additional filter to
+  be specified beyond the basic rule filter field, which is whether or not to
+  work on tables which already have a primary key defined.
+
+  Fields:
+    onlyIfNoPrimaryKey: Required. Only work on tables without primary key
+      defined
+  """
+
+  onlyIfNoPrimaryKey = _messages.BooleanField(1)
 
 
 class DatabaseEngineInfo(_messages.Message):
@@ -994,6 +1098,7 @@ class DatabaseEntity(_messages.Message):
     TreeValueValuesEnum: The type of tree the entity belongs to.
 
   Fields:
+    database: Database.
     databaseFunction: Function.
     databasePackage: Package.
     entityDdl: Details about the entity DDL script. Multiple DDL scripts are
@@ -1006,6 +1111,7 @@ class DatabaseEntity(_messages.Message):
       draft tree entities, this holds the source entities which were converted
       to form the draft entity. Destination entities will have no mapping
       details.
+    materializedView: Materialized view.
     parentEntity: The full name of the parent entity (e.g. schema name).
     schema: Schema.
     sequence: Sequence.
@@ -1014,6 +1120,7 @@ class DatabaseEntity(_messages.Message):
     synonym: Synonym.
     table: Table.
     tree: The type of tree the entity belongs to.
+    udt: UDT.
     view: View.
   """
 
@@ -1070,21 +1177,62 @@ class DatabaseEntity(_messages.Message):
     DRAFT = 2
     DESTINATION = 3
 
-  databaseFunction = _messages.MessageField('FunctionEntity', 1)
-  databasePackage = _messages.MessageField('PackageEntity', 2)
-  entityDdl = _messages.MessageField('EntityDdl', 3, repeated=True)
-  entityType = _messages.EnumField('EntityTypeValueValuesEnum', 4)
-  issues = _messages.MessageField('EntityIssue', 5, repeated=True)
-  mappings = _messages.MessageField('EntityMapping', 6, repeated=True)
-  parentEntity = _messages.StringField(7)
-  schema = _messages.MessageField('SchemaEntity', 8)
-  sequence = _messages.MessageField('SequenceEntity', 9)
-  shortName = _messages.StringField(10)
-  storedProcedure = _messages.MessageField('StoredProcedureEntity', 11)
-  synonym = _messages.MessageField('SynonymEntity', 12)
-  table = _messages.MessageField('TableEntity', 13)
-  tree = _messages.EnumField('TreeValueValuesEnum', 14)
-  view = _messages.MessageField('ViewEntity', 15)
+  database = _messages.MessageField('DatabaseInstanceEntity', 1)
+  databaseFunction = _messages.MessageField('FunctionEntity', 2)
+  databasePackage = _messages.MessageField('PackageEntity', 3)
+  entityDdl = _messages.MessageField('EntityDdl', 4, repeated=True)
+  entityType = _messages.EnumField('EntityTypeValueValuesEnum', 5)
+  issues = _messages.MessageField('EntityIssue', 6, repeated=True)
+  mappings = _messages.MessageField('EntityMapping', 7, repeated=True)
+  materializedView = _messages.MessageField('MaterializedViewEntity', 8)
+  parentEntity = _messages.StringField(9)
+  schema = _messages.MessageField('SchemaEntity', 10)
+  sequence = _messages.MessageField('SequenceEntity', 11)
+  shortName = _messages.StringField(12)
+  storedProcedure = _messages.MessageField('StoredProcedureEntity', 13)
+  synonym = _messages.MessageField('SynonymEntity', 14)
+  table = _messages.MessageField('TableEntity', 15)
+  tree = _messages.EnumField('TreeValueValuesEnum', 16)
+  udt = _messages.MessageField('UDTEntity', 17)
+  view = _messages.MessageField('ViewEntity', 18)
+
+
+class DatabaseInstanceEntity(_messages.Message):
+  r"""DatabaseInstance acts as a parent entity to other database entities.
+
+  Messages:
+    CustomFeaturesValue: Custom engine specific features.
+
+  Fields:
+    customFeatures: Custom engine specific features.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CustomFeaturesValue(_messages.Message):
+    r"""Custom engine specific features.
+
+    Messages:
+      AdditionalProperty: An additional property for a CustomFeaturesValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CustomFeaturesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  customFeatures = _messages.MessageField('CustomFeaturesValue', 1)
 
 
 class DatabaseType(_messages.Message):
@@ -1427,32 +1575,34 @@ class DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntities
   tiesRequest object.
 
   Enums:
-    TreeValueValuesEnum: The tree to fetch.
+    TreeValueValuesEnum: Required. The tree to fetch.
+    ViewValueValuesEnum: Optional. Results view based on AIP-157
 
   Fields:
-    commitId: Request a specific commit ID. If not specified, the entities
-      from the latest commit are returned.
+    commitId: Optional. Request a specific commit ID. If not specified, the
+      entities from the latest commit are returned.
     conversionWorkspace: Required. Name of the conversion workspace resource
       whose database entities are described. Must be in the form of: projects/
       {project}/locations/{location}/conversionWorkspaces/{conversion_workspac
       e}.
-    filter: Filter the returned entities based on AIP-160 standard.
-    pageSize: The maximum number of entities to return. The service may return
-      fewer entities than the value specifies.
-    pageToken: The nextPageToken value received in the previous call to
-      conversionWorkspace.describeDatabaseEntities, used in the subsequent
+    filter: Optional. Filter the returned entities based on AIP-160 standard.
+    pageSize: Optional. The maximum number of entities to return. The service
+      may return fewer entities than the value specifies.
+    pageToken: Optional. The nextPageToken value received in the previous call
+      to conversionWorkspace.describeDatabaseEntities, used in the subsequent
       request to retrieve the next page of results. On first call this should
       be left blank. When paginating, all other parameters provided to
       conversionWorkspace.describeDatabaseEntities must match the call that
       provided the page token.
-    tree: The tree to fetch.
-    uncommitted: Whether to retrieve the latest committed version of the
-      entities or the latest version. This field is ignored if a specific
+    tree: Required. The tree to fetch.
+    uncommitted: Optional. Whether to retrieve the latest committed version of
+      the entities or the latest version. This field is ignored if a specific
       commit_id is specified.
+    view: Optional. Results view based on AIP-157
   """
 
   class TreeValueValuesEnum(_messages.Enum):
-    r"""The tree to fetch.
+    r"""Required. The tree to fetch.
 
     Values:
       DB_TREE_TYPE_UNSPECIFIED: Unspecified tree type.
@@ -1465,6 +1615,28 @@ class DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntities
     DRAFT_TREE = 2
     DESTINATION_TREE = 3
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Results view based on AIP-157
+
+    Values:
+      DATABASE_ENTITY_VIEW_UNSPECIFIED: Unspecified view. Defaults to basic
+        view.
+      DATABASE_ENTITY_VIEW_BASIC: Default view. Does not return DDLs or
+        Issues.
+      DATABASE_ENTITY_VIEW_FULL: Return full entity details including
+        mappings, ddl and issues.
+      DATABASE_ENTITY_VIEW_ROOT_SUMMARY: Top-most (Database, Schema) nodes
+        which are returned contains summary details for their decendents such
+        as the number of entities per type and issues rollups. When this view
+        is used, only a single page of result is returned and the page_size
+        property of the request is ignored. The returned page will only
+        include the top-most node types.
+    """
+    DATABASE_ENTITY_VIEW_UNSPECIFIED = 0
+    DATABASE_ENTITY_VIEW_BASIC = 1
+    DATABASE_ENTITY_VIEW_FULL = 2
+    DATABASE_ENTITY_VIEW_ROOT_SUMMARY = 3
+
   commitId = _messages.StringField(1)
   conversionWorkspace = _messages.StringField(2, required=True)
   filter = _messages.StringField(3)
@@ -1472,6 +1644,7 @@ class DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntities
   pageToken = _messages.StringField(5)
   tree = _messages.EnumField('TreeValueValuesEnum', 6)
   uncommitted = _messages.BooleanField(7)
+  view = _messages.EnumField('ViewValueValuesEnum', 8)
 
 
 class DatamigrationProjectsLocationsConversionWorkspacesGetIamPolicyRequest(_messages.Message):
@@ -1542,6 +1715,62 @@ class DatamigrationProjectsLocationsConversionWorkspacesListRequest(_messages.Me
   parent = _messages.StringField(4, required=True)
 
 
+class DatamigrationProjectsLocationsConversionWorkspacesMappingRulesCreateRequest(_messages.Message):
+  r"""A
+  DatamigrationProjectsLocationsConversionWorkspacesMappingRulesCreateRequest
+  object.
+
+  Fields:
+    mappingRule: A MappingRule resource to be passed as the request body.
+    mappingRuleId: Required. The ID of the rule to create.
+    parent: Required. The parent which owns this collection of mapping rules.
+    requestId: A unique ID used to identify the request. If the server
+      receives two requests with the same ID, then the second request is
+      ignored. It is recommended to always set this value to a UUID. The ID
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  mappingRule = _messages.MessageField('MappingRule', 1)
+  mappingRuleId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class DatamigrationProjectsLocationsConversionWorkspacesMappingRulesDeleteRequest(_messages.Message):
+  r"""A
+  DatamigrationProjectsLocationsConversionWorkspacesMappingRulesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the mapping rule resource to delete.
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two requests with the same ID, then the second request
+      is ignored. It is recommended to always set this value to a UUID. The ID
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class DatamigrationProjectsLocationsConversionWorkspacesMappingRulesGetRequest(_messages.Message):
+  r"""A
+  DatamigrationProjectsLocationsConversionWorkspacesMappingRulesGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the mapping rule resource to get. Example:
+      conversionWorkspaces/123/mappingRules/rule123 In order to retrieve a
+      previous revision of the mapping rule, also provide the revision ID.
+      Example: conversionWorkspace/123/mappingRules/rule123@c7cfa2a8c7cfa2a8c7
+      cfa2a8c7cfa2a8
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class DatamigrationProjectsLocationsConversionWorkspacesMappingRulesImportRequest(_messages.Message):
   r"""A
   DatamigrationProjectsLocationsConversionWorkspacesMappingRulesImportRequest
@@ -1557,6 +1786,29 @@ class DatamigrationProjectsLocationsConversionWorkspacesMappingRulesImportReques
 
   importMappingRulesRequest = _messages.MessageField('ImportMappingRulesRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class DatamigrationProjectsLocationsConversionWorkspacesMappingRulesListRequest(_messages.Message):
+  r"""A
+  DatamigrationProjectsLocationsConversionWorkspacesMappingRulesListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of rules to return. The service may return
+      fewer than this value.
+    pageToken: The nextPageToken value received in the previous call to
+      mappingRules.list, used in the subsequent request to retrieve the next
+      page of results. On first call this should be left blank. When
+      paginating, all other parameters provided to mappingRules.list must
+      match the call that provided the page token.
+    parent: Required. Name of the conversion workspace resource whose mapping
+      rules are listed in the form of: projects/{project}/locations/{location}
+      /conversionWorkspaces/{conversion_workspace}.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class DatamigrationProjectsLocationsConversionWorkspacesPatchRequest(_messages.Message):
@@ -1721,9 +1973,9 @@ class DatamigrationProjectsLocationsMigrationJobsCreateRequest(_messages.Message
     migrationJob: A MigrationJob resource to be passed as the request body.
     migrationJobId: Required. The ID of the instance to create.
     parent: Required. The parent which owns this collection of migration jobs.
-    requestId: A unique ID used to identify the request. If the server
-      receives two requests with the same ID, then the second request is
-      ignored. It is recommended to always set this value to a UUID. The ID
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two requests with the same ID, then the second request
+      is ignored. It is recommended to always set this value to a UUID. The ID
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
@@ -2221,6 +2473,43 @@ class DescribeDatabaseEntitiesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class DoubleComparisonFilter(_messages.Message):
+  r"""Filter based on relation between source value and compare value of type
+  double in ConditionalColumnSetValue
+
+  Enums:
+    ValueComparisonValueValuesEnum: Required. Relation between source value
+      and compare value
+
+  Fields:
+    value: Required. Double compare value to be used
+    valueComparison: Required. Relation between source value and compare value
+  """
+
+  class ValueComparisonValueValuesEnum(_messages.Enum):
+    r"""Required. Relation between source value and compare value
+
+    Values:
+      VALUE_COMPARISON_UNSPECIFIED: Value comparison unspecified.
+      VALUE_COMPARISON_IF_VALUE_SMALLER_THAN: Value is smaller than the
+        Compare value.
+      VALUE_COMPARISON_IF_VALUE_SMALLER_EQUAL_THAN: Value is smaller or equal
+        than the Compare value.
+      VALUE_COMPARISON_IF_VALUE_LARGER_THAN: Value is larger than the Compare
+        value.
+      VALUE_COMPARISON_IF_VALUE_LARGER_EQUAL_THAN: Value is larger or equal
+        than the Compare value.
+    """
+    VALUE_COMPARISON_UNSPECIFIED = 0
+    VALUE_COMPARISON_IF_VALUE_SMALLER_THAN = 1
+    VALUE_COMPARISON_IF_VALUE_SMALLER_EQUAL_THAN = 2
+    VALUE_COMPARISON_IF_VALUE_LARGER_THAN = 3
+    VALUE_COMPARISON_IF_VALUE_LARGER_EQUAL_THAN = 4
+
+  value = _messages.FloatField(1)
+  valueComparison = _messages.EnumField('ValueComparisonValueValuesEnum', 2)
+
+
 class DumpFlag(_messages.Message):
   r"""Dump flag definition.
 
@@ -2277,7 +2566,7 @@ class EntityDdl(_messages.Message):
     ddlType: Type of DDL (Create, Alter).
     entity: The name of the database entity the ddl refers to.
     entityType: The entity type (if the DDL is for a sub entity).
-    issueId: EntityIssues found for this ddl
+    issueId: EntityIssues found for this ddl.
   """
 
   class EntityTypeValueValuesEnum(_messages.Enum):
@@ -2326,13 +2615,13 @@ class EntityDdl(_messages.Message):
 
 
 class EntityIssue(_messages.Message):
-  r"""Issue related to the entity
+  r"""Issue related to the entity.
 
   Enums:
     EntityTypeValueValuesEnum: The entity type (if the DDL is for a sub
       entity).
     SeverityValueValuesEnum: Severity of the issue
-    TypeValueValuesEnum: The type of the issue
+    TypeValueValuesEnum: The type of the issue.
 
   Fields:
     code: Error/Warning code
@@ -2342,7 +2631,7 @@ class EntityIssue(_messages.Message):
     message: Issue detailed message
     position: The position of the issue found, if relevant.
     severity: Severity of the issue
-    type: The type of the issue
+    type: The type of the issue.
   """
 
   class EntityTypeValueValuesEnum(_messages.Enum):
@@ -2398,10 +2687,10 @@ class EntityIssue(_messages.Message):
     ISSUE_SEVERITY_ERROR = 3
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of the issue
+    r"""The type of the issue.
 
     Values:
-      ISSUE_TYPE_UNSPECIFIED: Unspecified issue type
+      ISSUE_TYPE_UNSPECIFIED: Unspecified issue type.
       ISSUE_TYPE_DDL: Issue originated from the DDL
       ISSUE_TYPE_APPLY: Issue originated during the apply process
       ISSUE_TYPE_CONVERT: Issue originated during the convert process
@@ -2541,6 +2830,19 @@ class EntityMappingLogEntry(_messages.Message):
   ruleRevisionId = _messages.StringField(3)
 
 
+class EntityMove(_messages.Message):
+  r"""Options to configure rule type EntityMove. The rule is used to move an
+  entity to a new schema. The rule filter field can refer to one or more
+  entities. The rule scope can be one of: Table, Column, Constraint, Index,
+  View, Function, Stored Procedure, Materialized View, Sequence, UDT
+
+  Fields:
+    newSchema: Required. The new schema
+  """
+
+  newSchema = _messages.StringField(1)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -2588,6 +2890,23 @@ class FetchStaticIpsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   staticIps = _messages.StringField(2, repeated=True)
+
+
+class FilterTableColumns(_messages.Message):
+  r"""Options to configure rule type FilterTableColumns. The rule is used to
+  filter the list of columns to include or exclude from a table. The rule
+  filter field can refer to one entity. The rule scope can be: Table Only one
+  of the two lists can be specified for the rule.
+
+  Fields:
+    excludeColumns: Optional. List of columns to be excluded for a particular
+      table.
+    includeColumns: Optional. List of columns to be included for a particular
+      table.
+  """
+
+  excludeColumns = _messages.StringField(1, repeated=True)
+  includeColumns = _messages.StringField(2, repeated=True)
 
 
 class ForwardSshTunnelConnectivity(_messages.Message):
@@ -2719,17 +3038,18 @@ class ImportMappingRulesRequest(_messages.Message):
   r"""Request message for 'ImportMappingRules' request.
 
   Enums:
-    RulesFormatValueValuesEnum: The format of the rules content file.
+    RulesFormatValueValuesEnum: Required. The format of the rules content
+      file.
 
   Fields:
-    autoCommit: Should the conversion workspace be committed automatically
-      after the import operation.
-    rulesFiles: One or more rules files.
-    rulesFormat: The format of the rules content file.
+    autoCommit: Required. Should the conversion workspace be committed
+      automatically after the import operation.
+    rulesFiles: Required. One or more rules files.
+    rulesFormat: Required. The format of the rules content file.
   """
 
   class RulesFormatValueValuesEnum(_messages.Enum):
-    r"""The format of the rules content file.
+    r"""Required. The format of the rules content file.
 
     Values:
       IMPORT_RULES_FILE_FORMAT_UNSPECIFIED: Unspecified rules format.
@@ -2750,15 +3070,15 @@ class ImportRulesJobDetails(_messages.Message):
   r"""Details regarding an Import Rules background job.
 
   Enums:
-    FileFormatValueValuesEnum: The requested file format.
+    FileFormatValueValuesEnum: Output only. The requested file format.
 
   Fields:
-    fileFormat: The requested file format.
-    files: File names used for the import rules job.
+    fileFormat: Output only. The requested file format.
+    files: Output only. File names used for the import rules job.
   """
 
   class FileFormatValueValuesEnum(_messages.Enum):
-    r"""The requested file format.
+    r"""Output only. The requested file format.
 
     Values:
       IMPORT_RULES_FILE_FORMAT_UNSPECIFIED: Unspecified rules format.
@@ -2822,6 +3142,43 @@ class IndexEntity(_messages.Message):
   unique = _messages.BooleanField(5)
 
 
+class IntComparisonFilter(_messages.Message):
+  r"""Filter based on relation between source value and compare value of type
+  integer in ConditionalColumnSetValue
+
+  Enums:
+    ValueComparisonValueValuesEnum: Required. Relation between source value
+      and compare value
+
+  Fields:
+    value: Required. Integer compare value to be used
+    valueComparison: Required. Relation between source value and compare value
+  """
+
+  class ValueComparisonValueValuesEnum(_messages.Enum):
+    r"""Required. Relation between source value and compare value
+
+    Values:
+      VALUE_COMPARISON_UNSPECIFIED: Value comparison unspecified.
+      VALUE_COMPARISON_IF_VALUE_SMALLER_THAN: Value is smaller than the
+        Compare value.
+      VALUE_COMPARISON_IF_VALUE_SMALLER_EQUAL_THAN: Value is smaller or equal
+        than the Compare value.
+      VALUE_COMPARISON_IF_VALUE_LARGER_THAN: Value is larger than the Compare
+        value.
+      VALUE_COMPARISON_IF_VALUE_LARGER_EQUAL_THAN: Value is larger or equal
+        than the Compare value.
+    """
+    VALUE_COMPARISON_UNSPECIFIED = 0
+    VALUE_COMPARISON_IF_VALUE_SMALLER_THAN = 1
+    VALUE_COMPARISON_IF_VALUE_SMALLER_EQUAL_THAN = 2
+    VALUE_COMPARISON_IF_VALUE_LARGER_THAN = 3
+    VALUE_COMPARISON_IF_VALUE_LARGER_EQUAL_THAN = 4
+
+  value = _messages.IntegerField(1)
+  valueComparison = _messages.EnumField('ValueComparisonValueValuesEnum', 2)
+
+
 class ListConnectionProfilesResponse(_messages.Message):
   r"""Response message for 'ListConnectionProfiles' request.
 
@@ -2862,6 +3219,19 @@ class ListLocationsResponse(_messages.Message):
   """
 
   locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListMappingRulesResponse(_messages.Message):
+  r"""Response message for 'ListMappingRulesRequest' request.
+
+  Fields:
+    mappingRules: The list of conversion workspace mapping rules.
+    nextPageToken: A token which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  mappingRules = _messages.MessageField('MappingRule', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -2996,6 +3366,198 @@ class MachineConfig(_messages.Message):
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class MappingRule(_messages.Message):
+  r"""Definition of a transformation that is to be applied to a group of
+  entities in the source schema. Several such transformations can be applied
+  to an entity sequentially to define the corresponding entity in the target
+  schema.
+
+  Enums:
+    RuleScopeValueValuesEnum: Required. The rule scope
+    StateValueValuesEnum: Optional. The mapping rule state
+
+  Fields:
+    conditionalColumnSetValue: Optional. Rule to specify how the data
+      contained in a column should be transformed (such as trimmed, rounded,
+      etc) provided that the data meets certain criteria.
+    convertRowidColumn: Optional. Rule to specify how multiple tables should
+      be converted with an additional rowid column.
+    displayName: Optional. A human readable name
+    entityMove: Optional. Rule to specify how multiple entities should be
+      relocated into a different schema.
+    filter: Required. The rule filter
+    filterTableColumns: Optional. Rule to specify the list of columns to
+      include or exclude from a table.
+    multiColumnDataTypeChange: Optional. Rule to specify how multiple columns
+      should be converted to a different data type.
+    multiEntityRename: Optional. Rule to specify how multiple entities should
+      be renamed.
+    name: Full name of the mapping rule resource, in the form of: projects/{pr
+      oject}/locations/{location}/conversionWorkspaces/{set}/mappingRule/{rule
+      }.
+    revisionCreateTime: Output only. The timestamp that the revision was
+      created.
+    revisionId: Output only. The revision ID of the mapping rule. A new
+      revision is committed whenever the mapping rule is changed in any way.
+      The format is an 8-character hexadecimal string.
+    ruleOrder: Required. The order in which the rule is applied. Lower order
+      rules are applied before higher value rules so they may end up being
+      overridden.
+    ruleScope: Required. The rule scope
+    setTablePrimaryKey: Optional. Rule to specify the primary key for a table
+    singleColumnChange: Optional. Rule to specify how a single column is
+      converted.
+    singleEntityRename: Optional. Rule to specify how a single entity should
+      be renamed.
+    singlePackageChange: Optional. Rule to specify how a single package is
+      converted.
+    sourceSqlChange: Optional. Rule to change the sql code for an entity, for
+      example, function, procedure.
+    state: Optional. The mapping rule state
+  """
+
+  class RuleScopeValueValuesEnum(_messages.Enum):
+    r"""Required. The rule scope
+
+    Values:
+      DATABASE_ENTITY_TYPE_UNSPECIFIED: Unspecified database entity type.
+      DATABASE_ENTITY_TYPE_SCHEMA: Schema.
+      DATABASE_ENTITY_TYPE_TABLE: Table.
+      DATABASE_ENTITY_TYPE_COLUMN: Column.
+      DATABASE_ENTITY_TYPE_CONSTRAINT: Constraint.
+      DATABASE_ENTITY_TYPE_INDEX: Index.
+      DATABASE_ENTITY_TYPE_TRIGGER: Trigger.
+      DATABASE_ENTITY_TYPE_VIEW: View.
+      DATABASE_ENTITY_TYPE_SEQUENCE: Sequence.
+      DATABASE_ENTITY_TYPE_STORED_PROCEDURE: Stored Procedure.
+      DATABASE_ENTITY_TYPE_FUNCTION: Function.
+      DATABASE_ENTITY_TYPE_SYNONYM: Synonym.
+      DATABASE_ENTITY_TYPE_DATABASE_PACKAGE: Package.
+      DATABASE_ENTITY_TYPE_UDT: UDT.
+      DATABASE_ENTITY_TYPE_MATERIALIZED_VIEW: Materialized View.
+      DATABASE_ENTITY_TYPE_DATABASE: Database.
+    """
+    DATABASE_ENTITY_TYPE_UNSPECIFIED = 0
+    DATABASE_ENTITY_TYPE_SCHEMA = 1
+    DATABASE_ENTITY_TYPE_TABLE = 2
+    DATABASE_ENTITY_TYPE_COLUMN = 3
+    DATABASE_ENTITY_TYPE_CONSTRAINT = 4
+    DATABASE_ENTITY_TYPE_INDEX = 5
+    DATABASE_ENTITY_TYPE_TRIGGER = 6
+    DATABASE_ENTITY_TYPE_VIEW = 7
+    DATABASE_ENTITY_TYPE_SEQUENCE = 8
+    DATABASE_ENTITY_TYPE_STORED_PROCEDURE = 9
+    DATABASE_ENTITY_TYPE_FUNCTION = 10
+    DATABASE_ENTITY_TYPE_SYNONYM = 11
+    DATABASE_ENTITY_TYPE_DATABASE_PACKAGE = 12
+    DATABASE_ENTITY_TYPE_UDT = 13
+    DATABASE_ENTITY_TYPE_MATERIALIZED_VIEW = 14
+    DATABASE_ENTITY_TYPE_DATABASE = 15
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Optional. The mapping rule state
+
+    Values:
+      STATE_UNSPECIFIED: The state of the mapping rule is unknown.
+      ENABLED: The rule is enabled.
+      DISABLED: The rule is disabled.
+      DELETED: The rule is logically deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+    DELETED = 3
+
+  conditionalColumnSetValue = _messages.MessageField('ConditionalColumnSetValue', 1)
+  convertRowidColumn = _messages.MessageField('ConvertRowIdToColumn', 2)
+  displayName = _messages.StringField(3)
+  entityMove = _messages.MessageField('EntityMove', 4)
+  filter = _messages.MessageField('MappingRuleFilter', 5)
+  filterTableColumns = _messages.MessageField('FilterTableColumns', 6)
+  multiColumnDataTypeChange = _messages.MessageField('MultiColumnDatatypeChange', 7)
+  multiEntityRename = _messages.MessageField('MultiEntityRename', 8)
+  name = _messages.StringField(9)
+  revisionCreateTime = _messages.StringField(10)
+  revisionId = _messages.StringField(11)
+  ruleOrder = _messages.IntegerField(12)
+  ruleScope = _messages.EnumField('RuleScopeValueValuesEnum', 13)
+  setTablePrimaryKey = _messages.MessageField('SetTablePrimaryKey', 14)
+  singleColumnChange = _messages.MessageField('SingleColumnChange', 15)
+  singleEntityRename = _messages.MessageField('SingleEntityRename', 16)
+  singlePackageChange = _messages.MessageField('SinglePackageChange', 17)
+  sourceSqlChange = _messages.MessageField('SourceSqlChange', 18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+
+
+class MappingRuleFilter(_messages.Message):
+  r"""A filter defining the entities that a mapping rule should be applied to.
+  When more than one field is specified, the rule is applied only to entities
+  which match all the fields.
+
+  Fields:
+    entities: Optional. The rule should be applied to specific entities
+      defined by their fully qualified names.
+    entityNameContains: Optional. The rule should be applied to entities whose
+      non-qualified name contains the given string.
+    entityNamePrefix: Optional. The rule should be applied to entities whose
+      non-qualified name starts with the given prefix.
+    entityNameSuffix: Optional. The rule should be applied to entities whose
+      non-qualified name ends with the given suffix.
+    parentEntity: Optional. The rule should be applied to entities whose
+      parent entity (fully qualified name) matches the given value. For
+      example, if the rule applies to a table entity, the expected value
+      should be a schema (schema). If the rule applies to a column or index
+      entity, the expected value can be either a schema (schema) or a table
+      (schema.table)
+  """
+
+  entities = _messages.StringField(1, repeated=True)
+  entityNameContains = _messages.StringField(2)
+  entityNamePrefix = _messages.StringField(3)
+  entityNameSuffix = _messages.StringField(4)
+  parentEntity = _messages.StringField(5)
+
+
+class MaterializedViewEntity(_messages.Message):
+  r"""MaterializedView's parent is a schema.
+
+  Messages:
+    CustomFeaturesValue: Custom engine specific features.
+
+  Fields:
+    customFeatures: Custom engine specific features.
+    sqlCode: The SQL code which creates the view.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CustomFeaturesValue(_messages.Message):
+    r"""Custom engine specific features.
+
+    Messages:
+      AdditionalProperty: An additional property for a CustomFeaturesValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CustomFeaturesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  customFeatures = _messages.MessageField('CustomFeaturesValue', 1)
+  sqlCode = _messages.StringField(2)
 
 
 class MigrationJob(_messages.Message):
@@ -3251,6 +3813,7 @@ class MigrationJobVerificationError(_messages.Message):
       UNSUPPORTED_DEFINER: The definer is not supported.
       CANT_RESTART_RUNNING_MIGRATION: Migration is already running at the time
         of restart request.
+      SOURCE_ALREADY_SETUP: The source already has a replication setup.
       TABLES_WITH_LIMITED_SUPPORT: The source has tables with limited support.
         E.g. PostgreSQL tables without primary keys.
       UNSUPPORTED_DATABASE_LOCALE: The source uses an unsupported locale.
@@ -3283,16 +3846,134 @@ class MigrationJobVerificationError(_messages.Message):
     UNSUPPORTED_TABLE_DEFINITION = 17
     UNSUPPORTED_DEFINER = 18
     CANT_RESTART_RUNNING_MIGRATION = 19
-    TABLES_WITH_LIMITED_SUPPORT = 20
-    UNSUPPORTED_DATABASE_LOCALE = 21
-    UNSUPPORTED_DATABASE_FDW_CONFIG = 22
-    ERROR_RDBMS = 23
-    SOURCE_SIZE_EXCEEDS_THRESHOLD = 24
-    EXISTING_CONFLICTING_DATABASES = 25
+    SOURCE_ALREADY_SETUP = 20
+    TABLES_WITH_LIMITED_SUPPORT = 21
+    UNSUPPORTED_DATABASE_LOCALE = 22
+    UNSUPPORTED_DATABASE_FDW_CONFIG = 23
+    ERROR_RDBMS = 24
+    SOURCE_SIZE_EXCEEDS_THRESHOLD = 25
+    EXISTING_CONFLICTING_DATABASES = 26
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)
   errorMessage = _messages.StringField(3)
+
+
+class MultiColumnDatatypeChange(_messages.Message):
+  r"""Options to configure rule type MultiColumnDatatypeChange. The rule is
+  used to change the data type and associated properties of multiple columns
+  at once. The rule filter field can refer to one or more entities. The rule
+  scope can be one of:Column. This rule requires additional filters to be
+  specified beyond the basic rule filter field, which is the source data type,
+  but the rule supports additional filtering capabilities such as the minimum
+  and maximum field length. All additional filters which are specified are
+  required to be met in order for the rule to be applied (logical AND between
+  the fields).
+
+  Messages:
+    CustomFeaturesValue: Optional. Custom engine specific features.
+
+  Fields:
+    customFeatures: Optional. Custom engine specific features.
+    newDataType: Required. New data type.
+    overrideFractionalSecondsPrecision: Optional. Column fractional seconds
+      precision - used only for timestamp based datatypes - if not specified
+      and relevant uses the source column fractional seconds precision.
+    overrideLength: Optional. Column length - e.g. varchar (50) - if not
+      specified and relevant uses the source column length.
+    overridePrecision: Optional. Column precision - when relevant - if not
+      specified and relevant uses the source column precision.
+    overrideScale: Optional. Column scale - when relevant - if not specified
+      and relevant uses the source column scale.
+    sourceDataTypeFilter: Required. Filter on source data type.
+    sourceNumericFilter: Optional. Filter for fixed point number data types
+      such as NUMERIC/NUMBER.
+    sourceTextFilter: Optional. Filter for text-based data types like varchar.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CustomFeaturesValue(_messages.Message):
+    r"""Optional. Custom engine specific features.
+
+    Messages:
+      AdditionalProperty: An additional property for a CustomFeaturesValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CustomFeaturesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  customFeatures = _messages.MessageField('CustomFeaturesValue', 1)
+  newDataType = _messages.StringField(2)
+  overrideFractionalSecondsPrecision = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  overrideLength = _messages.IntegerField(4)
+  overridePrecision = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  overrideScale = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  sourceDataTypeFilter = _messages.StringField(7)
+  sourceNumericFilter = _messages.MessageField('SourceNumericFilter', 8)
+  sourceTextFilter = _messages.MessageField('SourceTextFilter', 9)
+
+
+class MultiEntityRename(_messages.Message):
+  r"""Options to configure rule type MultiEntityRename. The rule is used to
+  rename multiple entities. The rule filter field can refer to one or more
+  entities. The rule scope can be one of: Database, Schema, Table, Column,
+  Constraint, Index, View, Function, Stored Procedure, Materialized View,
+  Sequence, UDT
+
+  Enums:
+    SourceNameTransformationValueValuesEnum: Optional. Additional
+      transformation that can be done on the source entity name before it is
+      being used by the new_name_pattern, for example lower case. If no
+      transformation is desired, use NO_TRANSFORMATION
+
+  Fields:
+    newNamePattern: Optional. The pattern used to generate the new entity's
+      name. This pattern must include the characters '{name}', which will be
+      replaced with the name of the original entity. For example, the pattern
+      't_{name}' for an entity name jobs would be converted to 't_jobs'. If
+      unspecified, the default value for this field is '{name}'
+    sourceNameTransformation: Optional. Additional transformation that can be
+      done on the source entity name before it is being used by the
+      new_name_pattern, for example lower case. If no transformation is
+      desired, use NO_TRANSFORMATION
+  """
+
+  class SourceNameTransformationValueValuesEnum(_messages.Enum):
+    r"""Optional. Additional transformation that can be done on the source
+    entity name before it is being used by the new_name_pattern, for example
+    lower case. If no transformation is desired, use NO_TRANSFORMATION
+
+    Values:
+      ENTITY_NAME_TRANSFORMATION_UNSPECIFIED: Entity name transformation
+        unspecified.
+      ENTITY_NAME_TRANSFORMATION_NO_TRANSFORMATION: No transformation.
+      ENTITY_NAME_TRANSFORMATION_LOWER_CASE: Transform to lower case.
+      ENTITY_NAME_TRANSFORMATION_UPPER_CASE: Transform to upper case.
+      ENTITY_NAME_TRANSFORMATION_CAPITALIZED_CASE: Transform to capitalized
+        case.
+    """
+    ENTITY_NAME_TRANSFORMATION_UNSPECIFIED = 0
+    ENTITY_NAME_TRANSFORMATION_NO_TRANSFORMATION = 1
+    ENTITY_NAME_TRANSFORMATION_LOWER_CASE = 2
+    ENTITY_NAME_TRANSFORMATION_UPPER_CASE = 3
+    ENTITY_NAME_TRANSFORMATION_CAPITALIZED_CASE = 4
+
+  newNamePattern = _messages.StringField(1)
+  sourceNameTransformation = _messages.EnumField('SourceNameTransformationValueValuesEnum', 2)
 
 
 class MySqlConnectionProfile(_messages.Message):
@@ -3628,7 +4309,7 @@ class Policy(_messages.Message):
 
 
 class Position(_messages.Message):
-  r"""A Position object.
+  r"""Issue position.
 
   Fields:
     column: Issue column number
@@ -3940,14 +4621,28 @@ class RollbackConversionWorkspaceRequest(_messages.Message):
   r"""Request message for 'RollbackConversionWorkspace' request."""
 
 
+class RoundToScale(_messages.Message):
+  r"""This allows the data to change scale, for example if the source is 2
+  digits after the decimal point, specify round to scale value = 2. If for
+  example the value needs to be converted to an integer, use round to scale
+  value = 0.
+
+  Fields:
+    scale: Required. Scale value to be used
+  """
+
+  scale = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class RulesFile(_messages.Message):
   r"""Details of a single rules file.
 
   Fields:
-    rulesContent: The text content of the rules that needs to be converted.
-    rulesSourceFilename: The filename of the rules that needs to be converted.
-      The filename is used mainly so that future logs of the import rules job
-      contain it, and can therefore be searched by it.
+    rulesContent: Required. The text content of the rules that needs to be
+      converted.
+    rulesSourceFilename: Required. The filename of the rules that needs to be
+      converted. The filename is used mainly so that future logs of the import
+      rules job contain it, and can therefore be searched by it.
   """
 
   rulesContent = _messages.StringField(1)
@@ -4012,10 +4707,10 @@ class SeedConversionWorkspaceRequest(_messages.Message):
   Fields:
     autoCommit: Should the conversion workspace be committed automatically
       after the seed operation.
-    destinationConnectionProfile: Fully qualified (Uri) name of the
+    destinationConnectionProfile: Optional. Fully qualified (Uri) name of the
       destination connection profile.
-    sourceConnectionProfile: Fully qualified (Uri) name of the source
-      connection profile.
+    sourceConnectionProfile: Optional. Fully qualified (Uri) name of the
+      source connection profile.
   """
 
   autoCommit = _messages.BooleanField(1)
@@ -4027,7 +4722,8 @@ class SeedJobDetails(_messages.Message):
   r"""Details regarding a Seed background job.
 
   Fields:
-    connectionProfile: The connection profile which was used for the seed job.
+    connectionProfile: Output only. The connection profile which was used for
+      the seed job.
   """
 
   connectionProfile = _messages.StringField(1)
@@ -4101,6 +4797,197 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class SetTablePrimaryKey(_messages.Message):
+  r"""Options to configure rule type SetTablePrimaryKey. The rule is used to
+  specify the columns and name to configure/alter the primary key of a table.
+  The rule filter field can refer to one entity. The rule scope can be one of:
+  Table.
+
+  Fields:
+    primaryKey: Optional. Name for the primary key
+    primaryKeyColumns: Required. List of column names for the primary key
+  """
+
+  primaryKey = _messages.StringField(1)
+  primaryKeyColumns = _messages.StringField(2, repeated=True)
+
+
+class SingleColumnChange(_messages.Message):
+  r"""Options to configure rule type SingleColumnChange. The rule is used to
+  change the properties of a column. The rule filter field can refer to one
+  entity. The rule scope can be one of: Column. When using this rule, if a
+  field is not specified than the destination column's configuration will be
+  the same as the one in the source column..
+
+  Messages:
+    CustomFeaturesValue: Optional. Custom engine specific features.
+
+  Fields:
+    array: Optional. Is the column of array type.
+    arrayLength: Optional. The length of the array, only relevant if the
+      column type is an array.
+    autoGenerated: Optional. Is the column auto-generated/identity.
+    charset: Optional. Charset override - instead of table level charset.
+    collation: Optional. Collation override - instead of table level
+      collation.
+    comment: Optional. Comment associated with the column.
+    customFeatures: Optional. Custom engine specific features.
+    dataType: Optional. Column data type name.
+    fractionalSecondsPrecision: Optional. Column fractional seconds precision
+      - e.g. 2 as in timestamp (2) - when relevant.
+    length: Optional. Column length - e.g. 50 as in varchar (50) - when
+      relevant.
+    nullable: Optional. Is the column nullable.
+    precision: Optional. Column precision - e.g. 8 as in double (8,2) - when
+      relevant.
+    scale: Optional. Column scale - e.g. 2 as in double (8,2) - when relevant.
+    setValues: Optional. Specifies the list of values allowed in the column.
+    udt: Optional. Is the column a UDT (User-defined Type).
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CustomFeaturesValue(_messages.Message):
+    r"""Optional. Custom engine specific features.
+
+    Messages:
+      AdditionalProperty: An additional property for a CustomFeaturesValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CustomFeaturesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  array = _messages.BooleanField(1)
+  arrayLength = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  autoGenerated = _messages.BooleanField(3)
+  charset = _messages.StringField(4)
+  collation = _messages.StringField(5)
+  comment = _messages.StringField(6)
+  customFeatures = _messages.MessageField('CustomFeaturesValue', 7)
+  dataType = _messages.StringField(8)
+  fractionalSecondsPrecision = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  length = _messages.IntegerField(10)
+  nullable = _messages.BooleanField(11)
+  precision = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  scale = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  setValues = _messages.StringField(14, repeated=True)
+  udt = _messages.BooleanField(15)
+
+
+class SingleEntityRename(_messages.Message):
+  r"""Options to configure rule type SingleEntityRename. The rule is used to
+  rename an entity. The rule filter field can refer to only one entity. The
+  rule scope can be one of: Database, Schema, Table, Column, Constraint,
+  Index, View, Function, Stored Procedure, Materialized View, Sequence, UDT,
+  Synonym
+
+  Fields:
+    newName: Required. The new name of the destination entity
+  """
+
+  newName = _messages.StringField(1)
+
+
+class SinglePackageChange(_messages.Message):
+  r"""Options to configure rule type SinglePackageChange. The rule is used to
+  alter the sql code for a package entities. The rule filter field can refer
+  to one entity. The rule scope can be: Package
+
+  Fields:
+    packageBody: Optional. Sql code for package body
+    packageDescription: Optional. Sql code for package description
+  """
+
+  packageBody = _messages.StringField(1)
+  packageDescription = _messages.StringField(2)
+
+
+class SourceNumericFilter(_messages.Message):
+  r"""Filter for fixed point number data types such as NUMERIC/NUMBER
+
+  Enums:
+    NumericFilterOptionValueValuesEnum: Required. Enum to set the option
+      defining the datatypes numeric filter has to be applied to
+
+  Fields:
+    numericFilterOption: Required. Enum to set the option defining the
+      datatypes numeric filter has to be applied to
+    sourceMaxPrecisionFilter: Optional. The filter will match columns with
+      precision smaller than or equal to this number.
+    sourceMaxScaleFilter: Optional. The filter will match columns with scale
+      smaller than or equal to this number.
+    sourceMinPrecisionFilter: Optional. The filter will match columns with
+      precision greater than or equal to this number.
+    sourceMinScaleFilter: Optional. The filter will match columns with scale
+      greater than or equal to this number.
+  """
+
+  class NumericFilterOptionValueValuesEnum(_messages.Enum):
+    r"""Required. Enum to set the option defining the datatypes numeric filter
+    has to be applied to
+
+    Values:
+      NUMERIC_FILTER_OPTION_UNSPECIFIED: Numeric filter option unspecified
+      NUMERIC_FILTER_OPTION_ALL: Numeric filter option that matches all
+        numeric columns.
+      NUMERIC_FILTER_OPTION_LIMIT: Numeric filter option that matches columns
+        having numeric datatypes with specified precision and scale within the
+        limited range of filter.
+      NUMERIC_FILTER_OPTION_LIMITLESS: Numeric filter option that matches only
+        the numeric columns with no precision and scale specified.
+    """
+    NUMERIC_FILTER_OPTION_UNSPECIFIED = 0
+    NUMERIC_FILTER_OPTION_ALL = 1
+    NUMERIC_FILTER_OPTION_LIMIT = 2
+    NUMERIC_FILTER_OPTION_LIMITLESS = 3
+
+  numericFilterOption = _messages.EnumField('NumericFilterOptionValueValuesEnum', 1)
+  sourceMaxPrecisionFilter = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  sourceMaxScaleFilter = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  sourceMinPrecisionFilter = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  sourceMinScaleFilter = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class SourceSqlChange(_messages.Message):
+  r"""Options to configure rule type SourceSqlChange. The rule is used to
+  alter the sql code for database entities. The rule filter field can refer to
+  one entity. The rule scope can be: StoredProcedure, Function, Trigger, View
+
+  Fields:
+    sqlCode: Required. Sql code for source (stored procedure, function,
+      trigger or view)
+  """
+
+  sqlCode = _messages.StringField(1)
+
+
+class SourceTextFilter(_messages.Message):
+  r"""Filter for text-based data types like varchar.
+
+  Fields:
+    sourceMaxLengthFilter: Optional. The filter will match columns with length
+      smaller than or equal to this number.
+    sourceMinLengthFilter: Optional. The filter will match columns with length
+      greater than or equal to this number.
+  """
+
+  sourceMaxLengthFilter = _messages.IntegerField(1)
+  sourceMinLengthFilter = _messages.IntegerField(2)
 
 
 class SpannerConnectionProfile(_messages.Message):
@@ -4280,7 +5167,14 @@ class StandardQueryParameters(_messages.Message):
 
 
 class StartMigrationJobRequest(_messages.Message):
-  r"""Request message for 'StartMigrationJob' request."""
+  r"""Request message for 'StartMigrationJob' request.
+
+  Fields:
+    skipValidation: Optional. Start the migration job without running prior
+      configuration verification. Defaults to `false`.
+  """
+
+  skipValidation = _messages.BooleanField(1)
 
 
 class StaticIpConnectivity(_messages.Message):
@@ -4609,6 +5503,48 @@ class TriggerEntity(_messages.Message):
   triggeringEvents = _messages.StringField(5, repeated=True)
 
 
+class UDTEntity(_messages.Message):
+  r"""UDT's parent is a schema.
+
+  Messages:
+    CustomFeaturesValue: Custom engine specific features.
+
+  Fields:
+    customFeatures: Custom engine specific features.
+    udtBody: The SQL code which creates the udt body.
+    udtSqlCode: The SQL code which creates the udt.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CustomFeaturesValue(_messages.Message):
+    r"""Custom engine specific features.
+
+    Messages:
+      AdditionalProperty: An additional property for a CustomFeaturesValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CustomFeaturesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  customFeatures = _messages.MessageField('CustomFeaturesValue', 1)
+  udtBody = _messages.StringField(2)
+  udtSqlCode = _messages.StringField(3)
+
+
 class UserPassword(_messages.Message):
   r"""The username/password for a database user. Used for specifying initial
   users at cluster creation time.
@@ -4625,8 +5561,89 @@ class UserPassword(_messages.Message):
   user = _messages.StringField(3)
 
 
+class ValueListFilter(_messages.Message):
+  r"""A list of values to filter by in ConditionalColumnSetValue
+
+  Enums:
+    ValuePresentListValueValuesEnum: Required. Indicates whether the filter
+      matches rows with values that are present in the list or those with
+      values not present in it.
+
+  Fields:
+    ignoreCase: Required. Whether to ignore case when filtering by values.
+      Defaults to false
+    valuePresentList: Required. Indicates whether the filter matches rows with
+      values that are present in the list or those with values not present in
+      it.
+    values: Required. The list to be used to filter by
+  """
+
+  class ValuePresentListValueValuesEnum(_messages.Enum):
+    r"""Required. Indicates whether the filter matches rows with values that
+    are present in the list or those with values not present in it.
+
+    Values:
+      VALUE_PRESENT_IN_LIST_UNSPECIFIED: Value present in list unspecified
+      VALUE_PRESENT_IN_LIST_IF_VALUE_LIST: If the source value is in the
+        supplied list at value_list
+      VALUE_PRESENT_IN_LIST_IF_VALUE_NOT_LIST: If the source value is not in
+        the supplied list at value_list
+    """
+    VALUE_PRESENT_IN_LIST_UNSPECIFIED = 0
+    VALUE_PRESENT_IN_LIST_IF_VALUE_LIST = 1
+    VALUE_PRESENT_IN_LIST_IF_VALUE_NOT_LIST = 2
+
+  ignoreCase = _messages.BooleanField(1)
+  valuePresentList = _messages.EnumField('ValuePresentListValueValuesEnum', 2)
+  values = _messages.StringField(3, repeated=True)
+
+
+class ValueTransformation(_messages.Message):
+  r"""Description of data transformation during migration as part of the
+  ConditionalColumnSetValue.
+
+  Fields:
+    applyHash: Optional. Applies a hash function on the data
+    assignMaxValue: Optional. Set to max_value - if integer or numeric, will
+      use int.maxvalue, etc
+    assignMinValue: Optional. Set to min_value - if integer or numeric, will
+      use int.minvalue, etc
+    assignNull: Optional. Set to null
+    assignSpecificValue: Optional. Set to a specific value (value is converted
+      to fit the target data type)
+    doubleComparison: Optional. Filter on relation between source value and
+      compare value of type double.
+    intComparison: Optional. Filter on relation between source value and
+      compare value of type integer.
+    isNull: Optional. Value is null
+    roundScale: Optional. Allows the data to change scale
+    valueList: Optional. Value is found in the specified list.
+  """
+
+  applyHash = _messages.MessageField('ApplyHash', 1)
+  assignMaxValue = _messages.MessageField('Empty', 2)
+  assignMinValue = _messages.MessageField('Empty', 3)
+  assignNull = _messages.MessageField('Empty', 4)
+  assignSpecificValue = _messages.MessageField('AssignSpecificValue', 5)
+  doubleComparison = _messages.MessageField('DoubleComparisonFilter', 6)
+  intComparison = _messages.MessageField('IntComparisonFilter', 7)
+  isNull = _messages.MessageField('Empty', 8)
+  roundScale = _messages.MessageField('RoundToScale', 9)
+  valueList = _messages.MessageField('ValueListFilter', 10)
+
+
 class VerifyMigrationJobRequest(_messages.Message):
-  r"""Request message for 'VerifyMigrationJob' request."""
+  r"""Request message for 'VerifyMigrationJob' request.
+
+  Fields:
+    migrationJob: Optional. The changed migration job parameters to verify. It
+      will not update the migration job.
+    updateMask: Optional. Field mask is used to specify the changed fields to
+      be verified. It will not update the migration job.
+  """
+
+  migrationJob = _messages.MessageField('MigrationJob', 1)
+  updateMask = _messages.StringField(2)
 
 
 class ViewEntity(_messages.Message):

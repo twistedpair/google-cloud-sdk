@@ -199,6 +199,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PARTNERSSEGATEWAYS = (
+      'projects.locations.partnerSSEGateways',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'partnerSSEGateways/{partnerSSEGatewaysId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_PARTNERSSEREALMS = (
+      'projects.locations.partnerSSERealms',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'partnerSSERealms/{partnerSSERealmsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SECURITYPROFILEGROUPS = (
       'projects.locations.securityProfileGroups',
       '{+name}',
@@ -228,6 +250,39 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'serverTlsPolicies/{serverTlsPoliciesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SSEGATEWAYREFERENCES = (
+      'projects.locations.sseGatewayReferences',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'sseGatewayReferences/{sseGatewayReferencesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SSEGATEWAYS = (
+      'projects.locations.sseGateways',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/sseGateways/'
+              '{sseGatewaysId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SSEREALMS = (
+      'projects.locations.sseRealms',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/sseRealms/'
+              '{sseRealmsId}',
       },
       ['name'],
       True

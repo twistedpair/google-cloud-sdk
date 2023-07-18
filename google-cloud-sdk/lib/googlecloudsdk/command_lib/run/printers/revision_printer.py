@@ -128,7 +128,6 @@ class RevisionPrinter(cp.CustomPrinterBase):
         ('Max Instances', RevisionPrinter.GetMaxInstances(record)),
         ('SQL connections', k8s_util.GetCloudSqlInstances(record.annotations)),
         ('Timeout', RevisionPrinter.GetTimeout(record)),
-        ('VPC connector', k8s_util.GetVpcConnector(record.annotations)),
         ('VPC network', k8s_util.GetVpcNetwork(record.annotations)),
         ('CMEK', RevisionPrinter.GetCMEK(record)),
         ('HTTP/2 Enabled', RevisionPrinter.GetHttp2Enabled(record)),

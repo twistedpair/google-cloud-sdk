@@ -44,15 +44,55 @@ _SA_RISK_MESSAGE = (
     " interruptions, because in the last 90 days it had significant usage"
 )
 
+_POLICY_BINDING_DELETE_RISK_MESSAGE = (
+    "WARNING: Removing this role is likely to cause interruptions, because it"
+    " was used in the last 90 days"
+)
+
 _PROJECT_INSIGHT_TYPE = "google.resourcemanager.project.ChangeRiskInsight"
 
 _SA_INSIGHT_TYPE = "google.iam.serviceAccount.ChangeRiskInsight"
+
+_POLICY_BINDING_INSIGHT_TYPE = "google.iam.policy.ChangeRiskInsight"
 
 _RECOMMENDATIONS_HOME_URL = (
     "https://console.cloud.google.com/home/recommendations"
 )
 
 _MAX_NUMBER_OF_REASONS = 3
+
+
+def _GetIamPolicyBindingMatcher(member, role):
+  """Returns a function that matches an insight by policy binding.
+
+  Args:
+    member: Member string to fully match.
+    role: Member role to fully match.
+
+  Returns:
+    A function that matches an insight object by policy binding. The returned
+    function returns true iff both the member and the role match.
+  """
+
+  def Matcher(gcloud_insight):
+    matches_member = False
+    matches_role = False
+    for additional_property in gcloud_insight.content.additionalProperties:
+      if additional_property.key == "risk":
+        for p in additional_property.value.object_value.properties:
+          if p.key == "usageAtRisk":
+            for f in p.value.object_value.properties:
+              if f.key == "iamPolicyUtilization":
+                for iam_p in f.value.object_value.properties:
+                  if iam_p.key == "member":
+                    if iam_p.value.string_value == member:
+                      matches_member = True
+                  if iam_p.key == "role":
+                    if iam_p.value.string_value == role:
+                      matches_role = True
+    return matches_member and matches_role
+
+  return Matcher
 
 
 def _GetAssociatedRecommendationLink(gcloud_insight, project_id):
@@ -116,7 +156,7 @@ def _GetDeletionRiskMessage(gcloud_insight, risk_message, reasons_prefix=""):
 
 
 def _GetRiskInsight(
-    release_track, project_id, insight_type, request_filter=None
+    release_track, project_id, insight_type, request_filter=None, matcher=None
 ):
   """Returns the first insight fetched by the recommender API.
 
@@ -125,20 +165,25 @@ def _GetRiskInsight(
     project_id: Project ID.
     insight_type: String insight type.
     request_filter: Optional string filter for the recommender.
+    matcher: Matcher for the insight object. None means match all.
 
   Returns:
     Insight object returned by the recommender API. Returns 'None' if no
-    insights were found.
+    matching insights were found. Returns the first insight object that matches
+    the matcher. If no matcher, returns the first insight object fetched.
   """
   client = insight.CreateClient(release_track)
   parent_name = ("projects/{0}/locations/global/insightTypes/{1}").format(
       project_id, insight_type
   )
   result = client.List(
-      parent_name, page_size=1, limit=1, request_filter=request_filter
+      parent_name, page_size=100, limit=None, request_filter=request_filter
   )
   for r in result:
-    return r
+    if not matcher:
+      return r
+    if matcher(r):
+      return r
   return None
 
 
@@ -195,6 +240,42 @@ def GetServiceAccountDeletionRisk(release_track, project_id, service_account):
   if risk_insight:
     return "{0}\n{1}".format(
         _GetDeletionRiskMessage(risk_insight, _SA_RISK_MESSAGE),
+        _GetAssociatedRecommendationLink(risk_insight, project_id),
+    )
+  return None
+
+
+def GetIamPolicyBindingDeletionRisk(
+    release_track, project_id, member, member_role
+):
+  """Returns a risk assesment message for IAM policy binding deletion.
+
+  Args:
+    release_track: Release track of the recommender.
+    project_id: String project ID.
+    member: IAM policy binding member.
+    member_role: IAM policy binding member role.
+
+  Returns:
+    String Active Assist risk warning message to be displayed in IAM policy
+    binding deletion prompt.
+    If no risk exists, then returns 'None'.
+  """
+  # Remove prefixes like "user:", "group:", etc. from member
+  # because the recommender generates a member id only.
+  member = member[(member.find(":") + 1) :]
+  policy_matcher = _GetIamPolicyBindingMatcher(member, member_role)
+  risk_insight = _GetRiskInsight(
+      release_track,
+      project_id,
+      _POLICY_BINDING_INSIGHT_TYPE,
+      matcher=policy_matcher,
+  )
+  if risk_insight:
+    return "{0}\n{1}".format(
+        _GetDeletionRiskMessage(
+            risk_insight, _POLICY_BINDING_DELETE_RISK_MESSAGE
+        ),
         _GetAssociatedRecommendationLink(risk_insight, project_id),
     )
   return None

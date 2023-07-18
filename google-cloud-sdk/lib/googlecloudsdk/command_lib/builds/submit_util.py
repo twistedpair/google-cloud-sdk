@@ -18,11 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import hashlib
 import os
 import uuid
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
+from googlecloudsdk.api_lib.app import runtime_builders
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_exceptions
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import config
@@ -44,8 +46,6 @@ from googlecloudsdk.core.util import times
 import six
 
 _ALLOWED_SOURCE_EXT = ['.zip', '.tgz', '.gz']
-
-_DEFAULT_BUILDPACK_BUILDER = 'gcr.io/buildpacks/builder:v1'
 
 _CLUSTER_NAME_FMT = (
     'projects/{project}/locations/{location}/clusters/{cluster_name}'
@@ -104,7 +104,50 @@ def _GetBuildTimeout():
   return timeout_str
 
 
-def _GetBuildTags(builder) -> str:
+def _IsRequestPartOfBuilderExperiment()  -> bool:
+  """Checks whether request is part of the experiment or not.
+
+  Returns:
+    True if request is part of experiment
+  """
+  account = properties.VALUES.core.account.Get()
+  # Most likely a Google Internal project,
+  # Hence should always be part of experiment.
+  if (account is not None) and account.endswith('@google.com'):
+    return True
+  experiment_config = runtime_builders.Experiments.LoadFromURI(
+      'gs://gcp-runtime-experiments/'
+  )
+  experiment_percent = experiment_config.GetExperimentPercentWithDefault(
+      'migrate_to_buildpacks_builder_latest', 0
+  )
+  project_hash = (
+      int(
+          hashlib.sha256(
+              properties.VALUES.core.project.Get().encode('utf-8')
+          ).hexdigest(),
+          16,
+      )
+      % 100
+  )
+  return project_hash < experiment_percent
+
+
+def _GetDefaultBuildPackBuilder() -> str:
+  """Evaluates the default builder that needs to be set for build using buildpacks by using an experiment.
+
+  Returns:
+    gcr.io/buildpacks/builder:v1 if the request is not part of the experiment.
+    gcr.io/buildpacks/builder:latest if the request is part of the experiemnt.
+  """
+  return (
+      'gcr.io/buildpacks/builder:latest'
+      if _IsRequestPartOfBuilderExperiment()
+      else 'gcr.io/buildpacks/builder:v1'
+  )
+
+
+def _GetBuildTag(builder) -> str:
   """Get the builder tag for input builder useful to cloudbuild.
 
   Args:
@@ -117,15 +160,15 @@ def _GetBuildTags(builder) -> str:
       builder == 'gcr.io/buildpacks/builder:latest'
       or builder == 'gcr.io/buildpacks/builder'
   ):
-    return ['latest']
+    return 'latest'
   elif builder == 'gcr.io/buildpacks/builder:google-22':
-    return ['google22']
+    return 'google22'
   elif builder == 'gcr.io/buildpacks/builder:v1':
-    return ['v1']
+    return 'v1'
   elif builder is None:
-    return ['default'] + _GetBuildTags(_DEFAULT_BUILDPACK_BUILDER)
+    return 'default'
   else:
-    return ['other']
+    return 'other'
 
 
 def _SetBuildSteps(
@@ -237,6 +280,7 @@ def _SetBuildSteps(
         '--network',
         'cloudbuild',
     ]
+    build_tags = [_GetBuildTag(builder)]
     if env is not None:
       pack_args.append('--env')
       pack_args.append(env)
@@ -244,6 +288,8 @@ def _SetBuildSteps(
       pack_args.append('--builder')
       pack_args.append(builder)
     else:
+      default_buildpacks_builder = _GetDefaultBuildPackBuilder()
+      build_tags.append(_GetBuildTag(default_buildpacks_builder))
       # Use `pack config default-builder` to allow overriding the builder in a
       # project.toml file.
       steps = [
@@ -253,7 +299,7 @@ def _SetBuildSteps(
               args=[
                   'config',
                   'default-builder',
-                  _DEFAULT_BUILDPACK_BUILDER,
+                  default_buildpacks_builder,
               ],
           ),
       ]
@@ -270,7 +316,7 @@ def _SetBuildSteps(
     cloudbuild_tags = list(
         map(
             lambda x: 'gcp-runtimes-builder-' + x + '-' + client_tag,
-            _GetBuildTags(builder),
+            build_tags,
         )
     )
 

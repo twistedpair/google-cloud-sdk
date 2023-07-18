@@ -44,35 +44,32 @@ class GoogleCloudAuditAuthorizationLoggingOptions(_messages.Message):
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaAccessTuple(_messages.Message):
-  r"""Information about the member, resource, and permission to check.
+  r"""Information about the principal, resource, and permission to check.
 
   Fields:
-    conditionContext: Optional. The Cloud IAM condition context under which
-      defines the kind of access being explained. TroubleshootIamPolicy would
-      explain if and why the principal has the queried permission on the
-      resource specified in full_resource_name under this context
+    conditionContext: Optional. Additional context for the request, such as
+      the request time or IP address. This context allows Policy
+      Troubleshooter to troubleshoot conditional role bindings and deny rules.
     fullResourceName: Required. The full resource name that identifies the
       resource. For example, `//compute.googleapis.com/projects/my-
       project/zones/us-central1-a/instances/my-instance`. For examples of full
       resource names for Google Cloud services, see
       https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
-    permission: Required. The IAM permission to check for the specified member
-      and resource. This field can be either permission or permission FQDN.
-      For a complete list of IAM permissions, see
-      https://cloud.google.com/iam/help/permissions/reference. For a complete
-      list of predefined IAM roles and the permissions in each role, see
-      https://cloud.google.com/iam/help/roles/reference. For a complete list
-      of IAM permission FQDNs used in IAM v2, see
-      https://cloud.google.com/iam/docs/deny-permissions-support
-    permissionFqdn: Output only. The FQDN of the IAM permission to check for
-      the specified member and resource. For a complete list of IAM permission
-      FQDNs used in IAM v2, see https://cloud.google.com/iam/docs/deny-
-      permissions-support
-    principal: Required. The member, or principal, whose access you want to
-      check, in the form of the email address that represents that member. For
-      example, `alice@example.com` or `my-service-account@my-
-      project.iam.gserviceaccount.com`. The member must be a Google Account or
-      a service account. Other types of members are not supported.
+    permission: Required. The IAM permission to check for, either in the `v1`
+      permission format or the `v2` permission format. For a complete list of
+      IAM permissions in the `v1` format, see
+      https://cloud.google.com/iam/help/permissions/reference. For a list of
+      IAM permissions in the `v2` format, see
+      https://cloud.google.com/iam/help/deny/supported-permissions. For a
+      complete list of predefined IAM roles and the permissions in each role,
+      see https://cloud.google.com/iam/help/roles/reference.
+    permissionFqdn: Output only. The permission that Policy Troubleshooter
+      checked for, in the `v2` format.
+    principal: Required. The email address of the principal whose access you
+      want to check. For example, `alice@example.com` or `my-service-
+      account@my-project.iam.gserviceaccount.com`. The principal must be a
+      Google Account or a service account. Other types of principals are not
+      supported.
   """
 
   conditionContext = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3betaConditionContext', 1)
@@ -83,72 +80,75 @@ class GoogleCloudPolicytroubleshooterIamV3betaAccessTuple(_messages.Message):
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaAllowBindingExplanation(_messages.Message):
-  r"""Details about how a binding in an allow policy affects a member's
-  ability to use a permission.
+  r"""Details about how a role binding in an allow policy affects a
+  principal's ability to use a permission.
 
   Enums:
-    AllowAccessStateValueValuesEnum: Required. Indicates whether _this
-      binding_ provides the specified permission to the specified member for
+    AllowAccessStateValueValuesEnum: Required. Indicates whether _this role
+      binding_ gives the specified permission to the specified principal on
       the specified resource. This field does _not_ indicate whether the
-      member actually has the permission for the resource. There might be
-      another binding that overrides this binding. To determine whether the
-      member actually has the permission, use the `access` field in the
-      TroubleshootIamPolicyResponse.
-    RelevanceValueValuesEnum: The relevance of this binding to the overall
-      determination for the entire policy.
+      principal actually has the permission on the resource. There might be
+      another role binding that overrides this role binding. To determine
+      whether the principal actually has the permission, use the
+      `overall_access_state` field in the TroubleshootIamPolicyResponse.
+    RelevanceValueValuesEnum: The relevance of this role binding to the
+      overall determination for the entire policy.
     RolePermissionValueValuesEnum: Indicates whether the role granted by this
-      binding contains the specified permission.
+      role binding contains the specified permission.
     RolePermissionRelevanceValueValuesEnum: The relevance of the permission's
       existence, or nonexistence, in the role to the overall determination for
       the entire policy.
 
   Messages:
-    MembershipsValue: Indicates whether each member in the binding includes
-      the member specified in the request, either directly or indirectly. Each
-      key identifies a member in the binding, and each value indicates whether
-      the member in the binding includes the member in the request. For
-      example, suppose that a binding includes the following members: *
-      `user:alice@example.com` * `group:product-eng@example.com` You want to
-      troubleshoot access for `user:bob@example.com`. This user is a member of
-      the group `group:product-eng@example.com`. For the first member in the
-      binding, the key is `user:alice@example.com`, and the `membership` field
-      in the value is set to `NOT_INCLUDED`. For the second member in the
-      binding, the key is `group:product-eng@example.com`, and the
-      `membership` field in the value is set to `INCLUDED`.
+    MembershipsValue: Indicates whether each role binding includes the
+      principal specified in the request, either directly or indirectly. Each
+      key identifies a principal in the role binding, and each value indicates
+      whether the principal in the role binding includes the principal in the
+      request. For example, suppose that a role binding includes the following
+      principals: * `user:alice@example.com` * `group:product-eng@example.com`
+      You want to troubleshoot access for `user:bob@example.com`. This user is
+      a member of the group `group:product-eng@example.com`. For the first
+      principal in the role binding, the key is `user:alice@example.com`, and
+      the `membership` field in the value is set to `NOT_INCLUDED`. For the
+      second principal in the role binding, the key is `group:product-
+      eng@example.com`, and the `membership` field in the value is set to
+      `INCLUDED`.
 
   Fields:
-    allowAccessState: Required. Indicates whether _this binding_ provides the
-      specified permission to the specified member for the specified resource.
-      This field does _not_ indicate whether the member actually has the
-      permission for the resource. There might be another binding that
-      overrides this binding. To determine whether the member actually has the
-      permission, use the `access` field in the TroubleshootIamPolicyResponse.
+    allowAccessState: Required. Indicates whether _this role binding_ gives
+      the specified permission to the specified principal on the specified
+      resource. This field does _not_ indicate whether the principal actually
+      has the permission on the resource. There might be another role binding
+      that overrides this role binding. To determine whether the principal
+      actually has the permission, use the `overall_access_state` field in the
+      TroubleshootIamPolicyResponse.
     combinedMembership: The combined result of all memberships. Indicates if
-      there is any member in the binding includes the principal specified in
-      the request, either directly or indirectly.
-    condition: A condition expression that prevents access unless the
-      expression evaluates to `true`. To learn about IAM Conditions, see
+      the principal is included in any role binding, either directly or
+      indirectly.
+    condition: A condition expression that specifies when the role binding
+      grants access. To learn about IAM Conditions, see
       https://cloud.google.com/iam/help/conditions/overview.
-    conditionExplanation: Condition evaluation state for this binding.
-    memberships: Indicates whether each member in the binding includes the
-      member specified in the request, either directly or indirectly. Each key
-      identifies a member in the binding, and each value indicates whether the
-      member in the binding includes the member in the request. For example,
-      suppose that a binding includes the following members: *
-      `user:alice@example.com` * `group:product-eng@example.com` You want to
-      troubleshoot access for `user:bob@example.com`. This user is a member of
-      the group `group:product-eng@example.com`. For the first member in the
-      binding, the key is `user:alice@example.com`, and the `membership` field
-      in the value is set to `NOT_INCLUDED`. For the second member in the
-      binding, the key is `group:product-eng@example.com`, and the
-      `membership` field in the value is set to `INCLUDED`.
-    relevance: The relevance of this binding to the overall determination for
-      the entire policy.
-    role: The role that this binding grants. For example,
-      `roles/compute.serviceAgent`. For a complete list of predefined IAM
-      roles, as well as the permissions in each role, see
+    conditionExplanation: Condition evaluation state for this role binding.
+    memberships: Indicates whether each role binding includes the principal
+      specified in the request, either directly or indirectly. Each key
+      identifies a principal in the role binding, and each value indicates
+      whether the principal in the role binding includes the principal in the
+      request. For example, suppose that a role binding includes the following
+      principals: * `user:alice@example.com` * `group:product-eng@example.com`
+      You want to troubleshoot access for `user:bob@example.com`. This user is
+      a member of the group `group:product-eng@example.com`. For the first
+      principal in the role binding, the key is `user:alice@example.com`, and
+      the `membership` field in the value is set to `NOT_INCLUDED`. For the
+      second principal in the role binding, the key is `group:product-
+      eng@example.com`, and the `membership` field in the value is set to
+      `INCLUDED`.
+    relevance: The relevance of this role binding to the overall determination
+      for the entire policy.
+    role: The role that this role binding grants. For example,
+      `roles/compute.admin`. For a complete list of predefined IAM roles, as
+      well as the permissions in each role, see
       https://cloud.google.com/iam/help/roles/reference.
-    rolePermission: Indicates whether the role granted by this binding
+    rolePermission: Indicates whether the role granted by this role binding
       contains the specified permission.
     rolePermissionRelevance: The relevance of the permission's existence, or
       nonexistence, in the role to the overall determination for the entire
@@ -156,22 +156,27 @@ class GoogleCloudPolicytroubleshooterIamV3betaAllowBindingExplanation(_messages.
   """
 
   class AllowAccessStateValueValuesEnum(_messages.Enum):
-    r"""Required. Indicates whether _this binding_ provides the specified
-    permission to the specified member for the specified resource. This field
-    does _not_ indicate whether the member actually has the permission for the
-    resource. There might be another binding that overrides this binding. To
-    determine whether the member actually has the permission, use the `access`
-    field in the TroubleshootIamPolicyResponse.
+    r"""Required. Indicates whether _this role binding_ gives the specified
+    permission to the specified principal on the specified resource. This
+    field does _not_ indicate whether the principal actually has the
+    permission on the resource. There might be another role binding that
+    overrides this role binding. To determine whether the principal actually
+    has the permission, use the `overall_access_state` field in the
+    TroubleshootIamPolicyResponse.
 
     Values:
-      ALLOW_ACCESS_STATE_UNSPECIFIED: Reserved for future use.
-      ALLOW_ACCESS_STATE_GRANTED: Access is granted.
-      ALLOW_ACCESS_STATE_NOT_GRANTED: Access is not granted.
-      ALLOW_ACCESS_STATE_UNKNOWN_CONDITIONAL: Access is allowed only if a
-        condition expression evaluates to `true`.
-      ALLOW_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
-        access to all of the policies that Policy Troubleshooter needs to
-        evaluate.
+      ALLOW_ACCESS_STATE_UNSPECIFIED: Not specified.
+      ALLOW_ACCESS_STATE_GRANTED: The allow policy gives the principal the
+        permission.
+      ALLOW_ACCESS_STATE_NOT_GRANTED: The allow policy doesn't give the
+        principal the permission.
+      ALLOW_ACCESS_STATE_UNKNOWN_CONDITIONAL: The allow policy gives the
+        principal the permission if a condition expression evaluate to `true`.
+        However, the sender of the request didn't provide enough context for
+        Policy Troubleshooter to evaluate the condition expression.
+      ALLOW_ACCESS_STATE_UNKNOWN_INFO: The sender of the request doesn't have
+        access to all of the allow policies that Policy Troubleshooter needs
+        to evaluate the principal's access.
     """
     ALLOW_ACCESS_STATE_UNSPECIFIED = 0
     ALLOW_ACCESS_STATE_GRANTED = 1
@@ -180,11 +185,11 @@ class GoogleCloudPolicytroubleshooterIamV3betaAllowBindingExplanation(_messages.
     ALLOW_ACCESS_STATE_UNKNOWN_INFO = 4
 
   class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of this binding to the overall determination for the
-    entire policy.
+    r"""The relevance of this role binding to the overall determination for
+    the entire policy.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Not specified.
       HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
         result. Changing the data point is unlikely to affect the overall
         determination.
@@ -201,7 +206,7 @@ class GoogleCloudPolicytroubleshooterIamV3betaAllowBindingExplanation(_messages.
     role to the overall determination for the entire policy.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Not specified.
       HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
         result. Changing the data point is unlikely to affect the overall
         determination.
@@ -214,16 +219,16 @@ class GoogleCloudPolicytroubleshooterIamV3betaAllowBindingExplanation(_messages.
     HEURISTIC_RELEVANCE_HIGH = 2
 
   class RolePermissionValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the role granted by this binding contains the
+    r"""Indicates whether the role granted by this role binding contains the
     specified permission.
 
     Values:
-      ROLE_PERMISSION_INCLUSION_STATE_UNSPECIFIED: Reserved for future use.
+      ROLE_PERMISSION_INCLUSION_STATE_UNSPECIFIED: Not specified.
       ROLE_PERMISSION_INCLUDED: The permission is included in the role.
       ROLE_PERMISSION_NOT_INCLUDED: The permission is not included in the
         role.
       ROLE_PERMISSION_UNKNOWN_INFO: The sender of the request is not allowed
-        to access the binding.
+        to access the role definition.
     """
     ROLE_PERMISSION_INCLUSION_STATE_UNSPECIFIED = 0
     ROLE_PERMISSION_INCLUDED = 1
@@ -232,18 +237,18 @@ class GoogleCloudPolicytroubleshooterIamV3betaAllowBindingExplanation(_messages.
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MembershipsValue(_messages.Message):
-    r"""Indicates whether each member in the binding includes the member
-    specified in the request, either directly or indirectly. Each key
-    identifies a member in the binding, and each value indicates whether the
-    member in the binding includes the member in the request. For example,
-    suppose that a binding includes the following members: *
+    r"""Indicates whether each role binding includes the principal specified
+    in the request, either directly or indirectly. Each key identifies a
+    principal in the role binding, and each value indicates whether the
+    principal in the role binding includes the principal in the request. For
+    example, suppose that a role binding includes the following principals: *
     `user:alice@example.com` * `group:product-eng@example.com` You want to
     troubleshoot access for `user:bob@example.com`. This user is a member of
-    the group `group:product-eng@example.com`. For the first member in the
-    binding, the key is `user:alice@example.com`, and the `membership` field
-    in the value is set to `NOT_INCLUDED`. For the second member in the
-    binding, the key is `group:product-eng@example.com`, and the `membership`
-    field in the value is set to `INCLUDED`.
+    the group `group:product-eng@example.com`. For the first principal in the
+    role binding, the key is `user:alice@example.com`, and the `membership`
+    field in the value is set to `NOT_INCLUDED`. For the second principal in
+    the role binding, the key is `group:product-eng@example.com`, and the
+    `membership` field in the value is set to `INCLUDED`.
 
     Messages:
       AdditionalProperty: An additional property for a MembershipsValue
@@ -279,34 +284,38 @@ class GoogleCloudPolicytroubleshooterIamV3betaAllowBindingExplanation(_messages.
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaAllowBindingExplanationAnnotatedAllowMembership(_messages.Message):
-  r"""Details about whether the binding includes the member.
+  r"""Details about whether the role binding includes the principal.
 
   Enums:
-    MembershipValueValuesEnum: Indicates whether the binding includes the
-      member.
-    RelevanceValueValuesEnum: The relevance of the member's status to the
-      overall determination for the binding.
+    MembershipValueValuesEnum: Indicates whether the role binding includes the
+      principal.
+    RelevanceValueValuesEnum: The relevance of the principal's status to the
+      overall determination for the role binding.
 
   Fields:
-    membership: Indicates whether the binding includes the member.
-    relevance: The relevance of the member's status to the overall
-      determination for the binding.
+    membership: Indicates whether the role binding includes the principal.
+    relevance: The relevance of the principal's status to the overall
+      determination for the role binding.
   """
 
   class MembershipValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the binding includes the member.
+    r"""Indicates whether the role binding includes the principal.
 
     Values:
-      MEMBERSHIP_MATCHING_STATE_UNSPECIFIED: Reserved for future use.
-      MEMBERSHIP_MATCHED: The principal matches the member. The member can be
-        included directly or indirectly. For example: * A member is included
-        directly if that member is listed in the binding. * A member is
-        included indirectly if that member is in a Google group or G Suite
-        domain that is listed in the binding.
-      MEMBERSHIP_NOT_MATCHED: The binding does not match the member.
-      MEMBERSHIP_UNKNOWN_INFO: The sender of the request is not allowed to
-        access the binding.
-      MEMBERSHIP_UNKNOWN_UNSUPPORTED: The member is an unsupported type.
+      MEMBERSHIP_MATCHING_STATE_UNSPECIFIED: Not specified.
+      MEMBERSHIP_MATCHED: The principal in the request matches the principal
+        in the policy. The principal can be included directly or indirectly: *
+        A principal is included directly if that principal is listed in the
+        role binding. * A principal is included indirectly if that principal
+        is in a Google group, Google Workspace account, or Cloud Identity
+        domain that is listed in the policy.
+      MEMBERSHIP_NOT_MATCHED: The principal in the request doesn't match the
+        principal in the policy.
+      MEMBERSHIP_UNKNOWN_INFO: The principal in the policy is a group or
+        domain, and the sender of the request doesn't have permission to view
+        whether the principal in the request is a member of the group or
+        domain.
+      MEMBERSHIP_UNKNOWN_UNSUPPORTED: The principal is an unsupported type.
     """
     MEMBERSHIP_MATCHING_STATE_UNSPECIFIED = 0
     MEMBERSHIP_MATCHED = 1
@@ -315,11 +324,11 @@ class GoogleCloudPolicytroubleshooterIamV3betaAllowBindingExplanationAnnotatedAl
     MEMBERSHIP_UNKNOWN_UNSUPPORTED = 4
 
   class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of the member's status to the overall determination for
-    the binding.
+    r"""The relevance of the principal's status to the overall determination
+    for the role binding.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Not specified.
       HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
         result. Changing the data point is unlikely to affect the overall
         determination.
@@ -336,23 +345,24 @@ class GoogleCloudPolicytroubleshooterIamV3betaAllowBindingExplanationAnnotatedAl
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaAllowPolicyExplanation(_messages.Message):
-  r"""Details about how IAM allow policies contributed to the access check.
+  r"""Details about how the relevant IAM allow policies affect the final
+  access state.
 
   Enums:
-    AllowAccessStateValueValuesEnum: Indicates whether the member has the
+    AllowAccessStateValueValuesEnum: Indicates whether the principal has the
       specified permission for the specified resource, based on evaluating all
       applicable IAM allow policies.
     RelevanceValueValuesEnum: The relevance of the allow policy type to the
       overall access state.
 
   Fields:
-    allowAccessState: Indicates whether the member has the specified
+    allowAccessState: Indicates whether the principal has the specified
       permission for the specified resource, based on evaluating all
       applicable IAM allow policies.
     explainedPolicies: List of IAM allow policies that were evaluated to check
-      the member's permissions, with annotations to indicate how each policy
-      contributed to the final result. The list of policies can include the
-      policy for the resource itself. It can also include policies that are
+      the principal's permissions, with annotations to indicate how each
+      policy contributed to the final result. The list of policies includes
+      the policy for the resource itself, as well as allow policies that are
       inherited from higher levels of the resource hierarchy, including the
       organization, the folder, and the project. To learn more about the
       resource hierarchy, see https://cloud.google.com/iam/help/resource-
@@ -362,18 +372,22 @@ class GoogleCloudPolicytroubleshooterIamV3betaAllowPolicyExplanation(_messages.M
   """
 
   class AllowAccessStateValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the member has the specified permission for the
+    r"""Indicates whether the principal has the specified permission for the
     specified resource, based on evaluating all applicable IAM allow policies.
 
     Values:
-      ALLOW_ACCESS_STATE_UNSPECIFIED: Reserved for future use.
-      ALLOW_ACCESS_STATE_GRANTED: Access is granted.
-      ALLOW_ACCESS_STATE_NOT_GRANTED: Access is not granted.
-      ALLOW_ACCESS_STATE_UNKNOWN_CONDITIONAL: Access is allowed only if a
-        condition expression evaluates to `true`.
-      ALLOW_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
-        access to all of the policies that Policy Troubleshooter needs to
-        evaluate.
+      ALLOW_ACCESS_STATE_UNSPECIFIED: Not specified.
+      ALLOW_ACCESS_STATE_GRANTED: The allow policy gives the principal the
+        permission.
+      ALLOW_ACCESS_STATE_NOT_GRANTED: The allow policy doesn't give the
+        principal the permission.
+      ALLOW_ACCESS_STATE_UNKNOWN_CONDITIONAL: The allow policy gives the
+        principal the permission if a condition expression evaluate to `true`.
+        However, the sender of the request didn't provide enough context for
+        Policy Troubleshooter to evaluate the condition expression.
+      ALLOW_ACCESS_STATE_UNKNOWN_INFO: The sender of the request doesn't have
+        access to all of the allow policies that Policy Troubleshooter needs
+        to evaluate the principal's access.
     """
     ALLOW_ACCESS_STATE_UNSPECIFIED = 0
     ALLOW_ACCESS_STATE_GRANTED = 1
@@ -385,7 +399,7 @@ class GoogleCloudPolicytroubleshooterIamV3betaAllowPolicyExplanation(_messages.M
     r"""The relevance of the allow policy type to the overall access state.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Not specified.
       HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
         result. Changing the data point is unlikely to affect the overall
         determination.
@@ -403,16 +417,15 @@ class GoogleCloudPolicytroubleshooterIamV3betaAllowPolicyExplanation(_messages.M
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaConditionContext(_messages.Message):
-  r"""Represents the attributes that will be used to do IAM condition
-  evaluation.
+  r"""Additional context for troubleshooting conditional role bindings and
+  deny rules.
 
   Fields:
     destination: The destination of a network activity, such as accepting a
-      TCP connection. In a multi hop network activity, the destination
+      TCP connection. In a multi-hop network activity, the destination
       represents the receiver of the last hop.
-    effectiveTags: Output only. Represents the effective tags on the resource.
-      The effective tags are fetched during Troubleshooting so this field in
-      output only.
+    effectiveTags: Output only. The effective tags on the resource. The
+      effective tags are fetched during troubleshooting.
     request: Represents a network request, such as an HTTP request.
     resource: Represents a target resource that is involved with a network
       activity. If multiple resources are involved with an activity, this must
@@ -426,11 +439,11 @@ class GoogleCloudPolicytroubleshooterIamV3betaConditionContext(_messages.Message
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaConditionContextEffectiveTag(_messages.Message):
-  r"""An EffectiveTag represents a tag that applies to a resource during
-  policy evaluation. Tags can be either directly bound to a resource or
-  inherited from its ancestor. EffectiveTag contains the name and
-  namespaced_name of the tag value and tag key, with additional fields of
-  `inherited` to indicate the inheritance status of the effective tag.
+  r"""A tag that applies to a resource during policy evaluation. Tags can be
+  either directly bound to a resource or inherited from its ancestor.
+  `EffectiveTag` contains the `name` and `namespaced_name` of the tag value
+  and tag key, with additional fields of `inherited` to indicate the
+  inheritance status of the effective tag.
 
   Fields:
     inherited: Indicates the inheritance status of a tag value attached to the
@@ -481,14 +494,12 @@ class GoogleCloudPolicytroubleshooterIamV3betaConditionContextRequest(_messages.
   actual request to an equivalent HTTP request.
 
   Fields:
-    receiveTime: Optional. The timestamp when the `destination` service
-      receives the first byte of the request.
+    receiveTime: Optional. The timestamp when the destination service receives
+      the first byte of the request.
     satisfiedAccessLevels: Optional. The information for access levels that
-      are satisfied for the given access tuple. This field is google internal
-      and can only be used by pantheon
+      are satisfied for the given access tuple.
     unsatisfiedAccessLevels: Optional. The information for access levels that
-      are unsatisfied for the given access tuple. This field is google
-      internal and can only be used by pantheon
+      are unsatisfied for the given access tuple.
   """
 
   receiveTime = _messages.StringField(1)
@@ -497,27 +508,25 @@ class GoogleCloudPolicytroubleshooterIamV3betaConditionContextRequest(_messages.
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaConditionContextResource(_messages.Message):
-  r"""This message defines core attributes for a resource. A resource is an
-  addressable (named) entity provided by the destination service. For example,
-  a file stored on a network storage service.
+  r"""Core attributes for a resource. A resource is an addressable (named)
+  entity provided by the destination service. For example, a Compute Engine
+  instance.
 
   Fields:
     name: The stable identifier (name) of a resource on the `service`. A
       resource can be logically identified as
-      "//{resource.service}/{resource.name}". The differences between a
-      resource name and a URI are: * Resource name is a logical identifier,
-      independent of network protocol and API version. For example,
-      `//pubsub.googleapis.com/projects/123/topics/news-feed`. * URI often
-      includes protocol and version information, so it can be used directly by
-      applications. For example,
-      `https://pubsub.googleapis.com/v1/projects/123/topics/news-feed`. See
-      https://google.aip.dev/122 for details.
+      `//{resource.service}/{resource.name}`. Unlike the resource URI, the
+      resource name doesn't contain any protocol and version information. For
+      a list of full resource name formats, see
+      https://cloud.google.com/iam/help/troubleshooter/full-resource-names
     service: The name of the service that this resource belongs to, such as
-      `pubsub.googleapis.com`. The service may be different from the DNS
-      hostname that actually serves the request.
-    type: The type of the resource. The syntax is platform-specific because
-      different platforms define their resources differently. For Google APIs,
-      the type format must be "{service}/{kind}".
+      `compute.googleapis.com`. The service name might not match the DNS
+      hostname that actually serves the request. For a full list of resource
+      service values, see
+      https://cloud.google.com/iam/help/conditions/resource-services
+    type: The type of the resource, in the format `{service}/{kind}`. For a
+      full list of resource type values, see
+      https://cloud.google.com/iam/help/conditions/resource-types
   """
 
   name = _messages.StringField(1)
@@ -526,13 +535,14 @@ class GoogleCloudPolicytroubleshooterIamV3betaConditionContextResource(_messages
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaConditionExplanation(_messages.Message):
-  r"""Condition Explanation
+  r"""Explanation for how a condition affects a principal's access
 
   Fields:
-    errors: The general errors contained in the overall expression
-      explanation.
-    evaluationStates: List of evaluated states of non boolean expression in
-      the condition
+    errors: Any errors that prevented complete evaluation of the condition
+      expression.
+    evaluationStates: The value of each statement of the condition expression.
+      The value can be `true`, `false`, or `null`. The value is `null` if the
+      statement can't be evaluated.
     value: Value of the condition.
   """
 
@@ -542,15 +552,15 @@ class GoogleCloudPolicytroubleshooterIamV3betaConditionExplanation(_messages.Mes
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaConditionExplanationEvaluationState(_messages.Message):
-  r"""Evaluated state of an expression.
+  r"""Evaluated state of a condition expression.
 
   Fields:
-    end: End position of an expression in the original condition, by
-      character, end included, for example: the end position of the first part
-      of "a==b || c==d" would be 4.
-    errors: The general errors contained in the expression explanation.
-    start: Start position of an expression in the original condition, by
-      character.
+    end: End position of an expression in the condition, by character, end
+      included, for example: the end position of the first part of `a==b ||
+      c==d` would be 4.
+    errors: Any errors that prevented complete evaluation of the condition
+      expression.
+    start: Start position of an expression in the condition, by character.
     value: Value of this expression.
   """
 
@@ -561,48 +571,54 @@ class GoogleCloudPolicytroubleshooterIamV3betaConditionExplanationEvaluationStat
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaDenyPolicyExplanation(_messages.Message):
-  r"""Details about how IAM deny policies contributed to the access check.
+  r"""Details about how the relevant IAM deny policies affect the final access
+  state.
 
   Enums:
-    DenyAccessStateValueValuesEnum: Indicates whether the member is denied for
+    DenyAccessStateValueValuesEnum: Indicates whether the principal is denied
       the specified permission for the specified resource, based on evaluating
       all applicable IAM deny policies.
-    RelevanceValueValuesEnum: The relevance of the deny policy type to the
+    RelevanceValueValuesEnum: The relevance of the deny policy result to the
       overall access state.
 
   Fields:
-    denyAccessState: Indicates whether the member is denied for the specified
+    denyAccessState: Indicates whether the principal is denied the specified
       permission for the specified resource, based on evaluating all
       applicable IAM deny policies.
     explainedResources: List of resources with IAM deny policies that were
-      evaluated to check the member's denied permissions, with annotations to
-      indicate how each policy contributed to the final result. The list of
-      resources can include the policy for the resource itself. It can also
-      include policies that are inherited from higher levels of the resource
+      evaluated to check the principal's denied permissions, with annotations
+      to indicate how each policy contributed to the final result. The list of
+      resources includes the policy for the resource itself, as well as
+      policies that are inherited from higher levels of the resource
       hierarchy, including the organization, the folder, and the project. The
       order of the resources starts from the resource and climbs up the
       resource hierarchy. To learn more about the resource hierarchy, see
       https://cloud.google.com/iam/help/resource-hierarchy.
-    permissionDeniable: Indicates whether the permission to troubleshoot
-      supports deny.
-    relevance: The relevance of the deny policy type to the overall access
+    permissionDeniable: Indicates whether the permission to troubleshoot is
+      supported in deny policies.
+    relevance: The relevance of the deny policy result to the overall access
       state.
   """
 
   class DenyAccessStateValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the member is denied for the specified permission
-    for the specified resource, based on evaluating all applicable IAM deny
+    r"""Indicates whether the principal is denied the specified permission for
+    the specified resource, based on evaluating all applicable IAM deny
     policies.
 
     Values:
-      DENY_ACCESS_STATE_UNSPECIFIED: Reserved for future use.
-      DENY_ACCESS_STATE_DENIED: Access is denied.
-      DENY_ACCESS_STATE_NOT_DENIED: Access is not denied.
-      DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL: Access is denied only if a
-        condition expression evaluates to `true`.
+      DENY_ACCESS_STATE_UNSPECIFIED: Not specified.
+      DENY_ACCESS_STATE_DENIED: The deny policy denies the principal the
+        permission.
+      DENY_ACCESS_STATE_NOT_DENIED: The deny policy doesn't deny the principal
+        the permission.
+      DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL: The deny policy denies the
+        principal the permission if a condition expression evaluates to
+        `true`. However, the sender of the request didn't provide enough
+        context for Policy Troubleshooter to evaluate the condition
+        expression.
       DENY_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
         access to all of the deny policies that Policy Troubleshooter needs to
-        evaluate.
+        evaluate the principal's access.
     """
     DENY_ACCESS_STATE_UNSPECIFIED = 0
     DENY_ACCESS_STATE_DENIED = 1
@@ -611,10 +627,10 @@ class GoogleCloudPolicytroubleshooterIamV3betaDenyPolicyExplanation(_messages.Me
     DENY_ACCESS_STATE_UNKNOWN_INFO = 4
 
   class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of the deny policy type to the overall access state.
+    r"""The relevance of the deny policy result to the overall access state.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Not specified.
       HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
         result. Changing the data point is unlikely to affect the overall
         determination.
@@ -633,94 +649,111 @@ class GoogleCloudPolicytroubleshooterIamV3betaDenyPolicyExplanation(_messages.Me
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaDenyRuleExplanation(_messages.Message):
-  r"""Details about how a deny rule in a deny policy affects a member's
+  r"""Details about how a deny rule in a deny policy affects a principal's
   ability to use a permission.
 
   Enums:
     DenyAccessStateValueValuesEnum: Required. Indicates whether _this rule_
-      denies the specified permission to the specified member for the
-      specified resource. This field does _not_ indicate whether the member is
-      actually denied on the permission for the resource. There might be
-      another rule that overrides this rule. To determine whether the member
-      actually has the permission, use the `access` field in the
-      TroubleshootIamPolicyResponse.
-    RelevanceValueValuesEnum: The relevance of this binding to the overall
-      determination for the entire policy.
+      denies the specified permission to the specified principal for the
+      specified resource. This field does _not_ indicate whether the principal
+      is actually denied on the permission for the resource. There might be
+      another rule that overrides this rule. To determine whether the
+      principal actually has the permission, use the `overall_access_state`
+      field in the TroubleshootIamPolicyResponse.
+    RelevanceValueValuesEnum: The relevance of this role binding to the
+      overall determination for the entire policy.
 
   Messages:
-    DeniedPermissionsValue: Indicates whether the permission matches each
-      denied permission pattern. Each key identifies a denied permission in
-      the rule, and each value indicates whether the denied permission matches
-      the permission in the request.
-    DeniedPrincipalsValue: Indicates whether the principal matches each denied
-      principals. Each key identifies a denied principal in the rule, and each
-      value indicates whether the denied principal matches the principal in
-      the request.
-    ExceptionPermissionsValue: Indicates whether the permission matches each
-      exception permission pattern. Each key identifies a exception permission
-      in the rule, and each value indicates whether the exception permission
-      matches the permission in the request.
-    ExceptionPrincipalsValue: Indicates whether the principal matches each
-      exception principal pattern. Each key identifies a exception principal
-      in the rule, and each value indicates whether the exception principal
-      matches the principal in the request.
+    DeniedPermissionsValue: Lists all denied permissions in the deny rule and
+      indicates whether each permission matches the permission in the request.
+      Each key identifies a denied permission in the rule, and each value
+      indicates whether the denied permission matches the permission in the
+      request.
+    DeniedPrincipalsValue: Lists all denied principals in the deny rule and
+      indicates whether each principal matches the principal in the request,
+      either directly or through membership in a principal set. Each key
+      identifies a denied principal in the rule, and each value indicates
+      whether the denied principal matches the principal in the request.
+    ExceptionPermissionsValue: Lists all exception permissions in the deny
+      rule and indicates whether each permission matches the permission in the
+      request. Each key identifies a exception permission in the rule, and
+      each value indicates whether the exception permission matches the
+      permission in the request.
+    ExceptionPrincipalsValue: Lists all exception principals in the deny rule
+      and indicates whether each principal matches the principal in the
+      request, either directly or through membership in a principal set. Each
+      key identifies a exception principal in the rule, and each value
+      indicates whether the exception principal matches the principal in the
+      request.
 
   Fields:
-    combinedDeniedPermission: Indicates whether the permission matches any
-      denied permission pattern.
-    combinedDeniedPrincipal: Indicates whether the principal matches any
-      denied principal pattern.
-    combinedExceptionPermission: Indicates whether the permission matches any
-      exception permission pattern.
-    combinedExceptionPrincipal: Indicates whether the principal matches any
-      exception principal pattern.
-    condition: A condition expression that prevents access unless the
-      expression evaluates to `true`. To learn about IAM Conditions, see
+    combinedDeniedPermission: Indicates whether the permission in the request
+      is listed as a denied permission in the deny rule.
+    combinedDeniedPrincipal: Indicates whether the principal is listed as a
+      denied principal in the deny rule, either directly or through membership
+      in a principal set.
+    combinedExceptionPermission: Indicates whether the permission in the
+      request is listed as an exception permission in the deny rule.
+    combinedExceptionPrincipal: Indicates whether the principal is listed as
+      an exception principal in the deny rule, either directly or through
+      membership in a principal set.
+    condition: A condition expression that specifies when the deny rule denies
+      the principal access. To learn about IAM Conditions, see
       https://cloud.google.com/iam/help/conditions/overview.
-    conditionExplanation: Condition evaluation state for this binding.
-    deniedPermissions: Indicates whether the permission matches each denied
-      permission pattern. Each key identifies a denied permission in the rule,
-      and each value indicates whether the denied permission matches the
-      permission in the request.
-    deniedPrincipals: Indicates whether the principal matches each denied
-      principals. Each key identifies a denied principal in the rule, and each
-      value indicates whether the denied principal matches the principal in
-      the request.
+    conditionExplanation: Condition evaluation state for this role binding.
+    deniedPermissions: Lists all denied permissions in the deny rule and
+      indicates whether each permission matches the permission in the request.
+      Each key identifies a denied permission in the rule, and each value
+      indicates whether the denied permission matches the permission in the
+      request.
+    deniedPrincipals: Lists all denied principals in the deny rule and
+      indicates whether each principal matches the principal in the request,
+      either directly or through membership in a principal set. Each key
+      identifies a denied principal in the rule, and each value indicates
+      whether the denied principal matches the principal in the request.
     denyAccessState: Required. Indicates whether _this rule_ denies the
-      specified permission to the specified member for the specified resource.
-      This field does _not_ indicate whether the member is actually denied on
-      the permission for the resource. There might be another rule that
-      overrides this rule. To determine whether the member actually has the
-      permission, use the `access` field in the TroubleshootIamPolicyResponse.
-    exceptionPermissions: Indicates whether the permission matches each
-      exception permission pattern. Each key identifies a exception permission
-      in the rule, and each value indicates whether the exception permission
-      matches the permission in the request.
-    exceptionPrincipals: Indicates whether the principal matches each
-      exception principal pattern. Each key identifies a exception principal
-      in the rule, and each value indicates whether the exception principal
-      matches the principal in the request.
-    relevance: The relevance of this binding to the overall determination for
-      the entire policy.
+      specified permission to the specified principal for the specified
+      resource. This field does _not_ indicate whether the principal is
+      actually denied on the permission for the resource. There might be
+      another rule that overrides this rule. To determine whether the
+      principal actually has the permission, use the `overall_access_state`
+      field in the TroubleshootIamPolicyResponse.
+    exceptionPermissions: Lists all exception permissions in the deny rule and
+      indicates whether each permission matches the permission in the request.
+      Each key identifies a exception permission in the rule, and each value
+      indicates whether the exception permission matches the permission in the
+      request.
+    exceptionPrincipals: Lists all exception principals in the deny rule and
+      indicates whether each principal matches the principal in the request,
+      either directly or through membership in a principal set. Each key
+      identifies a exception principal in the rule, and each value indicates
+      whether the exception principal matches the principal in the request.
+    relevance: The relevance of this role binding to the overall determination
+      for the entire policy.
   """
 
   class DenyAccessStateValueValuesEnum(_messages.Enum):
     r"""Required. Indicates whether _this rule_ denies the specified
-    permission to the specified member for the specified resource. This field
-    does _not_ indicate whether the member is actually denied on the
+    permission to the specified principal for the specified resource. This
+    field does _not_ indicate whether the principal is actually denied on the
     permission for the resource. There might be another rule that overrides
-    this rule. To determine whether the member actually has the permission,
-    use the `access` field in the TroubleshootIamPolicyResponse.
+    this rule. To determine whether the principal actually has the permission,
+    use the `overall_access_state` field in the TroubleshootIamPolicyResponse.
 
     Values:
-      DENY_ACCESS_STATE_UNSPECIFIED: Reserved for future use.
-      DENY_ACCESS_STATE_DENIED: Access is denied.
-      DENY_ACCESS_STATE_NOT_DENIED: Access is not denied.
-      DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL: Access is denied only if a
-        condition expression evaluates to `true`.
+      DENY_ACCESS_STATE_UNSPECIFIED: Not specified.
+      DENY_ACCESS_STATE_DENIED: The deny policy denies the principal the
+        permission.
+      DENY_ACCESS_STATE_NOT_DENIED: The deny policy doesn't deny the principal
+        the permission.
+      DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL: The deny policy denies the
+        principal the permission if a condition expression evaluates to
+        `true`. However, the sender of the request didn't provide enough
+        context for Policy Troubleshooter to evaluate the condition
+        expression.
       DENY_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
         access to all of the deny policies that Policy Troubleshooter needs to
-        evaluate.
+        evaluate the principal's access.
     """
     DENY_ACCESS_STATE_UNSPECIFIED = 0
     DENY_ACCESS_STATE_DENIED = 1
@@ -729,11 +762,11 @@ class GoogleCloudPolicytroubleshooterIamV3betaDenyRuleExplanation(_messages.Mess
     DENY_ACCESS_STATE_UNKNOWN_INFO = 4
 
   class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of this binding to the overall determination for the
-    entire policy.
+    r"""The relevance of this role binding to the overall determination for
+    the entire policy.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Not specified.
       HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
         result. Changing the data point is unlikely to affect the overall
         determination.
@@ -747,10 +780,10 @@ class GoogleCloudPolicytroubleshooterIamV3betaDenyRuleExplanation(_messages.Mess
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DeniedPermissionsValue(_messages.Message):
-    r"""Indicates whether the permission matches each denied permission
-    pattern. Each key identifies a denied permission in the rule, and each
-    value indicates whether the denied permission matches the permission in
-    the request.
+    r"""Lists all denied permissions in the deny rule and indicates whether
+    each permission matches the permission in the request. Each key identifies
+    a denied permission in the rule, and each value indicates whether the
+    denied permission matches the permission in the request.
 
     Messages:
       AdditionalProperty: An additional property for a DeniedPermissionsValue
@@ -777,9 +810,11 @@ class GoogleCloudPolicytroubleshooterIamV3betaDenyRuleExplanation(_messages.Mess
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DeniedPrincipalsValue(_messages.Message):
-    r"""Indicates whether the principal matches each denied principals. Each
-    key identifies a denied principal in the rule, and each value indicates
-    whether the denied principal matches the principal in the request.
+    r"""Lists all denied principals in the deny rule and indicates whether
+    each principal matches the principal in the request, either directly or
+    through membership in a principal set. Each key identifies a denied
+    principal in the rule, and each value indicates whether the denied
+    principal matches the principal in the request.
 
     Messages:
       AdditionalProperty: An additional property for a DeniedPrincipalsValue
@@ -806,10 +841,10 @@ class GoogleCloudPolicytroubleshooterIamV3betaDenyRuleExplanation(_messages.Mess
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ExceptionPermissionsValue(_messages.Message):
-    r"""Indicates whether the permission matches each exception permission
-    pattern. Each key identifies a exception permission in the rule, and each
-    value indicates whether the exception permission matches the permission in
-    the request.
+    r"""Lists all exception permissions in the deny rule and indicates whether
+    each permission matches the permission in the request. Each key identifies
+    a exception permission in the rule, and each value indicates whether the
+    exception permission matches the permission in the request.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -836,10 +871,11 @@ class GoogleCloudPolicytroubleshooterIamV3betaDenyRuleExplanation(_messages.Mess
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ExceptionPrincipalsValue(_messages.Message):
-    r"""Indicates whether the principal matches each exception principal
-    pattern. Each key identifies a exception principal in the rule, and each
-    value indicates whether the exception principal matches the principal in
-    the request.
+    r"""Lists all exception principals in the deny rule and indicates whether
+    each principal matches the principal in the request, either directly or
+    through membership in a principal set. Each key identifies a exception
+    principal in the rule, and each value indicates whether the exception
+    principal matches the principal in the request.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -879,33 +915,44 @@ class GoogleCloudPolicytroubleshooterIamV3betaDenyRuleExplanation(_messages.Mess
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaDenyRuleExplanationAnnotatedDenyPrincipalMatching(_messages.Message):
-  r"""Details about whether the principal matches the principal set.
+  r"""Details about whether the principal in the request is listed as a denied
+  principal in the deny rule, either directly or through membership in a
+  principal set.
 
   Enums:
-    MembershipValueValuesEnum: Indicates whether the principal is matched.
-    RelevanceValueValuesEnum: The relevance of the member's status to the
-      overall determination for the binding.
+    MembershipValueValuesEnum: Indicates whether the principal is listed as a
+      denied principal in the deny rule, either directly or through membership
+      in a principal set.
+    RelevanceValueValuesEnum: The relevance of the principal's status to the
+      overall determination for the role binding.
 
   Fields:
-    membership: Indicates whether the principal is matched.
-    relevance: The relevance of the member's status to the overall
-      determination for the binding.
+    membership: Indicates whether the principal is listed as a denied
+      principal in the deny rule, either directly or through membership in a
+      principal set.
+    relevance: The relevance of the principal's status to the overall
+      determination for the role binding.
   """
 
   class MembershipValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the principal is matched.
+    r"""Indicates whether the principal is listed as a denied principal in the
+    deny rule, either directly or through membership in a principal set.
 
     Values:
-      MEMBERSHIP_MATCHING_STATE_UNSPECIFIED: Reserved for future use.
-      MEMBERSHIP_MATCHED: The principal matches the member. The member can be
-        included directly or indirectly. For example: * A member is included
-        directly if that member is listed in the binding. * A member is
-        included indirectly if that member is in a Google group or G Suite
-        domain that is listed in the binding.
-      MEMBERSHIP_NOT_MATCHED: The binding does not match the member.
-      MEMBERSHIP_UNKNOWN_INFO: The sender of the request is not allowed to
-        access the binding.
-      MEMBERSHIP_UNKNOWN_UNSUPPORTED: The member is an unsupported type.
+      MEMBERSHIP_MATCHING_STATE_UNSPECIFIED: Not specified.
+      MEMBERSHIP_MATCHED: The principal in the request matches the principal
+        in the policy. The principal can be included directly or indirectly: *
+        A principal is included directly if that principal is listed in the
+        role binding. * A principal is included indirectly if that principal
+        is in a Google group, Google Workspace account, or Cloud Identity
+        domain that is listed in the policy.
+      MEMBERSHIP_NOT_MATCHED: The principal in the request doesn't match the
+        principal in the policy.
+      MEMBERSHIP_UNKNOWN_INFO: The principal in the policy is a group or
+        domain, and the sender of the request doesn't have permission to view
+        whether the principal in the request is a member of the group or
+        domain.
+      MEMBERSHIP_UNKNOWN_UNSUPPORTED: The principal is an unsupported type.
     """
     MEMBERSHIP_MATCHING_STATE_UNSPECIFIED = 0
     MEMBERSHIP_MATCHED = 1
@@ -914,11 +961,11 @@ class GoogleCloudPolicytroubleshooterIamV3betaDenyRuleExplanationAnnotatedDenyPr
     MEMBERSHIP_UNKNOWN_UNSUPPORTED = 4
 
   class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of the member's status to the overall determination for
-    the binding.
+    r"""The relevance of the principal's status to the overall determination
+    for the role binding.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Not specified.
       HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
         result. Changing the data point is unlikely to affect the overall
         determination.
@@ -935,30 +982,32 @@ class GoogleCloudPolicytroubleshooterIamV3betaDenyRuleExplanationAnnotatedDenyPr
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaDenyRuleExplanationAnnotatedPermissionMatching(_messages.Message):
-  r"""Details about whether the permission matches the permission pattern.
+  r"""Details about whether the permission in the request is denied by the
+  deny rule.
 
   Enums:
     PermissionMatchingStateValueValuesEnum: Indicates whether the permission
-      matches the permission pattern.
+      in the request is denied by the deny rule.
     RelevanceValueValuesEnum: The relevance of the permission status to the
       overall determination for the rule.
 
   Fields:
-    permissionMatchingState: Indicates whether the permission matches the
-      permission pattern.
+    permissionMatchingState: Indicates whether the permission in the request
+      is denied by the deny rule.
     relevance: The relevance of the permission status to the overall
       determination for the rule.
   """
 
   class PermissionMatchingStateValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the permission matches the permission pattern.
+    r"""Indicates whether the permission in the request is denied by the deny
+    rule.
 
     Values:
-      PERMISSION_PATTERN_MATCHING_STATE_UNSPECIFIED: Reserved for future use.
-      PERMISSION_PATTERN_MATCHED: The permission matches the permission
-        pattern.
-      PERMISSION_PATTERN_NOT_MATCHED: The permission does not match the
-        permission pattern..
+      PERMISSION_PATTERN_MATCHING_STATE_UNSPECIFIED: Not specified.
+      PERMISSION_PATTERN_MATCHED: The permission in the request matches the
+        permission in the policy.
+      PERMISSION_PATTERN_NOT_MATCHED: The permission in the request matches
+        the permission in the policy.
     """
     PERMISSION_PATTERN_MATCHING_STATE_UNSPECIFIED = 0
     PERMISSION_PATTERN_MATCHED = 1
@@ -969,7 +1018,7 @@ class GoogleCloudPolicytroubleshooterIamV3betaDenyRuleExplanationAnnotatedPermis
     for the rule.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Not specified.
       HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
         result. Changing the data point is unlikely to affect the overall
         determination.
@@ -986,32 +1035,34 @@ class GoogleCloudPolicytroubleshooterIamV3betaDenyRuleExplanationAnnotatedPermis
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaExplainedAllowPolicy(_messages.Message):
-  r"""Details about how a specific IAM Policy contributed to the access check.
+  r"""Details about how a specific IAM allow policy contributed to the final
+  access state.
 
   Enums:
     AllowAccessStateValueValuesEnum: Required. Indicates whether _this policy_
-      provides the specified permission to the specified member for the
-      specified resource. This field does _not_ indicate whether the member
+      provides the specified permission to the specified principal for the
+      specified resource. This field does _not_ indicate whether the principal
       actually has the permission for the resource. There might be another
-      policy that overrides this policy. To determine whether the member
-      actually has the permission, use the `access` field in the
+      policy that overrides this policy. To determine whether the principal
+      actually has the permission, use the `overall_access_state` field in the
       TroubleshootIamPolicyResponse.
     RelevanceValueValuesEnum: The relevance of this policy to the overall
-      determination in the TroubleshootIamPolicyResponse. If the sender of the
+      access state in the TroubleshootIamPolicyResponse. If the sender of the
       request does not have access to the policy, this field is omitted.
 
   Fields:
     allowAccessState: Required. Indicates whether _this policy_ provides the
-      specified permission to the specified member for the specified resource.
-      This field does _not_ indicate whether the member actually has the
-      permission for the resource. There might be another policy that
-      overrides this policy. To determine whether the member actually has the
-      permission, use the `access` field in the TroubleshootIamPolicyResponse.
-    bindingExplanations: Details about how each binding in the policy affects
-      the member's ability, or inability, to use the permission for the
-      resource. The order of the bindings matches the binding order in the
-      policy. If the sender of the request does not have access to the policy,
-      this field is omitted.
+      specified permission to the specified principal for the specified
+      resource. This field does _not_ indicate whether the principal actually
+      has the permission for the resource. There might be another policy that
+      overrides this policy. To determine whether the principal actually has
+      the permission, use the `overall_access_state` field in the
+      TroubleshootIamPolicyResponse.
+    bindingExplanations: Details about how each role binding in the policy
+      affects the principal's ability, or inability, to use the permission for
+      the resource. The order of the role bindings matches the role binding
+      order in the policy. If the sender of the request does not have access
+      to the policy, this field is omitted.
     fullResourceName: The full resource name that identifies the resource. For
       example, `//compute.googleapis.com/projects/my-project/zones/us-
       central1-a/instances/my-instance`. If the sender of the request does not
@@ -1020,28 +1071,33 @@ class GoogleCloudPolicytroubleshooterIamV3betaExplainedAllowPolicy(_messages.Mes
       https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
     policy: The IAM allow policy attached to the resource. If the sender of
       the request does not have access to the policy, this field is empty.
-    relevance: The relevance of this policy to the overall determination in
-      the TroubleshootIamPolicyResponse. If the sender of the request does not
+    relevance: The relevance of this policy to the overall access state in the
+      TroubleshootIamPolicyResponse. If the sender of the request does not
       have access to the policy, this field is omitted.
   """
 
   class AllowAccessStateValueValuesEnum(_messages.Enum):
     r"""Required. Indicates whether _this policy_ provides the specified
-    permission to the specified member for the specified resource. This field
-    does _not_ indicate whether the member actually has the permission for the
-    resource. There might be another policy that overrides this policy. To
-    determine whether the member actually has the permission, use the `access`
-    field in the TroubleshootIamPolicyResponse.
+    permission to the specified principal for the specified resource. This
+    field does _not_ indicate whether the principal actually has the
+    permission for the resource. There might be another policy that overrides
+    this policy. To determine whether the principal actually has the
+    permission, use the `overall_access_state` field in the
+    TroubleshootIamPolicyResponse.
 
     Values:
-      ALLOW_ACCESS_STATE_UNSPECIFIED: Reserved for future use.
-      ALLOW_ACCESS_STATE_GRANTED: Access is granted.
-      ALLOW_ACCESS_STATE_NOT_GRANTED: Access is not granted.
-      ALLOW_ACCESS_STATE_UNKNOWN_CONDITIONAL: Access is allowed only if a
-        condition expression evaluates to `true`.
-      ALLOW_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
-        access to all of the policies that Policy Troubleshooter needs to
-        evaluate.
+      ALLOW_ACCESS_STATE_UNSPECIFIED: Not specified.
+      ALLOW_ACCESS_STATE_GRANTED: The allow policy gives the principal the
+        permission.
+      ALLOW_ACCESS_STATE_NOT_GRANTED: The allow policy doesn't give the
+        principal the permission.
+      ALLOW_ACCESS_STATE_UNKNOWN_CONDITIONAL: The allow policy gives the
+        principal the permission if a condition expression evaluate to `true`.
+        However, the sender of the request didn't provide enough context for
+        Policy Troubleshooter to evaluate the condition expression.
+      ALLOW_ACCESS_STATE_UNKNOWN_INFO: The sender of the request doesn't have
+        access to all of the allow policies that Policy Troubleshooter needs
+        to evaluate the principal's access.
     """
     ALLOW_ACCESS_STATE_UNSPECIFIED = 0
     ALLOW_ACCESS_STATE_GRANTED = 1
@@ -1050,12 +1106,12 @@ class GoogleCloudPolicytroubleshooterIamV3betaExplainedAllowPolicy(_messages.Mes
     ALLOW_ACCESS_STATE_UNKNOWN_INFO = 4
 
   class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of this policy to the overall determination in the
+    r"""The relevance of this policy to the overall access state in the
     TroubleshootIamPolicyResponse. If the sender of the request does not have
     access to the policy, this field is omitted.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Not specified.
       HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
         result. Changing the data point is unlikely to affect the overall
         determination.
@@ -1080,52 +1136,59 @@ class GoogleCloudPolicytroubleshooterIamV3betaExplainedDenyPolicy(_messages.Mess
 
   Enums:
     DenyAccessStateValueValuesEnum: Required. Indicates whether _this policy_
-      denies the specified permission to the specified member for the
-      specified resource. This field does _not_ indicate whether the member
+      denies the specified permission to the specified principal for the
+      specified resource. This field does _not_ indicate whether the principal
       actually has the permission for the resource. There might be another
-      policy that overrides this policy. To determine whether the member
-      actually has the permission, use the `access` field in the
+      policy that overrides this policy. To determine whether the principal
+      actually has the permission, use the `overall_access_state` field in the
       TroubleshootIamPolicyResponse.
     RelevanceValueValuesEnum: The relevance of this policy to the overall
-      determination in the TroubleshootIamPolicyResponse. If the sender of the
+      access state in the TroubleshootIamPolicyResponse. If the sender of the
       request does not have access to the policy, this field is omitted.
 
   Fields:
     denyAccessState: Required. Indicates whether _this policy_ denies the
-      specified permission to the specified member for the specified resource.
-      This field does _not_ indicate whether the member actually has the
-      permission for the resource. There might be another policy that
-      overrides this policy. To determine whether the member actually has the
-      permission, use the `access` field in the TroubleshootIamPolicyResponse.
+      specified permission to the specified principal for the specified
+      resource. This field does _not_ indicate whether the principal actually
+      has the permission for the resource. There might be another policy that
+      overrides this policy. To determine whether the principal actually has
+      the permission, use the `overall_access_state` field in the
+      TroubleshootIamPolicyResponse.
     policy: The IAM deny policy attached to the resource. If the sender of the
       request does not have access to the policy, this field is omitted.
-    relevance: The relevance of this policy to the overall determination in
-      the TroubleshootIamPolicyResponse. If the sender of the request does not
+    relevance: The relevance of this policy to the overall access state in the
+      TroubleshootIamPolicyResponse. If the sender of the request does not
       have access to the policy, this field is omitted.
     ruleExplanations: Details about how each rule in the policy affects the
-      member's inability to use the permission for the resource. The order of
-      the deny rule matches the order of the rules in the deny policy. If the
-      sender of the request does not have access to the policy, this field is
-      omitted.
+      principal's inability to use the permission for the resource. The order
+      of the deny rule matches the order of the rules in the deny policy. If
+      the sender of the request does not have access to the policy, this field
+      is omitted.
   """
 
   class DenyAccessStateValueValuesEnum(_messages.Enum):
     r"""Required. Indicates whether _this policy_ denies the specified
-    permission to the specified member for the specified resource. This field
-    does _not_ indicate whether the member actually has the permission for the
-    resource. There might be another policy that overrides this policy. To
-    determine whether the member actually has the permission, use the `access`
-    field in the TroubleshootIamPolicyResponse.
+    permission to the specified principal for the specified resource. This
+    field does _not_ indicate whether the principal actually has the
+    permission for the resource. There might be another policy that overrides
+    this policy. To determine whether the principal actually has the
+    permission, use the `overall_access_state` field in the
+    TroubleshootIamPolicyResponse.
 
     Values:
-      DENY_ACCESS_STATE_UNSPECIFIED: Reserved for future use.
-      DENY_ACCESS_STATE_DENIED: Access is denied.
-      DENY_ACCESS_STATE_NOT_DENIED: Access is not denied.
-      DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL: Access is denied only if a
-        condition expression evaluates to `true`.
+      DENY_ACCESS_STATE_UNSPECIFIED: Not specified.
+      DENY_ACCESS_STATE_DENIED: The deny policy denies the principal the
+        permission.
+      DENY_ACCESS_STATE_NOT_DENIED: The deny policy doesn't deny the principal
+        the permission.
+      DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL: The deny policy denies the
+        principal the permission if a condition expression evaluates to
+        `true`. However, the sender of the request didn't provide enough
+        context for Policy Troubleshooter to evaluate the condition
+        expression.
       DENY_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
         access to all of the deny policies that Policy Troubleshooter needs to
-        evaluate.
+        evaluate the principal's access.
     """
     DENY_ACCESS_STATE_UNSPECIFIED = 0
     DENY_ACCESS_STATE_DENIED = 1
@@ -1134,12 +1197,12 @@ class GoogleCloudPolicytroubleshooterIamV3betaExplainedDenyPolicy(_messages.Mess
     DENY_ACCESS_STATE_UNKNOWN_INFO = 4
 
   class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of this policy to the overall determination in the
+    r"""The relevance of this policy to the overall access state in the
     TroubleshootIamPolicyResponse. If the sender of the request does not have
     access to the policy, this field is omitted.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Not specified.
       HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
         result. Changing the data point is unlikely to affect the overall
         determination.
@@ -1158,60 +1221,66 @@ class GoogleCloudPolicytroubleshooterIamV3betaExplainedDenyPolicy(_messages.Mess
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaExplainedDenyResource(_messages.Message):
-  r"""Details about how a specific resource contributed to the deny access
-  check.
+  r"""Details about how a specific resource contributed to the deny policy
+  evaluation.
 
   Enums:
     DenyAccessStateValueValuesEnum: Required. Indicates whether any policies
       attached to _this resource_ deny the specific permission to the
-      specified member for the specified resource. This field does _not_
-      indicate whether the member actually has the permission for the
+      specified principal for the specified resource. This field does _not_
+      indicate whether the principal actually has the permission for the
       resource. There might be another policy that overrides this policy. To
-      determine whether the member actually has the permission, use the
-      `access` field in the TroubleshootIamPolicyResponse.
+      determine whether the principal actually has the permission, use the
+      `overall_access_state` field in the TroubleshootIamPolicyResponse.
     RelevanceValueValuesEnum: The relevance of this policy to the overall
-      determination in the TroubleshootIamPolicyResponse. If the sender of the
+      access state in the TroubleshootIamPolicyResponse. If the sender of the
       request does not have access to the policy, this field is omitted.
 
   Fields:
     denyAccessState: Required. Indicates whether any policies attached to
-      _this resource_ deny the specific permission to the specified member for
-      the specified resource. This field does _not_ indicate whether the
-      member actually has the permission for the resource. There might be
+      _this resource_ deny the specific permission to the specified principal
+      for the specified resource. This field does _not_ indicate whether the
+      principal actually has the permission for the resource. There might be
       another policy that overrides this policy. To determine whether the
-      member actually has the permission, use the `access` field in the
-      TroubleshootIamPolicyResponse.
+      principal actually has the permission, use the `overall_access_state`
+      field in the TroubleshootIamPolicyResponse.
     explainedPolicies: List of IAM deny policies that were evaluated to check
-      the member's denied permissions, with annotations to indicate how each
-      policy contributed to the final result.
+      the principal's denied permissions, with annotations to indicate how
+      each policy contributed to the final result.
     fullResourceName: The full resource name that identifies the resource. For
       example, `//compute.googleapis.com/projects/my-project/zones/us-
       central1-a/instances/my-instance`. If the sender of the request does not
       have access to the policy, this field is omitted. For examples of full
       resource names for Google Cloud services, see
       https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
-    relevance: The relevance of this policy to the overall determination in
-      the TroubleshootIamPolicyResponse. If the sender of the request does not
+    relevance: The relevance of this policy to the overall access state in the
+      TroubleshootIamPolicyResponse. If the sender of the request does not
       have access to the policy, this field is omitted.
   """
 
   class DenyAccessStateValueValuesEnum(_messages.Enum):
     r"""Required. Indicates whether any policies attached to _this resource_
-    deny the specific permission to the specified member for the specified
-    resource. This field does _not_ indicate whether the member actually has
-    the permission for the resource. There might be another policy that
-    overrides this policy. To determine whether the member actually has the
-    permission, use the `access` field in the TroubleshootIamPolicyResponse.
+    deny the specific permission to the specified principal for the specified
+    resource. This field does _not_ indicate whether the principal actually
+    has the permission for the resource. There might be another policy that
+    overrides this policy. To determine whether the principal actually has the
+    permission, use the `overall_access_state` field in the
+    TroubleshootIamPolicyResponse.
 
     Values:
-      DENY_ACCESS_STATE_UNSPECIFIED: Reserved for future use.
-      DENY_ACCESS_STATE_DENIED: Access is denied.
-      DENY_ACCESS_STATE_NOT_DENIED: Access is not denied.
-      DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL: Access is denied only if a
-        condition expression evaluates to `true`.
+      DENY_ACCESS_STATE_UNSPECIFIED: Not specified.
+      DENY_ACCESS_STATE_DENIED: The deny policy denies the principal the
+        permission.
+      DENY_ACCESS_STATE_NOT_DENIED: The deny policy doesn't deny the principal
+        the permission.
+      DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL: The deny policy denies the
+        principal the permission if a condition expression evaluates to
+        `true`. However, the sender of the request didn't provide enough
+        context for Policy Troubleshooter to evaluate the condition
+        expression.
       DENY_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
         access to all of the deny policies that Policy Troubleshooter needs to
-        evaluate.
+        evaluate the principal's access.
     """
     DENY_ACCESS_STATE_UNSPECIFIED = 0
     DENY_ACCESS_STATE_DENIED = 1
@@ -1220,12 +1289,12 @@ class GoogleCloudPolicytroubleshooterIamV3betaExplainedDenyResource(_messages.Me
     DENY_ACCESS_STATE_UNKNOWN_INFO = 4
 
   class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of this policy to the overall determination in the
+    r"""The relevance of this policy to the overall access state in the
     TroubleshootIamPolicyResponse. If the sender of the request does not have
     access to the policy, this field is omitted.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Not specified.
       HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
         result. Changing the data point is unlikely to affect the overall
         determination.
@@ -1247,7 +1316,7 @@ class GoogleCloudPolicytroubleshooterIamV3betaTroubleshootIamPolicyRequest(_mess
   r"""Request for TroubleshootIamPolicy.
 
   Fields:
-    accessTuple: The information to use for checking whether a member has a
+    accessTuple: The information to use for checking whether a principal has a
       permission for a resource.
   """
 
@@ -1258,39 +1327,37 @@ class GoogleCloudPolicytroubleshooterIamV3betaTroubleshootIamPolicyResponse(_mes
   r"""Response for TroubleshootIamPolicy.
 
   Enums:
-    OverallAccessStateValueValuesEnum: Indicates whether the member has the
+    OverallAccessStateValueValuesEnum: Indicates whether the principal has the
       specified permission for the specified resource, based on evaluating all
       types of the applicable IAM policies.
 
   Fields:
-    accessTuple: The access tuples with evaluation information of both IAM v1
-      and v2.
-    allowPolicyExplanation: The explanation of IAM Allow policies with
-      annotations to indicated how each policy contributed to the final
-      result.
-    denyPolicyExplanation: The explanation of IAM Allow policies with
-      annotations to indicated how each policy contributed to the final
-      result.
-    overallAccessState: Indicates whether the member has the specified
+    accessTuple: The access tuple from the request, including any provided
+      context used to evaluate the condition.
+    allowPolicyExplanation: An explanation of how the applicable IAM allow
+      policies affect the final access state.
+    denyPolicyExplanation: An explanation of how the applicable IAM deny
+      policies affect the final access state.
+    overallAccessState: Indicates whether the principal has the specified
       permission for the specified resource, based on evaluating all types of
       the applicable IAM policies.
   """
 
   class OverallAccessStateValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the member has the specified permission for the
+    r"""Indicates whether the principal has the specified permission for the
     specified resource, based on evaluating all types of the applicable IAM
     policies.
 
     Values:
-      OVERALL_ACCESS_STATE_UNSPECIFIED: Reserved for future use.
-      CAN_ACCESS: The principal has the access.
-      CANNOT_ACCESS: The principal does not have the access.
-      UNKNOWN_INFO: The principal might have the access but it is unknown for
-        the reason that the sender lacks access to information needed to get a
-        certain access state.
-      UNKNOWN_CONDITIONAL: The principal might have the access but it is
-        unknown for the reason that the sender did not provide the required
-        condition context which is required to get a certain access state.
+      OVERALL_ACCESS_STATE_UNSPECIFIED: Not specified.
+      CAN_ACCESS: The principal has the permission.
+      CANNOT_ACCESS: The principal doesn't have the permission.
+      UNKNOWN_INFO: The principal might have the permission, but the sender
+        can't access all of the information needed to fully evaluate the
+        principal's access.
+      UNKNOWN_CONDITIONAL: The principal might have the permission, but Policy
+        Troubleshooter can't fully evaluate the principal's access because the
+        sender didn't provide the required context to evaluate the condition.
     """
     OVERALL_ACCESS_STATE_UNSPECIFIED = 0
     CAN_ACCESS = 1
@@ -1933,7 +2000,7 @@ class GoogleIamV2Policy(_messages.Message):
     etag: An opaque tag that identifies the current version of the `Policy`.
       IAM uses this value to help manage concurrent updates, so they do not
       cause one update to be overwritten by another. If this field is present
-      in a CreatePolicy request, the value is ignored.
+      in a CreatePolicyRequest, the value is ignored.
     kind: Output only. The kind of the `Policy`. Always contains the value
       `DenyPolicy`.
     managingAuthority: Immutable. Specifies that this policy is managed by an

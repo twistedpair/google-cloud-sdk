@@ -5083,6 +5083,7 @@ class ParameterMetadata(_messages.Message):
       WORKER_ZONE: The parameter specifies a Worker Zone.
       BOOLEAN: The parameter specifies a boolean input.
       ENUM: The parameter specifies an enum input.
+      NUMBER: The parameter specifies a number input.
     """
     DEFAULT = 0
     TEXT = 1
@@ -5103,6 +5104,7 @@ class ParameterMetadata(_messages.Message):
     WORKER_ZONE = 16
     BOOLEAN = 17
     ENUM = 18
+    NUMBER = 19
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomMetadataValue(_messages.Message):

@@ -269,9 +269,21 @@ class _SqlCursor(object):
 
 
 def GetConfigStore(config_name=None):
+  """Gets the config sqlite store for a given config name.
+
+  Args:
+    config_name: string, The configuration name to get the config store for.
+
+  Returns:
+    SqliteConfigStore, The corresponding config store, or None if no config.
+  """
   # Automatically defaults to active config if config_name is not specified
   if config_name is None:
-    config_name = named_configs.ConfigurationStore.ActiveConfig().name
+    # Need try catch due to CLOUDSDK_CONFIG not writeable case, see b/290619868
+    try:
+      config_name = named_configs.ConfigurationStore.ActiveConfig().name
+    except named_configs.NamedConfigFileAccessError:
+      return None
   return _GetSqliteStore(config_name)
 
 
@@ -321,7 +333,7 @@ class InvalidValueError(Error):
 
 
 class SqliteConfigStore(object):
-  """Sqllite backed config store."""
+  """Sqlite backed config store."""
 
   def __init__(self, store_file, config_name):
     self._cursor = _SqlCursor(store_file)
@@ -459,7 +471,9 @@ class SqliteConfigStore(object):
     except ValueError:
       raise InvalidValueError(
           'The attribute [{attr}] must have an integer value: [{value}]'.format(
-              attr=config_attr, value=attr_value))
+              attr=config_attr, value=attr_value
+          )
+      )
 
   def GetInt(self, config_attr, required=False):
     """Gets the integer value for this attribute.

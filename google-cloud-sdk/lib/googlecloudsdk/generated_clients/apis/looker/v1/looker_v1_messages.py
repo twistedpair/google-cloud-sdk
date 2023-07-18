@@ -384,14 +384,14 @@ class Instance(_messages.Message):
     StateValueValuesEnum: Output only. The state of the instance.
 
   Fields:
-    adminSettings: Looker instance admin settings.
+    adminSettings: Looker Instance Admin settings.
     consumerNetwork: Network name in the consumer project. Format:
       `projects/{project}/global/networks/{network}`. Note that the consumer
       network may be in a different GCP project than the consumer project that
       is hosting the Looker Instance.
     createTime: Output only. The time when the Looker instance provisioning
       was first requested.
-    customDomain: Custom domain information.
+    customDomain: A CustomDomain attribute.
     denyMaintenancePeriod: Maintenance denial period for this instance.
     egressPublicIp: Output only. Public Egress IP (IPv4).
     encryptionConfig: Encryption configuration (CMEK). Only set if CMEK has

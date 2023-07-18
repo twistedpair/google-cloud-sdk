@@ -11,6 +11,66 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+oauth_client:
+  client_type:
+    api_field: oauthClient.clientType
+    arg_name: client-type
+    help_text: |-
+      The type of OAuth client.
+    choices:
+    - arg_value: confidential-client
+      enum_value: CONFIDENTIAL_CLIENT
+    - arg_value: public-client
+      enum_value: PUBLIC_CLIENT
+  description:
+    api_field: oauthClient.description
+    arg_name: description
+    help_text: |-
+      A description of the OAuth client. Cannot exceed 256 characters.
+  display_name:
+    api_field: oauthClient.displayName
+    arg_name: display-name
+    help_text: |-
+      A display name for the OAuth client. Cannot exceed 32 characters.
+  disabled:
+    api_field: oauthClient.disabled
+    arg_name: disabled
+    help_text: |-
+      Disables the OAuth client. You cannot use a disabled OAuth client for login. Include `--no-disabled` to enable a disabled OAuth client.
+  allowed_grant_types:
+    api_field: oauthClient.allowedGrantTypes
+    type: 'googlecloudsdk.calliope.arg_parsers:ArgList:'
+    arg_name: allowed-grant-types
+    help_text: |-
+      A list of OAuth grant types that are allowed for the OAuth client.
+
+      The following grant types are currently supported:
+
+      * `authorization-code-grant`
+
+      * `refresh-token-grant`
+  allowed_scopes:
+    api_field: oauthClient.allowedScopes
+    arg_name: allowed-scopes
+    help_text: |-
+      A list of scopes that the OAuth client is allowed to request during OAuth flows.
+
+      The following scopes are currently supported:
+
+      * `https://www.googleapis.com/auth/cloud-platform`: View, edit, configure, and delete your
+                                                          Google Cloud data and view the email
+                                                          address for your Google Account.
+
+      * `openid`: Associate you with your personal info on Google Cloud.
+
+      * `email`: View your Google Cloud Account email address.
+  allowed_redirect_uris:
+    api_field: oauthClient.allowedRedirectUris
+    arg_name: allowed-redirect-uris
+    help_text: |-
+      A list of redirect uris that is allowed for redirecting when the authorization is completed.
+
 workload_identity_pool:
   display_name:
     api_field: workloadIdentityPool.displayName
@@ -522,7 +582,6 @@ workforce_pool_provider:
   oidc_web_sso_additional_scopes:
     api_field: workforcePoolProvider.oidc.webSsoConfig.additionalScopes
     arg_name: web-sso-additional-scopes
-    hidden: true
     help_text: |-
       Additional scopes to request for the OIDC authentication on
       top of scopes requested by default. By default, the `openid`, `profile`
@@ -557,9 +616,8 @@ workforce_pool_provider:
           Use `only-id-token-claims` to include only ID token claims.
       - api_field: workforcePoolProvider.oidc.webSsoConfig.additionalScopes
         arg_name: web-sso-additional-scopes
-        hidden: true
         help_text: |-
-          Additional scopes to request for in the OIDC authentication request on
+          Additional scopes to request for the OIDC authentication on
           top of scopes requested by default. By default, the `openid`, `profile`
           and `email` scopes that are supported by the identity provider are
           requested.

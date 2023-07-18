@@ -25,9 +25,6 @@ class ApplyResults(_messages.Message):
       `gs://{bucket}/{object}`
     content: Location of generated manifests in Google Cloud Storage. Format:
       `gs://{bucket}/{object}`
-    outputFile: Location of output JSON file in Cloud Storage. Format:
-      `gs://{bucket}/{object}` DEPRECATED The output values can only be read
-      from the 'outputs' field
     outputs: Map of output name to output information.
   """
 
@@ -57,8 +54,7 @@ class ApplyResults(_messages.Message):
 
   artifacts = _messages.StringField(1)
   content = _messages.StringField(2)
-  outputFile = _messages.StringField(3)
-  outputs = _messages.MessageField('OutputsValue', 4)
+  outputs = _messages.MessageField('OutputsValue', 3)
 
 
 class AuditConfig(_messages.Message):
@@ -265,6 +261,20 @@ class ConfigProjectsLocationsDeploymentsDeleteRequest(_messages.Message):
   force = _messages.BooleanField(2)
   name = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ConfigProjectsLocationsDeploymentsDeleteStateRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsDeploymentsDeleteStateRequest object.
+
+  Fields:
+    deleteStatefileRequest: A DeleteStatefileRequest resource to be passed as
+      the request body.
+    name: Required. The name of the deployment in the format:
+      'projects/{project_id}/locations/{location}/deployments/{deployment}'.
+  """
+
+  deleteStatefileRequest = _messages.MessageField('DeleteStatefileRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ConfigProjectsLocationsDeploymentsExportLockRequest(_messages.Message):
@@ -655,12 +665,18 @@ class ConfigProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class DeleteStatefileRequest(_messages.Message):
+  r"""A request to delete a state file passed to a 'DeleteStatefile' call."""
+
+
 class Deployment(_messages.Message):
   r"""A Deployment object.
 
   Enums:
     ErrorCodeValueValuesEnum: Output only. Code describing any errors that may
       have occurred.
+    LockStateValueValuesEnum: Output only. Current lock state of the
+      deployment.
     StateValueValuesEnum: Output only. Current state of the deployment.
 
   Messages:
@@ -695,6 +711,7 @@ class Deployment(_messages.Message):
       Format:
       `projects/{project}/locations/{location}/deployments/{deployment}/
       revisions/{revision}`
+    lockState: Output only. Current lock state of the deployment.
     name: Resource name of the deployment. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}`
     serviceAccount: Optional. User-specified Service Account (SA) credentials
@@ -743,6 +760,25 @@ class Deployment(_messages.Message):
     DELETE_BUILD_RUN_FAILED = 4
     BUCKET_CREATION_PERMISSION_DENIED = 5
     BUCKET_CREATION_FAILED = 6
+
+  class LockStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current lock state of the deployment.
+
+    Values:
+      LOCK_STATE_UNSPECIFIED: The default value. This value is used if the
+        lock state is omitted.
+      LOCKED: The deployment is locked.
+      UNLOCKED: The deployment is unlocked.
+      LOCKING: The deployment is being locked.
+      UNLOCKING: The deployment is being unlocked.
+      LOCK_FAILED: The deployment has failed to unlock.
+    """
+    LOCK_STATE_UNSPECIFIED = 0
+    LOCKED = 1
+    UNLOCKED = 2
+    LOCKING = 3
+    UNLOCKING = 4
+    LOCK_FAILED = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the deployment.
@@ -802,14 +838,15 @@ class Deployment(_messages.Message):
   importExistingResources = _messages.BooleanField(8)
   labels = _messages.MessageField('LabelsValue', 9)
   latestRevision = _messages.StringField(10)
-  name = _messages.StringField(11)
-  serviceAccount = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  stateDetail = _messages.StringField(14)
-  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 15)
-  tfErrors = _messages.MessageField('TerraformError', 16, repeated=True)
-  updateTime = _messages.StringField(17)
-  workerPool = _messages.StringField(18)
+  lockState = _messages.EnumField('LockStateValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  serviceAccount = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  stateDetail = _messages.StringField(15)
+  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 16)
+  tfErrors = _messages.MessageField('TerraformError', 17, repeated=True)
+  updateTime = _messages.StringField(18)
+  workerPool = _messages.StringField(19)
 
 
 class DeploymentOperationMetadata(_messages.Message):
@@ -873,8 +910,14 @@ class Empty(_messages.Message):
 class ExportDeploymentStatefileRequest(_messages.Message):
   r"""A request to export a state file passed to a 'ExportDeploymentStatefile'
   call.
+
+  Fields:
+    draft: Optional. If this flag is set to true, the exported deployment
+      state file will be the draft state. This will enable the draft file to
+      be validated before copying it over to the working state on unlock.
   """
 
+  draft = _messages.BooleanField(1)
 
 
 class ExportRevisionStatefileRequest(_messages.Message):
@@ -1101,16 +1144,6 @@ class Location(_messages.Message):
 
 class LockDeploymentRequest(_messages.Message):
   r"""A request to lock a deployment passed to a 'LockDeployment' call."""
-
-
-class LockDeploymentResponse(_messages.Message):
-  r"""A response to a 'LockDeployment' call. Contains a lock ID.
-
-  Fields:
-    lockId: Lock ID of the lock file.
-  """
-
-  lockId = _messages.IntegerField(1)
 
 
 class LockInfo(_messages.Message):

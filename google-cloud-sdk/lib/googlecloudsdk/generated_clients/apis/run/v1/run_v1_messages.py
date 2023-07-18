@@ -91,9 +91,8 @@ class AuditLogConfig(_messages.Message):
 
 
 class AuthorizedDomain(_messages.Message):
-  r"""A domain that a user has been authorized to administer.
-
-  To authorize use of a domain, verify ownership via [Search
+  r"""A domain that a user has been authorized to administer. To authorize use
+  of a domain, verify ownership via [Search
   Console](https://search.google.com/search-console/welcome).
 
   Fields:
@@ -502,7 +501,6 @@ class DomainMappingStatus(_messages.Message):
 
 class EmptyDirVolumeSource(_messages.Message):
   r"""Ephemeral storage which can be backed by real disks (HD, SSD), network
-
   storage or memory (i.e. tmpfs). For now only in memory (tmpfs) is supported.
   It is ephemeral in the sense that when the sandbox is taken down, the data
   is destroyed with it (it does not persist across sandbox runs).
@@ -1607,7 +1605,6 @@ class Policy(_messages.Message):
 
 class Probe(_messages.Message):
   r"""Probe describes a health check to be performed against a container to
-
   determine whether it is alive or ready to receive traffic.
 
   Fields:

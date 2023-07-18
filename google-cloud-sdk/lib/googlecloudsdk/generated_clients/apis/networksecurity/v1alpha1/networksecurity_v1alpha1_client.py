@@ -54,9 +54,14 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     self.projects_locations_gatewaySecurityPolicies_rules = self.ProjectsLocationsGatewaySecurityPoliciesRulesService(self)
     self.projects_locations_gatewaySecurityPolicies = self.ProjectsLocationsGatewaySecurityPoliciesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_partnerSSEGateways = self.ProjectsLocationsPartnerSSEGatewaysService(self)
+    self.projects_locations_partnerSSERealms = self.ProjectsLocationsPartnerSSERealmsService(self)
     self.projects_locations_securityProfileGroups = self.ProjectsLocationsSecurityProfileGroupsService(self)
     self.projects_locations_securityProfiles = self.ProjectsLocationsSecurityProfilesService(self)
     self.projects_locations_serverTlsPolicies = self.ProjectsLocationsServerTlsPoliciesService(self)
+    self.projects_locations_sseGatewayReferences = self.ProjectsLocationsSseGatewayReferencesService(self)
+    self.projects_locations_sseGateways = self.ProjectsLocationsSseGatewaysService(self)
+    self.projects_locations_sseRealms = self.ProjectsLocationsSseRealmsService(self)
     self.projects_locations_tlsInspectionPolicies = self.ProjectsLocationsTlsInspectionPoliciesService(self)
     self.projects_locations_urlLists = self.ProjectsLocationsUrlListsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -2345,6 +2350,242 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsPartnerSSEGatewaysService(base_api.BaseApiService):
+    """Service class for the projects_locations_partnerSSEGateways resource."""
+
+    _NAME = 'projects_locations_partnerSSEGateways'
+
+    def __init__(self, client):
+      super(NetworksecurityV1alpha1.ProjectsLocationsPartnerSSEGatewaysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new PartnerSSEGateway in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsPartnerSSEGatewaysCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/partnerSSEGateways',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.partnerSSEGateways.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['partnerSseGatewayId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/partnerSSEGateways',
+        request_field='partnerSSEGateway',
+        request_type_name='NetworksecurityProjectsLocationsPartnerSSEGatewaysCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single PartnerSSEGateway.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsPartnerSSEGatewaysDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/partnerSSEGateways/{partnerSSEGatewaysId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.partnerSSEGateways.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsPartnerSSEGatewaysDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single PartnerSSEGateway.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsPartnerSSEGatewaysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PartnerSSEGateway) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/partnerSSEGateways/{partnerSSEGatewaysId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.partnerSSEGateways.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsPartnerSSEGatewaysGetRequest',
+        response_type_name='PartnerSSEGateway',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists PartnerSSEGateways in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsPartnerSSEGatewaysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPartnerSSEGatewaysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/partnerSSEGateways',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.partnerSSEGateways.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/partnerSSEGateways',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsPartnerSSEGatewaysListRequest',
+        response_type_name='ListPartnerSSEGatewaysResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPartnerSSERealmsService(base_api.BaseApiService):
+    """Service class for the projects_locations_partnerSSERealms resource."""
+
+    _NAME = 'projects_locations_partnerSSERealms'
+
+    def __init__(self, client):
+      super(NetworksecurityV1alpha1.ProjectsLocationsPartnerSSERealmsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new PartnerSSERealm in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsPartnerSSERealmsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/partnerSSERealms',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.partnerSSERealms.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['partnerSseRealmId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/partnerSSERealms',
+        request_field='partnerSSERealm',
+        request_type_name='NetworksecurityProjectsLocationsPartnerSSERealmsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single PartnerSSERealm.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsPartnerSSERealmsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/partnerSSERealms/{partnerSSERealmsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.partnerSSERealms.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsPartnerSSERealmsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single PartnerSSERealm.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsPartnerSSERealmsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PartnerSSERealm) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/partnerSSERealms/{partnerSSERealmsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.partnerSSERealms.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsPartnerSSERealmsGetRequest',
+        response_type_name='PartnerSSERealm',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists PartnerSSERealms in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsPartnerSSERealmsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPartnerSSERealmsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/partnerSSERealms',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.partnerSSERealms.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/partnerSSERealms',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsPartnerSSERealmsListRequest',
+        response_type_name='ListPartnerSSERealmsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsSecurityProfileGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_securityProfileGroups resource."""
 
@@ -2858,6 +3099,306 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='NetworksecurityProjectsLocationsServerTlsPoliciesTestIamPermissionsRequest',
         response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSseGatewayReferencesService(base_api.BaseApiService):
+    """Service class for the projects_locations_sseGatewayReferences resource."""
+
+    _NAME = 'projects_locations_sseGatewayReferences'
+
+    def __init__(self, client):
+      super(NetworksecurityV1alpha1.ProjectsLocationsSseGatewayReferencesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single SSEGatewayReference.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSseGatewayReferencesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SSEGatewayReference) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseGatewayReferences/{sseGatewayReferencesId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.sseGatewayReferences.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSseGatewayReferencesGetRequest',
+        response_type_name='SSEGatewayReference',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SSEGatewayReferences in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSseGatewayReferencesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSSEGatewayReferencesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseGatewayReferences',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.sseGatewayReferences.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/sseGatewayReferences',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSseGatewayReferencesListRequest',
+        response_type_name='ListSSEGatewayReferencesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSseGatewaysService(base_api.BaseApiService):
+    """Service class for the projects_locations_sseGateways resource."""
+
+    _NAME = 'projects_locations_sseGateways'
+
+    def __init__(self, client):
+      super(NetworksecurityV1alpha1.ProjectsLocationsSseGatewaysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new SSEGateway in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSseGatewaysCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseGateways',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.sseGateways.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'sseGatewayId'],
+        relative_path='v1alpha1/{+parent}/sseGateways',
+        request_field='sSEGateway',
+        request_type_name='NetworksecurityProjectsLocationsSseGatewaysCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single SSEGateway.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSseGatewaysDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseGateways/{sseGatewaysId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.sseGateways.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSseGatewaysDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single SSEGateway.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSseGatewaysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SSEGateway) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseGateways/{sseGatewaysId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.sseGateways.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSseGatewaysGetRequest',
+        response_type_name='SSEGateway',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SSEGateways in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSseGatewaysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSSEGatewaysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseGateways',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.sseGateways.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/sseGateways',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSseGatewaysListRequest',
+        response_type_name='ListSSEGatewaysResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSseRealmsService(base_api.BaseApiService):
+    """Service class for the projects_locations_sseRealms resource."""
+
+    _NAME = 'projects_locations_sseRealms'
+
+    def __init__(self, client):
+      super(NetworksecurityV1alpha1.ProjectsLocationsSseRealmsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new SSERealm in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSseRealmsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseRealms',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.sseRealms.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'sseRealmId'],
+        relative_path='v1alpha1/{+parent}/sseRealms',
+        request_field='sSERealm',
+        request_type_name='NetworksecurityProjectsLocationsSseRealmsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single SSERealm.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSseRealmsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseRealms/{sseRealmsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.sseRealms.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSseRealmsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single SSERealm.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSseRealmsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SSERealm) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseRealms/{sseRealmsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.sseRealms.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSseRealmsGetRequest',
+        response_type_name='SSERealm',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SSERealms in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSseRealmsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSSERealmsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseRealms',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.sseRealms.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/sseRealms',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSseRealmsListRequest',
+        response_type_name='ListSSERealmsResponse',
         supports_download=False,
     )
 

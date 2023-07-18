@@ -6,6 +6,151 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 439.0.0 (2023-07-18)
+
+### Breaking Changes
+
+*   **(Kubernetes Engine)** Renamed `--binauthz-policy` to `--binauthz-policy-bindings` in `gcloud beta container clusters` commands.
+
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.16 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.16>.
+
+### Assured Workloads
+
+*   Added `--partner-permissions` flag (optional) for `gcloud assured workloads create` command to enable setting the partner permissions parameter for creation of partner workload (workload managed by local trusted partners) through gCloud command.
+
+### BigQuery
+
+* Updated bundled discovery docs to revision 20230614.
+* Fixed bug stopping `httplib2_debuglevel` from being used.
+* Added `file_set_spec_type` flag to support manifest Files in load jobs and
+  external tables.
+* Added `destination_kms_key` to create / update transfer configs.
+
+### Cloud Bigtable
+
+* Added `--change-stream-retention-period` flag to `gcloud bigtable instances tables create` and `gcloud bigtable instances tables update`.
+* Added `--clear-change-stream-retention-period` flag to `gcloud bigtable instances tables update`.
+* Rebuilt with golang 1.20.6 to address CVEs present in prior versions.
+
+### Cloud Bigtable Emulator
+
+* Rebuilt with golang 1.20.6 to address multiple CVEs in prior versions of golang.
+* Added support for reverse scans.
+
+### Cloud Build
+
+* Promoted `gcloud builds triggers update` to GA.
+
+### Cloud Datastream
+
+*  Fixed issue where creating an oracle profile with streamLargeObjects field returned an error.
+
+### Cloud Functions
+
+* Updated `gcloud functions deploy` to prompt to allow unauthenticated
+  invocations for new 2nd gen functions _before_ deploying. This aligns with the
+  behavior for new 1st gen functions.
+
+### Cloud IAM
+
+*   Added `--web-sso-additional-scopes` flag to
+    `gcloud iam workforce-pools providers create-oidc` and
+    `gcloud iam workforce-pools providers update-oidc` which allows
+    specification of additional OIDC scopes for web sign-in.
+
+### Cloud Memorystore
+
+*   Added `--reserved-ip-range-id` flag to `gcloud memcache instances create`
+    to allow specifying named allocations while creating an instance.
+
+### Cloud Pub/Sub
+
+*   Promoted `--push-no-wrapper` and `--push-no-wrapper-write-metadata` flags
+    of `gcloud pubsub subscriptions [create|update|modify-push-config]` to GA.
+    Adds the ability to set and update payload unwrapping properties for push
+    subscriptions. For more information, see
+    the <https://cloud.google.com/pubsub/docs/payload-unwrapping>.
+
+### Cloud SQL
+
+* Added `--[no-]recreate-replicas-on-primary-crash` flag to
+`gcloud sql instances create` and `gcloud sql instances patch` to enable/disable
+replica recreation when a Mysql primary instance operating in reduced durability
+mode crashes.
+
+### Cloud Spanner
+
+* Added `--priority` flag to `gcloud spanner databases execute-sql` to allow
+setting request priority for the query to convey the relative importance of
+workloads.
+
+### Cloud Storage
+
+* Fixed `gcloud storage buckets update --clear-log-bucket` behavior so it now clears the entire logging configuration.
+* Promoted `gcloud storage du` command to GA.
+* Promoted `gcloud storage hmac` command group to GA.
+* Promoted `gcloud sign-url` command to GA.
+* Standardized resource format for `describe` and `list` commands across API providers. Use `--raw` flag to get the old API-specific format.
+
+### Compute Engine
+
+* Promoted `--custom-learned-route-priority` and `--set-custom-learned-route-ranges` flags of `gcloud compute routers add-bgp-peer` to GA.
+* Promoted `--custom-learned-route-priority`, `--set-custom-learned-route-ranges`, `--add-custom-learned-route-ranges` and `--remove-custom-learned-route-ranges` flags of `gcloud compute routers update-bgp-peer` to GA.
+* Promoted `--http-keep-alive-timeout-sec` flag for `gcloud compute <target-http-proxies|target-https-proxies> <create|update>` to GA.
+* Promoted `--clear-http-keep-alive-timeout-sec` flag for `gcloud compute <target-http-proxies|target-https-proxies> update` to GA.
+* Added `--local-ssd-recovery-timeout` to specify the timeout to recover Local
+SSD to beta for:
+    * `gcloud compute instances create`
+    * `gcloud compute instances create-with-container`
+    * `gcloud compute instance-templates create`
+    * `gcloud compute instances bulk create`
+    * `gcloud compute instances set-scheduling`
+    * `gcloud compute instances update-from-file`
+* Added `--requested-features` flag to `gcloud compute interconnects create` to allow requesting MACSec support for an Interconnect.
+* Promoted `--requested-features` flag of `gcloud compute interconnects create` to beta.
+* Promoted `gcloud compute interconnects macsec get-config` to beta.
+* Promoted `gcloud compute interconnects macsec update` to beta.
+* Promoted `gcloud compute interconnects macsec add-key` to beta.
+* Promoted `gcloud compute interconnects macsec remove-key` to beta.
+* Added `gcloud compute interconnects macsec update-key` to allow updating MACSec pre-shared keys.
+* Promoted `gcloud compute interconnects macsec update-key` to beta.
+* Custom machine type validation in regional `gcloud compute instances bulk create` command has been fixed.
+
+### GKE Hub
+
+* Promoted `gcloud container fleet fleetobservability` to GA.
+
+### Kubernetes Engine
+
+* Updated broken links in `gcloud container get-credentials` help text.
+* Added `--enable-dataplane-v2-metrics` and ` --dataplane-v2-observability-mode`
+  flags to `gcloud container clusters create`,
+  `gcloud container clusters create-auto` and
+  `gcloud container clusters update`.
+
+### Network Security
+
+* Updated import/export schema for `gcloud network-security tls-inspection-policies` with new fields in beta.
+* Security Profile Groups and Security Profiles only supports `global` location. `--location` flag now takes default `global` as location.
+* Updated Firewall Endpoint Associations resource to accept TLS inspection policy with an optional flag.
+
+### Security Command Center
+
+* Add deprecation notices to `gcloud scc assets` commands which are being deprecated in favor of Cloud Asset Inventory APIs.
+
+### Workbench
+
+* Added `gcloud workbench` to manage workbench instances.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
 ## 438.0.0 (2023-07-11)
 
 ### Breaking Changes

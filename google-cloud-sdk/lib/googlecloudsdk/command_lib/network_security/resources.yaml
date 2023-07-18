@@ -138,6 +138,21 @@ orgLocation:
     help: |
       Location Id.
 
+locationDefaultGlobal:
+  name: location
+  collection: networksecurity.organizations.locations
+  attributes:
+  - *organization
+  - &locationDefaultGlobal
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      Location Id of the resource.
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.network_security.util:SetGlobalLocation
+      hint: |
+        use default global location
+
 orgAddressGroup:
   name: address group
   collection: networksecurity.organizations.locations.addressGroups
@@ -156,7 +171,7 @@ securityProfile:
   request_id_field: securityProfileId
   attributes:
   - *organization
-  - *orgLocation
+  - *locationDefaultGlobal
   - &securityProfile
     parameter_name: securityProfilesId
     attribute_name: security_profile
@@ -168,7 +183,7 @@ securityProfileGroup:
   request_id_field: securityProfileGroupId
   attributes:
   - *organization
-  - *orgLocation
+  - *locationDefaultGlobal
   - &securityProfileGroup
     parameter_name: securityProfileGroupsId
     attribute_name: security_profile_group

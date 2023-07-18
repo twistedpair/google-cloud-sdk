@@ -29,14 +29,20 @@ class Collections:
 
 
 class Topology:
+  """Consts for Topology."""
   TOPOLOGY_SUFFIX = '/topology'
 
   STATE_ENABLED = 'enabled'
   STATE_DISABLED = 'disabled'
   VALID_STATES = [STATE_ENABLED, STATE_DISABLED]
 
+  NAME = 'name'
+  ENABLED = 'enabled'
+  PROJECT = 'project'
+
 
 class Telemetry:
+  """Consts for Telemetry."""
   TELEMETRY_SUFFIX = '/telemetry'
 
   MONITORING_STATE_ENABLED = 'enabled'
@@ -45,3 +51,7 @@ class Telemetry:
       MONITORING_STATE_ENABLED,
       MONITORING_STATE_DISABLED,
   ]
+
+  NAME = 'name'
+  MONITORING_ENABLED = 'monitoring_enabled'
+  PROJECT = 'project'

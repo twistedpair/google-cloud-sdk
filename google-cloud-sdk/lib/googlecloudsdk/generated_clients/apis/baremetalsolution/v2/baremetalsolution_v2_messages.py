@@ -488,6 +488,23 @@ class BaremetalsolutionProjectsLocationsOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class BaremetalsolutionProjectsLocationsOsImagesListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsOsImagesListRequest object.
+
+  Fields:
+    pageSize: Requested page size. The server might return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+      Notice that page_size field is not supported and won't be respected in
+      the API request for now, will be updated when pagination is supported.
+    pageToken: A token identifying a page of results from the server.
+    parent: Required. Parent value for ListProvisioningQuotasRequest.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class BaremetalsolutionProjectsLocationsProvisioningConfigsCreateRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsProvisioningConfigsCreateRequest
   object.
@@ -1384,6 +1401,19 @@ class ListNfsSharesResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListOSImagesResponse(_messages.Message):
+  r"""Request for getting all available OS images.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    osImages: The OS images available.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  osImages = _messages.MessageField('OSImage', 2, repeated=True)
+
+
 class ListProvisioningQuotasResponse(_messages.Message):
   r"""Response message for the list of provisioning quotas.
 
@@ -2071,6 +2101,27 @@ class NfsShare(_messages.Message):
   volume = _messages.StringField(9)
 
 
+class OSImage(_messages.Message):
+  r"""Operation System image.
+
+  Fields:
+    applicableInstanceTypes: Instance types this image is applicable to.
+      [Available types](https://cloud.google.com/bare-metal/docs/bms-
+      planning#server_configurations)
+    code: OS Image code.
+    description: OS Image description.
+    name: Output only. OS Image's unique name.
+    supportedNetworkTemplates: Network templates that can be used with this OS
+      Image.
+  """
+
+  applicableInstanceTypes = _messages.StringField(1, repeated=True)
+  code = _messages.StringField(2)
+  description = _messages.StringField(3)
+  name = _messages.StringField(4)
+  supportedNetworkTemplates = _messages.StringField(5, repeated=True)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -2691,6 +2742,9 @@ class VlanAttachment(_messages.Message):
 
   Fields:
     id: Immutable. The identifier of the attachment within vrf.
+    interconnectAttachment: Optional. The name of the vlan attachment within
+      vrf. This is of the form projects/{project_number}/regions/{region}/inte
+      rconnectAttachments/{interconnect_attachment}
     pairingKey: Input only. Pairing key.
     peerIp: The peer IP of the attachment.
     peerVlanId: The peer vlan ID of the attachment.
@@ -2700,11 +2754,12 @@ class VlanAttachment(_messages.Message):
   """
 
   id = _messages.StringField(1)
-  pairingKey = _messages.StringField(2)
-  peerIp = _messages.StringField(3)
-  peerVlanId = _messages.IntegerField(4)
-  qosPolicy = _messages.MessageField('QosPolicy', 5)
-  routerIp = _messages.StringField(6)
+  interconnectAttachment = _messages.StringField(2)
+  pairingKey = _messages.StringField(3)
+  peerIp = _messages.StringField(4)
+  peerVlanId = _messages.IntegerField(5)
+  qosPolicy = _messages.MessageField('QosPolicy', 6)
+  routerIp = _messages.StringField(7)
 
 
 class Volume(_messages.Message):

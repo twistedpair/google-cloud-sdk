@@ -568,9 +568,8 @@ def GetAndCacheArchitecture(user_platform):
   """
 
   active_config_store = config.GetConfigStore()
-  config_client_arch = active_config_store.Get('client_arch')
-  if config_client_arch:
-    return config_client_arch
+  if active_config_store and active_config_store.Get('client_arch'):
+    return active_config_store.Get('client_arch')
 
   # Determine if this is an M1 Mac Python using x86_64 emulation.
   if (user_platform.operating_system == platforms.OperatingSystem.MACOSX and
@@ -581,7 +580,8 @@ def GetAndCacheArchitecture(user_platform):
   else:
     arch = str(user_platform.architecture)
 
-  active_config_store.Set('client_arch', arch)
+  if active_config_store:
+    active_config_store.Set('client_arch', arch)
   return arch
 
 

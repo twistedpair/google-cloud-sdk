@@ -378,9 +378,12 @@ class Instance(_messages.Message):
       STATE_NOTE_UNSPECIFIED: STATE_NOTE_UNSPECIFIED as the first value of
         State.
       PAUSED_CMEK_UNAVAILABLE: CMEK access is unavailable.
+      INSTANCE_RESUMING: INSTANCE_RESUMING indicates that the instance was
+        previously paused and is under the process of being brought back.
     """
     STATE_NOTE_UNSPECIFIED = 0
     PAUSED_CMEK_UNAVAILABLE = 1
+    INSTANCE_RESUMING = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the instance.
@@ -807,8 +810,8 @@ class Repository(_messages.Message):
 
   Fields:
     createTime: Output only. Create timestamp.
-    description: Optional. Description of the repository, which cannot not
-      exceed 500 characters.
+    description: Optional. Description of the repository, which cannot exceed
+      500 characters.
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.

@@ -864,6 +864,33 @@ class DatastreamV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Run(self, request, global_params=None):
+      r"""Use this method to start, resume or recover a stream with a non default CDC strategy.
+
+      Args:
+        request: (DatastreamProjectsLocationsStreamsRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/streams/{streamsId}:run',
+        http_method='POST',
+        method_id='datastream.projects.locations.streams.run',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:run',
+        request_field='runStreamRequest',
+        request_type_name='DatastreamProjectsLocationsStreamsRunRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 

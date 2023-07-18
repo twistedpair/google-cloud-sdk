@@ -52,7 +52,7 @@ class PolicytroubleshooterV3beta(base_api.BaseApiClient):
           }
 
     def Troubleshoot(self, request, global_params=None):
-      r"""Checks whether a member has a specific permission for a specific resource, and explains why the member does or does not have that permission.
+      r"""Checks whether a principal has a specific permission for a specific resource, and explains why the principal does or doesn't have that permission.
 
       Args:
         request: (GoogleCloudPolicytroubleshooterIamV3betaTroubleshootIamPolicyRequest) input message

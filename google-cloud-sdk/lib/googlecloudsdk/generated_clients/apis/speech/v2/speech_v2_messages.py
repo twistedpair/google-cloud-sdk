@@ -150,7 +150,11 @@ class BatchRecognizeRequest(_messages.Message):
     processingStrategy: Processing strategy to use for this request.
     recognitionOutputConfig: Configuration options for where to output the
       transcripts of each file.
-    recognizer: Required. Resource name of the recognizer to be used for ASR.
+    recognizer: Required. The name of the Recognizer to use during
+      recognition. The expected format is
+      `projects/{project}/locations/{location}/recognizers/{recognizer}`. The
+      {recognizer} segment may be set to `_` to use an empty implicit
+      Recognizer.
   """
 
   class ProcessingStrategyValueValuesEnum(_messages.Enum):
@@ -1155,12 +1159,31 @@ class RecognitionConfig(_messages.Message):
     explicitDecodingConfig: Explicitly specified decoding parameters. Required
       if using headerless PCM audio (linear16, mulaw, alaw).
     features: Speech recognition features to enable.
+    languageCodes: Optional. The language of the supplied audio as a
+      [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
+      Language tags are normalized to BCP-47 before they are used eg "en-us"
+      becomes "en-US". Supported languages for each model are listed in the
+      [Table of Supported Models](https://cloud.google.com/speech-to-
+      text/v2/docs/speech-to-text-supported-languages). If additional
+      languages are provided, recognition result will contain recognition in
+      the most likely language detected. The recognition result will include
+      the language tag of the language detected in the audio.
+    model: Optional. Which model to use for recognition requests. Select the
+      model best suited to your domain to get best results. Guidance for
+      choosing which model to use can be found in the [Transcription Models
+      Documentation](https://cloud.google.com/speech-to-
+      text/v2/docs/transcription-model) and the models supported in each
+      region can be found in the [Table Of Supported
+      Models](https://cloud.google.com/speech-to-text/v2/docs/speech-to-text-
+      supported-languages).
   """
 
   adaptation = _messages.MessageField('SpeechAdaptation', 1)
   autoDecodingConfig = _messages.MessageField('AutoDetectDecodingConfig', 2)
   explicitDecodingConfig = _messages.MessageField('ExplicitDecodingConfig', 3)
   features = _messages.MessageField('RecognitionFeatures', 4)
+  languageCodes = _messages.StringField(5, repeated=True)
+  model = _messages.StringField(6)
 
 
 class RecognitionFeatures(_messages.Message):
@@ -1346,9 +1369,11 @@ class Recognizer(_messages.Message):
       with which the Recognizer is encrypted. The expected format is `projects
       /{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_k
       ey}/cryptoKeyVersions/{crypto_key_version}`.
-    languageCodes: Required. The language of the supplied audio as a
-      [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
-      Supported languages for each model are listed in the [Table of Supported
+    languageCodes: Optional. This field is now deprecated. Prefer the
+      `language_codes` field in the `RecognitionConfig` message. The language
+      of the supplied audio as a [BCP-47](https://www.rfc-
+      editor.org/rfc/bcp/bcp47.txt) language tag. Supported languages for each
+      model are listed in the [Table of Supported
       Models](https://cloud.google.com/speech-to-text/v2/docs/speech-to-text-
       supported-languages). If additional languages are provided, recognition
       result will contain recognition in the most likely language detected.
@@ -1356,10 +1381,11 @@ class Recognizer(_messages.Message):
       detected in the audio. When you create or update a Recognizer, these
       values are stored in normalized BCP-47 form. For example, "en-us" is
       stored as "en-US".
-    model: Required. Which model to use for recognition requests. Select the
-      model best suited to your domain to get best results. Guidance for
-      choosing which model to use can be found in the [Transcription Models
-      Documentation](https://cloud.google.com/speech-to-
+    model: Optional. This field is now deprecated. Prefer the `model` field in
+      the `RecognitionConfig` message. Which model to use for recognition
+      requests. Select the model best suited to your domain to get best
+      results. Guidance for choosing which model to use can be found in the
+      [Transcription Models Documentation](https://cloud.google.com/speech-to-
       text/v2/docs/transcription-model) and the models supported in each
       region can be found in the [Table Of Supported
       Models](https://cloud.google.com/speech-to-text/v2/docs/speech-to-text-
@@ -1848,7 +1874,9 @@ class SpeechProjectsLocationsRecognizersRecognizeRequest(_messages.Message):
       body.
     recognizer: Required. The name of the Recognizer to use during
       recognition. The expected format is
-      `projects/{project}/locations/{location}/recognizers/{recognizer}`.
+      `projects/{project}/locations/{location}/recognizers/{recognizer}`. The
+      {recognizer} segment may be set to `_` to use an empty implicit
+      Recognizer.
   """
 
   recognizeRequest = _messages.MessageField('RecognizeRequest', 1)

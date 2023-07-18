@@ -977,6 +977,32 @@ class SasportalV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def CheckHasProvisionedDeployment(self, request, global_params=None):
+      r"""Checks whether a SAS deployment for the authentication context exists.
+
+      Args:
+        request: (SasportalCustomersCheckHasProvisionedDeploymentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SasPortalCheckHasProvisionedDeploymentResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckHasProvisionedDeployment')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckHasProvisionedDeployment.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='sasportal.customers.checkHasProvisionedDeployment',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1alpha1/customers:checkHasProvisionedDeployment',
+        request_field='',
+        request_type_name='SasportalCustomersCheckHasProvisionedDeploymentRequest',
+        response_type_name='SasPortalCheckHasProvisionedDeploymentResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Returns a requested customer.
 
@@ -1031,21 +1057,17 @@ class SasportalV1alpha1(base_api.BaseApiClient):
     )
 
     def MigrateOrganization(self, request, global_params=None):
-      r"""Migrates a SAS organization to the cloud.
-
-      This will create GCP projects for each deployment and associate them. The
-      SAS Organization is linked to the gcp project that called the command.
-      go/sas-legacy-customer-migration.
+      r"""Migrates a SAS organization to the cloud. This will create GCP projects for each deployment and associate them. The SAS Organization is linked to the gcp project that called the command. go/sas-legacy-customer-migration.
 
       Args:
         request: (SasPortalMigrateOrganizationRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (SasPortalOperation) The response message.
       """
       config = self.GetMethodConfig('MigrateOrganization')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     MigrateOrganization.method_config = lambda: base_api.ApiMethodInfo(
         http_method='POST',

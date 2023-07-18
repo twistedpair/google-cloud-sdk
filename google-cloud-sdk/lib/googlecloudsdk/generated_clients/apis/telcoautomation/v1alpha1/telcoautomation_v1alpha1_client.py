@@ -41,7 +41,10 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_edgeSlms = self.ProjectsLocationsEdgeSlmsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_orchestrationClusters_blueprints = self.ProjectsLocationsOrchestrationClustersBlueprintsService(self)
+    self.projects_locations_orchestrationClusters_deployments = self.ProjectsLocationsOrchestrationClustersDeploymentsService(self)
     self.projects_locations_orchestrationClusters = self.ProjectsLocationsOrchestrationClustersService(self)
+    self.projects_locations_publicBlueprints = self.ProjectsLocationsPublicBlueprintsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -308,6 +311,431 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsOrchestrationClustersBlueprintsService(base_api.BaseApiService):
+    """Service class for the projects_locations_orchestrationClusters_blueprints resource."""
+
+    _NAME = 'projects_locations_orchestrationClusters_blueprints'
+
+    def __init__(self, client):
+      super(TelcoautomationV1alpha1.ProjectsLocationsOrchestrationClustersBlueprintsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Approve(self, request, global_params=None):
+      r"""Approves a blueprint and commits a new revision.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsApproveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Blueprint) The response message.
+      """
+      config = self.GetMethodConfig('Approve')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Approve.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/blueprints/{blueprintsId}:approve',
+        http_method='POST',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.blueprints.approve',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:approve',
+        request_field='approveBlueprintRequest',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsApproveRequest',
+        response_type_name='Blueprint',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a blueprint.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Blueprint) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/blueprints',
+        http_method='POST',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.blueprints.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['blueprintId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/blueprints',
+        request_field='blueprint',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsCreateRequest',
+        response_type_name='Blueprint',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a blueprint and all its revisions.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Blueprint) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/blueprints/{blueprintsId}',
+        http_method='DELETE',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.blueprints.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteRequest',
+        response_type_name='Blueprint',
+        supports_download=False,
+    )
+
+    def DeleteRevision(self, request, global_params=None):
+      r"""Deletes the specified revision of the blueprint.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteRevisionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Blueprint) The response message.
+      """
+      config = self.GetMethodConfig('DeleteRevision')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteRevision.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/blueprints/{blueprintsId}:deleteRevision',
+        http_method='DELETE',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.blueprints.deleteRevision',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:deleteRevision',
+        request_field='',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteRevisionRequest',
+        response_type_name='Blueprint',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the requested blueprint.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Blueprint) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/blueprints/{blueprintsId}',
+        http_method='GET',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.blueprints.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsGetRequest',
+        response_type_name='Blueprint',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List all blueprints.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBlueprintsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/blueprints',
+        http_method='GET',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.blueprints.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/blueprints',
+        request_field='',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsListRequest',
+        response_type_name='ListBlueprintsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a blueprint.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Blueprint) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/blueprints/{blueprintsId}',
+        http_method='PATCH',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.blueprints.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='blueprint',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsPatchRequest',
+        response_type_name='Blueprint',
+        supports_download=False,
+    )
+
+    def Propose(self, request, global_params=None):
+      r"""Proposes a blueprint for approval of changes.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsProposeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Blueprint) The response message.
+      """
+      config = self.GetMethodConfig('Propose')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Propose.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/blueprints/{blueprintsId}:propose',
+        http_method='POST',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.blueprints.propose',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:propose',
+        request_field='proposeBlueprintRequest',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsProposeRequest',
+        response_type_name='Blueprint',
+        supports_download=False,
+    )
+
+    def Reject(self, request, global_params=None):
+      r"""Rejects a blueprint revision proposal and flips it back to Draft state.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsRejectRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Blueprint) The response message.
+      """
+      config = self.GetMethodConfig('Reject')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reject.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/blueprints/{blueprintsId}:reject',
+        http_method='POST',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.blueprints.reject',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:reject',
+        request_field='rejectBlueprintRequest',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsRejectRequest',
+        response_type_name='Blueprint',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOrchestrationClustersDeploymentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_orchestrationClusters_deployments resource."""
+
+    _NAME = 'projects_locations_orchestrationClusters_deployments'
+
+    def __init__(self, client):
+      super(TelcoautomationV1alpha1.ProjectsLocationsOrchestrationClustersDeploymentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a deployment.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Deployment) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/deployments',
+        http_method='POST',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.deployments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['deploymentId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/deployments',
+        request_field='deployment',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsCreateRequest',
+        response_type_name='Deployment',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a deployment and all its revisions.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Deployment) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/deployments/{deploymentsId}',
+        http_method='DELETE',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.deployments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDeleteRequest',
+        response_type_name='Deployment',
+        supports_download=False,
+    )
+
+    def DeleteRevision(self, request, global_params=None):
+      r"""Deletes the specified revision of the deployment.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDeleteRevisionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Deployment) The response message.
+      """
+      config = self.GetMethodConfig('DeleteRevision')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteRevision.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/deployments/{deploymentsId}:deleteRevision',
+        http_method='DELETE',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.deployments.deleteRevision',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:deleteRevision',
+        request_field='',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDeleteRevisionRequest',
+        response_type_name='Deployment',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the requested deployment.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Deployment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/deployments/{deploymentsId}',
+        http_method='GET',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.deployments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsGetRequest',
+        response_type_name='Deployment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List all deployments.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDeploymentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/deployments',
+        http_method='GET',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.deployments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/deployments',
+        request_field='',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsListRequest',
+        response_type_name='ListDeploymentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a deployment.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Deployment) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/deployments/{deploymentsId}',
+        http_method='PATCH',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.deployments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='deployment',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsPatchRequest',
+        response_type_name='Deployment',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOrchestrationClustersService(base_api.BaseApiService):
     """Service class for the projects_locations_orchestrationClusters resource."""
 
@@ -450,6 +878,43 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         request_field='orchestrationCluster',
         request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPublicBlueprintsService(base_api.BaseApiService):
+    """Service class for the projects_locations_publicBlueprints resource."""
+
+    _NAME = 'projects_locations_publicBlueprints'
+
+    def __init__(self, client):
+      super(TelcoautomationV1alpha1.ProjectsLocationsPublicBlueprintsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the blueprints in TNA's public catalog. Default page size = 20, Max Page Size = 100.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsPublicBlueprintsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPublicBlueprintsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/publicBlueprints',
+        http_method='GET',
+        method_id='telcoautomation.projects.locations.publicBlueprints.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/publicBlueprints',
+        request_field='',
+        request_type_name='TelcoautomationProjectsLocationsPublicBlueprintsListRequest',
+        response_type_name='ListPublicBlueprintsResponse',
         supports_download=False,
     )
 

@@ -37,6 +37,10 @@ CHANNELS_FIELD_REMAPPINGS = {'channelLabels': 'labels'}
 
 SNOOZE_FIELD_DELETIONS = ['criteria']
 
+MIGRATED_FROM_PROMETHEUS_TEXT = (
+    'Notification channel migrated from Prometheus alert manager file'
+)
+
 
 class YamlOrJsonLoadError(exceptions.Error):
   """Exception for when a JSON or YAML string could not loaded as a message."""
@@ -56,6 +60,10 @@ class ConflictingFieldsError(exceptions.Error):
 
 class MonitoredProjectNameError(exceptions.Error):
   """Inidicates that an invalid Monitored Project name has been specified."""
+
+
+class MissingRequiredFieldError(exceptions.Error):
+  """Inidicates that supplied policy/alert rule is missing required field(s)."""
 
 
 def ValidateUpdateArgsSpecified(args, update_arg_dests, resource):
@@ -590,3 +598,264 @@ def CreateSnoozeFromArgs(args, messages):
       end_time=args.end_time)
 
   return snooze
+
+
+def BuildPrometheusCondition(messages, group, rule):
+  """Populates Alert Policy conditions translated from a Prometheus alert rule.
+
+  Args:
+    messages: Object containing information about all message types allowed.
+    group: Information about the parent group of the current rule.
+    rule: The current alert rule being translated into an Alert Policy.
+
+  Raises:
+    MissingRequiredFieldError: If the provided group/rule is missing an required
+    field needed for translation.
+
+  Returns:
+     The Alert Policy condition corresponding to the Prometheus group and rule
+     provided.
+  """
+  condition = messages.Condition()
+  condition.conditionPrometheusQueryLanguage = (
+      messages.PrometheusQueryLanguageCondition()
+  )
+  if group.get('name') is None:
+    raise MissingRequiredFieldError('Supplied rules file is missing group.name')
+  if rule.get('alert') is None:
+    raise MissingRequiredFieldError(
+        'Supplied rules file is missing group.rules.alert'
+    )
+  if rule.get('expr') is None:
+    raise MissingRequiredFieldError(
+        'Supplied rules file is missing groups.rules.expr'
+    )
+  condition.conditionPrometheusQueryLanguage.ruleGroup = group.get('name')
+  condition.displayName = rule.get('alert')
+  condition.conditionPrometheusQueryLanguage.alertRule = rule.get('alert')
+  condition.conditionPrometheusQueryLanguage.query = rule.get('expr')
+
+  # optional fields
+  if rule.get('for') is not None:
+    condition.conditionPrometheusQueryLanguage.duration = rule.get('for')
+  if group.get('interval') is not None:
+    condition.conditionPrometheusQueryLanguage.evaluationInterval = group.get(
+        'interval'
+    )
+  if rule.get('labels') is not None:
+    condition.conditionPrometheusQueryLanguage.labels = (
+        messages.PrometheusQueryLanguageCondition.LabelsValue()
+    )
+    for k, v in rule.get('labels').items():
+      condition.conditionPrometheusQueryLanguage.labels.additionalProperties.append(
+          messages.PrometheusQueryLanguageCondition.LabelsValue.AdditionalProperty(
+              key=k, value=v
+          )
+      )
+
+  return condition
+
+
+def PrometheusMessageFromString(rule_yaml, messages, channels):
+  """Populates Alert Policies translated from Prometheus alert rules.
+
+  Args:
+    rule_yaml: Opened object of the Prometheus YAML file provided.
+    messages: Object containing information about all message types allowed.
+    channels: List of Notification Channel names to be added to the translated
+      policies.
+
+  Raises:
+    YamlOrJsonLoadError: If the YAML file cannot be loaded.
+
+  Returns:
+     The Alert Policies corresponding to the Prometheus rules YAML file
+     provided.
+  """
+  try:
+    contents = yaml.load(rule_yaml)
+    policies = []
+    for group in contents.get('groups'):
+      for rule in group.get('rules'):
+        condition = BuildPrometheusCondition(messages, group, rule)
+        policy = messages.AlertPolicy()
+        policy.conditions.append(condition)
+        if rule.get('annotations') is not None:
+          policy.documentation = messages.Documentation()
+          if rule.get('annotations').get('subject') is not None:
+            policy.documentation.subject = rule.get('annotations').get(
+                'subject'
+            )
+          if rule.get('annotations').get('description') is not None:
+            policy.documentation.content = rule.get('annotations').get(
+                'description'
+            )
+          policy.documentation.mimeType = 'text/markdown'
+        policy.displayName = '{0}/{1}'.format(
+            group.get('name'), rule.get('alert')
+        )
+        policy.combiner = arg_utils.ChoiceToEnum(
+            'OR', policy.CombinerValueValuesEnum, item_type='combiner'
+        )
+        if channels is not None:
+          policy.notificationChannels = channels
+        policies.append(policy)
+    return policies
+  except Exception as exc:  # pylint: disable=broad-except
+    raise YamlOrJsonLoadError('Could not parse YAML: {0}'.format(exc))
+
+
+def CreateBasePromQLNotificationChannel(channel_name, messages):
+  """Helper function for creating a basic Notification Channel translated from a Prometheus alert_manager YAML.
+
+  Args:
+    channel_name: The display name of the desired channel.
+    messages: Object containing information about all message types allowed.
+
+  Returns:
+     A base Notification Channel containing the requested display_name and
+     other basic fields.
+  """
+  channel = messages.NotificationChannel()
+  channel.displayName = channel_name
+  channel.description = MIGRATED_FROM_PROMETHEUS_TEXT
+  channel.labels = messages.NotificationChannel.LabelsValue()
+  return channel
+
+
+def BuildChannelsFromPrometheusReceivers(receiver_config, messages):
+  """Populates a Notification Channel translated from Prometheus alert manager.
+
+  Args:
+    receiver_config: Object containing information the Prometheus receiver. For
+      example receiver_configs, see
+      https://github.com/prometheus/alertmanager/blob/main/doc/examples/simple.yml
+    messages: Object containing information about all message types allowed.
+
+  Raises:
+    MissingRequiredFieldError: If the provided alert manager file contains
+    receivers with missing required field(s).
+
+  Returns:
+     The Notification Channel corresponding to the Prometheus alert manager
+     provided.
+  """
+  channels = []
+  channel_name = receiver_config.get('name')
+  if channel_name is None:
+    raise MissingRequiredFieldError(
+        'Supplied alert manager file contains receiver without a required field'
+        ' "name"'
+    )
+
+  if receiver_config.get('email_configs') is not None:
+    for fields in receiver_config.get('email_configs'):
+      if fields.get('to') is not None:
+        channel = CreateBasePromQLNotificationChannel(channel_name, messages)
+        channel.type = 'email'
+        channel.labels.additionalProperties.append(
+            messages.NotificationChannel.LabelsValue.AdditionalProperty(
+                key='email_address', value=fields.get('to')
+            )
+        )
+        channels.append(channel)
+
+  if receiver_config.get('pagerduty_configs') is not None:
+    for fields in receiver_config.get('pagerduty_configs'):
+      if fields.get('service_key') is not None:
+        channel = CreateBasePromQLNotificationChannel(channel_name, messages)
+        channel.type = 'pagerduty'
+        channel.labels.additionalProperties.append(
+            messages.NotificationChannel.LabelsValue.AdditionalProperty(
+                key='service_key', value=fields.get('service_key')
+            )
+        )
+        channels.append(channel)
+
+  if receiver_config.get('webhook_configs') is not None:
+    for fields in receiver_config.get('webhook_configs'):
+      if fields.get('url') is not None:
+        channel = CreateBasePromQLNotificationChannel(channel_name, messages)
+        channel.type = 'webhook_tokenauth'
+        channel.labels.additionalProperties.append(
+            messages.NotificationChannel.LabelsValue.AdditionalProperty(
+                key='url', value=fields.get('url')
+            )
+        )
+        channels.append(channel)
+
+  return channels
+
+
+def NotificationChannelMessageFromString(alert_manager_yaml, messages):
+  """Populates Alert Policies translated from Prometheus alert rules.
+
+  Args:
+    alert_manager_yaml: Opened object of the Prometheus YAML file provided.
+    messages: Object containing information about all message types allowed.
+
+  Raises:
+    YamlOrJsonLoadError: If the YAML file cannot be loaded.
+
+  Returns:
+     The Alert Policies corresponding to the Prometheus rules YAML file
+     provided.
+  """
+  try:
+    contents = yaml.load(alert_manager_yaml)
+  except Exception as exc:  # pylint: disable=broad-except
+    raise YamlOrJsonLoadError('Could not parse YAML: {0}'.format(exc))
+
+  channels = []
+  for receiver_config in contents.get('receivers'):
+    channels += BuildChannelsFromPrometheusReceivers(receiver_config, messages)
+  return channels
+
+
+def CreatePromQLPoliciesFromArgs(args, messages, channels=None):
+  """Builds a PromQL policies message from args.
+
+  Args:
+    args: Flags provided by the user.
+    messages: Object containing information about all message types allowed.
+    channels: List of full Notification Channel names ("projects/<>/...") to be
+      added to the translated policies.
+
+  Returns:
+     The Alert Policies corresponding to the Prometheus rules YAML file
+     provided. In the case that no file is specified, the default behavior is to
+     return an empty list.
+  """
+
+  if args.IsSpecified('policies_from_prometheus_alert_rules_yaml'):
+    all_rule_yamls = args.policies_from_prometheus_alert_rules_yaml
+    policies = []
+    for rule_yaml in all_rule_yamls:
+      policies += PrometheusMessageFromString(rule_yaml, messages, channels)
+  else:
+    policies = []
+
+  return policies
+
+
+def CreateNotificationChannelsFromArgs(args, messages):
+  """Builds a notification channel message from args.
+
+  Args:
+    args: Flags provided by the user.
+    messages: Object containing information about all message types allowed.
+
+  Returns:
+     The notification channels corresponding to the Prometheus alert manager
+     YAML file provided. In the case that no file is specified, the default
+     behavior is to return an empty list.
+  """
+
+  if args.IsSpecified('channels_from_prometheus_alertmanager_yaml'):
+    alert_manager_yaml = args.channels_from_prometheus_alertmanager_yaml
+    channels = NotificationChannelMessageFromString(
+        alert_manager_yaml, messages
+    )
+  else:
+    channels = []
+  return channels

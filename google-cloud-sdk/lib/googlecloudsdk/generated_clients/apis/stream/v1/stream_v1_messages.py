@@ -607,7 +607,7 @@ class StreamContent(_messages.Message):
 
 
 class StreamInstance(_messages.Message):
-  r"""Message describing StreamInstance object Next ID: 14
+  r"""Message describing StreamInstance object Next ID: 16
 
   Messages:
     LabelsValue: Labels as key value pairs
@@ -624,11 +624,15 @@ class StreamInstance(_messages.Message):
     contentBuildVersion: The user-specified version tag and build ID of the
       content served.
     createTime: Output only. [Output only] Create time stamp
+    gpuClass: Immutable. The GPU class this instance uses. Default value is
+      "general_purpose".
     labels: Labels as key value pairs
     lifecycleState: Output only. Current status of the instance.
     locationConfigs: Deployment configuration of the instance by locations
       (only regions are supported now). Map keys are regions in the string
       form.
+    mode: Immutable. The XR mode this instance supports. Default value is "ar"
+      which supports both 3D and AR experiences.
     name: name of resource
     realmConfigs: Deployment configuration of the instance in realms. Note
       that this is not defined as a map for enum types (Realm) cannot be used
@@ -693,13 +697,15 @@ class StreamInstance(_messages.Message):
   content = _messages.StringField(3)
   contentBuildVersion = _messages.MessageField('BuildVersion', 4)
   createTime = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  lifecycleState = _messages.MessageField('LifecycleState', 7)
-  locationConfigs = _messages.MessageField('LocationConfigsValue', 8)
-  name = _messages.StringField(9)
-  realmConfigs = _messages.MessageField('RealmConfig', 10, repeated=True)
-  streamConfig = _messages.MessageField('StreamConfig', 11)
-  updateTime = _messages.StringField(12)
+  gpuClass = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  lifecycleState = _messages.MessageField('LifecycleState', 8)
+  locationConfigs = _messages.MessageField('LocationConfigsValue', 9)
+  mode = _messages.StringField(10)
+  name = _messages.StringField(11)
+  realmConfigs = _messages.MessageField('RealmConfig', 12, repeated=True)
+  streamConfig = _messages.MessageField('StreamConfig', 13)
+  updateTime = _messages.StringField(14)
 
 
 class StreamProjectsLocationsGetRequest(_messages.Message):

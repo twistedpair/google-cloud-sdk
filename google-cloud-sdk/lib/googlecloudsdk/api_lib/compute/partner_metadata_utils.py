@@ -159,7 +159,7 @@ def DecodeStructuredEntries(structured_entries):
       messages.StructuredEntries, structured_entries
   )
 
-
-encoding.RegisterCustomMessageCodec(
-    encoder=EncodeStructuredEntries, decoder=DecodeStructuredEntries
-)(messages.StructuredEntries)
+if hasattr(messages, 'StructuredEntries'):
+  encoding.RegisterCustomMessageCodec(
+      encoder=EncodeStructuredEntries, decoder=DecodeStructuredEntries
+  )(messages.StructuredEntries)

@@ -494,9 +494,12 @@ class InternalRange(_messages.Message):
       OVERLAP_UNSPECIFIED: No overlap overrides.
       OVERLAP_ROUTE_RANGE: Allow creation of static routes more specific than
         the current internal range.
+      OVERLAP_EXISTING_SUBNET_RANGE: Allow creation of internal ranges that
+        overlap with existing subnets.
     """
     OVERLAP_UNSPECIFIED = 0
     OVERLAP_ROUTE_RANGE = 1
+    OVERLAP_EXISTING_SUBNET_RANGE = 2
 
   class PeeringValueValuesEnum(_messages.Enum):
     r"""The type of peering set for this internal range.

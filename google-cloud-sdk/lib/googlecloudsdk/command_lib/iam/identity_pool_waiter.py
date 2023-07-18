@@ -44,8 +44,56 @@ class IdentityPoolOperationPoller(waiter.CloudOperationPoller):
     return self.result_service.Get(request_type(name=resource_name))
 
 
+class IdentityPoolOperationPollerNoResources(waiter.CloudOperationPoller):
+  """Manages an identity pool long-running operation that creates no resources."""
+
+  def GetResult(self, operation):
+    """Overrides.
+
+    Override the default implementation because Identity Pools
+    GetOperation does not return anything in the Operation.response field.
+
+    Args:
+      operation: api_name_message.Operation.
+
+    Returns:
+      None
+    """
+
+    return None
+
+
 class WorkloadSourcesOperationPoller(waiter.CloudOperationPoller):
   """Manages a workload source long-running operation."""
+
+  def GetResult(self, operation):
+    """Overrides.
+
+    Override the default implementation because Identity Pools
+    GetOperation does not return anything in the Operation.response field.
+    There is additional logic to decode the resource name before getting the
+    resource since the operation name for workload source is encoded due to
+    workload source id containing slashes.
+
+    Args:
+      operation: api_name_message.Operation.
+
+    Returns:
+      result of result_service.Get request.
+    """
+
+    request_type = self.result_service.GetRequestType('Get')
+    resource_name = '/'.join(operation.name.split('/')[:-2])
+    # The resource name needs to be decoded twice because the url is also
+    # encoded when polling
+    decoded_resource_name = urllib.parse.unquote(
+        urllib.parse.unquote(resource_name)
+    )
+    return self.result_service.Get(request_type(name=decoded_resource_name))
+
+
+class WorkloadSourcesDeleteOperationPoller(waiter.CloudOperationPoller):
+  """Manages a workload source long-running operation for delete."""
 
   def GetResult(self, operation):
     """Overrides.

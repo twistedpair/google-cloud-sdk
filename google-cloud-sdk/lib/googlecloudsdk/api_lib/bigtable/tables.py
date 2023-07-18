@@ -232,8 +232,7 @@ def AddFieldToUpdateMask(field, req):
   return req
 
 
-# TODO(b/240411657): Remove 'Alpha' and use for all release tracks
-def RefreshUpdateMaskAlpha(unused_ref, args, req):
+def RefreshUpdateMask(unused_ref, args, req):
   """Refresh the update mask of the updateTableRequest according to the input arguments.
 
   Args:
@@ -268,8 +267,8 @@ def AddChangeStreamConfigUpdateTableParams():
       base.Argument(
           '--clear-change-stream-retention-period',
           help=(
-              'This disables the change stream and eventually removes the '
-              'change stream data within your retention period.'
+              'This disables the change stream and eventually removes the'
+              ' change stream data.'
           ),
           action='store_const',
           const=True,

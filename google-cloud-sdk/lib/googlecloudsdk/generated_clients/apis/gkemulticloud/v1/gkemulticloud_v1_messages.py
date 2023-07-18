@@ -146,11 +146,10 @@ class GkemulticloudProjectsLocationsAttachedClustersPatchRequest(_messages.Messa
       details on Google Cloud Platform resource names.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
-      only include these fields from AttachedCluster: * `annotations`. *
-      `authorization.admin_users`. * `description`. *
+      only include these fields from AttachedCluster: * `description`. *
+      `annotations`. * `platform_version`. * `authorization.admin_users`. *
       `logging_config.component_config.enable_components`. *
-      `monitoring_config.managed_prometheus_config.enabled`. *
-      `platform_version`.
+      `monitoring_config.managed_prometheus_config.enabled`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """

@@ -26,6 +26,10 @@ class AdBreak(_messages.Message):
   startTimeOffset = _messages.StringField(1)
 
 
+class Aes128Encryption(_messages.Message):
+  r"""Configuration for AES-128 encryption."""
+
+
 class Animation(_messages.Message):
   r"""Animation types.
 
@@ -212,6 +216,10 @@ class BwdifConfig(_messages.Message):
   parity = _messages.StringField(3)
 
 
+class Clearkey(_messages.Message):
+  r"""Clearkey configuration."""
+
+
 class Color(_messages.Message):
   r"""Color preprocessing configuration. **Note:** This configuration is not
   supported.
@@ -250,6 +258,36 @@ class Crop(_messages.Message):
   leftPixels = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   rightPixels = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   topPixels = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class DashConfig(_messages.Message):
+  r"""`DASH` manifest configuration.
+
+  Enums:
+    SegmentReferenceSchemeValueValuesEnum: The segment reference scheme for a
+      `DASH` manifest. The default is `SEGMENT_LIST`
+
+  Fields:
+    segmentReferenceScheme: The segment reference scheme for a `DASH`
+      manifest. The default is `SEGMENT_LIST`
+  """
+
+  class SegmentReferenceSchemeValueValuesEnum(_messages.Enum):
+    r"""The segment reference scheme for a `DASH` manifest. The default is
+    `SEGMENT_LIST`
+
+    Values:
+      SEGMENT_REFERENCE_SCHEME_UNSPECIFIED: The segment reference scheme is
+        not specified.
+      SEGMENT_LIST: Lists the URLs of media files for each segment.
+      SEGMENT_TEMPLATE_NUMBER: Lists each segment from a template with
+        $Number$ variable.
+    """
+    SEGMENT_REFERENCE_SCHEME_UNSPECIFIED = 0
+    SEGMENT_LIST = 1
+    SEGMENT_TEMPLATE_NUMBER = 2
+
+  segmentReferenceScheme = _messages.EnumField('SegmentReferenceSchemeValueValuesEnum', 1)
 
 
 class Deblock(_messages.Message):
@@ -293,6 +331,22 @@ class Denoise(_messages.Message):
 
   strength = _messages.FloatField(1)
   tune = _messages.StringField(2)
+
+
+class DrmSystems(_messages.Message):
+  r"""Defines configuration for DRM systems in use.
+
+  Fields:
+    clearkey: Clearkey configuration.
+    fairplay: Fairplay configuration.
+    playready: Playready configuration.
+    widevine: Widevine configuration.
+  """
+
+  clearkey = _messages.MessageField('Clearkey', 1)
+  fairplay = _messages.MessageField('Fairplay', 2)
+  playready = _messages.MessageField('Playready', 3)
+  widevine = _messages.MessageField('Widevine', 4)
 
 
 class EditAtom(_messages.Message):
@@ -342,6 +396,31 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class Encryption(_messages.Message):
+  r"""Encryption settings.
+
+  Fields:
+    aes128: Configuration for AES-128 encryption.
+    drmSystems: Required. DRM system(s) to use; at least one must be
+      specified. If a DRM system is omitted, it is considered disabled.
+    id: Required. Identifier for this set of encryption options.
+    mpegCenc: Configuration for MPEG Common Encryption (MPEG-CENC).
+    sampleAes: Configuration for SAMPLE-AES encryption.
+    secretManagerKeySource: Keys are stored in Google Secret Manager.
+  """
+
+  aes128 = _messages.MessageField('Aes128Encryption', 1)
+  drmSystems = _messages.MessageField('DrmSystems', 2)
+  id = _messages.StringField(3)
+  mpegCenc = _messages.MessageField('MpegCommonEncryption', 4)
+  sampleAes = _messages.MessageField('SampleAesEncryption', 5)
+  secretManagerKeySource = _messages.MessageField('SecretManagerSource', 6)
+
+
+class Fairplay(_messages.Message):
+  r"""Fairplay configuration."""
 
 
 class H264CodecSettings(_messages.Message):
@@ -607,6 +686,8 @@ class Job(_messages.Message):
   Enums:
     ModeValueValuesEnum: The processing mode of the job. The default is
       `PROCESSING_MODE_INTERACTIVE`.
+    OptimizationValueValuesEnum: Optional. The optimization strategy of the
+      job. The default is `AUTODETECT`.
     StateValueValuesEnum: Output only. The current state of the job.
 
   Messages:
@@ -614,6 +695,10 @@ class Job(_messages.Message):
       organize and group your jobs.
 
   Fields:
+    batchModePriority: The processing priority of a batch job. This field can
+      only be set for batch mode jobs, and the default value is 0. This value
+      cannot be negative. Higher values correspond to higher priorities for
+      the job.
     config: The configuration for this job.
     createTime: Output only. The time the job was created.
     endTime: Output only. The time the transcoding finished.
@@ -633,6 +718,8 @@ class Job(_messages.Message):
       `PROCESSING_MODE_INTERACTIVE`.
     name: The resource name of the job. Format:
       `projects/{project_number}/locations/{location}/jobs/{job}`
+    optimization: Optional. The optimization strategy of the job. The default
+      is `AUTODETECT`.
     outputUri: Input only. Specify the `output_uri` to populate an empty
       `Job.config.output.uri` or `JobTemplate.config.output.uri` when using
       template. URI for the output file(s). For example, `gs://my-
@@ -664,6 +751,20 @@ class Job(_messages.Message):
     PROCESSING_MODE_UNSPECIFIED = 0
     PROCESSING_MODE_INTERACTIVE = 1
     PROCESSING_MODE_BATCH = 2
+
+  class OptimizationValueValuesEnum(_messages.Enum):
+    r"""Optional. The optimization strategy of the job. The default is
+    `AUTODETECT`.
+
+    Values:
+      OPTIMIZATION_STRATEGY_UNSPECIFIED: The optimization strategy is not
+        specified.
+      AUTODETECT: Prioritize job processing speed.
+      DISABLED: Disable all optimizations.
+    """
+    OPTIMIZATION_STRATEGY_UNSPECIFIED = 0
+    AUTODETECT = 1
+    DISABLED = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the job.
@@ -707,19 +808,21 @@ class Job(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  config = _messages.MessageField('JobConfig', 1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  error = _messages.MessageField('Status', 4)
-  inputUri = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  mode = _messages.EnumField('ModeValueValuesEnum', 7)
-  name = _messages.StringField(8)
-  outputUri = _messages.StringField(9)
-  startTime = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  templateId = _messages.StringField(12)
-  ttlAfterCompletionDays = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  batchModePriority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  config = _messages.MessageField('JobConfig', 2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  error = _messages.MessageField('Status', 5)
+  inputUri = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  mode = _messages.EnumField('ModeValueValuesEnum', 8)
+  name = _messages.StringField(9)
+  optimization = _messages.EnumField('OptimizationValueValuesEnum', 10)
+  outputUri = _messages.StringField(11)
+  startTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  templateId = _messages.StringField(14)
+  ttlAfterCompletionDays = _messages.IntegerField(15, variant=_messages.Variant.INT32)
 
 
 class JobConfig(_messages.Message):
@@ -731,6 +834,9 @@ class JobConfig(_messages.Message):
     editList: List of `Edit atom`s. Defines the ultimate timeline of the
       resulting file or manifest.
     elementaryStreams: List of elementary streams.
+    encryptions: List of encryption configurations for the content. Each
+      configuration has an ID. Specify this ID in the MuxStream.encryption_id
+      field to indicate the configuration to use for that `MuxStream` output.
     inputs: List of input assets stored in Cloud Storage.
     manifests: List of output manifests.
     muxStreams: List of multiplexing settings for output streams.
@@ -744,13 +850,14 @@ class JobConfig(_messages.Message):
   adBreaks = _messages.MessageField('AdBreak', 1, repeated=True)
   editList = _messages.MessageField('EditAtom', 2, repeated=True)
   elementaryStreams = _messages.MessageField('ElementaryStream', 3, repeated=True)
-  inputs = _messages.MessageField('Input', 4, repeated=True)
-  manifests = _messages.MessageField('Manifest', 5, repeated=True)
-  muxStreams = _messages.MessageField('MuxStream', 6, repeated=True)
-  output = _messages.MessageField('Output', 7)
-  overlays = _messages.MessageField('Overlay', 8, repeated=True)
-  pubsubDestination = _messages.MessageField('PubsubDestination', 9)
-  spriteSheets = _messages.MessageField('SpriteSheet', 10, repeated=True)
+  encryptions = _messages.MessageField('Encryption', 4, repeated=True)
+  inputs = _messages.MessageField('Input', 5, repeated=True)
+  manifests = _messages.MessageField('Manifest', 6, repeated=True)
+  muxStreams = _messages.MessageField('MuxStream', 7, repeated=True)
+  output = _messages.MessageField('Output', 8)
+  overlays = _messages.MessageField('Overlay', 9, repeated=True)
+  pubsubDestination = _messages.MessageField('PubsubDestination', 10)
+  spriteSheets = _messages.MessageField('SpriteSheet', 11, repeated=True)
 
 
 class JobTemplate(_messages.Message):
@@ -833,6 +940,7 @@ class Manifest(_messages.Message):
     TypeValueValuesEnum: Required. Type of the manifest.
 
   Fields:
+    dash: `DASH` manifest configuration.
     fileName: The name of the generated file. The default is `manifest` with
       the extension suffix corresponding to the `Manifest.type`.
     muxStreams: Required. List of user given `MuxStream.key`s that should
@@ -856,9 +964,21 @@ class Manifest(_messages.Message):
     HLS = 1
     DASH = 2
 
-  fileName = _messages.StringField(1)
-  muxStreams = _messages.StringField(2, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  dash = _messages.MessageField('DashConfig', 1)
+  fileName = _messages.StringField(2)
+  muxStreams = _messages.StringField(3, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class MpegCommonEncryption(_messages.Message):
+  r"""Configuration for MPEG Common Encryption (MPEG-CENC).
+
+  Fields:
+    scheme: Required. Specify the encryption scheme. Supported encryption
+      schemes: - `cenc` - `cbcs`
+  """
+
+  scheme = _messages.StringField(1)
 
 
 class MuxStream(_messages.Message):
@@ -872,6 +992,8 @@ class MuxStream(_messages.Message):
       input-and-output-formats)
     elementaryStreams: List of `ElementaryStream.key`s multiplexed in this
       stream.
+    encryptionId: Identifier of the encryption configuration to use. If
+      omitted, output will be unencrypted.
     fileName: The name of the generated file. The default is `MuxStream.key`
       with the extension suffix corresponding to the `MuxStream.container`.
       Individual segments also have an incremental 10-digit zero-padded suffix
@@ -883,9 +1005,10 @@ class MuxStream(_messages.Message):
 
   container = _messages.StringField(1)
   elementaryStreams = _messages.StringField(2, repeated=True)
-  fileName = _messages.StringField(3)
-  key = _messages.StringField(4)
-  segmentSettings = _messages.MessageField('SegmentSettings', 5)
+  encryptionId = _messages.StringField(3)
+  fileName = _messages.StringField(4)
+  key = _messages.StringField(5)
+  segmentSettings = _messages.MessageField('SegmentSettings', 6)
 
 
 class NormalizedCoordinate(_messages.Message):
@@ -944,6 +1067,10 @@ class Pad(_messages.Message):
   topPixels = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class Playready(_messages.Message):
+  r"""Playready configuration."""
+
+
 class PreprocessingConfig(_messages.Message):
   r"""Preprocessing configurations.
 
@@ -975,6 +1102,24 @@ class PubsubDestination(_messages.Message):
   """
 
   topic = _messages.StringField(1)
+
+
+class SampleAesEncryption(_messages.Message):
+  r"""Configuration for SAMPLE-AES encryption."""
+
+
+class SecretManagerSource(_messages.Message):
+  r"""Configuration for secrets stored in Google Secret Manager.
+
+  Fields:
+    secretVersion: Required. The name of the Secret Version containing the
+      encryption key in the following format:
+      `projects/{project}/secrets/{secret_id}/versions/{version_number}` Note
+      that only numbered versions are supported. Aliases like "latest" are not
+      supported.
+  """
+
+  secretVersion = _messages.StringField(1)
 
 
 class SegmentSettings(_messages.Message):
@@ -1408,6 +1553,10 @@ class Vp9CodecSettings(_messages.Message):
   profile = _messages.StringField(8)
   rateControlMode = _messages.StringField(9)
   widthPixels = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+
+
+class Widevine(_messages.Message):
+  r"""Widevine configuration."""
 
 
 class YadifConfig(_messages.Message):

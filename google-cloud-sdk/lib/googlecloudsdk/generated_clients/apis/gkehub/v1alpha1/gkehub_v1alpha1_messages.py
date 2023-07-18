@@ -2901,6 +2901,8 @@ class OnClusterState(_messages.Message):
       SUSPENDED: Policy Controller (PC) is installed but suspended. This means
         that the policies are not enforced, but violations are still recorded
         (through audit).
+      DETACHED: PoCo Hub is not taking any action to reconcile cluster
+        objects. Changes to those objects will not be overwritten by PoCo Hub.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
@@ -2911,6 +2913,7 @@ class OnClusterState(_messages.Message):
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
     SUSPENDED = 8
+    DETACHED = 9
 
   details = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -3437,6 +3440,8 @@ class PolicyControllerFeatureState(_messages.Message):
       SUSPENDED: Policy Controller (PC) is installed but suspended. This means
         that the policies are not enforced, but violations are still recorded
         (through audit).
+      DETACHED: PoCo Hub is not taking any action to reconcile cluster
+        objects. Changes to those objects will not be overwritten by PoCo Hub.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
@@ -3447,6 +3452,7 @@ class PolicyControllerFeatureState(_messages.Message):
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
     SUSPENDED = 8
+    DETACHED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ComponentStatesValue(_messages.Message):
@@ -3532,11 +3538,15 @@ class PolicyControllerHubConfig(_messages.Message):
       INSTALL_SPEC_SUSPENDED: Request to suspend Policy Controller i.e. its
         webhooks. If Policy Controller is not installed, it will be installed
         but suspended.
+      INSTALL_SPEC_DETACHED: Request to stop all reconciliation actions by
+        PoCo Hub controller. This is a breakglass mechanism to stop PoCo Hub
+        from affecting cluster resources.
     """
     INSTALL_SPEC_UNSPECIFIED = 0
     INSTALL_SPEC_NOT_INSTALLED = 1
     INSTALL_SPEC_ENABLED = 2
     INSTALL_SPEC_SUSPENDED = 3
+    INSTALL_SPEC_DETACHED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DeploymentConfigsValue(_messages.Message):

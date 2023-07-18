@@ -2927,6 +2927,7 @@ class Discovered(_messages.Message):
     lastScanTime: The last time this resource was scanned.
     operation: Output only. An operation that indicates the status of the
       current scan. This field is deprecated, do not use.
+    sbomStatus: Output only. The status of an SBOM generation.
   """
 
   class AnalysisStatusValueValuesEnum(_messages.Enum):
@@ -2971,6 +2972,7 @@ class Discovered(_messages.Message):
   cpe = _messages.StringField(7)
   lastScanTime = _messages.StringField(8)
   operation = _messages.MessageField('Operation', 9)
+  sbomStatus = _messages.MessageField('SBOMStatus', 10)
 
 
 class Discovery(_messages.Message):
@@ -5440,6 +5442,35 @@ class SBOMReferenceOccurrence(_messages.Message):
   payload = _messages.MessageField('SbomReferenceIntotoPayload', 1)
   payloadType = _messages.StringField(2)
   signatures = _messages.MessageField('EnvelopeSignature', 3, repeated=True)
+
+
+class SBOMStatus(_messages.Message):
+  r"""The status of an SBOM generation.
+
+  Enums:
+    SbomStateValueValuesEnum: Output only. The progress of the SBOM
+      generation.
+
+  Fields:
+    error: Output only. If there was an error generating an SBOM, this will
+      indicate what that error was.
+    sbomState: Output only. The progress of the SBOM generation.
+  """
+
+  class SbomStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The progress of the SBOM generation.
+
+    Values:
+      SBOM_STATE_UNSPECIFIED: Default unknown state.
+      PENDING: SBOM scanning is pending.
+      COMPLETE: SBOM scanning has completed.
+    """
+    SBOM_STATE_UNSPECIFIED = 0
+    PENDING = 1
+    COMPLETE = 2
+
+  error = _messages.StringField(1)
+  sbomState = _messages.EnumField('SbomStateValueValuesEnum', 2)
 
 
 class SbomReferenceIntotoPayload(_messages.Message):

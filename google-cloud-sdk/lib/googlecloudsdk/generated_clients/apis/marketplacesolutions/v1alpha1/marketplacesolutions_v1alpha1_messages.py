@@ -13,6 +13,38 @@ from apitools.base.py import extra_types
 package = 'marketplacesolutions'
 
 
+class ApplyPowerInstancePowerActionRequest(_messages.Message):
+  r"""Message requesting to perform one of several power actions on an
+  instance.
+
+  Enums:
+    ActionValueValuesEnum: The action to perform on the instance.
+
+  Fields:
+    action: The action to perform on the instance.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""The action to perform on the instance.
+
+    Values:
+      ACTION_UNSPECIFIED: No action was specified.
+      START: Start the instance.
+      STOP: Cleanly shut down the instance.
+      SOFT_REBOOT: Cleanly reboot the instance.
+      HARD_REBOOT: Hard reboot the instance.
+      IMMEDIATE_SHUTDOWN: Immediately shut down the instance.
+    """
+    ACTION_UNSPECIFIED = 0
+    START = 1
+    STOP = 2
+    SOFT_REBOOT = 3
+    HARD_REBOOT = 4
+    IMMEDIATE_SHUTDOWN = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -202,6 +234,55 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class MarketplacesolutionsOperationsCancelRequest(_messages.Message):
+  r"""A MarketplacesolutionsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class MarketplacesolutionsOperationsDeleteRequest(_messages.Message):
+  r"""A MarketplacesolutionsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MarketplacesolutionsOperationsGetRequest(_messages.Message):
+  r"""A MarketplacesolutionsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MarketplacesolutionsOperationsListRequest(_messages.Message):
+  r"""A MarketplacesolutionsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class MarketplacesolutionsProjectsLocationsGetRequest(_messages.Message):
   r"""A MarketplacesolutionsProjectsLocationsGetRequest object.
 
@@ -232,29 +313,6 @@ class MarketplacesolutionsProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class MarketplacesolutionsProjectsLocationsOperationsCancelRequest(_messages.Message):
-  r"""A MarketplacesolutionsProjectsLocationsOperationsCancelRequest object.
-
-  Fields:
-    cancelOperationRequest: A CancelOperationRequest resource to be passed as
-      the request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class MarketplacesolutionsProjectsLocationsOperationsDeleteRequest(_messages.Message):
-  r"""A MarketplacesolutionsProjectsLocationsOperationsDeleteRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class MarketplacesolutionsProjectsLocationsOperationsGetRequest(_messages.Message):
   r"""A MarketplacesolutionsProjectsLocationsOperationsGetRequest object.
 
@@ -263,22 +321,6 @@ class MarketplacesolutionsProjectsLocationsOperationsGetRequest(_messages.Messag
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class MarketplacesolutionsProjectsLocationsOperationsListRequest(_messages.Message):
-  r"""A MarketplacesolutionsProjectsLocationsOperationsListRequest object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
 
 
 class MarketplacesolutionsProjectsLocationsPowerImagesGetRequest(_messages.Message):
@@ -308,6 +350,50 @@ class MarketplacesolutionsProjectsLocationsPowerImagesListRequest(_messages.Mess
   parent = _messages.StringField(4, required=True)
 
 
+class MarketplacesolutionsProjectsLocationsPowerInstancesApplyPowerActionRequest(_messages.Message):
+  r"""A
+  MarketplacesolutionsProjectsLocationsPowerInstancesApplyPowerActionRequest
+  object.
+
+  Fields:
+    applyPowerInstancePowerActionRequest: A
+      ApplyPowerInstancePowerActionRequest resource to be passed as the
+      request body.
+    name: Required. Name of the resource.
+  """
+
+  applyPowerInstancePowerActionRequest = _messages.MessageField('ApplyPowerInstancePowerActionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class MarketplacesolutionsProjectsLocationsPowerInstancesCreateRequest(_messages.Message):
+  r"""A MarketplacesolutionsProjectsLocationsPowerInstancesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. Parent of the resource.
+    powerInstance: A PowerInstance resource to be passed as the request body.
+    powerInstanceId: Required. The ID to use for the instance, which will
+      become the final component of the instance name. This value should be
+      4-63 characters, and valid characters are /a-z[0-9]-_/.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  powerInstance = _messages.MessageField('PowerInstance', 2)
+  powerInstanceId = _messages.StringField(3)
+
+
+class MarketplacesolutionsProjectsLocationsPowerInstancesDeleteRequest(_messages.Message):
+  r"""A MarketplacesolutionsProjectsLocationsPowerInstancesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the instance to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class MarketplacesolutionsProjectsLocationsPowerInstancesGetRequest(_messages.Message):
   r"""A MarketplacesolutionsProjectsLocationsPowerInstancesGetRequest object.
 
@@ -333,6 +419,39 @@ class MarketplacesolutionsProjectsLocationsPowerInstancesListRequest(_messages.M
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class MarketplacesolutionsProjectsLocationsPowerInstancesPatchRequest(_messages.Message):
+  r"""A MarketplacesolutionsProjectsLocationsPowerInstancesPatchRequest
+  object.
+
+  Fields:
+    name: Output only. The resource name of this PowerInstance. Resource names
+      are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. Format: `projects/{
+      project}/locations/{location}/powerInstances/{power_instance}`
+    powerInstance: A PowerInstance resource to be passed as the request body.
+    updateMask: The list of fields to update. The currently supported fields
+      are: - 'memory_gib' - 'virtual_cpu_cores'
+  """
+
+  name = _messages.StringField(1, required=True)
+  powerInstance = _messages.MessageField('PowerInstance', 2)
+  updateMask = _messages.StringField(3)
+
+
+class MarketplacesolutionsProjectsLocationsPowerInstancesResetRequest(_messages.Message):
+  r"""A MarketplacesolutionsProjectsLocationsPowerInstancesResetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource.
+    resetPowerInstanceRequest: A ResetPowerInstanceRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resetPowerInstanceRequest = _messages.MessageField('ResetPowerInstanceRequest', 2)
 
 
 class MarketplacesolutionsProjectsLocationsPowerNetworksGetRequest(_messages.Message):
@@ -414,6 +533,52 @@ class MarketplacesolutionsProjectsLocationsPowerVolumesListRequest(_messages.Mes
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class NetworkAttachment(_messages.Message):
+  r"""A VM attachment to a network.
+
+  Enums:
+    IpTypeValueValuesEnum: Output only. The type of this network attachment.
+    IpVersionValueValuesEnum: Output only. The version of this IP address.
+
+  Fields:
+    ipAddress: Output only. The IP address on this network.
+    ipType: Output only. The type of this network attachment.
+    ipVersion: Output only. The version of this IP address.
+    macAddress: Output only. The MAC address on this network.
+    powerNetwork: Required. The name of the network attached to.
+  """
+
+  class IpTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of this network attachment.
+
+    Values:
+      IP_TYPE_UNSPECIFIED: The type of this ip is unknown.
+      FIXED: The ip address is fixed.
+      DYNAMIC: The ip address is dynamic.
+    """
+    IP_TYPE_UNSPECIFIED = 0
+    FIXED = 1
+    DYNAMIC = 2
+
+  class IpVersionValueValuesEnum(_messages.Enum):
+    r"""Output only. The version of this IP address.
+
+    Values:
+      IP_VERSION_UNSPECIFIED: The version of this ip is unknown.
+      IPV4: The ip is an IPv4 address.
+      IPV6: The ip is an IPv6 address.
+    """
+    IP_VERSION_UNSPECIFIED = 0
+    IPV4 = 1
+    IPV6 = 2
+
+  ipAddress = _messages.StringField(1)
+  ipType = _messages.EnumField('IpTypeValueValuesEnum', 2)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 3)
+  macAddress = _messages.StringField(4)
+  powerNetwork = _messages.StringField(5)
 
 
 class Operation(_messages.Message):
@@ -580,48 +745,6 @@ class OsImage(_messages.Message):
   version = _messages.StringField(2)
 
 
-class PowerIP(_messages.Message):
-  r"""A PowerIP.
-
-  Enums:
-    TypeValueValuesEnum: Type of the IP.
-    VersionValueValuesEnum: IP protocol version.
-
-  Fields:
-    address: The ip address for this ip.
-    type: Type of the IP.
-    version: IP protocol version.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Type of the IP.
-
-    Values:
-      IPTYPE_UNSPECIFIED: The type of this ip is unknown.
-      FIXED: The ip address is fixed.
-      DYNAMIC: The ip address is dynamic.
-    """
-    IPTYPE_UNSPECIFIED = 0
-    FIXED = 1
-    DYNAMIC = 2
-
-  class VersionValueValuesEnum(_messages.Enum):
-    r"""IP protocol version.
-
-    Values:
-      IPVERSION_UNSPECIFIED: The version of this ip is unknown.
-      IPV4: The ip is an IPv4 address.
-      IPV6: The ip is an IPv6 address.
-    """
-    IPVERSION_UNSPECIFIED = 0
-    IPV4 = 1
-    IPV6 = 2
-
-  address = _messages.StringField(1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
-  version = _messages.EnumField('VersionValueValuesEnum', 3)
-
-
 class PowerIPAddressMetrics(_messages.Message):
   r"""Power IP Address Metrics
 
@@ -756,10 +879,14 @@ class PowerInstance(_messages.Message):
 
   Enums:
     StateValueValuesEnum: The state of the instance.
+    VirtualCpuTypeValueValuesEnum: Required. The processor type of this
+      instance.
 
   Fields:
-    addresses: List of addresses associated with this instance, corresponds to
-      `addresses` field from Power's API.
+    addresses: Output only. List of addresses associated with this instance,
+      corresponds to `addresses` field from Power's API.
+    bootImage: Required. The name of the boot image used to create this
+      instance.
     createTime: Output only. Instance creation time.
     healthStatus: Last health status for instance.
     memoryGib: Memory size for the instance.
@@ -767,17 +894,18 @@ class PowerInstance(_messages.Message):
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format: `projects/{
       project}/locations/{location}/powerInstances/{power_instance}`
-    networks: List of networks associated with this instance, corresponds to
-      `networks` field from Power's API.
+    networkAttachments: Optional. List of network attachments associated with
+      this instance, corresponds to `networks` field from Power's API.
     osImage: The OS image currently installed on this instance.
     state: The state of the instance.
-    systemType: IBM Power System type, most commonly s922.
+    systemType: Required. IBM Power System type, most commonly s922.
     uid: Output only. An unique identifier generated for the PowerInstance.
     updateTime: Output only. Instance update time.
     virtualCpuCores: Processor for the instance.
+    virtualCpuType: Required. The processor type of this instance.
     volumeIds: List of volumes IDs associated with this instance.
-    volumes: List of volumes associated with this instance, retrieved by
-      calling ListVolumes API.
+    volumes: Output only. List of volumes associated with this instance,
+      retrieved by calling ListVolumes API.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -808,20 +936,37 @@ class PowerInstance(_messages.Message):
     RESIZE = 9
     VERIFY_RESIZE = 10
 
-  addresses = _messages.MessageField('PowerNetwork', 1, repeated=True)
-  createTime = _messages.StringField(2)
-  healthStatus = _messages.StringField(3)
-  memoryGib = _messages.IntegerField(4)
-  name = _messages.StringField(5)
-  networks = _messages.MessageField('PowerNetwork', 6, repeated=True)
-  osImage = _messages.MessageField('OsImage', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  systemType = _messages.StringField(9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
-  virtualCpuCores = _messages.FloatField(12)
-  volumeIds = _messages.StringField(13, repeated=True)
-  volumes = _messages.MessageField('PowerVolume', 14, repeated=True)
+  class VirtualCpuTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The processor type of this instance.
+
+    Values:
+      VIRTUAL_CPU_TYPE_UNSPECIFIED: Unspecified.
+      DEDICATED: Dedicated processors. Processor counts for this type must be
+        whole numbers.
+      UNCAPPED_SHARED: Uncapped shared processors.
+      CAPPED_SHARED: Capped shared processors.
+    """
+    VIRTUAL_CPU_TYPE_UNSPECIFIED = 0
+    DEDICATED = 1
+    UNCAPPED_SHARED = 2
+    CAPPED_SHARED = 3
+
+  addresses = _messages.MessageField('NetworkAttachment', 1, repeated=True)
+  bootImage = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  healthStatus = _messages.StringField(4)
+  memoryGib = _messages.IntegerField(5)
+  name = _messages.StringField(6)
+  networkAttachments = _messages.MessageField('NetworkAttachment', 7, repeated=True)
+  osImage = _messages.MessageField('OsImage', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  systemType = _messages.StringField(10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  virtualCpuCores = _messages.FloatField(13)
+  virtualCpuType = _messages.EnumField('VirtualCpuTypeValueValuesEnum', 14)
+  volumeIds = _messages.StringField(15, repeated=True)
+  volumes = _messages.MessageField('PowerVolume', 16, repeated=True)
 
 
 class PowerNetwork(_messages.Message):
@@ -836,17 +981,16 @@ class PowerNetwork(_messages.Message):
     gateway: The gateway of the network.
     ipAddressMetrics: IPAddressMetrics information for Power Network
     ipAddressRanges: List of IP address ranges for the network
-    ips: List of PowerIPs attached to this network.
     jumboFramesEnabled: Whether jumbo frames are enabled.
-    macAddress: A physical interface for this PowerNetwork.
     name: Output only. The resource name of this PowerNetwork. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format:
-      `projects/{project}/locations/{location}/powerNetworks/{network}`
+      `projects/{project}/locations/{location}/powerNetworks/{power_network}`
     type: Type of the vlan.
     uid: Output only. An unique identifier for this PowerNetwork, generated by
       the backend.
-    vlanId: The vlan id of the network.
+    vlanId: The vlan id of the network. VLAN IDs are 12-bit, and range from
+      0x000 to 0xFFF.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -864,13 +1008,11 @@ class PowerNetwork(_messages.Message):
   gateway = _messages.StringField(3)
   ipAddressMetrics = _messages.MessageField('PowerIPAddressMetrics', 4)
   ipAddressRanges = _messages.MessageField('PowerIPAddressRanges', 5, repeated=True)
-  ips = _messages.MessageField('PowerIP', 6, repeated=True)
-  jumboFramesEnabled = _messages.BooleanField(7)
-  macAddress = _messages.StringField(8)
-  name = _messages.StringField(9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
-  uid = _messages.StringField(11)
-  vlanId = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
+  jumboFramesEnabled = _messages.BooleanField(6)
+  name = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  uid = _messages.StringField(9)
+  vlanId = _messages.IntegerField(10)
 
 
 class PowerSSHKey(_messages.Message):
@@ -998,6 +1140,10 @@ class PowerVolume(_messages.Message):
   volumePool = _messages.StringField(13)
   volumeType = _messages.StringField(14)
   wwn = _messages.StringField(15)
+
+
+class ResetPowerInstanceRequest(_messages.Message):
+  r"""Message requesting to reset a server."""
 
 
 class StandardQueryParameters(_messages.Message):

@@ -1200,6 +1200,8 @@ class Gateway(_messages.Message):
   Gateways to dictate how requests should be routed by this Gateway.
 
   Enums:
+    IpVersionValueValuesEnum: Optional. The IP Version that will be used by
+      this gateway. Valid options are IPV4 or IPV6. Default is IPV4.
     TypeValueValuesEnum: Immutable. The type of the customer managed gateway.
       This field is required. If unspecified, an error is returned.
 
@@ -1208,10 +1210,11 @@ class Gateway(_messages.Message):
       resource.
 
   Fields:
-    addresses: Optional. Zero or one IPv4-address on which the Gateway will
-      receive the traffic. When no address is provided, an IP from the
+    addresses: Optional. Zero or one IPv4 or IPv6 address on which the Gateway
+      will receive the traffic. When no address is provided, an IP from the
       subnetwork is allocated This field only applies to gateways of type
-      'SECURE_WEB_GATEWAY'. Gateways of type 'OPEN_MESH' listen on 0.0.0.0.
+      'SECURE_WEB_GATEWAY'. Gateways of type 'OPEN_MESH' listen on 0.0.0.0 for
+      IPv4 and :: for IPv6.
     authorizationPolicy: Optional. A fully-qualified AuthorizationPolicy URL
       reference. Specifies how traffic is authorized. If empty, authorization
       checks are disabled.
@@ -1227,6 +1230,8 @@ class Gateway(_messages.Message):
       inbound (VM to Proxy) initiated connections. For example:
       `projects/*/locations/*/gatewaySecurityPolicies/swg-policy`. This policy
       is specific to gateways of type 'SECURE_WEB_GATEWAY'.
+    ipVersion: Optional. The IP Version that will be used by this gateway.
+      Valid options are IPV4 or IPV6. Default is IPV4.
     labels: Optional. Set of label tags associated with the Gateway resource.
     name: Required. Name of the Gateway resource. It matches pattern
       `projects/*/locations/*/gateways/`.
@@ -1237,7 +1242,8 @@ class Gateway(_messages.Message):
     ports: Required. One or more port numbers (1-65535), on which the Gateway
       will receive traffic. The proxy binds to the specified ports. Gateways
       of type 'SECURE_WEB_GATEWAY' are limited to 1 port. Gateways of type
-      'OPEN_MESH' listen on 0.0.0.0 and support multiple ports.
+      'OPEN_MESH' listen on 0.0.0.0 for IPv4 and :: for IPv6 and support
+      multiple ports.
     scope: Optional. Scope determines how configuration across multiple
       Gateway instances are merged. The configuration for multiple Gateway
       instances with the same scope will be merged as presented as a single
@@ -1260,6 +1266,19 @@ class Gateway(_messages.Message):
       required. If unspecified, an error is returned.
     updateTime: Output only. The timestamp when the resource was updated.
   """
+
+  class IpVersionValueValuesEnum(_messages.Enum):
+    r"""Optional. The IP Version that will be used by this gateway. Valid
+    options are IPV4 or IPV6. Default is IPV4.
+
+    Values:
+      IP_VERSION_UNSPECIFIED: The type when IP version is not specified.
+      IPV4: The type for IP version 4.
+      IPV6: The type for IP version 6.
+    """
+    IP_VERSION_UNSPECIFIED = 0
+    IPV4 = 1
+    IPV6 = 2
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Immutable. The type of the customer managed gateway. This field is
@@ -1307,17 +1326,18 @@ class Gateway(_messages.Message):
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
   gatewaySecurityPolicy = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  ports = _messages.IntegerField(10, repeated=True, variant=_messages.Variant.INT32)
-  scope = _messages.StringField(11)
-  securityPolicy = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  serverTlsPolicy = _messages.StringField(14)
-  subnetwork = _messages.StringField(15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
-  updateTime = _messages.StringField(17)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  ports = _messages.IntegerField(11, repeated=True, variant=_messages.Variant.INT32)
+  scope = _messages.StringField(12)
+  securityPolicy = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  serverTlsPolicy = _messages.StringField(15)
+  subnetwork = _messages.StringField(16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  updateTime = _messages.StringField(18)
 
 
 class GrpcRoute(_messages.Message):

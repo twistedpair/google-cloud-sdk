@@ -710,7 +710,7 @@ class AlloydbV1alpha(base_api.BaseApiClient):
     )
 
     def GenerateClientCertificate(self, request, global_params=None):
-      r"""Generate a client certificate signed by a Cluster CA. The sole purpose of this endpoint is to support the Auth Proxy client and the endpoint's behavior is subject to change without notice, so do not rely on its behavior remaining constant. Future changes will not break the Auth Proxy client.
+      r"""Generate a client certificate signed by a Cluster CA. The sole purpose of this endpoint is to support AlloyDB connectors and the Auth Proxy client. The endpoint's behavior is subject to change without notice, so do not rely on its behavior remaining constant. Future changes will not break AlloyDB connectors or the Auth Proxy client.
 
       Args:
         request: (AlloydbProjectsLocationsClustersGenerateClientCertificateRequest) input message

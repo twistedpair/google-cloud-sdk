@@ -4407,8 +4407,7 @@ class QueryAssetsRequest(_messages.Message):
       less than [end_time] Defaults [end_time] to now if [start_time] is set
       and [end_time] isn't. Maximum permitted time range is 7 days.
     statement: Optional. A SQL statement that's compatible with [BigQuery
-      Standard SQL](http://cloud/bigquery/docs/reference/standard-
-      sql/enabling-standard-sql).
+      SQL](https://cloud.google.com/bigquery/docs/introduction-sql).
     timeout: Optional. Specifies the maximum amount of time that the client is
       willing to wait for the query to complete. By default, this limit is 5
       min for the first query, and 1 minute for the following queries. If the

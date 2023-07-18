@@ -24,16 +24,24 @@ from googlecloudsdk.command_lib.assured import resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 _GA_COMPLIANCE_REGIMES = [
-    'CJIS', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'IL4', 'US_REGIONAL_ACCESS',
-    'HIPAA', 'HITRUST', 'EU_REGIONS_AND_SUPPORT', 'CA_REGIONS_AND_SUPPORT',
-    'ITAR', 'ASSURED_WORKLOADS_FOR_PARTNERS'
+    'CJIS',
+    'FEDRAMP_HIGH',
+    'FEDRAMP_MODERATE',
+    'IL4',
+    'US_REGIONAL_ACCESS',
+    'HIPAA',
+    'HITRUST',
+    'EU_REGIONS_AND_SUPPORT',
+    'CA_REGIONS_AND_SUPPORT',
+    'ITAR',
+    'ASSURED_WORKLOADS_FOR_PARTNERS',
 ]
 _BETA_COMPLIANCE_REGIMES = _GA_COMPLIANCE_REGIMES
 
 compliance_regimes = {
     ReleaseTrack.GA: _GA_COMPLIANCE_REGIMES,
     ReleaseTrack.BETA: _BETA_COMPLIANCE_REGIMES,
-    ReleaseTrack.ALPHA: _BETA_COMPLIANCE_REGIMES
+    ReleaseTrack.ALPHA: _BETA_COMPLIANCE_REGIMES,
 }
 
 PARTNERS = ['LOCAL_CONTROLS_BY_S3NS', 'SOVEREIGN_CONTROLS_BY_T_SYSTEMS']
@@ -43,30 +51,42 @@ def AddListWorkloadsFlags(parser):
   parser.add_argument(
       '--location',
       required=True,
-      help=('The location of the Assured Workloads environments. For a '
-            'current list of supported LOCATION values, see '
-            '[Assured Workloads locations]'
-            '(http://cloud/assured-workloads/docs/locations).'))
+      help=(
+          'The location of the Assured Workloads environments. For a '
+          'current list of supported LOCATION values, see '
+          '[Assured Workloads locations]'
+          '(http://cloud/assured-workloads/docs/locations).'
+      ),
+  )
   parser.add_argument(
       '--organization',
       required=True,
-      help=('The parent organization of the Assured Workloads environments, '
-            'provided as an organization ID.'))
+      help=(
+          'The parent organization of the Assured Workloads environments, '
+          'provided as an organization ID.'
+      ),
+  )
 
 
 def AddListOperationsFlags(parser):
   parser.add_argument(
       '--location',
       required=True,
-      help=('The location of the Assured Workloads operations. For a '
-            'current list of supported LOCATION values, see '
-            '[Assured Workloads locations]'
-            '(http://cloud/assured-workloads/docs/locations).'))
+      help=(
+          'The location of the Assured Workloads operations. For a '
+          'current list of supported LOCATION values, see '
+          '[Assured Workloads locations]'
+          '(http://cloud/assured-workloads/docs/locations).'
+      ),
+  )
   parser.add_argument(
       '--organization',
       required=True,
-      help=('The parent organization of the Assured Workloads operations, '
-            'provided as an organization ID.'))
+      help=(
+          'The parent organization of the Assured Workloads operations, '
+          'provided as an organization ID.'
+      ),
+  )
 
 
 def AddCreateWorkloadFlags(parser, release_track):
@@ -82,61 +102,104 @@ def AddCreateWorkloadFlags(parser, release_track):
   parser.add_argument(
       '--location',
       required=True,
-      help=('The location of the new Assured Workloads environment. For a '
-            'current list of supported LOCATION values, see '
-            '[Assured Workloads locations]'
-            '(http://cloud/assured-workloads/docs/locations).'))
+      help=(
+          'The location of the new Assured Workloads environment. For a '
+          'current list of supported LOCATION values, see '
+          '[Assured Workloads locations]'
+          '(http://cloud/assured-workloads/docs/locations).'
+      ),
+  )
   parser.add_argument(
       '--organization',
       required=True,
-      help=('The parent organization of the new Assured Workloads environment, '
-            'provided as an organization ID'))
+      help=(
+          'The parent organization of the new Assured Workloads environment, '
+          'provided as an organization ID'
+      ),
+  )
   parser.add_argument(
       '--external-identifier',
-      help='The external identifier of the new Assured Workloads environment')
+      help='The external identifier of the new Assured Workloads environment',
+  )
   parser.add_argument(
       '--display-name',
       required=True,
-      help='The display name of the new Assured Workloads environment')
+      help='The display name of the new Assured Workloads environment',
+  )
   parser.add_argument(
       '--compliance-regime',
       required=True,
       choices=compliance_regimes.get(release_track),
-      help='The compliance regime of the new Assured Workloads environment')
+      help='The compliance regime of the new Assured Workloads environment',
+  )
   parser.add_argument(
       '--partner',
       choices=PARTNERS,
-      help='The partner choice when creating a workload managed by local trusted partners.'
+      help=(
+          'The partner choice when creating a workload managed by local trusted'
+          ' partners.'
+      ),
+  )
+  parser.add_argument(
+      '--partner-permissions',
+      type=arg_parsers.ArgDict(
+          spec={
+              'data-logs-viewer': bool,
+          }
+      ),
+      metavar='KEY=VALUE',
+      help=(
+          'The partner permissions for the partner regime, for example,'
+          ' data-logs-viewer=true/false'
+      ),
   )
   parser.add_argument(
       '--billing-account',
       required=True,
-      help=('The billing account of the new Assured Workloads environment, for '
-            'example, billingAccounts/0000AA-AAA00A-A0A0A0'))
+      help=(
+          'The billing account of the new Assured Workloads environment, for '
+          'example, billingAccounts/0000AA-AAA00A-A0A0A0'
+      ),
+  )
   parser.add_argument(
       '--next-rotation-time',
-      help=('The next rotation time of the KMS settings of new Assured '
-            'Workloads environment, for example, 2020-12-30T10:15:30.00Z'))
+      help=(
+          'The next rotation time of the KMS settings of new Assured '
+          'Workloads environment, for example, 2020-12-30T10:15:30.00Z'
+      ),
+  )
   parser.add_argument(
       '--rotation-period',
-      help=('The rotation period of the KMS settings of the new Assured '
-            'Workloads environment, for example, 172800s'))
+      help=(
+          'The rotation period of the KMS settings of the new Assured '
+          'Workloads environment, for example, 172800s'
+      ),
+  )
   parser.add_argument(
       '--labels',
       type=arg_parsers.ArgDict(),
       metavar='KEY=VALUE',
-      help=('The labels of the new Assured Workloads environment, for example, '
-            'LabelKey1=LabelValue1,LabelKey2=LabelValue2'))
+      help=(
+          'The labels of the new Assured Workloads environment, for example, '
+          'LabelKey1=LabelValue1,LabelKey2=LabelValue2'
+      ),
+  )
   parser.add_argument(
       '--provisioned-resources-parent',
-      help=('The parent of the provisioned projects, for example, '
-            'folders/{FOLDER_ID}'))
+      help=(
+          'The parent of the provisioned projects, for example, '
+          'folders/{FOLDER_ID}'
+      ),
+  )
   parser.add_argument(
       '--enable-sovereign-controls',
       type=bool,
       default=False,
-      help=('If true, enable sovereign controls for the new Assured Workloads '
-            'environment, currently only supported by EU_REGIONS_AND_SUPPORT'))
+      help=(
+          'If true, enable sovereign controls for the new Assured Workloads '
+          'environment, currently only supported by EU_REGIONS_AND_SUPPORT'
+      ),
+  )
   _AddResourceSettingsFlag(parser, release_track)
 
 
@@ -160,16 +223,20 @@ def _AddResourceSettingsFlag(parser, release_track):
                 'encryption-keys-project-id': str,
                 'encryption-keys-project-name': str,
                 'keyring-id': str,
-            }),
+            }
+        ),
         metavar='KEY=VALUE',
         help=(
-            'A comma-separated, key=value map of custom resource settings such '
-            'as custom project ids, for example: consumer-project-id={CONSUMER_PROJECT_ID} '
-            'Note: Currently only consumer-project-id, consumer-project-name, '
-            'encryption-keys-project-id, encryption-keys-project-name and '
-            'keyring-id are supported. The encryption-keys-project-id, '
-            'encryption-keys-project-name and keyring-id settings can be '
-            'specified only if KMS settings are provided'))
+            'A comma-separated, key=value map of custom resource settings such'
+            ' as custom project ids, for example:'
+            ' consumer-project-id={CONSUMER_PROJECT_ID} Note: Currently only'
+            ' consumer-project-id, consumer-project-name,'
+            ' encryption-keys-project-id, encryption-keys-project-name and'
+            ' keyring-id are supported. The encryption-keys-project-id,'
+            ' encryption-keys-project-name and keyring-id settings can be'
+            ' specified only if KMS settings are provided'
+        ),
+    )
   else:
     parser.add_argument(
         '--resource-settings',
@@ -178,24 +245,30 @@ def _AddResourceSettingsFlag(parser, release_track):
                 'encryption-keys-project-id': str,
                 'encryption-keys-project-name': str,
                 'keyring-id': str,
-            }),
+            }
+        ),
         metavar='KEY=VALUE',
         help=(
-            'A comma-separated, key=value map of custom resource settings such '
-            'as custom project ids, for example: consumer-project-id={CONSUMER_PROJECT_ID} '
-            'Note: Currently only encryption-keys-project-id, '
-            'encryption-keys-project-name and keyring-id are supported. The '
-            'encryption-keys-project-id, encryption-keys-project-name and '
-            'keyring-id settings can be specified only if KMS settings are '
-            'provided'))
+            'A comma-separated, key=value map of custom resource settings such'
+            ' as custom project ids, for example:'
+            ' consumer-project-id={CONSUMER_PROJECT_ID} Note: Currently only'
+            ' encryption-keys-project-id, encryption-keys-project-name and'
+            ' keyring-id are supported. The encryption-keys-project-id,'
+            ' encryption-keys-project-name and keyring-id settings can be'
+            ' specified only if KMS settings are provided'
+        ),
+    )
 
 
 def AddDeleteWorkloadFlags(parser):
   AddWorkloadResourceArgToParser(parser, verb='delete')
   parser.add_argument(
       '--etag',
-      help=('The etag acquired by reading the Assured Workloads environment or '
-            'AW "resource".'))
+      help=(
+          'The etag acquired by reading the Assured Workloads environment or '
+          'AW "resource".'
+      ),
+  )
 
 
 def AddDescribeWorkloadFlags(parser):
@@ -207,19 +280,23 @@ def AddDescribeViolationFlags(parser):
 
 
 def AddUpdateWorkloadFlags(parser):
-  """Method to add update workload flags.
-  """
+  """Method to add update workload flags."""
   AddWorkloadResourceArgToParser(parser, verb='update')
   parser.add_argument(
       '--etag',
-      help=('The etag acquired by reading the Assured Workloads environment '
-            'before updating.'))
+      help=(
+          'The etag acquired by reading the Assured Workloads environment '
+          'before updating.'
+      ),
+  )
   updatable_fields = parser.add_group(
       required=True,
-      help='Settings that can be updated on the Assured Workloads environment.')
+      help='Settings that can be updated on the Assured Workloads environment.',
+  )
   updatable_fields.add_argument(
       '--display-name',
-      help='The new display name of the Assured Workloads environment.')
+      help='The new display name of the Assured Workloads environment.',
+  )
   updatable_fields.add_argument(
       '--violation-notifications-enabled',
       help='The notification setting of the Assured Workloads environment.',
@@ -228,32 +305,38 @@ def AddUpdateWorkloadFlags(parser):
       '--labels',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
-      help=('The new labels of the Assured Workloads environment, for example, '
-            'LabelKey1=LabelValue1,LabelKey2=LabelValue2'))
+      help=(
+          'The new labels of the Assured Workloads environment, for example, '
+          'LabelKey1=LabelValue1,LabelKey2=LabelValue2'
+      ),
+  )
 
 
 def AddDescribeOperationFlags(parser):
   concept_parsers.ConceptParser.ForResource(
       'operation',
       resource_args.GetOperationResourceSpec(),
-      ('The Assured Workloads operation resource to describe.'),
-      required=True).AddToParser(parser)
+      'The Assured Workloads operation resource to describe.',
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddWorkloadResourceArgToParser(parser, verb):
   concept_parsers.ConceptParser.ForResource(
       'workload',
       resource_args.GetWorkloadResourceSpec(),
-      ('The Assured Workloads environment resource to {}.'.format(verb)),
-      required=True).AddToParser(parser)
+      'The Assured Workloads environment resource to {}.'.format(verb),
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddViolationResourceArgToParser(parser, verb):
   concept_parsers.ConceptParser.ForResource(
       'violation',
       resource_args.GetViolationResourceSpec(),
-      ('The Assured Workloads violation resource to {}.'.format(verb)),
-      required=True).AddToParser(parser)
+      'The Assured Workloads violation resource to {}.'.format(verb),
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddListViolationsFlags(parser):
@@ -262,8 +345,11 @@ def AddListViolationsFlags(parser):
   parser.add_argument(
       '--workload',
       required=True,
-      help=('The parent workload of the Assured Workloads violations, '
-            'provided as workload ID.'))
+      help=(
+          'The parent workload of the Assured Workloads violations, '
+          'provided as workload ID.'
+      ),
+  )
 
 
 def AddAcknowledgeViolationsFlags(parser):
@@ -272,4 +358,5 @@ def AddAcknowledgeViolationsFlags(parser):
   parser.add_argument(
       '--comment',
       required=True,
-      help=('Business justification used added to acknowledge a violation.'))
+      help='Business justification used added to acknowledge a violation.',
+  )

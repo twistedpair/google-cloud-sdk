@@ -379,6 +379,7 @@ def AddCreateDestinationArgs(parser, release_track, required=False):
     _AddCreateGKEDestinationArgs(dest_group)
     _AddCreateWorkflowDestinationArgs(dest_group, hidden=True)
     _AddCreateFunctionDestinationArgs(dest_group, hidden=True)
+    _AddCreateHTTPEndpointDestinationArgs(dest_group, hidden=True)
 
 
 def _AddCreateCloudRunDestinationArgs(parser, release_track, required=False):
@@ -418,6 +419,29 @@ def _AddCreateWorkflowDestinationArgs(parser, required=False, hidden=False):
       help='Flags for specifying a Workflow destination.')
   _AddDestinationWorkflowArg(workflow_group, required=True)
   _AddDestinationWorkflowLocationArg(workflow_group)
+
+
+def _AddCreateHTTPEndpointDestinationArgs(parser, required=False, hidden=False):
+  """Adds arguments related to trigger's HTTP Endpoint destination for create operations."""
+  http_endpoint_group = parser.add_group(
+      required=required,
+      hidden=hidden,
+      help='Flags for specifying a HTTP Endpoint destination.')
+  _AddDestinationHTTPEndpointUriArg(http_endpoint_group, required=True)
+  _AddDestinationHTTPEndpointForwardDnsRequestsArg(http_endpoint_group)
+  _AddCreateNetworkConfigDestinationArgs(http_endpoint_group, hidden=True)
+
+
+def _AddCreateNetworkConfigDestinationArgs(
+    parser, required=False, hidden=False
+):
+  """Adds arguments related to trigger's Network Config destination for create operations."""
+  network_config_group = parser.add_group(
+      required=required,
+      hidden=hidden,
+      help='Flags for specifying a Network Config for the destination.',
+  )
+  _AddNetworkAttachmentArg(network_config_group, required=True)
 
 
 def _AddCreateFunctionDestinationArgs(parser, required=False, hidden=False):
@@ -616,12 +640,46 @@ def _AddDestinationFunctionLocationArg(parser, required=False):
       'location as the trigger.')
 
 
+def _AddDestinationHTTPEndpointUriArg(parser, required=False):
+  """Adds an argument for the trigger's HTTP endpoint destination URI."""
+  parser.add_argument(
+      '--destination-http-endpoint-uri',
+      required=required,
+      help='URI that the destination HTTP Endpoint is connecting to.')
+
+
+def _AddDestinationHTTPEndpointForwardDnsRequestsArg(parser, required=False):
+  """Adds an argument to toggle forward DNS requests for a trigger's HTTP endpoint destination"."""
+  parser.add_argument(
+      '--destination-http-endpoint-forward-dns-requests',
+      required=required,
+      type=bool,
+      help=(
+          'Default to false. If the http endpoint uses a private DNS name,'
+          ' enable this flag for Eventarc to forward DNS requests to the target'
+          ' VPC. '
+      ),
+  )
+
+
+def _AddNetworkAttachmentArg(parser, required=False):
+  """Adds an argument for the trigger's destination service account."""
+  parser.add_argument(
+      '--network-attachment',
+      required=required,
+      help=(
+          'The network attachment associated with the trigger that allows'
+          ' access to the destination VPC.'
+      ),
+  )
+
+
 def AddClearServiceAccountArg(parser):
-  """Adds an argument for clearing the trigger's service account."""
   parser.add_argument(
       '--clear-service-account',
       action='store_true',
-      help='Clear the IAM service account associated with the trigger.')
+      help='Clear the IAM service account associated with the trigger.',
+  )
 
 
 def AddClearDestinationRunPathArg(parser):

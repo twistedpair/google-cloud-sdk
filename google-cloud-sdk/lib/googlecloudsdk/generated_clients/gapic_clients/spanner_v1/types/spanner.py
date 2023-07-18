@@ -477,12 +477,12 @@ class ExecuteSqlRequest(proto.Message):
             Common options for this request.
         data_boost_enabled (bool):
             If this is for a partitioned query and this field is set to
-            ``true``, the request will be executed via Spanner
+            ``true``, the request is executed with Spanner Data Boost
             independent compute resources.
 
             If the field is set to ``true`` but the request does not set
-            ``partition_token``, the API will return an
-            ``INVALID_ARGUMENT`` error.
+            ``partition_token``, the API returns an ``INVALID_ARGUMENT``
+            error.
     """
     class QueryMode(proto.Enum):
         r"""Mode in which the statement must be processed.
@@ -1136,12 +1136,12 @@ class ReadRequest(proto.Message):
             Common options for this request.
         data_boost_enabled (bool):
             If this is for a partitioned read and this field is set to
-            ``true``, the request will be executed via Spanner
+            ``true``, the request is executed with Spanner Data Boost
             independent compute resources.
 
             If the field is set to ``true`` but the request does not set
-            ``partition_token``, the API will return an
-            ``INVALID_ARGUMENT`` error.
+            ``partition_token``, the API returns an ``INVALID_ARGUMENT``
+            error.
     """
 
     session: str = proto.Field(

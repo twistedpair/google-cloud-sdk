@@ -445,7 +445,7 @@ def AddBuildConfigArgsForUpdate(flag_config,
   # Build config and inline config support substitutions whereas Dockerfile
   # does not. Cloud Build cannot have a flag with the same name in two separate
   # groups. You must add a flag outside of the config argument group.
-  substitutions = flag_config.add_argument_group()
+  substitutions = flag_config.add_mutually_exclusive_group()
   AddSubstitutionUpdatingFlags(substitutions)
 
   build_config = flag_config.add_mutually_exclusive_group()

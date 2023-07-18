@@ -56,7 +56,7 @@ enable_external_ips:
   type: bool
   processor: googlecloudsdk.command_lib.compute.tpus.tpu_vm.util:InvertBoolean
   help_text: |
-    Indicates that the IP addresses for the node should be internal. The default is that external IP
+    Indicate that the IP addresses for the node should be internal. The default is that external IP
     addresses will be associated with the TPU workers.
 
 version:

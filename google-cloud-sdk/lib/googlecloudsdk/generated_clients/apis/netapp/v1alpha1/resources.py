@@ -52,6 +52,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_KMSCONFIGS = (
+      'projects.locations.kmsConfigs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/kmsConfigs/'
+              '{kmsConfigsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -81,6 +92,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/volumes/'
               '{volumesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_VOLUMES_REPLICATIONS = (
+      'projects.locations.volumes.replications',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/volumes/'
+              '{volumesId}/replications/{replicationsId}',
       },
       ['name'],
       True

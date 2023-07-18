@@ -54,5 +54,22 @@ def ExtractZoneFromLocation(response, args):
   want_zone = args.zone.split('/')[-1]
   for zone_name, zone in metadata.get('availableZones', {}).items():
     if zone_name == want_zone:
+      if 'rackTypes' in zone:
+        racks = zone.pop('rackTypes')
+        populated_rack = []
+        for rack, rack_type in racks.items():
+          # Base racks are a pair of two modified Config-1 racks containing
+          # aggregation switches.
+          if rack_type == 'BASE':
+            populated_rack.append(rack + ' (BASE)')
+          # Expansion rack type, also known as standalone racks,
+          # are added by customers on demand.
+          elif rack_type == 'EXPANSION':
+            populated_rack.append(rack + ' (EXPANSION)')
+          # Only displaying the suffix for multi-rack rack types,
+          # i.e. base/expansion, ignore the rest.
+          else:
+            populated_rack.append(rack)
+        zone['racks'] = populated_rack
       return zone
   raise exceptions.Error('Zone not found: {}'.format(want_zone))

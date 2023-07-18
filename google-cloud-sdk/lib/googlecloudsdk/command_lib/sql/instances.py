@@ -343,6 +343,11 @@ class _BaseInstances(object):
           sql_messages, args.connector_enforcement
       )
 
+    if args.recreate_replicas_on_primary_crash is not None:
+      settings.recreateReplicasOnPrimaryCrash = (
+          args.recreate_replicas_on_primary_crash
+      )
+
     if args.IsSpecified('edition'):
       settings.edition = _ParseEdition(sql_messages, args.edition)
 
@@ -398,10 +403,6 @@ class _BaseInstances(object):
           settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
         settings.ipConfiguration.pscConfig.allowedConsumerProjects = []
 
-      if args.recreate_replicas_on_primary_crash is not None:
-        settings.recreateReplicasOnPrimaryCrash = (
-            args.recreate_replicas_on_primary_crash
-        )
     return settings
 
   @classmethod

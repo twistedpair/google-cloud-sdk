@@ -27,7 +27,10 @@ class Collections(enum.Enum):
   DATASETS = (
       'datasets',
       'projects/{projectId}/datasets/{datasetId}',
-      {},
+      {
+          '':
+              'projects/{projectId}/datasets/{datasetId}',
+      },
       ['projectId', 'datasetId'],
       True
   )
@@ -38,11 +41,32 @@ class Collections(enum.Enum):
       ['projectId', 'jobId'],
       True
   )
+  MODELS = (
+      'models',
+      'projects/{+projectId}/datasets/{+datasetId}/models/{+modelId}',
+      {
+          '':
+              'projects/{projectsId}/datasets/{datasetsId}/models/{modelsId}',
+      },
+      ['projectId', 'datasetId', 'modelId'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectId}',
       {},
       ['projectId'],
+      True
+  )
+  ROUTINES = (
+      'routines',
+      'projects/{+projectId}/datasets/{+datasetId}/routines/{+routineId}',
+      {
+          '':
+              'projects/{projectsId}/datasets/{datasetsId}/routines/'
+              '{routinesId}',
+      },
+      ['projectId', 'datasetId', 'routineId'],
       True
   )
   TABLEDATA = (

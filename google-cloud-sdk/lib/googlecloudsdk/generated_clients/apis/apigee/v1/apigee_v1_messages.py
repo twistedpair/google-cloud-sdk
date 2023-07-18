@@ -8932,6 +8932,18 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       milliseconds since epoch.
     customerName: Not used by Apigee.
     description: Description of the Apigee organization.
+    disableVpcPeering: Optional. Flag that specifies whether the VPC Peering
+      through Private Google Access should be disabled between the consumer
+      network and Apigee. Valid only when RuntimeType is set to CLOUD.
+      Required if an authorizedNetwork on the consumer project is not
+      provided, in which case the flag should be set to true. The value must
+      be set before the creation of any Apigee runtime instance and can be
+      updated only when there are no runtime instances. **Note:** Apigee will
+      be deprecating the vpc peering model that requires you to provide
+      'authorizedNetwork', by making the non-peering model as the default way
+      of provisioning Apigee organization in future. So, this will be a
+      temporary flag to enable the transition. Not supported for Apigee
+      hybrid.
     displayName: Display name for the Apigee organization. Unused, but
       reserved for future use.
     environments: Output only. List of environments in the Apigee
@@ -9088,20 +9100,21 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   createdAt = _messages.IntegerField(11)
   customerName = _messages.StringField(12)
   description = _messages.StringField(13)
-  displayName = _messages.StringField(14)
-  environments = _messages.StringField(15, repeated=True)
-  expiresAt = _messages.IntegerField(16)
-  lastModifiedAt = _messages.IntegerField(17)
-  name = _messages.StringField(18)
-  portalDisabled = _messages.BooleanField(19)
-  projectId = _messages.StringField(20)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 21)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 22)
-  runtimeDatabaseEncryptionKeyName = _messages.StringField(23)
-  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 26)
-  type = _messages.EnumField('TypeValueValuesEnum', 27)
+  disableVpcPeering = _messages.BooleanField(14)
+  displayName = _messages.StringField(15)
+  environments = _messages.StringField(16, repeated=True)
+  expiresAt = _messages.IntegerField(17)
+  lastModifiedAt = _messages.IntegerField(18)
+  name = _messages.StringField(19)
+  portalDisabled = _messages.BooleanField(20)
+  projectId = _messages.StringField(21)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 22)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 23)
+  runtimeDatabaseEncryptionKeyName = _messages.StringField(24)
+  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 27)
+  type = _messages.EnumField('TypeValueValuesEnum', 28)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):
@@ -9289,6 +9302,17 @@ class GoogleCloudApigeeV1ProvisionOrganizationRequest(_messages.Message):
       VPC network, use the following format: `projects/{host-project-
       id}/{region}/networks/{network-name}`. For example: `projects/my-
       sharedvpc-host/global/networks/mynetwork`
+    disableVpcPeering: Optional. Flag that specifies whether the VPC Peering
+      through Private Google Access should be disabled between the consumer
+      network and Apigee. Required if an authorizedNetwork on the consumer
+      project is not provided, in which case the flag should be set to true.
+      The value must be set before the creation of any Apigee runtime instance
+      and can be updated only when there are no runtime instances. **Note:**
+      Apigee will be deprecating the vpc peering model that requires you to
+      provide 'authorizedNetwork', by making the non-peering model as the
+      default way of provisioning Apigee organization in future. So, this will
+      be a temporary flag to enable the transition. Not supported for Apigee
+      hybrid.
     runtimeLocation: Cloud Platform location for the runtime instance.
       Defaults to zone `us-west1-a`. If a region is provided, `EVAL`
       organizations will use the region for automatically selecting a zone for
@@ -9297,7 +9321,8 @@ class GoogleCloudApigeeV1ProvisionOrganizationRequest(_messages.Message):
 
   analyticsRegion = _messages.StringField(1)
   authorizedNetwork = _messages.StringField(2)
-  runtimeLocation = _messages.StringField(3)
+  disableVpcPeering = _messages.BooleanField(3)
+  runtimeLocation = _messages.StringField(4)
 
 
 class GoogleCloudApigeeV1Query(_messages.Message):

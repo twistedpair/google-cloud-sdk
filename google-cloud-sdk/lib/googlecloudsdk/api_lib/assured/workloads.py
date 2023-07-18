@@ -31,7 +31,8 @@ WORKLOAD_CREATION_IN_PROGRESS_MESSAGE = 'Creating Assured Workloads environment'
 def GetWorkloadURI(resource):
   workload = resources.REGISTRY.ParseRelativeName(
       resource.name,
-      collection='assuredworkloads.organizations.locations.workloads')
+      collection='assuredworkloads.organizations.locations.workloads',
+  )
   return workload.SelfLink()
 
 
@@ -59,14 +60,16 @@ class WorkloadsClient(object):
       organization.
     """
     list_req = self.messages.AssuredworkloadsOrganizationsLocationsWorkloadsListRequest(
-        parent=parent, pageSize=page_size)
+        parent=parent, pageSize=page_size
+    )
     return list_pager.YieldFromList(
         self._service,
         list_req,
         field='workloads',
         batch_size=page_size,
         limit=limit,
-        batch_size_attribute=None)
+        batch_size_attribute=None,
+    )
 
   def Create(self, parent, external_id, workload):
     """Create a new Assured Workloads environment in the parent organization.
@@ -82,8 +85,9 @@ class WorkloadsClient(object):
     Returns:
       The created Assured Workloads environment resource.
     """
-    create_req = message_util.CreateCreateRequest(external_id, parent, workload,
-                                                  self._release_track)
+    create_req = message_util.CreateCreateRequest(
+        external_id, parent, workload, self._release_track
+    )
     op = self.client.organizations_locations_workloads.Create(create_req)
     return self.WaitForOperation(op, WORKLOAD_CREATION_IN_PROGRESS_MESSAGE)
 
@@ -100,7 +104,8 @@ class WorkloadsClient(object):
       Empty response message.
     """
     delete_req = self.messages.AssuredworkloadsOrganizationsLocationsWorkloadsDeleteRequest(
-        name=name, etag=etag)
+        name=name, etag=etag
+    )
     return self.client.organizations_locations_workloads.Delete(delete_req)
 
   def Describe(self, name):
@@ -114,8 +119,11 @@ class WorkloadsClient(object):
     Returns:
       Specified Assured Workloads resource.
     """
-    describe_req = self.messages.AssuredworkloadsOrganizationsLocationsWorkloadsGetRequest(
-        name=name)
+    describe_req = (
+        self.messages.AssuredworkloadsOrganizationsLocationsWorkloadsGetRequest(
+            name=name
+        )
+    )
     return self.client.organizations_locations_workloads.Get(describe_req)
 
   def Update(self, workload, name, update_mask):
@@ -125,8 +133,8 @@ class WorkloadsClient(object):
       workload: googleCloudAssuredworkloadsV1beta1Workload, new Assured
         Workloads environment containing the new configuration values to be
         used.
-      name: str, the name for the Assured Workloads environment being updated
-        in the form:
+      name: str, the name for the Assured Workloads environment being updated in
+        the form:
         organizations/{ORG_ID}/locations/{LOCATION}/workloads/{WORKLOAD_ID}.
       update_mask: str, list of the fields to be updated, for example,
         workload.display_name,workload.labels,workload.violation_notifications_enabled
@@ -135,8 +143,9 @@ class WorkloadsClient(object):
       Updated Assured Workloads environment resource.
     """
 
-    update_req = message_util.CreateUpdateRequest(workload, name, update_mask,
-                                                  self._release_track)
+    update_req = message_util.CreateUpdateRequest(
+        workload, name, update_mask, self._release_track
+    )
     return self.client.organizations_locations_workloads.Patch(update_req)
 
   def WaitForOperation(self, operation, progress_message):
@@ -155,9 +164,11 @@ class WorkloadsClient(object):
     operation_ref = self.GetOperationResource(operation.name)
     poller = waiter.CloudOperationPoller(
         self.client.organizations_locations_workloads,
-        self.client.organizations_locations_operations)
+        self.client.organizations_locations_operations,
+    )
     return waiter.WaitFor(poller, operation_ref, progress_message)
 
   def GetOperationResource(self, name):
     return resources.REGISTRY.ParseRelativeName(
-        name, collection='assuredworkloads.organizations.locations.operations')
+        name, collection='assuredworkloads.organizations.locations.operations'
+    )

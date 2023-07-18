@@ -355,8 +355,9 @@ def _EnumsStrForFacade(facade: str) -> str:
 def _EnumsMessageToStr(enums) -> str:
   """Returns the human-readable PublicRepository enum strings."""
   return ", ".join(
-      arg_utils.EnumNameToChoice(c)
-      for c in sorted(list(enums.to_dict().keys())[1:])
+      arg_utils.EnumNameToChoice(name)
+      for name, number in sorted(enums.to_dict().items())
+      if number != 0  # Ignore UNSPECIFIED enum values.
   )
 
 

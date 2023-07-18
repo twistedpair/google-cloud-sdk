@@ -30,9 +30,9 @@ class AvroConfig(_messages.Message):
   and metadata will be written to files as an Avro binary.
 
   Fields:
-    writeMetadata: When true, write the subscription name, message_id,
-      publish_time, attributes, and ordering_key as additional fields in the
-      output.
+    writeMetadata: Optional. When true, write the subscription name,
+      message_id, publish_time, attributes, and ordering_key as additional
+      fields in the output.
   """
 
   writeMetadata = _messages.BooleanField(1)
@@ -52,11 +52,11 @@ class AwsKinesis(_messages.Message):
     consumerArn: Required. The Kinesis consumer ARN to used for ingestion in
       Enhanced Fan-Out mode. The consumer must be already created and ready to
       be used.
-    gcpServiceAccount: Required. The GCP service account to be used Federated
-      Identity authentication with Kinesis (via a `AssumeRoleWithWebIdentity`
-      call for the provided role using the gcp_service_account for this
-      project). The `aws_role_arn` must be set up with
-      `accounts.google.com:sub` equals to this account number.
+    gcpServiceAccount: Required. The GCP service account to be used for
+      Federated Identity authentication with Kinesis (via a
+      `AssumeRoleWithWebIdentity` call for the provided role using the
+      gcp_service_account for this project). The `aws_role_arn` must be set up
+      with `accounts.google.com:sub` equals to this account number.
     state: Output only. An output-only field that indicates the state of the
       Kinesis ingestion source.
     streamArn: Required. The Kinesis stream ARN to ingest data from.
@@ -106,22 +106,23 @@ class BigQueryConfig(_messages.Message):
       whether or not the subscription can receive messages.
 
   Fields:
-    dropUnknownFields: When true and use_topic_schema is true, any fields that
-      are a part of the topic schema that are not part of the BigQuery table
-      schema are dropped when writing to BigQuery. Otherwise, the schemas must
-      be kept in sync and any messages with extra fields are not written and
-      remain in the subscription's backlog.
+    dropUnknownFields: Optional. When true and use_topic_schema is true, any
+      fields that are a part of the topic schema that are not part of the
+      BigQuery table schema are dropped when writing to BigQuery. Otherwise,
+      the schemas must be kept in sync and any messages with extra fields are
+      not written and remain in the subscription's backlog.
     state: Output only. An output-only field that indicates whether or not the
       subscription can receive messages.
-    table: The name of the table to which to write data, of the form
+    table: Optional. The name of the table to which to write data, of the form
       {projectId}.{datasetId}.{tableId}
-    useTopicSchema: When true, use the topic's schema as the columns to write
-      to in BigQuery, if it exists.
-    writeMetadata: When true, write the subscription name, message_id,
-      publish_time, attributes, and ordering_key to additional columns in the
-      table. The subscription name, message_id, and publish_time fields are
-      put in their own columns while all other message properties (other than
-      data) are written to a JSON object in the attributes column.
+    useTopicSchema: Optional. When true, use the topic's schema as the columns
+      to write to in BigQuery, if it exists.
+    writeMetadata: Optional. When true, write the subscription name,
+      message_id, publish_time, attributes, and ordering_key to additional
+      columns in the table. The subscription name, message_id, and
+      publish_time fields are put in their own columns while all other message
+      properties (other than data) are written to a JSON object in the
+      attributes column.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -224,28 +225,30 @@ class CloudStorageConfig(_messages.Message):
       whether or not the subscription can receive messages.
 
   Fields:
-    avroConfig: If set, message data will be written to Cloud Storage in Avro
-      format.
+    avroConfig: Optional. If set, message data will be written to Cloud
+      Storage in Avro format.
     bucket: Required. User-provided name for the Cloud Storage bucket. The
       bucket must be created by the user. The bucket name must be without any
       prefix like "gs://". See the [bucket naming requirements]
       (https://cloud.google.com/storage/docs/buckets#naming).
-    filenamePrefix: User-provided prefix for Cloud Storage filename. See the
-      [object naming
+    filenamePrefix: Optional. User-provided prefix for Cloud Storage filename.
+      See the [object naming
       requirements](https://cloud.google.com/storage/docs/objects#naming).
-    filenameSuffix: User-provided suffix for Cloud Storage filename. See the
-      [object naming
+    filenameSuffix: Optional. User-provided suffix for Cloud Storage filename.
+      See the [object naming
       requirements](https://cloud.google.com/storage/docs/objects#naming).
-    maxBytes: The maximum bytes that can be written to a Cloud Storage file
-      before a new file is created. Min 1 KB, max 10 GiB. The max_bytes limit
-      may be exceeded in cases where messages are larger than the limit.
-    maxDuration: The maximum duration that can elapse before a new Cloud
-      Storage file is created. Min 1 minute, max 10 minutes, default 5
+      Must not end in "/".
+    maxBytes: Optional. The maximum bytes that can be written to a Cloud
+      Storage file before a new file is created. Min 1 KB, max 10 GiB. The
+      max_bytes limit may be exceeded in cases where messages are larger than
+      the limit.
+    maxDuration: Optional. The maximum duration that can elapse before a new
+      Cloud Storage file is created. Min 1 minute, max 10 minutes, default 5
       minutes. May not exceed the subscription's acknowledgement deadline.
     state: Output only. An output-only field that indicates whether or not the
       subscription can receive messages.
-    textConfig: If set, message data will be written to Cloud Storage in text
-      format.
+    textConfig: Optional. If set, message data will be written to Cloud
+      Storage in text format.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -289,11 +292,11 @@ class CreateSnapshotRequest(_messages.Message):
   r"""Request for the `CreateSnapshot` method.
 
   Messages:
-    LabelsValue: See [Creating and managing
+    LabelsValue: Optional. See [Creating and managing
       labels](https://cloud.google.com/pubsub/docs/labels).
 
   Fields:
-    labels: See [Creating and managing
+    labels: Optional. See [Creating and managing
       labels](https://cloud.google.com/pubsub/docs/labels).
     subscription: Required. The subscription whose backlog the snapshot
       retains. Specifically, the created snapshot is guaranteed to retain: (a)
@@ -307,7 +310,7 @@ class CreateSnapshotRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""See [Creating and managing
+    r"""Optional. See [Creating and managing
     labels](https://cloud.google.com/pubsub/docs/labels).
 
     Messages:
@@ -341,16 +344,17 @@ class DeadLetterPolicy(_messages.Message):
   fail.
 
   Fields:
-    deadLetterTopic: The name of the topic to which dead letter messages
-      should be published. Format is `projects/{project}/topics/{topic}`.The
-      Cloud Pub/Sub service account associated with the enclosing
-      subscription's parent project (i.e., service-{project_number}@gcp-sa-
-      pubsub.iam.gserviceaccount.com) must have permission to Publish() to
-      this topic. The operation will fail if the topic does not exist. Users
-      should ensure that there is a subscription attached to this topic since
-      messages published to a topic with no subscriptions are lost.
-    maxDeliveryAttempts: The maximum number of delivery attempts for any
-      message. The value must be between 5 and 100. The number of delivery
+    deadLetterTopic: Optional. The name of the topic to which dead letter
+      messages should be published. Format is
+      `projects/{project}/topics/{topic}`.The Pub/Sub service account
+      associated with the enclosing subscription's parent project (i.e.,
+      service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com) must
+      have permission to Publish() to this topic. The operation will fail if
+      the topic does not exist. Users should ensure that there is a
+      subscription attached to this topic since messages published to a topic
+      with no subscriptions are lost.
+    maxDeliveryAttempts: Optional. The maximum number of delivery attempts for
+      any message. The value must be between 5 and 100. The number of delivery
       attempts is defined as 1 + (the sum of number of NACKs and number of
       times the acknowledgement deadline has been exceeded for the message). A
       NACK is any call to ModifyAckDeadline with a 0 deadline. Note that
@@ -381,12 +385,12 @@ class ExpirationPolicy(_messages.Message):
   automatic resource deletion).
 
   Fields:
-    ttl: Specifies the "time-to-live" duration for an associated resource. The
-      resource expires if it is not active for a period of `ttl`. The
-      definition of "activity" depends on the type of the associated resource.
-      The minimum and maximum allowed values for `ttl` depend on the type of
-      the associated resource, as well. If `ttl` is not set, the associated
-      resource never expires.
+    ttl: Optional. Specifies the "time-to-live" duration for an associated
+      resource. The resource expires if it is not active for a period of
+      `ttl`. The definition of "activity" depends on the type of the
+      associated resource. The minimum and maximum allowed values for `ttl`
+      depend on the type of the associated resource, as well. If `ttl` is not
+      set, the associated resource never expires.
   """
 
   ttl = _messages.StringField(1)
@@ -432,7 +436,7 @@ class IngestionDataSourceSettings(_messages.Message):
   r"""Settings for an ingestion data source on a topic.
 
   Fields:
-    awsKinesis: Amazon Kinesis Data Streams.
+    awsKinesis: Optional. Amazon Kinesis Data Streams.
   """
 
   awsKinesis = _messages.MessageField('AwsKinesis', 1)
@@ -469,10 +473,10 @@ class ListSnapshotsResponse(_messages.Message):
   r"""Response for the `ListSnapshots` method.
 
   Fields:
-    nextPageToken: If not empty, indicates that there may be more snapshot
-      that match the request; this value should be passed in a new
+    nextPageToken: Optional. If not empty, indicates that there may be more
+      snapshot that match the request; this value should be passed in a new
       `ListSnapshotsRequest`.
-    snapshots: The resulting snapshots.
+    snapshots: Optional. The resulting snapshots.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -483,10 +487,10 @@ class ListSubscriptionsResponse(_messages.Message):
   r"""Response for the `ListSubscriptions` method.
 
   Fields:
-    nextPageToken: If not empty, indicates that there may be more
+    nextPageToken: Optional. If not empty, indicates that there may be more
       subscriptions that match the request; this value should be passed in a
       new `ListSubscriptionsRequest` to get more subscriptions.
-    subscriptions: The subscriptions that match the request.
+    subscriptions: Optional. The subscriptions that match the request.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -497,10 +501,10 @@ class ListTopicSnapshotsResponse(_messages.Message):
   r"""Response for the `ListTopicSnapshots` method.
 
   Fields:
-    nextPageToken: If not empty, indicates that there may be more snapshots
-      that match the request; this value should be passed in a new
+    nextPageToken: Optional. If not empty, indicates that there may be more
+      snapshots that match the request; this value should be passed in a new
       `ListTopicSnapshotsRequest` to get more snapshots.
-    snapshots: The names of the snapshots that match the request.
+    snapshots: Optional. The names of the snapshots that match the request.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -511,11 +515,11 @@ class ListTopicSubscriptionsResponse(_messages.Message):
   r"""Response for the `ListTopicSubscriptions` method.
 
   Fields:
-    nextPageToken: If not empty, indicates that there may be more
+    nextPageToken: Optional. If not empty, indicates that there may be more
       subscriptions that match the request; this value should be passed in a
       new `ListTopicSubscriptionsRequest` to get more subscriptions.
-    subscriptions: The names of subscriptions attached to the topic specified
-      in the request.
+    subscriptions: Optional. The names of subscriptions attached to the topic
+      specified in the request.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -526,10 +530,10 @@ class ListTopicsResponse(_messages.Message):
   r"""Response for the `ListTopics` method.
 
   Fields:
-    nextPageToken: If not empty, indicates that there may be more topics that
-      match the request; this value should be passed in a new
+    nextPageToken: Optional. If not empty, indicates that there may be more
+      topics that match the request; this value should be passed in a new
       `ListTopicsRequest`.
-    topics: The resulting topics.
+    topics: Optional. The resulting topics.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -540,12 +544,12 @@ class MessageStoragePolicy(_messages.Message):
   r"""A policy constraining the storage of messages published to the topic.
 
   Fields:
-    allowedPersistenceRegions: A list of IDs of GCP regions where messages
-      that are published to the topic may be persisted in storage. Messages
-      published by publishers running in non-allowed GCP regions (or running
-      outside of GCP altogether) will be routed for storage in one of the
-      allowed regions. An empty list means that no regions are allowed, and is
-      not a valid configuration.
+    allowedPersistenceRegions: Optional. A list of IDs of GCP regions where
+      messages that are published to the topic may be persisted in storage.
+      Messages published by publishers running in non-allowed GCP regions (or
+      running outside of GCP altogether) will be routed for storage in one of
+      the allowed regions. An empty list means that no regions are allowed,
+      and is not a valid configuration.
   """
 
   allowedPersistenceRegions = _messages.StringField(1, repeated=True)
@@ -589,9 +593,9 @@ class NoWrapper(_messages.Message):
   r"""Sets the `data` field as the HTTP body for delivery.
 
   Fields:
-    writeMetadata: When true, writes the Pub/Sub message metadata to `x-goog-
-      pubsub-:` headers of the HTTP request. Writes the Pub/Sub message
-      attributes to `:` headers of the HTTP request.
+    writeMetadata: Optional. When true, writes the Pub/Sub message metadata to
+      `x-goog-pubsub-:` headers of the HTTP request. Writes the Pub/Sub
+      message attributes to `:` headers of the HTTP request.
   """
 
   writeMetadata = _messages.BooleanField(1)
@@ -602,14 +606,14 @@ class OidcToken(_messages.Message):
   token](https://developers.google.com/identity/protocols/OpenIDConnect).
 
   Fields:
-    audience: Audience to be used when generating OIDC token. The audience
-      claim identifies the recipients that the JWT is intended for. The
-      audience value is a single case-sensitive string. Having multiple values
-      (array) for the audience field is not supported. More info about the
-      OIDC JWT token audience here:
+    audience: Optional. Audience to be used when generating OIDC token. The
+      audience claim identifies the recipients that the JWT is intended for.
+      The audience value is a single case-sensitive string. Having multiple
+      values (array) for the audience field is not supported. More info about
+      the OIDC JWT token audience here:
       https://tools.ietf.org/html/rfc7519#section-4.1.3 Note: if not
       specified, the Push endpoint URL will be used.
-    serviceAccountEmail: [Service account
+    serviceAccountEmail: Optional. [Service account
       email](https://cloud.google.com/iam/docs/service-accounts) used for
       generating the OIDC token. For more information on setting up
       authentication, see [Push
@@ -696,6 +700,43 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class PubSubExportConfig(_messages.Message):
+  r"""Configuration for a Pub/Sub export subscription.
+
+  Enums:
+    StateValueValuesEnum: Output only. An output-only field that indicates
+      whether or not the subscription can receive messages.
+
+  Fields:
+    state: Output only. An output-only field that indicates whether or not the
+      subscription can receive messages.
+    topic: Optional. The name of the topic to which to write data, of the form
+      projects/{project_id}/topics/{topic_id}
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. An output-only field that indicates whether or not the
+    subscription can receive messages.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: The subscription can actively send messages
+      PERMISSION_DENIED: Cannot write to the destination because of permission
+        denied errors.
+      NOT_FOUND: Cannot write to the destination because it does not exist.
+      SCHEMA_MISMATCH: Cannot write to the destination due to a schema
+        mismatch.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PERMISSION_DENIED = 2
+    NOT_FOUND = 3
+    SCHEMA_MISMATCH = 4
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+  topic = _messages.StringField(2)
+
+
 class PubSubLiteExportConfig(_messages.Message):
   r"""Configuration for a Pub/Sub Lite export subscription.
 
@@ -706,7 +747,7 @@ class PubSubLiteExportConfig(_messages.Message):
   Fields:
     state: Output only. An output-only field that indicates whether or not the
       subscription can receive messages.
-    topic: The name of the topic to which to write data, of the form
+    topic: Optional. The name of the topic to which to write data, of the form
       projects/{project_id}/locations/{location_id}/topics/{topic_id} Pushes
       occur in the same region as the Pub/Sub Lite topic. If this is different
       from the location the messages were published to, egress fees will be
@@ -747,9 +788,9 @@ class PublishResponse(_messages.Message):
   r"""Response for the `Publish` method.
 
   Fields:
-    messageIds: The server-assigned ID of each published message, in the same
-      order as the messages in the request. IDs are guaranteed to be unique
-      within the topic.
+    messageIds: Optional. The server-assigned ID of each published message, in
+      the same order as the messages in the request. IDs are guaranteed to be
+      unique within the topic.
   """
 
   messageIds = _messages.StringField(1, repeated=True)
@@ -766,39 +807,39 @@ class PubsubMessage(_messages.Message):
   limits.
 
   Messages:
-    AttributesValue: Attributes for this message. If this field is empty, the
-      message must contain non-empty data. This can be used to filter messages
-      on the subscription.
+    AttributesValue: Optional. Attributes for this message. If this field is
+      empty, the message must contain non-empty data. This can be used to
+      filter messages on the subscription.
 
   Fields:
-    attributes: Attributes for this message. If this field is empty, the
-      message must contain non-empty data. This can be used to filter messages
-      on the subscription.
-    data: The message data field. If this field is empty, the message must
-      contain at least one attribute.
-    messageId: ID of this message, assigned by the server when the message is
-      published. Guaranteed to be unique within the topic. This value may be
-      read by a subscriber that receives a `PubsubMessage` via a `Pull` call
-      or a push delivery. It must not be populated by the publisher in a
-      `Publish` call.
-    orderingKey: If non-empty, identifies related messages for which publish
-      order should be respected. If a `Subscription` has
+    attributes: Optional. Attributes for this message. If this field is empty,
+      the message must contain non-empty data. This can be used to filter
+      messages on the subscription.
+    data: Optional. The message data field. If this field is empty, the
+      message must contain at least one attribute.
+    messageId: Optional. ID of this message, assigned by the server when the
+      message is published. Guaranteed to be unique within the topic. This
+      value may be read by a subscriber that receives a `PubsubMessage` via a
+      `Pull` call or a push delivery. It must not be populated by the
+      publisher in a `Publish` call.
+    orderingKey: Optional. If non-empty, identifies related messages for which
+      publish order should be respected. If a `Subscription` has
       `enable_message_ordering` set to `true`, messages published with the
       same non-empty `ordering_key` value will be delivered to subscribers in
       the order in which they are received by the Pub/Sub system. All
       `PubsubMessage`s published in a given `PublishRequest` must specify the
       same `ordering_key` value. For more information, see [ordering
       messages](https://cloud.google.com/pubsub/docs/ordering).
-    publishTime: The time at which the message was published, populated by the
-      server when it receives the `Publish` call. It must not be populated by
-      the publisher in a `Publish` call.
+    publishTime: Optional. The time at which the message was published,
+      populated by the server when it receives the `Publish` call. It must not
+      be populated by the publisher in a `Publish` call.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributesValue(_messages.Message):
-    r"""Attributes for this message. If this field is empty, the message must
-    contain non-empty data. This can be used to filter messages on the
-    subscription.
+    r"""Optional. Attributes for this message. If this field is empty, the
+    message must contain non-empty data. This can be used to filter messages
+    on the subscription.
 
     Messages:
       AdditionalProperty: An additional property for a AttributesValue object.
@@ -1170,10 +1211,11 @@ class PubsubProjectsSnapshotsListRequest(_messages.Message):
   r"""A PubsubProjectsSnapshotsListRequest object.
 
   Fields:
-    pageSize: Maximum number of snapshots to return.
-    pageToken: The value returned by the last `ListSnapshotsResponse`;
-      indicates that this is a continuation of a prior `ListSnapshots` call,
-      and that the system should return the next page of data.
+    pageSize: Optional. Maximum number of snapshots to return.
+    pageToken: Optional. The value returned by the last
+      `ListSnapshotsResponse`; indicates that this is a continuation of a
+      prior `ListSnapshots` call, and that the system should return the next
+      page of data.
     project: Required. The name of the project in which to list snapshots.
       Format is `projects/{project-id}`.
   """
@@ -1187,7 +1229,7 @@ class PubsubProjectsSnapshotsPatchRequest(_messages.Message):
   r"""A PubsubProjectsSnapshotsPatchRequest object.
 
   Fields:
-    name: The name of the snapshot.
+    name: Optional. The name of the snapshot.
     updateSnapshotRequest: A UpdateSnapshotRequest resource to be passed as
       the request body.
   """
@@ -1305,10 +1347,11 @@ class PubsubProjectsSubscriptionsListRequest(_messages.Message):
   r"""A PubsubProjectsSubscriptionsListRequest object.
 
   Fields:
-    pageSize: Maximum number of subscriptions to return.
-    pageToken: The value returned by the last `ListSubscriptionsResponse`;
-      indicates that this is a continuation of a prior `ListSubscriptions`
-      call, and that the system should return the next page of data.
+    pageSize: Optional. Maximum number of subscriptions to return.
+    pageToken: Optional. The value returned by the last
+      `ListSubscriptionsResponse`; indicates that this is a continuation of a
+      prior `ListSubscriptions` call, and that the system should return the
+      next page of data.
     project: Required. The name of the project in which to list subscriptions.
       Format is `projects/{project-id}`.
   """
@@ -1473,10 +1516,10 @@ class PubsubProjectsTopicsListRequest(_messages.Message):
   r"""A PubsubProjectsTopicsListRequest object.
 
   Fields:
-    pageSize: Maximum number of topics to return.
-    pageToken: The value returned by the last `ListTopicsResponse`; indicates
-      that this is a continuation of a prior `ListTopics` call, and that the
-      system should return the next page of data.
+    pageSize: Optional. Maximum number of topics to return.
+    pageToken: Optional. The value returned by the last `ListTopicsResponse`;
+      indicates that this is a continuation of a prior `ListTopics` call, and
+      that the system should return the next page of data.
     project: Required. The name of the project in which to list topics. Format
       is `projects/{project-id}`.
   """
@@ -1538,10 +1581,11 @@ class PubsubProjectsTopicsSnapshotsListRequest(_messages.Message):
   r"""A PubsubProjectsTopicsSnapshotsListRequest object.
 
   Fields:
-    pageSize: Maximum number of snapshot names to return.
-    pageToken: The value returned by the last `ListTopicSnapshotsResponse`;
-      indicates that this is a continuation of a prior `ListTopicSnapshots`
-      call, and that the system should return the next page of data.
+    pageSize: Optional. Maximum number of snapshot names to return.
+    pageToken: Optional. The value returned by the last
+      `ListTopicSnapshotsResponse`; indicates that this is a continuation of a
+      prior `ListTopicSnapshots` call, and that the system should return the
+      next page of data.
     topic: Required. The name of the topic that snapshots are attached to.
       Format is `projects/{project}/topics/{topic}`.
   """
@@ -1555,8 +1599,8 @@ class PubsubProjectsTopicsSubscriptionsListRequest(_messages.Message):
   r"""A PubsubProjectsTopicsSubscriptionsListRequest object.
 
   Fields:
-    pageSize: Maximum number of subscription names to return.
-    pageToken: The value returned by the last
+    pageSize: Optional. Maximum number of subscription names to return.
+    pageToken: Optional. The value returned by the last
       `ListTopicSubscriptionsResponse`; indicates that this is a continuation
       of a prior `ListTopicSubscriptions` call, and that the system should
       return the next page of data.
@@ -1617,12 +1661,12 @@ class PullResponse(_messages.Message):
   r"""Response for the `Pull` method.
 
   Fields:
-    receivedMessages: Received Pub/Sub messages. The list will be empty if
-      there are no more messages available in the backlog, or if no messages
-      could be returned before the request timeout. For JSON, the response can
-      be entirely empty. The Pub/Sub system may return fewer than the
-      `maxMessages` requested even if there are more messages available in the
-      backlog.
+    receivedMessages: Optional. Received Pub/Sub messages. The list will be
+      empty if there are no more messages available in the backlog, or if no
+      messages could be returned before the request timeout. For JSON, the
+      response can be entirely empty. The Pub/Sub system may return fewer than
+      the `maxMessages` requested even if there are more messages available in
+      the backlog.
   """
 
   receivedMessages = _messages.MessageField('ReceivedMessage', 1, repeated=True)
@@ -1632,8 +1676,25 @@ class PushConfig(_messages.Message):
   r"""Configuration for a push delivery endpoint.
 
   Messages:
-    AttributesValue: Endpoint configuration attributes that can be used to
-      control different aspects of the message delivery. The only currently
+    AttributesValue: Optional. Endpoint configuration attributes that can be
+      used to control different aspects of the message delivery. The only
+      currently supported attribute is `x-goog-version`, which you can use to
+      change the format of the pushed message. This attribute indicates the
+      version of the data expected by the endpoint. This controls the shape of
+      the pushed message (i.e., its fields and metadata). If not present
+      during the `CreateSubscription` call, it will default to the version of
+      the Pub/Sub API used to make such call. If not present in a
+      `ModifyPushConfig` call, its value will not be changed.
+      `GetSubscription` calls will always return a valid version, even if the
+      subscription was created without this attribute. The only supported
+      values for the `x-goog-version` attribute are: * `v1beta1`: uses the
+      push format defined in the v1beta1 Pub/Sub API. * `v1` or `v1beta2`:
+      uses the push format defined in the v1 Pub/Sub API. For example:
+      `attributes { "x-goog-version": "v1" }`
+
+  Fields:
+    attributes: Optional. Endpoint configuration attributes that can be used
+      to control different aspects of the message delivery. The only currently
       supported attribute is `x-goog-version`, which you can use to change the
       format of the pushed message. This attribute indicates the version of
       the data expected by the endpoint. This controls the shape of the pushed
@@ -1646,42 +1707,27 @@ class PushConfig(_messages.Message):
       attribute are: * `v1beta1`: uses the push format defined in the v1beta1
       Pub/Sub API. * `v1` or `v1beta2`: uses the push format defined in the v1
       Pub/Sub API. For example: `attributes { "x-goog-version": "v1" }`
-
-  Fields:
-    attributes: Endpoint configuration attributes that can be used to control
-      different aspects of the message delivery. The only currently supported
-      attribute is `x-goog-version`, which you can use to change the format of
-      the pushed message. This attribute indicates the version of the data
-      expected by the endpoint. This controls the shape of the pushed message
-      (i.e., its fields and metadata). If not present during the
-      `CreateSubscription` call, it will default to the version of the Pub/Sub
-      API used to make such call. If not present in a `ModifyPushConfig` call,
-      its value will not be changed. `GetSubscription` calls will always
-      return a valid version, even if the subscription was created without
-      this attribute. The only supported values for the `x-goog-version`
-      attribute are: * `v1beta1`: uses the push format defined in the v1beta1
-      Pub/Sub API. * `v1` or `v1beta2`: uses the push format defined in the v1
-      Pub/Sub API. For example: `attributes { "x-goog-version": "v1" }`
-    noWrapper: When set, the payload to the push endpoint is not wrapped.
-    oidcToken: If specified, Pub/Sub will generate and attach an OIDC JWT
-      token as an `Authorization` header in the HTTP request for every pushed
-      message.
-    pubsubWrapper: When set, the payload to the push endpoint is in the form
-      of the JSON representation of a PubsubMessage (https://cloud.google.com/
-      pubsub/docs/reference/rpc/google.pubsub.v1#pubsubmessage).
-    pushEndpoint: A URL locating the endpoint to which messages should be
-      pushed. For example, a Webhook endpoint might use
+    noWrapper: Optional. When set, the payload to the push endpoint is not
+      wrapped.
+    oidcToken: Optional. If specified, Pub/Sub will generate and attach an
+      OIDC JWT token as an `Authorization` header in the HTTP request for
+      every pushed message.
+    pubsubWrapper: Optional. When set, the payload to the push endpoint is in
+      the form of the JSON representation of a PubsubMessage (https://cloud.go
+      ogle.com/pubsub/docs/reference/rpc/google.pubsub.v1#pubsubmessage).
+    pushEndpoint: Optional. A URL locating the endpoint to which messages
+      should be pushed. For example, a Webhook endpoint might use
       `https://example.com/push`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributesValue(_messages.Message):
-    r"""Endpoint configuration attributes that can be used to control
-    different aspects of the message delivery. The only currently supported
-    attribute is `x-goog-version`, which you can use to change the format of
-    the pushed message. This attribute indicates the version of the data
-    expected by the endpoint. This controls the shape of the pushed message
-    (i.e., its fields and metadata). If not present during the
+    r"""Optional. Endpoint configuration attributes that can be used to
+    control different aspects of the message delivery. The only currently
+    supported attribute is `x-goog-version`, which you can use to change the
+    format of the pushed message. This attribute indicates the version of the
+    data expected by the endpoint. This controls the shape of the pushed
+    message (i.e., its fields and metadata). If not present during the
     `CreateSubscription` call, it will default to the version of the Pub/Sub
     API used to make such call. If not present in a `ModifyPushConfig` call,
     its value will not be changed. `GetSubscription` calls will always return
@@ -1722,9 +1768,9 @@ class ReceivedMessage(_messages.Message):
   r"""A message and its corresponding acknowledgment ID.
 
   Fields:
-    ackId: This ID can be used to acknowledge the received message.
-    deliveryAttempt: The approximate number of times that Cloud Pub/Sub has
-      attempted to deliver the associated message to a subscriber. More
+    ackId: Optional. This ID can be used to acknowledge the received message.
+    deliveryAttempt: Optional. The approximate number of times that Pub/Sub
+      has attempted to deliver the associated message to a subscriber. More
       precisely, this is 1 + (number of NACKs) + (number of ack_deadline
       exceeds) for this message. A NACK is any call to ModifyAckDeadline with
       a 0 deadline. An ack_deadline exceeds event is whenever a message is not
@@ -1734,7 +1780,7 @@ class ReceivedMessage(_messages.Message):
       `delivery_attempt` will have a value of 1. The value is calculated at
       best effort and is approximate. If a DeadLetterPolicy is not set on the
       subscription, this will be 0.
-    message: The message.
+    message: Optional. The message.
   """
 
   ackId = _messages.StringField(1)
@@ -1743,21 +1789,21 @@ class ReceivedMessage(_messages.Message):
 
 
 class RetryPolicy(_messages.Message):
-  r"""A policy that specifies how Cloud Pub/Sub retries message delivery.
-  Retry delay will be exponential based on provided minimum and maximum
-  backoffs. https://en.wikipedia.org/wiki/Exponential_backoff. RetryPolicy
-  will be triggered on NACKs or acknowledgement deadline exceeded events for a
-  given message. Retry Policy is implemented on a best effort basis. At times,
-  the delay between consecutive deliveries may not match the configuration.
-  That is, delay can be more or less than configured backoff.
+  r"""A policy that specifies how Pub/Sub retries message delivery. Retry
+  delay will be exponential based on provided minimum and maximum backoffs.
+  https://en.wikipedia.org/wiki/Exponential_backoff. RetryPolicy will be
+  triggered on NACKs or acknowledgement deadline exceeded events for a given
+  message. Retry Policy is implemented on a best effort basis. At times, the
+  delay between consecutive deliveries may not match the configuration. That
+  is, delay can be more or less than configured backoff.
 
   Fields:
-    maximumBackoff: The maximum delay between consecutive deliveries of a
-      given message. Value should be between 0 and 600 seconds. Defaults to
-      600 seconds.
-    minimumBackoff: The minimum delay between consecutive deliveries of a
-      given message. Value should be between 0 and 600 seconds. Defaults to 10
-      seconds.
+    maximumBackoff: Optional. The maximum delay between consecutive deliveries
+      of a given message. Value should be between 0 and 600 seconds. Defaults
+      to 600 seconds.
+    minimumBackoff: Optional. The minimum delay between consecutive deliveries
+      of a given message. Value should be between 0 and 600 seconds. Defaults
+      to 10 seconds.
   """
 
   maximumBackoff = _messages.StringField(1)
@@ -1816,17 +1862,17 @@ class SchemaSettings(_messages.Message):
   r"""Settings for validating messages published against a schema.
 
   Enums:
-    EncodingValueValuesEnum: The encoding of messages validated against
-      `schema`.
+    EncodingValueValuesEnum: Optional. The encoding of messages validated
+      against `schema`.
 
   Fields:
-    encoding: The encoding of messages validated against `schema`.
-    firstRevisionId: The minimum (inclusive) revision allowed for validating
-      messages. If empty or not present, allow any revision to be validated
-      against last_revision or any revision created before.
-    lastRevisionId: The maximum (inclusive) revision allowed for validating
-      messages. If empty or not present, allow any revision to be validated
-      against first_revision or any revision created after.
+    encoding: Optional. The encoding of messages validated against `schema`.
+    firstRevisionId: Optional. The minimum (inclusive) revision allowed for
+      validating messages. If empty or not present, allow any revision to be
+      validated against last_revision or any revision created before.
+    lastRevisionId: Optional. The maximum (inclusive) revision allowed for
+      validating messages. If empty or not present, allow any revision to be
+      validated against first_revision or any revision created after.
     schema: Required. The name of the schema that messages published should be
       validated against. Format is `projects/{project}/schemas/{schema}`. The
       value of this field will be `_deleted-schema_` if the schema has been
@@ -1834,7 +1880,7 @@ class SchemaSettings(_messages.Message):
   """
 
   class EncodingValueValuesEnum(_messages.Enum):
-    r"""The encoding of messages validated against `schema`.
+    r"""Optional. The encoding of messages validated against `schema`.
 
     Values:
       ENCODING_UNSPECIFIED: Unspecified
@@ -1856,19 +1902,20 @@ class SeekRequest(_messages.Message):
   r"""Request for the `Seek` method.
 
   Fields:
-    snapshot: The snapshot to seek to. The snapshot's topic must be the same
-      as that of the provided subscription. Format is
+    snapshot: Optional. The snapshot to seek to. The snapshot's topic must be
+      the same as that of the provided subscription. Format is
       `projects/{project}/snapshots/{snap}`.
-    time: The time to seek to. Messages retained in the subscription that were
-      published before this time are marked as acknowledged, and messages
-      retained in the subscription that were published after this time are
-      marked as unacknowledged. Note that this operation affects only those
-      messages retained in the subscription (configured by the combination of
-      `message_retention_duration` and `retain_acked_messages`). For example,
-      if `time` corresponds to a point before the message retention window (or
-      to a point before the system's notion of the subscription creation
-      time), only retained messages will be marked as unacknowledged, and
-      already-expunged messages will not be restored.
+    time: Optional. The time to seek to. Messages retained in the subscription
+      that were published before this time are marked as acknowledged, and
+      messages retained in the subscription that were published after this
+      time are marked as unacknowledged. Note that this operation affects only
+      those messages retained in the subscription (configured by the
+      combination of `message_retention_duration` and
+      `retain_acked_messages`). For example, if `time` corresponds to a point
+      before the message retention window (or to a point before the system's
+      notion of the subscription creation time), only retained messages will
+      be marked as unacknowledged, and already-expunged messages will not be
+      restored.
   """
 
   snapshot = _messages.StringField(1)
@@ -1900,31 +1947,31 @@ class Snapshot(_messages.Message):
   state captured by a snapshot.
 
   Messages:
-    LabelsValue: See [Creating and managing labels]
+    LabelsValue: Optional. See [Creating and managing labels]
       (https://cloud.google.com/pubsub/docs/labels).
 
   Fields:
-    expireTime: The snapshot is guaranteed to exist up until this time. A
-      newly-created snapshot expires no later than 7 days from the time of its
-      creation. Its exact lifetime is determined at creation by the existing
-      backlog in the source subscription. Specifically, the lifetime of the
-      snapshot is `7 days - (age of oldest unacked message in the
-      subscription)`. For example, consider a subscription whose oldest
+    expireTime: Optional. The snapshot is guaranteed to exist up until this
+      time. A newly-created snapshot expires no later than 7 days from the
+      time of its creation. Its exact lifetime is determined at creation by
+      the existing backlog in the source subscription. Specifically, the
+      lifetime of the snapshot is `7 days - (age of oldest unacked message in
+      the subscription)`. For example, consider a subscription whose oldest
       unacked message is 3 days old. If a snapshot is created from this
       subscription, the snapshot -- which will always capture this 3-day-old
       backlog as long as the snapshot exists -- will expire in 4 days. The
       service will refuse to create a snapshot that would expire in less than
       1 hour after creation.
-    labels: See [Creating and managing labels]
+    labels: Optional. See [Creating and managing labels]
       (https://cloud.google.com/pubsub/docs/labels).
-    name: The name of the snapshot.
-    topic: The name of the topic from which this snapshot is retaining
-      messages.
+    name: Optional. The name of the snapshot.
+    topic: Optional. The name of the topic from which this snapshot is
+      retaining messages.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""See [Creating and managing labels]
+    r"""Optional. See [Creating and managing labels]
     (https://cloud.google.com/pubsub/docs/labels).
 
     Messages:
@@ -2026,43 +2073,43 @@ class Subscription(_messages.Message):
       or not the subscription can receive messages.
 
   Messages:
-    LabelsValue: See [Creating and managing
+    LabelsValue: Optional. See [Creating and managing
       labels](https://cloud.google.com/pubsub/docs/labels).
 
   Fields:
-    ackDeadlineSeconds: The approximate amount of time (on a best-effort
-      basis) Pub/Sub waits for the subscriber to acknowledge receipt before
-      resending the message. In the interval after the message is delivered
-      and before it is acknowledged, it is considered to be _outstanding_.
-      During that time period, the message will not be redelivered (on a best-
-      effort basis). For pull subscriptions, this value is used as the initial
-      value for the ack deadline. To override this value for a given message,
-      call `ModifyAckDeadline` with the corresponding `ack_id` if using non-
-      streaming pull or send the `ack_id` in a
-      `StreamingModifyAckDeadlineRequest` if using streaming pull. The minimum
-      custom deadline you can specify is 10 seconds. The maximum custom
-      deadline you can specify is 600 seconds (10 minutes). If this parameter
-      is 0, a default value of 10 seconds is used. For push delivery, this
-      value is also used to set the request timeout for the call to the push
-      endpoint. If the subscriber never acknowledges the message, the Pub/Sub
-      system will eventually redeliver the message.
-    bigqueryConfig: If delivery to BigQuery is used with this subscription,
-      this field is used to configure it.
-    cloudStorageConfig: If delivery to Google Cloud Storage is used with this
+    ackDeadlineSeconds: Optional. The approximate amount of time (on a best-
+      effort basis) Pub/Sub waits for the subscriber to acknowledge receipt
+      before resending the message. In the interval after the message is
+      delivered and before it is acknowledged, it is considered to be
+      _outstanding_. During that time period, the message will not be
+      redelivered (on a best-effort basis). For pull subscriptions, this value
+      is used as the initial value for the ack deadline. To override this
+      value for a given message, call `ModifyAckDeadline` with the
+      corresponding `ack_id` if using non-streaming pull or send the `ack_id`
+      in a `StreamingModifyAckDeadlineRequest` if using streaming pull. The
+      minimum custom deadline you can specify is 10 seconds. The maximum
+      custom deadline you can specify is 600 seconds (10 minutes). If this
+      parameter is 0, a default value of 10 seconds is used. For push
+      delivery, this value is also used to set the request timeout for the
+      call to the push endpoint. If the subscriber never acknowledges the
+      message, the Pub/Sub system will eventually redeliver the message.
+    bigqueryConfig: Optional. If delivery to BigQuery is used with this
       subscription, this field is used to configure it.
-    deadLetterPolicy: A policy that specifies the conditions for dead
-      lettering messages in this subscription. If dead_letter_policy is not
-      set, dead lettering is disabled. The Cloud Pub/Sub service account
+    cloudStorageConfig: Optional. If delivery to Google Cloud Storage is used
+      with this subscription, this field is used to configure it.
+    deadLetterPolicy: Optional. A policy that specifies the conditions for
+      dead lettering messages in this subscription. If dead_letter_policy is
+      not set, dead lettering is disabled. The Pub/Sub service account
       associated with this subscriptions's parent project (i.e.,
       service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com) must
       have permission to Acknowledge() messages on this subscription.
-    detached: Indicates whether the subscription is detached from its topic.
-      Detached subscriptions don't receive messages from their topic and don't
-      retain any backlog. `Pull` and `StreamingPull` requests will return
-      FAILED_PRECONDITION. If the subscription is a push subscription, pushes
-      to the endpoint will not be made.
-    enableExactlyOnceDelivery: If true, Pub/Sub provides the following
-      guarantees for the delivery of a message with a given value of
+    detached: Optional. Indicates whether the subscription is detached from
+      its topic. Detached subscriptions don't receive messages from their
+      topic and don't retain any backlog. `Pull` and `StreamingPull` requests
+      will return FAILED_PRECONDITION. If the subscription is a push
+      subscription, pushes to the endpoint will not be made.
+    enableExactlyOnceDelivery: Optional. If true, Pub/Sub provides the
+      following guarantees for the delivery of a message with a given value of
       `message_id` on this subscription: * The message sent to a subscriber is
       guaranteed not to be resent before the message's acknowledgement
       deadline expires. * An acknowledged message will not be resent to a
@@ -2070,53 +2117,55 @@ class Subscription(_messages.Message):
       message when `enable_exactly_once_delivery` is true if the message was
       published multiple times by a publisher client. These copies are
       considered distinct by Pub/Sub and have distinct `message_id` values.
-    enableMessageOrdering: If true, messages published with the same
+    enableMessageOrdering: Optional. If true, messages published with the same
       `ordering_key` in `PubsubMessage` will be delivered to the subscribers
       in the order in which they are received by the Pub/Sub system.
       Otherwise, they may be delivered in any order.
-    expirationPolicy: A policy that specifies the conditions for this
-      subscription's expiration. A subscription is considered active as long
-      as any connected subscriber is successfully consuming messages from the
-      subscription or is issuing operations on the subscription. If
+    expirationPolicy: Optional. A policy that specifies the conditions for
+      this subscription's expiration. A subscription is considered active as
+      long as any connected subscriber is successfully consuming messages from
+      the subscription or is issuing operations on the subscription. If
       `expiration_policy` is not set, a *default policy* with `ttl` of 31 days
       will be used. The minimum allowed value for `expiration_policy.ttl` is 1
       day. If `expiration_policy` is set, but `expiration_policy.ttl` is not
       set, the subscription never expires.
-    filter: An expression written in the Pub/Sub [filter
+    filter: Optional. An expression written in the Pub/Sub [filter
       language](https://cloud.google.com/pubsub/docs/filtering). If non-empty,
       then only `PubsubMessage`s whose `attributes` field matches the filter
       are delivered on this subscription. If empty, then no messages are
       filtered out.
-    labels: See [Creating and managing
+    labels: Optional. See [Creating and managing
       labels](https://cloud.google.com/pubsub/docs/labels).
-    messageRetentionDuration: How long to retain unacknowledged messages in
-      the subscription's backlog, from the moment a message is published. If
-      `retain_acked_messages` is true, then this also configures the retention
-      of acknowledged messages, and thus configures how far back in time a
-      `Seek` can be done. Defaults to 7 days. Cannot be more than 7 days or
-      less than 10 minutes.
+    messageRetentionDuration: Optional. How long to retain unacknowledged
+      messages in the subscription's backlog, from the moment a message is
+      published. If `retain_acked_messages` is true, then this also configures
+      the retention of acknowledged messages, and thus configures how far back
+      in time a `Seek` can be done. Defaults to 7 days. Cannot be more than 7
+      days or less than 10 minutes.
     name: Required. The name of the subscription. It must have the format
       `"projects/{project}/subscriptions/{subscription}"`. `{subscription}`
       must start with a letter, and contain only letters (`[A-Za-z]`), numbers
       (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`), tildes (`~`),
       plus (`+`) or percent signs (`%`). It must be between 3 and 255
       characters in length, and it must not start with `"goog"`.
-    pubsubliteExportConfig: If delivery to Pub/Sub Lite is used with this
+    pubsubExportConfig: Optional. If delivery to Pub/Sub is used with this
       subscription, this field is used to configure it.
-    pushConfig: If push delivery is used with this subscription, this field is
-      used to configure it.
-    retainAckedMessages: Indicates whether to retain acknowledged messages. If
-      true, then messages are not expunged from the subscription's backlog,
-      even if they are acknowledged, until they fall out of the
-      `message_retention_duration` window. This must be true if you would like
-      to [`Seek` to a timestamp] (https://cloud.google.com/pubsub/docs/replay-
-      overview#seek_to_a_time) in the past to replay previously-acknowledged
-      messages.
-    retryPolicy: A policy that specifies how Pub/Sub retries message delivery
-      for this subscription. If not set, the default retry policy is applied.
-      This generally implies that messages will be retried as soon as possible
-      for healthy subscribers. RetryPolicy will be triggered on NACKs or
-      acknowledgement deadline exceeded events for a given message.
+    pubsubliteExportConfig: Optional. If delivery to Pub/Sub Lite is used with
+      this subscription, this field is used to configure it.
+    pushConfig: Optional. If push delivery is used with this subscription,
+      this field is used to configure it.
+    retainAckedMessages: Optional. Indicates whether to retain acknowledged
+      messages. If true, then messages are not expunged from the
+      subscription's backlog, even if they are acknowledged, until they fall
+      out of the `message_retention_duration` window. This must be true if you
+      would like to [`Seek` to a timestamp]
+      (https://cloud.google.com/pubsub/docs/replay-overview#seek_to_a_time) in
+      the past to replay previously-acknowledged messages.
+    retryPolicy: Optional. A policy that specifies how Pub/Sub retries message
+      delivery for this subscription. If not set, the default retry policy is
+      applied. This generally implies that messages will be retried as soon as
+      possible for healthy subscribers. RetryPolicy will be triggered on NACKs
+      or acknowledgement deadline exceeded events for a given message.
     state: Output only. An output-only field indicating whether or not the
       subscription can receive messages.
     topic: Required. The name of the topic from which this subscription is
@@ -2149,7 +2198,7 @@ class Subscription(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""See [Creating and managing
+    r"""Optional. See [Creating and managing
     labels](https://cloud.google.com/pubsub/docs/labels).
 
     Messages:
@@ -2184,13 +2233,14 @@ class Subscription(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 10)
   messageRetentionDuration = _messages.StringField(11)
   name = _messages.StringField(12)
-  pubsubliteExportConfig = _messages.MessageField('PubSubLiteExportConfig', 13)
-  pushConfig = _messages.MessageField('PushConfig', 14)
-  retainAckedMessages = _messages.BooleanField(15)
-  retryPolicy = _messages.MessageField('RetryPolicy', 16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  topic = _messages.StringField(18)
-  topicMessageRetentionDuration = _messages.StringField(19)
+  pubsubExportConfig = _messages.MessageField('PubSubExportConfig', 13)
+  pubsubliteExportConfig = _messages.MessageField('PubSubLiteExportConfig', 14)
+  pushConfig = _messages.MessageField('PushConfig', 15)
+  retainAckedMessages = _messages.BooleanField(16)
+  retryPolicy = _messages.MessageField('RetryPolicy', 17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  topic = _messages.StringField(19)
+  topicMessageRetentionDuration = _messages.StringField(20)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -2232,40 +2282,40 @@ class Topic(_messages.Message):
       state of the topic.
 
   Messages:
-    LabelsValue: See [Creating and managing labels]
+    LabelsValue: Optional. See [Creating and managing labels]
       (https://cloud.google.com/pubsub/docs/labels).
 
   Fields:
-    ingestionDataSourceSettings: Settings for managed ingestion from a data
-      source into this topic.
-    kmsKeyName: The resource name of the Cloud KMS CryptoKey to be used to
-      protect access to messages published on this topic. The expected format
-      is `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
-    labels: See [Creating and managing labels]
+    ingestionDataSourceSettings: Optional. Settings for managed ingestion from
+      a data source into this topic.
+    kmsKeyName: Optional. The resource name of the Cloud KMS CryptoKey to be
+      used to protect access to messages published on this topic. The expected
+      format is `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+    labels: Optional. See [Creating and managing labels]
       (https://cloud.google.com/pubsub/docs/labels).
-    messageRetentionDuration: Indicates the minimum duration to retain a
-      message after it is published to the topic. If this field is set,
-      messages published to the topic in the last `message_retention_duration`
-      are always available to subscribers. For instance, it allows any
-      attached subscription to [seek to a
+    messageRetentionDuration: Optional. Indicates the minimum duration to
+      retain a message after it is published to the topic. If this field is
+      set, messages published to the topic in the last
+      `message_retention_duration` are always available to subscribers. For
+      instance, it allows any attached subscription to [seek to a
       timestamp](https://cloud.google.com/pubsub/docs/replay-
       overview#seek_to_a_time) that is up to `message_retention_duration` in
       the past. If this field is not set, message retention is controlled by
       settings on individual subscriptions. Cannot be more than 31 days or
       less than 10 minutes.
-    messageStoragePolicy: Policy constraining the set of Google Cloud Platform
-      regions where messages published to the topic may be stored. If not
-      present, then no constraints are in effect.
+    messageStoragePolicy: Optional. Policy constraining the set of Google
+      Cloud Platform regions where messages published to the topic may be
+      stored. If not present, then no constraints are in effect.
     name: Required. The name of the topic. It must have the format
       `"projects/{project}/topics/{topic}"`. `{topic}` must start with a
       letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes
       (`-`), underscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or
       percent signs (`%`). It must be between 3 and 255 characters in length,
       and it must not start with `"goog"`.
-    satisfiesPzs: Reserved for future use. This field is set only in responses
-      from the server; it is ignored if it is set in any requests.
-    schemaSettings: Settings for validating messages published against a
-      schema.
+    satisfiesPzs: Optional. Reserved for future use. This field is set only in
+      responses from the server; it is ignored if it is set in any requests.
+    schemaSettings: Optional. Settings for validating messages published
+      against a schema.
     state: Output only. An output-only field indicating the state of the
       topic.
   """
@@ -2286,7 +2336,7 @@ class Topic(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""See [Creating and managing labels]
+    r"""Optional. See [Creating and managing labels]
     (https://cloud.google.com/pubsub/docs/labels).
 
     Messages:

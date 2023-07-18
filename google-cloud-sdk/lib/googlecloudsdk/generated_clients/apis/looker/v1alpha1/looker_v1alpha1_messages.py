@@ -382,16 +382,17 @@ class Instance(_messages.Message):
   Enums:
     PlatformEditionValueValuesEnum: Platform edition.
     StateValueValuesEnum: Output only. The state of the instance.
+    TierValueValuesEnum: Optional. Tier
 
   Fields:
-    adminSettings: Looker instance admin settings.
+    adminSettings: Looker Instance Admin settings.
     consumerNetwork: Network name in the consumer project. Format:
       `projects/{project}/global/networks/{network}`. Note that the consumer
       network may be in a different GCP project than the consumer project that
       is hosting the Looker Instance.
     createTime: Output only. The time when the Looker instance provisioning
       was first requested.
-    customDomain: Custom domain information.
+    customDomain: A CustomDomain attribute.
     denyMaintenancePeriod: Maintenance denial period for this instance.
     egressPublicIp: Output only. Public Egress IP (IPv4).
     enablePrivateIp: Whether private IP is enabled on the Looker instance.
@@ -415,6 +416,7 @@ class Instance(_messages.Message):
       Instance.consumer_network, to be used for private services access
       connection. May or may not be specified in a create request.
     state: Output only. The state of the instance.
+    tier: Optional. Tier
     updateTime: Output only. The time when the Looker instance was last
       updated.
     users: User metadata.
@@ -430,6 +432,7 @@ class Instance(_messages.Message):
       ELITE: Elite.
       LOOKER_CORE_TRIAL: Trial.
       LOOKER_MODELER: Standalone Model Service.
+      LOOKER_MODELER_TRIAL: Standalone Model Service Trial.
     """
     PLATFORM_EDITION_UNSPECIFIED = 0
     STANDARD = 1
@@ -437,6 +440,7 @@ class Instance(_messages.Message):
     ELITE = 3
     LOOKER_CORE_TRIAL = 4
     LOOKER_MODELER = 5
+    LOOKER_MODELER_TRIAL = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the instance.
@@ -462,6 +466,24 @@ class Instance(_messages.Message):
     EXPORTING = 7
     IMPORTING = 8
 
+  class TierValueValuesEnum(_messages.Enum):
+    r"""Optional. Tier
+
+    Values:
+      TIER_UNSPECIFIED: Unspecified tier.
+      XS: X-Small
+      S: Small
+      M: Medium
+      L: Large
+      XL: X-Large
+    """
+    TIER_UNSPECIFIED = 0
+    XS = 1
+    S = 2
+    M = 3
+    L = 4
+    XL = 5
+
   adminSettings = _messages.MessageField('AdminSettings', 1)
   consumerNetwork = _messages.StringField(2)
   createTime = _messages.StringField(3)
@@ -483,8 +505,9 @@ class Instance(_messages.Message):
   platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 19)
   reservedRange = _messages.StringField(20)
   state = _messages.EnumField('StateValueValuesEnum', 21)
-  updateTime = _messages.StringField(22)
-  users = _messages.MessageField('Users', 23)
+  tier = _messages.EnumField('TierValueValuesEnum', 22)
+  updateTime = _messages.StringField(23)
+  users = _messages.MessageField('Users', 24)
 
 
 class InstanceBackup(_messages.Message):

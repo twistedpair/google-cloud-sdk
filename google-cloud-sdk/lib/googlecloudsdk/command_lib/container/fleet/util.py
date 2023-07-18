@@ -72,6 +72,27 @@ B_LIST_FORMAT = """
     )
 """
 
+FLEET_FORMAT = """
+table(
+    name.basename():label=NAME,
+    name.segment(3):label=LOCATION,
+    state.code:label=STATUS
+)
+"""
+
+OPERATION_FORMAT = """
+table(
+    name.basename():label=NAME,
+    metadata.verb:label=ACTION,
+    metadata.target.segment(-2):label=TYPE,
+    metadata.target.basename():label=TARGET,
+    name.segment(3):label=LOCATION,
+    done:label=DONE,
+    metadata.createTime.date():label=START_TIME:sort=1,
+    metadata.endTime.date():label=END_TIME
+)
+"""
+
 
 def DefaultFleetID():
   """Returns 'default' to be used as a fallthrough hook in resources.yaml."""
@@ -86,7 +107,8 @@ def AddClusterConnectionCommonArgs(parser):
   """
   # A top level Cluster identifier mutually exclusive group.
   group = parser.add_group(
-      mutex=True, required=True, help='Cluster identifier.')
+      mutex=True, required=True, help='Cluster identifier.'
+  )
   group.add_argument(
       '--gke-uri',
       type=str,
@@ -179,11 +201,13 @@ def Base64EncodedFileContents(filename):
    files.Error: if the file cannot be read.
   """
   return base64.b64encode(
-      files.ReadBinaryFileContents(files.ExpandHomeDir(filename)))
+      files.ReadBinaryFileContents(files.ExpandHomeDir(filename))
+  )
 
 
-def GenerateWIUpdateMsgString(membership, issuer_url, resource_name,
-                              cluster_name):
+def GenerateWIUpdateMsgString(
+    membership, issuer_url, resource_name, cluster_name
+):
   """Generates user message with information about enabling/disabling Workload Identity.
 
   We do not allow updating issuer url from one non-empty value to another.
@@ -208,7 +232,9 @@ def GenerateWIUpdateMsgString(membership, issuer_url, resource_name,
         ' was previously registered with Workload Identity'
         ' enabled. Continuing will disable Workload Identity on your'
         ' membership, and will reinstall the Connect agent deployment.'.format(
-            resource_name, cluster_name))
+            resource_name, cluster_name
+        )
+    )
 
   if not membership.authority and issuer_url:
     # Since the issuer is being set to a non-empty value from an empty value
@@ -218,7 +244,9 @@ def GenerateWIUpdateMsgString(membership, issuer_url, resource_name,
         ' was previously registered without Workload Identity.'
         ' Continuing will enable Workload Identity on your'
         ' membership, and will reinstall the Connect agent deployment.'.format(
-            resource_name, cluster_name))
+            resource_name, cluster_name
+        )
+    )
 
   return ''
 
@@ -256,11 +284,14 @@ def APIEndpoint():
   """
   try:
     hub_endpoint_override = properties.VALUES.api_endpoint_overrides.Property(
-        'gkehub').Get()
+        'gkehub'
+    ).Get()
   except properties.NoSuchPropertyError:
     hub_endpoint_override = None
-  if (not hub_endpoint_override or
-      'gkehub.googleapis.com' in hub_endpoint_override):
+  if (
+      not hub_endpoint_override
+      or 'gkehub.googleapis.com' in hub_endpoint_override
+  ):
     return PROD_API
   elif 'staging-gkehub' in hub_endpoint_override:
     return STAGING_API
@@ -289,8 +320,9 @@ def LocationFromGKEArgs(args):
   location = ''
   if args.gke_cluster:
     # e.g. us-central1/my-cluster
-    location_re = re.search(r'([a-z0-9]+\-[a-z0-9]+)(\-[a-z])?/(\-[a-z])?',
-                            args.gke_cluster)
+    location_re = re.search(
+        r'([a-z0-9]+\-[a-z0-9]+)(\-[a-z])?/(\-[a-z])?', args.gke_cluster
+    )
     if location_re:
       location = location_re.group(1)
     else:
@@ -302,7 +334,8 @@ def LocationFromGKEArgs(args):
     # e.g. .../projects/123/locations/us-central1-a/clusters/my-cluster
     location_re = re.search(
         r'(regions|locations|zones)/([a-z0-9]+\-[a-z0-9]+)(\-[a-z])?/clusters',
-        args.gke_uri)
+        args.gke_uri,
+    )
     if location_re:
       location = location_re.group(2)
     else:

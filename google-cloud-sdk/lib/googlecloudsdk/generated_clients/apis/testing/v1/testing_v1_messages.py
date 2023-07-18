@@ -1054,6 +1054,10 @@ class NetworkConfigurationCatalog(_messages.Message):
   configurations = _messages.MessageField('NetworkConfiguration', 1, repeated=True)
 
 
+class NoActivityIntent(_messages.Message):
+  r"""Skips the starting activity"""
+
+
 class ObbFile(_messages.Message):
   r"""An opaque binary blob file to install on the device before the test
   starts.
@@ -1296,13 +1300,15 @@ class RoboStartingIntent(_messages.Message):
 
   Fields:
     launcherActivity: An intent that starts the main launcher activity.
+    noActivity: Skips the starting activity
     startActivity: An intent that starts an activity with specific details.
     timeout: Timeout in seconds for each intent.
   """
 
   launcherActivity = _messages.MessageField('LauncherActivityIntent', 1)
-  startActivity = _messages.MessageField('StartActivityIntent', 2)
-  timeout = _messages.StringField(3)
+  noActivity = _messages.MessageField('NoActivityIntent', 2)
+  startActivity = _messages.MessageField('StartActivityIntent', 3)
+  timeout = _messages.StringField(4)
 
 
 class Service(_messages.Message):

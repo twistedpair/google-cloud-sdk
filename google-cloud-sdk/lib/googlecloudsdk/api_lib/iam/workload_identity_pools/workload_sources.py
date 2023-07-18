@@ -89,6 +89,7 @@ def WaitForWorkloadSourceOperation(
     client,
     lro_ref,
     for_managed_identity: bool = False,
+    delete: bool = False,
 ):
   """Make API calls to poll for a workload source LRO.
 
@@ -97,9 +98,10 @@ def WaitForWorkloadSourceOperation(
     lro_ref: the lro ref returned from a LRO workload source API call.
     for_managed_identity: whether the workload source LRO is under a managed
       identity
+    delete: whether it's a delete operation
 
   Returns:
-    The LRO ref for a create response
+    The result workload source or None for delete
   """
   lro_resource = sdkresources.REGISTRY.ParseRelativeName(
       lro_ref.name,
@@ -109,16 +111,29 @@ def WaitForWorkloadSourceOperation(
           else 'iam.projects.locations.workloadIdentityPools.namespaces.workloadSources'
       ),
   )
-  result = waiter.WaitFor(
-      identity_pool_waiter.WorkloadSourcesOperationPoller(
-          client.projects_locations_workloadIdentityPools_namespaces_workloadSources,
-          client.projects_locations_workloadIdentityPools_namespaces_workloadSources_operations,
-      ),
-      lro_resource,
-      'Waiting for operation [{}] to complete'.format(lro_ref.name),
-      # Wait for a maximum of 5 minutes, as the IAM replication has a lag of
-      # up to 80 seconds.
-      max_wait_ms=300000,
-  )
+  if delete:
+    result = waiter.WaitFor(
+        identity_pool_waiter.IdentityPoolOperationPollerNoResources(
+            client.projects_locations_workloadIdentityPools_namespaces_workloadSources,
+            client.projects_locations_workloadIdentityPools_namespaces_workloadSources_operations,
+        ),
+        lro_resource,
+        'Waiting for operation [{}] to complete'.format(lro_ref.name),
+        # Wait for a maximum of 5 minutes, as the IAM replication has a lag of
+        # up to 80 seconds.
+        max_wait_ms=300000,
+    )
+  else:
+    result = waiter.WaitFor(
+        identity_pool_waiter.WorkloadSourcesOperationPoller(
+            client.projects_locations_workloadIdentityPools_namespaces_workloadSources,
+            client.projects_locations_workloadIdentityPools_namespaces_workloadSources_operations,
+        ),
+        lro_resource,
+        'Waiting for operation [{}] to complete'.format(lro_ref.name),
+        # Wait for a maximum of 5 minutes, as the IAM replication has a lag of
+        # up to 80 seconds.
+        max_wait_ms=300000,
+    )
 
   return result

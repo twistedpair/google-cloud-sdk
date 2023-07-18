@@ -1234,6 +1234,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'config': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.config.v1',
+                    client_classpath='config_v1_client.ConfigV1',
+                    base_url='https://config.googleapis.com/',
+                    messages_modulepath='config_v1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1771,6 +1781,18 @@ MAP = {
                     client_classpath='events_v1beta1_client.EventsV1beta1',
                     base_url='https://events.googleapis.com/',
                     messages_modulepath='events_v1beta1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'faultinjectiontesting': {
+        'v1alpha1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.faultinjectiontesting.v1alpha1',
+                    client_classpath='faultinjectiontesting_v1alpha1_client.FaultinjectiontestingV1alpha1',
+                    base_url='https://faultinjectiontesting.googleapis.com/',
+                    messages_modulepath='faultinjectiontesting_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -2573,6 +2595,16 @@ MAP = {
                     client_classpath='notebooks_v1beta1_client.NotebooksV1beta1',
                     base_url='https://notebooks.googleapis.com/',
                     messages_modulepath='notebooks_v1beta1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v2':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.notebooks.v2',
+                    client_classpath='notebooks_v2_client.NotebooksV2',
+                    base_url='',
+                    messages_modulepath='notebooks_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

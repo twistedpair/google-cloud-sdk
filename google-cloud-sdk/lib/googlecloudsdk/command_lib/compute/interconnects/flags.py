@@ -178,14 +178,8 @@ def AddCreateGaArgs(parser):
   AddInterconnectTypeGA(parser)
 
 
-def AddCreateBetaArgs(parser):
-  """Adds beta flags for create command to the argparse.ArgumentParser."""
-  AddCreateCommonArgs(parser)
-  AddInterconnectTypeBetaAndAlpha(parser)
-
-
-def AddCreateAlphaArgs(parser):
-  """Adds alpha flags for create command to the argparse.ArgumentParser."""
+def AddCreateAlphaBetaArgs(parser):
+  """Adds alpha / beta flags for create command to the argparse.ArgumentParser."""
   AddCreateCommonArgs(parser)
   AddInterconnectTypeBetaAndAlpha(parser)
   AddRequestedFeatures(parser)
@@ -240,7 +234,6 @@ def AddRequestedFeatures(parser):
       '--requested-features',
       type=arg_parsers.ArgList(choices=_REQUESTED_FEATURES_CHOICES),
       metavar='FEATURES',
-      hidden=True,
       help="""\
       List of features requested for this interconnect.
       """)

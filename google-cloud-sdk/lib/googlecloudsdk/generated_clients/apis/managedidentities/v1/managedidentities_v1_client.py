@@ -375,6 +375,33 @@ class ManagedidentitiesV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CheckMigrationPermission(self, request, global_params=None):
+      r"""CheckMigrationPermission API gets the current state of DomainMigration.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsCheckMigrationPermissionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckMigrationPermissionResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckMigrationPermission')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckMigrationPermission.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/domains/{domainsId}:checkMigrationPermission',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.checkMigrationPermission',
+        ordered_params=['domain'],
+        path_params=['domain'],
+        query_params=[],
+        relative_path='v1/{+domain}:checkMigrationPermission',
+        request_field='checkMigrationPermissionRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsCheckMigrationPermissionRequest',
+        response_type_name='CheckMigrationPermissionResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a Microsoft AD domain.
 

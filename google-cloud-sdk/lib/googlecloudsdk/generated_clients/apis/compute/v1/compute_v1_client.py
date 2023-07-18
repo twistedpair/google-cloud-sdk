@@ -10271,7 +10271,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def MoveInstance(self, request, global_params=None):
-      r"""Moves an instance and its attached persistent disks from one zone to another. *Note*: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the [known issue](/compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).
+      r"""Moves an instance and its attached persistent disks from one zone to another. *Note*: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the [known issue](/compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior). [Deprecated] This method is deprecated. See [moving instance across zones](/compute/docs/instances/moving-instance-across-zones) instead.
 
       Args:
         request: (ComputeProjectsMoveInstanceRequest) input message
@@ -15165,6 +15165,32 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeResourcePoliciesListRequest',
         response_type_name='ResourcePolicyList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Modify the specified resource policy.
+
+      Args:
+        request: (ComputeResourcePoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.resourcePolicies.patch',
+        ordered_params=['project', 'region', 'resourcePolicy'],
+        path_params=['project', 'region', 'resourcePolicy'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/regions/{region}/resourcePolicies/{resourcePolicy}',
+        request_field='resourcePolicyResource',
+        request_type_name='ComputeResourcePoliciesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

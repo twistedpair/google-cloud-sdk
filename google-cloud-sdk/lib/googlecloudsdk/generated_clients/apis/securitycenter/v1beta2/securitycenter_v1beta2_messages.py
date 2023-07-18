@@ -53,6 +53,7 @@ class Access(_messages.Message):
       counts/{ACCOUNT}/keys/{key}".
     serviceName: This is the API service that the service account made a call
       to, e.g. "iam.googleapis.com"
+    userAgent: The caller's user agent string associated with the finding.
     userAgentFamily: Type of user agent associated with the finding. For
       example, an operating system shell or an embedded or standalone
       application.
@@ -70,8 +71,9 @@ class Access(_messages.Message):
   serviceAccountDelegationInfo = _messages.MessageField('ServiceAccountDelegationInfo', 6, repeated=True)
   serviceAccountKeyName = _messages.StringField(7)
   serviceName = _messages.StringField(8)
-  userAgentFamily = _messages.StringField(9)
-  userName = _messages.StringField(10)
+  userAgent = _messages.StringField(9)
+  userAgentFamily = _messages.StringField(10)
+  userName = _messages.StringField(11)
 
 
 class AccessReview(_messages.Message):
@@ -638,22 +640,25 @@ class Database(_messages.Message):
   name](https://google.aip.dev/122#full-resource-names) populated because
   these resource types, such as Cloud SQL databases, are not yet supported by
   Cloud Asset Inventory. In these cases only the display name is provided.
-  Some database resources may not have the [full resource
-  name](https://google.aip.dev/122#full-resource-names) populated because
-  these resource types are not yet supported by Cloud Asset Inventory (e.g.
-  Cloud SQL databases). In these cases only the display name will be provided.
 
   Fields:
     displayName: The human-readable name of the database that the user
       connected to.
     grantees: The target usernames, roles, or groups of an SQL privilege
       grant, which is not an IAM policy change.
-    name: The [full resource name](https://google.aip.dev/122#full-resource-
-      names) of the database that the user connected to, if it is supported by
-      Cloud Asset Inventory.
+    name: Some database resources may not have the [full resource
+      name](https://google.aip.dev/122#full-resource-names) populated because
+      these resource types are not yet supported by Cloud Asset Inventory
+      (e.g. Cloud SQL databases). In these cases only the display name will be
+      provided. The [full resource name](https://google.aip.dev/122#full-
+      resource-names) of the database that the user connected to, if it is
+      supported by Cloud Asset Inventory.
     query: The SQL statement that is associated with the database access.
     userName: The username used to connect to the database. The username might
       not be an IAM principal and does not have a set format.
+    version: The version of the database, for example, POSTGRES_14. See [the
+      complete list](https://cloud.google.com/sql/docs/mysql/admin-
+      api/rest/v1/SqlDatabaseVersion).
   """
 
   displayName = _messages.StringField(1)
@@ -661,6 +666,7 @@ class Database(_messages.Message):
   name = _messages.StringField(3)
   query = _messages.StringField(4)
   userName = _messages.StringField(5)
+  version = _messages.StringField(6)
 
 
 class Details(_messages.Message):

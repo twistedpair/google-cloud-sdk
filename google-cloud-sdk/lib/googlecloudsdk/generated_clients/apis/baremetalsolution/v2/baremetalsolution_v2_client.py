@@ -45,6 +45,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     self.projects_locations_networks = self.ProjectsLocationsNetworksService(self)
     self.projects_locations_nfsShares = self.ProjectsLocationsNfsSharesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_osImages = self.ProjectsLocationsOsImagesService(self)
     self.projects_locations_provisioningConfigs = self.ProjectsLocationsProvisioningConfigsService(self)
     self.projects_locations_provisioningQuotas = self.ProjectsLocationsProvisioningQuotasService(self)
     self.projects_locations_snapshotSchedulePolicies = self.ProjectsLocationsSnapshotSchedulePoliciesService(self)
@@ -815,6 +816,43 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsOperationsGetRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOsImagesService(base_api.BaseApiService):
+    """Service class for the projects_locations_osImages resource."""
+
+    _NAME = 'projects_locations_osImages'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsOsImagesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of OS images which are currently approved.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsOsImagesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOSImagesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/osImages',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.osImages.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/osImages',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsOsImagesListRequest',
+        response_type_name='ListOSImagesResponse',
         supports_download=False,
     )
 

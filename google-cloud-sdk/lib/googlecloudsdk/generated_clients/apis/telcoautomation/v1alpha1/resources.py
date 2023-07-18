@@ -74,6 +74,30 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ORCHESTRATIONCLUSTERS_BLUEPRINTS = (
+      'projects.locations.orchestrationClusters.blueprints',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'orchestrationClusters/{orchestrationClustersId}/blueprints/'
+              '{blueprintsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ORCHESTRATIONCLUSTERS_DEPLOYMENTS = (
+      'projects.locations.orchestrationClusters.deployments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'orchestrationClusters/{orchestrationClustersId}/deployments/'
+              '{deploymentsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

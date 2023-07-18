@@ -40,8 +40,10 @@ class NetappV1alpha1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_activeDirectories = self.ProjectsLocationsActiveDirectoriesService(self)
+    self.projects_locations_kmsConfigs = self.ProjectsLocationsKmsConfigsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_storagePools = self.ProjectsLocationsStoragePoolsService(self)
+    self.projects_locations_volumes_replications = self.ProjectsLocationsVolumesReplicationsService(self)
     self.projects_locations_volumes_snapshots = self.ProjectsLocationsVolumesSnapshotsService(self)
     self.projects_locations_volumes = self.ProjectsLocationsVolumesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -192,6 +194,205 @@ class NetappV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsKmsConfigsService(base_api.BaseApiService):
+    """Service class for the projects_locations_kmsConfigs resource."""
+
+    _NAME = 'projects_locations_kmsConfigs'
+
+    def __init__(self, client):
+      super(NetappV1alpha1.ProjectsLocationsKmsConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreateKmsConfig Creates a new KMS config.
+
+      Args:
+        request: (NetappProjectsLocationsKmsConfigsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/kmsConfigs',
+        http_method='POST',
+        method_id='netapp.projects.locations.kmsConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['kmsConfigId'],
+        relative_path='v1alpha1/{+parent}/kmsConfigs',
+        request_field='kmsConfig',
+        request_type_name='NetappProjectsLocationsKmsConfigsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteKmsConfig Warning! This operation will permanently delete the Kms config.
+
+      Args:
+        request: (NetappProjectsLocationsKmsConfigsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/kmsConfigs/{kmsConfigsId}',
+        http_method='DELETE',
+        method_id='netapp.projects.locations.kmsConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsKmsConfigsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Encrypt(self, request, global_params=None):
+      r"""EncryptVolumes Encrypt the existing volumes without CMEK encryption with the desired the KMS config for the whole region.
+
+      Args:
+        request: (NetappProjectsLocationsKmsConfigsEncryptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Encrypt')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Encrypt.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/kmsConfigs/{kmsConfigsId}:encrypt',
+        http_method='POST',
+        method_id='netapp.projects.locations.kmsConfigs.encrypt',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:encrypt',
+        request_field='encryptVolumesRequest',
+        request_type_name='NetappProjectsLocationsKmsConfigsEncryptRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetKmsConfig Returns the description of the specified KMS config by kms_config_id.
+
+      Args:
+        request: (NetappProjectsLocationsKmsConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (KmsConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/kmsConfigs/{kmsConfigsId}',
+        http_method='GET',
+        method_id='netapp.projects.locations.kmsConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsKmsConfigsGetRequest',
+        response_type_name='KmsConfig',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListKmsConfigs Returns descriptions of all KMS configs owned by the caller.
+
+      Args:
+        request: (NetappProjectsLocationsKmsConfigsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListKmsConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/kmsConfigs',
+        http_method='GET',
+        method_id='netapp.projects.locations.kmsConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/kmsConfigs',
+        request_field='',
+        request_type_name='NetappProjectsLocationsKmsConfigsListRequest',
+        response_type_name='ListKmsConfigsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""UpdateKmsConfig Updates the Kms config properties with the full spec.
+
+      Args:
+        request: (NetappProjectsLocationsKmsConfigsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/kmsConfigs/{kmsConfigsId}',
+        http_method='PATCH',
+        method_id='netapp.projects.locations.kmsConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='kmsConfig',
+        request_type_name='NetappProjectsLocationsKmsConfigsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Verify(self, request, global_params=None):
+      r"""VerifyKmsConfigRequest Verifies KMS config reachability.
+
+      Args:
+        request: (NetappProjectsLocationsKmsConfigsVerifyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VerifyKmsConfigResponse) The response message.
+      """
+      config = self.GetMethodConfig('Verify')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Verify.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/kmsConfigs/{kmsConfigsId}:verify',
+        http_method='POST',
+        method_id='netapp.projects.locations.kmsConfigs.verify',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:verify',
+        request_field='verifyKmsConfigRequest',
+        request_type_name='NetappProjectsLocationsKmsConfigsVerifyRequest',
+        response_type_name='VerifyKmsConfigResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
@@ -209,7 +410,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
         request: (NetappProjectsLocationsOperationsCancelRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (GoogleProtobufEmpty) The response message.
       """
       config = self.GetMethodConfig('Cancel')
       return self._RunMethod(
@@ -225,7 +426,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}:cancel',
         request_field='cancelOperationRequest',
         request_type_name='NetappProjectsLocationsOperationsCancelRequest',
-        response_type_name='Empty',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -236,7 +437,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
         request: (NetappProjectsLocationsOperationsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (GoogleProtobufEmpty) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -252,7 +453,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='NetappProjectsLocationsOperationsDeleteRequest',
-        response_type_name='Empty',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -451,6 +652,232 @@ class NetappV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='storagePool',
         request_type_name='NetappProjectsLocationsStoragePoolsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsVolumesReplicationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_volumes_replications resource."""
+
+    _NAME = 'projects_locations_volumes_replications'
+
+    def __init__(self, client):
+      super(NetappV1alpha1.ProjectsLocationsVolumesReplicationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a new replication for a volume.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.replications.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['replicationId'],
+        relative_path='v1alpha1/{+parent}/replications',
+        request_field='replication',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a replication.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}',
+        http_method='DELETE',
+        method_id='netapp.projects.locations.volumes.replications.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Describe a replication for a volume.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Replication) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}',
+        http_method='GET',
+        method_id='netapp.projects.locations.volumes.replications.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsGetRequest',
+        response_type_name='Replication',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns descriptions of all replications for a volume.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListReplicationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications',
+        http_method='GET',
+        method_id='netapp.projects.locations.volumes.replications.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/replications',
+        request_field='',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsListRequest',
+        response_type_name='ListReplicationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the settings of a specific replication.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}',
+        http_method='PATCH',
+        method_id='netapp.projects.locations.volumes.replications.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='replication',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Resume(self, request, global_params=None):
+      r"""Resume Cross Region Replication.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}:resume',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.replications.resume',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:resume',
+        request_field='resumeReplicationRequest',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsResumeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def ReverseDirection(self, request, global_params=None):
+      r"""ReverseReplicationDirection reverses direction of replication. Source becomes destination and destination becomes source.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsReverseDirectionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ReverseDirection')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReverseDirection.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}:reverseDirection',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.replications.reverseDirection',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:reverseDirection',
+        request_field='reverseReplicationDirectionRequest',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsReverseDirectionRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Stop(self, request, global_params=None):
+      r"""Stop Cross Region Replication.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}:stop',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.replications.stop',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:stop',
+        request_field='stopReplicationRequest',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsStopRequest',
         response_type_name='Operation',
         supports_download=False,
     )

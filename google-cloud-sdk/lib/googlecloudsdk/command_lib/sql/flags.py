@@ -1979,14 +1979,13 @@ def AddRecreateReplicasOnPrimaryCrash(parser):
   """Adds --recreate-replicas-on-primary-crash flag."""
   parser.add_argument(
       '--recreate-replicas-on-primary-crash',
-      hidden=True,
       required=False,
       help=(
-          'Enable/Disable replica recreation when a primary MySQL instance '
-          'operating in reduced durability mode with either or both of '
-          '`innodb_flush_log_at_trx_commit` and `sync_binlog` flags set to '
-          'non-default values. Not recreating the replicas might lead to '
-          'data inconsistencies between the primary and the replicas. '
+          'Allow/Disallow replica recreation when a primary MySQL instance '
+          'operating in reduced durability mode crashes. Not recreating the '
+          'replicas might lead to data inconsistencies between the primary and '
+          'its replicas. This setting is only applicable for MySQL instances '
+          'and is enabled by default.'
       ),
       action=arg_parsers.StoreTrueFalseAction,
   )

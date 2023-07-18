@@ -87,6 +87,15 @@ class _ContainerSummaryFormatWrapper(BaseFormatWrapper):
     )
 
 
+class _BucketSummaryFormatWrapper(_ContainerSummaryFormatWrapper):
+
+  def __str__(self):
+    if self.resource.storage_url.is_bucket():
+      return super(_BucketSummaryFormatWrapper, self).__str__()
+    else:
+      return ''
+
+
 class DuExecutor(BaseListExecutor):
   """Helper class for the Du command."""
 
@@ -114,7 +123,9 @@ class DuExecutor(BaseListExecutor):
         zero_terminator=zero_terminator,
     )
     self._summarize = summarize
-    if not self._summarize:
+    if self._summarize:
+      self._container_summary_wrapper = _BucketSummaryFormatWrapper
+    else:
       self._container_summary_wrapper = _ContainerSummaryFormatWrapper
       self._object_wrapper = _ObjectFormatWrapper
 
@@ -125,7 +136,7 @@ class DuExecutor(BaseListExecutor):
   def _print_summary_for_top_level_url(
       self, resource_url, only_display_buckets, object_count, total_bytes
   ):
-    if not self._summarize:
+    if not self._summarize or resource_url.is_provider():
       return
     if self._readable_sizes:
       total_bytes = shim_format_util.get_human_readable_byte_value(

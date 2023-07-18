@@ -427,3 +427,19 @@ workforce_pool_subject_operation:
     help: |
       The ID of the operation.
   disable_auto_completers: false
+
+oauth_client:
+  name: oauth client
+  collection: iam.projects.locations.oauthClients
+  request_id_field: oauthClientId
+  attributes:
+  - *project
+  - *location
+  - &oauth_client
+    parameter_name: oauthClientsId
+    attribute_name: oauth_client
+    help: |
+      The ID to use for the OAuth client, which becomes the final component of the resource name.
+      This value should be 4-32 characters, and may contain the characters [a-z0-9-].
+      The prefix `gcp-` is reserved for use by Google, and may not be specified.
+  disable_auto_completers: false

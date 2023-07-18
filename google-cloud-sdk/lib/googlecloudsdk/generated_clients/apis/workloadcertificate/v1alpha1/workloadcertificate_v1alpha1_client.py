@@ -86,7 +86,7 @@ class WorkloadcertificateV1alpha1(base_api.BaseApiClient):
       r"""Updates the `WorkloadCertificateFeature` resource of a given project.
 
       Args:
-        request: (WorkloadCertificateFeature) input message
+        request: (WorkloadcertificateProjectsLocationsGlobalUpdateWorkloadCertificateFeatureRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -101,10 +101,10 @@ class WorkloadcertificateV1alpha1(base_api.BaseApiClient):
         method_id='workloadcertificate.projects.locations.global.updateWorkloadCertificateFeature',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['force'],
         relative_path='v1alpha1/{+name}',
-        request_field='<request>',
-        request_type_name='WorkloadCertificateFeature',
+        request_field='workloadCertificateFeature',
+        request_type_name='WorkloadcertificateProjectsLocationsGlobalUpdateWorkloadCertificateFeatureRequest',
         response_type_name='Operation',
         supports_download=False,
     )

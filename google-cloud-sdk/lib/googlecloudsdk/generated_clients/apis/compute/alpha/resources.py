@@ -653,6 +653,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'serviceAttachment'],
       True
   )
+  SNAPSHOTSETTINGS = (
+      'snapshotSettings',
+      'projects/{project}/global/snapshotSettings',
+      {},
+      ['project'],
+      True
+  )
   SNAPSHOTS = (
       'snapshots',
       'projects/{project}/global/snapshots/{snapshot}',

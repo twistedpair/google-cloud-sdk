@@ -501,6 +501,7 @@ class _BareMetalAdminClusterClient(client.ClientBase):
         'nodeConfig': self._workload_node_config(args),
         'nodeAccessConfig': self._node_access_config(args),
         'securityConfig': self._security_config(args),
+        'binaryAuthorization': self._binary_authorization(args),
     }
 
     if any(kwargs.values()):
@@ -635,6 +636,7 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
         'maintenanceConfig': self._maintenance_config(args),
         'nodeConfig': self._workload_node_config(args),
         'nodeAccessConfig': self._node_access_config(args),
+        'binaryAuthorization': self._binary_authorization(args),
     }
     if any(kwargs.values()):
       return messages.BareMetalAdminCluster(**kwargs)

@@ -36,3 +36,60 @@ def AddGcpWorkloadSourceFlags(parser):
       ),
       metavar='SERVICE_ACCOUNT',
   )
+
+
+def AddFederatedWorkloadSourceFlags(parser):
+  parser.add_argument(
+      '--external-condition',
+      help=(
+          'A CEL expression that defines the allowed conditions for the '
+          'workload source.'
+      ),
+  )
+
+
+def AddUpdateWorkloadSourceFlags(parser):
+  """Adds the flags for update workload source command."""
+  parser.add_argument(
+      '--add-resources',
+      type=arg_parsers.ArgList(),
+      help='A list of allowed resources to add to the workload source.',
+      metavar='RESOURCE',
+  )
+  parser.add_argument(
+      '--add-attached-service-accounts',
+      type=arg_parsers.ArgList(),
+      help=(
+          'A list of allowed attached_service_accounts to add to the workload'
+          ' source.'
+      ),
+      metavar='SERVICE_ACCOUNT',
+  )
+  parser.add_argument(
+      '--remove-resources',
+      type=arg_parsers.ArgList(),
+      help='A list of allowed resources to remove from the workload source.',
+      metavar='RESOURCE',
+  )
+  parser.add_argument(
+      '--remove-attached-service-accounts',
+      type=arg_parsers.ArgList(),
+      help=(
+          'A list of allowed attached_service_accounts to remove from the'
+          ' workload source.'
+      ),
+      metavar='SERVICE_ACCOUNT',
+  )
+  parser.add_argument(
+      '--clear-resources',
+      help='Remove all the allowed resources for the workload source.',
+      action='store_true',
+  )
+  parser.add_argument(
+      '--clear-attached-service-accounts',
+      help=(
+          'Remove all the allowed attached_service_accounts for the workload'
+          ' source.'
+      ),
+      action='store_true',
+  )

@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.container.fleet import util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
+from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_messages as messages
 
 
 class HubClient(object):
@@ -144,7 +145,7 @@ class HubClient(object):
     return self.client.projects_locations_features.Delete(req)
 
   @staticmethod
-  def OperationRef(op):
+  def OperationRef(op: messages.Operation) -> resources.Resource:
     """Parses a gkehub Operation reference from an operation."""
     return resources.REGISTRY.ParseRelativeName(
         op.name, collection='gkehub.projects.locations.operations')
@@ -245,60 +246,55 @@ class FleetClient(object):
         name=util.FleetResourceName(project))
     return self.client.projects_locations_fleets.Get(req)
 
-  def CreateFleet(self, displayname, project):
+  def CreateFleet(
+      self, req: messages.GkehubProjectsLocationsFleetsCreateRequest
+  ) -> messages.Operation:
     """Creates a fleet resource from the Fleet API.
 
     Args:
-      displayname: the fleet display name.
-      project: the project containing the fleet.
+      req: An HTTP create request to be sent to the API server.
 
     Returns:
-      A fleet resource
+      A long-running operation to be polled till completion, or returned
+      directly if user specifies async flag.
 
     Raises:
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
-    fleet = self.messages.Fleet(
-        displayName=displayname, name=util.FleetResourceName(project))
-    req = self.messages.GkehubProjectsLocationsFleetsCreateRequest(
-        fleet=fleet, parent=util.FleetParentName(project))
     return self.client.projects_locations_fleets.Create(req)
 
-  def DeleteFleet(self, project):
+  def DeleteFleet(
+      self, req: messages.GkehubProjectsLocationsFleetsDeleteRequest
+  ) -> messages.Operation:
     """Deletes a fleet resource from the Fleet API.
 
     Args:
-      project: the project containing the fleet.
+      req: An HTTP delete request to send to the API server.
 
     Returns:
-      A fleet resource
+      A long-running operation to be polled till completion, or returned
+      directly if user specifies async flag.
 
     Raises:
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
-    req = self.messages.GkehubProjectsLocationsFleetsDeleteRequest(
-        name=util.FleetResourceName(project))
     return self.client.projects_locations_fleets.Delete(req)
 
-  def UpdateFleet(self, displayname, project):
+  def UpdateFleet(
+      self, req: messages.GkehubProjectsLocationsFleetsPatchRequest
+  ) -> messages.Operation:
     """Updates a fleet resource from the Fleet API.
 
     Args:
-      displayname: the fleet display name.
-      project: the project containing the fleet.
+      req: An HTTP patch request to send to the API server.
 
     Returns:
-      A fleet resource
+      A long-running operation to be polled till completion, or returned
+      directly if user specifies async flag.
 
     Raises:
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
-    # Fleet containing fields with updated value(s)
-    fleet = self.messages.Fleet(displayName=displayname)
-    # Fields to be updated (currently only display_name)
-    mask = 'display_name'
-    req = self.messages.GkehubProjectsLocationsFleetsPatchRequest(
-        fleet=fleet, name=util.FleetResourceName(project), updateMask=mask)
     return self.client.projects_locations_fleets.Patch(req)
 
   def ListFleets(self, project, organization):
@@ -361,7 +357,18 @@ class FleetClient(object):
     req = self.messages.GkehubProjectsLocationsScopesNamespacesCreateRequest(
         namespace=namespace, scopeNamespaceId=name, parent=parent
     )
-    return self.client.projects_locations_scopes_namespaces.Create(req)
+    op = self.client.projects_locations_scopes_namespaces.Create(req)
+    op_resource = resources.REGISTRY.ParseRelativeName(
+        op.name, collection='gkehub.projects.locations.operations'
+    )
+    return waiter.WaitFor(
+        waiter.CloudOperationPoller(
+            self.client.projects_locations_scopes_namespaces,
+            self.client.projects_locations_operations,
+        ),
+        op_resource,
+        'Waiting for namespace to be created',
+    )
 
   def DeleteScopeNamespace(self, namespace_path):
     """Deletes a namespace resource from the fleet.
@@ -378,7 +385,17 @@ class FleetClient(object):
     req = self.messages.GkehubProjectsLocationsScopesNamespacesDeleteRequest(
         name=namespace_path
     )
-    return self.client.projects_locations_scopes_namespaces.Delete(req)
+    op = self.client.projects_locations_scopes_namespaces.Delete(req)
+    op_resource = resources.REGISTRY.ParseRelativeName(
+        op.name, collection='gkehub.projects.locations.operations'
+    )
+    return waiter.WaitFor(
+        waiter.CloudOperationPollerNoResources(
+            self.client.projects_locations_operations,
+        ),
+        op_resource,
+        'Waiting for namespace to be deleted',
+    )
 
   def UpdateScopeNamespace(self, namespace_path, mask):
     """Updates a namespace resource in the fleet.
@@ -402,7 +419,18 @@ class FleetClient(object):
         name=namespace_path,
         updateMask=mask,
     )
-    return self.client.projects_locations_scopes_namespaces.Patch(req)
+    op = self.client.projects_locations_scopes_namespaces.Patch(req)
+    op_resource = resources.REGISTRY.ParseRelativeName(
+        op.name, collection='gkehub.projects.locations.operations'
+    )
+    return waiter.WaitFor(
+        waiter.CloudOperationPoller(
+            self.client.projects_locations_scopes_namespaces,
+            self.client.projects_locations_operations,
+        ),
+        op_resource,
+        'Waiting for namespace to be updated',
+    )
 
   def ListScopeNamespaces(self, parent):
     """Lists namespaces in a project.
@@ -462,7 +490,18 @@ class FleetClient(object):
         namespace=namespace,
         namespaceId=name,
         parent=util.NamespaceParentName(project))
-    return self.client.projects_locations_namespaces.Create(req)
+    op = self.client.projects_locations_namespaces.Create(req)
+    op_resource = resources.REGISTRY.ParseRelativeName(
+        op.name, collection='gkehub.projects.locations.operations'
+    )
+    return waiter.WaitFor(
+        waiter.CloudOperationPoller(
+            self.client.projects_locations_namespaces,
+            self.client.projects_locations_operations,
+        ),
+        op_resource,
+        'Waiting for namespace to be created',
+    )
 
   def DeleteNamespace(self, project, name):
     """Deletes a namespace resource from the fleet.
@@ -479,7 +518,17 @@ class FleetClient(object):
     """
     req = self.messages.GkehubProjectsLocationsNamespacesDeleteRequest(
         name=util.NamespaceResourceName(project, name))
-    return self.client.projects_locations_namespaces.Delete(req)
+    op = self.client.projects_locations_namespaces.Delete(req)
+    op_resource = resources.REGISTRY.ParseRelativeName(
+        op.name, collection='gkehub.projects.locations.operations'
+    )
+    return waiter.WaitFor(
+        waiter.CloudOperationPollerNoResources(
+            self.client.projects_locations_operations,
+        ),
+        op_resource,
+        'Waiting for namespace to be deleted',
+    )
 
   def UpdateNamespace(self, name, scope, project, mask):
     """Updates a namespace resource in the fleet.
@@ -505,7 +554,18 @@ class FleetClient(object):
         name=util.NamespaceResourceName(project, name),
         updateMask=mask,
     )
-    return self.client.projects_locations_namespaces.Patch(req)
+    op = self.client.projects_locations_namespaces.Patch(req)
+    op_resource = resources.REGISTRY.ParseRelativeName(
+        op.name, collection='gkehub.projects.locations.operations'
+    )
+    return waiter.WaitFor(
+        waiter.CloudOperationPoller(
+            self.client.projects_locations_namespaces,
+            self.client.projects_locations_operations,
+        ),
+        op_resource,
+        'Waiting for namespace to be updated',
+    )
 
   def ListNamespaces(self, project):
     """Lists namespaces in a project.
@@ -995,3 +1055,23 @@ class FleetClient(object):
         parent=resource.Parent().RelativeName())
     return self.client.projects_locations_memberships_rbacrolebindings.GenerateMembershipRBACRoleBindingYAML(
         req)
+
+
+class OperationClient:
+  """Client for the GKE Hub API long-running operations."""
+
+  def __init__(self, release_track: base.ReleaseTrack):
+    self.messages = util.FleetMessageModule(release_track)
+    self.client = util.GetClientInstance(release_track=base.ReleaseTrack.GA)
+    self.service = self.client.projects_locations_operations
+
+  def Wait(self, operation_ref: resources.Resource) -> messages.Operation:
+    return waiter.WaitFor(
+        waiter.CloudOperationPollerNoResources(self.service),
+        operation_ref,
+        'Waiting for operation [{}] to complete'.format(
+            operation_ref.RelativeName()
+        ),
+        wait_ceiling_ms=10000,
+        max_wait_ms=43200000,
+    )

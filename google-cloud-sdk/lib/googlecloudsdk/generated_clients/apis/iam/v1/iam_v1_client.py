@@ -1365,7 +1365,7 @@ class IamV1(base_api.BaseApiClient):
         request: (IamProjectsLocationsOauthClientsCredentialsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (OauthClientCredential) The response message.
+        (Empty) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -1381,7 +1381,7 @@ class IamV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='IamProjectsLocationsOauthClientsCredentialsDeleteRequest',
-        response_type_name='OauthClientCredential',
+        response_type_name='Empty',
         supports_download=False,
     )
 

@@ -475,10 +475,13 @@ class EnableMigrationRequest(_messages.Message):
   method.
 
   Fields:
+    enableDuration: Optional. Period after which the migration would be auto
+      disabled. If unspecified, a default timeout of 48h is used.
     migratingDomains: Required. List of the on-prem domains to be migrated.
   """
 
-  migratingDomains = _messages.MessageField('OnPremDomainDetails', 1, repeated=True)
+  enableDuration = _messages.StringField(1)
+  migratingDomains = _messages.MessageField('OnPremDomainDetails', 2, repeated=True)
 
 
 class Expr(_messages.Message):

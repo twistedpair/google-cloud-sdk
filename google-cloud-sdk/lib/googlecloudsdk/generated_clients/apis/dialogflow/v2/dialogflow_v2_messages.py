@@ -4728,13 +4728,18 @@ class GoogleCloudDialogflowCxV3ExportAgentResponse(_messages.Message):
   r"""The response message for Agents.ExportAgent.
 
   Fields:
-    agentContent: Uncompressed raw byte content for agent.
+    agentContent: Uncompressed raw byte content for agent. This field is
+      populated if none of `agent_uri` and `git_destination` are specified in
+      ExportAgentRequest.
     agentUri: The URI to a file containing the exported agent. This field is
       populated if `agent_uri` is specified in ExportAgentRequest.
+    commitSha: Commit SHA of the git push. This field is populated if
+      `git_destination` are specified in ExportAgentRequest.
   """
 
   agentContent = _messages.BytesField(1)
   agentUri = _messages.StringField(2)
+  commitSha = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowCxV3ExportFlowResponse(_messages.Message):
@@ -7004,13 +7009,18 @@ class GoogleCloudDialogflowCxV3beta1ExportAgentResponse(_messages.Message):
   r"""The response message for Agents.ExportAgent.
 
   Fields:
-    agentContent: Uncompressed raw byte content for agent.
+    agentContent: Uncompressed raw byte content for agent. This field is
+      populated if none of `agent_uri` and `git_destination` are specified in
+      ExportAgentRequest.
     agentUri: The URI to a file containing the exported agent. This field is
       populated if `agent_uri` is specified in ExportAgentRequest.
+    commitSha: Commit SHA of the git push. This field is populated if
+      `git_destination` are specified in ExportAgentRequest.
   """
 
   agentContent = _messages.BytesField(1)
   agentUri = _messages.StringField(2)
+  commitSha = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowCxV3beta1ExportFlowResponse(_messages.Message):

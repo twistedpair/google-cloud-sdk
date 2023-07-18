@@ -64,6 +64,8 @@ def ParseVexFile(filename, uri):
       publisherNamespace=vex['document']['publisher']['namespace'],
   )
 
+  uri = _RemoveHTTPS(uri)
+
   image, version = docker_util.DockerUrlToVersion(uri)
   uri_without_tag_or_digest = image.GetDockerString()
   uri_with_digest = version.GetDockerString()
@@ -73,12 +75,12 @@ def ParseVexFile(filename, uri):
   productid_to_product_proto_map = {}
   for product_info in vex['product_tree']['branches']:
     artifact_uri = product_info['name']
+    artifact_uri = _RemoveHTTPS(artifact_uri)
     if uri_without_tag_or_digest != artifact_uri:
       continue
     product = product_info['product']
     product_id = product['product_id']
-    if not uri_with_digest.startswith('https://'):
-      uri_with_digest = 'https://{}'.format(uri_with_digest)
+    uri_with_digest = 'https://{}'.format(uri_with_digest)
     product_proto = ca_messages.Product(
         name=product['name'],
         id=product_id,
@@ -293,3 +295,11 @@ def _GetJustifications(vuln, product, msgs):
       justificationType=justification_type,
   )
   return justification
+
+
+def _RemoveHTTPS(uri):
+  prefix = 'https://'
+  if uri.startswith(prefix):
+    return uri[len(prefix):]
+  else:
+    return uri

@@ -84,18 +84,13 @@ class Client:
       labels=None,
   ):
     """Calls the CreateAssociation API."""
-    association = None
-    if tls_inspection_policy is None:
-      association = self.messages.FirewallEndpointAssociation(
-          network=network, firewallEndpoint=firewall_endpoint, labels=labels
-      )
-    else:
-      association = self.messages.FirewallEndpointAssociation(
-          network=network,
-          firewallEndpoint=firewall_endpoint,
-          labels=labels,
-          tlsInspectionPolicy=tls_inspection_policy,
-      )
+
+    association = self.messages.FirewallEndpointAssociation(
+        network=network,
+        firewallEndpoint=firewall_endpoint,
+        labels=labels,
+        tlsInspectionPolicy=tls_inspection_policy
+    )
 
     create_request = self.messages.NetworksecurityProjectsLocationsFirewallEndpointAssociationsCreateRequest(
         firewallEndpointAssociation=association,

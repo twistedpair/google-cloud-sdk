@@ -834,6 +834,8 @@ class MembershipFeatureStatus(_messages.Message):
       SUSPENDED: Policy Controller (PC) is installed but suspended. This means
         that the policies are not enforced, but violations are still recorded
         (through audit).
+      DETACHED: PoCo Hub is not taking any action to reconcile cluster
+        objects. Changes to those objects will not be overwritten by PoCo Hub.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
@@ -844,6 +846,7 @@ class MembershipFeatureStatus(_messages.Message):
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
     SUSPENDED = 8
+    DETACHED = 9
 
   lifecycleStatus = _messages.EnumField('LifecycleStatusValueValuesEnum', 1)
 

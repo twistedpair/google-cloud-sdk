@@ -362,10 +362,6 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
     machine_type_name = instance_utils.CreateMachineTypeName(
         args, confidential_vm_type)
 
-    # Check to see if the custom machine type ratio is supported.
-    instance_utils.CheckCustomCpuRamRatio(compute_client, project, location,
-                                          machine_type_name)
-
   can_ip_forward = instance_utils.GetCanIpForward(args, skip_defaults)
   guest_accelerators = create_utils.GetAcceleratorsForInstanceProperties(
       args=args, compute_client=compute_client)

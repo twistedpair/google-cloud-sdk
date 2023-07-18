@@ -47,4 +47,4 @@ properties:
   streamLargeObjects:
     description: |-
       Stream large object values. NOTE: This feature is currently experimental.
-    type: streamlargeobjects
+    $ref: StreamLargeObjects.yaml

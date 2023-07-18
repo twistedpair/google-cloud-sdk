@@ -160,6 +160,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PRIVATECLOUDS_IDENTITYSOURCES = (
+      'projects.locations.privateClouds.identitySources',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/privateClouds/'
+              '{privateCloudsId}/identitySources/{identitySourcesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_PRIVATECLOUDS_LOGGINGSERVERS = (
       'projects.locations.privateClouds.loggingServers',
       '{+name}',

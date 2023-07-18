@@ -2310,6 +2310,10 @@ class Record(_messages.Message):
 class RecordSummary(_messages.Message):
   r"""Summary of the underlying Record.
 
+  Enums:
+    StatusValueValuesEnum: Output only. Status of the underlying Run of this
+      Record
+
   Messages:
     RecordDataValue: Output only. Key-value pairs representing underlying
       record data, e.g. "status", "SUCCESS"
@@ -2319,10 +2323,29 @@ class RecordSummary(_messages.Message):
     record: Output only. Summarized record.
     recordData: Output only. Key-value pairs representing underlying record
       data, e.g. "status", "SUCCESS"
+    status: Output only. Status of the underlying Run of this Record
     type: Output only. Identifier of underlying data. e.g.
       `cloudbuild.googleapis.com/PipelineRun`
     updateTime: Output only. The time the Record was updated.
   """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Output only. Status of the underlying Run of this Record
+
+    Values:
+      STATUS_UNSPECIFIED: Default enum type; should not be used.
+      SUCCESS: Run was successful
+      FAILURE: Run failed
+      TIMEOUT: Run timed out
+      CANCELLED: Run got cancelled
+      IN_PROGRESS: Run is in progress
+    """
+    STATUS_UNSPECIFIED = 0
+    SUCCESS = 1
+    FAILURE = 2
+    TIMEOUT = 3
+    CANCELLED = 4
+    IN_PROGRESS = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RecordDataValue(_messages.Message):
@@ -2352,8 +2375,9 @@ class RecordSummary(_messages.Message):
   createTime = _messages.StringField(1)
   record = _messages.StringField(2)
   recordData = _messages.MessageField('RecordDataValue', 3)
-  type = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
+  type = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class Repository(_messages.Message):

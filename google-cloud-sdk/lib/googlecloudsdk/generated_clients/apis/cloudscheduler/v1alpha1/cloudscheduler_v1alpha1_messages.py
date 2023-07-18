@@ -40,18 +40,17 @@ class AppEngineHttpTarget(_messages.Message):
       `X-CloudScheduler-JobName`: This header will contain the job name. *
       `X-CloudScheduler-ScheduleTime`: For Cloud Scheduler jobs specified in
       the unix-cron format, this header will contain the job schedule time in
-      RFC3339 UTC "Zulu" format. If the job has an AppEngineHttpTarget.body,
-      Cloud Scheduler sets the following headers: * `Content-Type`: By
-      default, the `Content-Type` header is set to `"application/octet-
-      stream"`. The default can be overridden by explictly setting `Content-
-      Type` to a particular media type when the job is created. For example,
-      `Content-Type` can be set to `"application/json"`. * `Content-Length`:
-      This is computed by Cloud Scheduler. This value is output only. It
-      cannot be changed. The headers below are output only. They cannot be set
-      or overridden: * `X-Google-*`: For Google internal use only. *
-      `X-AppEngine-*`: For Google internal use only. In addition, some App
-      Engine headers, which contain job-specific information, are also be sent
-      to the job handler.
+      RFC3339 UTC "Zulu" format. If the job has a body and the following
+      headers are not set by the user, Cloud Scheduler sets default values: *
+      `Content-Type`: This will be set to `"application/octet-stream"`. You
+      can override this default by explicitly setting `Content-Type` to a
+      particular media type when creating the job. For example, you can set
+      `Content-Type` to `"application/json"`. The headers below are output
+      only. They cannot be set or overridden: * `Content-Length`: This is
+      computed by Cloud Scheduler. * `X-Google-*`: For Google internal use
+      only. * `X-AppEngine-*`: For Google internal use only. In addition, some
+      App Engine headers, which contain job-specific information, are also be
+      sent to the job handler.
 
   Fields:
     appEngineRouting: App Engine Routing setting for the job.
@@ -68,18 +67,18 @@ class AppEngineHttpTarget(_messages.Message):
       true. * `X-CloudScheduler-JobName`: This header will contain the job
       name. * `X-CloudScheduler-ScheduleTime`: For Cloud Scheduler jobs
       specified in the unix-cron format, this header will contain the job
-      schedule time in RFC3339 UTC "Zulu" format. If the job has an
-      AppEngineHttpTarget.body, Cloud Scheduler sets the following headers: *
-      `Content-Type`: By default, the `Content-Type` header is set to
-      `"application/octet-stream"`. The default can be overridden by explictly
-      setting `Content-Type` to a particular media type when the job is
-      created. For example, `Content-Type` can be set to `"application/json"`.
-      * `Content-Length`: This is computed by Cloud Scheduler. This value is
-      output only. It cannot be changed. The headers below are output only.
-      They cannot be set or overridden: * `X-Google-*`: For Google internal
-      use only. * `X-AppEngine-*`: For Google internal use only. In addition,
-      some App Engine headers, which contain job-specific information, are
-      also be sent to the job handler.
+      schedule time in RFC3339 UTC "Zulu" format. If the job has a body and
+      the following headers are not set by the user, Cloud Scheduler sets
+      default values: * `Content-Type`: This will be set to
+      `"application/octet-stream"`. You can override this default by
+      explicitly setting `Content-Type` to a particular media type when
+      creating the job. For example, you can set `Content-Type` to
+      `"application/json"`. The headers below are output only. They cannot be
+      set or overridden: * `Content-Length`: This is computed by Cloud
+      Scheduler. * `X-Google-*`: For Google internal use only. *
+      `X-AppEngine-*`: For Google internal use only. In addition, some App
+      Engine headers, which contain job-specific information, are also be sent
+      to the job handler.
     httpMethod: The HTTP method to use for the request. PATCH and OPTIONS are
       not permitted.
     relativeUrl: The relative URL. The relative URL must begin with "/" and
@@ -124,16 +123,15 @@ class AppEngineHttpTarget(_messages.Message):
     JobName`: This header will contain the job name. * `X-CloudScheduler-
     ScheduleTime`: For Cloud Scheduler jobs specified in the unix-cron format,
     this header will contain the job schedule time in RFC3339 UTC "Zulu"
-    format. If the job has an AppEngineHttpTarget.body, Cloud Scheduler sets
-    the following headers: * `Content-Type`: By default, the `Content-Type`
-    header is set to `"application/octet-stream"`. The default can be
-    overridden by explictly setting `Content-Type` to a particular media type
-    when the job is created. For example, `Content-Type` can be set to
-    `"application/json"`. * `Content-Length`: This is computed by Cloud
-    Scheduler. This value is output only. It cannot be changed. The headers
-    below are output only. They cannot be set or overridden: * `X-Google-*`:
-    For Google internal use only. * `X-AppEngine-*`: For Google internal use
-    only. In addition, some App Engine headers, which contain job-specific
+    format. If the job has a body and the following headers are not set by the
+    user, Cloud Scheduler sets default values: * `Content-Type`: This will be
+    set to `"application/octet-stream"`. You can override this default by
+    explicitly setting `Content-Type` to a particular media type when creating
+    the job. For example, you can set `Content-Type` to `"application/json"`.
+    The headers below are output only. They cannot be set or overridden: *
+    `Content-Length`: This is computed by Cloud Scheduler. * `X-Google-*`: For
+    Google internal use only. * `X-AppEngine-*`: For Google internal use only.
+    In addition, some App Engine headers, which contain job-specific
     information, are also be sent to the job handler.
 
     Messages:
@@ -414,43 +412,53 @@ class HttpTarget(_messages.Message):
     HttpMethodValueValuesEnum: Which HTTP method to use for the request.
 
   Messages:
-    HeadersValue: The user can specify HTTP request headers to send with the
-      Job's HTTP request. This map contains the header field names and values.
-      Repeated headers are not supported, but a header value can contain
-      commas. These headers represent a subset of the headers that will
-      accompany the Job's HTTP request. Some HTTP request headers will be
-      ignored or replaced. A partial list of headers that will be ignored or
-      replaced is below: - Host: This will be computed by Cloud Scheduler and
-      derived from HttpTarget.url. - Content-Length: This will be computed by
-      Cloud Scheduler. - User-Agent: This will be populated by Cloud
-      Scheduler. - X-Google-*: Google internal use only. - X-AppEngine-*:
-      Google internal use only. - `X-CloudScheduler`: This header will be set
-      to true. - `X-CloudScheduler-JobName`: This header will contain the job
-      name. - `X-CloudScheduler-ScheduleTime`: For Cloud Scheduler jobs
-      specified in the unix-cron format, this header will contain the job
-      schedule time in RFC3339 UTC "Zulu" format. The total size of headers
-      must be less than 80KB.
+    HeadersValue: HTTP request headers. This map contains the header field
+      names and values. The user can specify HTTP request headers to send with
+      the job's HTTP request. Repeated headers are not supported, but a header
+      value can contain commas. The following headers represent a subset of
+      the headers that accompany the job's HTTP request. Some HTTP request
+      headers are ignored or replaced. A partial list of headers that are
+      ignored or replaced is below: - Host: This will be computed by Cloud
+      Scheduler and derived from HttpTarget.url. - Content-Length: This will
+      be computed by Cloud Scheduler. - User-Agent: This will be populated by
+      Cloud Scheduler. - X-Google-*: Google internal use only. -
+      X-AppEngine-*: Google internal use only. - `X-CloudScheduler`: This
+      header will be set to true. - `X-CloudScheduler-JobName`: This header
+      will contain the job name. - `X-CloudScheduler-ScheduleTime`: For Cloud
+      Scheduler jobs specified in the unix-cron format, this header will
+      contain the job schedule time in RFC3339 UTC "Zulu" format. If the job
+      has a body and the following headers are not set by the user, Cloud
+      Scheduler sets default values: * `Content-Type`: This will be set to
+      `"application/octet-stream"`. You can override this default by
+      explicitly setting `Content-Type` to a particular media type when
+      creating the job. For example, you can set `Content-Type` to
+      `"application/json"`. The total size of headers must be less than 80KB.
 
   Fields:
     body: HTTP request body. A request body is allowed only if the HTTP method
       is POST, PUT, or PATCH. It is an error to set body on a job with an
       incompatible HttpMethod.
-    headers: The user can specify HTTP request headers to send with the Job's
-      HTTP request. This map contains the header field names and values.
-      Repeated headers are not supported, but a header value can contain
-      commas. These headers represent a subset of the headers that will
-      accompany the Job's HTTP request. Some HTTP request headers will be
-      ignored or replaced. A partial list of headers that will be ignored or
-      replaced is below: - Host: This will be computed by Cloud Scheduler and
-      derived from HttpTarget.url. - Content-Length: This will be computed by
-      Cloud Scheduler. - User-Agent: This will be populated by Cloud
-      Scheduler. - X-Google-*: Google internal use only. - X-AppEngine-*:
-      Google internal use only. - `X-CloudScheduler`: This header will be set
-      to true. - `X-CloudScheduler-JobName`: This header will contain the job
-      name. - `X-CloudScheduler-ScheduleTime`: For Cloud Scheduler jobs
-      specified in the unix-cron format, this header will contain the job
-      schedule time in RFC3339 UTC "Zulu" format. The total size of headers
-      must be less than 80KB.
+    headers: HTTP request headers. This map contains the header field names
+      and values. The user can specify HTTP request headers to send with the
+      job's HTTP request. Repeated headers are not supported, but a header
+      value can contain commas. The following headers represent a subset of
+      the headers that accompany the job's HTTP request. Some HTTP request
+      headers are ignored or replaced. A partial list of headers that are
+      ignored or replaced is below: - Host: This will be computed by Cloud
+      Scheduler and derived from HttpTarget.url. - Content-Length: This will
+      be computed by Cloud Scheduler. - User-Agent: This will be populated by
+      Cloud Scheduler. - X-Google-*: Google internal use only. -
+      X-AppEngine-*: Google internal use only. - `X-CloudScheduler`: This
+      header will be set to true. - `X-CloudScheduler-JobName`: This header
+      will contain the job name. - `X-CloudScheduler-ScheduleTime`: For Cloud
+      Scheduler jobs specified in the unix-cron format, this header will
+      contain the job schedule time in RFC3339 UTC "Zulu" format. If the job
+      has a body and the following headers are not set by the user, Cloud
+      Scheduler sets default values: * `Content-Type`: This will be set to
+      `"application/octet-stream"`. You can override this default by
+      explicitly setting `Content-Type` to a particular media type when
+      creating the job. For example, you can set `Content-Type` to
+      `"application/json"`. The total size of headers must be less than 80KB.
     httpMethod: Which HTTP method to use for the request.
     oauthToken: If specified, an [OAuth
       token](https://developers.google.com/identity/protocols/OAuth2) will be
@@ -495,21 +503,26 @@ class HttpTarget(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HeadersValue(_messages.Message):
-    r"""The user can specify HTTP request headers to send with the Job's HTTP
-    request. This map contains the header field names and values. Repeated
-    headers are not supported, but a header value can contain commas. These
-    headers represent a subset of the headers that will accompany the Job's
-    HTTP request. Some HTTP request headers will be ignored or replaced. A
-    partial list of headers that will be ignored or replaced is below: - Host:
-    This will be computed by Cloud Scheduler and derived from HttpTarget.url.
-    - Content-Length: This will be computed by Cloud Scheduler. - User-Agent:
-    This will be populated by Cloud Scheduler. - X-Google-*: Google internal
-    use only. - X-AppEngine-*: Google internal use only. - `X-CloudScheduler`:
-    This header will be set to true. - `X-CloudScheduler-JobName`: This header
-    will contain the job name. - `X-CloudScheduler-ScheduleTime`: For Cloud
-    Scheduler jobs specified in the unix-cron format, this header will contain
-    the job schedule time in RFC3339 UTC "Zulu" format. The total size of
-    headers must be less than 80KB.
+    r"""HTTP request headers. This map contains the header field names and
+    values. The user can specify HTTP request headers to send with the job's
+    HTTP request. Repeated headers are not supported, but a header value can
+    contain commas. The following headers represent a subset of the headers
+    that accompany the job's HTTP request. Some HTTP request headers are
+    ignored or replaced. A partial list of headers that are ignored or
+    replaced is below: - Host: This will be computed by Cloud Scheduler and
+    derived from HttpTarget.url. - Content-Length: This will be computed by
+    Cloud Scheduler. - User-Agent: This will be populated by Cloud Scheduler.
+    - X-Google-*: Google internal use only. - X-AppEngine-*: Google internal
+    use only. - `X-CloudScheduler`: This header will be set to true. -
+    `X-CloudScheduler-JobName`: This header will contain the job name. -
+    `X-CloudScheduler-ScheduleTime`: For Cloud Scheduler jobs specified in the
+    unix-cron format, this header will contain the job schedule time in
+    RFC3339 UTC "Zulu" format. If the job has a body and the following headers
+    are not set by the user, Cloud Scheduler sets default values: * `Content-
+    Type`: This will be set to `"application/octet-stream"`. You can override
+    this default by explicitly setting `Content-Type` to a particular media
+    type when creating the job. For example, you can set `Content-Type` to
+    `"application/json"`. The total size of headers must be less than 80KB.
 
     Messages:
       AdditionalProperty: An additional property for a HeadersValue object.

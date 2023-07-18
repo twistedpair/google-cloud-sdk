@@ -87,7 +87,6 @@ class JobPrinter(cp.CustomPrinterBase):
             container_util.GetUserEnvironmentVariables(record.template),
         ),
         ('Secrets', container_util.GetSecrets(record.template)),
-        ('VPC connector', k8s_util.GetVpcConnector(job_spec_annotations)),
         ('VPC network', k8s_util.GetVpcNetwork(job_spec_annotations)),
         (
             'SQL connections',
@@ -162,7 +161,6 @@ class TaskPrinter(cp.CustomPrinterBase):
         ('Service account', record.service_account),
         ('Env vars', container_util.GetUserEnvironmentVariables(record)),
         ('Secrets', container_util.GetSecrets(record)),
-        ('VPC connector', k8s_util.GetVpcConnector(record.annotations)),
         ('VPC network', k8s_util.GetVpcNetwork(record.annotations)),
         ('SQL connections', k8s_util.GetCloudSqlInstances(record.annotations)),
     ])
@@ -225,7 +223,6 @@ class ExecutionPrinter(cp.CustomPrinterBase):
             container_util.GetUserEnvironmentVariables(record.template),
         ),
         ('Secrets', container_util.GetSecrets(record.template)),
-        ('VPC connector', k8s_util.GetVpcConnector(record.annotations)),
         ('VPC network', k8s_util.GetVpcNetwork(record.annotations)),
         ('SQL connections', k8s_util.GetCloudSqlInstances(record.annotations)),
     ])

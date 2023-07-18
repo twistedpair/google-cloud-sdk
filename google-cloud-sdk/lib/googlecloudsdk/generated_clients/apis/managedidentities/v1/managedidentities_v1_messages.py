@@ -194,6 +194,44 @@ class Certificate(_messages.Message):
   thumbprint = _messages.StringField(5)
 
 
+class CheckMigrationPermissionRequest(_messages.Message):
+  r"""CheckMigrationPermissionRequest is the request message for
+  CheckMigrationPermission method.
+  """
+
+
+
+class CheckMigrationPermissionResponse(_messages.Message):
+  r"""CheckMigrationPermissionResponse is the response message for
+  CheckMigrationPermission method.
+
+  Enums:
+    StateValueValuesEnum: The state of DomainMigration.
+
+  Fields:
+    onpremDomains: The state of SID filtering of all the domains which has
+      trust established.
+    state: The state of DomainMigration.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of DomainMigration.
+
+    Values:
+      STATE_UNSPECIFIED: DomainMigration is in unspecified state.
+      DISABLED: Domain Migration is Disabled.
+      ENABLED: Domain Migration is Enabled.
+      NEEDS_MAINTENANCE: Domain Migration is not in valid state.
+    """
+    STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+    NEEDS_MAINTENANCE = 3
+
+  onpremDomains = _messages.MessageField('OnPremDomainSIDDetails', 1, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class DailyCycle(_messages.Message):
   r"""Time window specified for daily operations.
 
@@ -1613,6 +1651,21 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsTestIamPermissionsRe
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class ManagedidentitiesProjectsLocationsGlobalDomainsCheckMigrationPermissionRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsCheckMigrationPermissio
+  nRequest object.
+
+  Fields:
+    checkMigrationPermissionRequest: A CheckMigrationPermissionRequest
+      resource to be passed as the request body.
+    domain: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+  """
+
+  checkMigrationPermissionRequest = _messages.MessageField('CheckMigrationPermissionRequest', 1)
+  domain = _messages.StringField(2, required=True)
+
+
 class ManagedidentitiesProjectsLocationsGlobalDomainsCreateRequest(_messages.Message):
   r"""A ManagedidentitiesProjectsLocationsGlobalDomainsCreateRequest object.
 
@@ -2200,6 +2253,34 @@ class OnPremDomainDetails(_messages.Message):
 
   disableSidFiltering = _messages.BooleanField(1)
   domainName = _messages.StringField(2)
+
+
+class OnPremDomainSIDDetails(_messages.Message):
+  r"""OnPremDomainDetails is the message which contains details of on-prem
+  domain which is trusted and needs to be migrated.
+
+  Enums:
+    SidFilteringStateValueValuesEnum: Current SID filtering state.
+
+  Fields:
+    name: FQDN of the on-prem domain being migrated.
+    sidFilteringState: Current SID filtering state.
+  """
+
+  class SidFilteringStateValueValuesEnum(_messages.Enum):
+    r"""Current SID filtering state.
+
+    Values:
+      SID_FILTERING_STATE_UNSPECIFIED: SID Filtering is in unspecified state.
+      ENABLED: SID Filtering is Enabled.
+      DISABLED: SID Filtering is Disabled.
+    """
+    SID_FILTERING_STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  name = _messages.StringField(1)
+  sidFilteringState = _messages.EnumField('SidFilteringStateValueValuesEnum', 2)
 
 
 class Operation(_messages.Message):

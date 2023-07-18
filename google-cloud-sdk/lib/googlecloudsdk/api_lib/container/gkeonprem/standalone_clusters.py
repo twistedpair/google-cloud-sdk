@@ -956,6 +956,7 @@ class _BareMetalStandaloneClusterClient(client.ClientBase):
         'securityConfig': self._security_config(args),
         'nodeAccessConfig': self._node_access_config(args),
         'annotations': self._annotations(args),
+        'binaryAuthorization': self._binary_authorization(args),
     }
 
     return self._set_config_if_exists(

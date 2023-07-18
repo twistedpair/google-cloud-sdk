@@ -3403,8 +3403,8 @@ class BackendBucket(_messages.Message):
       based on the client's Accept-Encoding header.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    customResponseHeaders: Headers that the HTTP/S load balancer should add to
-      proxied responses.
+    customResponseHeaders: Headers that the Application Load Balancer should
+      add to proxied responses.
     description: An optional textual description of the resource; provided by
       the client when the resource is created.
     edgeSecurityPolicy: [Output Only] The resource URL for the edge security
@@ -24126,6 +24126,37 @@ class ComputeResourcePoliciesListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeResourcePoliciesPatchRequest(_messages.Message):
+  r"""A ComputeResourcePoliciesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    resourcePolicy: Id of the resource policy to patch.
+    resourcePolicyResource: A ResourcePolicy resource to be passed as the
+      request body.
+    updateMask: update_mask indicates fields to be updated as part of this
+      request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  resourcePolicy = _messages.StringField(4, required=True)
+  resourcePolicyResource = _messages.MessageField('ResourcePolicy', 5)
+  updateMask = _messages.StringField(6)
+
+
 class ComputeResourcePoliciesSetIamPolicyRequest(_messages.Message):
   r"""A ComputeResourcePoliciesSetIamPolicyRequest object.
 
@@ -31540,6 +31571,10 @@ class DistributionPolicy(_messages.Message):
         requested number of VMs within present resource constraints and to
         maximize utilization of unused zonal reservations. Recommended for
         batch workloads that do not require high availability.
+      ANY_SINGLE_ZONE: The group creates all VM instances within a single
+        zone. The zone is selected based on the present resource constraints
+        and to maximize utilization of unused zonal reservations. Recommended
+        for batch workloads with heavy interprocess communication.
       BALANCED: The group prioritizes acquisition of resources, scheduling VMs
         in zones where resources are available while distributing VMs as
         evenly as possible across selected zones to minimize the impact of
@@ -31551,8 +31586,9 @@ class DistributionPolicy(_messages.Message):
         highly available serving workloads.
     """
     ANY = 0
-    BALANCED = 1
-    EVEN = 2
+    ANY_SINGLE_ZONE = 1
+    BALANCED = 2
+    EVEN = 3
 
   targetShape = _messages.EnumField('TargetShapeValueValuesEnum', 1)
   zones = _messages.MessageField('DistributionPolicyZoneConfiguration', 2, repeated=True)
@@ -38866,11 +38902,9 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     ReplacementMethodValueValuesEnum: What action should be used to replace
       instances. See minimal_action.REPLACE
     TypeValueValuesEnum: The type of update process. You can specify either
-      PROACTIVE so that the instance group manager proactively executes
-      actions in order to bring instances to their target versions or
-      OPPORTUNISTIC so that no action is proactively executed but the update
-      will be performed as part of other actions (for example, resizes or
-      recreateInstances calls).
+      PROACTIVE so that the MIG automatically updates VMs to the latest
+      configurations or OPPORTUNISTIC so that you can select the VMs that you
+      want to update.
 
   Fields:
     instanceRedistributionType: The instance redistribution policy for
@@ -38920,10 +38954,8 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     replacementMethod: What action should be used to replace instances. See
       minimal_action.REPLACE
     type: The type of update process. You can specify either PROACTIVE so that
-      the instance group manager proactively executes actions in order to
-      bring instances to their target versions or OPPORTUNISTIC so that no
-      action is proactively executed but the update will be performed as part
-      of other actions (for example, resizes or recreateInstances calls).
+      the MIG automatically updates VMs to the latest configurations or
+      OPPORTUNISTIC so that you can select the VMs that you want to update.
   """
 
   class InstanceRedistributionTypeValueValuesEnum(_messages.Enum):
@@ -39000,19 +39032,15 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of update process. You can specify either PROACTIVE so that
-    the instance group manager proactively executes actions in order to bring
-    instances to their target versions or OPPORTUNISTIC so that no action is
-    proactively executed but the update will be performed as part of other
-    actions (for example, resizes or recreateInstances calls).
+    the MIG automatically updates VMs to the latest configurations or
+    OPPORTUNISTIC so that you can select the VMs that you want to update.
 
     Values:
-      OPPORTUNISTIC: No action is being proactively performed in order to
-        bring this IGM to its target version distribution (regardless of
-        whether this distribution is expressed using instanceTemplate or
-        versions field).
-      PROACTIVE: This IGM will actively converge to its target version
-        distribution (regardless of whether this distribution is expressed
-        using instanceTemplate or versions field).
+      OPPORTUNISTIC: MIG will apply new configurations to existing VMs only
+        when you selectively target specific or all VMs to be updated.
+      PROACTIVE: MIG will automatically apply new configurations to all or a
+        subset of existing VMs and also to new VMs that are added to the
+        group.
     """
     OPPORTUNISTIC = 0
     PROACTIVE = 1
@@ -54660,16 +54688,34 @@ class Quota(_messages.Message):
 class QuotaExceededInfo(_messages.Message):
   r"""Additional details for quota exceeded error for resource quota.
 
+  Enums:
+    RolloutStatusValueValuesEnum: Rollout status of the future quota limit.
+
   Messages:
     DimensionsValue: The map holding related quota dimensions.
 
   Fields:
     dimensions: The map holding related quota dimensions.
+    futureLimit: Future quota limit being rolled out. The limit's unit depends
+      on the quota type or metric.
     limit: Current effective quota limit. The limit's unit depends on the
       quota type or metric.
     limitName: The name of the quota limit.
     metricName: The Compute Engine quota metric name.
+    rolloutStatus: Rollout status of the future quota limit.
   """
+
+  class RolloutStatusValueValuesEnum(_messages.Enum):
+    r"""Rollout status of the future quota limit.
+
+    Values:
+      IN_PROGRESS: IN_PROGRESS - A rollout is in process which will change the
+        limit value to future limit.
+      ROLLOUT_STATUS_UNSPECIFIED: ROLLOUT_STATUS_UNSPECIFIED - Rollout status
+        is not specified. The default value.
+    """
+    IN_PROGRESS = 0
+    ROLLOUT_STATUS_UNSPECIFIED = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DimensionsValue(_messages.Message):
@@ -54696,9 +54742,11 @@ class QuotaExceededInfo(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   dimensions = _messages.MessageField('DimensionsValue', 1)
-  limit = _messages.FloatField(2)
-  limitName = _messages.StringField(3)
-  metricName = _messages.StringField(4)
+  futureLimit = _messages.FloatField(2)
+  limit = _messages.FloatField(3)
+  limitName = _messages.StringField(4)
+  metricName = _messages.StringField(5)
+  rolloutStatus = _messages.EnumField('RolloutStatusValueValuesEnum', 6)
 
 
 class Reference(_messages.Message):
@@ -62215,6 +62263,7 @@ class ServiceAttachmentConnectedEndpoint(_messages.Message):
       attachment.
 
   Fields:
+    consumerNetwork: The url of the consumer network.
     endpoint: The url of a connected endpoint.
     pscConnectionId: The PSC connection id of the connected endpoint.
     status: The status of a connected endpoint to this service attachment.
@@ -62240,9 +62289,10 @@ class ServiceAttachmentConnectedEndpoint(_messages.Message):
     REJECTED = 4
     STATUS_UNSPECIFIED = 5
 
-  endpoint = _messages.StringField(1)
-  pscConnectionId = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
-  status = _messages.EnumField('StatusValueValuesEnum', 3)
+  consumerNetwork = _messages.StringField(1)
+  endpoint = _messages.StringField(2)
+  pscConnectionId = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
 class ServiceAttachmentConsumerProjectLimit(_messages.Message):

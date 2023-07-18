@@ -383,3 +383,30 @@ def ValidateSnoozeInterval(
           '--end-time',
           'Expired snoozes can no longer be updated.',
       )
+
+
+def AddMigrateFlags(parser):
+  """Adds migrate flags to the parser."""
+  migrate_group = parser.add_group()
+  migrate_group.add_argument(
+      '--policies-from-prometheus-alert-rules-yaml',
+      metavar='PROMETHEUS_ALERT_RULE_FILE_PATHS',
+      type=arg_parsers.ArgList(arg_parsers.FileContents()),
+      help=(
+          'One or more Prometheus alert rule YAML files (separated by commas if'
+          ' multiple) to be converted to Cloud Alerting Policies. Example: '
+          '--policies-from-prometheus-alert-rules-yaml=rules_1.yaml,rules_2.yaml'
+      ),
+  )
+  migrate_group.add_argument(
+      '--channels-from-prometheus-alertmanager-yaml',
+      metavar='PROMETHEUS_ALERT_MANAGER_FILE_PATH',
+      type=arg_parsers.FileContents(),
+      help=(
+          'Prometheus alert manager YAML file to be converted to Cloud'
+          ' Monitoring notification channels. Specifying this flag with the'
+          ' --policies-from-prometheus-alert-rules-yaml flag puts the newly'
+          " created notification channels into the translated Alert Policies'"
+          ' definition.'
+      ),
+  )

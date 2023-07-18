@@ -66,23 +66,23 @@ def GenerateDataProfileSpec(args):
       )
   else:
     exclude_fields, include_fields, sampling_percent, row_filter = [None] * 4
-    if hasattr(args, 'exclude-fields') and args.IsSpecified('exclude_fields'):
+    if hasattr(args, 'exclude_fields') and args.IsSpecified('exclude_fields'):
       exclude_fields = (
           module.GoogleCloudDataplexV1DataProfileSpecSelectedFields(
               fieldNames=args.exclude_fields.split(',')
           )
       )
-    if hasattr(args, 'include-fields') and args.IsSpecified('include_fields'):
+    if hasattr(args, 'include_fields') and args.IsSpecified('include_fields'):
       include_fields = (
           module.GoogleCloudDataplexV1DataProfileSpecSelectedFields(
               fieldNames=args.include_fields.split(',')
           )
       )
-    if hasattr(args, 'sampling-percent') and args.IsSpecified(
+    if hasattr(args, 'sampling_percent') and args.IsSpecified(
         'sampling_percent'
     ):
       sampling_percent = float(args.sampling_percent)
-    if hasattr(args, 'row-filter') and args.IsSpecified('row_filter'):
+    if hasattr(args, 'row_filter') and args.IsSpecified('row_filter'):
       row_filter = args.row_filter
     dataprofilespec = module.GoogleCloudDataplexV1DataProfileSpec(
         excludeFields=exclude_fields,
@@ -111,7 +111,7 @@ def GenerateTrigger(args):
   return trigger
 
 
-def GenerateExecutionSpec(args):
+def GenerateExecutionSpecForCreateRequest(args):
   """Generate ExecutionSpec From Arguments."""
   module = dataplex_api.GetMessageModule()
   executionspec = module.GoogleCloudDataplexV1DataScanExecutionSpec(
@@ -119,6 +119,44 @@ def GenerateExecutionSpec(args):
       trigger=GenerateTrigger(args),
   )
   return executionspec
+
+
+def GenerateExecutionSpecForUpdateRequest(args):
+  """Generate ExecutionSpec From Arguments."""
+  module = dataplex_api.GetMessageModule()
+  executionspec = module.GoogleCloudDataplexV1DataScanExecutionSpec(
+      trigger=GenerateTrigger(args),
+  )
+  return executionspec
+
+
+def GenerateUpdateMask(args):
+  """Create Update Mask for Datascan."""
+  update_mask = []
+  args_to_mask = {
+      'description': 'description',
+      'display_name': 'displayName',
+      'labels': 'labels',
+      'on_demand': 'executionSpec.trigger.onDemand',
+      'schedule': 'executionSpec.trigger.schedule',
+  }
+  args_to_mask_attr = {
+      'data_profile_spec_file': 'dataProfileSpec',
+      'data_quality_spec_file': 'dataQualitySpec',
+      'row_filter': 'dataProfileSpec.rowFilter',
+      'sampling_percent': 'dataProfileSpec.samplingPercent',
+      'include_fields': 'dataProfileSpec.includeFields',
+      'exclude_fields': 'dataProfileSpec.excludeFields',
+  }
+
+  for arg, val in args_to_mask.items():
+    if args.IsSpecified(arg):
+      update_mask.append(val)
+
+  for arg, val in args_to_mask_attr.items():
+    if hasattr(args, arg) and args.IsSpecified(arg):
+      update_mask.append(val)
+  return update_mask
 
 
 def GenerateDatascanForCreateRequest(args):
@@ -131,14 +169,14 @@ def GenerateDatascanForCreateRequest(args):
           module.GoogleCloudDataplexV1DataScan, args
       ),
       data=GenerateData(args),
-      executionSpec=GenerateExecutionSpec(args),
+      executionSpec=GenerateExecutionSpecForCreateRequest(args),
   )
   if args.scan_type == 'PROFILE':
     if hasattr(args, 'data_quality_spec_file') and args.IsSpecified(
         'data_quality_spec_file'
     ):
       raise ValueError(
-          'Data Quality Spec file specified for Data Profile Scan.'
+          'Data quality spec file specified for data profile scan.'
       )
     else:
       request.dataProfileSpec = GenerateDataProfileSpec(args)
@@ -147,7 +185,7 @@ def GenerateDatascanForCreateRequest(args):
         'data_profile_spec_file'
     ):
       raise ValueError(
-          'Data Profile Spec file specified for Data Quality Scan.'
+          'Data profile spec file specified for data quality scan.'
       )
     elif args.IsSpecified('data_quality_spec_file'):
       request.dataQualitySpec = GenerateDataQualitySpec(args)
@@ -156,6 +194,39 @@ def GenerateDatascanForCreateRequest(args):
           'If scan-type="QUALITY" , data-quality-spec-file is a required'
           ' argument.'
       )
+  return request
+
+
+def GenerateDatascanForUpdateRequest(args):
+  """Create Datascan for Message Update Requests."""
+  module = dataplex_api.GetMessageModule()
+  request = module.GoogleCloudDataplexV1DataScan(
+      description=args.description,
+      displayName=args.display_name,
+      labels=dataplex_api.CreateLabels(
+          module.GoogleCloudDataplexV1DataScan, args
+      ),
+      executionSpec=GenerateExecutionSpecForUpdateRequest(args),
+  )
+  if args.scan_type == 'PROFILE':
+    if hasattr(args, 'data_quality_spec_file') and args.IsSpecified(
+        'data_quality_spec_file'
+    ):
+      raise ValueError(
+          'Data quality spec file specified for data profile scan.'
+      )
+    request.dataProfileSpec = GenerateDataProfileSpec(args)
+  elif args.scan_type == 'QUALITY':
+    if hasattr(args, 'data_profile_spec_file') and args.IsSpecified(
+        'data_profile_spec_file'
+    ):
+      raise ValueError(
+          'Data profile spec file specified for data quality scan.'
+      )
+    elif args.IsSpecified('data_quality_spec_file'):
+      request.dataQualitySpec = GenerateDataQualitySpec(args)
+    else:
+      request.dataQualitySpec = module.GoogleCloudDataplexV1DataQualitySpec()
   return request
 
 
