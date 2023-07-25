@@ -807,7 +807,17 @@ ENABLE_HIGH_RESILIENCE = base.Argument(
     const=True,
     action='store_const',
     help="""\
-    Enable use of a high resilience, supported for Composer 2 Environments.
+    Enable high resilience, supported for Composer 2 Environments.
+    """
+)
+
+DISABLE_HIGH_RESILIENCE = base.Argument(
+    '--disable-high-resilience',
+    default=None,
+    const=True,
+    action='store_const',
+    help="""\
+    Disable high resilience, supported for Composer 2 Environments.
     """
 )
 

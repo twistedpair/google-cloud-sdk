@@ -700,6 +700,7 @@ def AddCreateDiskArgs(
     support_replica_zones=False,
     support_storage_pool=False,
     enable_source_instant_snapshots=False,
+    enable_confidential_compute=False,
 ):
   """Adds create-disk argument for instances and instance-templates."""
 
@@ -932,6 +933,13 @@ def AddCreateDiskArgs(
       The multi-writer feature requires specialized filesystems, among other
       restrictions. For more information, see
       https://cloud.google.com/compute/docs/disks/sharing-disks-between-vms.
+    """
+
+  if enable_confidential_compute:
+    spec['confidential-compute'] = arg_parsers.ArgBoolean()
+    disk_help += """
+      *confidential-compute*::: If ``yes'', the disk is created in confidential
+      mode. The default value is ``no''.
     """
 
   if support_replica_zones:

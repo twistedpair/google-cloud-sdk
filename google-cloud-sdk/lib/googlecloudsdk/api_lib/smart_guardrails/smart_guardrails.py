@@ -95,25 +95,18 @@ def _GetIamPolicyBindingMatcher(member, role):
   return Matcher
 
 
-def _GetAssociatedRecommendationLink(gcloud_insight, project_id):
+def _GetInsightLink(gcloud_insight):
   """Returns a message with a link to the associated recommendation.
 
   Args:
     gcloud_insight: Insight object returned by the recommender API.
-    project_id: Project ID.
 
   Returns:
     A string message with a link to the associated recommendation.
   """
-  for reco in gcloud_insight.associatedRecommendations:
-    if reco.recommendation:
-      return (
-          "Before proceeding, view the risk assessment at {0}/view-link/{1}"
-      ).format(_RECOMMENDATIONS_HOME_URL, reco.recommendation)
   return (
-      "Failed to get an associated recommendation link. "
-      "All recommendations can be viewed at {0}?project={1}"
-  ).format(_RECOMMENDATIONS_HOME_URL, project_id)
+      "Before proceeding, view the risk assessment at {0}/view-link/{1}"
+  ).format(_RECOMMENDATIONS_HOME_URL, gcloud_insight.name)
 
 
 def _GetResourceRiskReasons(gcloud_insight):
@@ -210,7 +203,7 @@ def GetProjectDeletionRisk(release_track, project_id):
             risk_message=_PROJECT_RISK_MESSAGE,
             reasons_prefix=_PROJECT_REASONS_PREFIX,
         ),
-        _GetAssociatedRecommendationLink(risk_insight, project_id),
+        _GetInsightLink(risk_insight),
     )
   # If there are no risks to deleting a project,
   # return a standard warning message.
@@ -240,7 +233,7 @@ def GetServiceAccountDeletionRisk(release_track, project_id, service_account):
   if risk_insight:
     return "{0}\n{1}".format(
         _GetDeletionRiskMessage(risk_insight, _SA_RISK_MESSAGE),
-        _GetAssociatedRecommendationLink(risk_insight, project_id),
+        _GetInsightLink(risk_insight),
     )
   return None
 
@@ -276,6 +269,6 @@ def GetIamPolicyBindingDeletionRisk(
         _GetDeletionRiskMessage(
             risk_insight, _POLICY_BINDING_DELETE_RISK_MESSAGE
         ),
-        _GetAssociatedRecommendationLink(risk_insight, project_id),
+        _GetInsightLink(risk_insight),
     )
   return None

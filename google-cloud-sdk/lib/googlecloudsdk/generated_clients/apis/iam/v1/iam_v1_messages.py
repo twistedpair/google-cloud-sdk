@@ -16,6 +16,22 @@ from apitools.base.py import extra_types
 package = 'iam'
 
 
+class AccessRestrictions(_messages.Message):
+  r"""Access related restrictions on the workforce pool.
+
+  Fields:
+    allowedServices: Optional. Services allowed for web sign-in with the
+      workforce pool. If not set by default there are no restrictions.
+    disableProgrammaticSignin: Optional. Disable programmatic sign-in by
+      disabling token issue via the Security Token API endpoint. See [Security
+      Token Service API]
+      (https://cloud.google.com/iam/docs/reference/sts/rest).
+  """
+
+  allowedServices = _messages.MessageField('ServiceConfig', 1, repeated=True)
+  disableProgrammaticSignin = _messages.BooleanField(2)
+
+
 class AdminAuditData(_messages.Message):
   r"""Audit log information specific to Cloud IAM admin APIs. This message is
   serialized as an `Any` type in the `ServiceData` message of an `AuditLog`
@@ -492,6 +508,13 @@ class GoogleIamAdminV1WorkforcePoolProviderOidc(_messages.Message):
       Code flow for web sign-in.
     issuerUri: Required. The OIDC issuer URI. Must be a valid URI using the
       'https' scheme.
+    jwksJson: OIDC JWKs in JSON String format. For details on the definition
+      of a JWK, see https://tools.ietf.org/html/rfc7517. If not set, the
+      `jwks_uri` from the discovery document(fetched from the .well-known path
+      of the `issuer_uri`) will be used. Currently, RSA and EC asymmetric keys
+      are supported. The JWK must use following format and include only the
+      following fields: { "keys": [ { "kty": "RSA/EC", "alg": "", "use":
+      "sig", "kid": "", "n": "", "e": "", "x": "", "y": "", "crv": "" } ] }
     webSsoConfig: Required. Configuration for web single sign-on for the OIDC
       provider. Here, web sign-in refers to console sign-in and gcloud sign-in
       through the browser.
@@ -500,7 +523,8 @@ class GoogleIamAdminV1WorkforcePoolProviderOidc(_messages.Message):
   clientId = _messages.StringField(1)
   clientSecret = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidcClientSecret', 2)
   issuerUri = _messages.StringField(3)
-  webSsoConfig = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig', 4)
+  jwksJson = _messages.StringField(4)
+  webSsoConfig = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig', 5)
 
 
 class GoogleIamAdminV1WorkforcePoolProviderOidcClientSecret(_messages.Message):
@@ -1358,9 +1382,10 @@ class IamProjectsLocationsOauthClientsCreateRequest(_messages.Message):
   Fields:
     oauthClient: A OauthClient resource to be passed as the request body.
     oauthClientId: Required. The ID to use for the oauth client, which becomes
-      the final component of the resource name. This value should be 4-32
-      characters, and may contain the characters [a-z0-9-]. The prefix `gcp-`
-      is reserved for use by Google, and may not be specified.
+      the final component of the resource name. This value should be a string
+      of 6 to 63 lowercase letters, digits, or hyphens. It must start with a
+      letter, and cannot have a trailing hyphen. The prefix `gcp-` is reserved
+      for use by Google, and may not be specified.
     parent: Required. The parent resource to create the oauth client in. The
       only supported location is `global`.
   """
@@ -1441,8 +1466,8 @@ class IamProjectsLocationsOauthClientsCredentialsPatchRequest(_messages.Message)
 
   Fields:
     name: Immutable. The resource name of the oauth client credential. Format:
-      `projects/{project}/locations/{location}/
-      oauthClients/{oauth_client}/credentials/{credential}`
+      `projects/{project}/locations/{location}/oauthClients/{oauth_client}/cre
+      dentials/{credential}`
     oauthClientCredential: A OauthClientCredential resource to be passed as
       the request body.
     updateMask: Required. The list of fields to update.
@@ -1501,9 +1526,8 @@ class IamProjectsLocationsOauthClientsPatchRequest(_messages.Message):
   r"""A IamProjectsLocationsOauthClientsPatchRequest object.
 
   Fields:
-    name: Immutable. The resource name of the oauth client.
-      Format:`projects/{project}/locations/{location}/oauthClients/
-      {oauth_client}`.
+    name: Immutable. The resource name of the oauth client. Format:`projects/{
+      project}/locations/{location}/oauthClients/{oauth_client}`.
     oauthClient: A OauthClient resource to be passed as the request body.
     updateMask: Required. The list of fields to update.
   """
@@ -3502,9 +3526,8 @@ class OauthClient(_messages.Message):
       Cannot exceed 32 characters.
     expireTime: Output only. Time after which the oauth client will be
       permanently purged and cannot be recovered.
-    name: Immutable. The resource name of the oauth client.
-      Format:`projects/{project}/locations/{location}/oauthClients/
-      {oauth_client}`.
+    name: Immutable. The resource name of the oauth client. Format:`projects/{
+      project}/locations/{location}/oauthClients/{oauth_client}`.
     state: Output only. The state of the oauth client.
   """
 
@@ -3573,8 +3596,8 @@ class OauthClientCredential(_messages.Message):
     displayName: Optional. A user-specified display name of the oauth client
       credential Cannot exceed 32 characters.
     name: Immutable. The resource name of the oauth client credential. Format:
-      `projects/{project}/locations/{location}/
-      oauthClients/{oauth_client}/credentials/{credential}`
+      `projects/{project}/locations/{location}/oauthClients/{oauth_client}/cre
+      dentials/{credential}`
     updateTime: Output only. The timestamp for the last update of the oauth
       client credential. If no updates have been made, the creation time will
       serve as the designated value.
@@ -4099,7 +4122,7 @@ class ServiceAccount(_messages.Message):
   accounts/overview). When you create a service account, you specify the
   project ID that owns the service account, as well as a name that must be
   unique within the project. IAM uses these values to create an email address
-  that identifies the service //
+  that identifies the service account. //
 
   Fields:
     description: Optional. A user-specified, human-readable description of the
@@ -4291,6 +4314,17 @@ class ServiceAccountKey(_messages.Message):
   publicKeyData = _messages.BytesField(8)
   validAfterTime = _messages.StringField(9)
   validBeforeTime = _messages.StringField(10)
+
+
+class ServiceConfig(_messages.Message):
+  r"""Configuration for a service.
+
+  Fields:
+    domain: Optional. Domain name of the service. Example:
+      console.cloud.google
+  """
+
+  domain = _messages.StringField(1)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -4621,6 +4655,10 @@ class WorkforcePool(_messages.Message):
     StateValueValuesEnum: Output only. The state of the pool.
 
   Fields:
+    accessRestrictions: Optional. Configure access restrictions on the
+      workforce pool users. This is an optional field. If specified web sign-
+      in can be restricted to given set of services or programmatic sign-in
+      can be disabled for pool users.
     description: A user-specified description of the pool. Cannot exceed 256
       characters.
     disabled: Disables the workforce pool. You cannot use a disabled pool to
@@ -4662,14 +4700,15 @@ class WorkforcePool(_messages.Message):
     ACTIVE = 1
     DELETED = 2
 
-  description = _messages.StringField(1)
-  disabled = _messages.BooleanField(2)
-  displayName = _messages.StringField(3)
-  expireTime = _messages.StringField(4)
-  name = _messages.StringField(5)
-  parent = _messages.StringField(6)
-  sessionDuration = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  accessRestrictions = _messages.MessageField('AccessRestrictions', 1)
+  description = _messages.StringField(2)
+  disabled = _messages.BooleanField(3)
+  displayName = _messages.StringField(4)
+  expireTime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  parent = _messages.StringField(7)
+  sessionDuration = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
 class WorkforcePoolInstalledApp(_messages.Message):

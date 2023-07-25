@@ -696,6 +696,149 @@ class CloudRunRenderMetadata(_messages.Message):
   service = _messages.StringField(1)
 
 
+class ClouddeployProjectsLocationsCustomTargetTypesCreateRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsCustomTargetTypesCreateRequest object.
+
+  Fields:
+    customTargetType: A CustomTargetType resource to be passed as the request
+      body.
+    customTargetTypeId: Required. ID of the `CustomTargetType`.
+    parent: Required. The parent collection in which the `CustomTargetType`
+      should be created in. Format should be
+      projects/{project_id}/locations/{location_name}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
+  """
+
+  customTargetType = _messages.MessageField('CustomTargetType', 1)
+  customTargetTypeId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class ClouddeployProjectsLocationsCustomTargetTypesDeleteRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsCustomTargetTypesDeleteRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, then deleting an already deleted
+      or non-existing `CustomTargetType` will succeed.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    name: Required. The name of the `CustomTargetType` to delete. Format must
+      be projects/{project_id}/locations/{location_name}/customTargetTypes/{cu
+      stom_target_type}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set to true, the request is validated but no
+      actual change is made.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class ClouddeployProjectsLocationsCustomTargetTypesGetRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsCustomTargetTypesGetRequest object.
+
+  Fields:
+    name: Required. Name of the `CustomTargetType`. Format must be projects/{p
+      roject_id}/locations/{location_name}/customTargetTypes/{custom_target_ty
+      pe}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ClouddeployProjectsLocationsCustomTargetTypesListRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsCustomTargetTypesListRequest object.
+
+  Fields:
+    filter: Optional. Filter custom target types to be returned. See
+      https://google.aip.dev/160 for more details.
+    orderBy: Optional. Field to sort by. See
+      https://google.aip.dev/132#ordering for more details.
+    pageSize: Optional. The maximum number of `CustomTargetType` objects to
+      return. The service may return fewer than this value. If unspecified, at
+      most 50 `CustomTargetType` objects will be returned. The maximum value
+      is 1000; values above 1000 will be set to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListCustomTargetTypes` call. Provide this to retrieve the subsequent
+      page. When paginating, all other provided parameters match the call that
+      provided the page token.
+    parent: Required. The parent that owns this collection of custom target
+      types. Format must be projects/{project_id}/locations/{location_name}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ClouddeployProjectsLocationsCustomTargetTypesPatchRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsCustomTargetTypesPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, updating a `CustomTargetType` that
+      does not exist will result in the creation of a new `CustomTargetType`.
+    customTargetType: A CustomTargetType resource to be passed as the request
+      body.
+    name: Optional. Name of the `CustomTargetType`. Format is
+      projects/{project}/locations/{location}/customTargetTypes/a-z{0,62}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `CustomTargetType` resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  customTargetType = _messages.MessageField('CustomTargetType', 2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
+
+
 class ClouddeployProjectsLocationsDeliveryPipelinesAutomationRunsCancelRequest(_messages.Message):
   r"""A
   ClouddeployProjectsLocationsDeliveryPipelinesAutomationRunsCancelRequest
@@ -1891,6 +2034,158 @@ class CustomCanaryDeployment(_messages.Message):
   phaseConfigs = _messages.MessageField('PhaseConfig', 1, repeated=True)
 
 
+class CustomTarget(_messages.Message):
+  r"""Information specifying a Custom Target.
+
+  Fields:
+    customTargetType: Required. The name of the CustomTargetType. Format must
+      be `projects/{project}/locations/{location}/customTargetTypes/{custom_ta
+      rget_type}.
+  """
+
+  customTargetType = _messages.StringField(1)
+
+
+class CustomTargetSkaffoldActions(_messages.Message):
+  r"""CustomTargetSkaffoldActions represents the `CustomTargetType`
+  configuration using Skaffold custom actions.
+
+  Fields:
+    deployAction: Required. The Skaffold custom action responsible for deploy
+      operations.
+    includeSkaffoldModules: Optional. List of Skaffold modules Cloud Deploy
+      will include in the Skaffold Config as required before performing
+      diagnose.
+    renderAction: Optional. The Skaffold custom action responsible for render
+      operations. If not provided then Cloud Deploy will perform the render
+      operations via `skaffold render`.
+  """
+
+  deployAction = _messages.StringField(1)
+  includeSkaffoldModules = _messages.MessageField('SkaffoldModules', 2, repeated=True)
+  renderAction = _messages.StringField(3)
+
+
+class CustomTargetType(_messages.Message):
+  r"""A `CustomTargetType` resource in the Google Cloud Deploy API. A
+  `CustomTargetType` defines a type of custom target that can be referenced in
+  a `Target` in order to facilitate deploying to a runtime that does not have
+  a 1P integration with Google Cloud Deploy.
+
+  Messages:
+    AnnotationsValue: Optional. User annotations. These attributes can only be
+      set and used by the user, and not by Google Cloud Deploy. See
+      https://google.aip.dev/128#annotations for more details such as format
+      and size limitations.
+    LabelsValue: Optional. Labels are attributes that can be set and used by
+      both the user and by Google Cloud Deploy. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. Both keys and values are
+      additionally constrained to be <= 128 bytes.
+
+  Fields:
+    annotations: Optional. User annotations. These attributes can only be set
+      and used by the user, and not by Google Cloud Deploy. See
+      https://google.aip.dev/128#annotations for more details such as format
+      and size limitations.
+    createTime: Output only. Time at which the `CustomTargetType` was created.
+    customActions: Configures render and deploy for the `CustomTargetType`
+      using Skaffold custom actions.
+    customTargetTypeId: Output only. Resource id of the `CustomTargetType`.
+    description: Optional. Description of the `CustomTargetType`. Max length
+      is 255 characters.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    labels: Optional. Labels are attributes that can be set and used by both
+      the user and by Google Cloud Deploy. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. Both keys and values are
+      additionally constrained to be <= 128 bytes.
+    name: Optional. Name of the `CustomTargetType`. Format is
+      projects/{project}/locations/{location}/customTargetTypes/a-z{0,62}.
+    uid: Output only. Unique identifier of the `CustomTargetType`.
+    updateTime: Output only. Most recent time at which the `CustomTargetType`
+      was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User annotations. These attributes can only be set and used
+    by the user, and not by Google Cloud Deploy. See
+    https://google.aip.dev/128#annotations for more details such as format and
+    size limitations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels are attributes that can be set and used by both the
+    user and by Google Cloud Deploy. Labels must meet the following
+    constraints: * Keys and values can contain only lowercase letters, numeric
+    characters, underscores, and dashes. * All characters must use UTF-8
+    encoding, and international characters are allowed. * Keys must start with
+    a lowercase letter or international character. * Each resource is limited
+    to a maximum of 64 labels. Both keys and values are additionally
+    constrained to be <= 128 bytes.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  customActions = _messages.MessageField('CustomTargetSkaffoldActions', 3)
+  customTargetTypeId = _messages.StringField(4)
+  description = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
 class Date(_messages.Message):
   r"""Represents a whole or partial calendar date, such as a birthday. The
   time of day and time zone are either specified elsewhere or are
@@ -2845,6 +3140,21 @@ class ListAutomationsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListCustomTargetTypesResponse(_messages.Message):
+  r"""The response object from `ListCustomTargetTypes.`
+
+  Fields:
+    customTargetTypes: The `CustomTargetType` objects.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached.
+  """
+
+  customTargetTypes = _messages.MessageField('CustomTargetType', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListDeliveryPipelinesResponse(_messages.Message):
   r"""The response object from `ListDeliveryPipelines`.
 
@@ -3747,6 +4057,8 @@ class Release(_messages.Message):
     buildArtifacts: List of artifacts to pass through to Skaffold command.
     condition: Output only. Information around the state of the Release.
     createTime: Output only. Time at which the `Release` was created.
+    customTargetTypeSnapshots: Output only. Snapshot of the custom target
+      types referenced by the targets taken at release creation time.
     deliveryPipelineSnapshot: Output only. Snapshot of the parent pipeline
       taken at release creation time.
     deployParameters: Optional. The deploy parameters to use for all targets
@@ -3944,22 +4256,23 @@ class Release(_messages.Message):
   buildArtifacts = _messages.MessageField('BuildArtifact', 3, repeated=True)
   condition = _messages.MessageField('ReleaseCondition', 4)
   createTime = _messages.StringField(5)
-  deliveryPipelineSnapshot = _messages.MessageField('DeliveryPipeline', 6)
-  deployParameters = _messages.MessageField('DeployParametersValue', 7)
-  description = _messages.StringField(8)
-  etag = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  renderEndTime = _messages.StringField(12)
-  renderStartTime = _messages.StringField(13)
-  renderState = _messages.EnumField('RenderStateValueValuesEnum', 14)
-  skaffoldConfigPath = _messages.StringField(15)
-  skaffoldConfigUri = _messages.StringField(16)
-  skaffoldVersion = _messages.StringField(17)
-  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 18)
-  targetRenders = _messages.MessageField('TargetRendersValue', 19)
-  targetSnapshots = _messages.MessageField('Target', 20, repeated=True)
-  uid = _messages.StringField(21)
+  customTargetTypeSnapshots = _messages.MessageField('CustomTargetType', 6, repeated=True)
+  deliveryPipelineSnapshot = _messages.MessageField('DeliveryPipeline', 7)
+  deployParameters = _messages.MessageField('DeployParametersValue', 8)
+  description = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  renderEndTime = _messages.StringField(13)
+  renderStartTime = _messages.StringField(14)
+  renderState = _messages.EnumField('RenderStateValueValuesEnum', 15)
+  skaffoldConfigPath = _messages.StringField(16)
+  skaffoldConfigUri = _messages.StringField(17)
+  skaffoldVersion = _messages.StringField(18)
+  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 19)
+  targetRenders = _messages.MessageField('TargetRendersValue', 20)
+  targetSnapshots = _messages.MessageField('Target', 21, repeated=True)
+  uid = _messages.StringField(22)
 
 
 class ReleaseCondition(_messages.Message):
@@ -4481,6 +4794,34 @@ class SetIamPolicyRequest(_messages.Message):
   updateMask = _messages.StringField(2)
 
 
+class SkaffoldGitSource(_messages.Message):
+  r"""Git repository containing Skaffold Config modules.
+
+  Fields:
+    path: Required. Relative path from the repository root to the Skaffold
+      file.
+    ref: Required. Git ref the package should be cloned from.
+    repo: Required. Git repository the package should be cloned from.
+  """
+
+  path = _messages.StringField(1)
+  ref = _messages.StringField(2)
+  repo = _messages.StringField(3)
+
+
+class SkaffoldModules(_messages.Message):
+  r"""Skaffold Config modules and their remote source.
+
+  Fields:
+    configs: Required. The Skaffold Config modules to use from the specified
+      source.
+    git: Remote git repository containing the Skaffold Config modules.
+  """
+
+  configs = _messages.StringField(1, repeated=True)
+  git = _messages.MessageField('SkaffoldGitSource', 2)
+
+
 class SkaffoldSupportedCondition(_messages.Message):
   r"""SkaffoldSupportedCondition contains information about when support for
   the release's version of skaffold ends.
@@ -4735,6 +5076,7 @@ class Target(_messages.Message):
       and size limitations.
     anthosCluster: Optional. Information specifying an Anthos Cluster.
     createTime: Output only. Time at which the `Target` was created.
+    customTarget: Optional. Information specifying a Custom Target.
     deployParameters: Optional. The deploy parameters to use for this target.
     description: Optional. Description of the `Target`. Max length is 255
       characters.
@@ -4856,19 +5198,20 @@ class Target(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   anthosCluster = _messages.MessageField('AnthosCluster', 2)
   createTime = _messages.StringField(3)
-  deployParameters = _messages.MessageField('DeployParametersValue', 4)
-  description = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  executionConfigs = _messages.MessageField('ExecutionConfig', 7, repeated=True)
-  gke = _messages.MessageField('GkeCluster', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  multiTarget = _messages.MessageField('MultiTarget', 10)
-  name = _messages.StringField(11)
-  requireApproval = _messages.BooleanField(12)
-  run = _messages.MessageField('CloudRunLocation', 13)
-  targetId = _messages.StringField(14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  customTarget = _messages.MessageField('CustomTarget', 4)
+  deployParameters = _messages.MessageField('DeployParametersValue', 5)
+  description = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  executionConfigs = _messages.MessageField('ExecutionConfig', 8, repeated=True)
+  gke = _messages.MessageField('GkeCluster', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  multiTarget = _messages.MessageField('MultiTarget', 11)
+  name = _messages.StringField(12)
+  requireApproval = _messages.BooleanField(13)
+  run = _messages.MessageField('CloudRunLocation', 14)
+  targetId = _messages.StringField(15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class TargetArtifact(_messages.Message):

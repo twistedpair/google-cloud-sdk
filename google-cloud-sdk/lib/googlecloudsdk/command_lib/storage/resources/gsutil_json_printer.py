@@ -69,7 +69,7 @@ class GsutilJsonPrinter(resource_printer_base.ResourcePrinter):
       delimit: Dump one record if False, used by PrintSingleRecord().
     """
     self._empty = False
-    output = json.dumps(record)
+    output = json.dumps(record, sort_keys=True)
     if delimit:
       self._out.write(self._delimiter + output)
       self._delimiter = ','

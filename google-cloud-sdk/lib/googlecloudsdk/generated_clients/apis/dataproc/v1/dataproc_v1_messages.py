@@ -2650,9 +2650,12 @@ class DiagnoseClusterRequest(_messages.Message):
         default access of the bucket
       GOOGLE_CLOUD_SUPPORT: Google Cloud Support group has read access to the
         diagnostic tarball
+      GOOGLE_DATAPROC_DIAGNOSE: Google Cloud Dataproc Diagnose service account
+        has read access to the diagnostic tarball
     """
     TARBALL_ACCESS_UNSPECIFIED = 0
     GOOGLE_CLOUD_SUPPORT = 1
+    GOOGLE_DATAPROC_DIAGNOSE = 2
 
   diagnosisInterval = _messages.MessageField('Interval', 1)
   job = _messages.StringField(2)

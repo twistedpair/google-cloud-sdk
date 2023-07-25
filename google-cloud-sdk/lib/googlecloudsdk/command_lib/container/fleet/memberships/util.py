@@ -179,8 +179,11 @@ def GetConnectGatewayServiceName(endpoint_override, location):
 
   # Determine the location prefix, if any
   prefix = '' if location in ('global', None) else '{}-'.format(location)
-  if not endpoint_override:
-    # Production
+  if (
+      not endpoint_override
+      or endpoint_override == 'https://gkehub.googleapis.com/'
+  ):
+    # Production, use full text match to avoid substring false positives
     return '{}connectgateway.googleapis.com'.format(prefix)
   elif 'autopush-gkehub' in endpoint_override:
     return '{}autopush-connectgateway.sandbox.googleapis.com'.format(prefix)

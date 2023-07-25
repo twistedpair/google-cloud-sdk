@@ -160,6 +160,19 @@ logging_server:
     help: Resource ID of the Logging Server
   disable_auto_completers: false
 
+identity_source:
+  name: Identity Source
+  collection: vmwareengine.projects.locations.privateClouds.identitySources
+  attributes:
+  - *project
+  - *location
+  - *private_cloud
+  - &identity_source
+    parameter_name: identitySourcesId
+    attribute_name: identity-source
+    help: Resource ID of the Identity Source
+  disable_auto_completers: false
+
 node:
   name: node
   collection: vmwareengine.projects.locations.privateClouds.clusters.nodes

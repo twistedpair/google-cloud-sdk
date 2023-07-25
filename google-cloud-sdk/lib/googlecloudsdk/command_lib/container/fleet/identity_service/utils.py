@@ -238,6 +238,8 @@ def provision_azuread_config(auth_method, msg):
   if 'clientSecret' in azuread_config:
     auth_method_proto.azureadConfig.clientSecret = azuread_config[
         'clientSecret']
+  if 'userClaim' in azuread_config:
+    auth_method_proto.azureadConfig.userClaim = azuread_config['userClaim']
   return auth_method_proto
 
 

@@ -158,7 +158,8 @@ def ConstructPatch(is_composer_v1,
                    network_attachment=None,
                    workload_updated=None,
                    enable_private_environment=None,
-                   disable_private_environment=None):
+                   disable_private_environment=None,
+                   enable_high_resilience=None):
   """Constructs an environment patch.
 
   Args:
@@ -280,6 +281,9 @@ def ConstructPatch(is_composer_v1,
     disable_private_environment: bool or None, defines whether the internet
       access is enabled from Composer components.
       Can be specified only in Composer 2.5.
+    enable_high_resilience: bool or None, defines whether high resilience
+      should be enabled for given environment.
+      Can be specified only in Composer 2.
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -411,6 +415,10 @@ def ConstructPatch(is_composer_v1,
   if cloud_data_lineage_integration_enabled is not None:
     return _ConstructSoftwareConfigurationCloudDataLineageIntegrationPatch(
         cloud_data_lineage_integration_enabled, release_track
+    )
+  if enable_high_resilience is not None:
+    return _ConstructHighResiliencePatch(
+        enable_high_resilience, release_track
     )
   raise command_util.Error(
       'Cannot update Environment with no update type specified.'
@@ -1019,3 +1027,29 @@ def _ConstructSoftwareConfigurationCloudDataLineageIntegrationPatch(
           softwareConfig=messages.SoftwareConfig(
               cloudDataLineageIntegration=messages.CloudDataLineageIntegration(
                   enabled=enabled))))
+
+
+def _ConstructHighResiliencePatch(
+    enabled, release_track):
+  """Constructs a patch for updating high resilience.
+
+  Args:
+    enabled: bool, whether High resilience should be enabled.
+    release_track: base.ReleaseTrack, the release track of command. It dictates
+      which Composer client library is used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  if not enabled:
+    return 'config.resilience_mode', messages.Environment(
+        config=messages.EnvironmentConfig()
+    )
+  return 'config.resilience_mode', messages.Environment(
+      config=messages.EnvironmentConfig(
+          resilienceMode=(
+              messages.EnvironmentConfig.ResilienceModeValueValuesEnum.HIGH_RESILIENCE
+          )
+      )
+  )

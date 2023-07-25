@@ -515,7 +515,7 @@ def AddAcceleratorFields(parser):
   "nvidia-tesla-p100".
   """
   group.add_argument(
-      '--accelerator-type', type=str, help=help_text, required=True
+      '--accelerator-type', type=str, help=help_text
   )
 
   help_text = """\

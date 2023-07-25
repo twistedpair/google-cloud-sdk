@@ -128,16 +128,22 @@ def CreateCAFromArgs(args, is_subordinate):
   labels = labels_util.ParseCreateArgs(
       args, messages.CertificateAuthority.LabelsValue)
 
+  ski = flags_v1.ParseSubjectKeyId(args, messages)
+
   new_ca = messages.CertificateAuthority(
       type=messages.CertificateAuthority.TypeValueValuesEnum.SUBORDINATE
-      if is_subordinate else
-      messages.CertificateAuthority.TypeValueValuesEnum.SELF_SIGNED,
+      if is_subordinate
+      else messages.CertificateAuthority.TypeValueValuesEnum.SELF_SIGNED,
       lifetime=lifetime,
       config=messages.CertificateConfig(
-          subjectConfig=subject_config, x509Config=x509_parameters),
+          subjectConfig=subject_config,
+          x509Config=x509_parameters,
+          subjectKeyId=ski,
+      ),
       keySpec=keyspec,
       gcsBucket=None,
-      labels=labels)
+      labels=labels,
+  )
 
   return (new_ca, ca_ref, issuer_ref)
 

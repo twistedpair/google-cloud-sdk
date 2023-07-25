@@ -1062,7 +1062,7 @@ class OperationClient:
 
   def __init__(self, release_track: base.ReleaseTrack):
     self.messages = util.FleetMessageModule(release_track)
-    self.client = util.GetClientInstance(release_track=base.ReleaseTrack.GA)
+    self.client = util.GetClientInstance(release_track=release_track)
     self.service = self.client.projects_locations_operations
 
   def Wait(self, operation_ref: resources.Resource) -> messages.Operation:
@@ -1075,3 +1075,8 @@ class OperationClient:
         wait_ceiling_ms=10000,
         max_wait_ms=43200000,
     )
+
+  def Describe(
+      self, req: messages.GkehubProjectsLocationsOperationsGetRequest
+  ) -> messages.Operation:
+    return self.client.projects_locations_operations.Get(req)

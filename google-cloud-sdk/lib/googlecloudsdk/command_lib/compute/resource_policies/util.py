@@ -141,8 +141,7 @@ def MakeDiskSnapshotSchedulePolicy(policy_ref, args, messages):
       snapshotSchedulePolicy=snapshot_policy)
 
 
-def MakeDiskSnapshotSchedulePolicyForUpdate(policy_ref, args, messages,
-                                            enable_retention_policy_update=False):
+def MakeDiskSnapshotSchedulePolicyForUpdate(policy_ref, args, messages):
   """Creates a Disk Snapshot Schedule Resource Policy message from args used in ResourcePolicy.Patch.
   """
   hourly_cycle, daily_cycle, weekly_cycle = _ParseCycleFrequencyArgs(
@@ -163,8 +162,7 @@ def MakeDiskSnapshotSchedulePolicyForUpdate(policy_ref, args, messages,
     description = args.description
 
   retention_policy = None
-  if (enable_retention_policy_update and
-      (args.max_retention_days or args.on_source_disk_delete)):
+  if (args.max_retention_days or args.on_source_disk_delete):
     retention_policy = (
         messages.ResourcePolicySnapshotSchedulePolicyRetentionPolicy(
             maxRetentionDays=args.max_retention_days,

@@ -26,6 +26,7 @@ from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
@@ -783,6 +784,20 @@ def BuildChannelsFromPrometheusReceivers(receiver_config, messages):
             )
         )
         channels.append(channel)
+
+  # Tell users that their defined receiver type is not supported by the
+  # migration tool and will not be translated.
+  # TODO(b/277099361): Have a continue prompt telling users that certain
+  # receiver types are not supported.
+  supported_receiver_fields = set(
+      ['name', 'email_configs', 'pagerduty_configs', 'webhook_configs']
+  )
+  for field in receiver_config.keys():
+    if field not in supported_receiver_fields:
+      log.out.Print(
+          'Found unsupported receiver type {field}. {name}.{field} will not be'
+          ' translated.'.format(field=field, name=receiver_config.get('name'))
+      )
 
   return channels
 

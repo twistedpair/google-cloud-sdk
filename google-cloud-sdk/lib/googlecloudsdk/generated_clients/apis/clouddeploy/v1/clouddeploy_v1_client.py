@@ -39,6 +39,7 @@ class ClouddeployV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_customTargetTypes = self.ProjectsLocationsCustomTargetTypesService(self)
     self.projects_locations_deliveryPipelines_automationRuns = self.ProjectsLocationsDeliveryPipelinesAutomationRunsService(self)
     self.projects_locations_deliveryPipelines_automations = self.ProjectsLocationsDeliveryPipelinesAutomationsService(self)
     self.projects_locations_deliveryPipelines_releases_rollouts_jobRuns = self.ProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsService(self)
@@ -50,6 +51,151 @@ class ClouddeployV1(base_api.BaseApiClient):
     self.projects_locations_targets = self.ProjectsLocationsTargetsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsCustomTargetTypesService(base_api.BaseApiService):
+    """Service class for the projects_locations_customTargetTypes resource."""
+
+    _NAME = 'projects_locations_customTargetTypes'
+
+    def __init__(self, client):
+      super(ClouddeployV1.ProjectsLocationsCustomTargetTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new CustomTargetType in a given project and location.
+
+      Args:
+        request: (ClouddeployProjectsLocationsCustomTargetTypesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/customTargetTypes',
+        http_method='POST',
+        method_id='clouddeploy.projects.locations.customTargetTypes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['customTargetTypeId', 'requestId', 'validateOnly'],
+        relative_path='v1/{+parent}/customTargetTypes',
+        request_field='customTargetType',
+        request_type_name='ClouddeployProjectsLocationsCustomTargetTypesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single CustomTargetType.
+
+      Args:
+        request: (ClouddeployProjectsLocationsCustomTargetTypesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/customTargetTypes/{customTargetTypesId}',
+        http_method='DELETE',
+        method_id='clouddeploy.projects.locations.customTargetTypes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'etag', 'requestId', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ClouddeployProjectsLocationsCustomTargetTypesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single CustomTargetType.
+
+      Args:
+        request: (ClouddeployProjectsLocationsCustomTargetTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CustomTargetType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/customTargetTypes/{customTargetTypesId}',
+        http_method='GET',
+        method_id='clouddeploy.projects.locations.customTargetTypes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ClouddeployProjectsLocationsCustomTargetTypesGetRequest',
+        response_type_name='CustomTargetType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists CustomTargetTypes in a given project and location.
+
+      Args:
+        request: (ClouddeployProjectsLocationsCustomTargetTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListCustomTargetTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/customTargetTypes',
+        http_method='GET',
+        method_id='clouddeploy.projects.locations.customTargetTypes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/customTargetTypes',
+        request_field='',
+        request_type_name='ClouddeployProjectsLocationsCustomTargetTypesListRequest',
+        response_type_name='ListCustomTargetTypesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a single CustomTargetType.
+
+      Args:
+        request: (ClouddeployProjectsLocationsCustomTargetTypesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/customTargetTypes/{customTargetTypesId}',
+        http_method='PATCH',
+        method_id='clouddeploy.projects.locations.customTargetTypes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'requestId', 'updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='customTargetType',
+        request_type_name='ClouddeployProjectsLocationsCustomTargetTypesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsDeliveryPipelinesAutomationRunsService(base_api.BaseApiService):
     """Service class for the projects_locations_deliveryPipelines_automationRuns resource."""

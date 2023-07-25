@@ -2269,10 +2269,14 @@ class RRSetRoutingPolicyLoadBalancerTarget(_messages.Message):
 
     Values:
       none: <no description>
-      regionalL4ilb: <no description>
+      regionalL4ilb: Indicates that the load balancer configuration refers to
+        a Regional Internal Network Load Balancer.
+      regionalL7ilb: Indicates that the load balancer configuration refers to
+        a Regional Internal Application Load Balancer.
     """
     none = 0
     regionalL4ilb = 1
+    regionalL7ilb = 2
 
   ipAddress = _messages.StringField(1)
   ipProtocol = _messages.EnumField('IpProtocolValueValuesEnum', 2)

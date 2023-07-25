@@ -55,9 +55,7 @@ class DeletionPoller(waiter.OperationPoller):
 
 def Delete(ref, getter, deleter, async_):
   """Deletes a resource for a surface, including a pretty progress tracker."""
-  if async_ is None:
-    async_ = platforms.GetPlatform() != platforms.PLATFORM_MANAGED
-  if async_:
+  if AsyncOrDefault(async_):
     deleter(ref)
     return
   poller = DeletionPoller(getter)
@@ -74,3 +72,9 @@ def Delete(ref, getter, deleter, async_):
       else:
         raise serverless_exceptions.DeletionFailedError(
             'Failed to delete [{}].'.format(ref.Name()))
+
+
+def AsyncOrDefault(async_):
+  if async_ is None:
+    return platforms.GetPlatform() != platforms.PLATFORM_MANAGED
+  return async_

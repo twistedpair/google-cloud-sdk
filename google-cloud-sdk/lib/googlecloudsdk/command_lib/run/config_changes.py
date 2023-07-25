@@ -1221,6 +1221,12 @@ class NetworkInterfacesChange(ConfigChanger):
           interfaces=json.dumps(network_interface, sort_keys=True))
     self._SetOrClear(annotations, k8s_object.NETWORK_INTERFACES_ANNOTATION,
                      value)
+    # If clear network interfaces, egress setting should be cleared too.
+    if (
+        not value
+        and container_resource.EGRESS_SETTINGS_ANNOTATION in annotations
+    ):
+      del annotations[container_resource.EGRESS_SETTINGS_ANNOTATION]
     return resource
 
 

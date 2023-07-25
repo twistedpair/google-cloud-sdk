@@ -59,9 +59,9 @@ def BuildServerTlsPolicyUrl(project_name, location, policy_name):
       resource_name=policy_name)
 
 
-def BuildServiceLbPolicyUrl(project_name, location, policy_name):
+def BuildServiceLbPolicyUrl(project_name, location, policy_name, release_track):
   return BuildFullResourceUrlForProjectBasedResource(
-      base_uri=network_services.GetApiBaseUrl(),
+      base_uri=network_services.GetApiBaseUrl(release_track),
       project_name=project_name,
       location=location,
       collection_name='serviceLbPolicies',

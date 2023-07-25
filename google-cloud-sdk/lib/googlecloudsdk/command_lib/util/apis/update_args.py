@@ -58,14 +58,6 @@ class UpdateArgumentGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
     return value
 
-  def _GetFlagName(self, arg_name, flag_prefix):
-    if flag_prefix is not None:
-      name = flag_prefix + '-' + arg_name
-    else:
-      name = arg_name
-
-    return format_util.FlagNameFormat(name)
-
   def _CreateFlag(
       self, arg_name, flag_prefix=None, flag_type=None, action=None,
       help_text=None
@@ -83,7 +75,7 @@ class UpdateArgumentGenerator(six.with_metaclass(abc.ABCMeta, object)):
       base.Argument with correct params
     """
     arg = base.Argument(
-        self._GetFlagName(arg_name, flag_prefix),
+        arg_utils.GetFlagName(arg_name, flag_prefix),
         action=action, help=help_text
     )
     if action != 'store_true':
@@ -111,7 +103,7 @@ class UpdateArgumentGenerator(six.with_metaclass(abc.ABCMeta, object)):
     """Flag that removes value if part of existing field."""
     return None
 
-  def Generate(self):
+  def Generate(self, additional_flags=None):
     """Returns ArgumentGroup with all flags specified in generator.
 
     ArgumentGroup is returned where the set flag is mutually exclusive with
@@ -132,6 +124,10 @@ class UpdateArgumentGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
     # removes value6 and then re-adds it
     {command} --add-foo=value6 --remove-foo=value6
+
+    Args:
+      additional_flags: [base.Argument], list of additional arguments needed
+        to udpate the value
 
     Returns:
       base.ArgumentGroup, argument group containing flags
@@ -160,7 +156,18 @@ class UpdateArgumentGenerator(six.with_metaclass(abc.ABCMeta, object)):
     if update_group.arguments:
       base_group.AddArgument(update_group)
 
-    return base_group
+    if not additional_flags:
+      return base_group
+
+    wrapper_group = base.ArgumentGroup(
+        required=False,
+        hidden=self.is_hidden,
+        help='All arguments needed to update {}.'.format(self.arg_name),
+    )
+    wrapper_group.AddArgument(base_group)
+    for arg in additional_flags:
+      wrapper_group.AddArgument(arg)
+    return wrapper_group
 
   # METHODS REQUIRED FOR PARSING NEW VALUE
   @abc.abstractmethod

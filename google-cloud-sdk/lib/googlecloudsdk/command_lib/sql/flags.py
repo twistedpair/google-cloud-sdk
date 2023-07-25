@@ -31,6 +31,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import sys
+
 from googlecloudsdk.api_lib.compute import utils as compute_utils
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
@@ -2006,6 +2007,24 @@ def AddUpgradeSqlNetworkArchitecture(parser):
   )
 
 
+def AddCascadableReplica(parser):
+  """Adds --cascadable-replica flag."""
+  kwargs = _GetKwargsForBoolFlag(False)
+  parser.add_argument(
+      '--cascadable-replica',
+      hidden=True,
+      required=False,
+      help=(
+          'Specifies if a SQL Server replica is a cascadable replica. A'
+          ' cascadable replica is a SQL Server cross region replica that'
+          ' supports replica(s) under it. This flag only takes effect when the'
+          ' `--master-instance-name` flag is set, and the replica under'
+          ' creation is cross region from the primary instance.'
+      ),
+      **kwargs
+  )
+
+
 def AddEnableDataCache(parser, show_negated_in_help=False):
   """Adds '--enable-data-cache' flag to the parser."""
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
@@ -2018,3 +2037,22 @@ def AddEnableDataCache(parser, show_negated_in_help=False):
       ),
       **kwargs
   )
+
+
+def AddReplicationLagMaxSecondsForRecreate(parser):
+  """Adds the '--replication-lag-max-seconds-for-recreate' flag to the parser for instances patch action.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--replication-lag-max-seconds-for-recreate',
+      type=arg_parsers.BoundedInt(lower_bound=300, upper_bound=31536000),
+      hidden=True,
+      action=arg_parsers.StoreOnceAction,
+      required=False,
+      help=(
+          'Set a maximum replication lag for a read replica in'
+          'seconds, If the replica lag exceeds the specified value, the read'
+          'replica(s) will be recreated. Min value=300 seconds,'
+          'Max value=31536000 seconds.'))

@@ -586,18 +586,18 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
 
     return command_level_fallthroughs
 
-  def _GenerateConceptParser(self, method, resource_spec, attribute_names,
+  def _GenerateConceptParser(self, resource_spec, attribute_names,
                              repeated=False, shared_resource_flags=None,
-                             anchor_arg_name=None):
+                             anchor_arg_name=None, group_help=None):
     """Generates a ConceptParser from YAMLConceptArgument.
 
     Args:
-      method: registry.APIMethod, helps determine the arg name
       resource_spec: concepts.ResourceSpec, used to create PresentationSpec
       attribute_names: names of resource attributes
       repeated: bool, whether or not the resource arg should be plural
       shared_resource_flags: [string], list of flags being generated elsewhere
       anchor_arg_name: string | None, anchor arg name
+      group_help: string | None, group help text
 
     Returns:
       ConceptParser that will be added to the parser.
@@ -609,9 +609,6 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
         n: ''
         for n in ignored_fields if n in attribute_names
     }
-
-    if not anchor_arg_name:
-      anchor_arg_name = self.GetAnchorArgName(method)
 
     command_level_fallthroughs = {}
     arg_fallthroughs = self.command_level_fallthroughs.copy()
@@ -632,7 +629,7 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
         [presentation_spec_class(
             anchor_arg_name,
             resource_spec,
-            self.group_help,
+            group_help=group_help,
             prefixes=False,
             required=self.required,
             flag_name_overrides=no_gen,
@@ -674,7 +671,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     # Passing in method resource_collection was supposed to just validate the
     # resource spec but it was also defaulting the api version.
     self._api_version = data.get('api_version', request_api_version)
-    self._attribute_data = data['attributes']
+    self.attribute_data = data['attributes']
     self._disable_auto_completers = data.get('disable_auto_completers', True)
 
     for removed in self.removed_flags:
@@ -686,7 +683,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
 
   @property
   def attribute_names(self):
-    return [a['attribute_name'] for a in self._attribute_data]
+    return [a['attribute_name'] for a in self.attribute_data]
 
   @property
   def collection(self):
@@ -735,13 +732,18 @@ class YAMLResourceArgument(YAMLConceptArgument):
     return self._GenerateUpdateFlags(method).Parse(namespace, message)
 
   def GenerateResourceArg(
-      self, method, anchor_arg_name=None, shared_resource_flags=None):
+      self, method, anchor_arg_name=None, shared_resource_flags=None,
+      group_help=None):
     resource_spec = self._GenerateResourceSpec(
         method and method.resource_argument_collection)
 
     return self._GenerateConceptParser(
-        method, resource_spec, self.attribute_names,
-        self.repeated, shared_resource_flags, anchor_arg_name)
+        resource_spec,
+        self.attribute_names,
+        repeated=self.repeated,
+        shared_resource_flags=shared_resource_flags,
+        anchor_arg_name=anchor_arg_name,
+        group_help=group_help)
 
   def Generate(self, method, unused_message, shared_resource_flags=None):
     """Generates and returns resource argument.
@@ -758,7 +760,10 @@ class YAMLResourceArgument(YAMLConceptArgument):
       return self._GenerateUpdateFlags(method, shared_resource_flags).Generate()
 
     return self.GenerateResourceArg(
-        method, shared_resource_flags=shared_resource_flags)
+        method,
+        anchor_arg_name=self.GetAnchorArgName(method),
+        shared_resource_flags=shared_resource_flags,
+        group_help=self.group_help)
 
   def Parse(self, method, message, namespace, group_required=True):
     """Sets the argument message value, if any, from the parsed args.
@@ -820,7 +825,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     # If attributes do not match resource_collection.detailed_params, will
     # raise InvalidSchema error
     attributes = concepts.ParseAttributesFromData(
-        self._attribute_data, resource_collection.detailed_params)
+        self.attribute_data, resource_collection.detailed_params)
 
     return concepts.ResourceSpec(
         resource_collection.full_name,
@@ -878,8 +883,12 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
         method and method.resource_argument_collection)
 
     return self._GenerateConceptParser(
-        method, resource_spec, self.attribute_names,
-        self.repeated, shared_resource_flags)
+        resource_spec,
+        self.attribute_names,
+        repeated=self.repeated,
+        shared_resource_flags=shared_resource_flags,
+        anchor_arg_name=self.GetAnchorArgName(method),
+        group_help=self.group_help)
 
   def Parse(self, method, message, namespace, group_required=True):
     ref = self.ParseResourceArg(method, namespace, group_required)

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.dataplex import util as dataplex_api
 from googlecloudsdk.api_lib.util import messages as messages_util
+from googlecloudsdk.command_lib.iam import iam_util
 
 
 def GenerateData(args):
@@ -66,16 +67,24 @@ def GenerateDataProfileSpec(args):
       )
   else:
     exclude_fields, include_fields, sampling_percent, row_filter = [None] * 4
-    if hasattr(args, 'exclude_fields') and args.IsSpecified('exclude_fields'):
+    if hasattr(args, 'exclude_field_names') and args.IsSpecified(
+        'exclude_field_names'
+    ):
       exclude_fields = (
           module.GoogleCloudDataplexV1DataProfileSpecSelectedFields(
-              fieldNames=args.exclude_fields.split(',')
+              fieldNames=list(
+                  val.strip() for val in args.exclude_field_names.split(',')
+              )
           )
       )
-    if hasattr(args, 'include_fields') and args.IsSpecified('include_fields'):
+    if hasattr(args, 'include_field_names') and args.IsSpecified(
+        'include_field_names'
+    ):
       include_fields = (
           module.GoogleCloudDataplexV1DataProfileSpecSelectedFields(
-              fieldNames=args.include_fields.split(',')
+              fieldNames=list(
+                  val.strip() for val in args.include_field_names.split(',')
+              )
           )
       )
     if hasattr(args, 'sampling_percent') and args.IsSpecified(
@@ -145,8 +154,8 @@ def GenerateUpdateMask(args):
       'data_quality_spec_file': 'dataQualitySpec',
       'row_filter': 'dataProfileSpec.rowFilter',
       'sampling_percent': 'dataProfileSpec.samplingPercent',
-      'include_fields': 'dataProfileSpec.includeFields',
-      'exclude_fields': 'dataProfileSpec.excludeFields',
+      'include_field_names': 'dataProfileSpec.includeFields',
+      'exclude_field_names': 'dataProfileSpec.excludeFields',
   }
 
   for arg, val in args_to_mask.items():
@@ -228,6 +237,27 @@ def GenerateDatascanForUpdateRequest(args):
     else:
       request.dataQualitySpec = module.GoogleCloudDataplexV1DataQualitySpec()
   return request
+
+
+def SetIamPolicy(datascan_ref, policy):
+  """Set IAM Policy request."""
+  set_iam_policy_req = dataplex_api.GetMessageModule().DataplexProjectsLocationsDataScansSetIamPolicyRequest(
+      resource=datascan_ref.RelativeName(),
+      googleIamV1SetIamPolicyRequest=dataplex_api.GetMessageModule().GoogleIamV1SetIamPolicyRequest(
+          policy=policy
+      ),
+  )
+  return dataplex_api.GetClientInstance().projects_locations_dataScans.SetIamPolicy(
+      set_iam_policy_req
+  )
+
+
+def SetIamPolicyFromFile(datascan_ref, policy_file):
+  """Set IAM policy binding request from file."""
+  policy = iam_util.ParsePolicyFile(
+      policy_file, dataplex_api.GetMessageModule().GoogleIamV1Policy
+  )
+  return SetIamPolicy(datascan_ref, policy)
 
 
 def WaitForOperation(operation):

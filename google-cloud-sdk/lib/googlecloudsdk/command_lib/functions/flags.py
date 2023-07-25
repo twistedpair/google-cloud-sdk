@@ -38,7 +38,6 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
-
 import six
 
 API = 'cloudfunctions'
@@ -441,7 +440,6 @@ def AddStageBucketFlag(parser):
 
 
 def AddRuntimeFlag(parser, choices=None):
-  # TODO(b/110148388): Do not hardcode list of choices in the help text.
   parser.add_argument(
       '--runtime',
       help="""\
@@ -580,21 +578,16 @@ def AddTriggerFlagGroup(parser):
   Args:
     parser: the argparse parser for the command.
   """
-  trigger_flags = ['--trigger-topic', '--trigger-bucket', '--trigger-http']
-  trigger_flags.append('--trigger-event-filters')
-  formatted_trigger_flags = ', '.join(['`{}`'.format(f) for f in trigger_flags])
-
-  trigger_group = parser.add_mutually_exclusive_group(
-      help=(
-          "If you don't specify a trigger when deploying an update to an "
-          'existing function it will keep its current trigger. '
-          'You must specify {formatted_trigger_flags} or '
-          '(`--trigger-event` AND `--trigger-resource`) when deploying a '
-          'new function.'.format(
-              formatted_trigger_flags=formatted_trigger_flags
-          )
-      )
-  )
+  trigger_group = parser.add_mutually_exclusive_group(help="""\
+      If you don't specify a trigger when deploying an update to an existing
+      function it will keep its current trigger. You must specify one of the
+      following when deploying a new function:
+      - `--trigger-topic`,
+      - `--trigger-bucket`,
+      - `--trigger-http`,
+      - `--trigger-event` AND `--trigger-resource`,
+      - `--trigger-event-filters` and optionally `--trigger-event-filters-path-pattern`.
+      """)
   trigger_group.add_argument(
       '--trigger-topic',
       help=(
@@ -610,8 +603,9 @@ def AddTriggerFlagGroup(parser):
   trigger_group.add_argument(
       '--trigger-bucket',
       help=(
-          'Google Cloud Storage bucket name. Every change in files in this '
-          'bucket will trigger function execution.'
+          'Google Cloud Storage bucket name. Trigger the function when an '
+          'object is created or overwritten in the specified Cloud Storage '
+          'bucket.'
       ),
       type=api_util.ValidateAndStandarizeBucketUriOrRaise,
   )
@@ -647,17 +641,19 @@ def AddTriggerFlagGroup(parser):
       type=arg_parsers.ArgDict(),
       action=arg_parsers.UpdateAction,
       metavar='ATTRIBUTE=VALUE',
-      help=(
-          'The Eventarc matching criteria for the trigger. The criteria can '
-          'be specified either as a single comma-separated argument or as '
-          'multiple arguments. This is only relevant when `--gen2` is provided.'
-      ),
+      help="""\
+      The Eventarc matching criteria for the trigger. The criteria can be
+      specified either as a single comma-separated argument or as multiple
+      arguments. The filters must include the ``type'' attribute, as well as any
+      other attributes that are expected for the chosen type. This is only
+      relevant when `--gen2` is provided.
+      """,
   )
   eventarc_trigger_group.add_argument(
       '--trigger-event-filters-path-pattern',
       type=arg_parsers.ArgDict(),
       action=arg_parsers.UpdateAction,
-      metavar='ATTRIBUTE=VALUE',
+      metavar='ATTRIBUTE=PATH_PATTERN',
       help="""\
       The Eventarc matching criteria for the trigger in path pattern format.
       The criteria can be specified as a single comma-separated argument or as
@@ -868,7 +864,7 @@ def AddDataFlag(parser):
   parser.add_argument(
       '--data',
       help="""JSON string with data that will be passed to the function.""",
-      type=_ValidateJsonOrRaiseDataError
+      type=_ValidateJsonOrRaiseDataError,
   )
 
 
@@ -885,7 +881,7 @@ def AddCloudEventsFlag(parser):
       the top-level 'data' field set as the HTTP body and all other JSON fields
       sent as HTTP headers.
       """,
-      type=_ValidateJsonOrRaiseCloudEventError
+      type=_ValidateJsonOrRaiseCloudEventError,
   )
 
 
@@ -1028,7 +1024,7 @@ def AddUpgradeFlags(parser):
       action='store_true',
       help=(
           'Sets up the function upgrade config by creating a 2nd gen copy of'
-          " the function's code and configuration. This is the default action."
+          " the function's code and configuration."
       ),
   )
   upgrade_group.add_argument(
@@ -1078,4 +1074,5 @@ def _ValidateJsonOrRaiseError(data, arg_name):
     return data
   except ValueError as e:
     raise calliope_exceptions.InvalidArgumentException(
-        arg_name, 'Is not a valid JSON: ' + six.text_type(e))
+        arg_name, 'Is not a valid JSON: ' + six.text_type(e)
+    )

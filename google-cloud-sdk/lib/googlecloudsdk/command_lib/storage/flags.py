@@ -454,6 +454,17 @@ def add_raw_display_flag(parser):
   )
 
 
+def add_soft_deleted_flag(parser):
+  parser.add_argument(
+      '--soft-deleted',
+      action='store_true',
+      help=(
+          'Displays soft-deleted objects only. Excludes displaying live,'
+          ' versioned, and other objects.'
+      ),
+  )
+
+
 def add_recovery_point_objective_flag(parser):
   """Adds the recovery point objective flag for buckets commands.
 

@@ -100,7 +100,6 @@ NC_CPU_MANAGER_POLICY = 'cpuManagerPolicy'
 NC_CPU_CFS_QUOTA = 'cpuCFSQuota'
 NC_CPU_CFS_QUOTA_PERIOD = 'cpuCFSQuotaPeriod'
 NC_POD_PIDS_LIMIT = 'podPidsLimit'
-NC_INSECURE_KUBELET_READONLY_PORT_ENABLED = 'insecureKubeletReadonlyPortEnabled'
 NC_LINUX_CONFIG = 'linuxConfig'
 NC_SYSCTL = 'sysctl'
 NC_CGROUP_MODE = 'cgroupMode'
@@ -606,7 +605,6 @@ def LoadSystemConfigFromYAML(node_config, content, messages):
         NC_CPU_CFS_QUOTA: bool,
         NC_CPU_CFS_QUOTA_PERIOD: str,
         NC_POD_PIDS_LIMIT: int,
-        NC_INSECURE_KUBELET_READONLY_PORT_ENABLED: bool,
     }
     _CheckNodeConfigFields(
         NC_KUBELET_CONFIG, kubelet_config_opts, config_fields)
@@ -619,8 +617,6 @@ def LoadSystemConfigFromYAML(node_config, content, messages):
         NC_CPU_CFS_QUOTA_PERIOD)
     node_config.kubeletConfig.podPidsLimit = kubelet_config_opts.get(
         NC_POD_PIDS_LIMIT)
-    node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled = (
-        kubelet_config_opts.get(NC_INSECURE_KUBELET_READONLY_PORT_ENABLED))
 
   # Parse Linux config options.
   linux_config_opts = opts.get(NC_LINUX_CONFIG)

@@ -403,6 +403,10 @@ class _BaseInstances(object):
           settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
         settings.ipConfiguration.pscConfig.allowedConsumerProjects = []
 
+      if args.replication_lag_max_seconds_for_recreate is not None:
+        settings.replicationLagMaxSeconds = (
+            args.replication_lag_max_seconds_for_recreate
+        )
     return settings
 
   @classmethod
@@ -747,6 +751,19 @@ class _BaseInstances(object):
                 failoverTarget=True,
             )
         )
+      if args.cascadable_replica:
+        if instance_resource.replicaConfiguration:
+          instance_resource.replicaConfiguration.cascadableReplica = (
+              args.cascadable_replica
+          )
+        else:
+          instance_resource.replicaConfiguration = (
+              sql_messages.ReplicaConfiguration(
+                  kind='sql#replicaConfiguration',
+                  cascadableReplica=args.cascadable_replica,
+              )
+          )
+
     else:
       replication = (
           sql_messages.Settings.ReplicationTypeValueValuesEnum.SYNCHRONOUS

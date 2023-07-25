@@ -30,6 +30,7 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 VOLUMES_LIST_FORMAT = """\
     table(
         name.basename():label=VOLUME_NAME:sort=1,
+        name.segment(3):label=LOCATION,
         storagePool,
         capacityGib:label=CAPACITY_GB,
         serviceLevel,

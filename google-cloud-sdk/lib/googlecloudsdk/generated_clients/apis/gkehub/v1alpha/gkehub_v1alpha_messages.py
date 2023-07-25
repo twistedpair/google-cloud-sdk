@@ -452,10 +452,12 @@ class ClusterUpgradeGKEUpgradeFeatureState(_messages.Message):
   Fields:
     conditions: Current conditions of the feature.
     state: Scope-level upgrade state.
+    upgradeState: Upgrade state. It will eventually replace `state`.
   """
 
   conditions = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureCondition', 1, repeated=True)
   state = _messages.MessageField('ClusterUpgradeScopeGKEUpgradeState', 2, repeated=True)
+  upgradeState = _messages.MessageField('ClusterUpgradeGKEUpgradeState', 3, repeated=True)
 
 
 class ClusterUpgradeGKEUpgradeOverride(_messages.Message):
@@ -470,6 +472,48 @@ class ClusterUpgradeGKEUpgradeOverride(_messages.Message):
 
   postConditions = _messages.MessageField('ClusterUpgradePostConditions', 1)
   upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 2)
+
+
+class ClusterUpgradeGKEUpgradeState(_messages.Message):
+  r"""GKEUpgradeState is a GKEUpgrade and its state at the scope and fleet
+  level.
+
+  Messages:
+    StatsValue: Number of GKE clusters in each status code.
+
+  Fields:
+    stats: Number of GKE clusters in each status code.
+    status: Status of the upgrade.
+    upgrade: Which upgrade to track the state.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StatsValue(_messages.Message):
+    r"""Number of GKE clusters in each status code.
+
+    Messages:
+      AdditionalProperty: An additional property for a StatsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type StatsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a StatsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  stats = _messages.MessageField('StatsValue', 1)
+  status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 2)
+  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 3)
 
 
 class ClusterUpgradeIgnoredMembership(_messages.Message):
@@ -1071,7 +1115,7 @@ class ConfigManagementConfigSync(_messages.Message):
       and Cloud Monarch when Workload Identity is enabled. The GSA should have
       the Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role.
       The Kubernetes ServiceAccount `default` in the namespace `config-
-      management-monitoring` should be binded to the GSA. This field is
+      management-monitoring` should be bound to the GSA. This field is
       required when automatic Feature management is enabled.
     oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
@@ -4263,10 +4307,11 @@ class IdentityServiceAuthMethod(_messages.Message):
 
   Fields:
     azureadConfig: AzureAD specific Configuration.
-    googleConfig: GoogleConfig specific configuration
+    googleConfig: GoogleConfig specific configuration.
     name: Identifier for auth config.
     oidcConfig: OIDC specific configuration.
     proxy: Proxy server address to use for auth method.
+    samlConfig: SAML specific configuration.
   """
 
   azureadConfig = _messages.MessageField('IdentityServiceAzureADConfig', 1)
@@ -4274,6 +4319,7 @@ class IdentityServiceAuthMethod(_messages.Message):
   name = _messages.StringField(3)
   oidcConfig = _messages.MessageField('IdentityServiceOidcConfig', 4)
   proxy = _messages.StringField(5)
+  samlConfig = _messages.MessageField('IdentityServiceSamlConfig', 6)
 
 
 class IdentityServiceAzureADConfig(_messages.Message):
@@ -4288,6 +4334,8 @@ class IdentityServiceAzureADConfig(_messages.Message):
     kubectlRedirectUri: The redirect URL that kubectl uses for authorization.
     tenant: Kind of Azure AD account to be authenticated. Supported values are
       or for accounts belonging to a specific tenant.
+    userClaim: Optional. Claim in the AzureAD ID Token that holds the user
+      details.
   """
 
   clientId = _messages.StringField(1)
@@ -4295,6 +4343,7 @@ class IdentityServiceAzureADConfig(_messages.Message):
   encryptedClientSecret = _messages.BytesField(3)
   kubectlRedirectUri = _messages.StringField(4)
   tenant = _messages.StringField(5)
+  userClaim = _messages.StringField(6)
 
 
 class IdentityServiceGoogleConfig(_messages.Message):
@@ -4389,6 +4438,82 @@ class IdentityServiceOidcConfig(_messages.Message):
   scopes = _messages.StringField(12)
   userClaim = _messages.StringField(13)
   userPrefix = _messages.StringField(14)
+
+
+class IdentityServiceSamlConfig(_messages.Message):
+  r"""Configuration for the SAML Auth flow.
+
+  Messages:
+    AttributeMappingValue: Optional. The mapping of additional user attributes
+      like nickname, birthday and address etc.. `key` is the name of this
+      additional attribute. `value` is a string presenting as CEL(common
+      expression language, go/cel) used for getting the value from the
+      resources. Take nickname as an example, in this case, `key` is
+      "attribute.nickname" and `value` is "assertion.nickname".
+
+  Fields:
+    attributeMapping: Optional. The mapping of additional user attributes like
+      nickname, birthday and address etc.. `key` is the name of this
+      additional attribute. `value` is a string presenting as CEL(common
+      expression language, go/cel) used for getting the value from the
+      resources. Take nickname as an example, in this case, `key` is
+      "attribute.nickname" and `value` is "assertion.nickname".
+    groupPrefix: Optional. Prefix to prepend to group name.
+    groupsAttribute: Optional. The SAML attribute to read groups from. This
+      value is expected to be a string and will be passed along as-is (with
+      the option of being prefixed by the `group_prefix`).
+    identityProviderCertificates: Required. The list of IdP certificates to
+      validate the SAML response against.
+    identityProviderId: Required. The entity ID of the SAML IdP.
+    identityProviderSsoUri: Required. The URI where the SAML IdP exposes the
+      SSO service.
+    userAttribute: Optional. The SAML attribute to read username from. If
+      unspecified, the username will be read from the NameID element of the
+      assertion in SAML response. This value is expected to be a string and
+      will be passed along as-is (with the option of being prefixed by the
+      `user_prefix`).
+    userPrefix: Optional. Prefix to prepend to user name.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttributeMappingValue(_messages.Message):
+    r"""Optional. The mapping of additional user attributes like nickname,
+    birthday and address etc.. `key` is the name of this additional attribute.
+    `value` is a string presenting as CEL(common expression language, go/cel)
+    used for getting the value from the resources. Take nickname as an
+    example, in this case, `key` is "attribute.nickname" and `value` is
+    "assertion.nickname".
+
+    Messages:
+      AdditionalProperty: An additional property for a AttributeMappingValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AttributeMappingValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttributeMappingValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attributeMapping = _messages.MessageField('AttributeMappingValue', 1)
+  groupPrefix = _messages.StringField(2)
+  groupsAttribute = _messages.StringField(3)
+  identityProviderCertificates = _messages.StringField(4, repeated=True)
+  identityProviderId = _messages.StringField(5)
+  identityProviderSsoUri = _messages.StringField(6)
+  userAttribute = _messages.StringField(7)
+  userPrefix = _messages.StringField(8)
 
 
 class KubernetesMetadata(_messages.Message):

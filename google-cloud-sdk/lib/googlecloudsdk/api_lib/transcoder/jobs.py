@@ -45,6 +45,11 @@ class ProcessingMode(enum.Enum):
   PROCESSING_MODE_BATCH = 'PROCESSING_MODE_BATCH'
 
 
+class OptimizationStrategy(enum.Enum):
+  AUTODETECT = 'AUTODETECT'
+  DISABLED = 'DISABLED'
+
+
 class JobsClient(object):
   """Client for job service in the Transcoder API."""
 
@@ -74,6 +79,10 @@ class JobsClient(object):
     if args.mode is not None:
       msg = _GetTranscoderMessages()
       mode = msg.Job.ModeValueValuesEnum(args.mode)
+    optimization = None
+    if args.optimization is not None:
+      msg = _GetTranscoderMessages()
+      optimization = msg.Job.OptimizationValueValuesEnum(args.optimization)
     job_json = None
     if template_id is None:
       job_json = util.GetContent(args.file, args.json)
@@ -85,6 +94,7 @@ class JobsClient(object):
           templateId=template_id,
           labels=labels,
           mode=mode,
+          optimization=optimization,
       )
     else:
       job = encoding.JsonToMessage(self._job_class, job_json)
@@ -92,6 +102,7 @@ class JobsClient(object):
       job.outputUri = output_uri or job.outputUri
       job.labels = labels or job.labels
       job.mode = mode or job.mode
+      job.optimization = optimization or job.optimization
     req = self.message.TranscoderProjectsLocationsJobsCreateRequest(
         parent=parent_ref.RelativeName(), job=job)
     return self._service.Create(req)

@@ -72,5 +72,11 @@ def InsertDicomStreamConfig(api_version):
             bigqueryDestination=
             messages.GoogleCloudHealthcareV1beta1DicomBigQueryDestination(
                 tableUri=dest)))
+    else:
+      for dest in bq_destinations:
+        stream_configs.append(messages.GoogleCloudHealthcareV1DicomStreamConfig(
+            bigqueryDestination=
+            messages.GoogleCloudHealthcareV1DicomBigQueryDestination(
+                tableUri=dest)))
     return stream_configs
   return VersionedInsertDicomStreamConfig

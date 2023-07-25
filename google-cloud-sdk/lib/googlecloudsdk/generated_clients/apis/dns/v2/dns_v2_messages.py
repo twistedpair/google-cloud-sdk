@@ -2362,9 +2362,11 @@ class RRSetRoutingPolicyLoadBalancerTarget(_messages.Message):
     Values:
       NONE: <no description>
       REGIONAL_L4ILB: <no description>
+      REGIONAL_L7ILB: <no description>
     """
     NONE = 0
     REGIONAL_L4ILB = 1
+    REGIONAL_L7ILB = 2
 
   ipAddress = _messages.StringField(1)
   ipProtocol = _messages.EnumField('IpProtocolValueValuesEnum', 2)

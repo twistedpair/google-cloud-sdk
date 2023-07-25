@@ -313,6 +313,13 @@ properties:
     type: array
     items:
       type: string
+  serviceLbPolicy:
+    description: |-
+      URL to networkservices.ServiceLbPolicy resource.
+      Can only be set if load balancing scheme is
+      EXTERNAL_MANAGED, INTERNAL_MANAGED, or
+      INTERNAL_SELF_MANAGED and the scope is global.
+    type: string
   sessionAffinity:
     description: |-
       Type of session affinity to use. The default is NONE.

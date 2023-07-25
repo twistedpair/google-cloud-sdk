@@ -25,30 +25,19 @@ from googlecloudsdk.api_lib.workstations.util import VERSION_MAP
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
-
 import six
 
 IMAGE_URL_MAP = {
-    'codeoss':
-        'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest',
-    'intellij':
-        'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/intellij-ultimate:latest',
-    'pycharm':
-        'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/pycharm:latest',
-    'rider':
-        'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/rider:latest',
-    'webstorm':
-        'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/webstorm:latest',
-    'phpstorm':
-        'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/phpstorm:latest',
-    'rubymine':
-        'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/rubymine:latest',
-    'goland':
-        'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/goland:latest',
-    'clion':
-        'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/clion:latest',
-    'base-image':
-        'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/base:latest',
+    'codeoss': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest',
+    'intellij': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/intellij-ultimate:latest',
+    'pycharm': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/pycharm:latest',
+    'rider': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/rider:latest',
+    'webstorm': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/webstorm:latest',
+    'phpstorm': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/phpstorm:latest',
+    'rubymine': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/rubymine:latest',
+    'goland': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/goland:latest',
+    'clion': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/clion:latest',
+    'base-image': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/base:latest',
 }
 
 
@@ -59,7 +48,9 @@ class Configs:
     self.api_version = VERSION_MAP.get(release_track)
     self.client = GetClientInstance(release_track)
     self.messages = GetMessagesModule(release_track)
-    self._service = self.client.projects_locations_workstationClusters_workstationConfigs
+    self._service = (
+        self.client.projects_locations_workstationClusters_workstationConfigs
+    )
 
   def Create(self, args):
     """Create a new workstation configuration.
@@ -97,14 +88,21 @@ class Configs:
     if args.network_tags:
       config.host.gceInstance.tags = args.network_tags
     config.host.gceInstance.poolSize = args.pool_size
-    config.host.gceInstance.disablePublicIpAddresses = args.disable_public_ip_addresses
-    config.host.gceInstance.shieldedInstanceConfig = self.messages.GceShieldedInstanceConfig(
-        enableSecureBoot=args.shielded_secure_boot,
-        enableVtpm=args.shielded_vtpm,
-        enableIntegrityMonitoring=args.shielded_integrity_monitoring,
+    config.host.gceInstance.disablePublicIpAddresses = (
+        args.disable_public_ip_addresses
     )
-    config.host.gceInstance.confidentialInstanceConfig = self.messages.GceConfidentialInstanceConfig(
-        enableConfidentialCompute=args.enable_confidential_compute)
+    config.host.gceInstance.shieldedInstanceConfig = (
+        self.messages.GceShieldedInstanceConfig(
+            enableSecureBoot=args.shielded_secure_boot,
+            enableVtpm=args.shielded_vtpm,
+            enableIntegrityMonitoring=args.shielded_integrity_monitoring,
+        )
+    )
+    config.host.gceInstance.confidentialInstanceConfig = (
+        self.messages.GceConfidentialInstanceConfig(
+            enableConfidentialCompute=args.enable_confidential_compute
+        )
+    )
     config.host.gceInstance.bootDiskSizeGb = args.boot_disk_size
 
     if (
@@ -124,9 +122,13 @@ class Configs:
     pd = self.messages.PersistentDirectory()
     pd.mountPath = '/home'
     if args.pd_reclaim_policy == 'retain':
-      reclaim_policy = self.messages.GceRegionalPersistentDisk.ReclaimPolicyValueValuesEnum.RETAIN
+      reclaim_policy = (
+          self.messages.GceRegionalPersistentDisk.ReclaimPolicyValueValuesEnum.RETAIN
+      )
     else:
-      reclaim_policy = self.messages.GceRegionalPersistentDisk.ReclaimPolicyValueValuesEnum.DELETE
+      reclaim_policy = (
+          self.messages.GceRegionalPersistentDisk.ReclaimPolicyValueValuesEnum.DELETE
+      )
 
     pd.gcePd = self.messages.GceRegionalPersistentDisk(
         sizeGb=args.pd_disk_size,
@@ -142,7 +144,8 @@ class Configs:
       config.container.image = args.container_custom_image
     elif args.container_predefined_image:
       config.container.image = IMAGE_URL_MAP.get(
-          args.container_predefined_image)
+          args.container_predefined_image
+      )
     if args.container_command:
       config.container.command = args.container_command
     if args.container_args:
@@ -152,7 +155,9 @@ class Configs:
       for key, value in args.container_env.items():
         env_val.additionalProperties.append(
             self.messages.Container.EnvValue.AdditionalProperty(
-                key=key, value=value))
+                key=key, value=value
+            )
+        )
       config.container.env = env_val
     config.container.workingDir = args.container_working_dir
     config.container.runAsUser = args.container_run_as_user
@@ -166,7 +171,8 @@ class Configs:
     config.encryptionKey = encryption_key
 
     create_req = self.messages.WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsCreateRequest(
-        parent=parent, workstationConfigId=config_id, workstationConfig=config)
+        parent=parent, workstationConfigId=config_id, workstationConfig=config
+    )
     op_ref = self._service.Create(create_req)
 
     log.status.Print('Create request issued for: [{}]'.format(config_id))
@@ -178,13 +184,17 @@ class Configs:
     op_resource = resources.REGISTRY.ParseRelativeName(
         op_ref.name,
         collection='workstations.projects.locations.operations',
-        api_version=self.api_version)
+        api_version=self.api_version,
+    )
     poller = waiter.CloudOperationPoller(
-        self._service, self.client.projects_locations_operations)
+        self._service, self.client.projects_locations_operations
+    )
 
     result = waiter.WaitFor(
-        poller, op_resource,
-        'Waiting for operation [{}] to complete'.format(op_ref.name))
+        poller,
+        op_resource,
+        'Waiting for operation [{}] to complete'.format(op_ref.name),
+    )
     log.status.Print('Created configuration [{}].'.format(config_id))
 
     return result
@@ -206,15 +216,15 @@ class Configs:
     config.name = config_name
     update_mask = []
 
-    if args.idle_timeout:
+    if args.IsSpecified('idle_timeout'):
       config.idleTimeout = '{}s'.format(args.idle_timeout)
       update_mask.append('idle_timeout')
 
-    if args.running_timeout:
+    if args.IsSpecified('running_timeout'):
       config.runningTimeout = '{}s'.format(args.running_timeout)
       update_mask.append('running_timeout')
 
-    if args.labels:
+    if args.IsSpecified('labels'):
       config.labels = self.messages.WorkstationConfig.LabelsValue(
           additionalProperties=[
               self.messages.WorkstationConfig.LabelsValue.AdditionalProperty(
@@ -228,33 +238,33 @@ class Configs:
     # GCE Instance Config
     config.host = self.messages.Host()
     config.host.gceInstance = self.messages.GceInstance()
-    if args.machine_type:
+    if args.IsSpecified('machine_type'):
       config.host.gceInstance.machineType = args.machine_type
       update_mask.append('host.gce_instance.machine_type')
 
-    if args.service_account:
+    if args.IsSpecified('service_account'):
       config.host.gceInstance.serviceAccount = args.service_account
       update_mask.append('host.gce_instance.service_account')
 
-    if args.network_tags:
+    if args.IsSpecified('network_tags'):
       config.host.gceInstance.tags = args.network_tags
       update_mask.append('host.gce_instance.tags')
 
-    if args.pool_size:
+    if args.IsSpecified('pool_size'):
       config.host.gceInstance.poolSize = args.pool_size
       update_mask.append('host.gce_instance.pool_size')
 
-    if args.disable_public_ip_addresses is not None:
+    if args.IsSpecified('disable_public_ip_addresses'):
       config.host.gceInstance.disablePublicIpAddresses = (
           args.disable_public_ip_addresses
       )
       update_mask.append('host.gce_instance.disable_public_ip_addresses')
 
-    if args.boot_disk_size:
+    if args.IsSpecified('boot_disk_size'):
       config.host.gceInstance.bootDiskSizeGb = args.boot_disk_size
       update_mask.append('host.gce_instance.boot_disk_size_gb')
 
-    if args.enable_confidential_compute is not None:
+    if args.IsSpecified('enable_confidential_compute'):
       config.host.gceInstance.confidentialInstanceConfig = (
           self.messages.GceConfidentialInstanceConfig(
               enableConfidentialCompute=args.enable_confidential_compute
@@ -266,20 +276,22 @@ class Configs:
 
     # Shielded Instance Config
     gce_shielded_instance_config = self.messages.GceShieldedInstanceConfig()
-    if args.shielded_secure_boot is not None:
-      gce_shielded_instance_config.enableSecureBoot = True
+    if args.IsSpecified('shielded_secure_boot'):
+      gce_shielded_instance_config.enableSecureBoot = args.shielded_secure_boot
       update_mask.append(
           'host.gce_instance.shielded_instance_config.enable_secure_boot'
       )
 
-    if args.shielded_vtpm is not None:
-      gce_shielded_instance_config.enableVtpm = True
+    if args.IsSpecified('shielded_vtpm'):
+      gce_shielded_instance_config.enableVtpm = args.shielded_vtpm
       update_mask.append(
           'host.gce_instance.shielded_instance_config.enable_vtpm'
       )
 
-    if args.shielded_integrity_monitoring is not None:
-      gce_shielded_instance_config.enableIntegrityMonitoring = True
+    if args.IsSpecified('shielded_integrity_monitoring'):
+      gce_shielded_instance_config.enableIntegrityMonitoring = (
+          args.shielded_integrity_monitoring
+      )
       update_mask.append(
           'host.gce_instance.shielded_instance_config.enable_integrity_monitoring'
       )
@@ -288,26 +300,41 @@ class Configs:
         gce_shielded_instance_config
     )
 
+    if self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA) and (
+        args.IsSpecified('accelerator_type')
+        or args.IsSpecified('accelerator_count')
+    ):
+      accelerators = [
+          self.messages.Accelerator(
+              type=args.accelerator_type,
+              count=args.accelerator_count,
+          )
+      ]
+      config.host.gceInstance.accelerators = accelerators
+      update_mask.append(
+          'host.gce_instance.accelerators'
+      )
+
     # Container
     config.container = self.messages.Container()
-    if args.container_custom_image:
+    if args.IsSpecified('container_custom_image'):
       config.container.image = args.container_custom_image
       update_mask.append('container.image')
-    elif args.container_predefined_image:
+    elif args.IsSpecified('container_predefined_image'):
       config.container.image = IMAGE_URL_MAP.get(
           args.container_predefined_image
       )
       update_mask.append('container.image')
 
-    if args.container_command:
+    if args.IsSpecified('container_command'):
       config.container.command = args.container_command
       update_mask.append('container.command')
 
-    if args.container_args:
+    if args.IsSpecified('container_args'):
       config.container.args = args.container_args
       update_mask.append('container.args')
 
-    if args.container_env:
+    if args.IsSpecified('container_env'):
       env_val = self.messages.Container.EnvValue()
       for key, value in args.container_env.items():
         env_val.additionalProperties.append(
@@ -318,11 +345,11 @@ class Configs:
       config.container.env = env_val
       update_mask.append('container.env')
 
-    if args.container_working_dir:
+    if args.IsSpecified('container_working_dir'):
       config.container.workingDir = args.container_working_dir
       update_mask.append('container.working_dir')
 
-    if args.container_run_as_user:
+    if args.IsSpecified('container_run_as_user'):
       config.container.runAsUser = args.container_run_as_user
       update_mask.append('container.run_as_user')
 
@@ -333,7 +360,8 @@ class Configs:
     update_req = self.messages.WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsPatchRequest(
         name=config_name,
         workstationConfig=config,
-        updateMask=','.join(update_mask))
+        updateMask=','.join(update_mask),
+    )
     op_ref = self._service.Patch(update_req)
 
     log.status.Print('Update request issued for: [{}]'.format(config_id))
@@ -345,13 +373,17 @@ class Configs:
     op_resource = resources.REGISTRY.ParseRelativeName(
         op_ref.name,
         collection='workstations.projects.locations.operations',
-        api_version=self.api_version)
+        api_version=self.api_version,
+    )
     poller = waiter.CloudOperationPoller(
-        self._service, self.client.projects_locations_operations)
+        self._service, self.client.projects_locations_operations
+    )
 
     result = waiter.WaitFor(
-        poller, op_resource,
-        'Waiting for operation [{}] to complete'.format(op_ref.name))
+        poller,
+        op_resource,
+        'Waiting for operation [{}] to complete'.format(op_ref.name),
+    )
     log.status.Print('Updated configuration [{}].'.format(config_id))
 
     return result

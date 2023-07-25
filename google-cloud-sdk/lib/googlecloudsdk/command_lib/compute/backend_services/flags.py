@@ -225,14 +225,16 @@ def AddLoadBalancingScheme(parser):
       type=lambda x: x.replace('-', '_').upper(),
       default='EXTERNAL',
       help="""\
-      Specifies the load balancer type. Choose EXTERNAL for the classic HTTP(S)
-      load balancers, the external TCP/UDP network load balancers, and the
-      external TCP/SSL proxy load balancers.
+      Specifies the load balancer type. Choose EXTERNAL for the classic
+      Application Load Balancers, the external passthrough Network Load
+      Balancers, and the global external proxy Network Load Balancers.
       Choose EXTERNAL_MANAGED for the Envoy-based global and regional external
-      HTTP(S) load balancers. Choose INTERNAL for
-      internal TCP/UDP load balancers. Choose INTERNAL_MANAGED for Envoy-based
-      internal load balancers such as the internal HTTP(S) load balancers and
-      the internal TCP proxy load balancers. Choose INTERNAL_SELF_MANAGED for
+      Application Load Balancers, and the regional external proxy Network Load
+      Balancers. Choose INTERNAL for the internal
+      passthrough Network Load Balancers. Choose INTERNAL_MANAGED for
+      Envoy-based internal load balancers such as the internal Application
+      Load Balancers and the internal proxy Network Load Balancers. Choose
+      INTERNAL_SELF_MANAGED for
       Traffic Director. For more information, refer to this guide:
       https://cloud.google.com/load-balancing/docs/choosing-load-balancer
       """)
@@ -325,13 +327,13 @@ def AddConnectionTrackingPolicy(parser):
       help="""\
       Specifies the connection key used for connection tracking.
       The default value is PER_CONNECTION. Applicable only for backend
-      service-based network load balancers and
-      internal TCP/UDP load balancers as part of a connection tracking policy.
+      service-based external and internal passthrough Network Load
+      Balancers as part of a connection tracking policy.
       For details, see: [Connection tracking mode for
-      internal TCP/UDP load
+      internal passthrough Network Load Balancers
       balancing](https://cloud.google.com/load-balancing/docs/internal#tracking-mode)
-      and [Connection tracking mode for network load
-      balancing](https://cloud.google.com/load-balancing/docs/network/networklb-backend-service#tracking-mode).
+      and [Connection tracking mode for external passthrough Network Load
+      Balancers](https://cloud.google.com/load-balancing/docs/network/networklb-backend-service#tracking-mode).
       """)
   parser.add_argument(
       '--idle-timeout-sec',
@@ -340,8 +342,8 @@ def AddConnectionTrackingPolicy(parser):
       help="""\
       Specifies how long to keep a connection tracking table entry while there
       is no matching traffic (in seconds). Applicable only for backend
-      service-based network load balancers and internal TCP/UDP load balancers
-      as part of a connection tracking policy.
+      service-based external and internal passthrough Network Load
+      Balancers as part of a connection tracking policy.
       """)
   parser.add_argument(
       '--enable-strong-affinity',
@@ -552,9 +554,9 @@ def HttpHealthCheckArgument(required=False):
       health of the backend service.
 
       Legacy health checks are not recommended for backend services. It is
-      possible to use a legacy health check on a backend service for a HTTP(S)
-      load balancer if that backend service uses instance groups. For more
-      information, refer to this guide:
+      possible to use a legacy health check on a backend service for an
+      Application Load Balancer if that backend service uses instance groups.
+      For more information, refer to this guide:
       https://cloud.google.com/load-balancing/docs/health-check-concepts#lb_guide.
       """)
 
@@ -572,9 +574,9 @@ def HttpsHealthCheckArgument(required=False):
       health of the backend service.
 
       Legacy health checks are not recommended for backend services. It is
-      possible to use a legacy health check on a backend service for a HTTP(S)
-      load balancer if that backend service uses instance groups. For more
-      information, refer to this guide:
+      possible to use a legacy health check on a backend service for an
+      Application Load Balancer  if that backend service uses instance groups.
+      For more information, refer to this guide:
       https://cloud.google.com/load-balancing/docs/health-check-concepts#lb_guide.
       """)
 
@@ -627,10 +629,9 @@ def GetHealthCheckUris(args, resource_resolver, resource_parser):
 
 SERVICE_LB_POLICY_HELP = """\
 Service load balancing policy to be applied to this backend service.
-Can only be set if load balancing scheme is EXTERNAL, INTERNAL_MANAGED or
-INTERNAL_SELF_MANAGED. If used with a backend service, must reference a
-global policy. If used with a regional backend service, must reference a
-regional policy.
+Can only be set if load balancing scheme is EXTERNAL_MANAGED,
+INTERNAL_MANAGED, or INTERNAL_SELF_MANAGED. Only available for global backend
+services.
 """
 
 
@@ -837,10 +838,10 @@ def AddTimeout(parser, default='30s'):
       default=default,
       type=arg_parsers.Duration(),
       help="""\
-      Applicable to all load balancing products except Internal TCP/UDP Load
-      Balancing and External TCP/UDP Network Load Balancing. For Internal
-      TCP/UDP Load Balancing (``load-balancing-scheme'' set to INTERNAL) and
-      External TCP/UDP Network Load Balancing (``global'' not set and
+      Applicable to all load balancing products except passthrough Network Load
+      Balancers. For internal passthrough Network Load Balancers
+      (``load-balancing-scheme'' set to INTERNAL) and
+      external passthrough Network Load Balancers (``global'' not set and
       ``load-balancing-scheme'' set to EXTERNAL), ``timeout'' is ignored.
 
       If the ``protocol'' is HTTP, HTTPS, or HTTP2, ``timeout'' is a
@@ -870,9 +871,9 @@ def AddPortName(parser):
   parser.add_argument(
       '--port-name',
       help="""\
-      Backend services for external HTTP(S) load balancing, internal HTTP(S)
-      load balancing, TCP proxy load balancing, and SSL proxy load balancing
-      must reference exactly one named port if using instance group backends.
+      Backend services for Application Load Balancers and proxy Network
+      Load Balancers must reference exactly one named port if using instance
+      group backends.
 
       Each instance group backend exports one or more named ports, which map a
       user-configurable name to a port number. The backend service's named port
@@ -887,8 +888,8 @@ def AddPortName(parser):
 
       - For any load balancer, if the backends are not instance groups
         (for example, GCE_VM_IP_PORT NEGs).
-      - For any type of backend on a backend service for internal TCP/UDP load
-        balancing or external TCP/UDP network load balancing.
+      - For any type of backend on a backend service for internal or external
+        passthrough Network Load Balancers.
 
       See also
       https://cloud.google.com/load-balancing/docs/backend-service#named_ports.
@@ -915,25 +916,26 @@ def AddProtocol(parser, default='HTTP', support_unspecified_protocol=False):
       help="""\
       Protocol for incoming requests.
 
-      If the `load-balancing-scheme` is `INTERNAL` (Internal TCP/UDP Load
-      Balancing), the protocol must be one of: {0}.
+      If the `load-balancing-scheme` is `INTERNAL` (Internal passthrough
+      Network Load Balancer), the protocol must be one of: {0}.
 
       If the `load-balancing-scheme` is `INTERNAL_SELF_MANAGED` (Traffic
       Director), the protocol must be one of: {1}.
 
-      If the `load-balancing-scheme` is `INTERNAL_MANAGED` (Internal HTTP(S)
-      Load Balancing), the protocol must be one of: HTTP, HTTPS, HTTP2.
+      If the `load-balancing-scheme` is `INTERNAL_MANAGED` (Internal Application
+      Load Balancer), the protocol must be one of: HTTP, HTTPS, HTTP2.
 
       If the `load-balancing-scheme` is `EXTERNAL` and `region` is not set
-      (HTTP(S), SSL Proxy, or TCP Proxy Load Balancing), the protocol must be
-      one of: HTTP, HTTPS, HTTP2, SSL, TCP.
+      (Classic Application Load Balancer and global external proxy Network
+      Load Balancer), the protocol must be one of: HTTP, HTTPS, HTTP2, SSL, TCP.
 
       If the `load-balancing-scheme` is `EXTERNAL` and `region` is set
-      (External Network Load Balancing), the protocol must be one of: {2}.
+      (External passthrough Network Load Balancer), the protocol must be one
+      of: {2}.
 
       If the `load-balancing-scheme` is `EXTERNAL_MANAGED` (Envoy based
-      External HTTP(S) Load Balancing), the protocol must be one of: HTTP,
-      HTTPS, HTTP2.
+      Global and regional external Application Load Balancers), the protocol
+      must be one of: HTTP, HTTPS, HTTP2.
       """.format(ilb_protocols, td_protocols, netlb_protocols))
 
 
@@ -962,13 +964,14 @@ def AddDropTrafficIfUnhealthy(parser, default):
       help="""\
       Enable dropping of traffic if there are no healthy VMs detected in both
       the primary and backup instance groups. Not compatible with the --global
-      flag. Applicable only for backend service-based network load balancers and
-      internal TCP/UDP load balancers as part of a connection tracking policy.
-      For details, see: [Connection persistence on unhealthy backends for
-      internal TCP/UDP load
-      balancing](https://cloud.google.com/load-balancing/docs/internal#connection-persistence)
-      and [Connection persistence on unhealthy backends for network load
-      balancing](https://cloud.google.com/load-balancing/docs/network/networklb-backend-service#connection-persistence).
+      flag. Applicable only for backend service-based external and internal
+      passthrough Network Load Balancers as part of a connection tracking
+      policy. For details, see: [Connection persistence on unhealthy backends
+      for internal passthrough Network Load
+      Balancers](https://cloud.google.com/load-balancing/docs/internal#connection-persistence)
+      and [Connection persistence on unhealthy backends for external
+      passthrough Network Load
+      Balancers](https://cloud.google.com/load-balancing/docs/network/networklb-backend-service#connection-persistence).
       """)
 
 
@@ -992,8 +995,8 @@ def AddEnableLogging(parser):
       help="""\
       The logging options for the load balancer traffic served by this backend
       service. If logging is enabled, logs will be exported to Cloud Logging.
-      Disabled by default. This field cannot be specified for SSL Proxy and TCP
-      Proxy Load Balancing.
+      Disabled by default. This field cannot be specified for global external
+      proxy Network Load Balancers.
       """,
   )
 
@@ -1024,8 +1027,8 @@ def AddLoggingOptional(parser):
       This field can only be specified if logging is enabled for the backend
       service. Configures whether all, none, or a subset of optional fields
       should be added to the reported logs. Default is EXCLUDE_ALL_OPTIONAL.
-      This field can only be specified for Internal TCP/UDP Load Balancing and
-      External Network Load Balancing.
+      This field can only be specified for internal and external passthrough
+      Network Load Balancers.
       """,
   )
 
@@ -1041,8 +1044,8 @@ def AddLoggingOptionalFields(parser):
       service and "--logging-optional" was set to CUSTOM. Contains a
       comma-separated list of optional fields you want to include in the logs.
       For example: serverInstance, serverGkeDetails.cluster,
-      serverGkeDetails.pod.podNamespace. This can only be specified for Internal
-      TCP/UDP Load Balancing and External Network Load Balancing.
+      serverGkeDetails.pod.podNamespace. This can only be specified for
+      internal and external passthrough Network Load Balancers.
       """,
   )
 

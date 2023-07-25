@@ -65,7 +65,6 @@ def ParseVexFile(filename, uri):
   )
 
   uri = _RemoveHTTPS(uri)
-
   image, version = docker_util.DockerUrlToVersion(uri)
   uri_without_tag_or_digest = image.GetDockerString()
   uri_with_digest = version.GetDockerString()
@@ -207,7 +206,7 @@ def _MakeNote(vuln, status, product, publisher, document, msgs):
           publisher=publisher,
           product=product,
           assessment=msgs.Assessment(
-              cve=vuln['cve'],
+              vulnerabilityId=vuln['cve'],
               shortDescription=desc_note['title']
               if desc_note is not None
               else None,
@@ -222,7 +221,7 @@ def _MakeNote(vuln, status, product, publisher, document, msgs):
   )
   key = (
       note.vulnerabilityAssessment.product.genericUri
-      + note.vulnerabilityAssessment.assessment.cve
+      + note.vulnerabilityAssessment.assessment.vulnerabilityId
   )
   result = hashlib.md5(key.encode())
   noteid = result.hexdigest()

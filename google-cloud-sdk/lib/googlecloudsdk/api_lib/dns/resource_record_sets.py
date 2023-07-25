@@ -90,8 +90,6 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
   load_balancer_target = apis.GetMessagesModule(
       'dns', api_version).RRSetRoutingPolicyLoadBalancerTarget()
   load_balancer_target.project = project
-  load_balancer_target.loadBalancerType = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.LoadBalancerTypeValueValuesEnum(
-      'regionalL4ilb')
   config = None
   if len(forwarding_rule.split('@')) == 2:
     name, scope = forwarding_rule.split('@')
@@ -101,7 +99,8 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
             project=project, forwardingRule=name, region=scope))
     if config is None:
       raise ForwardingRuleNotFound(
-          "Either the forwarding rule doesn't exist, or multiple forwarding rules present with the same name - across different regions."
+          "Either the forwarding rule doesn't exist, or multiple forwarding "
+          'rules present with the same name - across different regions.'
       )
   else:
     try:
@@ -146,16 +145,47 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
       # https://www.googleapis.com/compute/v1/projects/project/regions/region
       load_balancer_target.region = region_url_split[
           region_url_split.index('regions') + 1]
-  # L4 ILB forwarding rules will specify loadBalancingScheme=INTERNAL and a
-  # backend service. We check for backendService to filter out L7ILBs that
-  # specify loadBalancingScheme=INTERNAL and a target.
-  if config.loadBalancingScheme != compute_messages.ForwardingRule.LoadBalancingSchemeValueValuesEnum(
-      'INTERNAL') or not config.backendService:
+  # L4 ILBs will have a backend service and load_balancing_scheme=INTERNAL.
+  if (
+      config.loadBalancingScheme
+      == compute_messages.ForwardingRule.LoadBalancingSchemeValueValuesEnum(
+          'INTERNAL'
+      )
+      and config.backendService
+  ):
+    load_balancer_target.loadBalancerType = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.LoadBalancerTypeValueValuesEnum(
+        'regionalL4ilb'
+    )
+  # L7 ILBs will have a HTTPx proxy and load_balancing_scheme=INTERNAL_MANAGED.
+  elif (
+      config.loadBalancingScheme
+      == compute_messages.ForwardingRule.LoadBalancingSchemeValueValuesEnum(
+          'INTERNAL_MANAGED'
+      )
+      and (
+          '/targetHttpProxies/' in config.target
+          or '/targetHttpsProxies/' in config.target
+      )
+  ):
+    if '/regions/' in config.target:
+      load_balancer_target.loadBalancerType = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.LoadBalancerTypeValueValuesEnum(
+          'regionalL7ilb'
+      )
+    else:
+      # Global L7 is not supported yet.
+      raise UnsupportedLoadBalancingScheme(
+          'Only Regional L4 and Regional L7 forwarding rules are supported at'
+          ' this time.'
+      )
+  else:
     raise UnsupportedLoadBalancingScheme(
-        'Only Regional L4 forwarding rules are supported at this time.')
+        'Only Regional L4 and Regional L7 forwarding rules are supported at'
+        ' this time.'
+    )
   load_balancer_target.ipAddress = config.IPAddress
-  if config.IPProtocol == compute_messages.ForwardingRule.IPProtocolValueValuesEnum(
-      'TCP'):
+  if config.IPProtocol == (
+      compute_messages.ForwardingRule.IPProtocolValueValuesEnum('TCP')
+  ):
     load_balancer_target.ipProtocol = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.IpProtocolValueValuesEnum(
         'tcp')
   else:
@@ -238,7 +268,8 @@ def CreateRecordSetFromArgs(args,
       if len(policy_item['forwarding_configs']
             ) and not args.enable_health_checking:
         raise ForwardingRuleWithoutHealthCheck(
-            'Specifying a forwarding rule enables health checking. If this is intended, set --enable-health-checking.'
+            'Specifying a forwarding rule enables health checking. '
+            'If this is intended, set --enable-health-checking.'
         )
       if policy_item['forwarding_configs']:
         includes_forwarding_rules = True
@@ -278,7 +309,8 @@ def CreateRecordSetFromArgs(args,
       if len(policy_item['forwarding_configs']
             ) and not args.enable_health_checking:
         raise ForwardingRuleWithoutHealthCheck(
-            'Specifying a forwarding rule enables health checking. If this is intended, set --enable-health-checking.'
+            'Specifying a forwarding rule enables health checking. '
+            'If this is intended, set --enable-health-checking.'
         )
       if policy_item['forwarding_configs']:
         includes_forwarding_rules = True
@@ -301,7 +333,8 @@ def CreateRecordSetFromArgs(args,
   elif args.routing_policy_type == 'FAILOVER':
     if not args.enable_health_checking:
       raise ForwardingRuleWithoutHealthCheck(
-          'Failover policy needs to have health checking enabled. Set --enable-health-checking.'
+          'Failover policy needs to have health checking enabled. '
+          'Set --enable-health-checking.'
       )
     includes_forwarding_rules = True
     record_set.routingPolicy = messages.RRSetRoutingPolicy(
@@ -310,13 +343,17 @@ def CreateRecordSetFromArgs(args,
                 internalLoadBalancers=[]),
             backupGeoTargets=messages.RRSetRoutingPolicyGeoPolicy(items=[])))
     if args.backup_data_trickle_ratio:
-      record_set.routingPolicy.primaryBackup.trickleTraffic = args.backup_data_trickle_ratio
+      record_set.routingPolicy.primaryBackup.trickleTraffic = (
+          args.backup_data_trickle_ratio
+      )
     for target in args.routing_policy_primary_data:
       record_set.routingPolicy.primaryBackup.primaryTargets.internalLoadBalancers.append(
           GetLoadBalancerTarget(target, api_version, project))
     if args.routing_policy_backup_data_type == 'GEO':
       if args.enable_geo_fencing:
-        record_set.routingPolicy.primaryBackup.backupGeoTargets.enableFencing = args.enable_geo_fencing
+        record_set.routingPolicy.primaryBackup.backupGeoTargets.enableFencing = (
+            args.enable_geo_fencing
+        )
       for policy_item in args.routing_policy_backup_data:
         targets = [
             GetLoadBalancerTarget(config, api_version, project)
@@ -338,7 +375,8 @@ def CreateRecordSetFromArgs(args,
       args, 'enable_health_checking') and args.enable_health_checking:
     raise HealthCheckWithoutForwardingRule(
         '--enable-health-check is set, but no forwarding rules are provided. '
-        'Either remove the --enable-health-check flag, or provide the forwarding '
-        'rule names instead of ip addresses for the rules to be health checked.'
+        'Either remove the --enable-health-check flag, or provide the '
+        'forwarding rule names instead of ip addresses for the rules to be '
+        'health checked.'
     )
   return record_set

@@ -247,10 +247,12 @@ def _AddSubnetworkArgs(parser, for_create, with_subnet_all):
     """
   subnetwork.add_argument(
       '--nat-custom-subnet-ip-ranges',
-      metavar='SUBNETWORK[:RANGE_NAME|ALL]'
-      if with_subnet_all else 'SUBNETWORK[:RANGE_NAME]',
+      metavar='SUBNETWORK[:RANGE_NAME|:ALL]'
+      if with_subnet_all
+      else 'SUBNETWORK[:RANGE_NAME]',
       help=custom_subnet_help_text,
-      type=arg_parsers.ArgList(min_length=1))
+      type=arg_parsers.ArgList(min_length=1),
+  )
 
 
 def _AddTimeoutsArgs(parser, for_create=False):

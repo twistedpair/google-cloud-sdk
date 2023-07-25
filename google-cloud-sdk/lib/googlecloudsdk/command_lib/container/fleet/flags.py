@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import textwrap
+from typing import List
 
 from apitools.base.protorpclite import messages
 from googlecloudsdk.api_lib.container.fleet import util
@@ -26,8 +27,15 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope import parser_extensions
+from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import resources
 from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_messages as fleet_messages
+
+# pylint: disable=invalid-name
+# Follow the naming style in calliope library, use snake_case for properties,
+# CamelCase for function names.
 
 
 class FleetFlags:
@@ -40,8 +48,36 @@ class FleetFlags:
     self._parser = parser
 
   @property
-  def parser(self):  # pylint: disable=invalid-name
+  def parser(self):
     return self._parser
+
+  @property
+  def command_name(self) -> List[str]:
+    """Returns the command name.
+
+    This provides information on the command track, command group, and the
+    action.
+
+    Returns:
+      A list of command, for `gcloud alpha container fleet operations describe`,
+      it returns `['gcloud', 'alpha', 'container', 'fleet', 'operations',
+      'describe']`.
+    """
+    return self.parser.command_name
+
+  @property
+  def action(self) -> str:
+    return self.command_name[-1]
+
+  @property
+  def release_track(self) -> base.ReleaseTrack:
+    """Returns the release track from the given command name."""
+    if self.command_name[1] == 'alpha':
+      return base.ReleaseTrack.ALPHA
+    elif self.command_name[1] == 'beta':
+      return base.ReleaseTrack.BETA
+    else:
+      return base.ReleaseTrack.GA
 
   def AddAsync(self):
     base.ASYNC_FLAG.AddToParser(self.parser)
@@ -99,6 +135,31 @@ class FleetFlags:
               $ {command} --workload-vulnerability-scanning=disabled
 
             """),
+    )
+
+  def _OperationResourceSpec(self):
+    return concepts.ResourceSpec(
+        'gkehub.projects.locations.operations',
+        resource_name='operation',
+        api_version=util.VERSION_MAP[self.release_track],
+        locationsId=self._LocationAttributeConfig(),
+        projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+    )
+
+  def AddOperationResourceArg(self):
+    concept_parsers.ConceptParser.ForResource(
+        'operation',
+        self._OperationResourceSpec(),
+        group_help='operation to {}.'.format(self.action),
+        required=True,
+    ).AddToParser(self.parser)
+    self.parser.set_defaults(location='global')
+
+  def _LocationAttributeConfig(self):
+    """Gets Google Cloud location resource attribute."""
+    return concepts.ResourceParameterAttributeConfig(
+        name='location',
+        help_text='Google Cloud location for the {resource}.',
     )
 
 
@@ -181,7 +242,7 @@ class FleetFlagParser:
     valid_options = ', '.join(sorted(list(mapping)))
     if choice not in mapping:
       return exceptions.InvalidArgumentException(
-          '{} not valid, expect [{}]'.format(choice, valid_options)
+          choice, 'expect [{}]'.format(valid_options)
       )
 
     return mapping[choice]
@@ -206,7 +267,7 @@ class FleetFlagParser:
     valid_options = ', '.join(sorted(list(mapping)))
     if choice not in mapping:
       return exceptions.InvalidArgumentException(
-          '{} not valid, expect [{}]'.format(choice, valid_options)
+          choice, 'expect [{}]'.format(valid_options)
       )
 
     return mapping[choice]
@@ -215,3 +276,7 @@ class FleetFlagParser:
     ret = self.messages.DefaultClusterConfig()
     ret.securityPostureConfig = self._SecurityPostureConfig()
     return self.TrimEmpty(ret)
+
+  def OperationRef(self) -> resources.Resource:
+    """Parses resource argument operation."""
+    return self.args.CONCEPTS.operation.Parse()

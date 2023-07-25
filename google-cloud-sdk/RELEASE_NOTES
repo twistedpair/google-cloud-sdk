@@ -6,6 +6,85 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 440.0.0 (2023-07-25)
+
+### Cloud Build
+
+* Updated help text for `--comment-control` flag in `gcloud builds triggers bitbucket-server`, `gcloud builds triggers gitlab` and `gcloud builds triggers gitlab-enterprise` to describe the allowed values.
+
+### Cloud Composer
+
+* Added `--enable-high-resilience` to `gcloud composer environments update` to enable high resilience mode for environments.
+* Added `--disable-high-resilience` to `gcloud composer environments update` to disable high resilience mode for environments.
+
+### Cloud DNS
+
+* Added support to allow specifying regional L7 forwarding rules as health
+checked targets for Routing Policies.
+
+### Cloud Healthcare
+
+* Added support for `--stream-configs` and `--send-for-bulk-import` flags to the following commands:
+  * `gcloud healthcare dicom-stores create`
+  * `gcloud healthcare dicom-stores update`
+  * `gcloud beta healthcare dicom-stores list`
+  * `gcloud healthcare dicom-stores list`
+
+### Cloud NetApp
+
+*   Added LOCATION to fields to be listed in structured output during `gcloud beta netapp volumes list`.
+
+### Cloud Pub/Sub
+
+*   Added a warning when `--push-auth-token-audience` and
+    `--push-auth-service-account` flags are ignored due to missing dependent
+    flags in `gcloud pubsub subscriptions [create|update|modify-push-config]`
+    commands.
+
+### Cloud Storage
+
+* Modified `buckets create` so that multiple buckets can be created with a single command.
+
+### Compute Engine
+
+* Promoted `--service-lb-policy` flag of `gcloud compute backend-services create` and `gcloud compute backend-services update` to beta.
+* Promoted `--type` flag of `gcloud compute routers nats create` to beta.
+* Promoted `--source-nat-active-ranges`, `--source-nat-active-ranges-region`, `--source-nat-drain-ranges`, `--clear-source-nat-drain-ranges` and `--source-nat-drain-ranges-region` flags of `gcloud compute routers nats rule update` to beta.
+* Promoted `--source-nat-active-ranges` and `--source-nat-active-ranges-region` flags of `gcloud compute routers nats rule create` to beta.
+* Promoted new allowed value: `PRIVATE_NAT` for `--purpose` flag of `gcloud compute networks subnets create` to beta.
+* Promoted new `:ALL` range option for subnets passed to `--nat-custom-subnet-ip-ranges` flag of `gcloud compute routers nats (create|update)`.
+* Promoted `--security-profile-group` and `--[no-]tls-inspect` flags for `gcloud compute <network->firewall-policies rules <create|update>` to beta.
+* Promoted `gcloud compute resource-policies update snapshot-schedule` to GA.
+* Promoted `--force-update-on-repair` flag of `gcloud compute instance-groups managed <create | update>` to GA.
+* Promoted `--confidential-compute` flag of `gcloud compute disks create` to beta.
+* Promoted `--create-disk=confidential-compute` for `gcloud compute instances create` to beta.
+
+### Container Registry
+
+* Fixed `gcloud container images describe` for gcr.io repos in Artifact Registry.
+
+### Kubernetes Engine
+
+* Updated broken links in `gcloud container get-credentials` help text.
+* Added `--network-performance-configs=total-egress-bandwidth-tier=[DEFAULT|TIER_1]` to `gcloud container clusters create` and `gcloud container clusters update`
+to allow setting default network performance tier for new node-pools. See `gcloud container node-pools create`.
+* Added `--enable-multi-networking` to `gcloud container clusters create` and added `--additional-node-network` and `--additional-pod-network` to `gcloud container node-pools create` to allow creation of multi-networking enabled clusters with additional node and pod networks.
+* Added `--placement-policy` flag to `gcloud container clusters create` command.
+* Added `--placement-policy` flag to `gcloud container node-pools create` command.
+* Disabled `--enable-insecure-kubelet-readonly-port` flag.
+* Updated help-text by removing `--release-channel=NONE` option for `gcloud
+container create-auto`. This option is not available for create-auto
+since Autopilot cluster must be subscribed to a release-channel.
+
+### Transcoder
+
+* Added support for `--optimization` flag when creating a new job.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
 ## 439.0.0 (2023-07-18)
 
 ### Breaking Changes

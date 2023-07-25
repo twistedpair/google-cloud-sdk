@@ -39,7 +39,7 @@ Named ports are key:value pairs metadata representing
 the service name and the port that it's running on. Named ports
 can be assigned to an instance group, which indicates that the service
 is available on all instances in the group. This information is used
-by the HTTP Load Balancing service.
+by Application Load Balancers and proxy Network Load Balancers.
 
 *{command}* lists the named ports (name and port tuples)
 for an instance group.
@@ -221,8 +221,8 @@ Named ports are key:value pairs metadata representing
 the service name and the port that it's running on. Named ports
 can be assigned to an instance group, which
 indicates that the service is available on all instances in the
-group. This information is used by the HTTP Load Balancing
-service.
+group. This information is used by Application Load Balancers
+and proxy Network Load Balancers.
 
 *{command}* sets the list of named ports for all instances
 in an instance group.

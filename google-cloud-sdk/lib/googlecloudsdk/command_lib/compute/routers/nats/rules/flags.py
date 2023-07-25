@@ -55,7 +55,7 @@ ACTIVE_IPS_ARG_OPTIONAL = _ActiveIpsArgument(required=False)
 _ACTIVE_RANGES_HELP_TEXT = textwrap.dedent("""\
     Subnetworks from which addresses are used for connections matching this
     rule. This is only supported for Private NAT, and is required when creating
-    a Private NAT gateway..
+    a Private NAT gateway.
 
     These must be Subnetwork resources in the same region, with purpose set to
     PRIVATE_NAT.""")

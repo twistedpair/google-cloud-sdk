@@ -1,6 +1,6 @@
 $schema: "http://json-schema.org/draft-06/schema#"
 
-title: backup for gke v1alpha substitution rule schema
+title: backup for gke v1 substitution rule schema
 description: backup for gke substitution rule file YAML validation schema
 type: object
 additionalProperties: false

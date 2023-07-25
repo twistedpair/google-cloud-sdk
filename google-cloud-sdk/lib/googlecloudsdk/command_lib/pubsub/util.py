@@ -50,6 +50,26 @@ SUBSCRIPTIONS_PULL_COLLECTION = 'pubsub.subscriptions.pull'
 SUBSCRIPTIONS_SEEK_COLLECTION = 'pubsub.subscriptions.seek'
 SCHEMAS_COLLECTION = 'pubsub.projects.schemas'
 
+PUSH_AUTH_SERVICE_ACCOUNT_MISSING_ENDPOINT_WARNING = """\
+Using --push-auth-service-account requires specifying --push-endpoint. This
+command will continue to run while ignoring --push-auth-service-account, but
+will fail in a future version. To correct a subscription configuration, run:
+  $ gcloud pubsub subscriptions update SUBSCRIPTION \\
+      --push-endpoint=PUSH_ENDPOINT \\
+      --push-auth-service-account={SERVICE_ACCOUNT_EMAIL} [...]
+"""
+
+PUSH_AUTH_TOKEN_AUDIENCE_MISSING_REQUIRED_FLAGS_WARNING = """\
+Using --push-auth-token-audience requires specifying both --push-endpoint and
+--push-auth-service-account. This command will continue to run while ignoring
+--push-auth-token-audience, but will fail in a future version. To correct a
+subscription configuration, run:
+  $ gcloud pubsub subscriptions update SUBSCRIPTION \\
+      --push-endpoint={PUSH_ENDPOINT} \\
+      --push-auth-service-account={SERVICE_ACCOUNT_EMAIL} \\
+      --push-auth-token-audience={OPTIONAL_AUDIENCE_OVERRIDE} [...]
+"""
+
 
 class InvalidArgumentError(exceptions.Error):
   """The user provides invalid arguments."""
@@ -125,6 +145,29 @@ def TopicUriFunc(topic):
 def ParsePushConfig(args, client=None):
   """Parses configs of push subscription from args."""
   push_endpoint = args.push_endpoint
+  service_account_email = getattr(args, 'SERVICE_ACCOUNT_EMAIL', None)
+  audience = getattr(args, 'OPTIONAL_AUDIENCE_OVERRIDE', None)
+
+  # TODO(b/284985002): Remove warnings when argument groups are created for
+  # authenticated push flags.
+  if audience is not None and (
+      push_endpoint is None or service_account_email is None
+  ):
+    log.warning(
+        PUSH_AUTH_TOKEN_AUDIENCE_MISSING_REQUIRED_FLAGS_WARNING.format(
+            PUSH_ENDPOINT=push_endpoint or 'PUSH_ENDPOINT',
+            SERVICE_ACCOUNT_EMAIL=service_account_email
+            or 'SERVICE_ACCOUNT_EMAIL',
+            OPTIONAL_AUDIENCE_OVERRIDE=audience,
+        )
+    )
+  elif service_account_email is not None and push_endpoint is None:
+    log.warning(
+        PUSH_AUTH_SERVICE_ACCOUNT_MISSING_ENDPOINT_WARNING.format(
+            SERVICE_ACCOUNT_EMAIL=service_account_email
+        )
+    )
+
   if push_endpoint is None:
     if HasNoWrapper(args):
       raise InvalidArgumentError(
@@ -134,11 +177,9 @@ def ParsePushConfig(args, client=None):
 
   client = client or subscriptions.SubscriptionsClient()
   oidc_token = None
-  service_account_email = getattr(args, 'SERVICE_ACCOUNT_EMAIL', None)
 
   # Only set oidc_token when service_account_email is set.
   if service_account_email is not None:
-    audience = getattr(args, 'OPTIONAL_AUDIENCE_OVERRIDE', None)
     oidc_token = client.messages.OidcToken(
         serviceAccountEmail=service_account_email, audience=audience)
 

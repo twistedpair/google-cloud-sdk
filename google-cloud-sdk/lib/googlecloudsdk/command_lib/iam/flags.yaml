@@ -71,6 +71,19 @@ oauth_client:
     help_text: |-
       A list of redirect uris that is allowed for redirecting when the authorization is completed.
 
+oauth_client_credential:
+  display_name:
+    api_field: oauthClientCredential.displayName
+    arg_name: display-name
+    help_text: |-
+      A display name for the OAuth client credential. Cannot exceed 32 characters.
+  disabled:
+    api_field: oauthClientCredential.disabled
+    arg_name: disabled
+    help_text: |-
+      Disables the OAuth client credential. You cannot use a disabled OAuth client credential for
+      OAuth. Include `--no-disabled` to enable a disabled OAuth client credential.
+
 workload_identity_pool:
   display_name:
     api_field: workloadIdentityPool.displayName
@@ -624,6 +637,31 @@ workforce_pool_provider:
 
           Each additional scope may be at most 256
           characters. A maximum of 10 additional scopes may be configured.
+  oidc_jwks_json_path:
+    api_field: workforcePoolProvider.oidc.jwksJson
+    type: "googlecloudsdk.calliope.arg_parsers:FileContents:"
+    arg_name: jwk-json-path
+    hidden: true
+    help_text: |-
+      Optional file containing jwk public keys. The file format must follow
+      [jwk specifications](https://www.rfc-editor.org/rfc/rfc7517#section-4). Example file format:
+      ```
+      {
+        "keys": [
+           {
+                "kty": "RSA/EC",
+                "alg": "<algorithm>",
+                "use": "sig",
+                "kid": "<key-id>",
+                "n": "",
+                "e": ""
+                "x": ""
+                "y": ""
+                "crv": ""
+           }
+        ]
+      }
+      ```
   saml_idp_metadata_path:
     api_field: workforcePoolProvider.saml.idpMetadataXml
     type: "googlecloudsdk.calliope.arg_parsers:FileContents:"

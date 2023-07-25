@@ -528,20 +528,24 @@ def AddLoadBalancingScheme(parser,
     ilb_proxies += (', --target-tcp-proxy')
   load_balancing_choices = {
       'EXTERNAL':
-          'External load balancing or forwarding, used with one of '
+          'Classic Application Load Balancers, global external proxy Network '
+          ' Load Balancers, external passthrough Network Load Balancers or '
+          ' protocol forwarding, used with one of '
           '--target-http-proxy, --target-https-proxy, --target-tcp-proxy, '
           '--target-ssl-proxy, --target-pool, --target-vpn-gateway, '
           '--target-instance.',
       'EXTERNAL_MANAGED':
-          'Envoy based External HTTP(S) Load Balancing, used with '
-          '--target-http-proxy, --target-https-proxy.',
+          'Global and regional external Application Load Balancers, and '
+          'regional external proxy Network Load Balancers, used with '
+          '--target-http-proxy, --target-https-proxy, --target-tcp-proxy.',
       'INTERNAL':
-          'Internal load balancing or forwarding, used with --backend-service.',
+          'Internal passthrough Network Load Balancers or protocol '
+          'forwarding, used with --backend-service.',
       'INTERNAL_SELF_MANAGED':
-          """Traffic Director load balancing or forwarding, used with
-          {0}.""".format(td_proxies),
+          'Traffic Director, used with {0}.'.format(td_proxies),
       'INTERNAL_MANAGED':
-          """Internal load balancing, used with {0}.""".format(ilb_proxies)
+          'Internal Application Load Balancers and internal proxy Network '
+          'Load Balancers, used with {0}.'.format(ilb_proxies)
   }
 
   # There isn't a default load-balancing-scheme for PSC forwarding rules.

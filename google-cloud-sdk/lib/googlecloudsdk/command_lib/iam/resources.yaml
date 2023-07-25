@@ -439,7 +439,24 @@ oauth_client:
     parameter_name: oauthClientsId
     attribute_name: oauth_client
     help: |
-      The ID to use for the OAuth client, which becomes the final component of the resource name.
+      ID to use for the OAuth client, which becomes the final component of the resource name.
       This value should be 4-32 characters, and may contain the characters [a-z0-9-].
+      The prefix `gcp-` is reserved for use by Google, and may not be specified.
+  disable_auto_completers: false
+
+oauth_client_credential:
+  name: oauth client credential
+  collection: iam.projects.locations.oauthClients.credentials
+  request_id_field: oauthClientCredentialId
+  attributes:
+  - *project
+  - *location
+  - *oauth_client
+  - &oauth_client_credential
+    parameter_name: credentialsId
+    attribute_name: credential
+    help: |
+      ID to use for the OAuth client credential, which becomes the final component of the
+      resource name. This value should be 4-32 characters, and may contain the characters [a-z0-9-].
       The prefix `gcp-` is reserved for use by Google, and may not be specified.
   disable_auto_completers: false

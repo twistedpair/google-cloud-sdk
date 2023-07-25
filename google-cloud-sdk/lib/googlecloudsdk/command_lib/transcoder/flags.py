@@ -52,6 +52,14 @@ def AddCreateJobFlags(parser):
       ),
   )
   parser.add_argument(
+      '--optimization',
+      choices=['AUTODETECT', 'DISABLED'],
+      help=(
+          'Optimization strategy of transcode job. This value '
+          'will override optimization in job config.'
+      ),
+  )
+  parser.add_argument(
       '--priority',
       help='Job priority, default 0.',
       hidden=True,
@@ -59,7 +67,9 @@ def AddCreateJobFlags(parser):
           '--region',
           warn='The {flag_name} option is deprecated.',
           error='The {flag_name} option is removed.',
-          removed=True))
+          removed=True,
+      ),
+  )
 
 
 def AddCreateTemplateFlags(parser):

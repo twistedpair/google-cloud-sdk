@@ -39,6 +39,14 @@ class NoFieldsSpecifiedError(exceptions.Error):
   """Error if no fields are specified for an update request."""
 
 
+class AttachDiskError(exceptions.Error):
+  """Error if the update request is invalid for attaching a disk."""
+
+
+class DetachDiskError(exceptions.Error):
+  """Error if the update request is invalid for detaching a disk."""
+
+
 def GetProject(release_track, ssh_helper):
   holder = base_classes.ComputeApiHolder(release_track)
   project_name = properties.VALUES.core.project.GetOrFail()
@@ -114,6 +122,8 @@ def GenerateUpdateMask(api_version='v2'):
 
     Raises:
       NoFieldsSpecifiedError: if no fields were specified.
+      AttachDiskError: if the request for attaching a disk is invalid.
+      DetachDiskError: if the request for detaching a disk is invalid.
     """
 
     update_mask = set()
@@ -175,6 +185,56 @@ def GenerateUpdateMask(api_version='v2'):
             tpu_messages.Node.MetadataValue.AdditionalProperty(
                 key=key, value=value))
       update_mask.add('metadata')
+
+    if args.IsSpecified('attach_disk'):
+      mode, source = '', ''
+      for key in args.attach_disk.keys():
+        if key == 'mode':
+          mode = args.attach_disk['mode']
+        elif key == 'source':
+          source = args.attach_disk['source']
+        else:
+          raise AttachDiskError(
+              'argument --attach-disk: valid keys are [mode, source]; '
+              'received: ' + key
+          )
+      if mode == 'read-only':
+        mode_enum = tpu_messages.AttachedDisk.ModeValueValuesEnum.READ_ONLY
+      elif not mode or mode == 'read-write':
+        mode_enum = tpu_messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE
+      else:
+        raise AttachDiskError(
+            'argument --attach-disk: key mode: can only attach disks in '
+            'read-write or read-only mode; received: ' + mode
+        )
+      disk_to_attach = tpu_messages.AttachedDisk(
+          mode=mode_enum,
+          sourceDisk=source
+      )
+      request.node.dataDisks.append(disk_to_attach)
+      update_mask.add('data_disks')
+
+    elif args.IsSpecified('detach_disk'):
+      if not request.node.dataDisks:
+        raise DetachDiskError(
+            'argument --detach-disk: No data disks to detach from current TPU '
+            'VM.'
+        )
+      source_disk_list = []
+      for disk in request.node.dataDisks:
+        source_disk_list.append(disk.sourceDisk)
+      for i, source_disk in enumerate(source_disk_list):
+        if args.detach_disk != source_disk:
+          continue
+        if args.detach_disk == source_disk:
+          del request.node.dataDisks[i]
+          break
+      else:
+        raise DetachDiskError(
+            'argument --detach-disk: The specified data disk '
+            + args.detach_disk + ' is not currently attached to the TPU VM.'
+        )
+      update_mask.add('data_disks')
 
     if not update_mask:
       raise NoFieldsSpecifiedError(

@@ -490,7 +490,11 @@ def ListSbomReferences(args):
         project, filters.GetFilter(), args.page_size
     )
 
-  return _VerifyGCSObjects(occs)
+  # Verifying GCS can be slow for large amount of occurrences, so we decided to
+  # only verify it when `resource` is provided.
+  if resource:
+    return _VerifyGCSObjects(occs)
+  return [SbomReference(occ, {}) for occ in occs]
 
 
 def _VerifyGCSObjects(occs):

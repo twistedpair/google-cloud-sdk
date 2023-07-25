@@ -269,7 +269,6 @@ cluster_resource_conflict_policy:
 namespaced_resource_restore_mode:
   arg_name: namespaced-resource-restore-mode
   api_field: restorePlan.restoreConfig.namespacedResourceRestoreMode
-  required: true
   help_text: |
     Define how to handle restore-time conflicts for namespaced resources.
   choices:
@@ -418,6 +417,14 @@ restore_plan_substitution_rules_file:
   arg_name: substitution-rules-file
   api_field: restorePlan.restoreConfig.substitutionRules
   processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ReadSubstitutionRuleFile
+  help_text: |
+    If provided, defines a set of resource transformations that will be applied to resources from
+    the source backup before they are created in the target cluster.
+
+restore_plan_transformation_rules_file:
+  arg_name: transformation-rules-file
+  api_field: restorePlan.restoreConfig.transformationRules
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ReadTransformationRuleFile
   help_text: |
     If provided, defines a set of resource transformations that will be applied to resources from
     the source backup before they are created in the target cluster.

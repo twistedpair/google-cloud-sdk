@@ -18,9 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.protorpclite import messages
 from googlecloudsdk.api_lib.container.backup_restore import util as api_util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.export import util as export_util
+from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 
 CLUSTER_RESOURCE_RESTORE_SCOPE = 'cluster_resource_restore_scope'
@@ -209,10 +211,6 @@ def PreprocessUpdateBackupPlan(ref, args, request):
   return request
 
 
-def GetSchemaPath():
-  return export_util.GetSchemaPath('gkebackup', 'v1', 'SubstitutionRules')
-
-
 def PreprocessUpdateRestorePlan(ref, args, request):
   """Preprocess request for updating restore plan."""
   del ref
@@ -276,12 +274,44 @@ def PreprocessUpdateRestorePlan(ref, args, request):
     request.restorePlan.restoreConfig.selectedNamespaces = None
     request.restorePlan.restoreConfig.excludedNamespaces = None
 
-  if args.IsSpecified('substitution_rules_file'):
-    request.restorePlan.restoreConfig.substitutionRules = (
-        ReadSubstitutionRuleFile(args.substitution_rules_file)
-    )
-
   new_masks = []
+
+  if (
+      args.IsSpecified('substitution_rules_file')
+      and len(request.restorePlan.restoreConfig.transformationRules) > 0
+  ):
+    console_io.PromptContinue(
+        """
+      The given restore plan already has the transformation rules. Updating the
+      restore plan with new substitution rules will delete the existing
+      transformation rules.
+      """,
+        cancel_on_no=True,
+    )
+    # Set transformationRules to be empty, and add it into update masks.
+    request.restorePlan.restoreConfig.transformationRules = messages.FieldList(
+        messages.StringField(number=1, repeated=True), []
+    )
+    new_masks.append('restoreConfig.transformationRules')
+
+  if (
+      args.IsSpecified('transformation_rules_file')
+      and len(request.restorePlan.restoreConfig.substitutionRules) > 0
+  ):
+    console_io.PromptContinue(
+        """
+      The given restore plan already has the substitution rules. Updating the
+      restore plan with new transformation rules will delete the existing
+      substitution rules.
+      """,
+        cancel_on_no=True,
+    )
+    # Set substitutionRules to be empty, and add it into update masks.
+    request.restorePlan.restoreConfig.substitutionRules = messages.FieldList(
+        messages.StringField(number=1, repeated=True), []
+    )
+    new_masks.append('restoreConfig.substitutionRules')
+
   for mask in request.updateMask.split(','):
     if mask.startswith('restoreConfig.selectedNamespaces'):
       mask = 'restoreConfig.selectedNamespaces'
@@ -302,11 +332,34 @@ def PreprocessUpdateRestorePlan(ref, args, request):
 def ReadSubstitutionRuleFile(file_arg):
   """Reads content of the substitution rule file specified in file_arg."""
   if not file_arg:
+    return messages.FieldList(messages.StringField(number=1, repeated=True), [])
+  log.warning(
+      'The substitutionRules field is deprecated and can only be managed via'
+      ' gcloud/API. Please migrate to transformation rules.'
+  )
+  data = console_io.ReadFromFileOrStdin(file_arg, binary=False)
+  ms = api_util.GetMessagesModule()
+  temp_restore_config = export_util.Import(
+      message_type=ms.RestoreConfig,
+      stream=data,
+      schema_path=export_util.GetSchemaPath(
+          'gkebackup', 'v1', 'SubstitutionRules'
+      ),
+  )
+  return temp_restore_config.substitutionRules
+
+
+def ReadTransformationRuleFile(file_arg):
+  """Reads content of the transformation rule file specified in file_arg."""
+  if not file_arg:
     return None
   data = console_io.ReadFromFileOrStdin(file_arg, binary=False)
-  messages = api_util.GetMessagesModule()
+  ms = api_util.GetMessagesModule()
   temp_restore_config = export_util.Import(
-      message_type=messages.RestoreConfig,
+      message_type=ms.RestoreConfig,
       stream=data,
-      schema_path=GetSchemaPath())
-  return temp_restore_config.substitutionRules
+      schema_path=export_util.GetSchemaPath(
+          'gkebackup', 'v1', 'TransformationRules'
+      ),
+  )
+  return temp_restore_config.transformationRules

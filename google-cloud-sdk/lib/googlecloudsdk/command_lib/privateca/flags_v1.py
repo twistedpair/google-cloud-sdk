@@ -54,6 +54,8 @@ _HIDDEN_KNOWN_EXTENSIONS = frozenset(['name-constraints'])
 _EMAIL_SAN_REGEX = re.compile('^[^@]+@[^@]+$')
 # Any number of labels (any character that is not a dot) concatenated by dots
 _DNS_SAN_REGEX = re.compile(r'^([^.]+\.)*[^.]+$')
+# Subject Key Identifier must be a lowercase hex string.
+_SKID_REGEX = re.compile(r'^([0-9a-f][0-9a-f])+$')
 
 # Flag definitions
 
@@ -207,6 +209,19 @@ def AddSubjectFlags(parser, subject_required=False):
   """
   _AddSubjectFlag(parser, subject_required)
   _AddSubjectAlternativeNameFlags(parser)
+
+
+def AddSubjectKeyIdFlag(parser):
+  base.Argument(
+      '--subject-key-id',
+      help=(
+          'Optional field to specify subject key ID for certificate. '
+          'DO NOT USE except to maintain a previously established identifier '
+          'for a public key, whose SKI was not generated using method (1) '
+          'described in RFC 5280 section 4.2.1.2.'
+      ),
+      hidden=True,
+  ).AddToParser(parser)
 
 
 def AddValidityFlag(parser,
@@ -1047,6 +1062,28 @@ def ParseNameConstraints(args, messages):
       _NAME_CONSTRAINT_CRITICAL] = args.name_constraints_critical
   return messages_util.DictToMessageWithErrorCheck(
       name_constraint_dict, message_type=messages.NameConstraints)
+
+
+def ParseSubjectKeyId(args, messages):
+  """Parses the subject key id for input into CertificateConfig.
+
+  Args:
+    args: The parsed argument values
+    messages: PrivateCA's messages modules
+
+  Returns:
+    A CertificateConfigKeyId message object
+  """
+  if not args.IsSpecified('subject_key_id'):
+    return None
+
+  skid = args.subject_key_id
+  if not re.match(_SKID_REGEX, skid):
+    raise exceptions.InvalidArgumentException(
+        '--subject-key-id',
+        'Subject key id must be an even length lowercase hex string.',
+    )
+  return messages.CertificateConfigKeyId(keyId=skid)
 
 
 def ParseX509Parameters(args, is_ca_command):

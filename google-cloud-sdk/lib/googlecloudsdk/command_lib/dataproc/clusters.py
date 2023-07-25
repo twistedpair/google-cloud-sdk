@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import re
 import textwrap
 from apitools.base.py import encoding
 
@@ -50,6 +51,7 @@ GENERATED_LABEL_PREFIX = 'goog-dataproc-'
 def ArgsForClusterRef(parser,
                       dataproc,
                       beta=False,
+                      alpha=False,
                       include_deprecated=True,
                       include_ttl_config=False,
                       include_gke_platform_args=False,
@@ -60,6 +62,7 @@ def ArgsForClusterRef(parser,
     parser: The argparse.ArgParser to configure with dataproc cluster arguments.
     dataproc: Dataproc object that contains client, messages, and resources.
     beta: whether or not this is a beta command (may affect flag visibility)
+    alpha: whether or not this is a alpha command (may affect flag visibility)
     include_deprecated: whether deprecated flags should be included
     include_ttl_config: whether to include Scheduled Delete(TTL) args
     include_gke_platform_args: whether to include GKE-based cluster args
@@ -143,11 +146,30 @@ def ArgsForClusterRef(parser,
       '--worker-machine-type',
       help='The type of machine to use for workers. Defaults to '
       'server-specified.')
+
+  if alpha:
+    parser.add_argument(
+        '--secondary-worker-standard-capacity-base',
+        hidden=False,
+        type=int,
+        help='The number of standard VMs in the Spot and Standard Mix feature.')
   parser.add_argument(
       '--secondary-worker-machine-type',
       hidden=True,
       help='Type of machine to use for secondary workers. Defaults to '
       'server-specified.')
+  parser.add_argument(
+      '--secondary-worker-machine-types',
+      help=(
+          'Types of machines with optional rank for secondary workers to use '
+          'for secondary workers. Defaults to server-specified.'
+          'eg. --secondary-worker-machine-types="type=e2-standard-8,type=t2d-standard-8,rank=0"'
+      ),
+      metavar='type=MACHINE_TYPE[,type=MACHINE_TYPE...][,rank=RANK]',
+      hidden=True,
+      type=ArgMultiValueDict(),
+      action=arg_parsers.FlattenAction(),
+  )
   image_parser = parser.add_mutually_exclusive_group()
   # TODO(b/73291743): Add external doc link to --image
   image_parser.add_argument(
@@ -775,6 +797,7 @@ def GetClusterConfig(args,
                      project_id,
                      compute_resources,
                      beta=False,
+                     alpha=False,
                      include_deprecated=True,
                      include_ttl_config=False,
                      include_gke_platform_args=False):
@@ -786,6 +809,7 @@ def GetClusterConfig(args,
     project_id: Dataproc project ID
     compute_resources: compute resource for cluster
     beta: use BETA only features
+    alpha: use ALPHA only features
     include_deprecated: whether to include deprecated args
     include_ttl_config: whether to include Scheduled Delete(TTL) args
     include_gke_platform_args: whether to include GKE-based cluster args
@@ -1097,6 +1121,9 @@ def GetClusterConfig(args,
       args.worker_min_cpu_platform is not None or
       args.secondary_worker_type == 'non-preemptible' or
       args.secondary_worker_type == 'spot'):
+    instance_flexibility_policy = GetInstanceFlexibilityPolicy(
+        dataproc, args, alpha
+    )
     cluster_config.secondaryWorkerConfig = (
         dataproc.messages.InstanceGroupConfig(
             numInstances=num_secondary_workers,
@@ -1111,7 +1138,10 @@ def GetClusterConfig(args,
             ),
             minCpuPlatform=args.worker_min_cpu_platform,
             preemptibility=_GetInstanceGroupPreemptibility(
-                dataproc, args.secondary_worker_type)))
+                dataproc, args.secondary_worker_type),
+            instanceFlexibilityPolicy=instance_flexibility_policy,
+        )
+    )
 
   # Add input-only auxiliaryNodeGroups
   if _AtLeastOneGceNodePoolSpecified(args, driver_pool_boot_disk_size_gb):
@@ -1310,16 +1340,46 @@ def GetDiskConfig(dataproc, boot_disk_type, boot_disk_size, num_local_ssds,
       bootDiskType=boot_disk_type,
       bootDiskSizeGb=boot_disk_size,
       numLocalSsds=num_local_ssds,
-      localSsdInterface=local_ssd_interface)
+      localSsdInterface=local_ssd_interface
+  )
 
 
-def CreateCluster(dataproc,
-                  cluster_ref,
-                  cluster,
-                  is_async,
-                  timeout,
-                  enable_create_on_gke=False,
-                  action_on_failed_primary_workers=None):
+def GetInstanceFlexibilityPolicy(
+    dataproc, args, alpha
+):
+  """Get instance flexibility policy.
+
+  Args:
+    dataproc: Dataproc object that contains client, messages, and resources
+    args: arguments of the request
+    alpha: checks if the release track is alpha
+
+  Returns:
+    InstanceFlexibilityPolicy of the secondary worker group.
+  """
+
+  if not alpha or args.secondary_worker_standard_capacity_base is None:
+    return None
+
+  provisioning_model_mix = dataproc.messages.ProvisioningModelMix(
+      standardCapacityBase=args.secondary_worker_standard_capacity_base
+  )
+  instance_flexibility_policy = dataproc.messages.InstanceFlexibilityPolicy(
+      instanceSelectionList=GetInstanceSelectionList(dataproc, args),
+      provisioningModelMix=provisioning_model_mix
+  )
+  return instance_flexibility_policy
+
+
+def CreateCluster(
+    dataproc,
+    cluster_ref,
+    cluster,
+    is_async,
+    timeout,
+    enable_create_on_gke=False,
+    action_on_failed_primary_workers=None,
+):
   """Create a cluster.
 
   Args:
@@ -1803,3 +1863,63 @@ def ParseSecureMultiTenancyUserServiceAccountMappingString(
           'Invalid Secure Multi-Tenancy User Mapping.')
     user_service_account_mapping[mapping[0]] = mapping[1]
   return user_service_account_mapping
+
+
+def GetInstanceSelectionList(dataproc, args):
+  """Build List of InstanceSelection from the given flags."""
+  if args.secondary_worker_machine_types is None:
+    return []
+  instance_selection_list = []
+  for machine_type_config in args.secondary_worker_machine_types:
+    if 'type' not in machine_type_config or not machine_type_config['type']:
+      raise exceptions.ArgumentError(
+          'Missing machine type for secondary-worker-machine-types'
+      )
+    machine_types = machine_type_config['type']
+
+    if 'rank' not in machine_type_config:
+      rank = 0
+    else:
+      rank = machine_type_config['rank']
+      if len(rank) != 1 or not rank[0].isdigit():
+        raise exceptions.ArgumentError(
+            'Invalid value for rank in secondary-worker-machine-types'
+        )
+      rank = int(rank[0])
+
+    instance_selection = dataproc.messages.InstanceSelection()
+    instance_selection.machineTypes = machine_types
+    instance_selection.rank = rank
+
+    instance_selection_list.append(instance_selection)
+
+  return instance_selection_list
+
+
+class ArgMultiValueDict:
+  """Converts argument values into multi-valued mappings.
+
+  Values for the repeated keys are collected in a list.
+  """
+
+  def __init__(self):
+    ops = '='
+    key_op_value_pattern = '([^{ops}]+)([{ops}]?)(.*)'.format(ops=ops)
+    self.key_op_value = re.compile(key_op_value_pattern, re.DOTALL)
+
+  def __call__(self, arg_value):
+    arg_list = [item.strip() for item in arg_value.split(',')]
+    arg_dict = collections.OrderedDict()
+    for arg in arg_list:
+      match = self.key_op_value.match(arg)
+      if not match:
+        raise arg_parsers.ArgumentTypeError(
+            'Invalid flag value [{0}]'.format(arg)
+        )
+      key, _, value = (
+          match.group(1).strip(),
+          match.group(2),
+          match.group(3).strip(),
+      )
+      arg_dict.setdefault(key, []).append(value)
+    return arg_dict

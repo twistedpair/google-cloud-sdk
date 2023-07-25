@@ -147,7 +147,7 @@ locationDefaultGlobal:
     parameter_name: locationsId
     attribute_name: location
     help: |
-      Location Id of the resource.
+      Location ID of the resource.
     fallthroughs:
     - hook: googlecloudsdk.command_lib.network_security.util:SetGlobalLocation
       hint: |
@@ -175,7 +175,7 @@ securityProfile:
   - &securityProfile
     parameter_name: securityProfilesId
     attribute_name: security_profile
-    help: Id of the security profile.
+    help: ID of the security profile.
 
 securityProfileGroup:
   name: security profile group
@@ -187,4 +187,4 @@ securityProfileGroup:
   - &securityProfileGroup
     parameter_name: securityProfileGroupsId
     attribute_name: security_profile_group
-    help: Id of the security profile group.
+    help: ID of the security profile group.

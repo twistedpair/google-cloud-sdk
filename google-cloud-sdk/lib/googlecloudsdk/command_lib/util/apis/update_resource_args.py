@@ -20,10 +20,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import util as format_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import update_args
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import resources
 
 
@@ -32,6 +34,48 @@ from googlecloudsdk.core import resources
 
 # TODO(b/283949482): Place this file in util/args and replace the duplicate
 # logic in the util files.
+
+
+def _GetRelativeNameField(arg_data):
+  """Gets message field where the resource's relative name is mapped."""
+  api_fields = [
+      key
+      for key, value in arg_data.resource_method_params.items()
+      if util.REL_NAME_FORMAT_KEY in value
+  ]
+  if not api_fields:
+    return None
+
+  return api_fields[0]
+
+
+def _GetAllSharedAttributes(arg_data, shared_resource_args):
+  """Gets a list of all shared resource attributes."""
+  if not shared_resource_args:
+    ignored_attributes = set()
+  else:
+    ignored_attributes = set(shared_resource_args)
+
+  # iterate through all attributes except the anchor
+  for a in arg_data.attribute_names[:-1]:
+    if a in arg_data.removed_flags or concepts.IGNORED_FIELDS.get(a):
+      continue
+    ignored_attributes.add(a)
+
+  return list(ignored_attributes)
+
+
+def _GetResourceArgGenerator(arg_data, method, shared_resource_args):
+  """Gets a function to generate a resource arg."""
+  ignored_attributes = _GetAllSharedAttributes(arg_data, shared_resource_args)
+  def ArgGen(name, group_help):
+    group_help += '\n\n'
+    if arg_data.group_help:
+      group_help += arg_data.group_help
+
+    return arg_data.GenerateResourceArg(
+        method, name, ignored_attributes, group_help=group_help)
+  return ArgGen
 
 
 class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
@@ -46,10 +90,6 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
     else:
       gen_cls = UpdateDefaultResourceArgumentGenerator
 
-    def ArgGen(arg_name):
-      return arg_data.GenerateResourceArg(
-          method, arg_name, shared_resource_args)
-
     arg_name = arg_data.GetAnchorArgName(method)
     is_primary = arg_data.IsPrimaryResource(
         method and method.resource_argument_collection
@@ -60,13 +100,8 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
           'cannot be listed as clearable.'.format(arg_name)
       )
 
-    api_fields = [
-        key
-        for key, value in arg_data.resource_method_params.items()
-        if util.REL_NAME_FORMAT_KEY in value
-    ]
-
-    if not api_fields:
+    api_field = _GetRelativeNameField(arg_data)
+    if not api_field:
       raise util.InvalidSchemaError(
           '{} does not specify the message field where the relative name is '
           'mapped in resource_method_params. Message field name is needed '
@@ -74,15 +109,16 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
           'resource_method_params.'.format(arg_name)
       )
 
-    api_field = api_fields[0]
-
     return gen_cls(
         arg_name=arg_name,
-        arg_gen=ArgGen,
+        arg_gen=_GetResourceArgGenerator(
+            arg_data, method, shared_resource_args),
         api_field=api_field,
         repeated=arg_data.repeated,
         collection=arg_data.collection,
-        is_primary=is_primary
+        is_primary=is_primary,
+        attribute_flags=arg_utils.GetAttributeFlags(
+            arg_data, arg_name, method, shared_resource_args),
     )
 
   def __init__(
@@ -94,6 +130,7 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
       repeated=False,
       collection=None,
       is_primary=None,
+      attribute_flags=None,
   ):
     super(UpdateResourceArgumentGenerator, self).__init__()
     self.arg_name = format_util.NormalizeFormat(arg_name)
@@ -103,10 +140,11 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
     self.repeated = repeated
     self.collection = collection
     self.is_primary = is_primary
+    self.attribute_flags = attribute_flags
 
-  def _CreateResourceFlag(self, flag_prefix=None):
-    flag_name = self._GetFlagName(self.arg_name, flag_prefix=flag_prefix)
-    return self.arg_gen(flag_name)
+  def _CreateResourceFlag(self, flag_prefix=None, group_help=None):
+    flag_name = arg_utils.GetFlagName(self.arg_name, flag_prefix=flag_prefix)
+    return self.arg_gen(flag_name, group_help=group_help)
 
   def _RelativeName(self, value):
     return resources.REGISTRY.ParseRelativeName(
@@ -117,22 +155,30 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
 
     Args:
       namespace: The parsed command line argument namespace.
-      arg: base.Argument, used to get namespace value
+      arg: base.Argument|concept_parsers.ConceptParser|None, used to get
+        namespace value
 
     Returns:
       value parsed from namespace
     """
-    if arg is None:
-      return None
-
     if isinstance(arg, base.Argument):
       return arg_utils.GetFromNamespace(namespace, arg.name)
 
-    value = arg_utils.GetFromNamespace(namespace.CONCEPTS, self.arg_name)
-    if value:
-      value = value.Parse()
+    if isinstance(arg, concept_parsers.ConceptParser):
+      all_anchors = list(arg.specs.keys())
+      if len(all_anchors) != 1:
+        raise ValueError(
+            'ConceptParser must contain exactly one spec for clearable '
+            'but found specs {}. {} cannot parse the namespace value if more '
+            'than or less than one spec is added to the '
+            'ConceptParser.'.format(all_anchors, type(self).__name__))
+      name = all_anchors[0]
+      value = arg_utils.GetFromNamespace(namespace.CONCEPTS, name)
+      if value:
+        value = value.Parse()
+      return value
 
-    return value
+    return None
 
   def GetFieldValueFromMessage(self, existing_message):
     value = arg_utils.GetFieldValueFromMessage(existing_message, self.api_field)
@@ -142,6 +188,10 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
     if isinstance(value, list):
       return [self._RelativeName(v) for v in value]
     return self._RelativeName(value)
+
+  def Generate(self):
+    return super(UpdateResourceArgumentGenerator, self).Generate(
+        self.attribute_flags)
 
 
 class UpdateDefaultResourceArgumentGenerator(UpdateResourceArgumentGenerator):
@@ -153,7 +203,8 @@ class UpdateDefaultResourceArgumentGenerator(UpdateResourceArgumentGenerator):
 
   @property
   def set_arg(self):
-    return self._CreateResourceFlag()
+    return self._CreateResourceFlag(
+        group_help='Set {} to new value.'.format(self.arg_name))
 
   @property
   def clear_arg(self):
@@ -185,7 +236,8 @@ class UpdateListResourceArgumentGenerator(UpdateResourceArgumentGenerator):
 
   @property
   def set_arg(self):
-    return self._CreateResourceFlag()
+    return self._CreateResourceFlag(
+        group_help='Set {} to new value.'.format(self.arg_name))
 
   @property
   def clear_arg(self):
@@ -197,6 +249,18 @@ class UpdateListResourceArgumentGenerator(UpdateResourceArgumentGenerator):
             self.arg_name, self._GetTextFormatOfEmptyValue(self._empty_value)),
     )
 
+  @property
+  def update_arg(self):
+    return self._CreateResourceFlag(
+        flag_prefix='add',
+        group_help='Add new value to {} list.'.format(self.arg_name))
+
+  @property
+  def remove_arg(self):
+    return self._CreateResourceFlag(
+        flag_prefix='remove',
+        group_help='Remove value from {} list.'.format(self.arg_name))
+
   def ApplySetFlag(self, output, set_val):
     if set_val:
       return set_val
@@ -206,4 +270,18 @@ class UpdateListResourceArgumentGenerator(UpdateResourceArgumentGenerator):
     if clear_flag:
       return self._empty_value
     return output
+
+  def ApplyRemoveFlag(self, existing_val, remove_val):
+    value = existing_val or self._empty_value
+    if remove_val:
+      return [x for x in value if x not in remove_val]
+    else:
+      return value
+
+  def ApplyUpdateFlag(self, existing_val, update_val):
+    value = existing_val or self._empty_value
+    if update_val:
+      return existing_val + [x for x in update_val if x not in value]
+    else:
+      return value
 

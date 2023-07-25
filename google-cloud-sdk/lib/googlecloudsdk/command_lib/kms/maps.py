@@ -39,6 +39,7 @@ IMPORT_METHOD_MAPPER = arg_utils.ChoiceEnumMapper('import_method_enum',
 PURPOSE_ENUM = MESSAGES.CryptoKey.PurposeValueValuesEnum
 PURPOSE_MAP = {
     'encryption': PURPOSE_ENUM.ENCRYPT_DECRYPT,
+    'raw-encryption': PURPOSE_ENUM.RAW_ENCRYPT_DECRYPT,
     'asymmetric-signing': PURPOSE_ENUM.ASYMMETRIC_SIGN,
     'asymmetric-encryption': PURPOSE_ENUM.ASYMMETRIC_DECRYPT,
     'mac': PURPOSE_ENUM.MAC,
@@ -58,6 +59,14 @@ VALID_ALGORITHMS_MAP = {
     PURPOSE_ENUM.ENCRYPT_DECRYPT: [
         'google-symmetric-encryption',
         'external-symmetric-encryption',
+    ],
+    PURPOSE_ENUM.RAW_ENCRYPT_DECRYPT: [
+        'aes-128-gcm',
+        'aes-256-gcm',
+        'aes-128-cbc',
+        'aes-256-cbc',
+        'aes-128-ctr',
+        'aes-256-ctr',
     ],
     PURPOSE_ENUM.ASYMMETRIC_SIGN: [
         'ec-sign-p256-sha256',

@@ -63,6 +63,13 @@ _BINAUTHZ_GKE_POLICY_REGEX = (
     'projects/([^/]+)/platforms/gke/policies/([a-zA-Z0-9_-]+)'
 )
 
+_PMU_LEVEL = {
+    'architectural': 'Enables architectural PMU events tied to non last ' +
+                     'level cache (LLC) events.',
+    'standard': 'Enables most documented core/L2 PMU events.',
+    'enhanced': 'Enables most documented core/L2 and LLC PMU events.',
+}
+
 
 def AddBasicAuthFlags(parser):
   """Adds basic auth flags to the given parser.
@@ -267,7 +274,8 @@ be either the project ID or the project number.
   )
 
 
-def AddReleaseChannelFlag(parser, is_update=False, hidden=False):
+def AddReleaseChannelFlag(parser, is_update=False, autopilot=False,
+                          hidden=False):
   """Adds a --release-channel flag to the given parser."""
   short_text = """\
 Release channel a cluster is subscribed to.
@@ -289,7 +297,6 @@ master version and the node version. Node auto-upgrade is enabled by default
 for release channel clusters and can be controlled via [upgrade-scope
 exclusions](https://cloud.google.com/kubernetes-engine/docs/concepts/maintenance-windows-and-exclusions#scope_of_maintenance_to_exclude).
 """
-
   choices = {
       'rapid': """\
 'rapid' channel is offered on an early access basis for customers who want
@@ -302,17 +309,17 @@ SLAs.
       'regular': """\
 Clusters subscribed to 'regular' receive versions that are considered GA
 quality. 'regular' is intended for production users who want to take
-advantage of new features.
-""",
+advantage of new features.""",
       'stable': """\
 Clusters subscribed to 'stable' receive versions that are known to be
-stable and reliable in production.
-""",
-      'None': """\
+stable and reliable in production.""",
+    }
+  if not autopilot:
+    choices.update({
+        'None': """\
 Use 'None' to opt-out of any release channel.
 """,
-  }
-
+    })
   return parser.add_argument(
       '--release-channel',
       metavar='CHANNEL',
@@ -1772,7 +1779,7 @@ def AddTPUTopologyFlag(parser, hidden=False):
   parser.add_argument('--tpu-topology', help=help_text, hidden=hidden)
 
 
-def AddPlacementPolicyFlag(parser, hidden=True):
+def AddPlacementPolicyFlag(parser, hidden=False):
   """Adds a --placement-policy flag to parser.
 
   Args:
@@ -1780,7 +1787,7 @@ def AddPlacementPolicyFlag(parser, hidden=True):
     hidden: Indicates that the flags are hidden.
   """
   help_text = textwrap.dedent("""\
-    This indicates the desired resource policy to use.
+    Indicates the desired resource policy to use.
 
     $ {command} node-pool-1 --cluster=example-cluster --placement-policy my-placement
       """)
@@ -4679,7 +4686,6 @@ cpuManagerPolicy                    | either 'static' or 'none'
 cpuCFSQuota                         | true or false (enabled by default)
 cpuCFSQuotaPeriod                   | interval (e.g., '100ms')
 podPidsLimit                        | integer (The value must be greater than or equal to 1024 and less than 4194304.)
-insecureKubeletReadonlyPortEnabled  | true or false (enabled by default)
 
 List of supported sysctls in 'linuxConfig'.
 
@@ -5005,6 +5011,19 @@ def AddEnableNestedVirtualizationFlag(parser, for_node_pool=False, hidden=True):
       hidden=hidden,
       action='store_true',
   )
+
+
+def AddPerformanceMonitoringUnit(parser, hidden=True):
+  help_text = """
+      Sets the Performance Monitoring Unit level.
+      Valid values are `architectural`, `standard` and `enhanced`
+    """
+  parser.add_argument(
+      '--performance-monitoring-unit',
+      choices=_PMU_LEVEL,
+      help=help_text,
+      default=None,
+      hidden=hidden)
 
 
 def AddNumaNodeCount(parser):
@@ -5557,7 +5576,7 @@ def AddBestEffortProvisionFlags(parser, hidden=False):
   )
 
 
-def AddEnableMultiNetworkingFlag(parser, hidden=True):
+def AddEnableMultiNetworkingFlag(parser):
   """Adds a --enable-multi-networking flag to the given parser."""
   help_text = """\
 Enables multi-networking on the cluster.
@@ -5568,21 +5587,22 @@ Multi-networking is disabled by default.
       action='store_true',
       default=None,
       help=help_text,
-      hidden=hidden,
   )
 
 
-def AddClusterNetworkPerformanceConfigFlags(parser, hidden=True):
+def AddClusterNetworkPerformanceConfigFlags(parser, hidden=False):
   """Adds config flags for advanced networking bandwidth tiers."""
 
   network_perf_config_help = """\
       Configures network performance settings for the cluster.
-      Node pools can override with their own settings
+      Node pools can override with their own settings.
 
       *total-egress-bandwidth-tier*::: Total egress bandwidth is the available
       outbound bandwidth from a VM, regardless of whether the traffic
       is going to internal IP or external IP destinations.
-      The following tier values are allowed: [{tier_values}]
+      The following tier values are allowed: [{tier_values}].
+
+      See https://cloud.google.com/compute/docs/networking/configure-vm-with-high-bandwidth-configuration for more information.
 
       """.format(tier_values=','.join(['DEFAULT', 'TIER_1']))
 
@@ -5598,12 +5618,11 @@ def AddClusterNetworkPerformanceConfigFlags(parser, hidden=True):
   )
 
 
-def AddAdditionalNodeNetworkFlag(parser, hidden=True):
+def AddAdditionalNodeNetworkFlag(parser):
   """Adds --additional-node-network flag to the given parser.
 
   Args:
     parser: A given parser.
-    hidden: Indicates that the flags are hidden.
   """
 
   spec = {
@@ -5619,7 +5638,6 @@ def AddAdditionalNodeNetworkFlag(parser, hidden=True):
           max_length=len(spec),
       ),
       metavar='network=NETWORK_NAME,subnetwork=SUBNETWORK_NAME',
-      hidden=hidden,
       action='append',
       help="""\
       Attach an additional network interface to each node in the pool.
@@ -5634,12 +5652,11 @@ def AddAdditionalNodeNetworkFlag(parser, hidden=True):
   )
 
 
-def AddAdditionalPodNetworkFlag(parser, hidden=False):
+def AddAdditionalPodNetworkFlag(parser):
   """Adds --additional-pod-network flag to the given parser.
 
   Args:
     parser: A given parser.
-    hidden: Indicates that the flags are hidden.
   """
   spec = {
       'subnetwork': str,
@@ -5653,7 +5670,6 @@ def AddAdditionalPodNetworkFlag(parser, hidden=False):
           spec=spec, required_keys=['pod-ipv4-range'], max_length=len(spec)
       ),
       metavar='subnetwork=SUBNETWORK_NAME,pod-ipv4-range=SECONDARY_RANGE_NAME,[max-pods-per-node=NUM_PODS]',
-      hidden=hidden,
       action='append',
       help="""\
       Specify the details of a secondary range to be used for an additional pod network.

@@ -97,6 +97,7 @@ def CreateDiskMessages(
     support_storage_pool=False,
     support_source_instant_snapshot=False,
     support_boot_instant_snapshot_uri=False,
+    support_enable_confidential_compute=False,
 ):
   """Creates disk messages for a single instance."""
 
@@ -137,6 +138,7 @@ def CreateDiskMessages(
       support_multi_writer=support_multi_writer,
       support_storage_pool=support_storage_pool,
       enable_source_instant_snapshots=support_source_instant_snapshot,
+      support_enable_confidential_compute=support_enable_confidential_compute,
   )
 
   local_nvdimms = []
@@ -285,6 +287,7 @@ def CreatePersistentCreateDiskMessages(
     support_image_family_scope=False,
     support_storage_pool=False,
     enable_source_instant_snapshots=False,
+    support_enable_confidential_compute=False,
 ):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
@@ -322,6 +325,7 @@ def CreatePersistentCreateDiskMessages(
     support_storage_pool: True if storage pool is supported.
     enable_source_instant_snapshots: True if instant snapshot initialization is
       supported for the disk.
+    support_enable_confidential_compute: True to use confidential mode for disk.
 
   Returns:
     list of API messages for attached disks
@@ -440,6 +444,10 @@ def CreatePersistentCreateDiskMessages(
     multi_writer = disk.get('multi-writer')
     if support_multi_writer and multi_writer:
       initialize_params.multiWriter = True
+
+    enable_confidential_compute = disk.get('confidential-compute')
+    if support_enable_confidential_compute and enable_confidential_compute:
+      initialize_params.enableConfidentialCompute = True
 
     provisioned_iops = disk.get('provisioned-iops')
     if provisioned_iops:

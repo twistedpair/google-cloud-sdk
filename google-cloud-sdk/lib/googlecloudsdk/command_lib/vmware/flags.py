@@ -30,14 +30,15 @@ def AddPrivatecloudArgToParser(parser, positional=False):
   if positional:
     name = 'private_cloud'
   privatecloud_data = yaml_data.ResourceYAMLData.FromPath(
-      'vmware.private_cloud')
+      'vmware.private_cloud'
+  )
   resource_spec = concepts.ResourceSpec.FromYaml(privatecloud_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
       concept_spec=resource_spec,
       required=True,
-      group_help='private_cloud.'
-      )
+      group_help='private_cloud.',
+  )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
@@ -49,8 +50,8 @@ def AddOperationArgToParser(parser):
       name='operation',
       concept_spec=resource_spec,
       required=True,
-      group_help='operation.'
-      )
+      group_help='operation.',
+  )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
@@ -64,12 +65,14 @@ def AddSubnetArgToParser(parser):
       name='subnet',
       concept_spec=resource_spec,
       required=True,
-      group_help='subnet.')
+      group_help='subnet.',
+  )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
-def AddClusterArgToParser(parser, positional=False,
-                          hide_resource_argument_flags=False):
+def AddClusterArgToParser(
+    parser, positional=False, hide_resource_argument_flags=False
+):
   """Sets up an argument for the cluster resource."""
   if positional:
     name = 'cluster'
@@ -86,8 +89,8 @@ def AddClusterArgToParser(parser, positional=False,
       concept_spec=resource_spec,
       required=True,
       group_help='cluster.',
-      flag_name_overrides=flag_name_overrides
-      )
+      flag_name_overrides=flag_name_overrides,
+  )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
@@ -101,7 +104,8 @@ def AddExternalAddressArgToParser(parser):
       name='external_address',
       concept_spec=resource_spec,
       required=True,
-      group_help='external_address.')
+      group_help='external_address.',
+  )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
@@ -116,16 +120,19 @@ def AddManagementDnsZoneBindingArgToParser(parser):
       name='management_dns_zone_binding',
       concept_spec=resource_spec,
       required=True,
-      group_help='management_dns_zone_binding.')
+      group_help='management_dns_zone_binding.',
+  )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
 def AddHcxActivationKeyArgToParser(parser):
   """Sets up an argument for the HCX activation key resource."""
   hcx_activation_key_data = yaml_data.ResourceYAMLData.FromPath(
-      'vmware.hcx_activation_key')
+      'vmware.hcx_activation_key'
+  )
   resource_spec = concepts.ResourceSpec.FromYaml(
-      hcx_activation_key_data.GetData())
+      hcx_activation_key_data.GetData()
+  )
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name='hcx_activation_key',
       concept_spec=resource_spec,
@@ -140,7 +147,8 @@ def AddLocationArgToParser(parser, regional=False, positional=False):
   location_data = yaml_data.ResourceYAMLData.FromPath('vmware.location')
   if regional:
     location_data = yaml_data.ResourceYAMLData.FromPath(
-        'vmware.regional_location')
+        'vmware.regional_location'
+    )
   resource_spec = concepts.ResourceSpec.FromYaml(location_data.GetData())
   name = '--location'
   if positional:
@@ -149,7 +157,8 @@ def AddLocationArgToParser(parser, regional=False, positional=False):
       name=name,
       concept_spec=resource_spec,
       required=True,
-      group_help='location.')
+      group_help='location.',
+  )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
@@ -170,7 +179,8 @@ def AddNodeTypeArgToParser(parser, positional=False):
       concept_spec=resource_spec,
       required=True,
       group_help='node_type.',
-      flag_name_overrides=flag_name_overrides)
+      flag_name_overrides=flag_name_overrides,
+  )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
@@ -187,7 +197,8 @@ def AddProjectArgToParser(parser, positional=False):
       name=name,
       concept_spec=resource_spec,
       required=True,
-      group_help='project.')
+      group_help='project.',
+  )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
@@ -197,14 +208,17 @@ def AddPrivateConnectionToParser(parser, positional=False):
   if positional:
     name = 'private_connection'
   private_connection_data = yaml_data.ResourceYAMLData.FromPath(
-      'vmware.private_connection')
+      'vmware.private_connection'
+  )
   resource_spec = concepts.ResourceSpec.FromYaml(
-      private_connection_data.GetData())
+      private_connection_data.GetData()
+  )
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
       concept_spec=resource_spec,
       required=True,
-      group_help='private_connection.')
+      group_help='private_connection.',
+  )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
@@ -212,13 +226,28 @@ def AddLoggingServerArgToParser(parser):
   """Sets up an argument for the Logging Server resource."""
 
   logging_server_data = yaml_data.ResourceYAMLData.FromPath(
-      'vmware.logging_server')
+      'vmware.logging_server'
+  )
   resource_spec = concepts.ResourceSpec.FromYaml(logging_server_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name='logging_server',
       concept_spec=resource_spec,
       required=True,
       group_help='logging_server.',
+  )
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddIdentitySourceArgToParser(parser):
+  """Sets up an argument for the Identity Source resource."""
+
+  resource_data = yaml_data.ResourceYAMLData.FromPath('vmware.identity_source')
+  resource_spec = concepts.ResourceSpec.FromYaml(resource_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='identity_source',
+      concept_spec=resource_spec,
+      required=True,
+      group_help='identity_source.',
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
@@ -230,9 +259,6 @@ def AddNodeArgToParser(parser):
   resource_spec = concepts.ResourceSpec.FromYaml(node_data.GetData())
 
   presentation_spec = presentation_specs.ResourcePresentationSpec(
-      name='node',
-      concept_spec=resource_spec,
-      required=True,
-      group_help='node.'
+      name='node', concept_spec=resource_spec, required=True, group_help='node.'
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)

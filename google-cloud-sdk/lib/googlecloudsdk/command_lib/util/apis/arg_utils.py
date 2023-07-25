@@ -27,6 +27,7 @@ from apitools.base.protorpclite import messages
 from apitools.base.py import encoding
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.concepts import util as format_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import http_encoding
@@ -521,6 +522,34 @@ def ConvertValue(field, value, repeated=None, processor=None, choices=None):
     # wrap it in a list.
     value = [value]
   return value
+
+
+def GetFlagName(arg_name, flag_prefix=None):
+  if flag_prefix is not None:
+    name = flag_prefix + '-' + arg_name
+  else:
+    name = arg_name
+
+  return format_util.FlagNameFormat(name)
+
+
+def GetAttributeFlags(arg_data, arg_name, method, shared_resource_args):
+  """Gets a list of attribute flags for the given resource arg.
+
+  Args:
+    arg_data: yaml_arg_schema.YAMLResourceArgument, data used to generate the
+      resource argument
+    arg_name: str, name of the anchor resource arg
+    method: registry.APIMethod, method the argument is being generated for
+    shared_resource_args: [str], list of resource args to ignore
+
+  Returns:
+    A list of base.Argument resource attribute flags.
+  """
+  name = GetFlagName(arg_name)
+  resource_arg = arg_data.GenerateResourceArg(
+      method, name, shared_resource_args).GetInfo(name)
+  return resource_arg.GetAttributeArgs()[:-1]
 
 
 def _MapChoice(choices, value):

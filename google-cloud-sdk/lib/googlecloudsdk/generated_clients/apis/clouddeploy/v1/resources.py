@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CUSTOMTARGETTYPES = (
+      'projects.locations.customTargetTypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'customTargetTypes/{customTargetTypesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_DELIVERYPIPELINES = (
       'projects.locations.deliveryPipelines',
       '{+name}',

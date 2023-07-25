@@ -171,8 +171,9 @@ def AddCdnPolicyArgs(parser, resource_name, update_command=False):
         help='Clears max TTL value.',
     )
   custom_response_header_help = """\
-  Custom headers that the external HTTP(S) load balancer adds to proxied responses.
-  For the list of headers, see [Creating custom headers](https://cloud.google.com/load-balancing/docs/custom-headers).
+  Custom headers that the external Application Load Balancer adds to proxied
+  responses. For the list of headers, see [Creating custom
+  headers](https://cloud.google.com/load-balancing/docs/custom-headers).
 
   Variables are not case-sensitive.
   """

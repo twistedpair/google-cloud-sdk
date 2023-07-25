@@ -18,14 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.netapp.constants import ACTIVEDIRECTORIES_COLLECTION
-from googlecloudsdk.api_lib.netapp.constants import KMSCONFIGS_COLLECTION
-from googlecloudsdk.api_lib.netapp.constants import LOCATIONS_COLLECTION
-from googlecloudsdk.api_lib.netapp.constants import OPERATIONS_COLLECTION
-from googlecloudsdk.api_lib.netapp.constants import REPLICATIONS_COLLECTION
-from googlecloudsdk.api_lib.netapp.constants import SNAPSHOTS_COLLECTION
-from googlecloudsdk.api_lib.netapp.constants import STORAGEPOOLS_COLLECTION
-from googlecloudsdk.api_lib.netapp.constants import VOLUMES_COLLECTION
+
+from googlecloudsdk.api_lib.netapp import constants
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -109,6 +103,23 @@ def GetActiveDirectoryAttributeConfig():
   )
 
 
+def GetBackupVaultAttributeConfig(positional=True):
+  fallthroughs = []
+  if not positional:
+    ## For when we need a Backup Vault attribute in Backup resource spec
+    ## we want to assign fallthrough flags
+    fallthroughs = [deps.ArgFallthrough('--backup-vault')]
+  return concepts.ResourceParameterAttributeConfig(
+      'backup_vault', 'The Backup Vault of the {resource}.',
+      fallthroughs=fallthroughs
+  )
+
+
+def GetBackupAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      'backup', 'The instance of the {resource}.')
+
+
 def GetKmsConfigAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       'kms_config', 'The instance of the {resource}')
@@ -133,7 +144,7 @@ def GetLocationResourceSpec():
   location_attribute_config = GetLocationAttributeConfig()
   location_attribute_config.fallthroughs = []
   return concepts.ResourceSpec(
-      LOCATIONS_COLLECTION,
+      constants.LOCATIONS_COLLECTION,
       resource_name='location',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=location_attribute_config)
@@ -144,7 +155,7 @@ def GetListingLocationResourceSpec():
   location_attribute_config.fallthroughs.insert(
       0, deps.Fallthrough(lambda: '-', hint='uses all locations by default.'))
   return concepts.ResourceSpec(
-      LOCATIONS_COLLECTION,
+      constants.LOCATIONS_COLLECTION,
       resource_name='location',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=location_attribute_config)
@@ -152,7 +163,7 @@ def GetListingLocationResourceSpec():
 
 def GetOperationResourceSpec():
   return concepts.ResourceSpec(
-      OPERATIONS_COLLECTION,
+      constants.OPERATIONS_COLLECTION,
       resource_name='operation',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
@@ -161,7 +172,7 @@ def GetOperationResourceSpec():
 
 def GetStoragePoolResourceSpec():
   return concepts.ResourceSpec(
-      STORAGEPOOLS_COLLECTION,
+      constants.STORAGEPOOLS_COLLECTION,
       resource_name='storage_pool',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
@@ -170,7 +181,7 @@ def GetStoragePoolResourceSpec():
 
 def GetVolumeResourceSpec(positional=True):
   return concepts.ResourceSpec(
-      VOLUMES_COLLECTION,
+      constants.VOLUMES_COLLECTION,
       resource_name='volume',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
@@ -199,7 +210,7 @@ def GetSnapshotResourceSpec(revert_op=False, positional=True):
         deps.PropertyFallthrough(properties.VALUES.netapp.region)
     ]
   return concepts.ResourceSpec(
-      SNAPSHOTS_COLLECTION,
+      constants.SNAPSHOTS_COLLECTION,
       resource_name='snapshot',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=location_attribute_config,
@@ -211,7 +222,7 @@ def GetReplicationResourceSpec():
   location_attribute_config = GetLocationAttributeConfig()
   volume_attribute_config = GetVolumeAttributeConfig(positional=False)
   return concepts.ResourceSpec(
-      REPLICATIONS_COLLECTION,
+      constants.REPLICATIONS_COLLECTION,
       resource_name='replication',
       api_version='v1beta1',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
@@ -222,7 +233,7 @@ def GetReplicationResourceSpec():
 
 def GetActiveDirectoryResourceSpec():
   return concepts.ResourceSpec(
-      ACTIVEDIRECTORIES_COLLECTION,
+      constants.ACTIVEDIRECTORIES_COLLECTION,
       resource_name='active_directory',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
@@ -231,12 +242,36 @@ def GetActiveDirectoryResourceSpec():
 
 def GetKmsConfigResourceSpec():
   return concepts.ResourceSpec(
-      KMSCONFIGS_COLLECTION,
+      constants.KMSCONFIGS_COLLECTION,
       resource_name='kms_config',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
       kmsConfigsId=GetKmsConfigAttributeConfig(),
       api_version='v1beta1')
+
+
+def GetBackupVaultResourceSpec(positional=True):
+  return concepts.ResourceSpec(
+      constants.BACKUPVAULTS_COLLECTION,
+      resource_name='backup_vault',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=GetLocationAttributeConfig(),
+      backupVaultsId=GetBackupVaultAttributeConfig(positional=positional),
+  )
+
+
+def GetBackupResourceSpec():
+  backup_vault_attribute_config = GetBackupVaultAttributeConfig(
+      positional=False
+  )
+  return concepts.ResourceSpec(
+      constants.BACKUPS_COLLECTION,
+      resource_name='backup',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=GetLocationAttributeConfig(),
+      backupVaultsId=backup_vault_attribute_config,
+      backupsId=GetBackupAttributeConfig(),
+  )
 
 
 def GetCryptoKeyResourceSpec():
@@ -311,6 +346,23 @@ def GetKmsConfigPresentationSpec(group_help):
       GetKmsConfigResourceSpec(),
       group_help,
       required=True)
+
+
+def GetBackupVaultPresentationSpec(group_help):
+  return presentation_specs.ResourcePresentationSpec(
+      'backup_vault',
+      GetBackupVaultResourceSpec(),
+      group_help,
+      required=True)
+
+
+def GetBackupPresentationSpec(group_help):
+  return presentation_specs.ResourcePresentationSpec(
+      'backup',
+      GetBackupResourceSpec(),
+      group_help,
+      required=True,
+      flag_name_overrides={'backup_vault': ''})
 
 ## Add args to arg parser ##
 

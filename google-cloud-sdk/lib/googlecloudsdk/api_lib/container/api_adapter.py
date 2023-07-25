@@ -683,6 +683,7 @@ class CreateClusterOptions(object):
       enable_multi_networking=None,
       enable_security_posture=None,
       enable_nested_virtualization=None,
+      performance_monitoring_unit=None,
       network_performance_config=None,
       enable_insecure_kubelet_readonly_port=None,
       enable_k8s_beta_apis=None,
@@ -856,6 +857,7 @@ class CreateClusterOptions(object):
     self.enable_service_externalips = enable_service_externalips
     self.threads_per_core = threads_per_core
     self.enable_nested_virtualization = enable_nested_virtualization
+    self.performance_monitoring_unit = performance_monitoring_unit
     self.logging = logging
     self.monitoring = monitoring
     self.enable_managed_prometheus = enable_managed_prometheus
@@ -1017,7 +1019,6 @@ class UpdateClusterOptions(object):
       clear_fleet_project=None,
       enable_security_posture=None,
       network_performance_config=None,
-      enable_insecure_kubelet_readonly_port=None,
       enable_k8s_beta_apis=None,
       security_posture=None,
       workload_vulnerability_scanning=None,
@@ -1146,9 +1147,6 @@ class UpdateClusterOptions(object):
     self.clear_fleet_project = clear_fleet_project
     self.enable_security_posture = enable_security_posture
     self.network_performance_config = network_performance_config
-    self.enable_insecure_kubelet_readonly_port = (
-        enable_insecure_kubelet_readonly_port
-    )
     self.enable_k8s_beta_apis = enable_k8s_beta_apis
     self.security_posture = security_posture
     self.workload_vulnerability_scanning = workload_vulnerability_scanning
@@ -1260,6 +1258,7 @@ class CreateNodePoolOptions(object):
                additional_node_network=None,
                additional_pod_network=None,
                enable_nested_virtualization=None,
+               performance_monitoring_unit=None,
                sole_tenant_node_affinity_file=None,
                host_maintenance_interval=None,
                enable_insecure_kubelet_readonly_port=None):
@@ -1324,6 +1323,7 @@ class CreateNodePoolOptions(object):
     self.enable_private_nodes = enable_private_nodes
     self.threads_per_core = threads_per_core
     self.enable_nested_virtualization = enable_nested_virtualization
+    self.performance_monitoring_unit = performance_monitoring_unit
     self.enable_blue_green_upgrade = enable_blue_green_upgrade
     self.enable_surge_upgrade = enable_surge_upgrade
     self.node_pool_soak_duration = node_pool_soak_duration
@@ -2283,7 +2283,14 @@ class APIAdapter(object):
       features.threadsPerCore = options.threads_per_core
     if options.enable_nested_virtualization:
       features.enableNestedVirtualization = options.enable_nested_virtualization
-    if options.threads_per_core or options.enable_nested_virtualization:
+    if options.performance_monitoring_unit:
+      features.performanceMonitoringUnit = (
+          features.PerformanceMonitoringUnitValueValuesEnum(
+              options.performance_monitoring_unit.upper()))
+
+    if (options.threads_per_core
+        or options.enable_nested_virtualization
+        or options.performance_monitoring_unit):
       node_config.advancedMachineFeatures = features
 
   def ParseCustomNodeConfig(self, options, node_config):
@@ -2831,20 +2838,35 @@ class APIAdapter(object):
         shielded_instance_config.enableSecureBoot = enable_secure_boot
         shielded_instance_config.enableIntegrityMonitoring = \
             enable_integrity_monitoring
-      autoscaling.autoprovisioningNodePoolDefaults = self.messages \
-        .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
-                                          oauthScopes=scopes,
-                                          upgradeSettings=upgrade_settings,
-                                          management=management,
-                                          minCpuPlatform=min_cpu_platform,
-                                          bootDiskKmsKey=boot_disk_kms_key,
-                                          diskSizeGb=disk_size_gb,
-                                          diskType=disk_type,
-                                          imageType=autoprovisioning_image_type,
-                                          shieldedInstanceConfig=
-                                          shielded_instance_config,
-                                          insecureKubeletReadonlyPortEnabled=
-                                          options.enable_insecure_kubelet_readonly_port)
+      if for_update:
+        autoscaling.autoprovisioningNodePoolDefaults = (
+            self.messages.AutoprovisioningNodePoolDefaults(
+                serviceAccount=service_account,
+                oauthScopes=scopes,
+                upgradeSettings=upgrade_settings,
+                management=management,
+                minCpuPlatform=min_cpu_platform,
+                bootDiskKmsKey=boot_disk_kms_key,
+                diskSizeGb=disk_size_gb,
+                diskType=disk_type,
+                imageType=autoprovisioning_image_type,
+                shieldedInstanceConfig=shielded_instance_config,
+            )
+        )
+      else:
+        autoscaling.autoprovisioningNodePoolDefaults = self.messages.AutoprovisioningNodePoolDefaults(
+            serviceAccount=service_account,
+            oauthScopes=scopes,
+            upgradeSettings=upgrade_settings,
+            management=management,
+            minCpuPlatform=min_cpu_platform,
+            bootDiskKmsKey=boot_disk_kms_key,
+            diskSizeGb=disk_size_gb,
+            diskType=disk_type,
+            imageType=autoprovisioning_image_type,
+            shieldedInstanceConfig=shielded_instance_config,
+            insecureKubeletReadonlyPortEnabled=options.enable_insecure_kubelet_readonly_port,
+        )
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \
             sorted(autoprovisioning_locations)
@@ -3466,14 +3488,6 @@ class APIAdapter(object):
       perf = self._GetClusterNetworkPerformanceConfig(options)
       update = self.messages.ClusterUpdate(
           desiredNetworkPerformanceConfig=perf)
-
-    if options.enable_insecure_kubelet_readonly_port is not None:
-      if options.enable_autoprovisioning is None:
-        node_kubelet_config = self.messages.NodeKubeletConfig()
-        node_kubelet_config.insecureKubeletReadonlyPortEnabled = (
-            options.enable_insecure_kubelet_readonly_port)
-        update = self.messages.ClusterUpdate(
-            desiredNodeKubeletConfig=node_kubelet_config)
 
     if options.workload_policies is not None:
       workload_policies = self.messages.WorkloadPolicyConfig()
@@ -5362,20 +5376,35 @@ class V1Beta1Adapter(V1Adapter):
         shielded_instance_config.enableSecureBoot = enable_secure_boot
         shielded_instance_config.enableIntegrityMonitoring = \
             enable_integrity_monitoring
-      autoscaling.autoprovisioningNodePoolDefaults = self.messages \
-        .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
-                                          oauthScopes=scopes,
-                                          upgradeSettings=upgrade_settings,
-                                          management=management,
-                                          minCpuPlatform=min_cpu_platform,
-                                          bootDiskKmsKey=boot_disk_kms_key,
-                                          diskSizeGb=disk_size_gb,
-                                          diskType=disk_type,
-                                          imageType=autoprovisioning_image_type,
-                                          shieldedInstanceConfig=
-                                          shielded_instance_config,
-                                          insecureKubeletReadonlyPortEnabled=
-                                          options.enable_insecure_kubelet_readonly_port)
+      if for_update:
+        autoscaling.autoprovisioningNodePoolDefaults = (
+            self.messages.AutoprovisioningNodePoolDefaults(
+                serviceAccount=service_account,
+                oauthScopes=scopes,
+                upgradeSettings=upgrade_settings,
+                management=management,
+                minCpuPlatform=min_cpu_platform,
+                bootDiskKmsKey=boot_disk_kms_key,
+                diskSizeGb=disk_size_gb,
+                diskType=disk_type,
+                imageType=autoprovisioning_image_type,
+                shieldedInstanceConfig=shielded_instance_config,
+            )
+        )
+      else:
+        autoscaling.autoprovisioningNodePoolDefaults = self.messages.AutoprovisioningNodePoolDefaults(
+            serviceAccount=service_account,
+            oauthScopes=scopes,
+            upgradeSettings=upgrade_settings,
+            management=management,
+            minCpuPlatform=min_cpu_platform,
+            bootDiskKmsKey=boot_disk_kms_key,
+            diskSizeGb=disk_size_gb,
+            diskType=disk_type,
+            imageType=autoprovisioning_image_type,
+            shieldedInstanceConfig=shielded_instance_config,
+            insecureKubeletReadonlyPortEnabled=options.enable_insecure_kubelet_readonly_port,
+        )
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \
           sorted(autoprovisioning_locations)
@@ -5917,20 +5946,36 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         shielded_instance_config.enableSecureBoot = enable_secure_boot
         shielded_instance_config.enableIntegrityMonitoring = \
             enable_integrity_monitoring
-      autoscaling.autoprovisioningNodePoolDefaults = self.messages \
-        .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
-                                          oauthScopes=scopes,
-                                          upgradeSettings=upgrade_settings,
-                                          management=management,
-                                          minCpuPlatform=min_cpu_platform,
-                                          bootDiskKmsKey=boot_disk_kms_key,
-                                          diskSizeGb=disk_size_gb,
-                                          diskType=disk_type,
-                                          imageType=autoprovisioning_image_type,
-                                          shieldedInstanceConfig=
-                                          shielded_instance_config,
-                                          insecureKubeletReadonlyPortEnabled=
-                                          options.enable_insecure_kubelet_readonly_port)
+
+      if for_update:
+        autoscaling.autoprovisioningNodePoolDefaults = (
+            self.messages.AutoprovisioningNodePoolDefaults(
+                serviceAccount=service_account,
+                oauthScopes=scopes,
+                upgradeSettings=upgrade_settings,
+                management=management,
+                minCpuPlatform=min_cpu_platform,
+                bootDiskKmsKey=boot_disk_kms_key,
+                diskSizeGb=disk_size_gb,
+                diskType=disk_type,
+                imageType=autoprovisioning_image_type,
+                shieldedInstanceConfig=shielded_instance_config,
+            )
+        )
+      else:
+        autoscaling.autoprovisioningNodePoolDefaults = self.messages.AutoprovisioningNodePoolDefaults(
+            serviceAccount=service_account,
+            oauthScopes=scopes,
+            upgradeSettings=upgrade_settings,
+            management=management,
+            minCpuPlatform=min_cpu_platform,
+            bootDiskKmsKey=boot_disk_kms_key,
+            diskSizeGb=disk_size_gb,
+            diskType=disk_type,
+            imageType=autoprovisioning_image_type,
+            shieldedInstanceConfig=shielded_instance_config,
+            insecureKubeletReadonlyPortEnabled=options.enable_insecure_kubelet_readonly_port,
+        )
 
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \
