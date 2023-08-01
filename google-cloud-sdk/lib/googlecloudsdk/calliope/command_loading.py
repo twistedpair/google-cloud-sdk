@@ -20,10 +20,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import importlib
 import os
 import re
 
-import googlecloudsdk
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import command_release_tracks
 from googlecloudsdk.core import exceptions
@@ -387,19 +387,20 @@ def CreateYamlLoader(impl_path):
       Returns:
         The referenced YAML data.
       """
-      root = os.path.dirname(os.path.dirname(googlecloudsdk.__file__))
       parts = path.split(':')
       if len(parts) != 2:
         raise LayoutException(
             'Invalid Yaml reference: [{}]. References must be in the format: '
             'path(.path)+:attribute(.attribute)*'.format(path))
-      yaml_path = os.path.join(root, *parts[0].split('.'))
-      yaml_path += '.yaml'
+      path_segments = parts[0].split('.')
       try:
+        root_module = importlib.import_module(path_segments[0])
+        yaml_path = os.path.join(
+            os.path.dirname(root_module.__file__), *path_segments[1:]) + '.yaml'
         data = _SafeLoadYamlFile(yaml_path)
-      except IOError as e:
+      except (ImportError, IOError) as e:
         raise LayoutException(
-            'Failed to load Yaml reference file [{}]: {}'.format(yaml_path, e))
+            'Failed to load Yaml reference file [{}]: {}'.format(parts[0], e))
 
       return self._GetAttribute(data, parts[1], yaml_path)
 

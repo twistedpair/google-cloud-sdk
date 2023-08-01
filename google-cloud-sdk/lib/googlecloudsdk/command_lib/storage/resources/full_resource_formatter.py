@@ -54,7 +54,9 @@ class FieldDisplayTitleAndDefault(object):
 # Determines the order in which the fields should be displayed for
 # a BucketResource.
 BucketDisplayTitlesAndDefaults = collections.namedtuple(
-    'BucketDisplayTitlesAndDefaults', (
+    'BucketDisplayTitlesAndDefaults',
+    (
+        'name',
         'default_storage_class',
         'location_type',
         'location',
@@ -77,18 +79,25 @@ BucketDisplayTitlesAndDefaults = collections.namedtuple(
         'rpo',
         'autoclass_enabled_time',
         'satisfies_pzs',
+        'soft_delete_policy',
         ACL_KEY,
         'default_acl',
-    ))
+    ),
+)
 
 
 # Determines the order in which the fields should be displayed for
 # an ObjectResource.
 ObjectDisplayTitlesAndDefaults = collections.namedtuple(
-    'ObjectDisplayTitlesAndDefaults', (
+    'ObjectDisplayTitlesAndDefaults',
+    (
+        'name',
+        'bucket',
         'creation_time',
         'update_time',
         'storage_class_update_time',
+        'soft_delete_time',
+        'hard_delete_time',
         'storage_class',
         'temporary_hold',
         'event_based_hold',
@@ -112,7 +121,8 @@ ObjectDisplayTitlesAndDefaults = collections.namedtuple(
         'generation',
         'metageneration',
         ACL_KEY,
-    ))
+    ),
+)
 
 
 def _get_formatted_line(display_name, value, default_value=None):
@@ -159,6 +169,9 @@ def get_formatted_string(
     if not show_acl and key == ACL_KEY:
       continue
     field_display_title_and_default = getattr(display_titles_and_defaults, key)
+    if field_display_title_and_default is None:
+      # Field not supported for this output style.
+      continue
     # The field_name present in field_display_title_and_default takes
     # precedence over the key in display_titles_and_defaults.
     if field_display_title_and_default.field_name is not None:

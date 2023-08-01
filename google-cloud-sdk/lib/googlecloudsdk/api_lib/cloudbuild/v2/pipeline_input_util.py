@@ -130,6 +130,8 @@ def _CheckUnsupportedFields(spec, unsupported_fields):
 
 
 def _PipelineSpecTransform(spec):
+  for param_spec in spec.get("params", []):
+    input_util.ParamSpecTransform(param_spec)
   for task in spec["tasks"]:
     _TaskTransform(task)
   if "finally" in spec:

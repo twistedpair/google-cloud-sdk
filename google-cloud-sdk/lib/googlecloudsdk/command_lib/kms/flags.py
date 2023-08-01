@@ -271,6 +271,13 @@ def AddAadFileFlag(parser):
       'authenticated data.')
 
 
+def AddIvFileFlag(parser, help_action):
+  parser.add_argument(
+      '--initialization-vector-file',
+      help='File path to the optional file containing the initialization '
+      'vector {}.'.format(help_action))
+
+
 def AddProtectionLevelFlag(parser):
   parser.add_argument(
       '--protection-level',

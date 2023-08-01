@@ -18,22 +18,28 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import numbers
 import os
+import sys
 import uuid
 
+from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import extra_types
 from googlecloudsdk.api_lib.infra_manager import configmanager_util
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.command_lib.infra_manager import deterministic_snapshot
+from googlecloudsdk.command_lib.infra_manager import errors
 from googlecloudsdk.command_lib.infra_manager import staging_bucket_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import times
 import six
+
+if sys.version_info >= (3, 6):
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.command_lib.infra_manager import tfvars_parser
 
 
 def _UploadSourceDirToGCS(gcs_client, source, gcs_source_staging, ignore_file):
@@ -239,6 +245,7 @@ def Apply(
     git_source_directory=None,
     git_source_ref=None,
     input_values=None,
+    inputs_file=None,
     labels=None,
 ):
   """Updates the deployment if one exists, otherwise creates a deployment.
@@ -278,6 +285,7 @@ def Apply(
     git_source_ref: Git branch or tag.
     input_values: Input variable values for the Terraform blueprint. It only
       accepts (key, value) pairs where value is a scalar value.
+    inputs_file: Accepts .tfvars file.
     labels: User-defined metadata for the deployment.
 
   Returns:
@@ -302,22 +310,41 @@ def Apply(
         ]
     )
 
-  tf_input_values = {}
+  additional_properties = []
   if input_values is not None:
-    additional_properties = []
     for key, value in six.iteritems(input_values):
       additional_properties.append(
           messages.TerraformBlueprint.InputValuesValue.AdditionalProperty(
               key=key,
               value=messages.TerraformVariable(
-                  inputValue=_PythonValueToJsonValue(value)
+                  inputValue=encoding.PyValueToMessage(
+                      extra_types.JsonValue, value
+                  )
+              ),
+          )
+      )
+  elif inputs_file is not None:
+    if sys.version_info < (3, 6):
+      raise errors.InvalidDataError(
+          '--inputs-file flag is only supported for python version 3.6 and'
+          ' above.'
+      )
+    tfvar_values = tfvars_parser.ParseTFvarFile(inputs_file)
+    for key, value in six.iteritems(tfvar_values):
+      additional_properties.append(
+          messages.TerraformBlueprint.InputValuesValue.AdditionalProperty(
+              key=key,
+              value=messages.TerraformVariable(
+                  inputValue=encoding.PyValueToMessage(
+                      extra_types.JsonValue, value
+                  )
               ),
           )
       )
 
-    tf_input_values = messages.TerraformBlueprint.InputValuesValue(
-        additionalProperties=additional_properties
-    )
+  tf_input_values = messages.TerraformBlueprint.InputValuesValue(
+      additionalProperties=additional_properties
+  )
 
   tf_blueprint = _CreateTFBlueprint(
       messages,
@@ -460,31 +487,224 @@ def _UpdateDeploymentOp(
   return configmanager_util.UpdateDeployment(deployment, deployment_full_name)
 
 
-_MAXINT64 = 2 << 63 - 1
-_MININT64 = -(2 << 63)
-
-
-# Mostly taken from extra_types._PythonValueToJsonValue
-def _PythonValueToJsonValue(py_value):
-  """Convert the given python value to a JsonValue. Works for scalar values.
+def ImportStateFile(messages, deployment_full_name, lock_id):
+  """Creates a signed uri to upload the state file.
 
   Args:
-    py_value: scalar python value.
+    messages: ModuleType, the messages module that lets us form Infra Manager
+      API messages based on our protos.
+    deployment_full_name: string, the fully qualified name of the deployment,
+      e.g. "projects/p/locations/l/deployments/d".
+    lock_id: Lock ID of the lock file to verify person importing owns lock.
 
   Returns:
-    Equivalent JsonValue.
+    A messages.StateFile which contains signed uri to be used to upload a state
+    file.
   """
-  if py_value is None:
-    return extra_types.JsonValue(is_null=True)
-  if isinstance(py_value, bool):
-    return extra_types.JsonValue(boolean_value=py_value)
-  if isinstance(py_value, six.string_types):
-    return extra_types.JsonValue(string_value=py_value)
-  if isinstance(py_value, numbers.Number):
-    if isinstance(py_value, six.integer_types):
-      if _MININT64 < py_value < _MAXINT64:
-        return extra_types.JsonValue(integer_value=py_value)
-    return extra_types.JsonValue(double_value=float(py_value))
-  raise apitools_exceptions.InvalidDataError(
-      'Cannot convert "%s" to JsonValue' % py_value
+
+  import_state_file_request = messages.ImportStatefileRequest(
+      lockId=int(lock_id),
   )
+
+  log.status.Print('Creating signed uri for ImportStatefile request...')
+
+  state_file = configmanager_util.ImportStateFile(
+      import_state_file_request, deployment_full_name
+  )
+
+  return state_file
+
+
+def ExportDeploymentStateFile(messages, deployment_full_name, draft=False):
+  """Creates a signed uri to download the state file.
+
+  Args:
+    messages: ModuleType, the messages module that lets us form Infra Manager
+      API messages based on our protos.
+    deployment_full_name: string, the fully qualified name of the deployment,
+      e.g. "projects/p/locations/l/deployments/d".
+    draft: Lock ID of the lock file to verify person importing owns lock.
+
+  Returns:
+    A messages.StateFile which contains signed uri to be used to upload a state
+    file.
+  """
+
+  export_deployment_state_file_request = (
+      messages.ExportDeploymentStatefileRequest(
+          draft=draft,
+      )
+  )
+
+  log.status.Print('Initiating export state file request...')
+
+  state_file = configmanager_util.ExportDeploymentStateFile(
+      export_deployment_state_file_request, deployment_full_name
+  )
+
+  return state_file
+
+
+def ExportRevisionStateFile(messages, deployment_full_name):
+  """Creates a signed uri to download the state file.
+
+  Args:
+    messages: ModuleType, the messages module that lets us form Infra Manager
+      API messages based on our protos.
+    deployment_full_name: string, the fully qualified name of the deployment,
+      e.g. "projects/p/locations/l/deployments/d".
+
+  Returns:
+    A messages.StateFile which contains signed uri to be used to upload a state
+    file.
+  """
+
+  export_revision_state_file_request = messages.ExportRevisionStatefileRequest()
+
+  log.status.Print('Initiating export state file request...')
+
+  state_file = configmanager_util.ExportRevisionStateFile(
+      export_revision_state_file_request, deployment_full_name
+  )
+
+  return state_file
+
+
+def ExportLock(deployment_full_name):
+  """Exports lock info of the deployment.
+
+  Args:
+    deployment_full_name: string, the fully qualified name of the deployment,
+      e.g. "projects/p/locations/l/deployments/d".
+
+  Returns:
+    A lock info response.
+  """
+
+  log.status.Print('Initiating export lock request...')
+
+  lock_info = configmanager_util.ExportLock(
+      deployment_full_name,
+  )
+
+  return lock_info
+
+
+def LockDeployment(messages, async_, deployment_full_name):
+  """Locks the deployment.
+
+  Args:
+    messages: ModuleType, the messages module that lets us form Infra Manager
+      API messages based on our protos.
+    async_: bool, if True, gcloud will return immediately, otherwise it will
+      wait on the long-running operation.
+    deployment_full_name: string, the fully qualified name of the deployment,
+      e.g. "projects/p/locations/l/deployments/d".
+
+  Returns:
+    A lock info resource or, in case async_ is True, a
+      long-running operation.
+  """
+
+  lock_deployment_request = messages.LockDeploymentRequest()
+
+  op = configmanager_util.LockDeployment(
+      lock_deployment_request, deployment_full_name
+  )
+
+  deployment_ref = resources.REGISTRY.Parse(
+      deployment_full_name, collection='config.projects.locations.deployments'
+  )
+  # Get just the ID from the fully qualified name.
+  deployment_id = deployment_ref.Name()
+
+  log.debug('LRO: %s', op.name)
+
+  if async_:
+    log.status.Print(
+        'Lock deployment request issued for: [{0}]'.format(deployment_id)
+    )
+
+    log.status.Print('Check operation [{}] for status.'.format(op.name))
+    return op
+
+  progress_message = 'Locking the deployment'
+
+  lock_response = configmanager_util.WaitForApplyDeploymentOperation(
+      op, progress_message
+  )
+
+  if (
+      lock_response.lockState
+      == messages.Deployment.LockStateValueValuesEnum.LOCK_FAILED
+  ):
+    log.error('Lock deployment operation failed.')
+
+  return ExportLock(deployment_full_name)
+
+
+def UnlockDeployment(
+    messages,
+    async_,
+    deployment_full_name,
+    lock_id,
+    disable_validate_update=False,
+):
+  """Unlocks the deployment.
+
+  Args:
+    messages: ModuleType, the messages module that lets us form Infra Manager
+      API messages based on our protos.
+    async_: bool, if True, gcloud will return immediately, otherwise it will
+      wait on the long-running operation.
+    deployment_full_name: string, the fully qualified name of the deployment,
+      e.g. "projects/p/locations/l/deployments/d".
+    lock_id: Lock ID of the deployment to be unlocked.
+    disable_validate_update: If this flag is set to true, the unlock mechanism
+      will only unlock the deployment instead of validating the state file and
+      triggering an update deployment workflow.
+
+  Returns:
+    A deployment resource or, in case async_ is True, a
+      long-running operation.
+  """
+
+  unlock_deployment_request = messages.UnlockDeploymentRequest(
+      disableValidateAndUpdate=disable_validate_update,
+      lockId=int(lock_id),
+  )
+
+  deployment_ref = resources.REGISTRY.Parse(
+      deployment_full_name, collection='config.projects.locations.deployments'
+  )
+  # Get just the ID from the fully qualified name.
+  deployment_id = deployment_ref.Name()
+
+  op = configmanager_util.UnlockDeployment(
+      unlock_deployment_request, deployment_full_name
+  )
+
+  log.debug('LRO: %s', op.name)
+
+  if async_:
+    log.status.Print(
+        'Unlock deployment request issued for: [{0}]'.format(deployment_id)
+    )
+
+    log.status.Print('Check operation [{}] for status.'.format(op.name))
+
+    return op
+
+  progress_message = 'Unlocking the deployment'
+
+  unlock_response = configmanager_util.WaitForApplyDeploymentOperation(
+      op, progress_message
+  )
+
+  if (
+      unlock_response.lockState
+      == messages.Deployment.LockStateValueValuesEnum.UNLOCK_FAILED
+  ):
+    log.error('Unlock deployment operation failed.')
+
+  return unlock_response

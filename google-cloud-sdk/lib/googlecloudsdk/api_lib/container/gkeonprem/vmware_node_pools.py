@@ -184,10 +184,26 @@ class NodePoolsClient(client.ClientBase):
         'bootDiskSizeGb': flags.Get(args, 'boot_disk_size'),
         'taints': self._node_taints(args),
         'labels': self._labels_value(args),
+        'vsphereConfig': self._vsphere_config(args),
         'enableLoadBalancer': self._enable_load_balancer(args),
     }
     if flags.IsSet(kwargs):
       return messages.VmwareNodeConfig(**kwargs)
+    return None
+
+  def _vsphere_config(self, args: parser_extensions.Namespace):
+    """Constructs proto message VmwareVsphereConfig."""
+    if 'vsphere_config' not in args.GetSpecifiedArgsDict():
+      return None
+
+    kwargs = {
+        'datastore': args.vsphere_config.get('datastore', None),
+        'storagePolicyName': args.vsphere_config.get(
+            'storage-policy-name', None
+        ),
+    }
+    if flags.IsSet(kwargs):
+      return messages.VmwareVsphereConfig(**kwargs)
     return None
 
   def _vmware_node_pool_autoscaling_config(

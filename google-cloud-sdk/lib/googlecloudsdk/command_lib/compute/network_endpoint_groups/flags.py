@@ -231,8 +231,8 @@ def _AddDefaultPort(
 
     If this flag isn't specified for a NEG with endpoint type {0},
     then every network endpoint in the network endpoint group must have a port
-    specified. For a NEG with endpoint type `internet-ip-port`
-    and `internet-fqdn-port`. If the default port is not specified,
+    specified. For a global NEG with endpoint type `internet-ip-port`
+    and `internet-fqdn-port` if the default port is not specified,
     the well-known port for your backend protocol is used (80 for HTTP,
     443 for HTTPS).
   """.format(

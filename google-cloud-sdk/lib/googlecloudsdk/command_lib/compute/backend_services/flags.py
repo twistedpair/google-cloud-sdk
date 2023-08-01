@@ -946,12 +946,19 @@ def AddConnectionDrainOnFailover(parser, default):
       action='store_true',
       default=default,
       help="""\
-      Connection drain is enabled by default and on failover or failback
-      connections will be drained. If connection drain is disabled, the existing
-      connection state will be cleared immediately on a best effort basis on
-      failover or failback, all connections will then be served by the active
-      pool of instances. Not compatible with the --global flag, load balancing
-      scheme must be INTERNAL or EXTERNAL, and the protocol must be TCP.
+      Applicable only for backend service-based external and internal
+      passthrough Network Load Balancers as part of a connection tracking
+      policy. Only applicable when the backend service protocol is TCP. Not
+      applicable to any other load balancer. Enabled by default, this option
+      instructs the load balancer to allow established TCP connections to
+      persist for up to 300 seconds on instances or endpoints in primary
+      backends during failover, and on instances or endpoints in failover
+      backends during failback. For details, see: [Connection draining on
+      failover and failback for internal passthrough Network Load
+      Balancers](https://cloud.google.com/load-balancing/docs/internal/failover-overview#connection_draining)
+      and [Connection draining on failover and failback for external passthrough
+      Network Load
+      Balancers](https://cloud.google.com/load-balancing/docs/network/networklb-failover-overview#connection_draining).
       """)
 
 
@@ -962,16 +969,17 @@ def AddDropTrafficIfUnhealthy(parser, default):
       action='store_true',
       default=default,
       help="""\
-      Enable dropping of traffic if there are no healthy VMs detected in both
-      the primary and backup instance groups. Not compatible with the --global
-      flag. Applicable only for backend service-based external and internal
+      Applicable only for backend service-based external and internal
       passthrough Network Load Balancers as part of a connection tracking
-      policy. For details, see: [Connection persistence on unhealthy backends
-      for internal passthrough Network Load
-      Balancers](https://cloud.google.com/load-balancing/docs/internal#connection-persistence)
-      and [Connection persistence on unhealthy backends for external
+      policy. Not applicable to any other load balancer. This option instructs
+      the load balancer to drop packets when all instances or endpoints in
+      primary and failover backends do not pass their load balancer health
+      checks. For details, see: [Dropping traffic when all backend VMs are
+      unhealthy for internal passthrough Network Load
+      Balancers](https://cloud.google.com/load-balancing/docs/internal/failover-overview#drop_traffic)
+      and [Dropping traffic when all backend VMs are unhealthy for external
       passthrough Network Load
-      Balancers](https://cloud.google.com/load-balancing/docs/network/networklb-backend-service#connection-persistence).
+      Balancers](https://cloud.google.com/load-balancing/docs/network/networklb-failover-overview#drop_traffic).
       """)
 
 
@@ -981,9 +989,14 @@ def AddFailoverRatio(parser):
       '--failover-ratio',
       type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
       help="""\
-      If the ratio of the healthy VMs in the primary backend is at or below this
-      number, traffic arriving at the load-balanced IP will be directed to the
-      failover backend(s). Not compatible with the --global flag.
+      Applicable only to backend service-based external passthrough Network load
+      balancers and internal passthrough Network load balancers as part of a
+      failover policy. Not applicable to any other load balancer. This option
+      defines the ratio used to control when failover and failback occur.
+      For details, see: [Failover ratio for internal passthrough Network
+      Load Balancers](https://cloud.google.com/load-balancing/docs/internal/failover-overview#failover_ratio)
+      and [Failover ratio for external passthrough Network Load Balancer
+      overview](https://cloud.google.com/load-balancing/docs/network/networklb-failover-overview#failover_ratio).
       """)
 
 

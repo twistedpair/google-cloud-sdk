@@ -33,6 +33,7 @@ PIPELINE_UPDATE_MASK = '*,labels'
 DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'
 TARGET_KIND_V1BETA1 = 'Target'
 AUTOMATION_KIND = 'Automation'
+CUSTOM_TARGET_TYPE_KIND = 'CustomTargetType'
 API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'
 API_VERSION_V1 = 'deploy.cloud.google.com/v1'
 USAGE_CHOICES = ['RENDER', 'DEPLOY']
@@ -83,6 +84,7 @@ def ParseDeployConfig(messages, manifests, region):
       DELIVERY_PIPELINE_KIND_V1BETA1: [],
       TARGET_KIND_V1BETA1: [],
       AUTOMATION_KIND: [],
+      CUSTOM_TARGET_TYPE_KIND: [],
   }
   project = properties.VALUES.core.project.GetOrFail()
   for manifest in manifests:
@@ -138,6 +140,11 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
   elif kind == AUTOMATION_KIND:
     resource_type = deploy_util.ResourceType.AUTOMATION
     resource, resource_ref = _CreateAutomationResource(
+        messages, metadata[NAME_FIELD], project, region
+    )
+  elif kind == CUSTOM_TARGET_TYPE_KIND:
+    resource_type = deploy_util.ResourceType.CUSTOM_TARGET_TYPE
+    resource, resource_ref = _CreateCustomTargetTypeResource(
         messages, metadata[NAME_FIELD], project, region
     )
   else:
@@ -214,6 +221,22 @@ def _CreateDeliveryPipelineResource(messages, delivery_pipeline_name, project,
 def _CreateAutomationResource(messages, name, project, region):
   resource = messages.Automation()
   resource_ref = automation_util.AutomationReference(name, project, region)
+  resource.name = resource_ref.RelativeName()
+
+  return resource, resource_ref
+
+
+def _CreateCustomTargetTypeResource(messages, name, project, region):
+  """Creates custom target type resource with full name and the resource reference."""
+  resource = messages.CustomTargetType()
+  resource_ref = resources.REGISTRY.Parse(
+      name,
+      collection='clouddeploy.projects.locations.customTargetTypes',
+      params={
+          'projectsId': project,
+          'locationsId': region,
+          'customTargetTypesId': name,
+      })
   resource.name = resource_ref.RelativeName()
 
   return resource, resource_ref

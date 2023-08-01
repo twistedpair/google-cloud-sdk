@@ -111,6 +111,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.regionTargetHttpsProxies = self.RegionTargetHttpsProxiesService(self)
     self.regionTargetTcpProxies = self.RegionTargetTcpProxiesService(self)
     self.regionUrlMaps = self.RegionUrlMapsService(self)
+    self.regionZones = self.RegionZonesService(self)
     self.regions = self.RegionsService(self)
     self.reservations = self.ReservationsService(self)
     self.resourcePolicies = self.ResourcePoliciesService(self)
@@ -118,6 +119,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.routes = self.RoutesService(self)
     self.securityPolicies = self.SecurityPoliciesService(self)
     self.serviceAttachments = self.ServiceAttachmentsService(self)
+    self.snapshotSettings = self.SnapshotSettingsService(self)
     self.snapshots = self.SnapshotsService(self)
     self.sslCertificates = self.SslCertificatesService(self)
     self.sslPolicies = self.SslPoliciesService(self)
@@ -9008,6 +9010,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified NetworkAttachment resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeNetworkAttachmentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.networkAttachments.patch',
+        ordered_params=['project', 'region', 'networkAttachment'],
+        path_params=['networkAttachment', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkAttachments/{networkAttachment}',
+        request_field='networkAttachmentResource',
+        request_type_name='ComputeNetworkAttachmentsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
@@ -11782,6 +11810,32 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/setDefaultNetworkTier',
         request_field='projectsSetDefaultNetworkTierRequest',
         request_type_name='ComputeProjectsSetDefaultNetworkTierRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetManagedProtectionTier(self, request, global_params=None):
+      r"""Sets the Cloud Armor Managed Protection (CAMP) tier of the project. To set PLUS or above the billing account of the project must be subscribed to Managed Protection Plus. See Subscribing to Managed Protection Plus for more information.
+
+      Args:
+        request: (ComputeProjectsSetManagedProtectionTierRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetManagedProtectionTier')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetManagedProtectionTier.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.projects.setManagedProtectionTier',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/setManagedProtectionTier',
+        request_field='projectsSetManagedProtectionTierRequest',
+        request_type_name='ComputeProjectsSetManagedProtectionTierRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -15851,7 +15905,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+      r"""Patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 
       Args:
         request: (ComputeRegionSecurityPoliciesPatchRequest) input message
@@ -17028,6 +17082,42 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class RegionZonesService(base_api.BaseApiService):
+    """Service class for the regionZones resource."""
+
+    _NAME = 'regionZones'
+
+    def __init__(self, client):
+      super(ComputeBeta.RegionZonesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of Zone resources under the specific region available to the specified project.
+
+      Args:
+        request: (ComputeRegionZonesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ZoneList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionZones.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/zones',
+        request_field='',
+        request_type_name='ComputeRegionZonesListRequest',
+        response_type_name='ZoneList',
+        supports_download=False,
+    )
+
   class RegionsService(base_api.BaseApiService):
     """Service class for the regions resource."""
 
@@ -17692,6 +17782,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetNatIpInfo(self, request, global_params=None):
+      r"""Retrieves runtime NAT IP information.
+
+      Args:
+        request: (ComputeRoutersGetNatIpInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NatIpInfoResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetNatIpInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetNatIpInfo.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.routers.getNatIpInfo',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['natName'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/getNatIpInfo',
+        request_field='',
+        request_type_name='ComputeRoutersGetNatIpInfoRequest',
+        response_type_name='NatIpInfoResponse',
+        supports_download=False,
+    )
+
     def GetNatMappingInfo(self, request, global_params=None):
       r"""Retrieves runtime Nat mapping information of VM endpoints.
 
@@ -18259,7 +18375,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+      r"""Patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 
       Args:
         request: (ComputeSecurityPoliciesPatchRequest) input message
@@ -18285,7 +18401,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def PatchRule(self, request, global_params=None):
-      r"""Patches a rule at the specified priority.
+      r"""Patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.
 
       Args:
         request: (ComputeSecurityPoliciesPatchRuleRequest) input message
@@ -18629,6 +18745,68 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeServiceAttachmentsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class SnapshotSettingsService(base_api.BaseApiService):
+    """Service class for the snapshotSettings resource."""
+
+    _NAME = 'snapshotSettings'
+
+    def __init__(self, client):
+      super(ComputeBeta.SnapshotSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get snapshot settings.
+
+      Args:
+        request: (ComputeSnapshotSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SnapshotSettings) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.snapshotSettings.get',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=[],
+        relative_path='projects/{project}/global/snapshotSettings',
+        request_field='',
+        request_type_name='ComputeSnapshotSettingsGetRequest',
+        response_type_name='SnapshotSettings',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patch snapshot settings.
+
+      Args:
+        request: (ComputeSnapshotSettingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.snapshotSettings.patch',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/global/snapshotSettings',
+        request_field='snapshotSettings',
+        request_type_name='ComputeSnapshotSettingsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

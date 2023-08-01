@@ -110,7 +110,7 @@ def AddEndpointTypesArg(parser, with_managed_proxy_lb_endpoint_type=False):
         help_text
         + """
     ENDPOINT_TYPE_MANAGED_PROXY_LB
-      For Regional Internal/External HTTP(S) and TCP Proxy load balancer endpoints"""
+      For regional Application Load Balancers (internal and external) and regional proxy Network Load Balancers (internal and external) endpoints"""
     )
   help_text = textwrap.dedent(help_text + """
 

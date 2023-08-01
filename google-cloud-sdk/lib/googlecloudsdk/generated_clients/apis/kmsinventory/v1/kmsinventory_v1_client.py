@@ -15,7 +15,7 @@ class KmsinventoryV1(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://kmsinventory.mtls.googleapis.com/'
 
   _PACKAGE = 'kmsinventory'
-  _SCOPES = ['https://www.googleapis.com/auth/userinfo.email']
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
   _VERSION = 'v1'
   _CLIENT_ID = 'CLIENT_ID'
   _CLIENT_SECRET = 'CLIENT_SECRET'
@@ -76,7 +76,7 @@ class KmsinventoryV1(base_api.BaseApiClient):
         method_id='kmsinventory.organizations.protectedResources.search',
         ordered_params=['scope'],
         path_params=['scope'],
-        query_params=['cryptoKey', 'pageSize', 'pageToken'],
+        query_params=['cryptoKey', 'pageSize', 'pageToken', 'resourceTypes'],
         relative_path='v1/{+scope}/protectedResources:search',
         request_field='',
         request_type_name='KmsinventoryOrganizationsProtectedResourcesSearchRequest',

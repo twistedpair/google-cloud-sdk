@@ -19,14 +19,19 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import functools
+
 from googlecloudsdk.api_lib.run import k8s_object
 
 CLOUDSQL_ANNOTATION = k8s_object.RUN_GROUP + '/cloudsql-instances'
 VPC_ACCESS_ANNOTATION = 'run.googleapis.com/vpc-access-connector'
 SANDBOX_ANNOTATION = 'run.googleapis.com/execution-environment'
 CMEK_KEY_ANNOTATION = 'run.googleapis.com/encryption-key'
-POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION = 'run.googleapis.com/post-key-revocation-action-type'
-ENCRYPTION_KEY_SHUTDOWN_HOURS_ANNOTATION = 'run.googleapis.com/encryption-key-shutdown-hours'
+POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION = (
+    'run.googleapis.com/post-key-revocation-action-type'
+)
+ENCRYPTION_KEY_SHUTDOWN_HOURS_ANNOTATION = (
+    'run.googleapis.com/encryption-key-shutdown-hours'
+)
 SECRETS_ANNOTATION = 'run.googleapis.com/secrets'
 CPU_THROTTLE_ANNOTATION = 'run.googleapis.com/cpu-throttling'
 COLD_START_BOOST_ANNOTATION = 'run.googleapis.com/startup-cpu-boost'
@@ -54,8 +59,9 @@ class ContainerResource(k8s_object.KubernetesObject):
     nested env vars fields.
     """
     if self.container:
-      return EnvVarsAsDictionaryWrapper(self.container.env,
-                                        self._messages.EnvVar)
+      return EnvVarsAsDictionaryWrapper(
+          self.container.env, self._messages.EnvVar
+      )
 
   @property
   def image(self):
@@ -71,10 +77,12 @@ class ContainerResource(k8s_object.KubernetesObject):
     if self.container.resources is not None:
       if self.container.resources.limits is None:
         self.container.resources.limits = k8s_object.InitializedInstance(
-            limits_cls)
+            limits_cls
+        )
     else:
       self.container.resources = k8s_object.InitializedInstance(
-          self._messages.ResourceRequirements)
+          self._messages.ResourceRequirements
+      )
     # These fields are in the schema due to an error in interperetation of the
     # Knative spec. We're removing them, so never send any contents for them.
     try:
@@ -129,9 +137,9 @@ class ContainerResource(k8s_object.KubernetesObject):
     a volume mounts that mount volumes of a given type.
     """
     if self.container:
-      return VolumeMountsAsDictionaryWrapper(self.volumes,
-                                             self.container.volumeMounts,
-                                             self._messages.VolumeMount)
+      return VolumeMountsAsDictionaryWrapper(
+          self.volumes, self.container.volumeMounts, self._messages.VolumeMount
+      )
 
   def MountedVolumeJoin(self, subgroup=None):
     vols = self.volumes
@@ -173,35 +181,42 @@ class EnvVarsAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
     return k8s_object.ListAsDictionaryWrapper(
         self._env_vars,
         self._env_var_class,
-        filter_func=lambda env_var: env_var.valueFrom is None)
+        filter_func=lambda env_var: env_var.valueFrom is None,
+    )
 
   @property
   def secrets(self):
     """Mutable dict-like object for vars with a secret source type."""
 
     def _FilterSecretEnvVars(env_var):
-      return (env_var.valueFrom is not None and
-              env_var.valueFrom.secretKeyRef is not None)
+      return (
+          env_var.valueFrom is not None
+          and env_var.valueFrom.secretKeyRef is not None
+      )
 
     return k8s_object.ListAsDictionaryWrapper(
         self._env_vars,
         self._env_var_class,
         value_field='valueFrom',
-        filter_func=_FilterSecretEnvVars)
+        filter_func=_FilterSecretEnvVars,
+    )
 
   @property
   def config_maps(self):
     """Mutable dict-like object for vars with a config map source type."""
 
     def _FilterConfigMapEnvVars(env_var):
-      return (env_var.valueFrom is not None and
-              env_var.valueFrom.configMapKeyRef is not None)
+      return (
+          env_var.valueFrom is not None
+          and env_var.valueFrom.configMapKeyRef is not None
+      )
 
     return k8s_object.ListAsDictionaryWrapper(
         self._env_vars,
         self._env_var_class,
         value_field='valueFrom',
-        filter_func=_FilterConfigMapEnvVars)
+        filter_func=_FilterConfigMapEnvVars,
+    )
 
 
 class VolumesAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
@@ -229,7 +244,8 @@ class VolumesAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
         self._volumes,
         self._volume_class,
         value_field='secret',
-        filter_func=lambda volume: volume.secret is not None)
+        filter_func=lambda volume: volume.secret is not None,
+    )
 
   @property
   def config_maps(self):
@@ -238,7 +254,8 @@ class VolumesAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
         self._volumes,
         self._volume_class,
         value_field='configMap',
-        filter_func=lambda volume: volume.configMap is not None)
+        filter_func=lambda volume: volume.configMap is not None,
+    )
 
 
 class VolumeMountsAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):
@@ -262,7 +279,8 @@ class VolumeMountsAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):
         mounts_to_wrap,
         functools.partial(mount_class, readOnly=True),
         key_field='mountPath',
-        value_field='name')
+        value_field='name',
+    )
     self._volumes = volumes
 
   @property
@@ -273,7 +291,8 @@ class VolumeMountsAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):
         self._item_class,
         key_field=self._key_field,
         value_field=self._value_field,
-        filter_func=lambda mount: mount.name in self._volumes.secrets)
+        filter_func=lambda mount: mount.name in self._volumes.secrets,
+    )
 
   @property
   def config_maps(self):
@@ -283,4 +302,5 @@ class VolumeMountsAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):
         self._item_class,
         key_field=self._key_field,
         value_field=self._value_field,
-        filter_func=lambda mount: mount.name in self._volumes.config_maps)
+        filter_func=lambda mount: mount.name in self._volumes.config_maps,
+    )

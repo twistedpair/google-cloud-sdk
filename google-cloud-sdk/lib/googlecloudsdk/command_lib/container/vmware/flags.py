@@ -18,7 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import textwrap
+
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope.concepts import concepts
@@ -671,7 +674,9 @@ def _AddNodeLabels(vmware_node_config_group):
 
 
 def AddVmwareNodeConfig(
-    parser: parser_arguments.ArgumentInterceptor, for_update=False
+    parser: parser_arguments.ArgumentInterceptor,
+    for_update: bool = False,
+    release_track: base.ReleaseTrack = None,
 ):
   """Adds flags to specify the configuration of the node pool.
 
@@ -679,6 +684,7 @@ def AddVmwareNodeConfig(
     parser: The argparse parser to add the flag to.
     for_update: bool, True to add flags for update command, False to add flags
       for create command.
+    release_track: The release track of this command.
   """
   vmware_node_config_group = parser.add_group(
       help='Configuration of the node pool',
@@ -692,6 +698,11 @@ def AddVmwareNodeConfig(
   _AddBootDiskSizeGb(vmware_node_config_group)
   _AddNodeTaint(vmware_node_config_group)
   _AddNodeLabels(vmware_node_config_group)
+  _AddVmwareVsphereConfig(
+      vmware_node_config_group,
+      release_track=release_track,
+      for_update=for_update,
+  )
   _AddEnableLoadBalancer(vmware_node_config_group, for_update=for_update)
 
 
@@ -1375,7 +1386,9 @@ def AddClusterAnnotations(
 
 
 def AddVmwareControlPlaneNodeConfig(
-    parser: parser_arguments.ArgumentInterceptor, for_update=False
+    parser: parser_arguments.ArgumentInterceptor,
+    for_update=False,
+    release_track: base.ReleaseTrack = None,
 ):
   """Adds flags to specify VMware user cluster control plane node configurations.
 
@@ -1383,6 +1396,8 @@ def AddVmwareControlPlaneNodeConfig(
     parser: The argparse parser to add the flag to.
     for_update: bool, True to add flags for update command, False to add flags
       for create command.
+    release_track: base.ReleaseTrack, determine the flag scope based on release
+      tracks.
   """
   vmware_control_plane_node_config_group = parser.add_group(
       help='Control plane node configurations',
@@ -1415,6 +1430,9 @@ def AddVmwareControlPlaneNodeConfig(
     )
   _AddVmwareAutoResizeConfig(
       vmware_control_plane_node_config_group, for_update=for_update
+  )
+  _AddVmwareControlPlaneVsphereConfig(
+      vmware_control_plane_node_config_group, release_track=release_track
   )
 
 
@@ -1741,7 +1759,7 @@ def _AddVmwareControlPlaneV2Config(
   """
   # control plane v2 config is immutable.
   if for_update:
-    return None
+    return
 
   vmware_control_plane_v2_config_group = vmware_network_config_group.add_group(
       help='Control plane v2 mode configurations.'
@@ -1868,4 +1886,59 @@ If independent is set to True, upgrade or downgrade the node pool independently 
       help=help_text,
       metavar='independent=BOOL',
       hidden=True,
+  )
+
+
+def _AddVmwareControlPlaneVsphereConfig(
+    vmware_control_plane_node_config_group: parser_arguments.ArgumentInterceptor,
+    release_track: base.ReleaseTrack = None,
+):
+  """Adds a flag for VmwareControlPlaneVsphereConfig message."""
+  if release_track and release_track == base.ReleaseTrack.ALPHA:
+    vmware_control_plane_node_config_group.add_argument(
+        '--control-plane-vsphere-config',
+        help='Vsphere-specific configurations.',
+        hidden=True,
+        metavar='datastore=DATASTORE,storage-policy-name=STORAGE_POLICY_NAME',
+        type=arg_parsers.ArgDict(
+            spec={
+                'datastore': str,
+                'storage-policy-name': str,
+            },
+        ),
+    )
+
+
+def _AddVmwareVsphereConfig(
+    vmware_node_config_group: parser_arguments.ArgumentInterceptor,
+    release_track: base.ReleaseTrack = None,
+    for_update: bool = False,
+):
+  """Adds a flag for VmwareVsphereConfig."""
+  if for_update:
+    return
+
+  # Only add to alpha track, promote to beta later.
+  # The __eq__ comparison checks release_track.id so it should exclude None.
+  if release_track is None or release_track != base.ReleaseTrack.ALPHA:
+    return
+
+  vmware_vsphere_config_help_text = textwrap.dedent("""\
+    vSphere configurations for the node pool.
+
+    DATASTORE is the name of the vCenter datastore.
+
+    STORAGE_POLICY_NAME is the name of the vCenter storage policy.
+    """)
+  vmware_node_config_group.add_argument(
+      '--vsphere-config',
+      help=vmware_vsphere_config_help_text,
+      hidden=True,
+      type=arg_parsers.ArgDict(
+          spec={
+              'datastore': str,
+              'storage-policy-name': str,
+          }
+      ),
+      metavar='datastore=DATASTORE,storage-policy-name=STORAGE_POLICY_NAME',
   )

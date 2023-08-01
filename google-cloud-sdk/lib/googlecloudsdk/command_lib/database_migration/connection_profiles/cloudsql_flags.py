@@ -248,7 +248,7 @@ def AddAllocatedIpRangeFlag(parser):
     This name refers to an already allocated IP range.
     If set, the instance IP will be created in the allocated range.
   """
-  parser.add_argument('--allocated-ip-range', help=help_text, hidden=True)
+  parser.add_argument('--allocated-ip-range', help=help_text)
 
 
 def AddRootPassword(parser):

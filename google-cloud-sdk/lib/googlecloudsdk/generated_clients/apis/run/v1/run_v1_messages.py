@@ -166,6 +166,60 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class CSIVolumeSource(_messages.Message):
+  r"""Storage volume source using the Container Storage Interface.
+
+  Messages:
+    VolumeAttributesValue: stores driver specific attributes. For Google Cloud
+      Storage volumes, the following attributes are supported: * bucketName:
+      the name of the Cloud Storage bucket to mount. The Cloud Run Service
+      identity must have access to this bucket.
+
+  Fields:
+    driver: name of the CSI driver for the requested storage system. Cloud Run
+      supports the following drivers: * gcsfuse.run.googleapis.com : Mount a
+      Cloud Storage Bucket as a volume.
+    readOnly: If true, mount the volume as read only. Defaults to false.
+    volumeAttributes: stores driver specific attributes. For Google Cloud
+      Storage volumes, the following attributes are supported: * bucketName:
+      the name of the Cloud Storage bucket to mount. The Cloud Run Service
+      identity must have access to this bucket.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class VolumeAttributesValue(_messages.Message):
+    r"""stores driver specific attributes. For Google Cloud Storage volumes,
+    the following attributes are supported: * bucketName: the name of the
+    Cloud Storage bucket to mount. The Cloud Run Service identity must have
+    access to this bucket.
+
+    Messages:
+      AdditionalProperty: An additional property for a VolumeAttributesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        VolumeAttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a VolumeAttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  driver = _messages.StringField(1)
+  readOnly = _messages.BooleanField(2)
+  volumeAttributes = _messages.MessageField('VolumeAttributesValue', 3)
+
+
 class CancelExecutionRequest(_messages.Message):
   r"""Request message for cancelling an execution."""
 
@@ -509,7 +563,7 @@ class EmptyDirVolumeSource(_messages.Message):
     medium: The medium on which the data is stored. The default is "" which
       means to use the node's default medium. Must be an empty string
       (default) or Memory. More info:
-      https://kubernetes.io/docs/concepts/storage/volumes#emptydir +optional
+      https://kubernetes.io/docs/concepts/storage/volumes#emptydir
     sizeLimit: Limit on the storage usable by this EmptyDir volume. The size
       limit is also applicable for memory medium. The maximum usage on memory
       medium EmptyDir would be the minimum value between the SizeLimit
@@ -1252,6 +1306,22 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class NFSVolumeSource(_messages.Message):
+  r"""Represents a persistent volume that will be mounted using NFS. This
+  volume will be shared between all instances of the Service and data will not
+  be deleted when the instance is shut down.
+
+  Fields:
+    path: Path that is exported by the NFS server.
+    readOnly: If true, mount the NFS volume as read only. Defaults to false.
+    server: Hostname or IP address of the NFS server.
+  """
+
+  path = _messages.StringField(1)
+  readOnly = _messages.BooleanField(2)
+  server = _messages.StringField(3)
 
 
 class Namespace(_messages.Message):
@@ -3857,18 +3927,22 @@ class Volume(_messages.Message):
 
   Fields:
     configMap: Not supported in Cloud Run.
+    csi: Volume specified by the Container Storage Interface driver
     emptyDir: Ephemeral storage used as a shared volume.
     name: Volume's name. In Cloud Run Fully Managed, the name 'cloudsql' is
       reserved.
+    nfs: A NFSVolumeSource attribute.
     secret: The secret's value will be presented as the content of a file
       whose name is defined in the item path. If no items are defined, the
       name of the file is the secretName.
   """
 
   configMap = _messages.MessageField('ConfigMapVolumeSource', 1)
-  emptyDir = _messages.MessageField('EmptyDirVolumeSource', 2)
-  name = _messages.StringField(3)
-  secret = _messages.MessageField('SecretVolumeSource', 4)
+  csi = _messages.MessageField('CSIVolumeSource', 2)
+  emptyDir = _messages.MessageField('EmptyDirVolumeSource', 3)
+  name = _messages.StringField(4)
+  nfs = _messages.MessageField('NFSVolumeSource', 5)
+  secret = _messages.MessageField('SecretVolumeSource', 6)
 
 
 class VolumeMount(_messages.Message):

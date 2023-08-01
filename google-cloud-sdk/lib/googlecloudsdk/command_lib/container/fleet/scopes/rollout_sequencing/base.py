@@ -131,19 +131,23 @@ class DescribeCommand(feature_base.FeatureCommand, ClusterUpgradeCommand):
       msg = ('Cluster Upgrade feature is not configured for Scope: {}.'
             ).format(scope_name)
       raise exceptions.Error(msg)
+    state = (
+        self.hubclient.ToPyDefaultDict(
+            self.messages.ScopeFeatureState, feature.scopeStates
+        )[scope_name].clusterupgrade
+        or self.messages.ClusterUpgradeScopeState()
+    )
+    gke_state = state.gkeState
+    if gke_state is not None:
+      gke_state.reset('state')
 
-    return ({
-        'scope':
-            scope_name,
-        'state':
-            self.hubclient.ToPyDefaultDict(
-                self.messages.ScopeFeatureState,
-                feature.scopeStates)[scope_name].clusterupgrade
-            or self.messages.ClusterUpgradeScopeState(),
-        'spec':
-            DescribeCommand.FormatDurations(
-                scope_specs[scope_name].clusterupgrade),
-    })
+    return {
+        'scope': scope_name,
+        'state': state,
+        'spec': DescribeCommand.FormatDurations(
+            scope_specs[scope_name].clusterupgrade
+        ),
+    }
 
   def GetLinkedClusterUpgradeScopes(self, scope_name, feature):
     """Gets Cluster Upgrade Feature information for the entire sequence."""

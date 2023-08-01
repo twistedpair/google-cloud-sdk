@@ -1040,6 +1040,33 @@ class ClouddeployV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RollbackTarget(self, request, global_params=None):
+      r"""Creates a `Rollout` to rollback the specified target of the `Delivery Pipeline`.
+
+      Args:
+        request: (ClouddeployProjectsLocationsDeliveryPipelinesRollbackTargetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RollbackTargetResponse) The response message.
+      """
+      config = self.GetMethodConfig('RollbackTarget')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RollbackTarget.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}:rollbackTarget',
+        http_method='POST',
+        method_id='clouddeploy.projects.locations.deliveryPipelines.rollbackTarget',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:rollbackTarget',
+        request_field='rollbackTargetRequest',
+        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesRollbackTargetRequest',
+        response_type_name='RollbackTargetResponse',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 

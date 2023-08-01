@@ -103,6 +103,9 @@ class Configs:
             enableConfidentialCompute=args.enable_confidential_compute
         )
     )
+    config.host.gceInstance.enableNestedVirtualization = (
+        args.enable_nested_virtualization
+    )
     config.host.gceInstance.bootDiskSizeGb = args.boot_disk_size
 
     if (
@@ -273,6 +276,12 @@ class Configs:
       update_mask.append(
           'host.gce_instance.confidential_instance_config.enable_confidential_compute'
       )
+
+    if args.IsSpecified('enable_nested_virtualization'):
+      config.host.gceInstance.enableNestedVirtualization = (
+          args.enable_nested_virtualization
+      )
+      update_mask.append('host.gce_instance.enable_nested_virtualization')
 
     # Shielded Instance Config
     gce_shielded_instance_config = self.messages.GceShieldedInstanceConfig()

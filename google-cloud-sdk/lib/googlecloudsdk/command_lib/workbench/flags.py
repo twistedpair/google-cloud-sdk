@@ -50,6 +50,7 @@ def GetLocationResourceArg(help_text):
     return concepts.ResourceSpec(
         'notebooks.projects.locations',
         resource_name='location',
+        api_version='v2',
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
         locationsId=LocationAttributeConfig())
 
@@ -82,6 +83,7 @@ def GetInstanceResourceArg(help_text):
     return concepts.ResourceSpec(
         'notebooks.projects.locations.instances',
         resource_name='instance',
+        api_version='v2',
         instancesId=InstanceAttributeConfig(),
         locationsId=LocationAttributeConfig(),
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
@@ -162,6 +164,7 @@ def AddDiagnosticConfigFlags(parser, vm_type):
   """Adds Diagnostic config flags to parser."""
   parser.add_argument(
       '--gcs-bucket',
+      dest='gcs_bucket',
       help=('The Cloud Storage bucket where the log files generated from the '
             'diagnose command will be stored. storage.buckets.writer '
             'permissions must be given to project\'s service account or '
@@ -169,6 +172,7 @@ def AddDiagnosticConfigFlags(parser, vm_type):
       required=True)
   parser.add_argument(
       '--relative-path',
+      dest='relative_path',
       help=('Defines the relative storage path in the Cloud Storage bucket '
             'where the diagnostic logs will be written. Default path will be '
             'the root directory of the Cloud Storage bucket'
@@ -177,14 +181,14 @@ def AddDiagnosticConfigFlags(parser, vm_type):
   parser.add_argument(
       '--enable-repair',
       action='store_true',
-      dest='enable-repair',
+      dest='enable_repair',
       default=False,
       help=('Enables flag to repair service for {}'.format(vm_type)),
       required=False)
   parser.add_argument(
       '--enable-packet-capture',
       action='store_true',
-      dest='enable-packet-capture',
+      dest='enable_packet_capture',
       default=False,
       help=('Enables flag to capture packets from '
             'the {} for 30 seconds'.format(vm_type)),
@@ -192,7 +196,7 @@ def AddDiagnosticConfigFlags(parser, vm_type):
   parser.add_argument(
       '--enable-copy-home-files',
       action='store_true',
-      dest='enable-copy-home-files',
+      dest='enable_copy_home_files',
       default=False,
       help=('Enables flag to copy all `/home/jupyter` folder contents'),
       required=False)
@@ -211,14 +215,17 @@ def AddCreateInstanceFlags(parser):
   nic_type_choices = ['VIRTIGO_NET', 'GVNIC']
 
   AddInstanceResource(parser)
-  parser.add_argument(
+  gce_setup_group = parser.add_group(
+      help=(
+          'Gce Setup for the instance'))
+  gce_setup_group.add_argument(
       '--machine-type',
       help=(
           'The '
           '[Compute Engine machine type](https://cloud.google.com/sdk/gcloud/reference/compute/machine-types) '  # pylint: disable=line-too-long
           'of this instance.'),
       default='n1-standard-4')
-  accelerator_group = parser.add_group(
+  accelerator_group = gce_setup_group.add_group(
       help=(
           'The hardware accelerator used on this instance. If you use '
           'accelerators, make sure that your configuration has [enough vCPUs '
@@ -233,19 +240,29 @@ def AddCreateInstanceFlags(parser):
       '--accelerator-core-count',
       help='Count of cores of this accelerator.',
       type=int)
-  parser.add_argument(
-      '--service-account-email',
+  service_account_group = gce_setup_group.add_group(
       help=(
           'The service account on this instance, giving access to other '
           'Google Cloud services. You can use any service account within the '
-          'same project, but you must have the service account user permission '
+          'same project, but you must grant the service account user permission '
           'to use the instance. If not specified, the [Compute Engine default '
           'service account](/compute/docs/access/service-accounts#default_'
           'service_account) is used.'
       ),
   )
-  environment_group = parser.add_group(mutex=True)
-  vm_source_group = environment_group.add_group()
+  service_account_group.add_argument(
+      '--service-account-email',
+      help=(
+          'The service account on this instance, giving access to other '
+          'Google Cloud services. You can use any service account within the '
+          'same project, but you must grant the service account user permission '
+          'to use the instance. If not specified, the [Compute Engine default '
+          'service account](/compute/docs/access/service-accounts#default_'
+          'service_account) is used.'
+      ),
+  )
+  image_group = gce_setup_group.add_group(mutex=True)
+  vm_source_group = image_group.add_group()
   vm_source_group.add_argument(
       '--vm-image-project',
       help=(
@@ -265,7 +282,7 @@ def AddCreateInstanceFlags(parser):
           'this family will be used.'
       )
   )
-  container_group = environment_group.add_group()
+  container_group = image_group.add_group()
   container_group.add_argument(
       '--container-repository',
       help=(
@@ -282,7 +299,7 @@ def AddCreateInstanceFlags(parser):
       ),
   )
 
-  boot_group = parser.add_group(help='Boot disk configurations.')
+  boot_group = gce_setup_group.add_group(help='Boot disk configurations.')
   boot_group.add_argument(
       '--boot-disk-type',
       choices=disk_choices,
@@ -305,15 +322,21 @@ def AddCreateInstanceFlags(parser):
       '--boot-disk-encryption',
       choices=encryption_choices,
       default=None,
-      help=(
-          'Disk encryption method used on the boot disk, defaults to GMEK.'
-      ),
+      help='Disk encryption method used on the boot disk, defaults to GMEK.',
   )
+  boot_kms_flag_overrides = {
+      'kms-keyring': '--boot-disk-encryption-key-keyring',
+      'kms-location': '--boot-disk-encryption-key-location',
+      'kms-project': '--boot-disk-encryption-key-project'
+  }
   kms_resource_args.AddKmsKeyResourceArg(
-      parser=boot_group, resource='boot_disk', name='boot-disk-kms-key'
+      parser=boot_group,
+      resource='boot_disk',
+      name='--boot-disk-kms-key',
+      flag_overrides=boot_kms_flag_overrides,
   )
 
-  data_group = parser.add_group(help='Data disk configurations.')
+  data_group = gce_setup_group.add_group(help='Data disk configurations.')
   data_group.add_argument(
       '--data-disk-type',
       choices=disk_choices,
@@ -336,29 +359,40 @@ def AddCreateInstanceFlags(parser):
       '--data-disk-encryption',
       choices=encryption_choices,
       default=None,
-      help=(
-          'Disk encryption method used on the data disk, defaults to GMEK.'
-      ),
+      help='Disk encryption method used on the data disk, defaults to GMEK.',
   )
+  data_kms_flag_overrides = {
+      'kms-keyring': '--data-disk-encryption-key-keyring',
+      'kms-location': '--data-disk-encryption-key-location',
+      'kms-project': '--data-disk-encryption-key-project',
+  }
   kms_resource_args.AddKmsKeyResourceArg(
-      parser=data_group, resource='data_disk', name='data-disk-kms-key'
+      parser=data_group,
+      resource='data_disk',
+      name='--data-disk-kms-key',
+      flag_overrides=data_kms_flag_overrides,
   )
 
-  shielded_vm_group = parser.add_group(help='Shielded VM configurations.')
+  shielded_vm_group = gce_setup_group.add_group(
+      help='Shielded VM configurations.'
+  )
   shielded_vm_group.add_argument(
       '--shielded-secure-boot',
       help='Boot instance with secure boot enabled',
-      type=bool)
+      type=bool,
+  )
   shielded_vm_group.add_argument(
       '--shielded-vtpm',
       help='Boot instance with TPM (Trusted Platform Module) enabled',
-      type=bool)
+      type=bool,
+  )
   shielded_vm_group.add_argument(
       '--shielded-integrity-monitoring',
       help='Enable monitoring of the boot integrity of the instance',
-      type=bool)
+      type=bool,
+  )
 
-  gpu_group = parser.add_group(help='GPU driver configurations.')
+  gpu_group = gce_setup_group.add_group(help='GPU driver configurations.')
   gpu_group.add_argument(
       '--install-gpu-driver',
       action='store_true',
@@ -378,7 +412,7 @@ def AddCreateInstanceFlags(parser):
       ),
   )
 
-  network_group = parser.add_group(help='Network configs.')
+  network_group = gce_setup_group.add_group(help='Network configs.')
   AddNetworkArgument(
       ('The name of the VPC that this instance is in. Format: '
        'projects/`{project_id}`/global/networks/`{network_id}`.'),
@@ -394,35 +428,36 @@ def AddCreateInstanceFlags(parser):
       choices=nic_type_choices,
       default=None)
 
-  network_group.add_argument(
+  gce_setup_group.add_argument(
       '--disable-public-ip',
       action='store_true',
-      dest='disable-public-ip',
+      dest='disable_public_ip',
       help="""\
   If specified, no public IP will be assigned to this instance.""")
-  network_group.add_argument(
+  gce_setup_group.add_argument(
       '--enable-ip-forwarding',
       action='store_true',
-      dest='enable-ip-forwarding',
+      dest='enable_ip_forwarding',
       help="""\
   If specified, IP forwarding will be enabled for this instance.""")
-  network_group.add_argument(
-      '--no-proxy-access',
+  parser.add_argument(
+      '--disable-proxy-access',
       action='store_true',
-      dest='no_proxy_access',
+      dest='disable_proxy_access',
       help="""\
   If true, the notebook instance will not register with the proxy.""")
 
-  parser.add_argument(
+  gce_setup_group.add_argument(
       '--metadata',
       help='Custom metadata to apply to this instance.',
       type=arg_parsers.ArgDict(),
       metavar='KEY=VALUE')
 
-  parser.add_argument(
+  gce_setup_group.add_argument(
       '--tags',
+      metavar='TAGS',
       help=('Tags to apply to this instance.'),
-      type=str)
+      type=arg_parsers.ArgList())
 
   parser.add_argument(
       '--labels',
@@ -503,7 +538,12 @@ def AddUpdateInstanceFlags(parser):
       'NVIDIA_TESLA_T4_VWS', 'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS'
   ]
   AddInstanceResource(parser)
-  accelerator_group = parser.add_group(help='Accelerator configurations.')
+  gce_setup_group = parser.add_group(
+      help=(
+          'Gce Setup for the instance'))
+  accelerator_group = gce_setup_group.add_group(
+      help='Accelerator configurations.'
+      )
   accelerator_group.add_argument(
       '--accelerator-type',
       help='Type of this accelerator.',
@@ -513,7 +553,7 @@ def AddUpdateInstanceFlags(parser):
       '--accelerator-core-count',
       help='Count of cores of this accelerator.',
       type=int)
-  gpu_group = parser.add_group(help='GPU driver configurations.')
+  gpu_group = gce_setup_group.add_group(help='GPU driver configurations.')
   gpu_group.add_argument(
       '--install-gpu-driver',
       help='Install gpu driver',
@@ -522,7 +562,9 @@ def AddUpdateInstanceFlags(parser):
       '--custom-gpu-driver-path',
       help='custom gpu driver path',
       type=str)
-  shielded_vm_group = parser.add_group(help='Shielded VM configurations.')
+  shielded_vm_group = gce_setup_group.add_group(
+      help='Shielded VM configurations.'
+      )
   shielded_vm_group.add_argument(
       '--shielded-secure-boot',
       help='Boot instance with secure boot enabled',
@@ -535,6 +577,23 @@ def AddUpdateInstanceFlags(parser):
       '--shielded-integrity-monitoring',
       help='Enable monitoring of the boot integrity of the instance',
       type=bool)
+  parser.add_argument(
+      '--labels',
+      help=('Labels to apply to this instance. These can be later modified '
+            'by the setLabels method.'),
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE')
+  gce_setup_group.add_argument(
+      '--metadata',
+      help='Custom metadata to apply to this instance.',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE')
+  gce_setup_group.add_argument(
+      '--machine-type',
+      help=(
+          'The '
+          '[Compute Engine machine type](https://cloud.google.com/sdk/gcloud/reference/compute/machine-types) '  # pylint: disable=line-too-long
+          'of this instance.'))
 
 
 def AddDiagnoseInstanceFlags(parser):

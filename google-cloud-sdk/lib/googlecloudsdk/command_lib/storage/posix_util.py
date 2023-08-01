@@ -295,7 +295,9 @@ PosixAttributes = collections.namedtuple(
 
 def get_posix_attributes_from_file(file_path, preserve_symlinks=False):
   """Takes file path and returns PosixAttributes object."""
-  follow_symlinks = not preserve_symlinks
+  follow_symlinks = (
+      not preserve_symlinks or os.stat not in os.supports_follow_symlinks
+  )
   mode, _, _, _, uid, gid, _, atime, mtime, _ = os.stat(
       file_path, follow_symlinks=follow_symlinks
   )
@@ -371,8 +373,10 @@ def set_posix_attributes_on_file_if_valid(
     )
 
   # Don't follow symlinks if they're being preserved.
-  follow_symlinks = not preserve_symlinks
   if need_utime_call:
+    follow_symlinks = (
+        not preserve_symlinks or os.utime not in os.supports_follow_symlinks
+    )
     os.utime(destination_path, (atime, mtime), follow_symlinks=follow_symlinks)
 
   if platforms.OperatingSystem.IsWindows():
@@ -409,12 +413,18 @@ def set_posix_attributes_on_file_if_valid(
 
   if need_chown_call:
     # Note: chown doesn't do anything for negative numbers like _INVALID_ID.
+    follow_symlinks = (
+        not preserve_symlinks or os.chown not in os.supports_follow_symlinks
+    )
     os.chown(destination_path, uid, gid, follow_symlinks=follow_symlinks)
 
   if custom_posix_attributes.mode is not None and (
       custom_posix_attributes.mode.base_ten_int
       != existing_posix_attributes.mode.base_ten_int
   ):
+    follow_symlinks = (
+        not preserve_symlinks or os.chmod not in os.supports_follow_symlinks
+    )
     os.chmod(
         destination_path,
         custom_posix_attributes.mode.base_ten_int,

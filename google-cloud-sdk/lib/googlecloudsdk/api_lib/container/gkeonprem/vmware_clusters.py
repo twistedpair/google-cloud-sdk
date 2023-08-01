@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from typing import Generator
+from typing import Generator, Optional
 
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
@@ -392,10 +392,26 @@ class ClustersClient(client.ClientBase):
         'cpus': flags.Get(args, 'cpus'),
         'memory': flags.Get(args, 'memory'),
         'replicas': flags.Get(args, 'replicas'),
+        'vsphereConfig': self._vmware_control_plane_vsphere_config(args),
     }
     if flags.IsSet(kwargs):
       return messages.VmwareControlPlaneNodeConfig(**kwargs)
     return None
+
+  def _vmware_control_plane_vsphere_config(
+      self, args: parser_extensions.Namespace
+  ) -> Optional[messages.VmwareControlPlaneVsphereConfig]:
+    """Constructs proto message VmwareControlPlaneVsphereConfig."""
+    if 'control_plane_vsphere_config' not in args.GetSpecifiedArgsDict():
+      return None
+
+    kwargs = {
+        'datastore': args.control_plane_vsphere_config.get('datastore', None),
+        'storagePolicyName': args.control_plane_vsphere_config.get(
+            'storage-policy-name', None
+        ),
+    }
+    return messages.VmwareControlPlaneVsphereConfig(**kwargs)
 
   def _create_annotations(self, args: parser_extensions.Namespace):
     """Constructs proto message AnnotationsValue for create command."""

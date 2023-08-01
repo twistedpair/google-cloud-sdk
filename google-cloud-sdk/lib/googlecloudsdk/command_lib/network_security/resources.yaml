@@ -178,7 +178,7 @@ securityProfile:
     help: ID of the security profile.
 
 securityProfileGroup:
-  name: security profile group
+  name: security_profile_group
   collection: networksecurity.organizations.locations.securityProfileGroups
   request_id_field: securityProfileGroupId
   attributes:

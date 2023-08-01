@@ -377,41 +377,42 @@ def AddMigInstanceRedistributionTypeFlag(parser):
       help=help_text)
 
 
-def AddMigDistributionPolicyTargetShapeFlag(parser, support_any_single_zone):
+def AddMigDistributionPolicyTargetShapeFlag(parser):
   """Add --target-distribution-shape flag to the parser."""
   help_text = """\
       Specifies how a regional managed instance group distributes its instances
       across zones within the region. The default shape is ``even''.
     """
   choices = {
-      'even':
+      'even': (
           'The group schedules VM instance creation and deletion to achieve '
           'and maintain an even number of managed instances across the '
           'selected zones. The distribution is even when the number of managed'
           ' instances does not differ by more than 1 between any two zones. '
-          'Recommended for highly available serving workloads.',
-      'balanced':
+          'Recommended for highly available serving workloads.'
+      ),
+      'balanced': (
           'The group prioritizes acquisition of resources, scheduling VMs in '
           'zones where resources are available while distributing VMs as '
           'evenly as possible across selected zones to minimize the impact of '
           'zonal failure. Recommended for highly available serving or batch '
-          'workloads that do not require autoscaling.',
-      'any':
+          'workloads that do not require autoscaling.'
+      ),
+      'any': (
           'The group picks zones for creating VM instances to fulfill the '
           'requested number of VMs within present resource constraints and to '
           'maximize utilization of unused zonal reservations. Recommended for '
           'batch workloads that do not require high availability.'
+      ),
+      'any-single-zone': (
+          'The group schedules all instances within a single zone. The zone '
+          'is chosen based on hardware support, current resources '
+          'availability, and matching reservations. The group might not be '
+          'able to create the requested number of VMs in case of zonal '
+          'resource availability constraints. Recommended for workloads '
+          'requiring extensive communication between VMs.'
+      ),
   }
-  if support_any_single_zone:
-    choices.update({
-        'any-single-zone':
-            'The group schedules all instances within a single zone. The zone '
-            'is chosen based on hardware support, current resources '
-            'availability, and matching reservations. The group might not be '
-            'able to create the requested number of VMs in case of zonal '
-            'resource availability constraints. Recommended for workloads '
-            'requiring extensive communication between VMs.'
-    })
 
   parser.add_argument(
       '--target-distribution-shape',

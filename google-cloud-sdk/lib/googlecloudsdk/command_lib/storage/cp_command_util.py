@@ -136,6 +136,8 @@ whose content consists of the linked path. Inversely, such placeholders will be
 converted to symlinks when downloaded while this feature is enabled, as
 described at https://cloud.google.com/storage-transfer/docs/metadata-preservation#posix_to.
 
+Directory symlinks are only followed if this flag is specified.
+
 CAUTION: No validation is applied to the symlink target paths. Once downloaded,
 preserved symlinks will point to whatever path was specified by the placeholder,
 regardless of the location or permissions of the path, or whether it actually
@@ -170,7 +172,6 @@ def add_ignore_symlinks_flag(parser_or_group, default=False):
       default=default,
       help=(
           'Ignore file symlinks instead of copying what they point to.'
-          ' Symlinks pointing to directories will always be ignored.'
       ),
   )
 
@@ -256,15 +257,6 @@ def add_cp_and_mv_flags(parser):
       action='store_true',
       help='Prints the version-specific URL for each copied object.')
   parser.add_argument(
-      '--read-paths-from-stdin',
-      '-I',
-      action='store_true',
-      help='Read the list of resources to copy from stdin. No need to enter'
-      ' a source argument if this flag is present.\nExample:'
-      ' "storage cp -I gs://bucket/destination"\n'
-      ' Note: To copy the contents of one file directly from stdin, use "-"'
-      ' as the source argument without the "-I" flag.')
-  parser.add_argument(
       '-s',
       '--storage-class',
       help='Specify the storage class of the destination object. If not'
@@ -290,6 +282,16 @@ def add_cp_and_mv_flags(parser):
   flags.add_preserve_acl_flag(acl_flags_group)
 
   flags.add_encryption_flags(parser)
+  flags.add_read_paths_from_stdin_flag(
+      parser,
+      help_text=(
+          'Read the list of resources to copy from stdin. No need to enter'
+          ' a source argument if this flag is present.\nExample:'
+          ' "storage cp -I gs://bucket/destination"\n'
+          ' Note: To copy the contents of one file directly from stdin, use "-"'
+          ' as the source argument without the "-I" flag.'
+      ),
+  )
 
 
 def add_recursion_flag(parser):

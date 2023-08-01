@@ -77,6 +77,40 @@ class TopicsClient(object):
     self._service = self.client.projects_topics
     self._subscriptions_service = self.client.projects_subscriptions
 
+  def _ParseIngestionDataSourceSettings(
+      self,
+      kinesis_ingestion_stream_arn=None,
+      kinesis_ingestion_consumer_arn=None,
+      kinesis_ingestion_role_arn=None,
+      kinesis_ingestion_service_account=None,
+  ):
+    """Returns an IngestionDataSourceSettings message from the provided args.
+    """
+
+    # For each datasource type, check if all required flags are passed, and
+    # conditionally construct the source and return the first datasource type
+    # which is present. We let the argument parser enforce mutual exclusion of
+    # argument groups.
+
+    is_kinesis = (
+        (kinesis_ingestion_stream_arn is not None)
+        and (kinesis_ingestion_consumer_arn is not None)
+        and (kinesis_ingestion_role_arn is not None)
+        and (kinesis_ingestion_service_account is not None)
+    )
+
+    if is_kinesis:
+      kinesis_source = self.messages.AwsKinesis(
+          streamArn=kinesis_ingestion_stream_arn,
+          consumerArn=kinesis_ingestion_consumer_arn,
+          awsRoleArn=kinesis_ingestion_role_arn,
+          gcpServiceAccount=kinesis_ingestion_service_account,
+      )
+      return self.messages.IngestionDataSourceSettings(
+          awsKinesis=kinesis_source
+      )
+    return None
+
   def Create(
       self,
       topic_ref,
@@ -88,6 +122,10 @@ class TopicsClient(object):
       message_encoding=None,
       first_revision_id=None,
       last_revision_id=None,
+      kinesis_ingestion_stream_arn=None,
+      kinesis_ingestion_consumer_arn=None,
+      kinesis_ingestion_role_arn=None,
+      kinesis_ingestion_service_account=None
   ):
     """Creates a Topic.
 
@@ -107,6 +145,14 @@ class TopicsClient(object):
         revision allowed for validation.
       last_revision_id (str): If a schema is set, the revision id of the newest
         revision allowed for validation.
+      kinesis_ingestion_stream_arn (str): The Kinesis data stream ARN to ingest
+        data from.
+      kinesis_ingestion_consumer_arn (str): The Kinesis data streams consumer
+        ARN to use for ingestion.
+      kinesis_ingestion_role_arn (str): AWS role ARN to be used for Federated
+        Identity authentication with Kinesis.
+      kinesis_ingestion_service_account (str): The GCP service account to be
+        used for Federated Identity authentication with Kinesis
 
     Returns:
       Topic: The created topic.
@@ -134,6 +180,12 @@ class TopicsClient(object):
           firstRevisionId=first_revision_id,
           lastRevisionId=last_revision_id,
       )
+    topic.ingestionDataSourceSettings = self._ParseIngestionDataSourceSettings(
+        kinesis_ingestion_stream_arn=kinesis_ingestion_stream_arn,
+        kinesis_ingestion_consumer_arn=kinesis_ingestion_consumer_arn,
+        kinesis_ingestion_role_arn=kinesis_ingestion_role_arn,
+        kinesis_ingestion_service_account=kinesis_ingestion_service_account,
+    )
     return self._service.Create(topic)
 
   def Get(self, topic_ref):
@@ -359,6 +411,11 @@ class TopicsClient(object):
       first_revision_id=None,
       last_revision_id=None,
       clear_schema_settings=None,
+      clear_ingestion_data_source_settings=False,
+      kinesis_ingestion_stream_arn=None,
+      kinesis_ingestion_consumer_arn=None,
+      kinesis_ingestion_role_arn=None,
+      kinesis_ingestion_service_account=None,
   ):
     """Updates a Topic.
 
@@ -384,6 +441,16 @@ class TopicsClient(object):
         revision allowed for validation.
       clear_schema_settings (bool): If set, clear schema settings from the
         topic.
+      clear_ingestion_data_source_settings (bool): If set, clear
+        IngestionDataSourceSettings from the topic.
+      kinesis_ingestion_stream_arn (str): The Kinesis data stream ARN to
+        ingest data from.
+      kinesis_ingestion_consumer_arn (str): The Kinesis data streams consumer
+        ARN to use for ingestion.
+      kinesis_ingestion_role_arn (str): AWS role ARN to be used for Federated
+        Identity authentication with Kinesis.
+      kinesis_ingestion_service_account (str): The GCP service account to be
+        used for Federated Identity authentication with Kinesis
 
     Returns:
       Topic: The updated topic.
@@ -435,6 +502,23 @@ class TopicsClient(object):
               ),
           )
       )
+
+    if clear_ingestion_data_source_settings:
+      update_settings.append(
+          _TopicUpdateSetting('ingestionDataSourceSettings', None)
+      )
+    else:
+      new_settings = self._ParseIngestionDataSourceSettings(
+          kinesis_ingestion_stream_arn=kinesis_ingestion_stream_arn,
+          kinesis_ingestion_consumer_arn=kinesis_ingestion_consumer_arn,
+          kinesis_ingestion_role_arn=kinesis_ingestion_role_arn,
+          kinesis_ingestion_service_account=kinesis_ingestion_service_account,
+      )
+      if new_settings is not None:
+        update_settings.append(
+            _TopicUpdateSetting('ingestionDataSourceSettings', new_settings)
+        )
+
     topic = self.messages.Topic(name=topic_ref.RelativeName())
 
     update_mask = []

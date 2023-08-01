@@ -211,7 +211,7 @@ class Client:
     """
     if operation_type == 'add_override':
       for override in overrides:
-        does_override_exist, override_index = self.CheckOverridesExist(
+        does_override_exist, _ = self.CheckOverridesExist(
             existing_threat_prevention_profile_object, update_mask, override
         )
         if not does_override_exist:

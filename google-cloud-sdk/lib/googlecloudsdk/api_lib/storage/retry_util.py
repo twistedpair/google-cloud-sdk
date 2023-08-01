@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import errno
+
 from apitools.base.py import http_wrapper as apitools_http_wrapper
 from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.core import properties
@@ -42,7 +44,15 @@ def set_retry_func(apitools_transfer_object):
     # that cannot be handled. For example, 404, 500, etc.
     apitools_http_wrapper.HandleExceptionsAndRebuildHttpConnections(retry_args)
 
-    # If it did not raise any error, we want to raise a custom error to
+    # Apitools attempts to retry all OS/socket errors, but some of them are not
+    # actually retriable. These are reraised below.
+    if (
+        isinstance(retry_args.exc, OSError)
+        and retry_args.exc.errno == errno.ENOSPC
+    ):
+      raise retry_args.exc
+
+    # If apitools did not raise any error, we want to raise a custom error to
     # inform the caller to retry the request.
     raise errors.RetryableApiError()
   apitools_transfer_object.retry_func = _handle_error_and_raise

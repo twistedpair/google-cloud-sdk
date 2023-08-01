@@ -3825,6 +3825,8 @@ class MigrationJobVerificationError(_messages.Message):
         or might not be supported.
       EXISTING_CONFLICTING_DATABASES: The destination DB contains existing
         databases that are conflicting with those in the source DB.
+      PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE: Insufficient privilege to enable
+        the parallelism configuration.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3853,6 +3855,7 @@ class MigrationJobVerificationError(_messages.Message):
     ERROR_RDBMS = 24
     SOURCE_SIZE_EXCEEDS_THRESHOLD = 25
     EXISTING_CONFLICTING_DATABASES = 26
+    PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE = 27
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)
@@ -4568,9 +4571,9 @@ class PrivateConnectivity(_messages.Message):
 
 
 class PrivateServiceConnectConnectivity(_messages.Message):
-  r"""Private Service Connect connectivity
-  (https://cloud.google.com/vpc/docs/private-service-connect#service-
-  attachments)
+  r"""[Private Service Connect
+  connectivity](https://cloud.google.com/vpc/docs/private-service-
+  connect#service-attachments)
 
   Fields:
     serviceAttachment: Required. A service attachment that exposes a database,
@@ -4586,7 +4589,14 @@ class PromoteMigrationJobRequest(_messages.Message):
 
 
 class RestartMigrationJobRequest(_messages.Message):
-  r"""Request message for 'RestartMigrationJob' request."""
+  r"""Request message for 'RestartMigrationJob' request.
+
+  Fields:
+    skipValidation: Restart the migration job without running prior
+      configuration verification. Defaults to `false`.
+  """
+
+  skipValidation = _messages.BooleanField(1)
 
 
 class ResumeMigrationJobRequest(_messages.Message):

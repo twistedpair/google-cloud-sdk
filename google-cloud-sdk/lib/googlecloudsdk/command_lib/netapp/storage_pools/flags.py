@@ -36,14 +36,7 @@ STORAGE_POOLS_LIST_FORMAT = """\
         capacityGib,
         network,
         state,
-        stateDetails,
-        createTime.date(),
-        description,
-        volumeCount,
-        volumeCapacityGib,
-        activeDirectory,
-        kmsConfig,
-        labels
+        volumeCapacityGib
     )"""
 
 ## Helper functions to add args / flags for Storage Pools gcloud commands ##

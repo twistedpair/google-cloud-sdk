@@ -140,6 +140,4 @@ def AddDumpParallelLevelFlag(parser):
       ' specified, will be defaulted to OPTIMAL.'
   )
   choices = ['MIN', 'OPTIMAL', 'MAX']
-  parser.add_argument(
-      '--dump-parallel-level', help=help_text, choices=choices, hidden=True
-  )
+  parser.add_argument('--dump-parallel-level', help=help_text, choices=choices)

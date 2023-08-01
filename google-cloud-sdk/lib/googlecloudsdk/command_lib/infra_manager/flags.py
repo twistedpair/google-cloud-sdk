@@ -73,6 +73,16 @@ Pass input values on command line:
   $ {command} projects/p1/location/us-central1/deployments/my-deployment --gcs-source="gs://my-bucket" --input-values=projects=p1,region=r
 """
 
+  inputs_file_help_text = """\
+A .tfvars file containing terraform variable values. --inputs-file flag is supported for python version 3.6 and above.
+
+Examples:
+
+Pass input values on the command line:
+
+  $ {command} projects/p1/location/us-central1/deployments/my-deployment --gcs-source="gs://my-bucket" --inputs-file=path-to-tfvar-file.tfvar
+"""
+
   gcs_source_help_text = """\
 URI of an object in Google Cloud Storage.
       e.g. `gs://{bucket}/{object}`
@@ -154,11 +164,18 @@ Create a deployment from a local storage path `./path/to/blueprint` and stage-bu
 """
 
   source_group = parser.add_group(mutex=False)
-  source_group.add_argument(
+
+  input_values = source_group.add_mutually_exclusive_group()
+  input_values.add_argument(
       '--input-values',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       help=input_values_help_text,
+  )
+
+  input_values.add_argument(
+      '--inputs-file',
+      help=inputs_file_help_text,
   )
 
   source_details = source_group.add_mutually_exclusive_group()
@@ -166,9 +183,6 @@ Create a deployment from a local storage path `./path/to/blueprint` and stage-bu
   source_details.add_argument(
       '--gcs-source',
       help=gcs_source_help_text,
-      # This will ensure that "--stage-bucket" takes on the form
-      # "gs://my-bucket/".
-      type=functions_api_util.ValidateAndStandarizeBucketUriOrRaise,
   )
 
   git_source_group = source_details.add_group(mutex=False)
@@ -268,4 +282,41 @@ def AddArtifactsGCSBucketFlag(parser, hidden=False):
           ' `gs://{bucket}/{folder}` A default bucket will be bootstrapped if'
           ' the field is not set or empty'
       ),
+  )
+
+
+def AddDraftFlag(parser, hidden=False):
+  """Add --draft flag."""
+  parser.add_argument(
+      '--draft',
+      hidden=hidden,
+      help=(
+          'If this flag is set to true, the exported deployment state file will'
+          ' be the draft state'
+      ),
+      action='store_true',
+  )
+
+
+def AddLockFlag(parser, hidden=False):
+  """Add --lock-id flag."""
+  parser.add_argument(
+      '--lock-id',
+      required=True,
+      hidden=hidden,
+      help='Lock ID of the lock file to verify person importing owns lock.',
+  )
+
+
+def DisableValidateUpdateFlag(parser, hidden=False):
+  """Add --disable-validate-update flag."""
+  parser.add_argument(
+      '--disable-validate-update',
+      hidden=hidden,
+      help=(
+          'If this flag is set to true, the unlock mechanism will only unlock'
+          ' the deployment instead of validating the state file and triggering'
+          ' an update deployment workflow.'
+      ),
+      action='store_true',
   )

@@ -88,7 +88,7 @@ def AdjustsTemplate(changes):
 class LabelChanges(ConfigChanger):
   """Represents the user intent to modify metadata labels."""
 
-  LABELS_NOT_ALLOWED_IN_REVISION = ([service.ENDPOINT_VISIBILITY])
+  LABELS_NOT_ALLOWED_IN_REVISION = [service.ENDPOINT_VISIBILITY]
 
   def __init__(self, diff, copy_to_revision=True):
     super(LabelChanges, self).__init__(adjusts_template=copy_to_revision)
@@ -100,14 +100,18 @@ class LabelChanges(ConfigChanger):
     # plane and it's ok for us to clear them on the client.
     update_result = self._diff.Apply(
         k8s_object.Meta(resource.MessagesModule()).LabelsValue,
-        resource.metadata.labels)
+        resource.metadata.labels,
+    )
     maybe_new_labels = update_result.GetOrNone()
     if maybe_new_labels:
       resource.metadata.labels = maybe_new_labels
       # For job, resource.template points to task template which has no
       # metadata. Use job specific execution_template instead.
-      template = resource.execution_template if hasattr(
-          resource, 'execution_template') else resource.template
+      template = (
+          resource.execution_template
+          if hasattr(resource, 'execution_template')
+          else resource.template
+      )
       if self._copy_to_revision and hasattr(template, 'labels'):
         # Service labels are the source of truth and *overwrite* revision labels
         # See go/run-labels-prd for deets.
@@ -129,9 +133,9 @@ class JobNonceChange(ConfigChanger):
     super(JobNonceChange, self).__init__(adjusts_template=True)
 
   def Adjust(self, resource):
-    resource.execution_template.labels[
-        job.NONCE_LABEL] = name_generator.GenerateName(
-            3, separator='_')
+    resource.execution_template.labels[job.NONCE_LABEL] = (
+        name_generator.GenerateName(3, separator='_')
+    )
 
     return resource
 
@@ -201,7 +205,8 @@ class EndpointVisibilityChange(LabelChanges):
     """
     if endpoint_visibility:
       diff = labels_util.Diff(
-          additions={service.ENDPOINT_VISIBILITY: service.CLUSTER_LOCAL})
+          additions={service.ENDPOINT_VISIBILITY: service.CLUSTER_LOCAL}
+      )
     else:
       diff = labels_util.Diff(subtractions=[service.ENDPOINT_VISIBILITY])
     # Don't copy this label to the revision because it's not supported there.
@@ -274,8 +279,9 @@ class SetLaunchStageAnnotationChange(ConfigChanger):
     if self._launch_stage == base.ReleaseTrack.GA:
       return resource
     else:
-      resource.annotations[
-          k8s_object.LAUNCH_STAGE_ANNOTATION] = self._launch_stage.id
+      resource.annotations[k8s_object.LAUNCH_STAGE_ANNOTATION] = (
+          self._launch_stage.id
+      )
       return resource
 
 
@@ -283,25 +289,30 @@ class SetClientNameAndVersionAnnotationChange(ConfigChanger):
   """Sets the client name and version annotations."""
 
   def __init__(self, client_name, client_version, set_on_template=True):
-    super(SetClientNameAndVersionAnnotationChange,
-          self).__init__(adjusts_template=set_on_template)
+    super(SetClientNameAndVersionAnnotationChange, self).__init__(
+        adjusts_template=set_on_template
+    )
     self._client_name = client_name
     self._client_version = client_version
     self._set_on_template = set_on_template
 
   def Adjust(self, resource):
     if self._client_name is not None:
-      resource.annotations[
-          k8s_object.CLIENT_NAME_ANNOTATION] = self._client_name
+      resource.annotations[k8s_object.CLIENT_NAME_ANNOTATION] = (
+          self._client_name
+      )
       if self._set_on_template and hasattr(resource.template, 'annotations'):
-        resource.template.annotations[
-            k8s_object.CLIENT_NAME_ANNOTATION] = self._client_name
+        resource.template.annotations[k8s_object.CLIENT_NAME_ANNOTATION] = (
+            self._client_name
+        )
     if self._client_version is not None:
-      resource.annotations[
-          k8s_object.CLIENT_VERSION_ANNOTATION] = self._client_version
+      resource.annotations[k8s_object.CLIENT_VERSION_ANNOTATION] = (
+          self._client_version
+      )
       if self._set_on_template and hasattr(resource.template, 'annotations'):
-        resource.template.annotations[
-            k8s_object.CLIENT_VERSION_ANNOTATION] = self._client_version
+        resource.template.annotations[k8s_object.CLIENT_VERSION_ANNOTATION] = (
+            self._client_version
+        )
     return resource
 
 
@@ -313,8 +324,9 @@ class SandboxChange(ConfigChanger):
     self._sandbox = sandbox
 
   def Adjust(self, resource):
-    resource.template.annotations[
-        container_resource.SANDBOX_ANNOTATION] = self._sandbox
+    resource.template.annotations[container_resource.SANDBOX_ANNOTATION] = (
+        self._sandbox
+    )
     return resource
 
 
@@ -326,8 +338,9 @@ class VpcConnectorChange(ConfigChanger):
     self._connector_name = connector_name
 
   def Adjust(self, resource):
-    resource.template.annotations[
-        container_resource.VPC_ACCESS_ANNOTATION] = self._connector_name
+    resource.template.annotations[container_resource.VPC_ACCESS_ANNOTATION] = (
+        self._connector_name
+    )
     return resource
 
 
@@ -388,17 +401,20 @@ def _PruneManagedVolumeMapping(volumes, volume_mounts, removes, clear_others):
           volumes[volume_mounts[mount]].items = new_paths
 
 
-def _CopyToNewVolume(resource, volume_name, mount_point, volume_source, volumes,
-                     volume_mounts):
+def _CopyToNewVolume(
+    resource, volume_name, mount_point, volume_source, volumes, volume_mounts
+):
   """Copies existing volume to volume with a new name."""
-  new_volume_name = _UniqueVolumeName(volume_source.secretName,
-                                      resource.template.volumes)
+  new_volume_name = _UniqueVolumeName(
+      volume_source.secretName, resource.template.volumes
+  )
   try:
     volume_mounts[mount_point] = new_volume_name
   except KeyError:
     raise exceptions.ConfigurationError(
         'Cannot update mount [{}] because its mounted volume '
-        'is of a different source type.'.format(mount_point))
+        'is of a different source type.'.format(mount_point)
+    )
     # the volume does not exist so we need a new one
   new_paths = {item.path for item in volume_source.items}
   old_volume = volumes[volume_name]
@@ -410,8 +426,7 @@ def _CopyToNewVolume(resource, volume_name, mount_point, volume_source, volumes,
 
 
 class EnvVarLiteralChanges(ConfigChanger):
-  """Represents the user intent to modify environment variables string literals.
-  """
+  """Represents the user intent to modify environment variables string literals."""
 
   def __init__(self, updates, removes, clear_others):
     """Initialize a new EnvVarLiteralChanges object.
@@ -441,8 +456,9 @@ class EnvVarLiteralChanges(ConfigChanger):
         (e.g. env var's secret source can't be replaced with a config map
         source).
     """
-    _PruneMapping(resource.template.env_vars.literals, self._removes,
-                  self._clear_others)
+    _PruneMapping(
+        resource.template.env_vars.literals, self._removes, self._clear_others
+    )
 
     try:
       resource.template.env_vars.literals.update(self._updates)
@@ -450,7 +466,9 @@ class EnvVarLiteralChanges(ConfigChanger):
       raise exceptions.ConfigurationError(
           'Cannot update environment variable [{}] to string literal '
           'because it has already been set with a different type.'.format(
-              e.args[0]))
+              e.args[0]
+          )
+      )
     return resource
 
 
@@ -498,7 +516,9 @@ class SecretEnvVarChanges(ConfigChanger):
         raise exceptions.ConfigurationError(
             'Cannot update environment variable [{}] to the given type '
             'because it has already been set with a different type.'.format(
-                name))
+                name
+            )
+        )
     secrets_mapping.PruneAnnotation(resource)
     return resource
 
@@ -533,7 +553,8 @@ class ConfigMapEnvVarChanges(ConfigChanger):
     if platforms.IsManaged():
       return 'latest'
     raise exceptions.ConfigurationError(
-        'Missing required item key for environment variable [{}].'.format(name))
+        'Missing required item key for environment variable [{}].'.format(name)
+    )
 
   def Adjust(self, resource):
     """Mutates the given config's env vars to match the desired changes.
@@ -555,18 +576,22 @@ class ConfigMapEnvVarChanges(ConfigChanger):
 
     for name, (source_name, source_key) in self._updates.items():
       try:
-        env_vars[name] = self._MakeEnvVarSource(resource.MessagesModule(),
-                                                source_name, source_key)
+        env_vars[name] = self._MakeEnvVarSource(
+            resource.MessagesModule(), source_name, source_key
+        )
       except KeyError:
         raise exceptions.ConfigurationError(
             'Cannot update environment variable [{}] to the given type '
             'because it has already been set with a different type.'.format(
-                name))
+                name
+            )
+        )
     return resource
 
   def _MakeEnvVarSource(self, messages, name, key):
     return messages.EnvVarSource(
-        configMapKeyRef=messages.ConfigMapKeySelector(name=name, key=key))
+        configMapKeyRef=messages.ConfigMapKeySelector(name=name, key=key)
+    )
 
 
 class ResourceChanges(ConfigChanger):
@@ -628,19 +653,21 @@ class CloudSQLChanges(ConfigChanger):
     return [self._Augment(i) for i in val]
 
   def Adjust(self, resource):
-
     def GetCurrentInstances():
       annotation_val = resource.template.annotations.get(
-          container_resource.CLOUDSQL_ANNOTATION)
+          container_resource.CLOUDSQL_ANNOTATION
+      )
       if annotation_val:
         return annotation_val.split(',')
       return []
 
-    instances = repeated.ParsePrimitiveArgs(self, 'cloudsql-instances',
-                                            GetCurrentInstances)
+    instances = repeated.ParsePrimitiveArgs(
+        self, 'cloudsql-instances', GetCurrentInstances
+    )
     if instances is not None:
-      resource.template.annotations[
-          container_resource.CLOUDSQL_ANNOTATION] = ','.join(instances)
+      resource.template.annotations[container_resource.CLOUDSQL_ANNOTATION] = (
+          ','.join(instances)
+      )
     return resource
 
   def _Augment(self, instance_str):
@@ -651,15 +678,18 @@ class CloudSQLChanges(ConfigChanger):
       if not self._project:
         raise exceptions.CloudSQLError(
             'To specify a Cloud SQL instance by plain name, you must specify a '
-            'project.')
+            'project.'
+        )
       if not self._region:
         raise exceptions.CloudSQLError(
             'To specify a Cloud SQL instance by plain name, you must be '
-            'deploying to a managed Cloud Run region.')
+            'deploying to a managed Cloud Run region.'
+        )
       ret = self._project, self._region, instance[0]
     else:
       raise exceptions.CloudSQLError(
-          'Malformed CloudSQL instance string: {}'.format(instance_str))
+          'Malformed CloudSQL instance string: {}'.format(instance_str)
+      )
     return ':'.join(ret)
 
 
@@ -715,9 +745,11 @@ class RevisionNameChanges(ConfigChanger):
   def Adjust(self, resource):
     """Mutates the given config's revision name to match what's desired."""
     max_prefix_length = (
-        _MAX_RESOURCE_NAME_LENGTH - len(self._revision_suffix) - 1)
-    resource.template.name = '{}-{}'.format(resource.name[:max_prefix_length],
-                                            self._revision_suffix)
+        _MAX_RESOURCE_NAME_LENGTH - len(self._revision_suffix) - 1
+    )
+    resource.template.name = '{}-{}'.format(
+        resource.name[:max_prefix_length], self._revision_suffix
+    )
     return resource
 
 
@@ -789,12 +821,15 @@ class SecretVolumeChanges(ConfigChanger):
           # secret in the same directory, error.
           raise exceptions.ConfigurationError(
               'Cannot update secret at [{}] because a different secret is '
-              'already mounted in the same directory.'.format(file_path))
-        reachable_secret.AppendToSecretVolumeSource(resource,
-                                                    new_volumes[mount_point])
+              'already mounted in the same directory.'.format(file_path)
+          )
+        reachable_secret.AppendToSecretVolumeSource(
+            resource, new_volumes[mount_point]
+        )
       else:
         new_volumes[mount_point] = reachable_secret.AsSecretVolumeSource(
-            resource)
+            resource
+        )
 
     for mount_point, volume_source in new_volumes.items():
       if mount_point in volume_mounts:
@@ -803,8 +838,14 @@ class SecretVolumeChanges(ConfigChanger):
           # the volume is used by more than one path, let's separate it into a
           # separate volume
           volumes_to_mounts[volume_name].remove(mount_point)
-          new_name = _CopyToNewVolume(resource, volume_name, mount_point,
-                                      volume_source, volumes, volume_mounts)
+          new_name = _CopyToNewVolume(
+              resource,
+              volume_name,
+              mount_point,
+              volume_source,
+              volumes,
+              volume_mounts,
+          )
           volumes_to_mounts[new_name].append(mount_point)
           continue
         else:
@@ -815,8 +856,9 @@ class SecretVolumeChanges(ConfigChanger):
             new_paths = {item.path for item in volume_source.items}
             if not existing_paths.issubset(new_paths):
               raise exceptions.ConfigurationError(
-                  'Multiple secrets are specified for directory [{}]. Cloud Run '
-                  'only supports one secret per directory'.format(mount_point))
+                  'Multiple secrets are specified for directory [{}]. Cloud Run'
+                  ' only supports one secret per directory'.format(mount_point)
+              )
           else:
             # we need to merge the two
             new_paths = {item.path for item in volume_source.items}
@@ -825,14 +867,16 @@ class SecretVolumeChanges(ConfigChanger):
               if item.path not in new_paths:
                 volume_source.items.append(item)
       else:
-        volume_name = _UniqueVolumeName(volume_source.secretName,
-                                        resource.template.volumes)
+        volume_name = _UniqueVolumeName(
+            volume_source.secretName, resource.template.volumes
+        )
         try:
           volume_mounts[mount_point] = volume_name
         except KeyError:
           raise exceptions.ConfigurationError(
               'Cannot update mount [{}] because its mounted volume '
-              'is of a different source type.'.format(mount_point))
+              'is of a different source type.'.format(mount_point)
+          )
           # the volume does not exist so we need a new one
       volumes[volume_name] = volume_source
 
@@ -855,8 +899,9 @@ class SecretVolumeChanges(ConfigChanger):
     volumes = resource.template.volumes.secrets
 
     if platforms.IsManaged():
-      _PruneManagedVolumeMapping(volumes, volume_mounts, self._removes,
-                                 self._clear_others)
+      _PruneManagedVolumeMapping(
+          volumes, volume_mounts, self._removes, self._clear_others
+      )
     else:
       removes = self._removes
       _PruneMapping(volume_mounts, removes, self._clear_others)
@@ -864,8 +909,9 @@ class SecretVolumeChanges(ConfigChanger):
       self._UpdateManagedVolumes(resource, volume_mounts, volumes)
     else:
       for file_path, reachable_secret in self._updates.items():
-        volume_name = _UniqueVolumeName(reachable_secret.secret_name,
-                                        resource.template.volumes)
+        volume_name = _UniqueVolumeName(
+            reachable_secret.secret_name, resource.template.volumes
+        )
 
         # volume_mounts is a special mapping that filters for the current kind
         # of mount and KeyErrors on existing keys with other types.
@@ -875,7 +921,8 @@ class SecretVolumeChanges(ConfigChanger):
         except KeyError:
           raise exceptions.ConfigurationError(
               'Cannot update mount [{}] because its mounted volume '
-              'is of a different source type.'.format(file_path))
+              'is of a different source type.'.format(file_path)
+          )
         volumes[volume_name] = reachable_secret.AsSecretVolumeSource(resource)
 
     _PruneVolumes(volume_mounts, volumes)
@@ -884,8 +931,7 @@ class SecretVolumeChanges(ConfigChanger):
 
 
 class ConfigMapVolumeChanges(ConfigChanger):
-  """Represents the user intent to change volumes with config map source types.
-  """
+  """Represents the user intent to change volumes with config map source types."""
 
   def __init__(self, updates, removes, clear_others):
     """Initialize a new ConfigMapVolumeChanges object.
@@ -939,9 +985,11 @@ class ConfigMapVolumeChanges(ConfigChanger):
       except KeyError:
         raise exceptions.ConfigurationError(
             'Cannot update mount [{}] because its mounted volume '
-            'is of a different source type.'.format(path))
-      volumes[volume_name] = self._MakeVolumeSource(resource.MessagesModule(),
-                                                    source_name, source_key)
+            'is of a different source type.'.format(path)
+        )
+      volumes[volume_name] = self._MakeVolumeSource(
+          resource.MessagesModule(), source_name, source_key
+      )
 
     _PruneVolumes(volume_mounts, volumes)
 
@@ -964,22 +1012,26 @@ class NoTrafficChange(ConfigChanger):
     """Removes LATEST from the services traffic assignments."""
     if not resource.generation:
       raise exceptions.ConfigurationError(
-          '--no-traffic not supported when creating a new service.')
+          '--no-traffic not supported when creating a new service.'
+      )
 
     resource.spec_traffic.ZeroLatestTraffic(
-        resource.status.latestReadyRevisionName)
+        resource.status.latestReadyRevisionName
+    )
     return resource
 
 
 class TrafficChanges(ConfigChanger):
   """Represents the user intent to change a service's traffic assignments."""
 
-  def __init__(self,
-               new_percentages,
-               by_tag=False,
-               tags_to_update=None,
-               tags_to_remove=None,
-               clear_other_tags=False):
+  def __init__(
+      self,
+      new_percentages,
+      by_tag=False,
+      tags_to_update=None,
+      tags_to_remove=None,
+      clear_other_tags=False,
+  ):
     super(TrafficChanges, self).__init__(adjusts_template=False)
     self._new_percentages = new_percentages
     self._by_tag = by_tag
@@ -990,9 +1042,9 @@ class TrafficChanges(ConfigChanger):
   def Adjust(self, resource):
     """Mutates the given service's traffic assignments."""
     if self._tags_to_update or self._tags_to_remove or self._clear_other_tags:
-      resource.spec_traffic.UpdateTags(self._tags_to_update,
-                                       self._tags_to_remove,
-                                       self._clear_other_tags)
+      resource.spec_traffic.UpdateTags(
+          self._tags_to_update, self._tags_to_remove, self._clear_other_tags
+      )
     if self._new_percentages:
       if self._by_tag:
         tag_to_key = resource.spec_traffic.TagToKey()
@@ -1002,8 +1054,9 @@ class TrafficChanges(ConfigChanger):
             percentages[tag_to_key[tag]] = self._new_percentages[tag]
           except KeyError:
             raise exceptions.ConfigurationError(
-                'There is no revision tagged with [{}] in the traffic allocation for [{}].'
-                .format(tag, resource.name))
+                'There is no revision tagged with [{}] in the traffic'
+                ' allocation for [{}].'.format(tag, resource.name)
+            )
       else:
         percentages = self._new_percentages
       resource.spec_traffic.UpdateTraffic(percentages)
@@ -1072,8 +1125,9 @@ class ContainerPortChange(ConfigChanger):
     """Modify an existing ContainerPort or create a new one."""
     port_msg = (
         resource.template.container.ports[0]
-        if resource.template.container.ports else
-        resource.MessagesModule().ContainerPort())
+        if resource.template.container.ports
+        else resource.MessagesModule().ContainerPort()
+    )
     old_port = port_msg.containerPort or 8080  # default port
     # Set port to given value or clear field
     if self._port == 'default':
@@ -1165,7 +1219,8 @@ class CpuThrottlingChange(ConfigChanger):
 
   def Adjust(self, resource):
     resource.template.annotations[
-        container_resource.CPU_THROTTLE_ANNOTATION] = str(self._throttling)
+        container_resource.CPU_THROTTLE_ANNOTATION
+    ] = str(self._throttling)
     return resource
 
 
@@ -1178,15 +1233,23 @@ class StartupCpuBoostChange(ConfigChanger):
 
   def Adjust(self, resource):
     resource.template.annotations[
-        container_resource.COLD_START_BOOST_ANNOTATION] = str(self._cpu_boost)
+        container_resource.COLD_START_BOOST_ANNOTATION
+    ] = str(self._cpu_boost)
     return resource
 
 
 class NetworkInterfacesChange(ConfigChanger):
   """Sets or updates the network interfaces annotation on the template."""
 
-  def __init__(self, network_is_set, network, subnet_is_set, subnet,
-               network_tags_is_set, network_tags):
+  def __init__(
+      self,
+      network_is_set,
+      network,
+      subnet_is_set,
+      subnet,
+      network_tags_is_set,
+      network_tags,
+  ):
     super(NetworkInterfacesChange, self).__init__(adjusts_template=True)
     self._network_is_set = network_is_set
     self._network = network
@@ -1208,7 +1271,8 @@ class NetworkInterfacesChange(ConfigChanger):
     network_interface = {}
     if k8s_object.NETWORK_INTERFACES_ANNOTATION in annotations:
       network_interface = json.loads(
-          annotations[k8s_object.NETWORK_INTERFACES_ANNOTATION])[0]
+          annotations[k8s_object.NETWORK_INTERFACES_ANNOTATION]
+      )[0]
     if self._network_is_set:
       self._SetOrClear(network_interface, 'network', self._network)
     if self._subnet_is_set:
@@ -1218,14 +1282,31 @@ class NetworkInterfacesChange(ConfigChanger):
     value = ''
     if network_interface:
       value = '[{interfaces}]'.format(
-          interfaces=json.dumps(network_interface, sort_keys=True))
-    self._SetOrClear(annotations, k8s_object.NETWORK_INTERFACES_ANNOTATION,
-                     value)
+          interfaces=json.dumps(network_interface, sort_keys=True)
+      )
+    self._SetOrClear(
+        annotations, k8s_object.NETWORK_INTERFACES_ANNOTATION, value
+    )
     # If clear network interfaces, egress setting should be cleared too.
     if (
         not value
         and container_resource.EGRESS_SETTINGS_ANNOTATION in annotations
     ):
+      del annotations[container_resource.EGRESS_SETTINGS_ANNOTATION]
+    return resource
+
+
+class ClearNetworkInterfacesChange(ConfigChanger):
+  """Clears a network interfaces annotation on the resource."""
+
+  def __init__(self):
+    super(ClearNetworkInterfacesChange, self).__init__(adjusts_template=True)
+
+  def Adjust(self, resource):
+    annotations = resource.template.annotations
+    if k8s_object.NETWORK_INTERFACES_ANNOTATION in annotations:
+      del annotations[k8s_object.NETWORK_INTERFACES_ANNOTATION]
+    if container_resource.EGRESS_SETTINGS_ANNOTATION in annotations:
       del annotations[container_resource.EGRESS_SETTINGS_ANNOTATION]
     return resource
 
@@ -1259,20 +1340,22 @@ class CustomAudiencesChanges(ConfigChanger):
     return getattr(self._args, 'clear_custom_audiences', None)
 
   def Adjust(self, resource):
-
     def GetCurrentCustomAudiences():
       annotation_val = resource.annotations.get(
-          k8s_object.CUSTOM_AUDIENCES_ANNOTATION)
+          k8s_object.CUSTOM_AUDIENCES_ANNOTATION
+      )
       if annotation_val:
         return json.loads(annotation_val)
       return []
 
-    audiences = repeated.ParsePrimitiveArgs(self, 'custom-audiences',
-                                            GetCurrentCustomAudiences)
+    audiences = repeated.ParsePrimitiveArgs(
+        self, 'custom-audiences', GetCurrentCustomAudiences
+    )
     if audiences is not None:
       if audiences:
-        resource.annotations[
-            k8s_object.CUSTOM_AUDIENCES_ANNOTATION] = json.dumps(audiences)
+        resource.annotations[k8s_object.CUSTOM_AUDIENCES_ANNOTATION] = (
+            json.dumps(audiences)
+        )
       elif k8s_object.CUSTOM_AUDIENCES_ANNOTATION in resource.annotations:
         del resource.annotations[k8s_object.CUSTOM_AUDIENCES_ANNOTATION]
     return resource
@@ -1286,13 +1369,5 @@ class RuntimeChange(ConfigChanger):
     self._runtime = runtime
 
   def Adjust(self, resource):
-    # TODO(b/278556672): Decide if the annotation should be cleaned up.
-    if self._runtime == 'default':
-      if k8s_object.RUNTIME_ANNOTATION in resource.template.annotations:
-        del resource.template.annotations[k8s_object.RUNTIME_ANNOTATION]
-    else:
-      resource.template.annotations[k8s_object.RUNTIME_ANNOTATION] = str(
-          self._runtime
-      )
     resource.template.spec.runtimeClassName = self._runtime
     return resource

@@ -41,7 +41,9 @@ class OperationsClient(client.ClientBase):
     super(OperationsClient, self).__init__(**kwargs)
     self._service = self._client.projects_locations_operations
 
-  def Wait(self, operation=None, operation_ref=None, timeout=None):
+  def Wait(
+      self, operation=None, operation_ref=None, timeout=None
+  ) -> messages.Operation:
     """Waits for an LRO to complete.
 
     Args:
@@ -50,7 +52,7 @@ class OperationsClient(client.ClientBase):
       timeout: int, time in seconds to wait for the operation to complete.
 
     Returns:
-      The GetOperation API response after the operation completes.
+      A completed long-running operation.
     """
     if operation:
       operation_ref = resources.REGISTRY.ParseRelativeName(

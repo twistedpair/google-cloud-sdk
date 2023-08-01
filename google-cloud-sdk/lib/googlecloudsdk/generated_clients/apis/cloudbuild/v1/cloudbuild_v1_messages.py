@@ -266,6 +266,14 @@ class BitbucketServerConfig(_messages.Message):
       in the format `projects/{project}/global/networks/{network}`, where
       {project} is a project number or id and {network} is the name of a VPC
       network in the project.
+    peeredNetworkIpRange: Immutable. IP range within the peered network. This
+      is specified in CIDR notation with a slash and the subnet prefix size.
+      You can optionally specify an IP address before the subnet prefix value.
+      e.g. `192.168.0.0/29` would specify an IP range starting at 192.168.0.0
+      with a 29 bit prefix size. `/16` would specify a prefix size of 16 bits,
+      with an automatically determined IP within the peered VPC. If
+      unspecified, a value of `/24` will be used. The field only has an effect
+      if peered_network is set.
     secrets: Required. Secret Manager secrets needed by the config.
     sslCa: Optional. SSL certificate to use for requests to Bitbucket Server.
       The format should be PEM format but the extension can be one of .pem,
@@ -282,10 +290,11 @@ class BitbucketServerConfig(_messages.Message):
   hostUri = _messages.StringField(4)
   name = _messages.StringField(5)
   peeredNetwork = _messages.StringField(6)
-  secrets = _messages.MessageField('BitbucketServerSecrets', 7)
-  sslCa = _messages.StringField(8)
-  username = _messages.StringField(9)
-  webhookKey = _messages.StringField(10)
+  peeredNetworkIpRange = _messages.StringField(7)
+  secrets = _messages.MessageField('BitbucketServerSecrets', 8)
+  sslCa = _messages.StringField(9)
+  username = _messages.StringField(10)
+  webhookKey = _messages.StringField(11)
 
 
 class BitbucketServerConnectedRepository(_messages.Message):
@@ -663,6 +672,8 @@ class BuildOptions(_messages.Message):
   Fields:
     anthosCluster: Details about how this build should be executed on a Anthos
       cluster.
+    automapSubstitutions: Option to include built-in and custom substitutions
+      as env variables for all build steps.
     cluster: Details about how this build should be executed on a GKE cluster.
     defaultLogsBucketBehavior: Optional. Option to specify how default logs
       buckets are setup.
@@ -720,7 +731,8 @@ class BuildOptions(_messages.Message):
       DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED: Unspecified.
       REGIONAL_USER_OWNED_BUCKET: Bucket is located in user-owned project in
         the same region as the build. The builder service account must have
-        access to create and write to GCS buckets in the build project.
+        access to create and write to Cloud Storage buckets in the build
+        project.
     """
     DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED = 0
     REGIONAL_USER_OWNED_BUCKET = 1
@@ -839,22 +851,23 @@ class BuildOptions(_messages.Message):
     ALLOW_LOOSE = 1
 
   anthosCluster = _messages.MessageField('AnthosWorkerPool', 1)
-  cluster = _messages.MessageField('ClusterOptions', 2)
-  defaultLogsBucketBehavior = _messages.EnumField('DefaultLogsBucketBehaviorValueValuesEnum', 3)
-  diskSizeGb = _messages.IntegerField(4)
-  dockerDaemon = _messages.EnumField('DockerDaemonValueValuesEnum', 5)
-  dynamicSubstitutions = _messages.BooleanField(6)
-  env = _messages.StringField(7, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 8)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 9)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 10)
-  pool = _messages.MessageField('PoolOption', 11)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 12)
-  secretEnv = _messages.StringField(13, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 14, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 15)
-  volumes = _messages.MessageField('Volume', 16, repeated=True)
-  workerPool = _messages.StringField(17)
+  automapSubstitutions = _messages.BooleanField(2)
+  cluster = _messages.MessageField('ClusterOptions', 3)
+  defaultLogsBucketBehavior = _messages.EnumField('DefaultLogsBucketBehaviorValueValuesEnum', 4)
+  diskSizeGb = _messages.IntegerField(5)
+  dockerDaemon = _messages.EnumField('DockerDaemonValueValuesEnum', 6)
+  dynamicSubstitutions = _messages.BooleanField(7)
+  env = _messages.StringField(8, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 9)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 10)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 11)
+  pool = _messages.MessageField('PoolOption', 12)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 13)
+  secretEnv = _messages.StringField(14, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 15, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 16)
+  volumes = _messages.MessageField('Volume', 17, repeated=True)
+  workerPool = _messages.StringField(18)
 
 
 class BuildStep(_messages.Message):
@@ -879,6 +892,9 @@ class BuildStep(_messages.Message):
       entrypoint, the `args` are used as arguments to that entrypoint. If the
       image does not define an entrypoint, the first element in args is used
       as the entrypoint, and the remainder will be used as arguments.
+    automapSubstitutions: Option to include built-in and custom substitutions
+      as env variables for this build step. This option will override the
+      global option in BuildOption.
     dir: Working directory to use when running this step's container. If this
       value is a relative path, it is relative to the build's working
       directory. If this value is absolute, it may be outside the build's
@@ -967,20 +983,21 @@ class BuildStep(_messages.Message):
   allowExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
   allowFailure = _messages.BooleanField(2)
   args = _messages.StringField(3, repeated=True)
-  dir = _messages.StringField(4)
-  entrypoint = _messages.StringField(5)
-  env = _messages.StringField(6, repeated=True)
-  exitCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  id = _messages.StringField(8)
-  name = _messages.StringField(9)
-  pullTiming = _messages.MessageField('TimeSpan', 10)
-  script = _messages.StringField(11)
-  secretEnv = _messages.StringField(12, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  timeout = _messages.StringField(14)
-  timing = _messages.MessageField('TimeSpan', 15)
-  volumes = _messages.MessageField('Volume', 16, repeated=True)
-  waitFor = _messages.StringField(17, repeated=True)
+  automapSubstitutions = _messages.BooleanField(4)
+  dir = _messages.StringField(5)
+  entrypoint = _messages.StringField(6)
+  env = _messages.StringField(7, repeated=True)
+  exitCode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  id = _messages.StringField(9)
+  name = _messages.StringField(10)
+  pullTiming = _messages.MessageField('TimeSpan', 11)
+  script = _messages.StringField(12)
+  secretEnv = _messages.StringField(13, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  timeout = _messages.StringField(15)
+  timing = _messages.MessageField('TimeSpan', 16)
+  volumes = _messages.MessageField('Volume', 17, repeated=True)
+  waitFor = _messages.StringField(18, repeated=True)
 
 
 class BuildTrigger(_messages.Message):
@@ -2627,8 +2644,8 @@ class ConnectedRepository(_messages.Message):
 
   Fields:
     dir: Directory, relative to the source root, in which to run the build.
-    repository: Name of the Google Cloud Build repository, formatted as
-      `projects/*locations/*/connections/*repositories/*`.
+    repository: Required. Name of the Google Cloud Build repository, formatted
+      as `projects/*/locations/*/connections/*/repositories/*`.
     revision: The revision to fetch from the Git repository such as a branch,
       a tag, a commit SHA, or any Git ref.
   """
@@ -4031,6 +4048,8 @@ class PrivatePoolConfig(_messages.Message):
     scalingConfig: Configuration options for worker pool.
     securityConfig: Security configuration for the pool.
     workerConfig: Configuration options for individual workers.
+    workerPoolGroup: Output only. UUID representing worker pools with the same
+      region, privilege mode and network config.
   """
 
   class PrivilegedModeValueValuesEnum(_messages.Enum):
@@ -4084,6 +4103,7 @@ class PrivatePoolConfig(_messages.Message):
   scalingConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1ScalingConfig', 4)
   securityConfig = _messages.MessageField('SecurityConfig', 5)
   workerConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1PrivatePoolConfigWorkerConfig', 6)
+  workerPoolGroup = _messages.StringField(7)
 
 
 class PrivatePoolV1Config(_messages.Message):

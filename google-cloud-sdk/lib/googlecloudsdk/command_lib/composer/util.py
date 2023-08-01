@@ -547,7 +547,7 @@ def ParseRequirementsFile(requirements_file_path):
     with file_content as requirements_file:
       for requirement_specifier in requirements_file:
         requirement_specifier = requirement_specifier.strip()
-        if not requirement_specifier:
+        if not requirement_specifier or requirement_specifier.startswith('#'):
           continue
         package, version = SplitRequirementSpecifier(requirement_specifier)
         # Ensure package not already in entry list.

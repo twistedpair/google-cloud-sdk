@@ -908,7 +908,7 @@ class ServerlessOperations(object):
         config_changes.append(_SwitchToDigestChange(base_revision))
 
   def _UpdateOrCreateService(
-      self, service_ref, config_changes, with_code, serv
+      self, service_ref, config_changes, with_code, serv, dry_run=False
   ):
     """Apply config_changes to the service.
 
@@ -921,6 +921,7 @@ class ServerlessOperations(object):
         can't create the service if we're not deploying code.
       serv: service.Service, For update the Service to update and for create
         None.
+      dry_run: bool, if True only validate the change.
 
     Returns:
       The Service object we created or modified.
@@ -932,7 +933,9 @@ class ServerlessOperations(object):
         serv = config_changes_mod.WithChanges(serv, config_changes)
         serv_name = service_ref.RelativeName()
         serv_update_req = messages.RunNamespacesServicesReplaceServiceRequest(
-            service=serv.Message(), name=serv_name
+            service=serv.Message(),
+            name=serv_name,
+            dryRun=('all' if dry_run else None),
         )
         with metrics.RecordDuration(metric_names.UPDATE_SERVICE):
           updated = self._client.namespaces_services.ReplaceService(
@@ -951,7 +954,9 @@ class ServerlessOperations(object):
         parent = service_ref.Parent().RelativeName()
         new_serv = config_changes_mod.WithChanges(new_serv, config_changes)
         serv_create_req = messages.RunNamespacesServicesCreateRequest(
-            service=new_serv.Message(), parent=parent
+            service=new_serv.Message(),
+            parent=parent,
+            dryRun='all' if dry_run else None,
         )
         with metrics.RecordDuration(metric_names.CREATE_SERVICE):
           raw_service = self._client.namespaces_services.Create(serv_create_req)
@@ -1074,6 +1079,7 @@ class ServerlessOperations(object):
       build_source=None,
       repo_to_create=None,
       already_activated_services=False,
+      dry_run=False,
   ):
     """Change the given service in prod using the given config_changes.
 
@@ -1102,6 +1108,7 @@ class ServerlessOperations(object):
         repository to be created.
       already_activated_services: bool. If true, skip activation prompts for
         services
+      dry_run: bool. If true, only validate the configuration.
 
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
@@ -1178,7 +1185,7 @@ class ServerlessOperations(object):
       )
 
     created_or_updated_service = self._UpdateOrCreateService(
-        service_ref, config_changes, with_image, serv
+        service_ref, config_changes, with_image, serv, dry_run
     )
 
     if allow_unauthenticated is not None:
@@ -1206,7 +1213,7 @@ class ServerlessOperations(object):
             stages.SERVICE_IAM_POLICY_SET, warning_message=warning_message
         )
 
-    if not asyn:
+    if not asyn and not dry_run:
       getter = functools.partial(self.GetService, service_ref)
       poller = ServiceConditionPoller(
           getter, tracker, dependencies=stages.ServiceDependencies(), serv=serv

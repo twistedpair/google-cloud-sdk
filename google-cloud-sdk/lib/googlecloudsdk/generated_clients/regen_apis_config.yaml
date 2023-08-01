@@ -1330,6 +1330,9 @@ apis:
     v1:
       discovery_doc: transcoder_v1.json
       default: true
+  transferappliance:
+    v1alpha1:
+      discovery_doc: transferappliance_v1alpha1.json
   tpu:
     v1alpha1:
       discovery_doc: tpu_v1alpha1.json
@@ -1984,6 +1987,9 @@ canonical_surfaces:
   transfer:
     name: transfer
     command: transfer
+  transferappliance:
+    name: transferappliance
+    command: transfer appliances
   vision:
     name: vision
     command: ml vision

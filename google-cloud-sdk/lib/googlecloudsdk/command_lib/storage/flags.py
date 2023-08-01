@@ -454,6 +454,14 @@ def add_raw_display_flag(parser):
   )
 
 
+def add_read_paths_from_stdin_flag(
+    parser, help_text='Read the list of URLs from stdin.'
+):
+  parser.add_argument(
+      '--read-paths-from-stdin', '-I', action='store_true', help=help_text
+  )
+
+
 def add_soft_deleted_flag(parser):
   parser.add_argument(
       '--soft-deleted',

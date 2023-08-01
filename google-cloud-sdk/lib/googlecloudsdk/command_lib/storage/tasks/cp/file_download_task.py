@@ -207,7 +207,10 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
     # removing files after a download makes us susceptible to a race condition
     # between two running instances of gcloud storage. See the following PR for
     # more information: https://github.com/GoogleCloudPlatform/gsutil/pull/1202.
-    if destination_url.exists():
+    # Note that it's not enough to check the results of `exists()`, since that
+    # method returns False if the path points to a broken symlink.
+    is_destination_symlink = os.path.islink(destination_url.object_name)
+    if is_destination_symlink or destination_url.exists():
       if self._user_request_args and self._user_request_args.no_clobber:
         log.status.Print(copy_util.get_no_clobber_message(destination_url))
         if self._send_manifest_messages:

@@ -1346,13 +1346,12 @@ def AddBinAuthzBreakglassFlag(parser):
 
 
 def AddVpcNetworkFlags(parser, resource_kind='Service'):
-  """Add flags for VPC network."""
+  """Add flags for setting VPC network."""
   parser.add_argument(
       '--network',
       metavar='NETWORK',
-      hidden=True,
       help=(
-          'The Compute Engine Network that the Cloud Run {kind} will connect'
+          'The Compute Engine network that the Cloud Run {kind} will connect'
           ' to. If --subnet is also specified, subnet must be a subnetwork of'
           ' the network specified by this --network flag. To reset this field'
           ' to its default, pass an empty string.'.format(kind=resource_kind)
@@ -1361,11 +1360,10 @@ def AddVpcNetworkFlags(parser, resource_kind='Service'):
 
 
 def AddVpcSubnetFlags(parser, resource_kind='Service'):
-  """Add flags for VPC network."""
+  """Add flags for setting VPC subnetwork."""
   parser.add_argument(
       '--subnet',
       metavar='SUBNET',
-      hidden=True,
       help=(
           'The Google Compute Engine subnetwork that the Cloud Run {kind} will'
           ' connect to. If --network is also specified, subnet must be a'
@@ -1378,11 +1376,10 @@ def AddVpcSubnetFlags(parser, resource_kind='Service'):
 
 
 def AddVpcNetworkTagsFlags(parser, resource_kind='Service'):
-  """Add flags for VPC network."""
+  """Add flags for setting VPC network tags."""
   parser.add_argument(
       '--network-tags',
       metavar='TAG',
-      hidden=True,
       type=arg_parsers.ArgList(),
       action=arg_parsers.UpdateAction,
       help=(
@@ -1393,6 +1390,55 @@ def AddVpcNetworkTagsFlags(parser, resource_kind='Service'):
           )
       ),
   )
+
+
+def AddClearVpcNetworkFlags(parser, resource_kind='Service'):
+  """Add flags for clearing VPC network."""
+  parser.add_argument(
+      '--clear-network',
+      action='store_true',
+      help=(
+          'Disconnect this Cloud Run {kind} from the Google Compute Engine'
+          ' subnetwork it has connected to.'.format(kind=resource_kind)
+      ),
+  )
+
+
+def AddClearVpcNetworkTagsFlags(parser, resource_kind='Service'):
+  """Add flags for clearing VPC network tags."""
+  parser.add_argument(
+      '--clear-network-tags',
+      action='store_true',
+      help=(
+          'Clears all existing Compute Engine tags from the Cloud Run {kind}. '
+          .format(kind=resource_kind)
+      ),
+  )
+
+
+def AddVpcNetworkGroupFlags(parser, resource_kind='Service', is_update=False):
+  """Add flags for all VPC network settings."""
+  group = parser.add_argument_group('Direct VPC egress setting flags group.')
+  AddVpcNetworkFlags(group, resource_kind)
+  AddVpcSubnetFlags(group, resource_kind)
+  if not is_update:
+    AddVpcNetworkTagsFlags(group, resource_kind)
+    return
+  tags_group = group.add_mutually_exclusive_group()
+  AddVpcNetworkTagsFlags(tags_group, resource_kind)
+  AddClearVpcNetworkTagsFlags(tags_group, resource_kind)
+
+
+def AddVpcNetworkGroupFlagsForCreate(parser, resource_kind='Service'):
+  """Add flags for all VPC network settings when creating a resource."""
+  AddVpcNetworkGroupFlags(parser, resource_kind, is_update=False)
+
+
+def AddVpcNetworkGroupFlagsForUpdate(parser, resource_kind='Service'):
+  """Add flags for all VPC network settings when updating a resource."""
+  group = parser.add_mutually_exclusive_group()
+  AddVpcNetworkGroupFlags(group, resource_kind, is_update=True)
+  AddClearVpcNetworkFlags(group, resource_kind)
 
 
 def AddCustomAudiencesFlag(parser):
@@ -1963,17 +2009,26 @@ def _GetConfigurationChanges(args):
       FlagIsExplicitlySet(args, 'network')
       or FlagIsExplicitlySet(args, 'subnet')
       or FlagIsExplicitlySet(args, 'network_tags')
+      or FlagIsExplicitlySet(args, 'clear_network_tags')
   ):
+    network_tags_is_set = FlagIsExplicitlySet(args, 'clear_network_tags')
+    network_tags = None
+    if FlagIsExplicitlySet(args, 'network_tags'):
+      network_tags_is_set = True
+      network_tags = args.network_tags
     changes.append(
         config_changes.NetworkInterfacesChange(
             FlagIsExplicitlySet(args, 'network'),
             args.network,
             FlagIsExplicitlySet(args, 'subnet'),
             args.subnet,
-            FlagIsExplicitlySet(args, 'network_tags'),
-            args.network_tags,
+            network_tags_is_set,
+            network_tags,
         )
     )
+  if 'clear_network' in args and args.clear_network:
+    # MUST be after 'vpc_egress' change.
+    changes.append(config_changes.ClearNetworkInterfacesChange())
   if _HasCustomAudiencesChanges(args):
     changes.append(config_changes.CustomAudiencesChanges(args))
   return changes
@@ -3099,3 +3154,16 @@ def PromptForDefaultSource():
         'to deploy the current directory.\n'
     )
     return source
+
+
+def AddDryRunFlag(parser):
+  """Add --dry-run flag."""
+  parser.add_argument(
+      '--dry-run',
+      action='store_true',
+      default=False,
+      help=(
+          'If set to true, only validates the configuration. The configuration'
+          ' will not be applied.'
+      ),
+  )

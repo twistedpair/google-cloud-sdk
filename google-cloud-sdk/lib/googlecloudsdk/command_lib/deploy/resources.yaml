@@ -139,3 +139,17 @@ automation:
     help: |
       The name of the Cloud Deploy automation.
   disable_auto_completers: false
+
+custom_target_type:
+  name: custom target type
+  collection: clouddeploy.projects.locations.customTargetTypes
+  request_id_field: customTargetTypeId
+  attributes:
+  - *project
+  - *location
+  - &custom_target_type
+    parameter_name: customTargetTypesId
+    attribute_name: custom_target_type
+    help: |
+      The name of the Cloud Deploy custom target type.
+  disable_auto_completers: false

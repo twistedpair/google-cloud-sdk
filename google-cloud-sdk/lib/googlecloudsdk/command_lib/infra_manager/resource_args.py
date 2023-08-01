@@ -30,6 +30,12 @@ def DeploymentAttributeConfig():
   )
 
 
+def RevisionAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='revision', help_text='The revision for the {resource}.'
+  )
+
+
 def LocationAttributeConfig():
   fallthroughs = [
       deps.PropertyFallthrough(properties.VALUES.blueprints.location)
@@ -52,6 +58,18 @@ def GetDeploymentResourceSpec():
   )
 
 
+def GetRevisionResourceSpec():
+  return concepts.ResourceSpec(
+      'config.projects.locations.deployments.revisions',
+      resource_name='revision',
+      revisionsId=RevisionAttributeConfig(),
+      deploymentsId=DeploymentAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False,
+  )
+
+
 def GetDeploymentResourceArgSpec(group_help):
   """Gets a resource presentation spec for a config manager deployment.
 
@@ -64,4 +82,19 @@ def GetDeploymentResourceArgSpec(group_help):
   name = 'DEPLOYMENT'
   return presentation_specs.ResourcePresentationSpec(
       name, GetDeploymentResourceSpec(), group_help, required=True
+  )
+
+
+def GetRevisionResourceArgSpec(group_help):
+  """Gets a resource presentation spec for a config manager revision.
+
+  Args:
+    group_help: string, the help text for the entire arg group.
+
+  Returns:
+    ResourcePresentationSpec for a config manager revision resource argument.
+  """
+  name = 'REVISION'
+  return presentation_specs.ResourcePresentationSpec(
+      name, GetRevisionResourceSpec(), group_help, required=True
   )

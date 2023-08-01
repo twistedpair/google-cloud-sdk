@@ -77,39 +77,43 @@ class GcsBucketResource(resource_reference.BucketResource):
     public_access_prevention (str|None): Public access prevention status.
     rpo (str|None): Recovery Point Objective status.
     satisfies_pzs (bool|None): Zone Separation status.
+    soft_delete_policy (dict|None): Soft delete settings for bucket.
     uniform_bucket_level_access (bool|None): True if all objects in the bucket
       share ACLs rather than the default, fine-grain ACL control.
   """
 
-  def __init__(self,
-               storage_url_object,
-               acl=None,
-               autoclass_enabled_time=None,
-               cors_config=None,
-               creation_time=None,
-               custom_placement_config=None,
-               default_acl=None,
-               default_event_based_hold=None,
-               default_kms_key=None,
-               default_storage_class=None,
-               etag=None,
-               labels=None,
-               lifecycle_config=None,
-               location=None,
-               location_type=None,
-               logging_config=None,
-               metadata=None,
-               metageneration=None,
-               project_number=None,
-               public_access_prevention=None,
-               requester_pays=None,
-               retention_policy=None,
-               rpo=None,
-               satisfies_pzs=None,
-               uniform_bucket_level_access=None,
-               update_time=None,
-               versioning_enabled=None,
-               website_config=None):
+  def __init__(
+      self,
+      storage_url_object,
+      acl=None,
+      autoclass_enabled_time=None,
+      cors_config=None,
+      creation_time=None,
+      custom_placement_config=None,
+      default_acl=None,
+      default_event_based_hold=None,
+      default_kms_key=None,
+      default_storage_class=None,
+      etag=None,
+      labels=None,
+      lifecycle_config=None,
+      location=None,
+      location_type=None,
+      logging_config=None,
+      metadata=None,
+      metageneration=None,
+      project_number=None,
+      public_access_prevention=None,
+      requester_pays=None,
+      retention_policy=None,
+      rpo=None,
+      satisfies_pzs=None,
+      soft_delete_policy=None,
+      uniform_bucket_level_access=None,
+      update_time=None,
+      versioning_enabled=None,
+      website_config=None,
+  ):
     """Initializes resource. Args are a subset of attributes."""
     super(GcsBucketResource, self).__init__(
         storage_url_object,
@@ -140,6 +144,7 @@ class GcsBucketResource(resource_reference.BucketResource):
     self.public_access_prevention = public_access_prevention
     self.rpo = rpo
     self.satisfies_pzs = satisfies_pzs
+    self.soft_delete_policy = soft_delete_policy
     self.uniform_bucket_level_access = uniform_bucket_level_access
 
   @property
@@ -161,16 +166,20 @@ class GcsBucketResource(resource_reference.BucketResource):
 
   def __eq__(self, other):
     return (
-        super(GcsBucketResource, self).__eq__(other) and
-        self.autoclass_enabled_time == other.autoclass_enabled_time and
-        self.custom_placement_config == other.custom_placement_config and
-        self.default_acl == other.default_acl and
-        self.default_kms_key == other.default_kms_key and
-        self.location_type == other.location_type and
-        self.project_number == other.project_number and
-        self.public_access_prevention == other.public_access_prevention and
-        self.rpo == other.rpo and self.satisfies_pzs == other.satisfies_pzs and
-        self.uniform_bucket_level_access == other.uniform_bucket_level_access)
+        super(GcsBucketResource, self).__eq__(other)
+        and self.autoclass_enabled_time == other.autoclass_enabled_time
+        and self.custom_placement_config == other.custom_placement_config
+        and self.default_acl == other.default_acl
+        and self.default_kms_key == other.default_kms_key
+        and self.location_type == other.location_type
+        and self.project_number == other.project_number
+        and self.public_access_prevention == other.public_access_prevention
+        and self.rpo == other.rpo
+        and self.satisfies_pzs == other.satisfies_pzs
+        and self.soft_delete_policy == other.soft_delete_policy
+        and self.uniform_bucket_level_access
+        == other.uniform_bucket_level_access
+    )
 
   def get_json_dump(self):
     return _get_json_dump(self)
@@ -204,34 +213,38 @@ class GcsObjectResource(resource_reference.ObjectResource):
     storage_class_update_time (datetime|None): Storage class update time.
   """
 
-  def __init__(self,
-               storage_url_object,
-               acl=None,
-               cache_control=None,
-               component_count=None,
-               content_disposition=None,
-               content_encoding=None,
-               content_language=None,
-               content_type=None,
-               crc32c_hash=None,
-               creation_time=None,
-               custom_fields=None,
-               custom_time=None,
-               decryption_key_hash_sha256=None,
-               encryption_algorithm=None,
-               etag=None,
-               event_based_hold=None,
-               kms_key=None,
-               md5_hash=None,
-               metadata=None,
-               metageneration=None,
-               noncurrent_time=None,
-               retention_expiration=None,
-               size=None,
-               storage_class=None,
-               storage_class_update_time=None,
-               temporary_hold=None,
-               update_time=None):
+  def __init__(
+      self,
+      storage_url_object,
+      acl=None,
+      cache_control=None,
+      component_count=None,
+      content_disposition=None,
+      content_encoding=None,
+      content_language=None,
+      content_type=None,
+      crc32c_hash=None,
+      creation_time=None,
+      custom_fields=None,
+      custom_time=None,
+      decryption_key_hash_sha256=None,
+      encryption_algorithm=None,
+      etag=None,
+      event_based_hold=None,
+      hard_delete_time=None,
+      kms_key=None,
+      md5_hash=None,
+      metadata=None,
+      metageneration=None,
+      noncurrent_time=None,
+      retention_expiration=None,
+      size=None,
+      soft_delete_time=None,
+      storage_class=None,
+      storage_class_update_time=None,
+      temporary_hold=None,
+      update_time=None,
+  ):
     """Initializes GcsObjectResource."""
     super(GcsObjectResource, self).__init__(
         storage_url_object,
@@ -261,11 +274,17 @@ class GcsObjectResource(resource_reference.ObjectResource):
         temporary_hold,
         update_time,
     )
+    self.hard_delete_time = hard_delete_time
+    self.soft_delete_time = soft_delete_time
     self.storage_class_update_time = storage_class_update_time
 
   def __eq__(self, other):
-    return (super(GcsObjectResource, self).__eq__(other) and
-            self.storage_class_update_time == other.storage_class_update_time)
+    return (
+        super(GcsObjectResource, self).__eq__(other)
+        and self.hard_delete_time == other.hard_delete_time
+        and self.soft_delete_time == other.soft_delete_time
+        and self.storage_class_update_time == other.storage_class_update_time
+    )
 
   def get_json_dump(self):
     return _get_json_dump(self)

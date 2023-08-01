@@ -1324,7 +1324,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.workflowexecutions = self._Add(
         'workflowexecutions', command='gcloud workflows executions')
     self.workflows = self._Add('workflows', command='gcloud workflows')
-    self.workstations = self._Add('workstations', hidden=True)
+    self.workstations = self._Add('workstations', command='gcloud workstations')
 
   def EndpointValidator(self, value):
     """Checks to see if the endpoint override string is valid."""

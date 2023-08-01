@@ -551,6 +551,23 @@ def AddExtensionConstraintsFlags(parser):
   ).AddToParser(extension_group)
 
 
+def AddMaximumLifetimeFlag(parser):
+  """Adds flag for specifying maximum lifetime in cert template.
+
+  Args:
+    parser: The argparser to add the arguments to.
+  """
+
+  base.Argument(
+      '--maximum-lifetime',
+      help=(
+          "If this is set, then issued certificate's lifetime "
+          'will be trunctated to the value provided'
+      ),
+      hidden=True,
+  ).AddToParser(parser)
+
+
 def AddExtensionConstraintsFlagsForUpdate(parser):
   """Adds flags for updating extension constraints.
 
@@ -683,6 +700,21 @@ def ParseExtensionConstraints(args):
 
   return messages.CertificateExtensionConstraints(
       knownExtensions=known_exts, additionalExtensions=oids)
+
+
+def ParseMaximumLifetime(args):
+  """Parses the maximum_lifetime flag from args.
+
+  Args:
+    args: The argparse object to read flags from.
+
+  Returns:
+    The JSON formatted duration of the maximum lifetime or none.
+  """
+
+  if not args.IsSpecified('maximum_lifetime'):
+    return None
+  return times.FormatDurationForJson(times.ParseDuration(args.maximum_lifetime))
 
 
 def ParsePredefinedValues(args):

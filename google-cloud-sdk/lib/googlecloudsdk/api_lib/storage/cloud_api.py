@@ -536,21 +536,31 @@ class CloudApi(object):
     """
     raise NotImplementedError('get_object_metadata must be overridden.')
 
-  def list_objects(self,
-                   bucket_name,
-                   prefix=None,
-                   delimiter=None,
-                   all_versions=None,
-                   fields_scope=None):
+  def list_objects(
+      self,
+      bucket_name,
+      prefix=None,
+      delimiter=None,
+      all_versions=None,
+      fields_scope=None,
+      halt_on_empty_response=True,
+      next_page_token=None,
+  ):
     """Lists objects (with metadata) and prefixes in a bucket.
 
     Args:
       bucket_name (str): Bucket containing the objects.
-      prefix (str): Prefix for directory-like behavior.
-      delimiter (str): Delimiter for directory-like behavior.
-      all_versions (boolean): If true, list all object versions.
+      prefix (str|None): Prefix for directory-like behavior.
+      delimiter (str|None): Delimiter for directory-like behavior.
+      all_versions (boolean|None): If true, list all object versions.
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
+      halt_on_empty_response (bool): For features like soft delete, the API may
+        return an empty list and a next page token. If true, print a warning
+        instead of using the next page token. See the warning text details.
+      next_page_token (str|None): Used to resume LIST calls. For example, if
+        halt_on_empty_response was true and a halt warning is printed, it will
+        contain a next_page_token the user can use to resume querying.
 
     Yields:
       Iterator over resource_reference.ObjectResource objects.

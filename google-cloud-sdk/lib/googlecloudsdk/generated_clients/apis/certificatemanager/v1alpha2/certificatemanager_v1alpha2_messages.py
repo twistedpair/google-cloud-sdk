@@ -240,9 +240,12 @@ class Certificate(_messages.Message):
       EDGE_CACHE: Certificates with scope EDGE_CACHE are special-purposed
         certificates, served from Edge Points of Presence. See
         https://cloud.google.com/vpc/docs/edge-locations.
+      ALL_REGIONS: Certificates with ALL_REGIONS scope are served from all GCP
+        regions. See https://cloud.google.com/compute/docs/regions-zones.
     """
     DEFAULT = 0
     EDGE_CACHE = 1
+    ALL_REGIONS = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

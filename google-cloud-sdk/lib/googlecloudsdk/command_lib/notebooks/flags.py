@@ -30,7 +30,9 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
 
-def GetEnvironmentResourceArg(help_text, positional=True, required=True):
+def GetEnvironmentResourceArg(
+    api_version, help_text, positional=True, required=True
+):
   """Constructs and returns the Environment Resource Argument."""
 
   def GetEnvironmentResourceSpec():
@@ -57,89 +59,122 @@ def GetEnvironmentResourceArg(help_text, positional=True, required=True):
     return concepts.ResourceSpec(
         'notebooks.projects.locations.environments',
         resource_name='environment',
+        api_version=api_version,
         environmentsId=EnvironmentAttributeConfig(),
         locationsId=LocationAttributeConfig(),
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-        disable_auto_completers=False)
+        disable_auto_completers=False,
+    )
 
   return concept_parsers.ConceptParser.ForResource(
       '{}environment'.format('' if positional else '--'),
       GetEnvironmentResourceSpec(),
       help_text,
-      required=required)
+      required=required,
+  )
 
 
 def AddListEnvironmentFlags(parser):
   parser.add_argument(
       '--location',
       completer=completers.LocationCompleter,
-      help=('Google Cloud location of this environment: '
-            'https://cloud.google.com/compute/docs/regions-zones/#locations.'))
+      help=(
+          'Google Cloud location of this environment: '
+          'https://cloud.google.com/compute/docs/regions-zones/#locations.'
+      ),
+  )
 
 
-def AddCreateEnvironmentFlags(parser):
+def AddCreateEnvironmentFlags(api_version, parser):
   """Construct groups and arguments specific to the environment create."""
   source_group = parser.add_group(mutex=True, required=True)
   vm_source_group = source_group.add_group()
   vm_mutex_group = vm_source_group.add_group(mutex=True, required=True)
   container_group = source_group.add_group()
   GetEnvironmentResourceArg(
-      ('User-defined unique name of this environment. The environment name '
-       'must be 1 to 63 characters long and contain only lowercase letters, '
-       'numeric characters, and dashes. The first character must be a lowercase'
-       'letter and the last character cannot be a dash.')).AddToParser(parser)
+      api_version,
+      (
+          'User-defined unique name of this environment. The environment name'
+          ' must be 1 to 63 characters long and contain only lowercase letters,'
+          ' numeric characters, and dashes. The first character must be a'
+          ' lowercaseletter and the last character cannot be a dash.'
+      ),
+  ).AddToParser(parser)
   parser.add_argument(
-      '--description', help='A brief description of this environment.')
+      '--description', help='A brief description of this environment.'
+  )
   parser.add_argument('--display-name', help='Name to display on the UI.')
   parser.add_argument(
       '--post-startup-script',
       help=(
-          'Path to a Bash script that automatically runs after a notebook '
-          'instance fully boots up. The path must be a URL or Cloud Storage path'
-          '(gs://`path-to-file/`file-name`).'))
+          'Path to a Bash script that automatically runs after a notebook'
+          ' instance fully boots up. The path must be a URL or Cloud Storage'
+          ' path(gs://`path-to-file/`file-name`).'
+      ),
+  )
   base.ASYNC_FLAG.AddToParser(parser)
   vm_source_group.add_argument(
       '--vm-image-project',
-      help=('The ID of the Google Cloud project that this VM image belongs to.'
-            'Format: projects/`{project_id}`.'),
-      default='deeplearning-platform-release')
+      help=(
+          'The ID of the Google Cloud project that this VM image belongs to.'
+          'Format: projects/`{project_id}`.'
+      ),
+      default='deeplearning-platform-release',
+  )
   vm_mutex_group.add_argument(
       '--vm-image-family',
-      help=('Use this VM image family to find the image; the newest image in '
-            'this family will be used.'),
-      default='common-cpu')
+      help=(
+          'Use this VM image family to find the image; the newest image in '
+          'this family will be used.'
+      ),
+      default='common-cpu',
+  )
   vm_mutex_group.add_argument(
-      '--vm-image-name', help='Use this VM image name to find the image.')
+      '--vm-image-name', help='Use this VM image name to find the image.'
+  )
   container_group.add_argument(
       '--container-repository',
-      help=('The path to the container image repository. For example: '
-            'gcr.io/`{project_id}`/`{image_name}`.'),
-      required=True)
+      help=(
+          'The path to the container image repository. For example: '
+          'gcr.io/`{project_id}`/`{image_name}`.'
+      ),
+      required=True,
+  )
   container_group.add_argument(
       '--container-tag',
-      help='The tag of the container image. If not specified, this defaults to the latest tag.'
+      help=(
+          'The tag of the container image. If not specified, this defaults to'
+          ' the latest tag.'
+      ),
   )
 
 
-def AddDeleteEnvironmentFlags(parser):
-
+def AddDeleteEnvironmentFlags(api_version, parser):
   GetEnvironmentResourceArg(
-      ('User-defined unique name of this environment. The environment name '
-       'must be 1 to 63 characters long and contain only lowercase letters, '
-       'numeric characters, and dashes. The first character must be a lowercase'
-       'letter and the last character cannot be a dash.')).AddToParser(parser)
+      api_version,
+      (
+          'User-defined unique name of this environment. The environment name'
+          ' must be 1 to 63 characters long and contain only lowercase letters,'
+          ' numeric characters, and dashes. The first character must be a'
+          ' lowercaseletter and the last character cannot be a dash.'
+      ),
+  ).AddToParser(parser)
   base.ASYNC_FLAG.AddToParser(parser)
 
 
-def AddDescribeEnvironmentFlags(parser):
+def AddDescribeEnvironmentFlags(api_version, parser):
   GetEnvironmentResourceArg(
-      ('User-defined unique name of this environment. The environment name '
-       'must be 1 to 63 characters long and contain only lowercase letters, '
-       'numeric characters, and dashes. The first character must be a lowercase'
-       'letter and the last character cannot be a dash.')).AddToParser(parser)
+      api_version,
+      (
+          'User-defined unique name of this environment. The environment name'
+          ' must be 1 to 63 characters long and contain only lowercase letters,'
+          ' numeric characters, and dashes. The first character must be a'
+          ' lowercaseletter and the last character cannot be a dash.'
+      ),
+  ).AddToParser(parser)
 
 
-def GetLocationResourceArg(help_text):
+def GetLocationResourceArg(api_version, help_text):
   """Constructs and returns the Location Resource Argument."""
 
   def GetLocationResourceSpec():
@@ -159,6 +194,7 @@ def GetLocationResourceArg(help_text):
     return concepts.ResourceSpec(
         'notebooks.projects.locations',
         resource_name='location',
+        api_version=api_version,
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
         locationsId=LocationAttributeConfig())
 
@@ -166,7 +202,7 @@ def GetLocationResourceArg(help_text):
       '--location', GetLocationResourceSpec(), help_text, required=True)
 
 
-def GetRuntimeResourceArg(help_text):
+def GetRuntimeResourceArg(api_version, help_text):
   """Constructs and returns the Runtime Resource Argument."""
 
   def GetRuntimeResourceSpec():
@@ -191,6 +227,7 @@ def GetRuntimeResourceArg(help_text):
     return concepts.ResourceSpec(
         'notebooks.projects.locations.runtimes',
         resource_name='runtime',
+        api_version=api_version,
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
         locationsId=LocationAttributeConfig(),
         runtimesId=RuntimeAttributeConfig(),
@@ -200,7 +237,7 @@ def GetRuntimeResourceArg(help_text):
       'runtime', GetRuntimeResourceSpec(), help_text, required=True)
 
 
-def GetInstanceResourceArg(help_text):
+def GetInstanceResourceArg(api_version, help_text):
   """Constructs and returns the Instance Resource Argument."""
 
   def GetInstanceResourceSpec():
@@ -225,6 +262,7 @@ def GetInstanceResourceArg(help_text):
     return concepts.ResourceSpec(
         'notebooks.projects.locations.instances',
         resource_name='instance',
+        api_version=api_version,
         instancesId=InstanceAttributeConfig(),
         locationsId=LocationAttributeConfig(),
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
@@ -285,28 +323,38 @@ def AddSubnetArgument(help_text, parser):
         subnetwork=SubnetAttributeConfig(),
         region=RegionAttributeConfig(),
         project=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-        disable_auto_completers=False)
+        disable_auto_completers=False,
+    )
 
-  concept_parsers.ConceptParser.ForResource('--subnet', GetSubnetResourceSpec(),
-                                            help_text).AddToParser(parser)
+  concept_parsers.ConceptParser.ForResource(
+      '--subnet', GetSubnetResourceSpec(), help_text
+  ).AddToParser(parser)
 
 
-def AddRuntimeResource(parser, add_async_flag=True):
+def AddRuntimeResource(api_version, parser, add_async_flag=True):
   GetRuntimeResourceArg(
-      ('User-defined unique name of this runtime. The runtime name must be '
-       '1 to 63 characters long and contain only lowercase letters, numeric '
-       'characters, and dashes. The first character must be a lowercase letter '
-       'and the last character cannot be a dash.')).AddToParser(parser)
+      api_version,
+      (
+          'User-defined unique name of this runtime. The runtime name must be 1'
+          ' to 63 characters long and contain only lowercase letters, numeric'
+          ' characters, and dashes. The first character must be a lowercase'
+          ' letter and the last character cannot be a dash.'
+      ),
+  ).AddToParser(parser)
   if add_async_flag:
     base.ASYNC_FLAG.AddToParser(parser)
 
 
-def AddInstanceResource(parser, add_async_flag=True):
+def AddInstanceResource(api_version, parser, add_async_flag=True):
   GetInstanceResourceArg(
-      ('User-defined unique name of this instance. The instance name must be '
-       '1 to 63 characters long and contain only lowercase letters, numeric '
-       'characters, and dashes. The first character must be a lowercase letter '
-       'and the last character cannot be a dash.')).AddToParser(parser)
+      api_version,
+      (
+          'User-defined unique name of this instance. The instance name must be'
+          ' 1 to 63 characters long and contain only lowercase letters, numeric'
+          ' characters, and dashes. The first character must be a lowercase'
+          ' letter and the last character cannot be a dash.'
+      ),
+  ).AddToParser(parser)
   if add_async_flag:
     base.ASYNC_FLAG.AddToParser(parser)
 
@@ -351,7 +399,7 @@ def AddDiagnosticConfigFlags(parser, vm_type):
       required=False)
 
 
-def AddCreateInstanceFlags(parser):
+def AddCreateInstanceFlags(api_version, parser):
   """Construct groups and arguments specific to the instance creation."""
   accelerator_choices = [
       'NVIDIA_TESLA_A100', 'NVIDIA_TESLA_K80', 'NVIDIA_TESLA_P100',
@@ -367,9 +415,9 @@ def AddCreateInstanceFlags(parser):
       'ANY_RESERVATION',
       'SPECIFIC_RESERVATION',
   ]
-  AddInstanceResource(parser)
+  AddInstanceResource(api_version, parser)
   environment_group = parser.add_group(mutex=True, required=True)
-  GetEnvironmentResourceArg((
+  GetEnvironmentResourceArg(api_version, (
       'User-defined unique name of this environment. The environment name '
       'must be 1 to 63 characters long and contain only lowercase letters, '
       'numeric characters, and dashes. The first character must be a lowercase '
@@ -404,8 +452,8 @@ def AddCreateInstanceFlags(parser):
       '--post-startup-script',
       help=(
           'Path to a Bash script that automatically runs after a notebook '
-          'instance fully boots up. The path must be a URL or Cloud Storage path '
-          '(gs://`path-to-file`/`file-name`).'))
+          'instance fully boots up. The path must be a URL or Cloud Storage '
+          'path (gs://`path-to-file`/`file-name`).'))
   parser.add_argument(
       '--service-account',
       help=(
@@ -419,22 +467,22 @@ def AddCreateInstanceFlags(parser):
       '--machine-type',
       help=(
           'The '
-          '[Compute Engine machine type](https://cloud.google.com/sdk/gcloud/reference/compute/machine-types) '
+          '[Compute Engine machine type](https://cloud.google.com/sdk/gcloud/reference/compute/machine-types) '  # pylint: disable=line-too-long
           'of this instance.'),
       default='n1-standard-1')
   parser.add_argument(
       '--instance-owners',
       help=(
-          'The owners of this instance after creation. Format: '
-          '`alias@example.com`. Currently supports one owner only. If not specified'
-          ", all of the service account users of the VM instance\'s service "
-          'account can use the instance.'))
+          'The owners of this instance after creation. '
+          'Format:`alias@example.com`. Currently supports one owner only.'
+          'If not specified, all of the service account users of the VM '
+          'instance\'s service account can use the instance.'))
   accelerator_group = parser.add_group(
       help=(
           'The hardware accelerator used on this instance. If you use '
-          'accelerators, make sure that your configuration has [enough vCPUs and '
-          'memory to support the `machine_type` you have selected](/compute/'
-          'docs/gpus/#gpus-list).'))
+          'accelerators, make sure that your configuration has [enough vCPUs '
+          'and memory to support the `machine_type` you have selected]'
+          '(/compute/docs/gpus/#gpus-list).'))
   accelerator_group.add_argument(
       '--accelerator-type',
       help='Type of this accelerator.',
@@ -451,8 +499,9 @@ def AddCreateInstanceFlags(parser):
       dest='install_gpu_driver',
       help=(
           'Whether the end user authorizes Google Cloud to install a GPU '
-          'driver on this instance. If this field is empty or set to false, the '
-          'GPU driver won\'t be installed. Only applicable to instances with GPUs.'
+          'driver on this instance. If this field is empty or set to false, '
+          'the GPU driver won\'t be installed. Only applicable to instances '
+          'with GPUs.'
       ))
   gpu_group.add_argument(
       '--custom-gpu-driver-path',
@@ -583,12 +632,12 @@ def AddCreateInstanceFlags(parser):
             '`--reservation-affinity=SPECIFIC_RESERVATION`.'))
 
 
-def AddDescribeInstanceFlags(parser):
-  AddInstanceResource(parser, add_async_flag=False)
+def AddDescribeInstanceFlags(api_version, parser):
+  AddInstanceResource(api_version, parser, add_async_flag=False)
 
 
-def AddDeleteInstanceFlags(parser):
-  AddInstanceResource(parser)
+def AddDeleteInstanceFlags(api_version, parser):
+  AddInstanceResource(api_version, parser)
 
 
 def AddListInstanceFlags(parser):
@@ -599,43 +648,43 @@ def AddListInstanceFlags(parser):
             'https://cloud.google.com/compute/docs/regions-zones/#locations.'))
 
 
-def AddRegisterInstanceFlags(parser):
-  AddInstanceResource(parser)
+def AddRegisterInstanceFlags(api_version, parser):
+  AddInstanceResource(api_version, parser)
 
 
-def AddResetInstanceFlags(parser):
-  AddInstanceResource(parser)
+def AddResetInstanceFlags(api_version, parser):
+  AddInstanceResource(api_version, parser)
 
 
-def AddStartInstanceFlags(parser):
-  AddInstanceResource(parser)
+def AddStartInstanceFlags(api_version, parser):
+  AddInstanceResource(api_version, parser)
 
 
-def AddStopInstanceFlags(parser):
-  AddInstanceResource(parser)
+def AddStopInstanceFlags(api_version, parser):
+  AddInstanceResource(api_version, parser)
 
 
-def AddGetHealthInstanceFlags(parser):
-  AddInstanceResource(parser, add_async_flag=False)
+def AddGetHealthInstanceFlags(api_version, parser):
+  AddInstanceResource(api_version, parser, add_async_flag=False)
 
 
-def AddIsUpgradeableInstanceFlags(parser):
-  AddInstanceResource(parser, add_async_flag=False)
+def AddIsUpgradeableInstanceFlags(api_version, parser):
+  AddInstanceResource(api_version, parser, add_async_flag=False)
 
 
-def AddUpgradeInstanceFlags(parser):
-  AddInstanceResource(parser)
+def AddUpgradeInstanceFlags(api_version, parser):
+  AddInstanceResource(api_version, parser)
 
 
-def AddRollbackInstanceFlags(parser):
-  AddInstanceResource(parser)
+def AddRollbackInstanceFlags(api_version, parser):
+  AddInstanceResource(api_version, parser)
   parser.add_argument(
       '--target-snapshot',
       help='The saved snapshot to rollback to',
       required=True)
 
 
-def AddUpdateInstanceFlags(parser):
+def AddUpdateInstanceFlags(api_version, parser):
   """Adds accelerator, labels and machine type flags to the parser for update."""
   accelerator_choices = [
       'NVIDIA_TESLA_A100', 'NVIDIA_TESLA_K80', 'NVIDIA_TESLA_P100',
@@ -643,7 +692,7 @@ def AddUpdateInstanceFlags(parser):
       'NVIDIA_TESLA_T4_VWS', 'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS',
       'TPU_V2', 'TPU_V3'
   ]
-  AddInstanceResource(parser)
+  AddInstanceResource(api_version, parser)
   update_group = parser.add_group(required=True)
   update_group.add_argument(
       '--accelerator-type',
@@ -665,29 +714,29 @@ def AddUpdateInstanceFlags(parser):
       help='The [Compute Engine machine type](/compute/docs/machine-types).')
 
 
-def AddDiagnoseInstanceFlags(parser):
+def AddDiagnoseInstanceFlags(api_version, parser):
   """Construct groups and arguments specific to the instance diagnosing."""
-  AddInstanceResource(parser)
+  AddInstanceResource(api_version, parser)
   AddDiagnosticConfigFlags(parser, 'instance')
 
 
-def AddDeleteRuntimeFlags(parser):
-  AddRuntimeResource(parser)
+def AddDeleteRuntimeFlags(api_version, parser):
+  AddRuntimeResource(api_version, parser)
 
 
-def AddDescribeRuntimeFlags(parser):
-  AddRuntimeResource(parser, add_async_flag=False)
+def AddDescribeRuntimeFlags(api_version, parser):
+  AddRuntimeResource(api_version, parser, add_async_flag=False)
 
 
-def AddStartRuntimeFlags(parser):
-  AddRuntimeResource(parser)
+def AddStartRuntimeFlags(api_version, parser):
+  AddRuntimeResource(api_version, parser)
 
 
-def AddStopRuntimeFlags(parser):
-  AddRuntimeResource(parser)
+def AddStopRuntimeFlags(api_version, parser):
+  AddRuntimeResource(api_version, parser)
 
 
-def AddSwitchRuntimeFlags(parser):
+def AddSwitchRuntimeFlags(api_version, parser):
   """Adds accelerator and machine type flags to the parser for switch."""
   accelerator_choices = [
       'NVIDIA_TESLA_A100', 'NVIDIA_TESLA_K80', 'NVIDIA_TESLA_P100',
@@ -695,7 +744,7 @@ def AddSwitchRuntimeFlags(parser):
       'NVIDIA_TESLA_T4_VWS', 'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS',
       'TPU_V2', 'TPU_V3'
   ]
-  AddRuntimeResource(parser)
+  AddRuntimeResource(api_version, parser)
   parser.add_argument('--machine-type', help=('machine type'))
   accelerator_config_group = parser.add_group()
   accelerator_config_group.add_argument(
@@ -709,52 +758,55 @@ def AddSwitchRuntimeFlags(parser):
       type=int)
 
 
-def AddResetRuntimeFlags(parser):
-  AddRuntimeResource(parser)
+def AddResetRuntimeFlags(api_version, parser):
+  AddRuntimeResource(api_version, parser)
 
 
-def AddCreateRuntimeFlags(parser):
+def AddCreateRuntimeFlags(api_version, parser):
   """Construct groups and arguments specific to the runtime creation."""
 
-  AddRuntimeResource(parser)
+  AddRuntimeResource(api_version, parser)
   runtime_type_group = parser.add_group(mutex=True, required=True)
-  runtime_type_group.add_argument(
-      '--runtime-type', help=('runtime type'))
+  runtime_type_group.add_argument('--runtime-type', help='runtime type')
   machine_type_group = runtime_type_group.add_group()
   machine_type_group.add_argument(
-      '--machine-type', help=('machine type'), required=True)
+      '--machine-type', help='machine type', required=True
+  )
   local_disk_group = machine_type_group.add_group()
-  local_disk_group.add_argument(
-      '--interface', help=('runtime interface'))
-  local_disk_group.add_argument('--source', help=('runtime source'))
-  local_disk_group.add_argument('--mode', help=('runtime mode'))
-  local_disk_group.add_argument('--type', help=('runtime type'))
+  local_disk_group.add_argument('--interface', help='runtime interface')
+  local_disk_group.add_argument('--source', help='runtime source')
+  local_disk_group.add_argument('--mode', help='runtime mode')
+  local_disk_group.add_argument('--type', help='runtime type')
 
   access_config_group = parser.add_group(required=True)
-  access_config_group.add_argument(
-      '--runtime-access-type', help=('access type'))
-  access_config_group.add_argument('--runtime-owner', help=('runtime owner'))
+  access_config_group.add_argument('--runtime-access-type', help='access type')
+  access_config_group.add_argument('--runtime-owner', help='runtime owner')
 
   software_config_group = parser.add_group()
   software_config_group.add_argument(
-      '--idle-shutdown-timeout', help=('idle shutdown timeout'))
+      '--idle-shutdown-timeout', help='idle shutdown timeout'
+  )
   software_config_group.add_argument(
-      '--install-gpu-driver', help=('install gpu driver'))
+      '--install-gpu-driver', help='install gpu driver'
+  )
   software_config_group.add_argument(
-      '--custom-gpu-driver-path', help=('custom gpu driver path'))
+      '--custom-gpu-driver-path', help='custom gpu driver path'
+  )
   software_config_group.add_argument(
-      '--post-startup-script', help=('post startup script'))
+      '--post-startup-script', help='post startup script'
+  )
   software_config_group.add_argument(
-      '--post-startup-script-behavior', help=('post startup script behavior'))
+      '--post-startup-script-behavior', help='post startup script behavior'
+  )
 
 
-def AddListRuntimeFlags(parser):
+def AddListRuntimeFlags(api_version, parser):
   GetLocationResourceArg(
-      ('Location of this runtime. '
-       'For example, us-central1-a')).AddToParser(parser)
+      api_version, 'Location of this runtime. For example, us-central1-a'
+  ).AddToParser(parser)
 
 
-def AddDiagnoseRuntimeFlags(parser):
+def AddDiagnoseRuntimeFlags(api_version, parser):
   """Construct groups and arguments specific to the runtime diagnosing."""
-  AddRuntimeResource(parser)
+  AddRuntimeResource(api_version, parser)
   AddDiagnosticConfigFlags(parser, 'runtime')

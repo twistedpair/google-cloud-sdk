@@ -525,7 +525,7 @@ def AddAcceleratorArgs(
       help="""\
       Attaches accelerators (e.g. GPUs) to all nodes.
 
-      *type*::: (Required) The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla K80)
+      *type*::: (Required) The specific type (e.g. nvidia-tesla-k80 for NVIDIA Tesla K80)
       of accelerator to attach to the instances. Use ```gcloud compute
       accelerator-types list``` to learn about all available accelerator types.
 
@@ -534,15 +534,15 @@ def AddAcceleratorArgs(
 
       *gpu-driver-version*::: (Optional) The NVIDIA driver version to install. GPU_DRIVER_VERSION must be one of:
 
-        `default`: Install the default driver version. If you omit the flag `gpu-driver-version`,
-        this is the default option.
+        `default`: Install the default driver version.
 
         `latest`: Install the latest available driver version. Available only for
         nodes that use Container-Optimized OS.
 
         `disabled`: Skip automatic driver installation. You must [manually install a
         driver](https://cloud.google.com/kubernetes-engine/docs/how-to/gpus#installing_drivers)
-        after you create the cluster.
+        after you create the cluster. If you omit the flag `gpu-driver-version`,
+        this is the default option.
 
       *gpu-partition-size*::: (Optional) The GPU partition size used when running multi-instance GPUs.
       For information about multi-instance GPUs,
@@ -4824,20 +4824,12 @@ Examples:
   )
 
 
-def AddMasterGlobalAccessFlag(parser, is_update=False):
+def AddMasterGlobalAccessFlag(parser):
   """Adds --enable-master-global-access boolean flag."""
-  help_text_suffix = """\
-
-Must be used in conjunction with '--enable-ip-alias' and '--enable-private-nodes'.
-"""
-
-  if is_update:
-    help_text_suffix = """"""
-
   help_text = """
 Use with private clusters to allow access to the master's private endpoint from any Google Cloud region or on-premises environment regardless of the
 private cluster's region.
-""" + help_text_suffix
+"""
 
   parser.add_argument(
       '--enable-master-global-access',

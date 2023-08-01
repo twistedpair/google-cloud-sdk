@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
@@ -38,6 +39,72 @@ def AddInstanceArgToParser(parser, positional=False):
       required=True,
       group_help='instance.')
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddInstanceSystemTypeArgToParse(parser):
+  """Adds system type argument for Instance."""
+  parser.add_argument(
+      '--system-type',
+      help='IBM Power system type of the instance',
+      type=str,
+      required=True)
+
+
+def AddInstanceBootImageNameArgToParse(parser):
+  """Adds name of boot image to create Instance."""
+  parser.add_argument(
+      '--boot-image-name',
+      help='Name of the boot image used to create this instance',
+      type=str,
+      required=True)
+
+
+def AddInstanceMemoryGibArgToParse(parser):
+  """Adds memory size to create Instance."""
+  parser.add_argument(
+      '--memory-gib',
+      help='The memory size used to create instance in Gib',
+      type=int,
+      required=True)
+
+
+def AddInstanceVirtualCpuCoresArgToParse(parser):
+  """Adds virtual CPU Cores argument for Instance."""
+  parser.add_argument(
+      '--virtual-cpu-cores',
+      help='Processor for the instance',
+      type=float,
+      required=True)
+
+
+def AddInstanceVirtualCpuTypeArgToParse(parser):
+  """Adds virtual CPU Cores argument for Instance."""
+  parser.add_argument(
+      '--virtual-cpu-type',
+      choices={
+          'UNSPECIFIED':
+          'Unspecified',
+          'DEDICATED':
+          'Dedicated processors. '
+          'Processor counts for this type must be whole numbers.',
+          'UNCAPPED_SHARED':
+          'Uncapped shared processors',
+          'CAPPED_SHARED':
+          'Capped shared processors'
+      },
+      help='Processor type for the instance',
+      type=arg_utils.ChoiceToEnumName,
+      required=True)
+
+
+def AddInstanceNetworkAttachmentNameArgToParse(parser):
+  parser.add_argument(
+      '--network-attachment-name',
+      type=str,
+      required=True,
+      action='append',
+      help='Name of network attached to the instance created',
+      )
 
 
 def AddImageArgToParser(parser, positional=False):

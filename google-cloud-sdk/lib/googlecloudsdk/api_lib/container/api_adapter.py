@@ -2722,11 +2722,8 @@ class APIAdapter(object):
             disabled=False, loadBalancerType=load_balancer_type)
 
     if options.enable_master_global_access is not None:
-      if not options.enable_private_nodes:
-        raise util.Error(
-            PREREQUISITE_OPTION_ERROR_MSG.format(
-                prerequisite='enable-private-nodes',
-                opt='enable-master-global-access'))
+      if cluster.privateClusterConfig is None:
+        cluster.privateClusterConfig = self.messages.PrivateClusterConfig()
       cluster.privateClusterConfig.masterGlobalAccessConfig = \
           self.messages.PrivateClusterMasterGlobalAccessConfig(
               enabled=options.enable_master_global_access)
@@ -5022,11 +5019,8 @@ class V1Beta1Adapter(V1Adapter):
       cluster.identityServiceConfig = self.messages.IdentityServiceConfig(
           enabled=options.enable_identity_service)
     if options.enable_master_global_access is not None:
-      if not options.enable_private_nodes:
-        raise util.Error(
-            PREREQUISITE_OPTION_ERROR_MSG.format(
-                prerequisite='enable-private-nodes',
-                opt='enable-master-global-access'))
+      if cluster.privateClusterConfig is None:
+        cluster.privateClusterConfig = self.messages.PrivateClusterConfig()
       cluster.privateClusterConfig.masterGlobalAccessConfig = \
           self.messages.PrivateClusterMasterGlobalAccessConfig(
               enabled=options.enable_master_global_access)
@@ -5589,11 +5583,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.networkConfig.serviceExternalIpsConfig = self.messages.ServiceExternalIPsConfig(
           enabled=options.enable_service_externalips)
     if options.enable_master_global_access is not None:
-      if not options.enable_private_nodes:
-        raise util.Error(
-            PREREQUISITE_OPTION_ERROR_MSG.format(
-                prerequisite='enable-private-nodes',
-                opt='enable-master-global-access'))
+      if cluster.privateClusterConfig is None:
+        cluster.privateClusterConfig = self.messages.PrivateClusterConfig()
       cluster.privateClusterConfig.masterGlobalAccessConfig = \
           self.messages.PrivateClusterMasterGlobalAccessConfig(
               enabled=options.enable_master_global_access)

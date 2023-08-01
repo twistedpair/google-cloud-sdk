@@ -32,6 +32,20 @@ from googlecloudsdk.core import log
 CLUSTER_ROLE = 'clusterrole'
 NAMESPACE_ROLE = 'role'
 ANTHOS_SUPPORT_USER = 'service-{project_number}@gcp-sa-{instance_name}anthossupport.iam.gserviceaccount.com'
+PRINCIPAL_FORMAT = [
+    'principal:',
+    '',
+    'iam.googleapis.com',
+    'locations',
+    'workforcePools',
+    'subject',
+]
+UNWANTED_CHARS = [' ', '/', '%']
+INVALID_ARGS_MESSAGE = (
+    'Please specify the --users in correct format:'
+    '"foo@example.com" or "principal://iam.googleapis.com/locations/global/'
+    'workforcePools/pool/subject/user".'
+)
 IMPERSONATE_POLICY_FORMAT = """\
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -252,6 +266,34 @@ def ValidateRole(role):
         'The required role is not a cluster role or a namespace role.')
 
 
+def FormatUserForResourceNaming(user):
+  """Format user by removing disallowed characters for k8s resource naming."""
+  # Check if the user is a third-party user.
+  parts = user.split('/')
+  if len(parts) >= 9:
+    # Check the fields shared by all third-party principals.
+    common_parts = parts[:4] + parts[5:8:2]
+    if common_parts == PRINCIPAL_FORMAT:
+      workforce_pool = user.split('/workforcePools/')[1].split('/')[0]
+      principal = user.split('/subject/')[1]
+      # Include workforce pool and remove unwanted characters from the
+      # principal name.
+      user = workforce_pool + '_' + principal
+    else:
+      raise InvalidArgsError(INVALID_ARGS_MESSAGE)
+  else:
+    if '@' not in user:
+      raise InvalidArgsError(INVALID_ARGS_MESSAGE)
+    else:
+      user = user.split('@')[0]
+  # Get rid of spaces to make RBAC policy management easier (not using
+  # quotes around the name) and '/' and '%' due to naming restrictions.
+  for ch in UNWANTED_CHARS:
+    user = user.replace(ch, '')
+
+  return user
+
+
 def ValidateArgs(args):
   """Validate Args in correct format."""
   # Validate the confliction between '--anthos-support' and '--role'.
@@ -273,13 +315,6 @@ def ValidateArgs(args):
       raise InvalidArgsError('Please specify the --kubeconfig in flags.')
     if not args.context:
       raise InvalidArgsError('Please specify the --context in flags.')
-  # Validate users in correct format before generate RBAC policy.
-  if args.users:
-    users_list = args.users.split(',')
-    for user in users_list:
-      if '@' not in user:
-        raise InvalidArgsError(
-            'Please specify the --users in correct format: foo@example.com.')
   if args.revoke and args.apply:
     # Validate confliction between --apply and --revoke.
     raise InvalidArgsError(
@@ -346,11 +381,16 @@ def GenerateRBAC(args, project_id):
     impersonate_users = os.linesep + '  - {user}'.format(user=user)
     permission_users = os.linesep + '- kind: User'
     permission_users += os.linesep + '  name: {user}'.format(user=user)
-    user_name = user.split('@')[0]
     if args.membership:
-      metadata_name = project_id + '_' + user_name + '_' + args.membership
+      metadata_name = (
+          project_id
+          + '_'
+          + FormatUserForResourceNaming(user)
+          + '_'
+          + args.membership
+      )
     else:
-      metadata_name = project_id + '_' + user_name
+      metadata_name = project_id + '_' + FormatUserForResourceNaming(user)
 
     # Assign value to the RBAC file templates.
     single_generated_rbac = rbac_policy_format.format(

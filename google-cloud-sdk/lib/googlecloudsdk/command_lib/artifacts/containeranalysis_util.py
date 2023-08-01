@@ -76,7 +76,7 @@ class ContainerAnalysisMetadata:
     elif (
         occ.kind == messages.Occurrence.KindValueValuesEnum.BUILD
         and occ.build
-        and occ.build.intotoStatement
+        and (occ.build.intotoStatement or occ.build.inTotoSlsaProvenanceV1)
     ):
       self.provenance.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.PACKAGE:

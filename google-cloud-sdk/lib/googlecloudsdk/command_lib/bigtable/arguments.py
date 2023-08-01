@@ -241,7 +241,6 @@ class ArgAdder(object):
       required=True,
       allow_failover_radius=False,
       allow_row_affinity=False,
-      is_update=False,
   ):
     """Adds arguments for app_profile routing to parser."""
     routing_group = self.parser.add_mutually_exclusive_group(required=required)
@@ -307,16 +306,10 @@ class ArgAdder(object):
     transactional_write_help = (
         'Allow transactional writes with a Single Cluster Routing policy.'
     )
-    if is_update:
-      transactional_write_help += (
-          '\n\nIf your app profile has single row transactions enabled, you'
-          ' must specify this flag when updating that app profile. If you do'
-          ' not specify this flag, then single row transactions are disabled.'
-      )
     route_to_group.add_argument(
         '--transactional-writes',
         action='store_true',
-        default=False,
+        default=None,
         help=transactional_write_help,
     )
     return self

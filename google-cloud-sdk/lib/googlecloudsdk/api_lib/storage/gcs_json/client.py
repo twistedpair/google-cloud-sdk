@@ -891,12 +891,16 @@ class JsonClient(cloud_api.CloudApi):
       )
     return metadata_util.get_object_resource_from_metadata(object_metadata)
 
-  def list_objects(self,
-                   bucket_name,
-                   prefix=None,
-                   delimiter=None,
-                   all_versions=None,
-                   fields_scope=cloud_api.FieldsScope.NO_ACL):
+  def list_objects(
+      self,
+      bucket_name,
+      prefix=None,
+      delimiter=None,
+      all_versions=None,
+      fields_scope=cloud_api.FieldsScope.NO_ACL,
+      halt_on_empty_response=True,
+      next_page_token=None,
+  ):
     """See super class."""
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageObjectsListRequest)
@@ -921,7 +925,7 @@ class JsonClient(cloud_api.CloudApi):
           )
       )
 
-    object_list = None
+    list_result = None
     while True:
       apitools_request = self.messages.StorageObjectsListRequest(
           bucket=bucket_name,
@@ -929,25 +933,44 @@ class JsonClient(cloud_api.CloudApi):
           delimiter=delimiter,
           versions=all_versions,
           projection=projection,
-          pageToken=object_list.nextPageToken if object_list else None,
-          maxResults=cloud_api.NUM_ITEMS_PER_LIST_PAGE)
+          pageToken=next_page_token,
+          maxResults=cloud_api.NUM_ITEMS_PER_LIST_PAGE,
+      )
 
       try:
-        object_list = self.client.objects.List(
-            apitools_request, global_params=global_params)
+        list_result = self.client.objects.List(
+            apitools_request, global_params=global_params
+        )
       except apitools_exceptions.HttpError as e:
         core_exceptions.reraise(
             cloud_errors.translate_error(e, error_util.ERROR_TRANSLATION))
 
+      next_page_token = list_result.nextPageToken
+      if (
+          not (list_result.items or list_result.prefixes)
+          and next_page_token
+          and halt_on_empty_response
+      ):
+        log.warning(
+            (
+                'Received empty list response. However, a next page token is'
+                ' available. Rerun with `--exhaustive --next-page-token={}` to'
+                ' pick up where you left off and exhaustively search all'
+                ' objects. Making numerous LIST API calls can be expensive, and'
+                ' additional objects are not guaranteed exist.'
+            ).format(next_page_token)
+        )
+        break
+
       # Yield objects.
       # TODO(b/160238394) Decrypt metadata fields if necessary.
-      for object_metadata in object_list.items:
+      for object_metadata in list_result.items:
         object_metadata.bucket = bucket_name
         yield metadata_util.get_object_resource_from_metadata(
             object_metadata)
 
       # Yield prefixes.
-      for prefix_string in object_list.prefixes:
+      for prefix_string in list_result.prefixes:
         yield resource_reference.PrefixResource(
             storage_url.CloudUrl(
                 scheme=storage_url.ProviderPrefix.GCS,
@@ -955,7 +978,7 @@ class JsonClient(cloud_api.CloudApi):
                 object_name=prefix_string),
             prefix=prefix_string)
 
-      if not object_list.nextPageToken:
+      if not next_page_token:
         break
 
   @error_util.catch_http_error_raise_gcs_api_error()

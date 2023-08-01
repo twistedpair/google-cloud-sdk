@@ -606,13 +606,18 @@ class S3XmlClient(cloud_api.CloudApi):
         self.scheme, object_dict, bucket_name, object_name
     )
 
-  def list_objects(self,
-                   bucket_name,
-                   prefix=None,
-                   delimiter=None,
-                   all_versions=False,
-                   fields_scope=None):
+  def list_objects(
+      self,
+      bucket_name,
+      prefix=None,
+      delimiter=None,
+      all_versions=False,
+      fields_scope=None,
+      halt_on_empty_response=True,
+      next_page_token=None,
+  ):
     """See super class."""
+    del halt_on_empty_response, next_page_token  # Only used by GCS.
     if all_versions:
       api_method_name = 'list_object_versions'
       objects_key = 'Versions'

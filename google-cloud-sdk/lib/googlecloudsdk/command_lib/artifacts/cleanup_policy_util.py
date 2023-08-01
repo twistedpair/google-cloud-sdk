@@ -122,12 +122,6 @@ def RepositoryToCleanupPoliciesResponse(response, unused_args):
   return sorted_policies
 
 
-def SetOverwriteMask(unused_ref, args, request):
-  if args.overwrite:
-    request.updateMask = None
-  return request
-
-
 def DeleteCleanupPolicyFields(unused_ref, args, request):
   removed_policies = args.policynames.split(',')
   remaining_policies = []

@@ -144,15 +144,28 @@ def VerifyNodeCount(ref, args, request):
   return request
 
 
-def SetBestEffortOrSpot(ref, args, request):
-  """Creates an empty BestEffort structure if best-effort or spot arg flag is set."""
+def SetBestEffort(ref, args, request):
+  """Creates an empty BestEffort structure if best-effort arg flag is set."""
   del ref  # unused
-  if args.best_effort or args.spot:
+  if args.best_effort:
     tpu_messages = GetMessagesModule()
     if request.queuedResource is None:
       request.queuedResource = tpu_messages.QueuedResource()
     if request.queuedResource.bestEffort is None:
       request.queuedResource.bestEffort = tpu_messages.BestEffort()
+
+  return request
+
+
+def SetSpot(ref, args, request):
+  """Creates an empty Spot structure if spot flag is set."""
+  del ref  # unused
+  if args.spot:
+    tpu_messages = GetMessagesModule()
+    if request.queuedResource is None:
+      request.queuedResource = tpu_messages.QueuedResource()
+    if request.queuedResource.spot is None:
+      request.queuedResource.spot = tpu_messages.Spot()
 
   return request
 

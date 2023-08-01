@@ -1,5 +1,3 @@
-
-
 # -*- coding: utf-8 -*- #
 # Copyright 2022 Google LLC. All Rights Reserved.
 #
@@ -61,11 +59,11 @@ def GetProtectedResourcesSummary(name):
       request)
 
 
-def SearchProtectedResources(scope, key_name, args):
+def SearchProtectedResources(scope, key_name, resource_types, args):
   client = GetClientInstance()
-  request = GetMessagesModule(
-  ).KmsinventoryOrganizationsProtectedResourcesSearchRequest(
-      scope=scope, cryptoKey=key_name)
+  request = GetMessagesModule().KmsinventoryOrganizationsProtectedResourcesSearchRequest(
+      scope=scope, cryptoKey=key_name, resourceTypes=resource_types
+  )
 
   return list_pager.YieldFromList(
       client.organizations_protectedResources,
@@ -74,5 +72,5 @@ def SearchProtectedResources(scope, key_name, args):
       limit=args.limit,
       batch_size_attribute='pageSize',
       batch_size=args.page_size,
-      field='protectedResources')
-
+      field='protectedResources',
+  )

@@ -162,6 +162,14 @@ class FleetFlags:
         help_text='Google Cloud location for the {resource}.',
     )
 
+  def AddLocation(self):
+    self.parser.add_argument(
+        '--location',
+        type=str,
+        help='The location name.',
+        default='-',
+    )
+
 
 class FleetFlagParser:
   """Parse flags during fleet command runtime."""
@@ -280,3 +288,14 @@ class FleetFlagParser:
   def OperationRef(self) -> resources.Resource:
     """Parses resource argument operation."""
     return self.args.CONCEPTS.operation.Parse()
+
+  def Location(self) -> str:
+    return self.args.location
+
+  def PageSize(self) -> int:
+    """Returns page size in a list request."""
+    return self.args.page_size
+
+  def Limit(self) -> int:
+    """Returns limit in a list request."""
+    return self.args.limit

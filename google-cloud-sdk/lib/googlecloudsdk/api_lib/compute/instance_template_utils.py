@@ -281,18 +281,20 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
   return result
 
 
-def CreateDiskMessages(args,
-                       client,
-                       resources,
-                       project,
-                       image_uri,
-                       boot_disk_size_gb=None,
-                       create_boot_disk=False,
-                       support_kms=False,
-                       support_multi_writer=False,
-                       match_container_mount_disks=False,
-                       support_replica_zones=False,
-                       support_storage_pool=False):
+def CreateDiskMessages(
+    args,
+    client,
+    resources,
+    project,
+    image_uri,
+    boot_disk_size_gb=None,
+    create_boot_disk=False,
+    support_kms=False,
+    support_multi_writer=False,
+    match_container_mount_disks=False,
+    support_replica_zones=True,
+    support_storage_pool=False,
+):
   """Create disk messages for a single instance template."""
   container_mount_disk = (
       args.container_mount_disk if match_container_mount_disks else [])
@@ -406,15 +408,17 @@ def CreatePersistentAttachedDiskMessages(
   return disks_messages
 
 
-def CreatePersistentCreateDiskMessages(client,
-                                       resources,
-                                       user_project,
-                                       create_disks,
-                                       support_kms=False,
-                                       container_mount_disk=None,
-                                       support_multi_writer=False,
-                                       support_replica_zones=False,
-                                       support_storage_pool=False):
+def CreatePersistentCreateDiskMessages(
+    client,
+    resources,
+    user_project,
+    create_disks,
+    support_kms=False,
+    container_mount_disk=None,
+    support_multi_writer=False,
+    support_replica_zones=True,
+    support_storage_pool=False,
+):
   """Returns a list of AttachedDisk messages.
 
   Args:

@@ -85,6 +85,7 @@ class BmsClient(object):
     self.nfs_shares_service = self._client.projects_locations_nfsShares
     self.ssh_keys_service = self._client.projects_locations_sshKeys
     self.operation_service = self._client.projects_locations_operations
+    self.os_images_service = self._client.projects_locations_osImages
     self.nfs_mount_permissions_str_to_message = {
         'READ_ONLY':
             self.messages.AllowedClient.MountPermissionsValueValuesEnum.READ,
@@ -423,6 +424,23 @@ class BmsClient(object):
         batch_size_attribute='pageSize',
         batch_size=page_size,
         field='networks')
+
+  def ListOSImages(self,
+                   project_resource,
+                   limit=None,
+                   page_size=None):
+    parent = 'projects/%s/locations/global' % project_resource
+    request = (
+        self.messages
+        .BaremetalsolutionProjectsLocationsOsImagesListRequest(
+            parent=parent))
+    return list_pager.YieldFromList(
+        self.os_images_service,
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='osImages')
 
   def AggregateListNetworks(self, project_resource, limit=None):
     return self.AggregateYieldFromList(

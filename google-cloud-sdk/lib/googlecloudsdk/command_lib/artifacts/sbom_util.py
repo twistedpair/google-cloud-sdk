@@ -463,6 +463,9 @@ def ListSbomReferences(args):
             'https://{}'.format(artifact.resource_uri),
             artifact.resource_uri,
         ]
+      # Update the project for the request when a specific resource is provided.
+      if artifact.project:
+        project = artifact.project
 
     except (ar_exceptions.InvalidInputValueError, docker_name.BadNameException):
       # Failed to process the artifact. Use the uri directly

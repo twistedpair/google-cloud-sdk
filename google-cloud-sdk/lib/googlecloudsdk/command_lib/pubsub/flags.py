@@ -297,25 +297,43 @@ def AddBigQueryConfigFlags(parser, is_update):
   bigquery_config_group.add_argument(
       '--bigquery-table',
       required=True,
-      help='A BigQuery table  of the form {project}:{dataset_name}.{table_name} to which to write messages for this subscription.'
+      help=(
+          'A BigQuery table  of the form {project}:{dataset_name}.{table_name}'
+          ' to which to write messages for this subscription.'
+      ),
   )
   bigquery_config_group.add_argument(
       '--use-topic-schema',
       action='store_true',
       default=None,
-      help='Whether or not to use the schema for the subscription\'s topic (if it exists) when writing messages to BigQuery.'
+      help=(
+          "Whether or not to use the schema for the subscription's topic (if it"
+          ' exists) when writing messages to BigQuery.'
+      ),
   )
   bigquery_config_group.add_argument(
       '--write-metadata',
       action='store_true',
       default=None,
-      help='Whether or not to write message metadata including message ID, publish timestamp, ordering key, and attributes to BigQuery.'
+      help=(
+          'Whether or not to write message metadata including message ID,'
+          ' publish timestamp, ordering key, and attributes to BigQuery. The'
+          ' subscription name, message_id, and publish_time fields are put in'
+          ' their own columns while all other message properties other than'
+          ' data (for example, an ordering_key, if present) are written to a'
+          ' JSON object in the attributes column.'
+      ),
   )
   bigquery_config_group.add_argument(
       '--drop-unknown-fields',
       action='store_true',
       default=None,
-      help='When --use-topic-schema is set, whether or not to ignore fields in the topic schema that do not appear in the BigQuery schema. If false, then the BigQuery schema must contain all fields that are also present in the topic schema.'
+      help=(
+          'When --use-topic-schema is set, whether or not to ignore fields in'
+          ' the topic schema that do not appear in the BigQuery schema. If'
+          ' false, then the BigQuery schema must contain all fields that are'
+          ' also present in the topic schema.'
+      ),
   )
 
 
@@ -406,7 +424,11 @@ def AddCloudStorageConfigFlags(parser, is_update):
       help=(
           'Whether or not to write the subscription name, message_id,'
           ' publish_time, attributes, and ordering_key as additional fields in'
-          ' the output. This has an effect only for subscriptions with'
+          ' the output. The subscription name, message_id, and publish_time'
+          ' fields are put in their own fields while all other message'
+          ' properties other than data (for example, an ordering_key, if'
+          ' present) are added as entries in the attributes map. This has an'
+          ' effect only for subscriptions with'
           ' --cloud-storage-output-format=avro.'
       ),
   )
@@ -624,6 +646,80 @@ def AddSchemaSettingsFlags(parser, is_update=False):
       help="""The id of the most recent
       revision allowed for the specified schema""",
       required=False)
+
+
+def AddIngestionDatasourceFlags(parser, is_update=False):
+  """Adds the flags for Datasource Ingestion.
+
+  Args:
+    parser: The argparse parser
+    is_update: (bool) If true, add a wrapper group with
+      clear-ingestion-data-source-settings as a mutually exclusive argument.
+  """
+  current_group = parser
+
+  if is_update:
+    clear_settings_group = current_group.add_mutually_exclusive_group(
+        help=(
+            'Specify either --clear-ingestion-data-source-settings or a new'
+            ' ingestion source.'
+        ),
+        hidden=True
+    )
+    clear_settings_group.add_argument(
+        '--clear-ingestion-data-source-settings',
+        action='store_true',
+        default=None,
+        help='If set, clear the Ingestion Data Source Settings from the topic.'
+    )
+    current_group = clear_settings_group
+
+  ingestion_source_types_group = current_group.add_mutually_exclusive_group(
+      hidden=(not is_update)
+  )
+
+  aws_kinesis_group = ingestion_source_types_group.add_argument_group(
+      help=(
+          'The flags for specifying an Amazon Web Services (AWS) Kinesis'
+          ' Ingestion Topic'
+      )
+  )
+  aws_kinesis_group.add_argument(
+      '--kinesis-ingestion-stream-arn',
+      default=None,
+      help=(
+          'The Kinesis data stream Amazon Resource Name (ARN) to ingest data'
+          ' from.'
+      ),
+      required=True,
+  )
+  aws_kinesis_group.add_argument(
+      '--kinesis-ingestion-consumer-arn',
+      default=None,
+      help=(
+          'The Kinesis data streams consumer Amazon Resource Name (ARN) to use'
+          ' for ingestion.'
+      ),
+      required=True,
+  )
+  aws_kinesis_group.add_argument(
+      '--kinesis-ingestion-role-arn',
+      default=None,
+      help=(
+          'AWS role Amazon Resource Name (ARN) to be used for Federated'
+          ' Identity authentication with Kinesis.'
+      ),
+      required=True,
+  )
+  aws_kinesis_group.add_argument(
+      '--kinesis-ingestion-service-account',
+      default=None,
+      help=(
+          'The GCP service account to be used for Federated Identity'
+          ' authentication with Kinesis.'
+      ),
+      required=True,
+  )
 
 
 def AddCommitSchemaFlags(parser):

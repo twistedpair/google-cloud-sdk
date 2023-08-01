@@ -810,6 +810,7 @@ class CertificateRevocationList(_messages.Message):
 
 class CertificateTemplate(_messages.Message):
   r"""A CertificateTemplate refers to a managed template for certificate
+
   issuance.
 
   Messages:
@@ -825,6 +826,13 @@ class CertificateTemplate(_messages.Message):
       omitted, then this template will not add restrictions on a certificate's
       identity.
     labels: Optional. Labels with user-defined metadata.
+    maximumLifetime: Optional. The maximum lifetime allowed for issued
+      Certificates that use this template. If the issuing CaPool's
+      IssuancePolicy specifies a maximum_lifetime the minimum of the two
+      durations will be the maximum lifetime for issued Certificates. Note
+      that if the issuing CertificateAuthority expires before a Certificate's
+      requested maximum_lifetime, the effective lifetime will be explicitly
+      truncated to match it.
     name: Output only. The resource name for this CertificateTemplate in the
       format `projects/*/locations/*/certificateTemplates/*`.
     passthroughExtensions: Optional. Describes the set of X.509 extensions
@@ -874,10 +882,13 @@ class CertificateTemplate(_messages.Message):
   description = _messages.StringField(2)
   identityConstraints = _messages.MessageField('CertificateIdentityConstraints', 3)
   labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  passthroughExtensions = _messages.MessageField('CertificateExtensionConstraints', 6)
-  predefinedValues = _messages.MessageField('X509Parameters', 7)
-  updateTime = _messages.StringField(8)
+  maximumLifetime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  passthroughExtensions = _messages.MessageField(
+      'CertificateExtensionConstraints', 7
+  )
+  predefinedValues = _messages.MessageField('X509Parameters', 8)
+  updateTime = _messages.StringField(9)
 
 
 class DisableCertificateAuthorityRequest(_messages.Message):
@@ -949,7 +960,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class EnableCertificateAuthorityRequest(_messages.Message):

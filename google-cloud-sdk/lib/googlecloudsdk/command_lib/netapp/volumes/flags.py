@@ -34,12 +34,8 @@ VOLUMES_LIST_FORMAT = """\
         storagePool,
         capacityGib:label=CAPACITY_GB,
         serviceLevel,
-        network,
         shareName,
-        state,
-        createTime.date(),
-        labels,
-        description
+        state
     )"""
 
 ## Helper functions to add args / flags for Volumes gcloud commands ##

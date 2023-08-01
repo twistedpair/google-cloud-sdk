@@ -64,22 +64,36 @@ class ConversionWorkspacesClient(object):
   def _GetDatabaseEngineInfo(self, database_engine, database_version):
     return self.messages.DatabaseEngineInfo(
         engine=self._GetDatabaseEngine(database_engine),
-        version=database_version)
+        version=database_version,
+    )
 
   def _GetConversionWorkspace(self, args):
     """Returns a conversion workspace."""
     conversion_workspace_type = self.messages.ConversionWorkspace
+
+    if args.global_settings is None:
+      args.global_settings = {}
+    args.global_settings['v2'] = 'true'
+    if (
+        args.source_database_engine == 'ORACLE'
+        and args.destination_database_engine == 'POSTGRESQL'
+    ):
+      args.global_settings['cc'] = 'true'
     global_settings = labels_util.ParseCreateArgs(
-        args, conversion_workspace_type.GlobalSettingsValue, 'global_settings')
-    source = self._GetDatabaseEngineInfo(args.source_database_engine,
-                                         args.source_database_version)
-    destination = self._GetDatabaseEngineInfo(args.destination_database_engine,
-                                              args.destination_database_version)
+        args, conversion_workspace_type.GlobalSettingsValue, 'global_settings'
+    )
+    source = self._GetDatabaseEngineInfo(
+        args.source_database_engine, args.source_database_version
+    )
+    destination = self._GetDatabaseEngineInfo(
+        args.destination_database_engine, args.destination_database_version
+    )
     return conversion_workspace_type(
         globalSettings=global_settings,
         displayName=args.display_name,
         source=source,
-        destination=destination)
+        destination=destination,
+    )
 
   def _GetUpdateMask(self, args):
     """Returns update mask for specified fields."""

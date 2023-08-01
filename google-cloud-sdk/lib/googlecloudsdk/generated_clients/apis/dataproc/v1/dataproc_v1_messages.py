@@ -4798,6 +4798,7 @@ class Metric(_messages.Message):
       SPARK_HISTORY_SERVER: Spark History Server metric source.
       HIVESERVER2: Hiveserver2 metric source.
       HIVEMETASTORE: hivemetastore metric source
+      FLINK: flink metric source
     """
     METRIC_SOURCE_UNSPECIFIED = 0
     MONITORING_AGENT_DEFAULTS = 1
@@ -4807,6 +4808,7 @@ class Metric(_messages.Message):
     SPARK_HISTORY_SERVER = 5
     HIVESERVER2 = 6
     HIVEMETASTORE = 7
+    FLINK = 8
 
   metricOverrides = _messages.StringField(1, repeated=True)
   metricSource = _messages.EnumField('MetricSourceValueValuesEnum', 2)

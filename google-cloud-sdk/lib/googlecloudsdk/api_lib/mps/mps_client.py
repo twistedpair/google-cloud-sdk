@@ -30,6 +30,7 @@ from googlecloudsdk.api_lib.util import exceptions as apilib_exceptions
 from googlecloudsdk.calliope.parser_errors import DetailedArgumentError
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_printer
 import six
 
@@ -81,15 +82,25 @@ class MpsClient(object):
     self._client = apis.GetClientInstance('marketplacesolutions', api_version)
     self._messages = apis.GetMessagesModule('marketplacesolutions', api_version)
 
-    self.power_instances_service = (
-        self._client.projects_locations_powerInstances
-    )
+    # pylint: disable-next=line-too-long
+    self.power_instances_service = self._client.projects_locations_powerInstances
     self.power_volumes_service = self._client.projects_locations_powerVolumes
     self.power_images_service = self._client.projects_locations_powerImages
     self.power_networks_service = self._client.projects_locations_powerNetworks
     self.power_sshkeys_service = self._client.projects_locations_powerSshKeys
-
+    self.operation_service = self._client.projects_locations_operations
     self.locations_service = self._client.projects_locations
+
+    self.power_instance_vitual_cpu_type_to_message = {
+        'UNSPECIFIED': self.messages.PowerInstance.
+                       VirtualCpuTypeValueValuesEnum.VIRTUAL_CPU_TYPE_UNSPECIFIED,
+        'DEDICATED': self.messages.PowerInstance.
+                     VirtualCpuTypeValueValuesEnum.DEDICATED,
+        'UNCAPPED_SHARED': self.messages.PowerInstance.
+                           VirtualCpuTypeValueValuesEnum.UNCAPPED_SHARED,
+        'CAPPED_SHARED': self.messages.PowerInstance.
+                         VirtualCpuTypeValueValuesEnum.CAPPED_SHARED,
+    }
 
   @property
   def client(self):
@@ -229,6 +240,78 @@ class MpsClient(object):
             parent=location
         )
         return self.power_instances_service.List(power_request).powerInstances
+    except exceptions.Error as e:
+      return e
+
+  def ParseNetworkAttachments(self, location, project, network_attachment):
+    """Parse network attachments in flag to create network list."""
+    # pylint: disable=line-too-long
+    networks = []
+    for net in network_attachment:
+      power_network = resources.REGISTRY.Parse(
+          net,
+          params={
+              'projectsId': project.Name(),
+              'locationsId': location.Name(),
+          },
+          collection='marketplacesolutions.projects.locations.powerNetworks').RelativeName()
+      networks.append(self.messages.NetworkAttachment(powerNetwork=power_network))
+    # pylint: enable=line-too-long
+    return networks
+
+  def CreateInstance(self, product,
+                     instance_resource,
+                     boot_image_name,
+                     system_type,
+                     memory_gib,
+                     network_attachment_names,
+                     virtual_cpu_cores,
+                     virtual_cpu_type):
+    """Create an Instance resource."""
+      # pylint: disable=line-too-long
+      # pylint: disable=bad-indentation
+    _ValidateProduct(product)
+    try:
+      if product == _PFORG:
+        location = instance_resource.Parent()
+        project = location.Parent()
+        boot_image = resources.REGISTRY.Parse(
+            boot_image_name,
+            params={
+                'projectsId': project.Name(),
+                'locationsId': location.Name(),
+            },
+            collection='marketplacesolutions.projects.locations.powerImages').RelativeName()
+
+        instance_msg = self.messages.PowerInstance(
+            name=instance_resource.RelativeName(),
+            bootImage=boot_image,
+            memoryGib=memory_gib,
+            networkAttachments=self.ParseNetworkAttachments(location, project, network_attachment_names),
+            systemType=system_type,
+            virtualCpuCores=virtual_cpu_cores,
+            virtualCpuType=self.power_instance_vitual_cpu_type_to_message[
+                virtual_cpu_type])
+        instance_id = instance_resource.RelativeName().split('/')[-1]
+        power_request = self.messages.MarketplacesolutionsProjectsLocationsPowerInstancesCreateRequest(
+            powerInstance=instance_msg,
+            powerInstanceId=instance_id,
+            parent=instance_resource.Parent().RelativeName())
+        return self.power_instances_service.Create(power_request)
+    # pylint: enable=line-too-long
+    # pylint: enable=bad-indentation
+    except exceptions.Error as e:
+      return e
+
+  def DeleteInstance(self, product, instance_resource):
+    """Delete an existing instance share resource."""
+    # pylint: disable=line-too-long
+    try:
+      if product == _PFORG:
+        request = self.messages.MarketplacesolutionsProjectsLocationsPowerInstancesDeleteRequest(
+            name=instance_resource.RelativeName())
+        return self.power_instances_service.Delete(request)
+    # pylint: enable=line-too-long
     except exceptions.Error as e:
       return e
 

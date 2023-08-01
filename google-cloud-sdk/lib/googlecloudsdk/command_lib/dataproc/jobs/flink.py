@@ -24,12 +24,10 @@ import argparse
 from apitools.base.py import encoding
 
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.dataproc.jobs import base as job_base
 from googlecloudsdk.command_lib.dataproc.jobs import util as job_util
 
 
-@base.Hidden
 class FlinkBase(job_base.JobBase):
   """Submit a Java or Scala Flink job to a cluster."""
 
@@ -39,7 +37,9 @@ class FlinkBase(job_base.JobBase):
     parser.add_argument(
         '--savepoint',
         help=(
-            'HCFS URI of the savepoint that contains the saved job progress.'
+            'HCFS URI of the savepoint that is used to refer to the state of '
+            'the previously stopped job. The new job will resume previous '
+            'state from there.'
         ),
     )
     parser.add_argument(

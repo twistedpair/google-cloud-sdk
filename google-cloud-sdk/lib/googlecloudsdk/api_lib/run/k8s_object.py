@@ -60,8 +60,6 @@ BINAUTHZ_BREAKGLASS_ANNOTATION = RUN_GROUP + '/binary-authorization-breakglass'
 
 EXECUTION_ENVIRONMENT_ANNOTATION = RUN_GROUP + '/execution-environment'
 CUSTOM_AUDIENCES_ANNOTATION = RUN_GROUP + '/custom-audiences'
-# TODO(b/278556672): Decide if the annotation should be cleaned up.
-RUNTIME_ANNOTATION = RUN_GROUP + '/runtime-class-name'
 
 NETWORK_INTERFACES_ANNOTATION = RUN_GROUP + '/network-interfaces'
 

@@ -697,7 +697,7 @@ def AddCreateDiskArgs(
     include_name=True,
     support_boot=False,
     support_multi_writer=False,
-    support_replica_zones=False,
+    support_replica_zones=True,
     support_storage_pool=False,
     enable_source_instant_snapshots=False,
     enable_confidential_compute=False,
@@ -947,8 +947,7 @@ def AddCreateDiskArgs(
       *replica-zones*::: Required for each regional disk associated with the
       instance. Specify the URLs of the zones where the disk should be
       replicated to. You must provide exactly two replica zones, and one zone
-      must be the same as the instance zone. You can't use this option with boot
-      disks.
+      must be the same as the instance zone.
     """
     spec['replica-zones'] = arg_parsers.ArgList(max_length=2)
 

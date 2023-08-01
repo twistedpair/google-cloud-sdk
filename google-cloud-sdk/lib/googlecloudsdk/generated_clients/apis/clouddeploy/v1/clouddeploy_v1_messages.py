@@ -214,7 +214,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class Automation(_messages.Message):
-  r"""An `Automation` resource in the Google Cloud Deploy API. An `Automation`
+  r"""An `Automation` resource in the Cloud Deploy API. An `Automation`
   enables the automation of manually driven actions for a Delivery Pipeline,
   which includes Release promotion amongst Targets, Rollout repair and Rollout
   deployment strategy advancement. The intention of Automation is to reduce
@@ -222,9 +222,9 @@ class Automation(_messages.Message):
 
   Messages:
     AnnotationsValue: Optional. User annotations. These attributes can only be
-      set and used by the user, and not by Google Cloud Deploy. Annotations
-      must meet the following constraints: * Annotations are key/value pairs.
-      * Valid annotation keys have two segments: an optional prefix and name,
+      set and used by the user, and not by Cloud Deploy. Annotations must meet
+      the following constraints: * Annotations are key/value pairs. * Valid
+      annotation keys have two segments: an optional prefix and name,
       separated by a slash (/). * The name segment is required and must be 63
       characters or less, beginning and ending with an alphanumeric character
       ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
@@ -234,7 +234,7 @@ class Automation(_messages.Message):
       (/). See https://kubernetes.io/docs/concepts/overview/working-with-
       objects/annotations/#syntax-and-character-set for more details.
     LabelsValue: Optional. Labels are attributes that can be set and used by
-      both the user and by Google Cloud Deploy. Labels must meet the following
+      both the user and by Cloud Deploy. Labels must meet the following
       constraints: * Keys and values can contain only lowercase letters,
       numeric characters, underscores, and dashes. * All characters must use
       UTF-8 encoding, and international characters are allowed. * Keys must
@@ -244,9 +244,9 @@ class Automation(_messages.Message):
 
   Fields:
     annotations: Optional. User annotations. These attributes can only be set
-      and used by the user, and not by Google Cloud Deploy. Annotations must
-      meet the following constraints: * Annotations are key/value pairs. *
-      Valid annotation keys have two segments: an optional prefix and name,
+      and used by the user, and not by Cloud Deploy. Annotations must meet the
+      following constraints: * Annotations are key/value pairs. * Valid
+      annotation keys have two segments: an optional prefix and name,
       separated by a slash (/). * The name segment is required and must be 63
       characters or less, beginning and ending with an alphanumeric character
       ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
@@ -263,7 +263,7 @@ class Automation(_messages.Message):
       sent on update and delete requests to ensure the client has an up-to-
       date value before proceeding.
     labels: Optional. Labels are attributes that can be set and used by both
-      the user and by Google Cloud Deploy. Labels must meet the following
+      the user and by Cloud Deploy. Labels must meet the following
       constraints: * Keys and values can contain only lowercase letters,
       numeric characters, underscores, and dashes. * All characters must use
       UTF-8 encoding, and international characters are allowed. * Keys must
@@ -290,15 +290,15 @@ class Automation(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""Optional. User annotations. These attributes can only be set and used
-    by the user, and not by Google Cloud Deploy. Annotations must meet the
-    following constraints: * Annotations are key/value pairs. * Valid
-    annotation keys have two segments: an optional prefix and name, separated
-    by a slash (/). * The name segment is required and must be 63 characters
-    or less, beginning and ending with an alphanumeric character ([a-z0-9A-Z])
-    with dashes (-), underscores (_), dots (.), and alphanumerics between. *
-    The prefix is optional. If specified, the prefix must be a DNS subdomain:
-    a series of DNS labels separated by dots(.), not longer than 253
-    characters in total, followed by a slash (/). See
+    by the user, and not by Cloud Deploy. Annotations must meet the following
+    constraints: * Annotations are key/value pairs. * Valid annotation keys
+    have two segments: an optional prefix and name, separated by a slash (/).
+    * The name segment is required and must be 63 characters or less,
+    beginning and ending with an alphanumeric character ([a-z0-9A-Z]) with
+    dashes (-), underscores (_), dots (.), and alphanumerics between. * The
+    prefix is optional. If specified, the prefix must be a DNS subdomain: a
+    series of DNS labels separated by dots(.), not longer than 253 characters
+    in total, followed by a slash (/). See
     https://kubernetes.io/docs/concepts/overview/working-with-
     objects/annotations/#syntax-and-character-set for more details.
 
@@ -326,13 +326,13 @@ class Automation(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Labels are attributes that can be set and used by both the
-    user and by Google Cloud Deploy. Labels must meet the following
-    constraints: * Keys and values can contain only lowercase letters, numeric
-    characters, underscores, and dashes. * All characters must use UTF-8
-    encoding, and international characters are allowed. * Keys must start with
-    a lowercase letter or international character. * Each resource is limited
-    to a maximum of 64 labels. Both keys and values are additionally
-    constrained to be <= 63 characters.
+    user and by Cloud Deploy. Labels must meet the following constraints: *
+    Keys and values can contain only lowercase letters, numeric characters,
+    underscores, and dashes. * All characters must use UTF-8 encoding, and
+    international characters are allowed. * Keys must start with a lowercase
+    letter or international character. * Each resource is limited to a maximum
+    of 64 labels. Both keys and values are additionally constrained to be <=
+    63 characters.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -406,7 +406,7 @@ class AutomationRuleCondition(_messages.Message):
 
 
 class AutomationRun(_messages.Message):
-  r"""An `AutomationRun` resource in the Google Cloud Deploy API. An
+  r"""An `AutomationRun` resource in the Cloud Deploy API. An
   `AutomationResource` represents an automation execution instance of an
   automation rule.
 
@@ -437,7 +437,7 @@ class AutomationRun(_messages.Message):
     ruleId: Output only. The ID of the automation rule that initiated the
       operation.
     serviceAccount: Output only. Email address of the user-managed IAM service
-      account that performs the operations against cloud deploy resources.
+      account that performs the operations against Cloud Deploy resources.
     state: Output only. Current state of the `AutomationRun`.
     stateDescription: Output only. Explains the current state of the
       `AutomationRun`. Present only an explanation is needed.
@@ -1526,6 +1526,22 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsRetryJobReque
   rollout = _messages.StringField(2, required=True)
 
 
+class ClouddeployProjectsLocationsDeliveryPipelinesRollbackTargetRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeliveryPipelinesRollbackTargetRequest
+  object.
+
+  Fields:
+    name: Required. The `DeliveryPipeline` in which the rollback `Rollout`
+      should be created. Format should be projects/{project_id}/locations/{loc
+      ation_name}/deliveryPipelines/{pipeline_name}.
+    rollbackTargetRequest: A RollbackTargetRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rollbackTargetRequest = _messages.MessageField('RollbackTargetRequest', 2)
+
+
 class ClouddeployProjectsLocationsDeliveryPipelinesSetIamPolicyRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesSetIamPolicyRequest
   object.
@@ -2067,18 +2083,18 @@ class CustomTargetSkaffoldActions(_messages.Message):
 
 
 class CustomTargetType(_messages.Message):
-  r"""A `CustomTargetType` resource in the Google Cloud Deploy API. A
+  r"""A `CustomTargetType` resource in the Cloud Deploy API. A
   `CustomTargetType` defines a type of custom target that can be referenced in
   a `Target` in order to facilitate deploying to a runtime that does not have
-  a 1P integration with Google Cloud Deploy.
+  a 1P integration with Cloud Deploy.
 
   Messages:
     AnnotationsValue: Optional. User annotations. These attributes can only be
-      set and used by the user, and not by Google Cloud Deploy. See
+      set and used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     LabelsValue: Optional. Labels are attributes that can be set and used by
-      both the user and by Google Cloud Deploy. Labels must meet the following
+      both the user and by Cloud Deploy. Labels must meet the following
       constraints: * Keys and values can contain only lowercase letters,
       numeric characters, underscores, and dashes. * All characters must use
       UTF-8 encoding, and international characters are allowed. * Keys must
@@ -2088,7 +2104,7 @@ class CustomTargetType(_messages.Message):
 
   Fields:
     annotations: Optional. User annotations. These attributes can only be set
-      and used by the user, and not by Google Cloud Deploy. See
+      and used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     createTime: Output only. Time at which the `CustomTargetType` was created.
@@ -2101,7 +2117,7 @@ class CustomTargetType(_messages.Message):
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
     labels: Optional. Labels are attributes that can be set and used by both
-      the user and by Google Cloud Deploy. Labels must meet the following
+      the user and by Cloud Deploy. Labels must meet the following
       constraints: * Keys and values can contain only lowercase letters,
       numeric characters, underscores, and dashes. * All characters must use
       UTF-8 encoding, and international characters are allowed. * Keys must
@@ -2118,7 +2134,7 @@ class CustomTargetType(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""Optional. User annotations. These attributes can only be set and used
-    by the user, and not by Google Cloud Deploy. See
+    by the user, and not by Cloud Deploy. See
     https://google.aip.dev/128#annotations for more details such as format and
     size limitations.
 
@@ -2146,13 +2162,13 @@ class CustomTargetType(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Labels are attributes that can be set and used by both the
-    user and by Google Cloud Deploy. Labels must meet the following
-    constraints: * Keys and values can contain only lowercase letters, numeric
-    characters, underscores, and dashes. * All characters must use UTF-8
-    encoding, and international characters are allowed. * Keys must start with
-    a lowercase letter or international character. * Each resource is limited
-    to a maximum of 64 labels. Both keys and values are additionally
-    constrained to be <= 128 bytes.
+    user and by Cloud Deploy. Labels must meet the following constraints: *
+    Keys and values can contain only lowercase letters, numeric characters,
+    underscores, and dashes. * All characters must use UTF-8 encoding, and
+    international characters are allowed. * Keys must start with a lowercase
+    letter or international character. * Each resource is limited to a maximum
+    of 64 labels. Both keys and values are additionally constrained to be <=
+    128 bytes.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2230,25 +2246,25 @@ class DefaultPool(_messages.Message):
 
 
 class DeliveryPipeline(_messages.Message):
-  r"""A `DeliveryPipeline` resource in the Google Cloud Deploy API. A
+  r"""A `DeliveryPipeline` resource in the Cloud Deploy API. A
   `DeliveryPipeline` defines a pipeline through which a Skaffold configuration
   can progress.
 
   Messages:
     AnnotationsValue: User annotations. These attributes can only be set and
-      used by the user, and not by Google Cloud Deploy.
+      used by the user, and not by Cloud Deploy.
     LabelsValue: Labels are attributes that can be set and used by both the
-      user and by Google Cloud Deploy. Labels must meet the following
-      constraints: * Keys and values can contain only lowercase letters,
-      numeric characters, underscores, and dashes. * All characters must use
-      UTF-8 encoding, and international characters are allowed. * Keys must
-      start with a lowercase letter or international character. * Each
-      resource is limited to a maximum of 64 labels. Both keys and values are
-      additionally constrained to be <= 128 bytes.
+      user and by Cloud Deploy. Labels must meet the following constraints: *
+      Keys and values can contain only lowercase letters, numeric characters,
+      underscores, and dashes. * All characters must use UTF-8 encoding, and
+      international characters are allowed. * Keys must start with a lowercase
+      letter or international character. * Each resource is limited to a
+      maximum of 64 labels. Both keys and values are additionally constrained
+      to be <= 128 bytes.
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
-      by the user, and not by Google Cloud Deploy.
+      by the user, and not by Cloud Deploy.
     condition: Output only. Information around the state of the Delivery
       Pipeline.
     createTime: Output only. Time at which the pipeline was created.
@@ -2258,13 +2274,13 @@ class DeliveryPipeline(_messages.Message):
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
     labels: Labels are attributes that can be set and used by both the user
-      and by Google Cloud Deploy. Labels must meet the following constraints:
-      * Keys and values can contain only lowercase letters, numeric
-      characters, underscores, and dashes. * All characters must use UTF-8
-      encoding, and international characters are allowed. * Keys must start
-      with a lowercase letter or international character. * Each resource is
-      limited to a maximum of 64 labels. Both keys and values are additionally
-      constrained to be <= 128 bytes.
+      and by Cloud Deploy. Labels must meet the following constraints: * Keys
+      and values can contain only lowercase letters, numeric characters,
+      underscores, and dashes. * All characters must use UTF-8 encoding, and
+      international characters are allowed. * Keys must start with a lowercase
+      letter or international character. * Each resource is limited to a
+      maximum of 64 labels. Both keys and values are additionally constrained
+      to be <= 128 bytes.
     name: Optional. Name of the `DeliveryPipeline`. Format is
       projects/{project}/ locations/{location}/deliveryPipelines/a-z{0,62}.
     serialPipeline: SerialPipeline defines a sequential set of stages for a
@@ -2279,7 +2295,7 @@ class DeliveryPipeline(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""User annotations. These attributes can only be set and used by the
-    user, and not by Google Cloud Deploy.
+    user, and not by Cloud Deploy.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -2305,8 +2321,8 @@ class DeliveryPipeline(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
-    Google Cloud Deploy. Labels must meet the following constraints: * Keys
-    and values can contain only lowercase letters, numeric characters,
+    Cloud Deploy. Labels must meet the following constraints: * Keys and
+    values can contain only lowercase letters, numeric characters,
     underscores, and dashes. * All characters must use UTF-8 encoding, and
     international characters are allowed. * Keys must start with a lowercase
     letter or international character. * Each resource is limited to a maximum
@@ -2417,6 +2433,8 @@ class DeliveryPipelineNotificationEvent(_messages.Message):
         sent.
       TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
       TYPE_PROCESS_ABORTED: A process aborted.
+      TYPE_RESTRICTION_VIOLATED: Restriction check failed.
+      TYPE_RESOURCE_DELETED: Resource deleted.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
@@ -2424,7 +2442,9 @@ class DeliveryPipelineNotificationEvent(_messages.Message):
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
     TYPE_RESOURCE_STATE_CHANGE = 2
     TYPE_PROCESS_ABORTED = 3
-    TYPE_RENDER_STATUES_CHANGE = 4
+    TYPE_RESTRICTION_VIOLATED = 4
+    TYPE_RESOURCE_DELETED = 5
+    TYPE_RENDER_STATUES_CHANGE = 6
 
   deliveryPipeline = _messages.StringField(1)
   message = _messages.StringField(2)
@@ -2477,9 +2497,9 @@ class DeployJobRun(_messages.Message):
     Values:
       FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
       CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
-        is not enabled or because Google Cloud Deploy has insufficient
-        permissions. See [Required permission](/deploy/docs/cloud-deploy-
-        service-account#required_permissions).
+        is not enabled or because Cloud Deploy has insufficient permissions.
+        See [Required permission](https://cloud.google.com/deploy/docs/cloud-
+        deploy-service-account#required_permissions).
       EXECUTION_FAILED: The deploy operation did not complete successfully;
         check Cloud Build logs.
       DEADLINE_EXCEEDED: The deploy build did not complete within the alloted
@@ -2487,8 +2507,8 @@ class DeployJobRun(_messages.Message):
       MISSING_RESOURCES_FOR_CANARY: There were missing resources in the
         runtime environment required for a canary deployment. Check the Cloud
         Build logs for more information.
-      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Google Cloud
-        Deploy's request. See failure_message for additional details.
+      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's
+        request. See failure_message for additional details.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
@@ -2589,14 +2609,14 @@ class DeployParameters(_messages.Message):
 
 
 class DeployPolicy(_messages.Message):
-  r"""A `DeployPolicy` resource in the Google Cloud Deploy API. A
-  `DeployPolicy` inhibits manual or automation driven actions within a
-  Delivery Pipeline or Target.
+  r"""A `DeployPolicy` resource in the Cloud Deploy API. A `DeployPolicy`
+  inhibits manual or automation driven actions within a Delivery Pipeline or
+  Target.
 
   Messages:
     AnnotationsValue: User annotations. These attributes can only be set and
-      used by the user, and not by Google Cloud Deploy. Annotations must meet
-      the following constraints: * Annotations are key/value pairs. * Valid
+      used by the user, and not by Cloud Deploy. Annotations must meet the
+      following constraints: * Annotations are key/value pairs. * Valid
       annotation keys have two segments: an optional prefix and name,
       separated by a slash (/). * The name segment is required and must be 63
       characters or less, beginning and ending with an alphanumeric character
@@ -2607,17 +2627,17 @@ class DeployPolicy(_messages.Message):
       (/). See https://kubernetes.io/docs/concepts/overview/working-with-
       objects/annotations/#syntax-and-character-set for more details.
     LabelsValue: Labels are attributes that can be set and used by both the
-      user and by Google Cloud Deploy. Labels must meet the following
-      constraints: * Keys and values can contain only lowercase letters,
-      numeric characters, underscores, and dashes. * All characters must use
-      UTF-8 encoding, and international characters are allowed. * Keys must
-      start with a lowercase letter or international character. * Each
-      resource is limited to a maximum of 64 labels. Both keys and values are
-      additionally constrained to be <= 128 bytes.
+      user and by Cloud Deploy. Labels must meet the following constraints: *
+      Keys and values can contain only lowercase letters, numeric characters,
+      underscores, and dashes. * All characters must use UTF-8 encoding, and
+      international characters are allowed. * Keys must start with a lowercase
+      letter or international character. * Each resource is limited to a
+      maximum of 64 labels. Both keys and values are additionally constrained
+      to be <= 128 bytes.
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
-      by the user, and not by Google Cloud Deploy. Annotations must meet the
+      by the user, and not by Cloud Deploy. Annotations must meet the
       following constraints: * Annotations are key/value pairs. * Valid
       annotation keys have two segments: an optional prefix and name,
       separated by a slash (/). * The name segment is required and must be 63
@@ -2636,13 +2656,13 @@ class DeployPolicy(_messages.Message):
       sent on update and delete requests to ensure the client has an up-to-
       date value before proceeding.
     labels: Labels are attributes that can be set and used by both the user
-      and by Google Cloud Deploy. Labels must meet the following constraints:
-      * Keys and values can contain only lowercase letters, numeric
-      characters, underscores, and dashes. * All characters must use UTF-8
-      encoding, and international characters are allowed. * Keys must start
-      with a lowercase letter or international character. * Each resource is
-      limited to a maximum of 64 labels. Both keys and values are additionally
-      constrained to be <= 128 bytes.
+      and by Cloud Deploy. Labels must meet the following constraints: * Keys
+      and values can contain only lowercase letters, numeric characters,
+      underscores, and dashes. * All characters must use UTF-8 encoding, and
+      international characters are allowed. * Keys must start with a lowercase
+      letter or international character. * Each resource is limited to a
+      maximum of 64 labels. Both keys and values are additionally constrained
+      to be <= 128 bytes.
     name: Output only. Name of the `DeployPolicy`. Format is
       projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
     rules: Rules to apply.
@@ -2658,7 +2678,7 @@ class DeployPolicy(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""User annotations. These attributes can only be set and used by the
-    user, and not by Google Cloud Deploy. Annotations must meet the following
+    user, and not by Cloud Deploy. Annotations must meet the following
     constraints: * Annotations are key/value pairs. * Valid annotation keys
     have two segments: an optional prefix and name, separated by a slash (/).
     * The name segment is required and must be 63 characters or less,
@@ -2694,8 +2714,8 @@ class DeployPolicy(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
-    Google Cloud Deploy. Labels must meet the following constraints: * Keys
-    and values can contain only lowercase letters, numeric characters,
+    Cloud Deploy. Labels must meet the following constraints: * Keys and
+    values can contain only lowercase letters, numeric characters,
     underscores, and dashes. * All characters must use UTF-8 encoding, and
     international characters are allowed. * Keys must start with a lowercase
     letter or international character. * Each resource is limited to a maximum
@@ -2984,7 +3004,7 @@ class Job(_messages.Message):
 
 
 class JobRun(_messages.Message):
-  r"""A `JobRun` resource in the Google Cloud Deploy API. A `JobRun` contains
+  r"""A `JobRun` resource in the Cloud Deploy API. A `JobRun` contains
   information of a single `Rollout` job evaluation.
 
   Enums:
@@ -3080,6 +3100,8 @@ class JobRunNotificationEvent(_messages.Message):
         sent.
       TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
       TYPE_PROCESS_ABORTED: A process aborted.
+      TYPE_RESTRICTION_VIOLATED: Restriction check failed.
+      TYPE_RESOURCE_DELETED: Resource deleted.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
@@ -3087,7 +3109,9 @@ class JobRunNotificationEvent(_messages.Message):
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
     TYPE_RESOURCE_STATE_CHANGE = 2
     TYPE_PROCESS_ABORTED = 3
-    TYPE_RENDER_STATUES_CHANGE = 4
+    TYPE_RESTRICTION_VIOLATED = 4
+    TYPE_RESOURCE_DELETED = 5
+    TYPE_RENDER_STATUES_CHANGE = 6
 
   jobRun = _messages.StringField(1)
   message = _messages.StringField(2)
@@ -3797,15 +3821,15 @@ class PostdeployJobRun(_messages.Message):
     Values:
       FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
       CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
-        is not enabled or because Google Cloud Deploy has insufficient
-        permissions. See [required permission](/deploy/docs/cloud-deploy-
-        service-account#required_permissions).
+        is not enabled or because Cloud Deploy has insufficient permissions.
+        See [required permission](https://cloud.google.com/deploy/docs/cloud-
+        deploy-service-account#required_permissions).
       EXECUTION_FAILED: The postdeploy operation did not complete
         successfully; check Cloud Build logs.
       DEADLINE_EXCEEDED: The postdeploy build did not complete within the
         alloted time.
-      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Google Cloud
-        Deploy's request. See failure_message for additional details.
+      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's
+        request. See failure_message for additional details.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
@@ -3865,15 +3889,15 @@ class PredeployJobRun(_messages.Message):
     Values:
       FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
       CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
-        is not enabled or because Google Cloud Deploy has insufficient
-        permissions. See [required permission](/deploy/docs/cloud-deploy-
-        service-account#required_permissions).
+        is not enabled or because Cloud Deploy has insufficient permissions.
+        See [required permission](https://cloud.google.com/deploy/docs/cloud-
+        deploy-service-account#required_permissions).
       EXECUTION_FAILED: The predeploy operation did not complete successfully;
         check Cloud Build logs.
       DEADLINE_EXCEEDED: The predeploy build did not complete within the
         alloted time.
-      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Google Cloud
-        Deploy's request. See failure_message for additional details.
+      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's
+        request. See failure_message for additional details.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
@@ -4021,8 +4045,8 @@ class Range(_messages.Message):
 
 
 class Release(_messages.Message):
-  r"""A `Release` resource in the Google Cloud Deploy API. A `Release` defines
-  a specific Skaffold configuration instance that can be deployed.
+  r"""A `Release` resource in the Cloud Deploy API. A `Release` defines a
+  specific Skaffold configuration instance that can be deployed.
 
   Enums:
     RenderStateValueValuesEnum: Output only. Current state of the render
@@ -4030,19 +4054,19 @@ class Release(_messages.Message):
 
   Messages:
     AnnotationsValue: User annotations. These attributes can only be set and
-      used by the user, and not by Google Cloud Deploy. See
+      used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     DeployParametersValue: Optional. The deploy parameters to use for all
       targets in this release.
     LabelsValue: Labels are attributes that can be set and used by both the
-      user and by Google Cloud Deploy. Labels must meet the following
-      constraints: * Keys and values can contain only lowercase letters,
-      numeric characters, underscores, and dashes. * All characters must use
-      UTF-8 encoding, and international characters are allowed. * Keys must
-      start with a lowercase letter or international character. * Each
-      resource is limited to a maximum of 64 labels. Both keys and values are
-      additionally constrained to be <= 128 bytes.
+      user and by Cloud Deploy. Labels must meet the following constraints: *
+      Keys and values can contain only lowercase letters, numeric characters,
+      underscores, and dashes. * All characters must use UTF-8 encoding, and
+      international characters are allowed. * Keys must start with a lowercase
+      letter or international character. * Each resource is limited to a
+      maximum of 64 labels. Both keys and values are additionally constrained
+      to be <= 128 bytes.
     TargetArtifactsValue: Output only. Map from target ID to the target
       artifacts created during the render operation.
     TargetRendersValue: Output only. Map from target ID to details of the
@@ -4051,7 +4075,7 @@ class Release(_messages.Message):
   Fields:
     abandoned: Output only. Indicates whether this is an abandoned release.
     annotations: User annotations. These attributes can only be set and used
-      by the user, and not by Google Cloud Deploy. See
+      by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     buildArtifacts: List of artifacts to pass through to Skaffold command.
@@ -4068,13 +4092,13 @@ class Release(_messages.Message):
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
     labels: Labels are attributes that can be set and used by both the user
-      and by Google Cloud Deploy. Labels must meet the following constraints:
-      * Keys and values can contain only lowercase letters, numeric
-      characters, underscores, and dashes. * All characters must use UTF-8
-      encoding, and international characters are allowed. * Keys must start
-      with a lowercase letter or international character. * Each resource is
-      limited to a maximum of 64 labels. Both keys and values are additionally
-      constrained to be <= 128 bytes.
+      and by Cloud Deploy. Labels must meet the following constraints: * Keys
+      and values can contain only lowercase letters, numeric characters,
+      underscores, and dashes. * All characters must use UTF-8 encoding, and
+      international characters are allowed. * Keys must start with a lowercase
+      letter or international character. * Each resource is limited to a
+      maximum of 64 labels. Both keys and values are additionally constrained
+      to be <= 128 bytes.
     name: Optional. Name of the `Release`. Format is projects/{project}/
       locations/{location}/deliveryPipelines/{deliveryPipeline}/
       releases/a-z{0,62}.
@@ -4086,9 +4110,9 @@ class Release(_messages.Message):
     skaffoldConfigUri: Cloud Storage URI of tar.gz archive containing Skaffold
       configuration.
     skaffoldVersion: The Skaffold version to use when operating on this
-      release, such as "1.20.0". Not all versions are valid; Google Cloud
-      Deploy supports a specific set of versions. If unset, the most recent
-      supported Skaffold version will be used.
+      release, such as "1.20.0". Not all versions are valid; Cloud Deploy
+      supports a specific set of versions. If unset, the most recent supported
+      Skaffold version will be used.
     targetArtifacts: Output only. Map from target ID to the target artifacts
       created during the render operation.
     targetRenders: Output only. Map from target ID to details of the render
@@ -4116,9 +4140,8 @@ class Release(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""User annotations. These attributes can only be set and used by the
-    user, and not by Google Cloud Deploy. See
-    https://google.aip.dev/128#annotations for more details such as format and
-    size limitations.
+    user, and not by Cloud Deploy. See https://google.aip.dev/128#annotations
+    for more details such as format and size limitations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -4171,8 +4194,8 @@ class Release(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
-    Google Cloud Deploy. Labels must meet the following constraints: * Keys
-    and values can contain only lowercase letters, numeric characters,
+    Cloud Deploy. Labels must meet the following constraints: * Keys and
+    values can contain only lowercase letters, numeric characters,
     underscores, and dashes. * All characters must use UTF-8 encoding, and
     international characters are allowed. * Keys must start with a lowercase
     letter or international character. * Each resource is limited to a maximum
@@ -4312,6 +4335,8 @@ class ReleaseNotificationEvent(_messages.Message):
         sent.
       TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
       TYPE_PROCESS_ABORTED: A process aborted.
+      TYPE_RESTRICTION_VIOLATED: Restriction check failed.
+      TYPE_RESOURCE_DELETED: Resource deleted.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
@@ -4319,7 +4344,9 @@ class ReleaseNotificationEvent(_messages.Message):
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
     TYPE_RESOURCE_STATE_CHANGE = 2
     TYPE_PROCESS_ABORTED = 3
-    TYPE_RENDER_STATUES_CHANGE = 4
+    TYPE_RESTRICTION_VIOLATED = 4
+    TYPE_RESOURCE_DELETED = 5
+    TYPE_RENDER_STATUES_CHANGE = 6
 
   message = _messages.StringField(1)
   release = _messages.StringField(2)
@@ -4459,9 +4486,60 @@ class RetryJobResponse(_messages.Message):
   r"""The response object from 'RetryJob'."""
 
 
+class RollbackTargetConfig(_messages.Message):
+  r"""Congs for the Rollback rollout.
+
+  Fields:
+    rollout: Optional. The rollback `Rollout` to create.
+    startingPhaseId: Optional. The starting phase ID for the `Rollout`. If
+      unspecified, the `Rollout` will start in the stable phase.
+  """
+
+  rollout = _messages.MessageField('Rollout', 1)
+  startingPhaseId = _messages.StringField(2)
+
+
+class RollbackTargetRequest(_messages.Message):
+  r"""The request object for `RollbackTarget`.
+
+  Fields:
+    overrideDeployPolicy: Optional. Deploy policies to override. Format is
+      projects/{project}/ locations/{location}/deployPolicies/{deploy_policy}.
+    releaseId: Optional. ID of the `Release` to rollback to. If this isn't
+      specified, the previous successful `Rollout` to the specified target
+      will be used to determine the `Release`.
+    rollbackConfig: Optional. Configs for the rollback `Rollout`.
+    rolloutId: Required. ID of the rollback `Rollout` to create.
+    rolloutToRollBack: Optional. If provided, this must be the latest
+      `Rollout` that is on the `Target`.
+    targetId: Required. ID of the `Target` that is being rolled back.
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with a `RollbackTargetResponse`.
+  """
+
+  overrideDeployPolicy = _messages.StringField(1, repeated=True)
+  releaseId = _messages.StringField(2)
+  rollbackConfig = _messages.MessageField('RollbackTargetConfig', 3)
+  rolloutId = _messages.StringField(4)
+  rolloutToRollBack = _messages.StringField(5)
+  targetId = _messages.StringField(6)
+  validateOnly = _messages.BooleanField(7)
+
+
+class RollbackTargetResponse(_messages.Message):
+  r"""The response object from `RollbackTarget`.
+
+  Fields:
+    rollbackConfig: The config of the rollback `Rollout` created or will be
+      created.
+  """
+
+  rollbackConfig = _messages.MessageField('RollbackTargetConfig', 1)
+
+
 class Rollout(_messages.Message):
-  r"""A `Rollout` resource in the Google Cloud Deploy API. A `Rollout`
-  contains information around a specific deployment to a `Target`.
+  r"""A `Rollout` resource in the Cloud Deploy API. A `Rollout` contains
+  information around a specific deployment to a `Target`.
 
   Enums:
     ApprovalStateValueValuesEnum: Output only. Approval state of the
@@ -4473,21 +4551,21 @@ class Rollout(_messages.Message):
 
   Messages:
     AnnotationsValue: User annotations. These attributes can only be set and
-      used by the user, and not by Google Cloud Deploy. See
+      used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     LabelsValue: Labels are attributes that can be set and used by both the
-      user and by Google Cloud Deploy. Labels must meet the following
-      constraints: * Keys and values can contain only lowercase letters,
-      numeric characters, underscores, and dashes. * All characters must use
-      UTF-8 encoding, and international characters are allowed. * Keys must
-      start with a lowercase letter or international character. * Each
-      resource is limited to a maximum of 64 labels. Both keys and values are
-      additionally constrained to be <= 128 bytes.
+      user and by Cloud Deploy. Labels must meet the following constraints: *
+      Keys and values can contain only lowercase letters, numeric characters,
+      underscores, and dashes. * All characters must use UTF-8 encoding, and
+      international characters are allowed. * Keys must start with a lowercase
+      letter or international character. * Each resource is limited to a
+      maximum of 64 labels. Both keys and values are additionally constrained
+      to be <= 128 bytes.
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
-      by the user, and not by Google Cloud Deploy. See
+      by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     approvalState: Output only. Approval state of the `Rollout`.
@@ -4515,19 +4593,23 @@ class Rollout(_messages.Message):
     failureReason: Output only. Additional information about the rollout
       failure, if available.
     labels: Labels are attributes that can be set and used by both the user
-      and by Google Cloud Deploy. Labels must meet the following constraints:
-      * Keys and values can contain only lowercase letters, numeric
-      characters, underscores, and dashes. * All characters must use UTF-8
-      encoding, and international characters are allowed. * Keys must start
-      with a lowercase letter or international character. * Each resource is
-      limited to a maximum of 64 labels. Both keys and values are additionally
-      constrained to be <= 128 bytes.
+      and by Cloud Deploy. Labels must meet the following constraints: * Keys
+      and values can contain only lowercase letters, numeric characters,
+      underscores, and dashes. * All characters must use UTF-8 encoding, and
+      international characters are allowed. * Keys must start with a lowercase
+      letter or international character. * Each resource is limited to a
+      maximum of 64 labels. Both keys and values are additionally constrained
+      to be <= 128 bytes.
     metadata: Output only. Metadata contains information about the rollout.
     name: Optional. Name of the `Rollout`. Format is projects/{project}/
       locations/{location}/deliveryPipelines/{deliveryPipeline}/
       releases/{release}/rollouts/a-z{0,62}.
     phases: Output only. The phases that represent the workflows of this
       `Rollout`.
+    rollbackOfRollout: Output only. Name of the `Rollout` that is rolled back
+      by this `Rollout`. Empty if this `Rollout` wasn't created as a rollback.
+    rolledBackByRollouts: Output only. Names of `Rollouts` that rolled back
+      this `Rollout`.
     state: Output only. Current state of the `Rollout`.
     targetId: Required. The ID of Target to which this `Rollout` is deploying.
     uid: Output only. Unique identifier of the `Rollout`.
@@ -4558,8 +4640,8 @@ class Rollout(_messages.Message):
       FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
       CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
         is not enabled or because Cloud Deploy has insufficient permissions.
-        See [required permission](/deploy/docs/cloud-deploy-service-
-        account#required_permissions).
+        See [required permission](https://cloud.google.com/deploy/docs/cloud-
+        deploy-service-account#required_permissions).
       EXECUTION_FAILED: The deploy operation did not complete successfully;
         check Cloud Build logs.
       DEADLINE_EXCEEDED: Deployment did not complete within the alloted time.
@@ -4567,8 +4649,8 @@ class Rollout(_messages.Message):
       RELEASE_ABANDONED: Release is abandoned.
       VERIFICATION_CONFIG_NOT_FOUND: No skaffold verify configuration was
         found.
-      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Google Cloud
-        Deploy's request. See failure_message for additional details.
+      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's
+        request. See failure_message for additional details.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
@@ -4612,9 +4694,8 @@ class Rollout(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""User annotations. These attributes can only be set and used by the
-    user, and not by Google Cloud Deploy. See
-    https://google.aip.dev/128#annotations for more details such as format and
-    size limitations.
+    user, and not by Cloud Deploy. See https://google.aip.dev/128#annotations
+    for more details such as format and size limitations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -4640,8 +4721,8 @@ class Rollout(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
-    Google Cloud Deploy. Labels must meet the following constraints: * Keys
-    and values can contain only lowercase letters, numeric characters,
+    Cloud Deploy. Labels must meet the following constraints: * Keys and
+    values can contain only lowercase letters, numeric characters,
     underscores, and dashes. * All characters must use UTF-8 encoding, and
     international characters are allowed. * Keys must start with a lowercase
     letter or international character. * Each resource is limited to a maximum
@@ -4685,9 +4766,11 @@ class Rollout(_messages.Message):
   metadata = _messages.MessageField('Metadata', 15)
   name = _messages.StringField(16)
   phases = _messages.MessageField('Phase', 17, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  targetId = _messages.StringField(19)
-  uid = _messages.StringField(20)
+  rollbackOfRollout = _messages.StringField(18)
+  rolledBackByRollouts = _messages.StringField(19, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  targetId = _messages.StringField(21)
+  uid = _messages.StringField(22)
 
 
 class RolloutNotificationEvent(_messages.Message):
@@ -4717,6 +4800,8 @@ class RolloutNotificationEvent(_messages.Message):
         sent.
       TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
       TYPE_PROCESS_ABORTED: A process aborted.
+      TYPE_RESTRICTION_VIOLATED: Restriction check failed.
+      TYPE_RESOURCE_DELETED: Resource deleted.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
@@ -4724,7 +4809,9 @@ class RolloutNotificationEvent(_messages.Message):
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
     TYPE_RESOURCE_STATE_CHANGE = 2
     TYPE_PROCESS_ABORTED = 3
-    TYPE_RENDER_STATUES_CHANGE = 4
+    TYPE_RESTRICTION_VIOLATED = 4
+    TYPE_RESOURCE_DELETED = 5
+    TYPE_RENDER_STATUES_CHANGE = 6
 
   message = _messages.StringField(1)
   pipelineUid = _messages.StringField(2)
@@ -5050,18 +5137,18 @@ class Strategy(_messages.Message):
 
 
 class Target(_messages.Message):
-  r"""A `Target` resource in the Google Cloud Deploy API. A `Target` defines a
+  r"""A `Target` resource in the Cloud Deploy API. A `Target` defines a
   location to which a Skaffold configuration can be deployed.
 
   Messages:
     AnnotationsValue: Optional. User annotations. These attributes can only be
-      set and used by the user, and not by Google Cloud Deploy. See
+      set and used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     DeployParametersValue: Optional. The deploy parameters to use for this
       target.
     LabelsValue: Optional. Labels are attributes that can be set and used by
-      both the user and by Google Cloud Deploy. Labels must meet the following
+      both the user and by Cloud Deploy. Labels must meet the following
       constraints: * Keys and values can contain only lowercase letters,
       numeric characters, underscores, and dashes. * All characters must use
       UTF-8 encoding, and international characters are allowed. * Keys must
@@ -5071,7 +5158,7 @@ class Target(_messages.Message):
 
   Fields:
     annotations: Optional. User annotations. These attributes can only be set
-      and used by the user, and not by Google Cloud Deploy. See
+      and used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     anthosCluster: Optional. Information specifying an Anthos Cluster.
@@ -5092,7 +5179,7 @@ class Target(_messages.Message):
       in `DefaultPool`.
     gke: Optional. Information specifying a GKE Cluster.
     labels: Optional. Labels are attributes that can be set and used by both
-      the user and by Google Cloud Deploy. Labels must meet the following
+      the user and by Cloud Deploy. Labels must meet the following
       constraints: * Keys and values can contain only lowercase letters,
       numeric characters, underscores, and dashes. * All characters must use
       UTF-8 encoding, and international characters are allowed. * Keys must
@@ -5113,7 +5200,7 @@ class Target(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""Optional. User annotations. These attributes can only be set and used
-    by the user, and not by Google Cloud Deploy. See
+    by the user, and not by Cloud Deploy. See
     https://google.aip.dev/128#annotations for more details such as format and
     size limitations.
 
@@ -5167,13 +5254,13 @@ class Target(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Labels are attributes that can be set and used by both the
-    user and by Google Cloud Deploy. Labels must meet the following
-    constraints: * Keys and values can contain only lowercase letters, numeric
-    characters, underscores, and dashes. * All characters must use UTF-8
-    encoding, and international characters are allowed. * Keys must start with
-    a lowercase letter or international character. * Each resource is limited
-    to a maximum of 64 labels. Both keys and values are additionally
-    constrained to be <= 128 bytes.
+    user and by Cloud Deploy. Labels must meet the following constraints: *
+    Keys and values can contain only lowercase letters, numeric characters,
+    underscores, and dashes. * All characters must use UTF-8 encoding, and
+    international characters are allowed. * Keys must start with a lowercase
+    letter or international character. * Each resource is limited to a maximum
+    of 64 labels. Both keys and values are additionally constrained to be <=
+    128 bytes.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -5334,6 +5421,8 @@ class TargetNotificationEvent(_messages.Message):
         sent.
       TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
       TYPE_PROCESS_ABORTED: A process aborted.
+      TYPE_RESTRICTION_VIOLATED: Restriction check failed.
+      TYPE_RESOURCE_DELETED: Resource deleted.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
@@ -5341,7 +5430,9 @@ class TargetNotificationEvent(_messages.Message):
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
     TYPE_RESOURCE_STATE_CHANGE = 2
     TYPE_PROCESS_ABORTED = 3
-    TYPE_RENDER_STATUES_CHANGE = 4
+    TYPE_RESTRICTION_VIOLATED = 4
+    TYPE_RESOURCE_DELETED = 5
+    TYPE_RENDER_STATUES_CHANGE = 6
 
   message = _messages.StringField(1)
   target = _messages.StringField(2)
@@ -5378,16 +5469,13 @@ class TargetRender(_messages.Message):
     Values:
       FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
       CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
-        is not enabled or because Google Cloud Deploy has insufficient
-        permissions. See [required permission](/deploy/docs/cloud-deploy-
-        service-account#required_permissions).
+        is not enabled or because Cloud Deploy has insufficient permissions.
+        See [required permission](https://cloud.google.com/deploy/docs/cloud-
+        deploy-service-account#required_permissions).
       EXECUTION_FAILED: The render operation did not complete successfully;
         check Cloud Build logs.
-      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Google Cloud
-        Deploy's request. See failure_message for additional details.
-      VERIFICATION_CONFIG_NOT_FOUND: The render operation did not complete
-        successfully because the verification stanza required for verify was
-        not found on the skaffold configuration.
+      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's
+        request. See failure_message for additional details.
       CUSTOM_ACTION_NOT_FOUND: The render operation did not complete
         successfully because the custom action required for predeploy or
         postdeploy was not found in the skaffold configuration. See
@@ -5397,8 +5485,7 @@ class TargetRender(_messages.Message):
     CLOUD_BUILD_UNAVAILABLE = 1
     EXECUTION_FAILED = 2
     CLOUD_BUILD_REQUEST_FAILED = 3
-    VERIFICATION_CONFIG_NOT_FOUND = 4
-    CUSTOM_ACTION_NOT_FOUND = 5
+    CUSTOM_ACTION_NOT_FOUND = 4
 
   class RenderingStateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the render operation for this Target.
@@ -5559,17 +5646,17 @@ class VerifyJobRun(_messages.Message):
     Values:
       FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
       CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
-        is not enabled or because Google Cloud Deploy has insufficient
-        permissions. See [required permission](/deploy/docs/cloud-deploy-
-        service-account#required_permissions).
+        is not enabled or because Cloud Deploy has insufficient permissions.
+        See [required permission](https://cloud.google.com/deploy/docs/cloud-
+        deploy-service-account#required_permissions).
       EXECUTION_FAILED: The verify operation did not complete successfully;
         check Cloud Build logs.
       DEADLINE_EXCEEDED: The verify build did not complete within the alloted
         time.
       VERIFICATION_CONFIG_NOT_FOUND: No Skaffold verify configuration was
         found.
-      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Google Cloud
-        Deploy's request. See failure_message for additional details.
+      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's
+        request. See failure_message for additional details.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1

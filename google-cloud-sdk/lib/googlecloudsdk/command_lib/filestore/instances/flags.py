@@ -353,8 +353,9 @@ Use the `--flags-file` flag to specify the path to a JSON or YAML configuration 
 *ip-ranges*::: A list of IPv4 addresses or CIDR ranges that are allowed to mount the file share.
 IPv4 addresses format: {octet 1}.{octet 2}.{octet 3}.{octet 4}.
 CIDR range format: {octet 1}.{octet 2}.{octet 3}.{octet 4}/{mask size}.
-Overlapping IP ranges, even across NfsExportOptions, are not allowed and will return an error.
-The limit of IP ranges/addresses for each FileShareConfig among all NfsExportOptions is 64 per instance.
+Overlapping IP ranges are allowed for all tiers other than BASIC_HDD and
+BASIC_SSD. The limit of IP ranges/addresses for each FileShareConfig among all
+NfsExportOptions is 64 per instance.
 
 *access-mode*::: The type of access allowed for the specified IP-addresses or CIDR ranges.
 READ_ONLY: Allows only read requests on the exported file share.
@@ -409,8 +410,9 @@ Use the `--flags-file` flag to specify the path to a JSON or YAML configuration 
 *ip-ranges*::: A list of IPv4 addresses or CIDR ranges that are allowed to mount the file share.
 IPv4 addresses format: {octet 1}.{octet 2}.{octet 3}.{octet 4}.
 CIDR range format: {octet 1}.{octet 2}.{octet 3}.{octet 4}/{mask size}.
-Overlapping IP ranges, even across NfsExportOptions, are not allowed and will return an error.
-The limit of IP ranges/addresses for each FileShareConfig among all NfsExportOptions is 64 per instance.
+Overlapping IP ranges are allowed for all tiers other than BASIC_HDD and
+BASIC_SSD. The limit of IP ranges/addresses for each FileShareConfig among all
+NfsExportOptions is 64 per instance.
 
 *access-mode*::: The type of access allowed for the specified IP-addresses or CIDR ranges.
 READ_ONLY: Allows only read requests on the exported file share.

@@ -32,6 +32,27 @@ from googlecloudsdk.core.util import files
 import six
 
 
+def read_yaml_json_from_string(string, source_path=None):
+  """Converts JSON or YAML stream to an in-memory dict."""
+  current_error_string = 'Found invalid JSON/YAML'
+  if source_path:
+    current_error_string += ' in {}'.format(source_path)
+
+  try:
+    parsed = yaml.load(string)
+    if isinstance(parsed, dict) or isinstance(parsed, list):
+      return parsed
+  except yaml.YAMLParseError as e:
+    current_error_string += '\n\nYAML Error: {}'.format(six.text_type(e))
+
+  try:
+    return json.loads(string)
+  except json.JSONDecodeError as e:
+    current_error_string += '\n\nJSON Error: {}'.format(six.text_type(e))
+
+  raise errors.InvalidUrlError(current_error_string)
+
+
 @function_result_cache.lru(maxsize=None)
 def cached_read_yaml_json_file(file_path):
   """Converts JSON or YAML file to an in-memory dict.
@@ -47,22 +68,8 @@ def cached_read_yaml_json_file(file_path):
       as a dict.
   """
   expanded_file_path = os.path.realpath(os.path.expanduser(file_path))
-  current_error_string = 'Found invalid JSON/YAML file {}'.format(file_path)
-
-  try:
-    parsed = yaml.load(files.ReadFileContents(expanded_file_path))
-    if isinstance(parsed, dict) or isinstance(parsed, list):
-      return parsed
-  except yaml.YAMLParseError as e:
-    current_error_string += '\n\nYAML Error: {}'.format(six.text_type(e))
-
-  with files.FileReader(expanded_file_path) as file_reader:
-    try:
-      return json.load(file_reader)
-    except json.JSONDecodeError as e:
-      current_error_string += '\n\nJSON Error: {}'.format(six.text_type(e))
-
-  raise errors.InvalidUrlError(current_error_string)
+  contents = files.ReadFileContents(expanded_file_path)
+  return read_yaml_json_from_string(contents, source_path=file_path)
 
 
 def get_updated_custom_fields(

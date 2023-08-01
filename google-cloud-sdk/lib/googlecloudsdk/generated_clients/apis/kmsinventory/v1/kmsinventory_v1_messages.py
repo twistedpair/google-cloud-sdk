@@ -96,13 +96,18 @@ class CryptoKey(_messages.Message):
         AsymmetricSign and GetPublicKey.
       ASYMMETRIC_DECRYPT: CryptoKeys with this purpose may be used with
         AsymmetricDecrypt and GetPublicKey.
+      RAW_ENCRYPT_DECRYPT: CryptoKeys with this purpose may be used with
+        RawEncrypt and RawDecrypt. This purpose is meant to be used for
+        interoperable symmetric encryption and does not support automatic
+        CryptoKey rotation.
       MAC: CryptoKeys with this purpose may be used with MacSign.
     """
     CRYPTO_KEY_PURPOSE_UNSPECIFIED = 0
     ENCRYPT_DECRYPT = 1
     ASYMMETRIC_SIGN = 2
     ASYMMETRIC_DECRYPT = 3
-    MAC = 4
+    RAW_ENCRYPT_DECRYPT = 4
+    MAC = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -171,12 +176,17 @@ class CryptoKeyVersion(_messages.Message):
       material was destroyed. Only present if state is DESTROYED.
     destroyTime: Output only. The time this CryptoKeyVersion's key material is
       scheduled for destruction. Only present if state is DESTROY_SCHEDULED.
+    externalDestructionFailureReason: Output only. The root cause of the most
+      recent external destruction failure. Only present if state is
+      EXTERNAL_DESTRUCTION_FAILED.
     externalProtectionLevelOptions: ExternalProtectionLevelOptions stores a
       group of additional fields for configuring a CryptoKeyVersion that are
       specific to the EXTERNAL protection level and EXTERNAL_VPC protection
       levels.
     generateTime: Output only. The time this CryptoKeyVersion's key material
       was generated.
+    generationFailureReason: Output only. The root cause of the most recent
+      generation failure. Only present if state is GENERATION_FAILED.
     importFailureReason: Output only. The root cause of the most recent import
       failure. Only present if state is IMPORT_FAILED.
     importJob: Output only. The name of the ImportJob used in the most recent
@@ -202,6 +212,12 @@ class CryptoKeyVersion(_messages.Message):
     Values:
       CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED: Not specified.
       GOOGLE_SYMMETRIC_ENCRYPTION: Creates symmetric encryption keys.
+      AES_128_GCM: AES-GCM (Galois Counter Mode) using 128-bit keys.
+      AES_256_GCM: AES-GCM (Galois Counter Mode) using 256-bit keys.
+      AES_128_CBC: AES-CBC (Cipher Block Chaining Mode) using 128-bit keys.
+      AES_256_CBC: AES-CBC (Cipher Block Chaining Mode) using 256-bit keys.
+      AES_128_CTR: AES-CTR (Counter Mode) using 128-bit keys.
+      AES_256_CTR: AES-CTR (Counter Mode) using 256-bit keys.
       RSA_SIGN_PSS_2048_SHA256: RSASSA-PSS 2048 bit key with a SHA256 digest.
       RSA_SIGN_PSS_3072_SHA256: RSASSA-PSS 3072 bit key with a SHA256 digest.
       RSA_SIGN_PSS_4096_SHA256: RSASSA-PSS 4096 bit key with a SHA256 digest.
@@ -232,9 +248,17 @@ class CryptoKeyVersion(_messages.Message):
       RSA_DECRYPT_OAEP_3072_SHA1: RSAES-OAEP 3072 bit key with a SHA1 digest.
       RSA_DECRYPT_OAEP_4096_SHA1: RSAES-OAEP 4096 bit key with a SHA1 digest.
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
+        Other hash functions can also be used:
+        https://cloud.google.com/kms/docs/create-validate-
+        signatures#ecdsa_support_for_other_hash_algorithms
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+        Other hash functions can also be used:
+        https://cloud.google.com/kms/docs/create-validate-
+        signatures#ecdsa_support_for_other_hash_algorithms
       EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
-        curve is only supported for HSM protection level.
+        curve is only supported for HSM protection level. Other hash functions
+        can also be used: https://cloud.google.com/kms/docs/create-validate-
+        signatures#ecdsa_support_for_other_hash_algorithms
       HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
       HMAC_SHA1: HMAC-SHA1 signing with a 160 bit key.
       HMAC_SHA384: HMAC-SHA384 signing with a 384 bit key.
@@ -245,33 +269,39 @@ class CryptoKeyVersion(_messages.Message):
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
-    RSA_SIGN_PSS_2048_SHA256 = 2
-    RSA_SIGN_PSS_3072_SHA256 = 3
-    RSA_SIGN_PSS_4096_SHA256 = 4
-    RSA_SIGN_PSS_4096_SHA512 = 5
-    RSA_SIGN_PKCS1_2048_SHA256 = 6
-    RSA_SIGN_PKCS1_3072_SHA256 = 7
-    RSA_SIGN_PKCS1_4096_SHA256 = 8
-    RSA_SIGN_PKCS1_4096_SHA512 = 9
-    RSA_SIGN_RAW_PKCS1_2048 = 10
-    RSA_SIGN_RAW_PKCS1_3072 = 11
-    RSA_SIGN_RAW_PKCS1_4096 = 12
-    RSA_DECRYPT_OAEP_2048_SHA256 = 13
-    RSA_DECRYPT_OAEP_3072_SHA256 = 14
-    RSA_DECRYPT_OAEP_4096_SHA256 = 15
-    RSA_DECRYPT_OAEP_4096_SHA512 = 16
-    RSA_DECRYPT_OAEP_2048_SHA1 = 17
-    RSA_DECRYPT_OAEP_3072_SHA1 = 18
-    RSA_DECRYPT_OAEP_4096_SHA1 = 19
-    EC_SIGN_P256_SHA256 = 20
-    EC_SIGN_P384_SHA384 = 21
-    EC_SIGN_SECP256K1_SHA256 = 22
-    HMAC_SHA256 = 23
-    HMAC_SHA1 = 24
-    HMAC_SHA384 = 25
-    HMAC_SHA512 = 26
-    HMAC_SHA224 = 27
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 28
+    AES_128_GCM = 2
+    AES_256_GCM = 3
+    AES_128_CBC = 4
+    AES_256_CBC = 5
+    AES_128_CTR = 6
+    AES_256_CTR = 7
+    RSA_SIGN_PSS_2048_SHA256 = 8
+    RSA_SIGN_PSS_3072_SHA256 = 9
+    RSA_SIGN_PSS_4096_SHA256 = 10
+    RSA_SIGN_PSS_4096_SHA512 = 11
+    RSA_SIGN_PKCS1_2048_SHA256 = 12
+    RSA_SIGN_PKCS1_3072_SHA256 = 13
+    RSA_SIGN_PKCS1_4096_SHA256 = 14
+    RSA_SIGN_PKCS1_4096_SHA512 = 15
+    RSA_SIGN_RAW_PKCS1_2048 = 16
+    RSA_SIGN_RAW_PKCS1_3072 = 17
+    RSA_SIGN_RAW_PKCS1_4096 = 18
+    RSA_DECRYPT_OAEP_2048_SHA256 = 19
+    RSA_DECRYPT_OAEP_3072_SHA256 = 20
+    RSA_DECRYPT_OAEP_4096_SHA256 = 21
+    RSA_DECRYPT_OAEP_4096_SHA512 = 22
+    RSA_DECRYPT_OAEP_2048_SHA1 = 23
+    RSA_DECRYPT_OAEP_3072_SHA1 = 24
+    RSA_DECRYPT_OAEP_4096_SHA1 = 25
+    EC_SIGN_P256_SHA256 = 26
+    EC_SIGN_P384_SHA384 = 27
+    EC_SIGN_SECP256K1_SHA256 = 28
+    HMAC_SHA256 = 29
+    HMAC_SHA1 = 30
+    HMAC_SHA384 = 31
+    HMAC_SHA512 = 32
+    HMAC_SHA224 = 33
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 34
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -318,6 +348,17 @@ class CryptoKeyVersion(_messages.Message):
         used, enabled, disabled, or destroyed. The submitted key material has
         been discarded. Additional details can be found in
         CryptoKeyVersion.import_failure_reason.
+      GENERATION_FAILED: This version was not generated successfully. It may
+        not be used, enabled, disabled, or destroyed. Additional details can
+        be found in CryptoKeyVersion.generation_failure_reason.
+      PENDING_EXTERNAL_DESTRUCTION: This version was destroyed, and it may not
+        be used or enabled again. Cloud KMS is waiting for the corresponding
+        key material residing in an external key manager to be destroyed.
+      EXTERNAL_DESTRUCTION_FAILED: This version was destroyed, and it may not
+        be used or enabled again. However, Cloud KMS could not confirm that
+        the corresponding key material residing in an external key manager was
+        destroyed. Additional details can be found in
+        CryptoKeyVersion.external_destruction_failure_reason.
     """
     CRYPTO_KEY_VERSION_STATE_UNSPECIFIED = 0
     PENDING_GENERATION = 1
@@ -327,21 +368,26 @@ class CryptoKeyVersion(_messages.Message):
     DESTROY_SCHEDULED = 5
     PENDING_IMPORT = 6
     IMPORT_FAILED = 7
+    GENERATION_FAILED = 8
+    PENDING_EXTERNAL_DESTRUCTION = 9
+    EXTERNAL_DESTRUCTION_FAILED = 10
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   attestation = _messages.MessageField('KeyOperationAttestation', 2)
   createTime = _messages.StringField(3)
   destroyEventTime = _messages.StringField(4)
   destroyTime = _messages.StringField(5)
-  externalProtectionLevelOptions = _messages.MessageField('ExternalProtectionLevelOptions', 6)
-  generateTime = _messages.StringField(7)
-  importFailureReason = _messages.StringField(8)
-  importJob = _messages.StringField(9)
-  importTime = _messages.StringField(10)
-  name = _messages.StringField(11)
-  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 12)
-  reimportEligible = _messages.BooleanField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
+  externalDestructionFailureReason = _messages.StringField(6)
+  externalProtectionLevelOptions = _messages.MessageField('ExternalProtectionLevelOptions', 7)
+  generateTime = _messages.StringField(8)
+  generationFailureReason = _messages.StringField(9)
+  importFailureReason = _messages.StringField(10)
+  importJob = _messages.StringField(11)
+  importTime = _messages.StringField(12)
+  name = _messages.StringField(13)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 14)
+  reimportEligible = _messages.BooleanField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
 
 
 class CryptoKeyVersionTemplate(_messages.Message):
@@ -376,6 +422,12 @@ class CryptoKeyVersionTemplate(_messages.Message):
     Values:
       CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED: Not specified.
       GOOGLE_SYMMETRIC_ENCRYPTION: Creates symmetric encryption keys.
+      AES_128_GCM: AES-GCM (Galois Counter Mode) using 128-bit keys.
+      AES_256_GCM: AES-GCM (Galois Counter Mode) using 256-bit keys.
+      AES_128_CBC: AES-CBC (Cipher Block Chaining Mode) using 128-bit keys.
+      AES_256_CBC: AES-CBC (Cipher Block Chaining Mode) using 256-bit keys.
+      AES_128_CTR: AES-CTR (Counter Mode) using 128-bit keys.
+      AES_256_CTR: AES-CTR (Counter Mode) using 256-bit keys.
       RSA_SIGN_PSS_2048_SHA256: RSASSA-PSS 2048 bit key with a SHA256 digest.
       RSA_SIGN_PSS_3072_SHA256: RSASSA-PSS 3072 bit key with a SHA256 digest.
       RSA_SIGN_PSS_4096_SHA256: RSASSA-PSS 4096 bit key with a SHA256 digest.
@@ -406,9 +458,17 @@ class CryptoKeyVersionTemplate(_messages.Message):
       RSA_DECRYPT_OAEP_3072_SHA1: RSAES-OAEP 3072 bit key with a SHA1 digest.
       RSA_DECRYPT_OAEP_4096_SHA1: RSAES-OAEP 4096 bit key with a SHA1 digest.
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
+        Other hash functions can also be used:
+        https://cloud.google.com/kms/docs/create-validate-
+        signatures#ecdsa_support_for_other_hash_algorithms
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+        Other hash functions can also be used:
+        https://cloud.google.com/kms/docs/create-validate-
+        signatures#ecdsa_support_for_other_hash_algorithms
       EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
-        curve is only supported for HSM protection level.
+        curve is only supported for HSM protection level. Other hash functions
+        can also be used: https://cloud.google.com/kms/docs/create-validate-
+        signatures#ecdsa_support_for_other_hash_algorithms
       HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
       HMAC_SHA1: HMAC-SHA1 signing with a 160 bit key.
       HMAC_SHA384: HMAC-SHA384 signing with a 384 bit key.
@@ -419,33 +479,39 @@ class CryptoKeyVersionTemplate(_messages.Message):
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
-    RSA_SIGN_PSS_2048_SHA256 = 2
-    RSA_SIGN_PSS_3072_SHA256 = 3
-    RSA_SIGN_PSS_4096_SHA256 = 4
-    RSA_SIGN_PSS_4096_SHA512 = 5
-    RSA_SIGN_PKCS1_2048_SHA256 = 6
-    RSA_SIGN_PKCS1_3072_SHA256 = 7
-    RSA_SIGN_PKCS1_4096_SHA256 = 8
-    RSA_SIGN_PKCS1_4096_SHA512 = 9
-    RSA_SIGN_RAW_PKCS1_2048 = 10
-    RSA_SIGN_RAW_PKCS1_3072 = 11
-    RSA_SIGN_RAW_PKCS1_4096 = 12
-    RSA_DECRYPT_OAEP_2048_SHA256 = 13
-    RSA_DECRYPT_OAEP_3072_SHA256 = 14
-    RSA_DECRYPT_OAEP_4096_SHA256 = 15
-    RSA_DECRYPT_OAEP_4096_SHA512 = 16
-    RSA_DECRYPT_OAEP_2048_SHA1 = 17
-    RSA_DECRYPT_OAEP_3072_SHA1 = 18
-    RSA_DECRYPT_OAEP_4096_SHA1 = 19
-    EC_SIGN_P256_SHA256 = 20
-    EC_SIGN_P384_SHA384 = 21
-    EC_SIGN_SECP256K1_SHA256 = 22
-    HMAC_SHA256 = 23
-    HMAC_SHA1 = 24
-    HMAC_SHA384 = 25
-    HMAC_SHA512 = 26
-    HMAC_SHA224 = 27
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 28
+    AES_128_GCM = 2
+    AES_256_GCM = 3
+    AES_128_CBC = 4
+    AES_256_CBC = 5
+    AES_128_CTR = 6
+    AES_256_CTR = 7
+    RSA_SIGN_PSS_2048_SHA256 = 8
+    RSA_SIGN_PSS_3072_SHA256 = 9
+    RSA_SIGN_PSS_4096_SHA256 = 10
+    RSA_SIGN_PSS_4096_SHA512 = 11
+    RSA_SIGN_PKCS1_2048_SHA256 = 12
+    RSA_SIGN_PKCS1_3072_SHA256 = 13
+    RSA_SIGN_PKCS1_4096_SHA256 = 14
+    RSA_SIGN_PKCS1_4096_SHA512 = 15
+    RSA_SIGN_RAW_PKCS1_2048 = 16
+    RSA_SIGN_RAW_PKCS1_3072 = 17
+    RSA_SIGN_RAW_PKCS1_4096 = 18
+    RSA_DECRYPT_OAEP_2048_SHA256 = 19
+    RSA_DECRYPT_OAEP_3072_SHA256 = 20
+    RSA_DECRYPT_OAEP_4096_SHA256 = 21
+    RSA_DECRYPT_OAEP_4096_SHA512 = 22
+    RSA_DECRYPT_OAEP_2048_SHA1 = 23
+    RSA_DECRYPT_OAEP_3072_SHA1 = 24
+    RSA_DECRYPT_OAEP_4096_SHA1 = 25
+    EC_SIGN_P256_SHA256 = 26
+    EC_SIGN_P384_SHA384 = 27
+    EC_SIGN_SECP256K1_SHA256 = 28
+    HMAC_SHA256 = 29
+    HMAC_SHA1 = 30
+    HMAC_SHA384 = 31
+    HMAC_SHA512 = 32
+    HMAC_SHA224 = 33
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 34
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -537,6 +603,17 @@ class KmsinventoryOrganizationsProtectedResourcesSearchRequest(_messages.Message
       retrieve the subsequent page. When paginating, all other parameters
       provided to KeyTrackingService.SearchProtectedResources must match the
       call that provided the page token.
+    resourceTypes: Optional. A list of resource types that this request
+      searches for. If empty, it will search all the [trackable resource
+      types](https://cloud.google.com/kms/docs/view-key-usage#tracked-
+      resource-types). Regular expressions are also supported. For example: *
+      `compute.googleapis.com.*` snapshots resources whose type starts with
+      `compute.googleapis.com`. * `.*Image` snapshots resources whose type
+      ends with `Image`. * `.*Image.*` snapshots resources whose type contains
+      `Image`. See [RE2](https://github.com/google/re2/wiki/Syntax) for all
+      supported regular expression syntax. If the regular expression does not
+      match any supported resource type, an INVALID_ARGUMENT error will be
+      returned.
     scope: Required. Resource name of the organization. Example:
       organizations/123
   """
@@ -544,7 +621,8 @@ class KmsinventoryOrganizationsProtectedResourcesSearchRequest(_messages.Message
   cryptoKey = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
-  scope = _messages.StringField(4, required=True)
+  resourceTypes = _messages.StringField(4, repeated=True)
+  scope = _messages.StringField(5, required=True)
 
 
 class KmsinventoryProjectsCryptoKeysListRequest(_messages.Message):

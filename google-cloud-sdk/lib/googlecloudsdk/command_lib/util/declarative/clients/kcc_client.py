@@ -56,7 +56,7 @@ def _TranslateCollectionToAssetType(collection):
 
 
 class KccClient(declarative_client_base.DeclarativeClientBase):
-  """Binary Clien Interface for the config-connector binary tool."""
+  """Binary Client Interface for the config-connector binary tool."""
 
   @property
   def binary_name(self):
@@ -66,7 +66,7 @@ class KccClient(declarative_client_base.DeclarativeClientBase):
   def binary_prompt(self):
     return (
         'This command requires the `config-connector` binary to be installed '
-        'to export GCP resource configurations. Would you like to install the'
+        'to export GCP resource configurations. Would you like to install the '
         '`config-connector` binary to continue command execution?')
 
   def _GetBinarySpecificExportArguments(self, args, cmd):

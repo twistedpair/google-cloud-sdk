@@ -31,11 +31,7 @@ KMS_CONFIGS_LIST_FORMAT = """\
         name.basename():label=KMS_CONFIG_NAME:sort=1,
         name.segment(3):label=LOCATION,
         cryptoKeyName,
-        state,
-        stateDetails,
-        createTime.date(),
-        description,
-        labels
+        state
     )"""
 
 

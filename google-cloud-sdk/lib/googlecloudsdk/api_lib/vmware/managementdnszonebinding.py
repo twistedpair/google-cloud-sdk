@@ -87,3 +87,9 @@ class ManagementDNSZoneBindingClient(util.VmwareClientBase):
         batch_size_attribute='pageSize',
         batch_size=page_size,
         field='managementDnsZoneBindings')
+
+  def Repair(self, resource):
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsRepairRequest(
+        name=resource.RelativeName()
+    )
+    return self.service.Repair(request)

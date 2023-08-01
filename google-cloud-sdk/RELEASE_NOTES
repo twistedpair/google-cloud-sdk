@@ -6,6 +6,139 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 441.0.0 (2023-08-01)
+
+### Artifact Registry
+
+* Include InTotoSlsaProvenanceV1 in the provenance output of
+`gcloud artifacts docker images describe` when using `--show-provenance` flag.
+* Deprecated `artifacts repositories set-cleanup-policies --overwrite`. The overwrite action is now the default behavior.
+
+### BigQuery
+
+* Fixed bug where local discovery docs were not loaded locally.
+* Added `file_set_spec_type` flag to support manifest Files in load jobs and
+  external tables.
+
+### Cloud Bigtable
+
+* Updated `--transactional-writes` behavior in `gcloud bigtable app-profile update` to no longer silently disable transactional writes, if not specified. `--no-transactional-writes` must be used to disable transactional writes, as opposed to the previous behavior, which only required omitting `--transactional-writes`.
+
+### Cloud Build
+
+* Fixed issue where `gcloud builds triggers update pubsub` command returned invalid request when not providing pubsub topic.
+
+### Cloud Composer
+
+* Fixed an issue where using comments in the `requirements.txt` file broke
+ updating Python packages.
+
+### Cloud Dataplex
+
+* Promoted `datascans` command group to GA.
+
+### Cloud Key Management Service
+
+*   Added  `gcloud kms raw-encrypt` and `gcloud kms raw-decrypt` commands to
+    support raw symmetric encryption algorithms  `AES-128-GCM`, `AES-256-GCM`,
+    `AES-128-CBC`, `AES-256-CBC`, `AES-128-CTR`, `and AES-256-CTR`.
+
+### Cloud NetApp
+
+* Removed some extra fields in `gcloud {beta, alpha} netapp {storage-pools, volumes, kms-configs}` list due to messy output when too many fields.
+
+### Cloud Storage
+
+* Fixed behavior when preserving both symlinks and POSIX metadata on an OS with limited symlink support.
+* Fixed an issue clobbering an existing file on download if the file is a broken symlink.
+* Fixed an issue causing some hidden files to be skipped or transferred multiple times.
+* Added `name` field to `objects` and `buckets` `list` and `describe` commands.
+* Added `bucket` field to `objects list` and `describe` commands.
+
+### Cloud Workstations
+
+*   Added `--enable-nested-virtualization` flag to `gcloud workstations configs`
+    to enable nested virtualization on new or existing Cloud Workstation
+    Configurations.
+
+### Compute Engine
+
+* Added new `ENDPOINT_TYPE_MANAGED_PROXY_LB` enum option to `--endpoint-types` flag of `gcloud compute routers nats create` in beta.
+* Promoted `any-single-zone` target distribution shape for regional managed instance groups to GA.
+* Promoted regional INTERNET_IP_PORT and INTERNET_FQDN_PORT Network Endpoint Groups in `gcloud compute network-endpoint-groups` to beta. Affected commands:
+    * `gcloud compute network-endpoint-groups create` - support for Internet NEG types in regional scopes
+    * `gcloud compute network-endpoint-groups list-network-endpoints`
+    * `gcloud compute network-endpoint-groups update <RESOURCE_NAME> --add-endpoint`
+    * `gcloud compute network-endpoint-groups update <RESOURCE_NAME> --remove-endpoint`
+* Update replica-zones support `--create-disk=replica-zones` for `gcloud compute instance-templates create`.
+* Promoted `--purpose=global-managed-proxy` flag of `gcloud compute networks subnets create` to beta.
+
+### Database Migration
+
+* Added `gcloud database-migration conversion-workspaces describe-ddls` which describes DDLs in a Database Migration Service conversion workspace.
+* Added `gcloud database-migration conversion-workspaces describe-issues` which describes issues in a Database Migration Service conversion workspace.
+* Added `gcloud database-migration migration-jobs create` to allow creating a migration job with a dump parallelization level.
+* Added `gcloud database-migration migration-jobs update` to allow configuring a migration job with a dump parallelization level.
+* Added `--allocated-ip-range` to `gcloud connection-profiles create cloudsql` to allow using an allocated subnet range when creating the destination Cloud SQL instance with a private connection.
+
+### GKE Hub
+
+* Updated `gcloud container fleet memberships generate-gateway-rbac` to include handling for third-party principals of the format `principal://iam.googleapis.com/locations/global/workforcePools/example-pool/subject/third party user`.
+
+### Kubernetes Engine
+
+* Updated default kubectl from 1.25.11 to 1.26.7.
+* Additional kubectl versions:
+  * kubectl.1.21 (1.21.14)
+  * kubectl.1.22 (1.22.17)
+  * kubectl.1.23 (1.23.17)
+  * kubectl.1.24 (1.24.16)
+  * kubectl.1.25 (1.25.12)
+  * kubectl.1.26 (1.26.7)
+  * kubectl.1.27 (1.27.4)
+* Removed prerequisite for using `--enable-master-global-access`
+
+### Network Connectivity
+
+* Updated `gcloud network-connectivity internal-ranges update` to support setting and clearing overlaps.
+
+### Network Security
+
+* Added labels support for Security Profile Group `create` and `update` commands.
+
+### Policy Simulator
+
+*   Added `gcloud beta policy-intelligence simulate orgpolicy` which runs a
+    Simulation for OrgPolicy.
+
+### Pubsub Emulator
+
+*   Fixed issue where messages may not be delivered in order when using unary
+    pull.
+
+### Workbench
+
+* Added `gcloud workbench` to manage workbench instances.
+* Added `gcloud workbench instances add-iam-policy-binding` to add iam policy for workbench instances.
+* Added `gcloud workbench instances delete` to delete workbench instances.
+* Added `gcloud workbench instances describe` to describe workbench instances.
+* Added `gcloud workbench instances get-iam-policy` to get the iam policy for workbench instances.
+* Added `gcloud workbench instances remove-iam-policy-binding` to remove the iam policy binding for workbench instances.
+* Added `gcloud workbench instances set-iam-policy` to set the iam policy for workbench instances.
+* Added `gcloud workbench instances reset` to reset workbench instances.
+* Added `gcloud workbench instances stop` to stop workbench instances.
+* Added `gcloud workbench instances start` to start workbench instances.
+* Added `gcloud workbench instances diagnose` to diagnose workbench instances.
+* Added `gcloud workbench instances upgrade` to upgrade workbench instances.
+* Added `gcloud workbench instances check-instance-upgradability` to check upgradability of workbench instances.
+* Added `gcloud workbench instances create` to create workbench instances.
+* Added `gcloud workbench instances update` to update workbench instances.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
 ## 440.0.0 (2023-07-25)
 
 ### Cloud Build

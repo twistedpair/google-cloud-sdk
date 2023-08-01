@@ -84,7 +84,7 @@ def Create(
     multi_cluster=False,
     restrict_to=None,
     failover_radius=None,
-    transactional_writes=False,
+    transactional_writes=None,
     force=False,
     priority=None,
     row_affinity=False,
@@ -194,7 +194,7 @@ def Update(
     multi_cluster=False,
     restrict_to=None,
     failover_radius=None,
-    transactional_writes=False,
+    transactional_writes=None,
     force=False,
     priority=None,
     row_affinity=None,
@@ -262,9 +262,12 @@ def Update(
   app_profile = msgs.AppProfile()
 
   if cluster:
-    changed_fields.append('singleClusterRouting')
+    changed_fields.append('singleClusterRouting.clusterId')
+    if transactional_writes is not None:
+      changed_fields.append('singleClusterRouting.allowTransactionalWrites')
     app_profile.singleClusterRouting = msgs.SingleClusterRouting(
-        clusterId=cluster, allowTransactionalWrites=transactional_writes
+        clusterId=cluster,
+        allowTransactionalWrites=transactional_writes,
     )
   elif multi_cluster:
     if failover_radius:

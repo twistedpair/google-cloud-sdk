@@ -120,6 +120,12 @@ def GetBackupAttributeConfig():
       'backup', 'The instance of the {resource}.')
 
 
+def GetBackupPolicyAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      'backup_policy', 'The instance of the {resource}.'
+  )
+
+
 def GetKmsConfigAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       'kms_config', 'The instance of the {resource}')
@@ -274,6 +280,15 @@ def GetBackupResourceSpec():
   )
 
 
+def GetBackupPolicyResourceSpec():
+  return concepts.ResourceSpec(
+      constants.BACKUPPOLICIES_COLLECTION,
+      resource_name='backup_policy',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=GetLocationAttributeConfig(),
+      backupPoliciesId=GetBackupPolicyAttributeConfig())
+
+
 def GetCryptoKeyResourceSpec():
   return concepts.ResourceSpec(
       'cloudkms.projects.locations.keyRings.cryptoKeys',
@@ -363,6 +378,16 @@ def GetBackupPresentationSpec(group_help):
       group_help,
       required=True,
       flag_name_overrides={'backup_vault': ''})
+
+
+# TODO(b/290375665): Add more unit tests to test Backup Poicy
+# Presentation, resource specs and flags
+def GetBackupPolicyPresentationSpec(group_help):
+  return presentation_specs.ResourcePresentationSpec(
+      'backup_policy',
+      GetBackupPolicyResourceSpec(),
+      group_help,
+      required=True)
 
 ## Add args to arg parser ##
 

@@ -599,6 +599,22 @@ def ApplyCdnPolicyArgs(client,
     backend_service.cdnPolicy = cdn_policy
 
 
+def HasFailoverPolicyArgs(args):
+  """Returns true if at least one of the failover policy args is defined.
+
+  Args:
+    args: The arguments passed to the gcloud command.
+  """
+  if (
+      args.IsSpecified('connection_drain_on_failover') or
+      args.IsSpecified('drop_traffic_if_unhealthy') or
+      args.IsSpecified('failover_ratio')
+      ):
+    return True
+  else:
+    return False
+
+
 def ApplyFailoverPolicyArgs(messages, args, backend_service, support_failover):
   """Applies the FailoverPolicy arguments to the specified backend service.
 
@@ -609,11 +625,9 @@ def ApplyFailoverPolicyArgs(messages, args, backend_service, support_failover):
     messages: The available API proto messages.
     args: The arguments passed to the gcloud command.
     backend_service: The backend service proto message object.
-    support_failover: Failover functionality is supported.
+    support_failover: Indicates whether failover functionality is supported.
   """
-  if (support_failover and (args.IsSpecified('connection_drain_on_failover') or
-                            args.IsSpecified('drop_traffic_if_unhealthy') or
-                            args.IsSpecified('failover_ratio'))):
+  if (support_failover and HasFailoverPolicyArgs(args)):
     failover_policy = (
         backend_service.failoverPolicy if backend_service.failoverPolicy else
         messages.BackendServiceFailoverPolicy())

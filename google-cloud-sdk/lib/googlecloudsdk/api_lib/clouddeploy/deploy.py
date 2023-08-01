@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.clouddeploy import client_util
 from googlecloudsdk.command_lib.deploy import automation_util
+from googlecloudsdk.command_lib.deploy import custom_target_type_util
 from googlecloudsdk.command_lib.deploy import manifest_util
 from googlecloudsdk.command_lib.deploy import target_util
 from googlecloudsdk.core import log
@@ -75,6 +76,14 @@ class DeployClient(object):
     operation_dict = {}
     for resource in automations:
       operation_dict[resource.name] = automation_util.PatchAutomation(resource)
+    self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+    # Create custom target type resource.
+    custom_target_types = resource_dict[manifest_util.CUSTOM_TARGET_TYPE_KIND]
+    operation_dict = {}
+    for resource in custom_target_types:
+      operation_dict[resource.name] = (
+          custom_target_type_util.PatchCustomTargetType(resource)
+      )
     self.operation_client.CheckOperationStatus(operation_dict, msg_template)
 
   def DeleteResources(self, manifests, region, force):

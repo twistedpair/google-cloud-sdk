@@ -331,3 +331,45 @@ def GetAutomationResourceSpec():
       locationsId=LocationAttributeConfig(),
       disable_auto_completers=False,
   )
+
+
+def CustomTargetTypeAttributeConfig():
+  """Creates the Custom Target Type resource attribute."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='custom_target_type',
+      help_text='The Custom Target Type associated with the {resource}.',
+  )
+
+
+def GetCustomTargetTypeResourceSpec():
+  """Constructs and returns the Resource specification for Custom Target Type."""
+  return concepts.ResourceSpec(
+      'clouddeploy.projects.locations.customTargetTypes',
+      resource_name='custom_target_type',
+      customTargetTypesId=CustomTargetTypeAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      disable_auto_completers=False,
+  )
+
+
+def AddCustomTargetTypeResourceArg(
+    parser, help_text=None, positional=False, required=True
+):
+  """Adds --custom-target-type resource argument to the parser.
+
+  Args:
+    parser: argparse.ArgumentPArser, the parser for the command.
+    help_text: help text for this flag.
+    positional: if it is a positional flag.
+    required: if it is required.
+  """
+  help_text = help_text or 'The name of the Custom Target Type.'
+
+  concept_parsers.ConceptParser.ForResource(
+      'custom_target_type' if positional else '--custom-target-type',
+      GetCustomTargetTypeResourceSpec(),
+      help_text,
+      required=required,
+      plural=False,
+  ).AddToParser(parser)

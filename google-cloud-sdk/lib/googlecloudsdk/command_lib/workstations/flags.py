@@ -275,6 +275,19 @@ def AddEnableConfidentialCompute(parser, use_default=True):
   )
 
 
+def AddEnableNestedVirtualization(parser, use_default=True):
+  """Adds an --enable-nested-virtualization flag to the given parser."""
+  help_text = """\
+  Default value is false.
+  If set, instances will have nested virtualization enabled."""
+  parser.add_argument(
+      '--enable-nested-virtualization',
+      action='store_true',
+      default=False if use_default else None,
+      help=help_text,
+  )
+
+
 def AddBootDiskSize(parser, use_default=True):
   """Adds a --boot-disk-size flag to the given parser."""
   help_text = """\

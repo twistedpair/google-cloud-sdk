@@ -441,6 +441,33 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def List(self, request, global_params=None):
+      r"""Lists locations with recommendations or insights.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudLocationListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/billingAccounts/{billingAccountsId}/locations',
+        http_method='GET',
+        method_id='recommender.billingAccounts.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+name}/locations',
+        request_field='',
+        request_type_name='RecommenderBillingAccountsLocationsListRequest',
+        response_type_name='GoogleCloudLocationListLocationsResponse',
+        supports_download=False,
+    )
+
   class BillingAccountsService(base_api.BaseApiService):
     """Service class for the billingAccounts resource."""
 
@@ -824,6 +851,33 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
       super(RecommenderV1alpha2.FoldersLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def List(self, request, global_params=None):
+      r"""Lists locations with recommendations or insights.
+
+      Args:
+        request: (RecommenderFoldersLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudLocationListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/folders/{foldersId}/locations',
+        http_method='GET',
+        method_id='recommender.folders.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+name}/locations',
+        request_field='',
+        request_type_name='RecommenderFoldersLocationsListRequest',
+        response_type_name='GoogleCloudLocationListLocationsResponse',
+        supports_download=False,
+    )
 
   class FoldersService(base_api.BaseApiService):
     """Service class for the folders resource."""
@@ -1272,6 +1326,33 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def List(self, request, global_params=None):
+      r"""Lists locations with recommendations or insights.
+
+      Args:
+        request: (RecommenderOrganizationsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudLocationListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/organizations/{organizationsId}/locations',
+        http_method='GET',
+        method_id='recommender.organizations.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+name}/locations',
+        request_field='',
+        request_type_name='RecommenderOrganizationsLocationsListRequest',
+        response_type_name='GoogleCloudLocationListLocationsResponse',
+        supports_download=False,
+    )
+
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""
 
@@ -1719,6 +1800,33 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
       super(RecommenderV1alpha2.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def List(self, request, global_params=None):
+      r"""Lists locations with recommendations or insights.
+
+      Args:
+        request: (RecommenderProjectsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudLocationListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='recommender.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+name}/locations',
+        request_field='',
+        request_type_name='RecommenderProjectsLocationsListRequest',
+        response_type_name='GoogleCloudLocationListLocationsResponse',
+        supports_download=False,
+    )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
