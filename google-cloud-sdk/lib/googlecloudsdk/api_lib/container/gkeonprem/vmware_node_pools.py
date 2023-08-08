@@ -132,7 +132,6 @@ class NodePoolsClient(client.ClientBase):
         'config': self._vmware_node_config(args),
         'onPremVersion': flags.Get(args, 'version'),
         'nodePoolAutoscaling': self._vmware_node_pool_autoscaling_config(args),
-        'upgradePolicy': self._vmware_node_pool_upgrade_policy(args),
     }
     return messages.VmwareNodePool(**kwargs)
 
@@ -236,16 +235,3 @@ class NodePoolsClient(client.ClientBase):
         additionalProperties=additional_property_messages
     )
     return annotation_value_message
-
-  def _vmware_node_pool_upgrade_policy(self, args: parser_extensions.Namespace):
-    """Constructs proto message VmwareNodePoolUpgradePolicy."""
-    if 'upgrade_policy' not in args.GetSpecifiedArgsDict():
-      return None
-
-    upgrade_policy = flags.Get(args, 'upgrade_policy')
-    kwargs = {
-        'independent': upgrade_policy.get('independent'),
-    }
-    if self.IsSet(kwargs):
-      return messages.VmwareNodePoolUpgradePolicy(**kwargs)
-    return None

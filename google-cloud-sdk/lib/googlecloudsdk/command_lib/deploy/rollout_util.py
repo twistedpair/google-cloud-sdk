@@ -129,6 +129,17 @@ def GetFilteredRollouts(
   )
 
 
+def GenerateRolloutId(to_target, release_ref):
+  filter_str = ROLLOUT_IN_TARGET_FILTER_TEMPLATE.format(to_target)
+  try:
+    rollouts = rollout.RolloutClient().List(
+        release_ref.RelativeName(), filter_str
+    )
+    return ComputeRolloutID(release_ref.Name(), to_target, rollouts)
+  except apitools_exceptions.HttpError:
+    raise cd_exceptions.ListRolloutsError(release_ref.RelativeName())
+
+
 def CreateRollout(
     release_ref,
     to_target,
@@ -161,16 +172,7 @@ def CreateRollout(
   """
   final_rollout_id = rollout_id
   if not final_rollout_id:
-    filter_str = ROLLOUT_IN_TARGET_FILTER_TEMPLATE.format(to_target)
-    try:
-      rollouts = rollout.RolloutClient().List(
-          release_ref.RelativeName(), filter_str
-      )
-      final_rollout_id = ComputeRolloutID(
-          release_ref.Name(), to_target, rollouts
-      )
-    except apitools_exceptions.HttpError:
-      raise cd_exceptions.ListRolloutsError(release_ref.RelativeName())
+    final_rollout_id = GenerateRolloutId(to_target, release_ref)
 
   resource_dict = release_ref.AsDict()
   rollout_ref = resources.REGISTRY.Parse(

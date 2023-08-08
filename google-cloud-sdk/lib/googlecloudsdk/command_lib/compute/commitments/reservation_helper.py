@@ -98,12 +98,17 @@ def _ConvertYAMLToMessage(messages, reservations_yaml, resources):
 
     share_settings = util.MakeShareSettingsWithDict(
         messages, a, a.get('share_setting', None))
+
+    resource_policies = util.MakeResourcePolicies(
+        messages, a, a.get('resource_policies', None), resources)
+
     specific_allocation = util.MakeSpecificSKUReservationMessage(
         messages, resources, a.get('vm_count', None), accelerators, local_ssds,
         a.get('machine_type', None), a.get('min_cpu_platform', None))
     a_msg = util.MakeReservationMessage(
         messages, a.get('reservation', None), share_settings,
-        specific_allocation, None, a.get('require_specific_reservation', None),
+        specific_allocation, resource_policies,
+        a.get('require_specific_reservation', None),
         a.get('reservation_zone', None))
     allocations_msg.append(a_msg)
   return allocations_msg

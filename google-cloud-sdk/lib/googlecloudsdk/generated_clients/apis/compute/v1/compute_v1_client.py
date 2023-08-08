@@ -13727,7 +13727,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+      r"""Patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 
       Args:
         request: (ComputeRegionSecurityPoliciesPatchRequest) input message
@@ -15334,6 +15334,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetNatIpInfo(self, request, global_params=None):
+      r"""Retrieves runtime NAT IP information.
+
+      Args:
+        request: (ComputeRoutersGetNatIpInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NatIpInfoResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetNatIpInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetNatIpInfo.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.routers.getNatIpInfo',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['natName'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/getNatIpInfo',
+        request_field='',
+        request_type_name='ComputeRoutersGetNatIpInfoRequest',
+        response_type_name='NatIpInfoResponse',
+        supports_download=False,
+    )
+
     def GetNatMappingInfo(self, request, global_params=None):
       r"""Retrieves runtime Nat mapping information of VM endpoints.
 
@@ -15849,7 +15875,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+      r"""Patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 
       Args:
         request: (ComputeSecurityPoliciesPatchRequest) input message
@@ -15875,7 +15901,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def PatchRule(self, request, global_params=None):
-      r"""Patches a rule at the specified priority.
+      r"""Patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.
 
       Args:
         request: (ComputeSecurityPoliciesPatchRuleRequest) input message

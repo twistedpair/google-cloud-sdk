@@ -324,6 +324,63 @@ class FleetClient(object):
         field='fleets',
         batch_size_attribute=None)
 
+  def GetScope(self, scope_path):
+    """Gets a namespace resource from the GKEHub API.
+
+    Args:
+      scope_path: Full resource path of the scope.
+
+    Returns:
+      A scope resource.
+
+    Raises:
+      apitools.base.py.HttpError: If the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsScopesGetRequest(
+        name=scope_path
+    )
+    return self.client.projects_locations_scopes.Get(req)
+
+  def UpdateScope(
+      self, scope_path, labels=None, namespace_labels=None, mask=''
+  ):
+    """Updates a namespace resource in the fleet.
+
+    Args:
+      scope_path: Full resource path of the namespace.
+      labels:  Labels for the resource.
+      namespace_labels:  Namespace-level labels for the cluster namespace.
+      mask: A mask of the fields to update.
+
+    Returns:
+      A longrunning operation for updating the namespace.
+
+    Raises:
+    """
+    # Namespace containing fields with updated value(s)
+    scope = self.messages.Scope(
+        name=scope_path,
+        labels=labels,
+        namespaceLabels=namespace_labels,
+    )
+    req = self.messages.GkehubProjectsLocationsScopesPatchRequest(
+        scope=scope,
+        name=scope_path,
+        updateMask=mask,
+    )
+    op = self.client.projects_locations_scopes.Patch(req)
+    op_resource = resources.REGISTRY.ParseRelativeName(
+        op.name, collection='gkehub.projects.locations.operations'
+    )
+    return waiter.WaitFor(
+        waiter.CloudOperationPoller(
+            self.client.projects_locations_scopes,
+            self.client.projects_locations_operations,
+        ),
+        op_resource,
+        'Waiting for scope to be updated',
+    )
+
   def GetScopeNamespace(self, namespace_path):
     """Gets a namespace resource from the GKEHub API.
 
@@ -337,16 +394,21 @@ class FleetClient(object):
       apitools.base.py.HttpError: If the request returns an HTTP error
     """
     req = self.messages.GkehubProjectsLocationsScopesNamespacesGetRequest(
-        name=namespace_path)
+        name=namespace_path
+    )
     return self.client.projects_locations_scopes_namespaces.Get(req)
 
-  def CreateScopeNamespace(self, name, namespace_path, parent):
+  def CreateScopeNamespace(
+      self, name, namespace_path, parent, labels=None, namespace_labels=None
+  ):
     """Creates a namespace resource from the GKEHub API.
 
     Args:
       name: The namespace name.
       namespace_path: Full resource path of the namespace.
       parent: Full resource path of the scope containing the namespace.
+      labels: labels for namespace resource.
+      namespace_labels: Namespace-level labels for the cluster namespace.
 
     Returns:
       A namespace resource.
@@ -354,7 +416,12 @@ class FleetClient(object):
     Raises:
       apitools.base.py.HttpError: If the request returns an HTTP error.
     """
-    namespace = self.messages.Namespace(name=namespace_path, scope='')
+    namespace = self.messages.Namespace(
+        name=namespace_path,
+        scope='',
+        labels=labels,
+        namespaceLabels=namespace_labels,
+    )
     req = self.messages.GkehubProjectsLocationsScopesNamespacesCreateRequest(
         namespace=namespace, scopeNamespaceId=name, parent=parent
     )
@@ -398,22 +465,28 @@ class FleetClient(object):
         'Waiting for namespace to be deleted',
     )
 
-  def UpdateScopeNamespace(self, namespace_path, mask):
+  def UpdateScopeNamespace(
+      self, namespace_path, labels=None, namespace_labels=None, mask=''
+  ):
     """Updates a namespace resource in the fleet.
 
     Args:
       namespace_path: Full resource path of the namespace.
+      labels:  Labels for the resource.
+      namespace_labels:  Namespace-level labels for the cluster namespace.
       mask: A mask of the fields to update.
 
     Returns:
       A longrunning operation for updating the namespace.
 
     Raises:
-      apitools.base.py.HttpError: If the request returns an HTTP error.
     """
     # Namespace containing fields with updated value(s)
     namespace = self.messages.Namespace(
-        name=namespace_path, scope=''
+        name=namespace_path,
+        scope='',
+        labels=labels,
+        namespaceLabels=namespace_labels,
     )
     req = self.messages.GkehubProjectsLocationsScopesNamespacesPatchRequest(
         namespace=namespace,
@@ -726,7 +799,7 @@ class FleetClient(object):
     )
     return self.client.projects_locations_scopes_rbacrolebindings.Get(req)
 
-  def CreateScopeRBACRoleBinding(self, name, role, user, group):
+  def CreateScopeRBACRoleBinding(self, name, role, user, group, labels=None):
     """Creates an ScopeRBACRoleBinding resource from the GKEHub API.
 
     Args:
@@ -734,6 +807,7 @@ class FleetClient(object):
       role: the role.
       user: the user.
       group: the group.
+      labels: labels for the RBACRoleBinding resource.
 
     Returns:
       An ScopeRBACRoleBinding resource
@@ -752,6 +826,7 @@ class FleetClient(object):
         ),
         user=user,
         group=group,
+        labels=labels,
     )
     resource = resources.REGISTRY.ParseRelativeName(
         name,
@@ -782,7 +857,7 @@ class FleetClient(object):
     )
     return self.client.projects_locations_scopes_rbacrolebindings.Delete(req)
 
-  def UpdateScopeRBACRoleBinding(self, name, user, group, role, mask):
+  def UpdateScopeRBACRoleBinding(self, name, user, group, role, labels, mask):
     """Updates an ScopeRBACRoleBinding resource in the fleet.
 
     Args:
@@ -790,6 +865,7 @@ class FleetClient(object):
       user: the user.
       group: the group.
       role: the role.
+      labels: labels for the RBACRoleBinding resource.
       mask: a mask of the fields to update.
 
     Returns:
@@ -808,6 +884,7 @@ class FleetClient(object):
                 role.upper()
             )
         ),
+        labels=labels,
     )
     req = (
         self.messages.GkehubProjectsLocationsScopesRbacrolebindingsPatchRequest(
@@ -858,13 +935,14 @@ class FleetClient(object):
         name=name)
     return self.client.projects_locations_memberships_bindings.Get(req)
 
-  def CreateMembershipBinding(self, name, scope, fleet):
+  def CreateMembershipBinding(self, name, scope, fleet, labels=None):
     """Creates a Membership-Binding resource from the GKEHub API.
 
     Args:
       name: the full binding resource name.
       scope: the Scope to be associated with Binding.
       fleet: the Fleet for which all related scopes are updated.
+      labels: labels for the membership binding resource
 
     Returns:
       A Membership-Binding resource
@@ -877,7 +955,8 @@ class FleetClient(object):
     binding = self.messages.MembershipBinding(
         name=name,
         scope=scope,
-        fleet=fleet)
+        fleet=fleet,
+        labels=labels)
     resource = resources.REGISTRY.ParseRelativeName(
         name,
         'gkehub.projects.locations.memberships.bindings',
@@ -914,13 +993,14 @@ class FleetClient(object):
         field='membershipBindings',
         batch_size_attribute=None)
 
-  def UpdateMembershipBinding(self, name, scope, fleet, mask):
+  def UpdateMembershipBinding(self, name, scope, fleet, labels, mask):
     """Updates a Membership-Binding resource.
 
     Args:
       name: the Binding name.
       scope: the Scope associated with binding.
       fleet: the Fleet for which all related scopes are updated.
+      labels: the labels for the Membership Binding resource.
       mask: a mask of the fields to update.
 
     Returns:
@@ -933,7 +1013,8 @@ class FleetClient(object):
     binding = self.messages.MembershipBinding(
         name=name,
         scope=scope,
-        fleet=fleet
+        fleet=fleet,
+        labels=labels,
     )
     req = self.messages.GkehubProjectsLocationsMembershipsBindingsPatchRequest(
         membershipBinding=binding,

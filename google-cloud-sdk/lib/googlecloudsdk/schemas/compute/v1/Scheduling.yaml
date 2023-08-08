@@ -40,6 +40,13 @@ properties:
     - DELETE
     - INSTANCE_TERMINATION_ACTION_UNSPECIFIED
     - STOP
+  localSsdRecoveryTimeout:
+    description: |-
+      Specifies the maximum amount of time a Local Ssd Vm should wait while
+      recovery of the Local Ssd state is attempted. Its value should be in
+      between 0 and 168 hours with hour granularity and the default value being 1
+      hour.
+    $ref: Duration.yaml
   locationHint:
     description: |-
       An opaque location hint used to place the instance close to other

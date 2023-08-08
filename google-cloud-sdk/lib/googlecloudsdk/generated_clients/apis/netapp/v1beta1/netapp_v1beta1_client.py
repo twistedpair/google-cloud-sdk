@@ -40,6 +40,9 @@ class NetappV1beta1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_activeDirectories = self.ProjectsLocationsActiveDirectoriesService(self)
+    self.projects_locations_backupPolicies = self.ProjectsLocationsBackupPoliciesService(self)
+    self.projects_locations_backupVaults_backups = self.ProjectsLocationsBackupVaultsBackupsService(self)
+    self.projects_locations_backupVaults = self.ProjectsLocationsBackupVaultsService(self)
     self.projects_locations_kmsConfigs = self.ProjectsLocationsKmsConfigsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_storagePools = self.ProjectsLocationsStoragePoolsService(self)
@@ -190,6 +193,441 @@ class NetappV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}',
         request_field='activeDirectory',
         request_type_name='NetappProjectsLocationsActiveDirectoriesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBackupPoliciesService(base_api.BaseApiService):
+    """Service class for the projects_locations_backupPolicies resource."""
+
+    _NAME = 'projects_locations_backupPolicies'
+
+    def __init__(self, client):
+      super(NetappV1beta1.ProjectsLocationsBackupPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreateBackupPolicy creates new backup policy.
+
+      Args:
+        request: (NetappProjectsLocationsBackupPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupPolicies',
+        http_method='POST',
+        method_id='netapp.projects.locations.backupPolicies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupPolicyId'],
+        relative_path='v1beta1/{+parent}/backupPolicies',
+        request_field='backupPolicy',
+        request_type_name='NetappProjectsLocationsBackupPoliciesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteBackupPolicy Warning! This operation will permanently delete the backup policy.
+
+      Args:
+        request: (NetappProjectsLocationsBackupPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupPolicies/{backupPoliciesId}',
+        http_method='DELETE',
+        method_id='netapp.projects.locations.backupPolicies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsBackupPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetBackupPolicy Returns the description of the specified backup policy by backup_policy_id.
+
+      Args:
+        request: (NetappProjectsLocationsBackupPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackupPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupPolicies/{backupPoliciesId}',
+        http_method='GET',
+        method_id='netapp.projects.locations.backupPolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsBackupPoliciesGetRequest',
+        response_type_name='BackupPolicy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListBackupPolicies Returns list of all available backup policies.
+
+      Args:
+        request: (NetappProjectsLocationsBackupPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupPolicies',
+        http_method='GET',
+        method_id='netapp.projects.locations.backupPolicies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/backupPolicies',
+        request_field='',
+        request_type_name='NetappProjectsLocationsBackupPoliciesListRequest',
+        response_type_name='ListBackupPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""UpdateBackupPolicy updates settings of a specific backup policy.
+
+      Args:
+        request: (NetappProjectsLocationsBackupPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupPolicies/{backupPoliciesId}',
+        http_method='PATCH',
+        method_id='netapp.projects.locations.backupPolicies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='backupPolicy',
+        request_type_name='NetappProjectsLocationsBackupPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBackupVaultsBackupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_backupVaults_backups resource."""
+
+    _NAME = 'projects_locations_backupVaults_backups'
+
+    def __init__(self, client):
+      super(NetappV1beta1.ProjectsLocationsBackupVaultsBackupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreateBackup Creates the backup from the volume specified in the request The backup can be created from the given snapshot if specified in the request. If no snapshot specified, there'll be a new snapshot taken to initiate the backup creation.
+
+      Args:
+        request: (NetappProjectsLocationsBackupVaultsBackupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/backups',
+        http_method='POST',
+        method_id='netapp.projects.locations.backupVaults.backups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupId'],
+        relative_path='v1beta1/{+parent}/backups',
+        request_field='backup',
+        request_type_name='NetappProjectsLocationsBackupVaultsBackupsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteBackup Warning! This operation will permanently delete the backup.
+
+      Args:
+        request: (NetappProjectsLocationsBackupVaultsBackupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/backups/{backupsId}',
+        http_method='DELETE',
+        method_id='netapp.projects.locations.backupVaults.backups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsBackupVaultsBackupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetBackup Returns the description of the specified backup.
+
+      Args:
+        request: (NetappProjectsLocationsBackupVaultsBackupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Backup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/backups/{backupsId}',
+        http_method='GET',
+        method_id='netapp.projects.locations.backupVaults.backups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsBackupVaultsBackupsGetRequest',
+        response_type_name='Backup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListBackups Returns descriptions of all backups for a backupVault.
+
+      Args:
+        request: (NetappProjectsLocationsBackupVaultsBackupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/backups',
+        http_method='GET',
+        method_id='netapp.projects.locations.backupVaults.backups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/backups',
+        request_field='',
+        request_type_name='NetappProjectsLocationsBackupVaultsBackupsListRequest',
+        response_type_name='ListBackupsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""UpdateBackup Update backup with full spec.
+
+      Args:
+        request: (NetappProjectsLocationsBackupVaultsBackupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/backups/{backupsId}',
+        http_method='PATCH',
+        method_id='netapp.projects.locations.backupVaults.backups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='backup',
+        request_type_name='NetappProjectsLocationsBackupVaultsBackupsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBackupVaultsService(base_api.BaseApiService):
+    """Service class for the projects_locations_backupVaults resource."""
+
+    _NAME = 'projects_locations_backupVaults'
+
+    def __init__(self, client):
+      super(NetappV1beta1.ProjectsLocationsBackupVaultsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates new backup vault.
+
+      Args:
+        request: (NetappProjectsLocationsBackupVaultsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupVaults',
+        http_method='POST',
+        method_id='netapp.projects.locations.backupVaults.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupVaultId'],
+        relative_path='v1beta1/{+parent}/backupVaults',
+        request_field='backupVault',
+        request_type_name='NetappProjectsLocationsBackupVaultsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteBackupVault Warning! This operation will permanently delete the backup vault.
+
+      Args:
+        request: (NetappProjectsLocationsBackupVaultsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}',
+        http_method='DELETE',
+        method_id='netapp.projects.locations.backupVaults.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsBackupVaultsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetBackupVault Returns the description of the specified backup vault.
+
+      Args:
+        request: (NetappProjectsLocationsBackupVaultsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackupVault) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}',
+        http_method='GET',
+        method_id='netapp.projects.locations.backupVaults.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsBackupVaultsGetRequest',
+        response_type_name='BackupVault',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListBackupVaults Returns list of all available backup vaults.
+
+      Args:
+        request: (NetappProjectsLocationsBackupVaultsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupVaultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupVaults',
+        http_method='GET',
+        method_id='netapp.projects.locations.backupVaults.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/backupVaults',
+        request_field='',
+        request_type_name='NetappProjectsLocationsBackupVaultsListRequest',
+        response_type_name='ListBackupVaultsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""UpdateBackupVault Updates the settings of a specific backup vault.
+
+      Args:
+        request: (NetappProjectsLocationsBackupVaultsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}',
+        http_method='PATCH',
+        method_id='netapp.projects.locations.backupVaults.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='backupVault',
+        request_type_name='NetappProjectsLocationsBackupVaultsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

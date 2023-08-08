@@ -8,9 +8,36 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'compute'
+
+
+class AWSV4Signature(_messages.Message):
+  r"""Contains the configurations necessary to generate a signature for access
+  to private storage buckets that support Signature Version 4 for
+  authentication. The service name for generating the authentication header
+  will always default to 's3'.
+
+  Fields:
+    accessKey: The access key used for s3 bucket authentication. Required for
+      updating or creating a backend that uses AWS v4 signature
+      authentication, but will not be returned as part of the configuration
+      when queried with a REST API GET request. @InputOnly
+    accessKeyId: The identifier of an access key used for s3 bucket
+      authentication.
+    accessKeyVersion: The optional version identifier for the access key. You
+      can use this to keep track of different iterations of your access key.
+    originRegion: The name of the cloud region of your origin. This is a free-
+      form field with the name of the region your cloud uses to host your
+      origin. For example, "us-east-1" for AWS or "us-ashburn-1" for OCI.
+  """
+
+  accessKey = _messages.StringField(1)
+  accessKeyId = _messages.StringField(2)
+  accessKeyVersion = _messages.StringField(3)
+  originRegion = _messages.StringField(4)
 
 
 class AcceleratorConfig(_messages.Message):
@@ -1883,8 +1910,7 @@ class AttachedDiskInitializeParams(_messages.Message):
     replicaZones: Required for each regional disk associated with the
       instance. Specify the URLs of the zones where the disk should be
       replicated to. You must provide exactly two replica zones, and one zone
-      must be the same as the instance zone. You can't use this option with
-      boot disks.
+      must be the same as the instance zone.
     resourceManagerTags: Resource manager tags to be bound to the disk. Tag
       keys and values have the same definition as resource manager tags. Keys
       must be in the format `tagKeys/{tag_key_id}`, and values are in the
@@ -5853,10 +5879,14 @@ class BulkInsertInstanceResourcePerInstanceProperties(_messages.Message):
   extended in the future.
 
   Fields:
+    hostname: Specifies the hostname of the instance. More details in:
+      https://cloud.google.com/compute/docs/instances/custom-hostname-
+      vm#naming_convention
     name: This field is only temporary. It will be removed. Do not use it.
   """
 
-  name = _messages.StringField(1)
+  hostname = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class CacheInvalidationRule(_messages.Message):
@@ -6082,9 +6112,11 @@ class Commitment(_messages.Message):
 
     Values:
       ACCELERATOR_OPTIMIZED: <no description>
+      ACCELERATOR_OPTIMIZED_A3: <no description>
       COMPUTE_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED_C2D: <no description>
       COMPUTE_OPTIMIZED_C3: <no description>
+      COMPUTE_OPTIMIZED_H3: <no description>
       GENERAL_PURPOSE: <no description>
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
@@ -6096,18 +6128,20 @@ class Commitment(_messages.Message):
       TYPE_UNSPECIFIED: <no description>
     """
     ACCELERATOR_OPTIMIZED = 0
-    COMPUTE_OPTIMIZED = 1
-    COMPUTE_OPTIMIZED_C2D = 2
-    COMPUTE_OPTIMIZED_C3 = 3
-    GENERAL_PURPOSE = 4
-    GENERAL_PURPOSE_E2 = 5
-    GENERAL_PURPOSE_N2 = 6
-    GENERAL_PURPOSE_N2D = 7
-    GENERAL_PURPOSE_T2D = 8
-    GRAPHICS_OPTIMIZED = 9
-    MEMORY_OPTIMIZED = 10
-    MEMORY_OPTIMIZED_M3 = 11
-    TYPE_UNSPECIFIED = 12
+    ACCELERATOR_OPTIMIZED_A3 = 1
+    COMPUTE_OPTIMIZED = 2
+    COMPUTE_OPTIMIZED_C2D = 3
+    COMPUTE_OPTIMIZED_C3 = 4
+    COMPUTE_OPTIMIZED_H3 = 5
+    GENERAL_PURPOSE = 6
+    GENERAL_PURPOSE_E2 = 7
+    GENERAL_PURPOSE_N2 = 8
+    GENERAL_PURPOSE_N2D = 9
+    GENERAL_PURPOSE_T2D = 10
+    GRAPHICS_OPTIMIZED = 11
+    MEMORY_OPTIMIZED = 12
+    MEMORY_OPTIMIZED_M3 = 13
+    TYPE_UNSPECIFIED = 14
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -24290,6 +24324,25 @@ class ComputeRoutersDeleteRequest(_messages.Message):
   router = _messages.StringField(4, required=True)
 
 
+class ComputeRoutersGetNatIpInfoRequest(_messages.Message):
+  r"""A ComputeRoutersGetNatIpInfoRequest object.
+
+  Fields:
+    natName: Name of the nat service to filter the NAT IP information. If it
+      is omitted, all nats for this router will be returned. Name should
+      conform to RFC1035.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    router: Name of the Router resource to query for Nat IP information. The
+      name should conform to RFC1035.
+  """
+
+  natName = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  router = _messages.StringField(4, required=True)
+
+
 class ComputeRoutersGetNatMappingInfoRequest(_messages.Message):
   r"""A ComputeRoutersGetNatMappingInfoRequest object.
 
@@ -33290,7 +33343,8 @@ class ForwardingRule(_messages.Message):
       this value must be equal to the networkTier of the Address.
     noAutomateDnsZone: This is used in PSC consumer ForwardingRule to control
       whether it should try to auto-generate a DNS zone or not. Non-PSC
-      forwarding rules do not use this field.
+      forwarding rules do not use this field. Once set, this field is not
+      mutable.
     portRange: This field can only be used: - If IPProtocol is one of TCP,
       UDP, or SCTP. - By backend service-based network load balancers, target
       pool-based network load balancers, internal proxy load balancers,
@@ -33366,6 +33420,7 @@ class ForwardingRule(_messages.Message):
       - APIs that support VPC Service Controls. - all-apis - All supported
       Google APIs. - For Private Service Connect forwarding rules that forward
       traffic to managed services, the target must be a service attachment.
+      The target is not mutable once set as a service attachment.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -46118,6 +46173,69 @@ class NamedPort(_messages.Message):
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class NatIpInfo(_messages.Message):
+  r"""Contains NAT IP information of a NAT config (i.e. usage status, mode).
+
+  Fields:
+    natIpInfoMappings: A list of all NAT IPs assigned to this NAT config.
+    natName: Name of the NAT config which the NAT IP belongs to.
+  """
+
+  natIpInfoMappings = _messages.MessageField('NatIpInfoNatIpInfoMapping', 1, repeated=True)
+  natName = _messages.StringField(2)
+
+
+class NatIpInfoNatIpInfoMapping(_messages.Message):
+  r"""Contains information of a NAT IP.
+
+  Enums:
+    ModeValueValuesEnum: Specifies whether NAT IP is auto or manual.
+    UsageValueValuesEnum: Specifies whether NAT IP is currently serving at
+      least one endpoint or not.
+
+  Fields:
+    mode: Specifies whether NAT IP is auto or manual.
+    natIp: NAT IP address. For example: 203.0.113.11.
+    usage: Specifies whether NAT IP is currently serving at least one endpoint
+      or not.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Specifies whether NAT IP is auto or manual.
+
+    Values:
+      AUTO: <no description>
+      MANUAL: <no description>
+    """
+    AUTO = 0
+    MANUAL = 1
+
+  class UsageValueValuesEnum(_messages.Enum):
+    r"""Specifies whether NAT IP is currently serving at least one endpoint or
+    not.
+
+    Values:
+      IN_USE: <no description>
+      UNUSED: <no description>
+    """
+    IN_USE = 0
+    UNUSED = 1
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+  natIp = _messages.StringField(2)
+  usage = _messages.EnumField('UsageValueValuesEnum', 3)
+
+
+class NatIpInfoResponse(_messages.Message):
+  r"""A NatIpInfoResponse object.
+
+  Fields:
+    result: [Output Only] A list of NAT IP information.
+  """
+
+  result = _messages.MessageField('NatIpInfo', 1, repeated=True)
+
+
 class Network(_messages.Message):
   r"""Represents a VPC Network resource. Networks connect resources to each
   other and to the internet. For more information, read Virtual Private Cloud
@@ -51232,7 +51350,7 @@ class Operation(_messages.Message):
   information, read Handling API responses. Operations can be global, regional
   or zonal. - For global operations, use the `globalOperations` resource. -
   For regional operations, use the `regionOperations` resource. - For zonal
-  operations, use the `zonalOperations` resource. For more information, read
+  operations, use the `zoneOperations` resource. For more information, read
   Global, Regional, and Zonal Resources.
 
   Enums:
@@ -51279,6 +51397,9 @@ class Operation(_messages.Message):
     region: [Output Only] The URL of the region where the operation resides.
       Only applicable when performing regional operations.
     selfLink: [Output Only] Server-defined URL for the resource.
+    setCommonInstanceMetadataOperationMetadata: [Output Only] If the operation
+      is for projects.setCommonInstanceMetadata, this field will contain
+      information on all underlying zonal actions and their state.
     startTime: [Output Only] The time that this operation was started by the
       server. This value is in RFC3339 text format.
     status: [Output Only] The status of the operation, which can be one of the
@@ -51291,7 +51412,8 @@ class Operation(_messages.Message):
       modifies. For operations related to creating a snapshot, this points to
       the persistent disk that the snapshot was created from.
     user: [Output Only] User who requested the operation, for example:
-      `user@example.com`.
+      `user@example.com` or `alice_smith_identifier
+      (global/workforcePools/example-com-us-employees)`.
     warnings: [Output Only] If warning messages are generated during
       processing of the operation, this field will be populated.
     zone: [Output Only] The URL of the zone where the operation resides. Only
@@ -51513,14 +51635,15 @@ class Operation(_messages.Message):
   progress = _messages.IntegerField(14, variant=_messages.Variant.INT32)
   region = _messages.StringField(15)
   selfLink = _messages.StringField(16)
-  startTime = _messages.StringField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  statusMessage = _messages.StringField(19)
-  targetId = _messages.IntegerField(20, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(21)
-  user = _messages.StringField(22)
-  warnings = _messages.MessageField('WarningsValueListEntry', 23, repeated=True)
-  zone = _messages.StringField(24)
+  setCommonInstanceMetadataOperationMetadata = _messages.MessageField('SetCommonInstanceMetadataOperationMetadata', 17)
+  startTime = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  targetId = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(22)
+  user = _messages.StringField(23)
+  warnings = _messages.MessageField('WarningsValueListEntry', 24, repeated=True)
+  zone = _messages.StringField(25)
 
 
 class OperationAggregatedList(_messages.Message):
@@ -60418,6 +60541,10 @@ class Scheduling(_messages.Message):
       if it is terminated by Compute Engine.
     instanceTerminationAction: Specifies the termination action for the
       instance.
+    localSsdRecoveryTimeout: Specifies the maximum amount of time a Local Ssd
+      Vm should wait while recovery of the Local Ssd state is attempted. Its
+      value should be in between 0 and 168 hours with hour granularity and the
+      default value being 1 hour.
     locationHint: An opaque location hint used to place the instance close to
       other resources. This field is for use by internal tools that use the
       public API.
@@ -60481,12 +60608,13 @@ class Scheduling(_messages.Message):
 
   automaticRestart = _messages.BooleanField(1)
   instanceTerminationAction = _messages.EnumField('InstanceTerminationActionValueValuesEnum', 2)
-  locationHint = _messages.StringField(3)
-  minNodeCpus = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 5, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 6)
-  preemptible = _messages.BooleanField(7)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 8)
+  localSsdRecoveryTimeout = _messages.MessageField('Duration', 3)
+  locationHint = _messages.StringField(4)
+  minNodeCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 6, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 7)
+  preemptible = _messages.BooleanField(8)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 9)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -61094,6 +61222,8 @@ class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(_messages.Me
     ruleVisibility: Rule visibility can be one of the following: STANDARD -
       opaque rules. (default) PREMIUM - transparent rules. This field is only
       supported in Global Security Policies of type CLOUD_ARMOR.
+    thresholdConfigs: Configuration options for layer7 adaptive protection for
+      various customizable thresholds.
   """
 
   class RuleVisibilityValueValuesEnum(_messages.Enum):
@@ -61110,6 +61240,28 @@ class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(_messages.Me
 
   enable = _messages.BooleanField(1)
   ruleVisibility = _messages.EnumField('RuleVisibilityValueValuesEnum', 2)
+  thresholdConfigs = _messages.MessageField('SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfig', 3, repeated=True)
+
+
+class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfig(_messages.Message):
+  r"""A
+  SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfig
+  object.
+
+  Fields:
+    autoDeployConfidenceThreshold: A number attribute.
+    autoDeployExpirationSec: A integer attribute.
+    autoDeployImpactedBaselineThreshold: A number attribute.
+    autoDeployLoadThreshold: A number attribute.
+    name: The name must be 1-63 characters long, and comply with RFC1035. The
+      name must be unique within the security policy.
+  """
+
+  autoDeployConfidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  autoDeployExpirationSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  autoDeployImpactedBaselineThreshold = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  autoDeployLoadThreshold = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(5)
 
 
 class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
@@ -61861,6 +62013,10 @@ class SecuritySettings(_messages.Message):
   r"""The authentication and authorization settings for a BackendService.
 
   Fields:
+    awsV4Authentication: The configuration needed to generate a signature for
+      access to private storage buckets that support AWS's Signature Version 4
+      for authentication. Allowed only for INTERNET_IP_PORT and
+      INTERNET_FQDN_PORT NEG backends.
     clientTlsPolicy: Optional. A URL referring to a
       networksecurity.ClientTlsPolicy resource that describes how clients
       should authenticate with this service's backends. clientTlsPolicy only
@@ -61881,8 +62037,9 @@ class SecuritySettings(_messages.Message):
       clientCertificate (mTLS mode).
   """
 
-  clientTlsPolicy = _messages.StringField(1)
-  subjectAltNames = _messages.StringField(2, repeated=True)
+  awsV4Authentication = _messages.MessageField('AWSV4Signature', 1)
+  clientTlsPolicy = _messages.StringField(2)
+  subjectAltNames = _messages.StringField(3, repeated=True)
 
 
 class SerialPortOutput(_messages.Message):
@@ -62623,6 +62780,94 @@ class ServiceAttachmentsScopedList(_messages.Message):
 
   serviceAttachments = _messages.MessageField('ServiceAttachment', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class SetCommonInstanceMetadataOperationMetadata(_messages.Message):
+  r"""A SetCommonInstanceMetadataOperationMetadata object.
+
+  Messages:
+    PerLocationOperationsValue: [Output Only] Status information per location
+      (location name is key). Example key: zones/us-central1-a
+
+  Fields:
+    clientOperationId: [Output Only] The client operation id.
+    perLocationOperations: [Output Only] Status information per location
+      (location name is key). Example key: zones/us-central1-a
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PerLocationOperationsValue(_messages.Message):
+    r"""[Output Only] Status information per location (location name is key).
+    Example key: zones/us-central1-a
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        PerLocationOperationsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        PerLocationOperationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PerLocationOperationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A
+          SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clientOperationId = _messages.StringField(1)
+  perLocationOperations = _messages.MessageField('PerLocationOperationsValue', 2)
+
+
+class SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo(_messages.Message):
+  r"""A SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo
+  object.
+
+  Enums:
+    StateValueValuesEnum: [Output Only] Status of the action, which can be one
+      of the following: `PROPAGATING`, `PROPAGATED`, `ABANDONED`, `FAILED`, or
+      `DONE`.
+
+  Fields:
+    error: [Output Only] If state is `ABANDONED` or `FAILED`, this field is
+      populated.
+    state: [Output Only] Status of the action, which can be one of the
+      following: `PROPAGATING`, `PROPAGATED`, `ABANDONED`, `FAILED`, or
+      `DONE`.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Status of the action, which can be one of the following:
+    `PROPAGATING`, `PROPAGATED`, `ABANDONED`, `FAILED`, or `DONE`.
+
+    Values:
+      ABANDONED: Operation not tracked in this location e.g. zone is marked as
+        DOWN.
+      DONE: Operation has completed successfully.
+      FAILED: Operation is in an error state.
+      PROPAGATED: Operation is confirmed to be in the location.
+      PROPAGATING: Operation is not yet confirmed to have been created in the
+        location.
+      UNSPECIFIED: <no description>
+    """
+    ABANDONED = 0
+    DONE = 1
+    FAILED = 2
+    PROPAGATED = 3
+    PROPAGATING = 4
+    UNSPECIFIED = 5
+
+  error = _messages.MessageField('Status', 1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class ShareSettings(_messages.Message):
@@ -64932,6 +65177,57 @@ class StatefulPolicyPreservedStateDiskDevice(_messages.Message):
     ON_PERMANENT_INSTANCE_DELETION = 1
 
   autoDelete = _messages.EnumField('AutoDeleteValueValuesEnum', 1)
+
+
+class Status(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
 
 
 class Subnetwork(_messages.Message):

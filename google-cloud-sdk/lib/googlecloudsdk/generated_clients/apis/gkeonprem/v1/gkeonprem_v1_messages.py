@@ -614,6 +614,7 @@ class BareMetalCluster(_messages.Message):
     uid: Output only. The unique identifier of the bare metal user cluster.
     updateTime: Output only. The time when the bare metal user cluster was
       last updated.
+    upgradePolicy: The cluster upgrade policy.
     validationCheck: Output only. The result of the preflight check.
   """
 
@@ -704,7 +705,8 @@ class BareMetalCluster(_messages.Message):
   storage = _messages.MessageField('BareMetalStorageConfig', 28)
   uid = _messages.StringField(29)
   updateTime = _messages.StringField(30)
-  validationCheck = _messages.MessageField('ValidationCheck', 31)
+  upgradePolicy = _messages.MessageField('BareMetalClusterUpgradePolicy', 31)
+  validationCheck = _messages.MessageField('ValidationCheck', 32)
 
 
 class BareMetalClusterOperationsConfig(_messages.Message):
@@ -716,6 +718,31 @@ class BareMetalClusterOperationsConfig(_messages.Message):
   """
 
   enableApplicationLogs = _messages.BooleanField(1)
+
+
+class BareMetalClusterUpgradePolicy(_messages.Message):
+  r"""BareMetalClusterUpgradePolicy defines the cluster upgrade policy.
+
+  Enums:
+    PolicyValueValuesEnum: Specifies which upgrade policy to use.
+
+  Fields:
+    policy: Specifies which upgrade policy to use.
+  """
+
+  class PolicyValueValuesEnum(_messages.Enum):
+    r"""Specifies which upgrade policy to use.
+
+    Values:
+      NODE_POOL_POLICY_UNSPECIFIED: No upgrade policy selected.
+      SERIAL: Upgrade worker node pools sequentially.
+      CONCURRENT: Upgrade all worker node pools in parallel.
+    """
+    NODE_POOL_POLICY_UNSPECIFIED = 0
+    SERIAL = 1
+    CONCURRENT = 2
+
+  policy = _messages.EnumField('PolicyValueValuesEnum', 1)
 
 
 class BareMetalControlPlaneConfig(_messages.Message):
@@ -1078,6 +1105,11 @@ class BareMetalNodePool(_messages.Message):
       a DNS subdomain. Name must be 63 characters or less, begin and end with
       alphanumerics, with dashes (-), underscores (_), dots (.), and
       alphanumerics between.
+    bareMetalVersion: Specifies node pool version. The field is used to
+      upgrade the nodepool to the specified version. When specified during
+      node pool creation, the maximum allowed version skew between cluster and
+      nodepool is 1 minor version. When the field is not specified during
+      nodepool creation, the nodepool is created at the cluster version.
     createTime: Output only. The time at which this bare metal node pool was
       created.
     deleteTime: Output only. The time at which this bare metal node pool was
@@ -1160,18 +1192,19 @@ class BareMetalNodePool(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  deleteTime = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  name = _messages.StringField(6)
-  nodePoolConfig = _messages.MessageField('BareMetalNodePoolConfig', 7)
-  reconciling = _messages.BooleanField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  status = _messages.MessageField('ResourceStatus', 10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
-  upgradePolicy = _messages.MessageField('BareMetalNodePoolUpgradePolicy', 13)
+  bareMetalVersion = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  deleteTime = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  name = _messages.StringField(7)
+  nodePoolConfig = _messages.MessageField('BareMetalNodePoolConfig', 8)
+  reconciling = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  status = _messages.MessageField('ResourceStatus', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+  upgradePolicy = _messages.MessageField('BareMetalNodePoolUpgradePolicy', 14)
 
 
 class BareMetalNodePoolConfig(_messages.Message):
@@ -1471,6 +1504,7 @@ class BareMetalStandaloneCluster(_messages.Message):
       cluster.
     updateTime: Output only. The time when the bare metal standalone cluster
       was last updated.
+    upgradePolicy: The cluster upgrade policy.
     validationCheck: Output only. The result of the preflight check.
   """
 
@@ -1571,7 +1605,8 @@ class BareMetalStandaloneCluster(_messages.Message):
   storage = _messages.MessageField('BareMetalStandaloneStorageConfig', 27)
   uid = _messages.StringField(28)
   updateTime = _messages.StringField(29)
-  validationCheck = _messages.MessageField('ValidationCheck', 30)
+  upgradePolicy = _messages.MessageField('BareMetalStandaloneClusterUpgradePolicy', 30)
+  validationCheck = _messages.MessageField('ValidationCheck', 31)
 
 
 class BareMetalStandaloneClusterOperationsConfig(_messages.Message):
@@ -1584,6 +1619,32 @@ class BareMetalStandaloneClusterOperationsConfig(_messages.Message):
   """
 
   enableApplicationLogs = _messages.BooleanField(1)
+
+
+class BareMetalStandaloneClusterUpgradePolicy(_messages.Message):
+  r"""BareMetalStandaloneClusterUpgradePolicy defines the cluster upgrade
+  policy.
+
+  Enums:
+    PolicyValueValuesEnum: Specifies which upgrade policy to use.
+
+  Fields:
+    policy: Specifies which upgrade policy to use.
+  """
+
+  class PolicyValueValuesEnum(_messages.Enum):
+    r"""Specifies which upgrade policy to use.
+
+    Values:
+      NODE_POOL_POLICY_UNSPECIFIED: No upgrade policy selected.
+      SERIAL: Upgrade worker node pools sequentially.
+      CONCURRENT: Upgrade all worker node pools in parallel.
+    """
+    NODE_POOL_POLICY_UNSPECIFIED = 0
+    SERIAL = 1
+    CONCURRENT = 2
+
+  policy = _messages.EnumField('PolicyValueValuesEnum', 1)
 
 
 class BareMetalStandaloneControlPlaneConfig(_messages.Message):
@@ -6033,13 +6094,15 @@ class VmwareAdminLoadBalancerConfig(_messages.Message):
     f5Config: Configuration for F5 Big IP typed load balancers.
     manualLbConfig: Manually configured load balancers.
     metalLbConfig: MetalLB load balancers.
+    seesawConfig: Output only. Configuration for Seesaw typed load balancers.
     vipConfig: The VIPs used by the load balancer.
   """
 
   f5Config = _messages.MessageField('VmwareAdminF5BigIpConfig', 1)
   manualLbConfig = _messages.MessageField('VmwareAdminManualLbConfig', 2)
   metalLbConfig = _messages.MessageField('VmwareAdminMetalLbConfig', 3)
-  vipConfig = _messages.MessageField('VmwareAdminVipConfig', 4)
+  seesawConfig = _messages.MessageField('VmwareAdminSeesawConfig', 4)
+  vipConfig = _messages.MessageField('VmwareAdminVipConfig', 5)
 
 
 class VmwareAdminManualLbConfig(_messages.Message):
@@ -6101,6 +6164,42 @@ class VmwareAdminNetworkConfig(_messages.Message):
   serviceAddressCidrBlocks = _messages.StringField(5, repeated=True)
   staticIpConfig = _messages.MessageField('VmwareStaticIpConfig', 6)
   vcenterNetwork = _messages.StringField(7)
+
+
+class VmwareAdminSeesawConfig(_messages.Message):
+  r"""VmwareSeesawConfig represents configuration parameters for an already
+  existing Seesaw load balancer. IMPORTANT: Please note that the Anthos On-
+  Prem API will not generate or update Seesaw configurations it can only bind
+  a pre-existing configuration to a new user cluster. IMPORTANT: When
+  attempting to create a user cluster with a pre-existing Seesaw load balancer
+  you will need to follow some preparation steps before calling the
+  'CreateVmwareCluster' API method. First you will need to create the user
+  cluster's namespace via kubectl. The namespace will need to use the
+  following naming convention : -gke-onprem-mgmt or -gke-onprem-mgmt depending
+  on whether you used the 'VmwareCluster.local_name' to disambiguate
+  collisions; for more context see the documentation of
+  'VmwareCluster.local_name'. Once the namespace is created you will need to
+  create a secret resource via kubectl. This secret will contain copies of
+  your Seesaw credentials. The Secret must be called 'user-cluster-creds' and
+  contain Seesaw's SSH and Cert credentials. The credentials must be keyed
+  with the following names: 'seesaw-ssh-private-key', 'seesaw-ssh-public-key',
+  'seesaw-ssh-ca-key', 'seesaw-ssh-ca-cert'.
+
+  Fields:
+    enableHa: Enable two load balancer VMs to achieve a highly-available
+      Seesaw load balancer.
+    group: In general the following format should be used for the Seesaw group
+      name: seesaw-for-[cluster_name].
+    ipBlocks: The IP Blocks to be used by the Seesaw load balancer
+    masterIp: MasterIP is the IP announced by the master of Seesaw group.
+    vms: Names of the VMs created for this Seesaw group.
+  """
+
+  enableHa = _messages.BooleanField(1)
+  group = _messages.StringField(2)
+  ipBlocks = _messages.MessageField('VmwareIpBlock', 3, repeated=True)
+  masterIp = _messages.StringField(4)
+  vms = _messages.StringField(5, repeated=True)
 
 
 class VmwareAdminVCenterConfig(_messages.Message):
@@ -6212,6 +6311,7 @@ class VmwareCluster(_messages.Message):
     authorization: RBAC policy that will be applied and managed by the Anthos
       On-Prem API.
     autoRepairConfig: Configuration for auto repairing.
+    binaryAuthorization: Binary Authorization related configurations.
     controlPlaneNode: VMware user cluster control plane nodes must have either
       1 or 3 replicas.
     createTime: Output only. The time at which VMware user cluster was
@@ -6251,6 +6351,7 @@ class VmwareCluster(_messages.Message):
     uid: Output only. The unique identifier of the VMware user cluster.
     updateTime: Output only. The time at which VMware user cluster was last
       updated.
+    upgradePolicy: Specifies upgrade policy for the cluster.
     validationCheck: Output only. ValidationCheck represents the result of the
       preflight check job.
     vcenter: Output only. VmwareVCenterConfig specifies vCenter config for the
@@ -6321,29 +6422,42 @@ class VmwareCluster(_messages.Message):
   antiAffinityGroups = _messages.MessageField('VmwareAAGConfig', 4)
   authorization = _messages.MessageField('Authorization', 5)
   autoRepairConfig = _messages.MessageField('VmwareAutoRepairConfig', 6)
-  controlPlaneNode = _messages.MessageField('VmwareControlPlaneNodeConfig', 7)
-  createTime = _messages.StringField(8)
-  dataplaneV2 = _messages.MessageField('VmwareDataplaneV2Config', 9)
-  deleteTime = _messages.StringField(10)
-  description = _messages.StringField(11)
-  enableControlPlaneV2 = _messages.BooleanField(12)
-  endpoint = _messages.StringField(13)
-  etag = _messages.StringField(14)
-  fleet = _messages.MessageField('Fleet', 15)
-  loadBalancer = _messages.MessageField('VmwareLoadBalancerConfig', 16)
-  localName = _messages.StringField(17)
-  name = _messages.StringField(18)
-  networkConfig = _messages.MessageField('VmwareNetworkConfig', 19)
-  onPremVersion = _messages.StringField(20)
-  reconciling = _messages.BooleanField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  status = _messages.MessageField('ResourceStatus', 23)
-  storage = _messages.MessageField('VmwareStorageConfig', 24)
-  uid = _messages.StringField(25)
-  updateTime = _messages.StringField(26)
-  validationCheck = _messages.MessageField('ValidationCheck', 27)
-  vcenter = _messages.MessageField('VmwareVCenterConfig', 28)
-  vmTrackingEnabled = _messages.BooleanField(29)
+  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 7)
+  controlPlaneNode = _messages.MessageField('VmwareControlPlaneNodeConfig', 8)
+  createTime = _messages.StringField(9)
+  dataplaneV2 = _messages.MessageField('VmwareDataplaneV2Config', 10)
+  deleteTime = _messages.StringField(11)
+  description = _messages.StringField(12)
+  enableControlPlaneV2 = _messages.BooleanField(13)
+  endpoint = _messages.StringField(14)
+  etag = _messages.StringField(15)
+  fleet = _messages.MessageField('Fleet', 16)
+  loadBalancer = _messages.MessageField('VmwareLoadBalancerConfig', 17)
+  localName = _messages.StringField(18)
+  name = _messages.StringField(19)
+  networkConfig = _messages.MessageField('VmwareNetworkConfig', 20)
+  onPremVersion = _messages.StringField(21)
+  reconciling = _messages.BooleanField(22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  status = _messages.MessageField('ResourceStatus', 24)
+  storage = _messages.MessageField('VmwareStorageConfig', 25)
+  uid = _messages.StringField(26)
+  updateTime = _messages.StringField(27)
+  upgradePolicy = _messages.MessageField('VmwareClusterUpgradePolicy', 28)
+  validationCheck = _messages.MessageField('ValidationCheck', 29)
+  vcenter = _messages.MessageField('VmwareVCenterConfig', 30)
+  vmTrackingEnabled = _messages.BooleanField(31)
+
+
+class VmwareClusterUpgradePolicy(_messages.Message):
+  r"""VmwareClusterUpgradePolicy defines the cluster upgrade policy.
+
+  Fields:
+    controlPlaneOnly: Controls whether the upgrade applies to the control
+      plane only.
+  """
+
+  controlPlaneOnly = _messages.BooleanField(1)
 
 
 class VmwareControlPlaneNodeConfig(_messages.Message):
@@ -6896,14 +7010,16 @@ class VmwareVsphereConfig(_messages.Message):
   Fields:
     datastore: The name of the vCenter datastore. Inherited from the user
       cluster.
+    hostGroups: Vsphere host groups to apply to all VMs in the node pool
     storagePolicyName: The name of the vCenter storage policy. Inherited from
       the user cluster.
     tags: Tags to apply to VMs.
   """
 
   datastore = _messages.StringField(1)
-  storagePolicyName = _messages.StringField(2)
-  tags = _messages.MessageField('VmwareVsphereTag', 3, repeated=True)
+  hostGroups = _messages.StringField(2, repeated=True)
+  storagePolicyName = _messages.StringField(3)
+  tags = _messages.MessageField('VmwareVsphereTag', 4, repeated=True)
 
 
 class VmwareVsphereTag(_messages.Message):

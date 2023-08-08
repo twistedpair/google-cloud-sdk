@@ -6,6 +6,139 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 442.0.0 (2023-08-08)
+
+### Artifact Registry
+
+* Added an argument group of two flags `allow-sbom-generation` and `disable-sbom-generation` to `gcloud artifacts repositories create`, to set the SBOM generation config of the repository.
+* Added an argument group of two flags `allow-sbom-generation` and `disable-sbom-generation` to `gcloud artifacts repositories update`, to set the SBOM generation config of the repository.
+* Added `gcloud artifacts sbom export` command to export SBOM into Google Cloud Storage.
+* Added `gcloud artifacts sbom list` command to list SBOMs.
+* Added `gcloud artifacts sbom load` command to upload a custom SBOM for an artifact.
+* Added `gcloud artifacts vulnerabilities load-vex` command to upload a vex statement.
+* Added `gcloud artifacts vulnerabilities list` command to list vulnerabilities for an artifact.
+
+### Bare Metal Solution
+
+* Promoted `gcloud bms os-images list` to GA.
+
+### BigQuery
+
+* Fixed a bug in discovery doc load when caching is used.
+* Fixed a bug that caused a crash in some common actions like `bq show`.
+
+### Cloud Dataflow
+
+* Added `gcloud beta dataflow jobs update-options` which updates properties of
+running dataflow jobs.
+
+### Cloud Functions
+
+*  Warned about on deprecation of Container Registry (used by default by Cloud
+Functions 1st gen for storing build artifacts) and recommended transition to
+Artifact Registry:
+<https://cloud.google.com/artifact-registry/docs/transition/transition-from-gcr>.
+
+### Cloud Memorystore
+
+*   Added `MEMCACHED_VERSION` field to the output of the command `gcloud memcache instances list` to specify memcached version of the instance.
+
+### Cloud Run
+
+* Added `--network`, `--subnet`, `--network-tags`, `--clear-network` and
+  `--clear-network-tags` flags to the following commands to allow enabling or
+  disabling Direct VPC egress for a Cloud Run service or job:
+    * `gcloud beta run deploy`
+    * `gcloud beta run services update`
+    * `gcloud beta run jobs create`
+    * `gcloud beta run jobs deploy`
+    * `gcloud beta run jobs update`
+* Added `--args`, `--task-timeout`, `--tasks` and `--update-env-vars` flags
+  to `gcloud beta run jobs execute` to allow executing a Cloud Run job with runtime overrides.
+
+### Cloud SQL
+
+*   Added `--enable-private-service-connect`, `--allowed-psc-projects` and
+    `--clear-allowed-psc-projects` flags to `gcloud sql instances create`
+    and `gcloud sql instances patch` to support Private Service Connect
+    for Cloud SQL.
+*   Added `gcloud  sql instances reencrypt`, which re-encrypts a Cloud SQL CMEK instance
+    with the current primary key version.
+
+### Cloud Services
+
+*  Promoted `gcloud services api-keys lookup` to GA.
+
+### Compute Engine
+
+* Added support for `version`=`12` and `short-name`=`debian` in `--os-types` for `gcloud beta compute instances ops-agents policies [create|update]`.
+* Promoted `--auto-network-tier` flag of `gcloud compute routers nats create` and `gcloud compute routers nats update` to GA.
+* Added `--local-ssd-recovery-timeout` to specify the timeout to recover Local
+SSD to GA for:
+    * `gcloud compute instances create`
+    * `gcloud compute instances create-with-container`
+    * `gcloud compute instance-templates create`
+    * `gcloud compute instances bulk create`
+    * `gcloud compute instances set-scheduling`
+    * `gcloud compute instances update-from-file`
+* Added `gcloud compute security-policies add/remove-layer7-ddos-defense-threshold-config`.
+* Added `--maintenance-interval` to specify the frequency of planned maintenance events to beta for:
+    * `gcloud compute instance-templates create`
+* Promoted `--resource-policies` flag for `glcloud compute commitments create`to to beta.
+* Promoted `--resource-policies` flag for `glcloud compute commitments create`to to GA.
+
+### Database Migration
+
+* Modified `gcloud database-migration connection-profiles --help` to specify what the host field value should be when `--psc-service-attachment` is also specified.
+* Added `--edition` to `gcloud database-migration connection-profiles create cloudsql` to allow creating a connection profile with the edition of the given Cloud SQL instance.
+* Added `skip-validation` param to `gcloud database-migration migration-jobs start`
+  and `gcloud database-migration migration-jobs restart` to allow starting/restarting
+  migration jobs without running validations.
+
+### Kpt
+
+* Updated kpt in Google Cloud CLI from 1.0.0-beta.37 to 1.0.0-beta.41.
+
+### Kubernetes Engine
+
+* flag when create a cluster.
+* Fixed issue of
+  `gcloud container cluster update --dataplane-v2-observability-mode` resetting
+  `dataplane-v2-metrics` to false.
+* Updated help-text by adding hyperdisk types to `--disk-type` choices.
+
+### Network Management
+
+* Added `forwardingRule` argument for destination in
+ `gcloud network-management connectivity-tests`. This allows the user to run
+ tests using a Forwarding Rule endpoint as a source.
+
+### Network Security
+
+* Added labels support for Security Profile `create`, `add-override`, `delete-override` and `update-override` commands.
+
+### Recommender
+
+* Added a `list` command for locations that lists all locations.
+
+### Transcoder
+
+* Added support for `--batch-mode-priority` flag when creating a new job.
+
+### Transfer
+
+* Log info about agent delete delays.
+* Fix bug for users mounting root with `--mount-directories`.
+
+### Workbench
+
+* Added `gcloud workbench instances rollback` to rollback workbench instances.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
 ## 441.0.0 (2023-08-01)
 
 ### Artifact Registry

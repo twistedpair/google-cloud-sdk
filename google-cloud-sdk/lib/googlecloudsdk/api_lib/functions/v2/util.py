@@ -140,6 +140,17 @@ def GetStateMessage(messages):
     return messages.GoogleCloudFunctionsV2StateMessage
 
 
+def GetApiEndpointOverride():
+  # type: () -> str | None
+  """Returns the API endpoint override property value for GCF."""
+  try:
+    return properties.VALUES.api_endpoint_overrides.Property(
+        'cloudfunctions'
+    ).Get()
+  except properties.NoSuchPropertyError:
+    return None
+
+
 def GetClientInstance(release_track):
   """Returns an API client for GCFv2."""
   api_version = RELEASE_TRACK_TO_API_VERSION.get(release_track)
@@ -533,10 +544,7 @@ def PromptToEnableDataAccessAuditLogs(service):
 
 def GetCloudFunctionsApiEnv():
   """Determine the cloudfunctions API env the gcloud cmd is using."""
-  endpoint_property = getattr(
-      properties.VALUES.api_endpoint_overrides, 'cloudfunctions'
-  )
-  api_string = endpoint_property.Get()
+  api_string = GetApiEndpointOverride()
   if api_string is None:
     return ApiEnv.PROD
   if 'test-cloudfunctions' in api_string:

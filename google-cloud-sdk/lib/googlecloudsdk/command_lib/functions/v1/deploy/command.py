@@ -480,11 +480,13 @@ def Run(args, track=None):
           base.ReleaseTrack.ALPHA,
           base.ReleaseTrack.BETA,
       )
-      and args.IsSpecified('automatic_update_policy')
-      and args.automatic_update_policy == 'automatic'
+      and args.IsSpecified('runtime_update_policy')
   ):
-    function.automaticUpdatePolicy = messages.AutomaticUpdatePolicy()
-    updated_fields.append('automatic_update_policy')
+    if args.runtime_update_policy == 'automatic':
+      function.automaticUpdatePolicy = messages.AutomaticUpdatePolicy()
+    if args.runtime_update_policy == 'on-deploy':
+      function.onDeployUpdatePolicy = messages.OnDeployUpdatePolicy()
+    updated_fields.extend(['automaticUpdatePolicy', 'onDeployUpdatePolicy'])
 
   warning = api_util.ValidateRuntimeOrRaise(
       v2_client.FunctionsClient(base.ReleaseTrack.GA),
@@ -640,6 +642,10 @@ def Run(args, track=None):
       )
 
     op = api_util.CreateFunction(function, function_ref.Parent().RelativeName())
+    if api_util.IsGcrRepository(function):
+      api_util.ValidateSecureImageRepositoryOrWarn(
+          function_ref.locationsId, _GetProject()
+      )
     if (
         function.httpsTrigger
         and not ensure_all_users_invoke
@@ -654,7 +660,10 @@ def Run(args, track=None):
 
   elif updated_fields:
     op = api_util.PatchFunction(function, updated_fields)
-
+    if api_util.IsGcrRepository(function):
+      api_util.ValidateSecureImageRepositoryOrWarn(
+          function_ref.locationsId, _GetProject()
+      )
   else:
     op = None  # Nothing to wait for
     if not ensure_all_users_invoke and not deny_all_users_invoke:

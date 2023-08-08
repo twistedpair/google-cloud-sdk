@@ -70,14 +70,6 @@ def AddProfileDescription(parser, required=False):
   )
 
 
-def AddEnablePacketCaptureArg(parser, required=False):
-  parser.add_argument(
-      "--enable-packet-capture",
-      required=required,
-      help="The flag will be set to default if not specified",
-  )
-
-
 def AddSecurityProfileResource(parser, release_track):
   """Adds Security Profile Threat Prevention type."""
   name = "security_profile"

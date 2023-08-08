@@ -601,6 +601,132 @@ def CreateSnoozeFromArgs(args, messages):
   return snooze
 
 
+# Conversions from interval suffixes to number of seconds.
+# (m => 60s, d => 86400s, etc)
+_INTERVAL_CONV_DICT = {'s': 1}
+_INTERVAL_CONV_DICT['ms'] = 0.001 * _INTERVAL_CONV_DICT['s']
+_INTERVAL_CONV_DICT['m'] = 60 * _INTERVAL_CONV_DICT['s']
+_INTERVAL_CONV_DICT['h'] = 60 * _INTERVAL_CONV_DICT['m']
+_INTERVAL_CONV_DICT['d'] = 24 * _INTERVAL_CONV_DICT['h']
+_INTERVAL_CONV_DICT['w'] = 7 * _INTERVAL_CONV_DICT['d']
+_INTERVAL_CONV_DICT['y'] = 365 * _INTERVAL_CONV_DICT['d']
+_INTERVAL_REGEXP = re.compile(
+    '^([0-9]+)([%s%s?])?'
+    % (''.join(_INTERVAL_CONV_DICT), ''.join(_INTERVAL_CONV_DICT))
+)
+
+
+def ConvertIntervalToSeconds(interval):
+  """Forked from datelib.py.
+
+  Convert a formatted Prometheus string representing an interval into seconds.
+
+  The accepted interval string syntax is:
+    interval: (interval_part)*
+    interval_part: decimal_integer unit
+    unit: "ms"       # Milliseconds
+        | "s"        # Seconds
+        | "m"        # Minutes
+        | "h"        # Hours
+        | "d"        # Days
+        | "w"        # Weeks (7 days)
+        | "y"        # Years (365 days)
+
+  No whitespace is allowed.
+  The empty string is valid (and equivalent to 0 seconds).
+  |decimal_integer| cannot include a sign.
+  No endianness ordering is required when using multiple interval_part-s. For
+  example, "1s1Y" and "1Y1s" are both valid.
+
+  Examples:
+    "45m" = 45 minutes
+    "14d12h" = 14 days + 12 hours
+    "5d12h30m" = 5 days + 12 hours + 30 minutes
+
+  Args:
+    interval: String to interpret as an interval.  See above for a description
+      of the syntax.
+
+  Raises:
+    MissingRequiredFieldError: If the provided time_string contains unexpected
+    characters.
+
+  Returns:
+    A non-negative integer representing the number of seconds represented by the
+    interval string, or None if the interval string could not be decoded.
+  """
+  total = 0
+  # 'ms' breaks the regex logic; must be handled separately.
+  if interval[-2:] == 'ms':
+    end_of_number_index = -1
+    for i in range(len(interval) - 3, -1, -1):
+      if not interval[i].isdecimal():
+        end_of_number_index = i
+        break
+    total += _INTERVAL_CONV_DICT.get('ms') * int(
+        interval[end_of_number_index + 1 : -2]
+    )
+    interval = interval[: end_of_number_index + 1]
+
+  while interval:
+    match = _INTERVAL_REGEXP.match(interval)
+    if not match:
+      raise MissingRequiredFieldError(
+          'Found invalid character in {}, which is neither an integer nor unit'
+          ' of time.'.format(interval)
+      )
+
+    try:
+      num = int(match.group(1))
+    except ValueError:
+      return None
+
+    suffix = match.group(2)
+    if suffix:
+      multiplier = _INTERVAL_CONV_DICT.get(suffix)
+      if not multiplier:
+        return None
+      num *= multiplier
+
+    total += num
+    interval = interval[match.end(0) :]
+  return total
+
+
+def ConvertPrometheusTimeStringToEvaluationDurationInSeconds(time_string):
+  """Converts Prometheus time to duration JSON string.
+
+  Args:
+    time_string: String provided by the alert rule YAML file defining time
+      (ex:1h30m)
+
+  Returns:
+    Duration proto string representing the adjusted seconds (multiple of 30
+    seconds) value of the provided time_string
+  """
+  seconds = ConvertIntervalToSeconds(time_string)
+  if seconds < 30:
+    log.out.Print(
+        '{time_string} converted to {seconds}s is less than 30 seconds.'
+        ' Rounding {seconds}s up to 30s.'.format(
+            time_string=time_string,
+            seconds=seconds,
+        )
+    )
+    seconds = 30
+  elif seconds % 30 != 0:
+    log.out.Print(
+        '{time_string} converted to {seconds}s is not a multiple of 30'
+        ' seconds. Rounding {seconds}s down to {rounded_seconds}s.'.format(
+            time_string=time_string,
+            seconds=seconds,
+            rounded_seconds=int(seconds - (seconds % 30)),
+        )
+    )
+    seconds = int(seconds - (seconds % 30))
+  return _FormatDuration(seconds)
+
+
 def BuildPrometheusCondition(messages, group, rule):
   """Populates Alert Policy conditions translated from a Prometheus alert rule.
 
@@ -638,10 +764,14 @@ def BuildPrometheusCondition(messages, group, rule):
 
   # optional fields
   if rule.get('for') is not None:
-    condition.conditionPrometheusQueryLanguage.duration = rule.get('for')
+    condition.conditionPrometheusQueryLanguage.duration = _FormatDuration(
+        ConvertIntervalToSeconds(rule.get('for'))
+    )
   if group.get('interval') is not None:
-    condition.conditionPrometheusQueryLanguage.evaluationInterval = group.get(
-        'interval'
+    condition.conditionPrometheusQueryLanguage.evaluationInterval = (
+        ConvertPrometheusTimeStringToEvaluationDurationInSeconds(
+            group.get('interval')
+        )
     )
   if rule.get('labels') is not None:
     condition.conditionPrometheusQueryLanguage.labels = (

@@ -434,6 +434,39 @@ def AddCloudStorageConfigFlags(parser, is_update):
   )
 
 
+def AddPubsubExportConfigFlags(parser, is_update):
+  """Adds Pubsub export config flags to parser."""
+  current_group = parser
+  if is_update:
+    mutual_exclusive_group = current_group.add_mutually_exclusive_group(
+        hidden=True
+    )
+    mutual_exclusive_group.add_argument(
+        '--clear-pubsub-export-config',
+        action='store_true',
+        default=None,
+        hidden=True,
+        help='If set, clear the Pubsub Export config from the subscription.',
+    )
+    current_group = mutual_exclusive_group
+  pubsub_export_config_group = current_group.add_argument_group(
+      hidden=True,
+      help="""Cloud Pub/Sub Export Config Options. The Cloud Pub/Sub service
+      account associated with the enclosing subscription's parent project
+      (i.e., service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
+      must have permission to publish to the destination Cloud Pub/Sub topic."""
+  )
+  pubsub_export_topic = resource_args.CreateTopicResourceArg(
+      'to publish messages to.',
+      flag_name='pubsub-export-topic',
+      positional=False,
+      required=False,
+  )
+  resource_args.AddResourceArgs(
+      pubsub_export_config_group, [pubsub_export_topic]
+  )
+
+
 def ParseSubscriptionRetentionDurationWithDefault(value):
   if value == subscriptions.DEFAULT_MESSAGE_RETENTION_VALUE:
     return value
@@ -447,13 +480,17 @@ def ParseExpirationPeriodWithNeverSentinel(value):
 
 
 def AddSubscriptionSettingsFlags(
-    parser, is_update=False
+    parser,
+    is_update=False,
+    enable_push_to_cps=False,
 ):
   """Adds the flags for creating or updating a subscription.
 
   Args:
     parser: The argparse parser.
     is_update: Whether or not this is for the update operation (vs. create).
+    enable_push_to_cps: whether or not to enable Pubsub Export config flags
+      support.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(
@@ -464,6 +501,8 @@ def AddSubscriptionSettingsFlags(
   mutex_group = parser.add_mutually_exclusive_group()
   AddBigQueryConfigFlags(mutex_group, is_update)
   AddCloudStorageConfigFlags(mutex_group, is_update)
+  if enable_push_to_cps:
+    AddPubsubExportConfigFlags(mutex_group, is_update)
   AddSubscriptionMessageRetentionFlags(parser, is_update)
   if not is_update:
     parser.add_argument(

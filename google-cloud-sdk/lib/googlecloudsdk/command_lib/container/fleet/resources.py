@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.api_lib.container.fleet import util
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.calliope.concepts import concepts
@@ -562,6 +563,107 @@ def AddRBACResourceArg(parser, api_version='v1', rbacrb_help=''):
       'The group of arguments defining an RBACRoleBinding.',
       plural=False,
       required=True).AddToParser(parser)
+
+
+def AddUpdateNamespaceLabelsFlags(parser):
+  """Adds flags to an argparse parser for updating namespace labels.
+
+  Args:
+    parser: The argparse parser to add the flags to.
+  """
+  _GetUpdateNamespaceLabelsFlag('namespace').AddToParser(parser)
+  remove_group = parser.add_mutually_exclusive_group()
+  _GetClearNamespaceLabelsFlag('namespace').AddToParser(
+      remove_group
+  )
+  _GetRemoveNamespaceLabelsFlag('namespace').AddToParser(remove_group)
+
+
+def UpdateScopeLabelsFlags():
+  remove_group = calliope_base.ArgumentGroup(mutex=True)
+  remove_group.AddArgument(
+      _GetClearNamespaceLabelsFlag('scope')
+  )
+  remove_group.AddArgument(
+      _GetRemoveNamespaceLabelsFlag('scope')
+  )
+  return [
+      _GetUpdateNamespaceLabelsFlag('scope'),
+      remove_group,
+  ]
+
+
+def AddCreateNamespaceLabelsFlags(parser):
+  """Adds flags to an argparse parser for creating namespace labels.
+
+  Args:
+    parser: The argparse parser to add the flags to.
+  """
+  _GetCreateNamespaceLabelsFlag('namespace').AddToParser(parser)
+
+
+def CreateScopeLabelsFlags():
+  return [_GetCreateNamespaceLabelsFlag('scope')]
+
+
+def _GetClearNamespaceLabelsFlag(resource_type):
+  labels_name = 'namespace-labels'
+  return calliope_base.Argument(
+      '--clear-{}'.format(labels_name),
+      action='store_true',
+      help="""\
+          Remove all {resource_type}-level labels from the cluster namespace. If `--update-{labels}` is also specified then
+          `--clear-{labels}` is applied first.
+
+          For example, to remove all labels:
+
+              $ {{command}} {resource_type}_name --clear-{labels}
+
+          To remove all existing {resource_type}-level labels and create two new labels,
+          ``foo'' and ``baz'':
+
+              $ {{command}} {resource_type}_name --clear-{labels} --update-{labels} foo=bar,baz=qux
+          """.format(labels=labels_name, resource_type=resource_type))
+
+
+def _GetRemoveNamespaceLabelsFlag(resource_type):
+  labels_name = 'namespace-labels'
+  return calliope_base.Argument(
+      '--remove-{}'.format(labels_name),
+      metavar='KEY',
+      type=arg_parsers.ArgList(),
+      action=arg_parsers.UpdateAction,
+      help="""\
+      List of {resource_type}-level label keys to remove in the cluster namespace. If a label does not exist it is
+      silently ignored. If `--update-{labels}` is also specified then
+      `--update-{labels}` is applied first.
+      """.format(labels=labels_name, resource_type=resource_type))
+
+
+def _GetUpdateNamespaceLabelsFlag(resource_type):
+  """Makes a base.Argument for the `--update-namespace-labels` flag."""
+  labels_name = 'namespace-labels'
+  return calliope_base.Argument(
+      '--update-{}'.format(labels_name),
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      help="""\
+      List of {resource_type}-level label KEY=VALUE pairs to update in the cluster namespace. If a
+      label exists, its value is modified. Otherwise, a new label is'
+      created.""".format(resource_type=resource_type))
+
+
+def _GetCreateNamespaceLabelsFlag(resource_type):
+  labels_name = 'namespace-labels'
+  return calliope_base.Argument(
+      '--{}'.format(labels_name),
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      help="""\
+      List of {resource_type}-level label KEY=VALUE pairs to add.
+      """.format(resource_type=resource_type))
 
 
 def RBACResourceName(args):

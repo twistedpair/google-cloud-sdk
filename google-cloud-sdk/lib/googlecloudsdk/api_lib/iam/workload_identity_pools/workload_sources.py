@@ -125,7 +125,7 @@ def WaitForWorkloadSourceOperation(
     )
   else:
     result = waiter.WaitFor(
-        identity_pool_waiter.WorkloadSourcesOperationPoller(
+        identity_pool_waiter.IdentityPoolOperationPoller(
             client.projects_locations_workloadIdentityPools_namespaces_workloadSources,
             client.projects_locations_workloadIdentityPools_namespaces_workloadSources_operations,
         ),

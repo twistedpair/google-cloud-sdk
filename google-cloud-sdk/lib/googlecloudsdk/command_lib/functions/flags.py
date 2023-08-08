@@ -905,12 +905,12 @@ def AddIgnoreFileFlag(parser):
   )
 
 
-# Flags for Automatic Base Image Update
-def AddAutomaticUpdatePolicy(parser, track):
-  """Adds flags for selecting the automatic update policy."""
+# Flags for Runtime Updates
+def AddRuntimeUpdatePolicy(parser, track):
+  """Adds flags for selecting the runtime update policy."""
   if track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
     parser.add_argument(
-        '--automatic-update-policy',
+        '--runtime-update-policy',
         hidden=True,
         help="""\
         Runtime update policy for the function being deployed.

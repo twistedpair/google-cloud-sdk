@@ -64,7 +64,7 @@ def AddPasswordFlagGroup(parser, required=False):
       '--password',
       help="""\
           Password for the user that Database Migration Service uses to
-          connect to the source database. Database Migration Service encrypts
+          connect to the database. Database Migration Service encrypts
           the value when storing it, and the field is not returned on request.
           """)
   password_group.add_argument(
@@ -76,7 +76,10 @@ def AddPasswordFlagGroup(parser, required=False):
 def AddHostFlag(parser, required=False):
   """Adds --host flag to the given parser."""
   help_text = """\
-    IP or hostname of the source database.
+    IP or hostname of the database.
+    When `--psc-service-attachment` is also specified, this field value should be:
+    1. For Cloud SQL PSC enabled instance - the dns_name field (e.g <uid>.<region>.sql.goog.).
+    2. For Cloud SQL PSA instance (vpc peering) - the private ip of the instance.
   """
   parser.add_argument('--host', help=help_text, required=required)
 
@@ -84,7 +87,7 @@ def AddHostFlag(parser, required=False):
 def AddPortFlag(parser, required=False):
   """Adds --port flag to the given parser."""
   help_text = """\
-    Network port of the source database.
+    Network port of the database.
   """
   parser.add_argument('--port', help=help_text, required=required, type=int)
 
@@ -104,7 +107,7 @@ def AddSslConfigGroup(parser, release_track):
 def AddCaCertificateFlag(parser, required=False):
   """Adds --ca-certificate flag to the given parser."""
   help_text = """\
-    x509 PEM-encoded certificate of the CA that signed the source database
+    x509 PEM-encoded certificate of the CA that signed the database
     server's certificate. The replica will use this certificate to verify
     it's connecting to the correct host. Database Migration Service encrypts the
     value when storing it.
@@ -116,7 +119,7 @@ def AddCertificateFlag(parser, required=False):
   """Adds --certificate flag to the given parser."""
   help_text = """\
     x509 PEM-encoded certificate that will be used by the replica to
-    authenticate against the source database server.
+    authenticate against the database server.
   """
   parser.add_argument('--certificate', help=help_text, required=required)
 
@@ -125,7 +128,7 @@ def AddClientCertificateFlag(parser, required=False):
   """Adds --client-certificate flag to the given parser."""
   help_text = """\
     x509 PEM-encoded certificate that will be used by the replica to
-    authenticate against the source database server. Database Migration Service
+    authenticate against the database server. Database Migration Service
     encrypts the value when storing it.
   """
   parser.add_argument('--client-certificate', help=help_text, required=required)

@@ -1443,6 +1443,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'dataprocgdc': {
+        'v1alpha1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.dataprocgdc.v1alpha1',
+                    client_classpath='dataprocgdc_v1alpha1_client.DataprocgdcV1alpha1',
+                    base_url='https://dataprocgdc.googleapis.com/',
+                    messages_modulepath='dataprocgdc_v1alpha1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'datastore': {
         'v1':
             APIDef(
@@ -2438,6 +2450,16 @@ MAP = {
                 mtls_endpoint_override='https://monitoring.mtls.googleapis.com/'),
     },
     'netapp': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.netapp.v1',
+                    client_classpath='netapp_v1_client.NetappV1',
+                    base_url='https://netapp.googleapis.com/',
+                    messages_modulepath='netapp_v1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(

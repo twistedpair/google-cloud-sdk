@@ -33,6 +33,16 @@ def GetNamePrefixFlag():
   return base.Argument('--name-prefix', help=help_text)
 
 
+def GetClearNamePrefixFlag():
+  """Gets the --clear-name-prefix flag."""
+  help_text = """\
+  Clears the name prefix for the system generated reservations.
+  """
+  return base.Argument(
+      '--clear-name-prefix', action='store_true', help=help_text
+  )
+
+
 def GetTotalCountFlag(required=True):
   """Gets the --total-count flag."""
   help_text = """\
@@ -40,13 +50,15 @@ def GetTotalCountFlag(required=True):
   future time period.
   """
   return base.Argument(
-      '--total-count', required=required, type=int, help=help_text)
+      '--total-count', required=required, type=int, help=help_text
+  )
 
 
 def GetStartTimeFlag(required=True):
   """Gets the --start-time flag."""
   return base.Argument(
-      '--start-time', required=required, type=str, help=GetStartTimeHelpText())
+      '--start-time', required=required, type=str, help=GetStartTimeHelpText()
+  )
 
 
 def GetStartTimeHelpText():
@@ -71,6 +83,53 @@ def GetEndTimeHelpText():
   return help_text
 
 
+def GetAutoDeleteAutoCreatedReservationsFlag(required=False):
+  """Gets the --auto-delete-auto-created-reservations flag."""
+  help_text = """\
+  If specified, the auto-created reservations for a future reservation
+  are deleted at the end time (default) or at a specified delete time.
+  """
+  return base.Argument(
+      '--auto-delete-auto-created-reservations',
+      action='store_true',
+      help=help_text,
+      required=required,
+  )
+
+
+def GetAutoCreatedReservationsDeleteTimeFlag(required=False):
+  """Gets the --auto-created-reservations-delete-time flag."""
+  help_text = """\
+  Automatically deletes an auto-created reservations at a specific time.
+  The specified time must be an RFC3339 timestamp, which must be
+  formatted as "YYYY-MM-DDTHH:MM:SSZ" where YYYY = year, MM = month, DD = day,
+  HH = hours, MM = minutes, SS = seconds, and Z = time zone in
+  Coordinated Universal Time (UTC). For example, specify 2021-11-20T07:00:00Z.
+  """
+  return base.Argument(
+      '--auto-created-reservations-delete-time',
+      required=required,
+      type=arg_parsers.Datetime.Parse,
+      help=help_text,
+  )
+
+
+def GetAutoCreatedReservationsDurationFlag(required=False):
+  """Gets the --auto-created-reservations-duration flag."""
+  help_text = """\
+  Automatically deletes an auto-created reservations after a specified
+  number of days, hours, minutes, or seconds. For example, specify 30m
+  for 30 minutes, or 1d2h3m4s for 1 day, 2 hours, 3 minutes, and 4
+  seconds. For more information, see $ gcloud topic datetimes.
+  """
+  return base.Argument(
+      '--auto-created-reservations-duration',
+      required=required,
+      type=arg_parsers.Duration(),
+      help=help_text,
+  )
+
+
 def GetDurationHelpText():
   """Gets the --duration help text."""
   help_text = """\
@@ -89,7 +148,8 @@ def GetSharedSettingFlag(custom_name=None):
   return base.Argument(
       custom_name if custom_name else '--share-setting',
       choices=['local', 'projects'],
-      help=help_text)
+      help=help_text,
+  )
 
 
 def GetShareWithFlag(custom_name=None):
@@ -103,7 +163,8 @@ def GetShareWithFlag(custom_name=None):
       custom_name if custom_name else '--share-with',
       type=arg_parsers.ArgList(min_length=1),
       metavar='PROJECT',
-      help=help_text)
+      help=help_text,
+  )
 
 
 def GetClearShareSettingsFlag():
@@ -113,8 +174,8 @@ def GetClearShareSettingsFlag():
   future reservation.
   """
   return base.Argument(
-      '--clear-share-settings', action='store_true',
-      help=help_text)
+      '--clear-share-settings', action='store_true', help=help_text
+  )
 
 
 def GetClearLocalSsdFlag():
@@ -167,6 +228,7 @@ def AddCreateFlags(
     support_instance_template=False,
     support_planning_status=False,
     support_local_ssd_count=False,
+    support_auto_delete=False,
 ):
   """Adds all flags needed for the create command."""
   GetNamePrefixFlag().AddToParser(parser)
@@ -176,24 +238,29 @@ def AddCreateFlags(
     GetPlanningStatusFlag().AddToParser(parser)
 
   specific_sku_properties_group = base.ArgumentGroup(
-      'Manage the instance properties for the Specific SKU reservation. You must either provide a source instance template or define the instance properties.',
+      'Manage the instance properties for the Specific SKU reservation. You'
+      ' must either provide a source instance template or define the instance'
+      ' properties.',
       required=True,
-      mutex=True)
+      mutex=True,
+  )
 
   if support_instance_template:
     specific_sku_properties_group.AddArgument(
-        reservation_flags.GetSourceInstanceTemplateFlag())
+        reservation_flags.GetSourceInstanceTemplateFlag()
+    )
 
   AddTimeWindowFlags(parser, time_window_requird=True)
 
   instance_properties_group = base.ArgumentGroup(
-      'Define individual instance properties for the specific SKU reservation.')
-  instance_properties_group.AddArgument(
-      reservation_flags.GetMachineType())
+      'Define individual instance properties for the specific SKU reservation.'
+  )
+  instance_properties_group.AddArgument(reservation_flags.GetMachineType())
   instance_properties_group.AddArgument(reservation_flags.GetMinCpuPlatform())
   if support_local_ssd_count:
     instance_properties_group.AddArgument(
-        reservation_flags.GetLocalSsdFlagWithCount())
+        reservation_flags.GetLocalSsdFlagWithCount()
+    )
   else:
     instance_properties_group.AddArgument(reservation_flags.GetLocalSsdFlag())
   instance_properties_group.AddArgument(reservation_flags.GetAcceleratorFlag())
@@ -201,19 +268,25 @@ def AddCreateFlags(
     instance_properties_group.AddArgument(reservation_flags.GetLocationHint())
   if support_fleet:
     instance_properties_group.AddArgument(
-        instance_flags.AddMaintenanceFreezeDuration())
+        instance_flags.AddMaintenanceFreezeDuration()
+    )
     instance_properties_group.AddArgument(
-        instance_flags.AddMaintenanceInterval())
+        instance_flags.AddMaintenanceInterval()
+    )
 
   specific_sku_properties_group.AddArgument(instance_properties_group)
   specific_sku_properties_group.AddToParser(parser)
 
   if support_share_setting:
     share_group = base.ArgumentGroup(
-        'Manage the properties of a shared reservation.', required=False)
+        'Manage the properties of a shared reservation.', required=False
+    )
     share_group.AddArgument(GetSharedSettingFlag())
     share_group.AddArgument(GetShareWithFlag())
     share_group.AddToParser(parser)
+
+  if support_auto_delete:
+    AddAutoDeleteFlags(parser)
 
 
 def AddUpdateFlags(
@@ -223,18 +296,27 @@ def AddUpdateFlags(
     support_planning_status=False,
     support_local_ssd_count=False,
     support_share_setting=False,
+    support_auto_delete=False
 ):
   """Adds all flags needed for the update command."""
 
-  GetNamePrefixFlag().AddToParser(parser)
+  name_prefix_group = base.ArgumentGroup(
+      'Manage the name-prefix of a future reservation.',
+      required=False,
+      mutex=True
+  )
+  name_prefix_group.AddArgument(GetNamePrefixFlag())
+  name_prefix_group.AddArgument(GetClearNamePrefixFlag())
+  name_prefix_group.AddToParser(parser)
+
   GetTotalCountFlag(required=False).AddToParser(parser)
   reservation_flags.GetDescriptionFlag().AddToParser(parser)
 
   if support_planning_status:
     GetPlanningStatusFlag().AddToParser(parser)
   group = base.ArgumentGroup(
-      'Manage the specific SKU reservation properties.',
-      required=False)
+      'Manage the specific SKU reservation properties.', required=False
+  )
   group.AddArgument(reservation_flags.GetMachineType(required=False))
   group.AddArgument(reservation_flags.GetMinCpuPlatform())
 
@@ -283,15 +365,47 @@ def AddUpdateFlags(
     share_group.AddArgument(share_setting_group)
     share_group.AddToParser(parser)
 
+  if support_auto_delete:
+    AddAutoDeleteFlags(parser, is_update=True)
+
+
+def AddAutoDeleteFlags(parser, is_update=False):
+  """Adds all flags needed for the modifying the auto-delete properties."""
+
+  GetAutoDeleteAutoCreatedReservationsFlag(
+      required=False if is_update else True
+  ).AddToParser(parser)
+
+  auto_delete_time_settings_group = base.ArgumentGroup(
+      'Manage the auto-delete time properties.',
+      required=False,
+      mutex=True,
+  )
+
+  auto_delete_time_settings_group.AddArgument(
+      GetAutoCreatedReservationsDeleteTimeFlag()
+  )
+  auto_delete_time_settings_group.AddArgument(
+      GetAutoCreatedReservationsDurationFlag()
+  )
+
+  auto_delete_time_settings_group.AddToParser(parser)
+
 
 def AddTimeWindowFlags(parser, time_window_requird=False):
+  """Adds all flags needed for the modifying the time window properties."""
+
   time_window_group = parser.add_group(
       help='Manage the time specific properties for requesting future capacity',
-      required=time_window_requird)
+      required=time_window_requird,
+  )
   time_window_group.add_argument(
-      '--start-time', required=time_window_requird, help=GetStartTimeHelpText())
+      '--start-time', required=time_window_requird, help=GetStartTimeHelpText()
+  )
   end_time_window_group = time_window_group.add_mutually_exclusive_group(
-      required=time_window_requird)
+      required=time_window_requird
+  )
   end_time_window_group.add_argument('--end-time', help=GetEndTimeHelpText())
   end_time_window_group.add_argument(
-      '--duration', type=int, help=GetDurationHelpText())
+      '--duration', type=int, help=GetDurationHelpText()
+  )

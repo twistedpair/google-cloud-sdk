@@ -17,7 +17,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import argparse
 
 from googlecloudsdk.command_lib.projects import util
 from googlecloudsdk.core import exceptions
@@ -67,6 +66,9 @@ def set_poco_hub_config_parameters_from_args(args, messages):
   return poco_hub_config
 
 
+# TODO(b/291816961) Validate should ultimately be removed. Hacks here to handle
+# different arg namespaces are only temporary until all commands can be brought
+# into line.
 def validate_args(args):
   """Validates the passed in arguments to make sure no incompatible arguments are used together.
 
@@ -77,7 +79,11 @@ def validate_args(args):
     raise exceptions.Error(
         'Both monitoring and no-monitoring cannot be used in the same command'
     )
-  if args.exemptable_namespaces is not None and args.no_exemptable_namespaces:
+
+  if (
+      args.exemptable_namespaces is not None
+      and args.clear_exemptable_namespaces
+  ):
     raise exceptions.Error(
         'Both exemptable-namespaces and no-exemptable-namespaces '
         + 'cannot be used in the same command'
@@ -111,6 +117,9 @@ def convert_membership_from_project_id_to_number(membership_path):
   )
 
 
+# TODO(b/291816961) Validate should ultimately be removed. Hacks here to handle
+# different arg namespaces are only temporary until all commands can be brought
+# into line.
 def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
   """Sets the given Policy Controller Hub Config object with parameters as passed in the command flags.
 
@@ -121,8 +130,8 @@ def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
     poco_hub_config: current config object read from GKE Hub API
     messages: GKE Hub proto messages
   """
-  if args.audit_interval_seconds:
-    poco_hub_config.auditIntervalSeconds = args.audit_interval_seconds
+  if args.audit_interval:
+    poco_hub_config.auditIntervalSeconds = args.audit_interval
 
   if args.constraint_violation_limit is not None:
     poco_hub_config.constraintViolationLimit = args.constraint_violation_limit
@@ -130,22 +139,23 @@ def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
   if args.exemptable_namespaces:
     exemptable_namespaces = args.exemptable_namespaces.split(',')
     poco_hub_config.exemptableNamespaces = exemptable_namespaces
-  elif args.no_exemptable_namespaces:
+
+  if args.clear_exemptable_namespaces:
     poco_hub_config.exemptableNamespaces = []
 
-  if args.log_denies_enabled is not None:
-    poco_hub_config.logDeniesEnabled = args.log_denies_enabled
+  if args.log_denies is not None:
+    poco_hub_config.logDeniesEnabled = args.log_denies
 
-  if hasattr(args, 'mutation_enabled') and args.mutation_enabled is not None:
-    poco_hub_config.mutationEnabled = args.mutation_enabled
+  if args.mutation is not None:
+    poco_hub_config.mutationEnabled = args.mutation
 
-  if args.referential_rules_enabled is not None:
-    poco_hub_config.referentialRulesEnabled = args.referential_rules_enabled
+  if args.referential_rules is not None:
+    poco_hub_config.referentialRulesEnabled = args.referential_rules
 
   # Default the library to on if it is unspecified, otherwise interpret the arg.
   install_library = True
-  if args.template_library_installed is not None:
-    install_library = args.template_library_installed
+  if args.template_library is not None:
+    install_library = args.template_library
   set_template_library_config(install_library, poco_hub_config, messages)
 
   if args.monitoring is not None:
@@ -153,7 +163,7 @@ def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
         args.monitoring.split(','), messages
     )
 
-  if args.no_monitoring:
+  if hasattr(args, 'no_monitoring') and args.no_monitoring:
     poco_hub_config.monitoring = build_poco_monitoring_config([], messages)
 
   if hasattr(args, 'suspend') and args.suspend is not None:
@@ -223,55 +233,3 @@ def build_poco_monitoring_config(backends_list, messages):
           + ' is not recognized'
       )
   return messages.PolicyControllerMonitoringConfig(backends=backends)
-
-
-class BooleanOptionalAction(argparse.Action):
-  """BooleanOptionalAction is copied from Python 3.9 library.
-
-  This is a workaround before the minimum supported version of python is updated
-  to 3.9 in gcloud, or the field mask bug is implemented (b/233366392),
-  whichever comes first.
-  """
-
-  def __init__(
-      self,
-      option_strings,
-      dest,
-      default=None,
-      type=None,  # pylint: disable=redefined-builtin
-      choices=None,
-      required=False,
-      help=None,  # pylint: disable=redefined-builtin
-      metavar=None,
-      const=None,
-  ):
-    _option_strings = []  # pylint: disable=invalid-name
-    for option_string in option_strings:
-      _option_strings.append(option_string)
-
-      if option_string.startswith('--'):
-        option_string = '--no-' + option_string[2:]
-        _option_strings.append(option_string)
-
-    if help is not None and default is not None:
-      help += ' (default: %(default)s)'
-
-    super(BooleanOptionalAction, self).__init__(
-        option_strings=_option_strings,
-        dest=dest,
-        nargs=0,
-        default=default,
-        type=type,
-        choices=choices,
-        required=required,
-        help=help,
-        metavar=metavar,
-        const=const,
-    )
-
-  def __call__(self, parser, namespace, values, option_string=None):
-    if option_string in self.option_strings:
-      setattr(namespace, self.dest, not option_string.startswith('--no-'))
-
-  def format_usage(self):
-    return ' | '.join(self.option_strings)

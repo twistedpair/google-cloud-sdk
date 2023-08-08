@@ -335,6 +335,31 @@ class _BaseInstances(object):
           args.enable_google_private_path
       )
 
+    if args.IsKnownAndSpecified('enable_private_service_connect'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      if not settings.ipConfiguration.pscConfig:
+        settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
+      settings.ipConfiguration.pscConfig.pscEnabled = (
+          args.enable_private_service_connect
+      )
+
+    if args.IsSpecified('allowed_psc_projects'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      if not settings.ipConfiguration.pscConfig:
+        settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
+      settings.ipConfiguration.pscConfig.allowedConsumerProjects = (
+          args.allowed_psc_projects
+      )
+
+    if args.IsKnownAndSpecified('clear_allowed_psc_projects'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      if not settings.ipConfiguration.pscConfig:
+        settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
+      settings.ipConfiguration.pscConfig.allowedConsumerProjects = []
+
     if args.deletion_protection is not None:
       settings.deletionProtectionEnabled = args.deletion_protection
 
@@ -377,31 +402,6 @@ class _BaseInstances(object):
                   '[--storage-auto-increase] must be enabled.'
               ),
           )
-
-      if args.IsKnownAndSpecified('enable_private_service_connect'):
-        if not settings.ipConfiguration:
-          settings.ipConfiguration = sql_messages.IpConfiguration()
-        if not settings.ipConfiguration.pscConfig:
-          settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
-        settings.ipConfiguration.pscConfig.pscEnabled = (
-            args.enable_private_service_connect
-        )
-
-      if args.IsSpecified('allowed_psc_projects'):
-        if not settings.ipConfiguration:
-          settings.ipConfiguration = sql_messages.IpConfiguration()
-        if not settings.ipConfiguration.pscConfig:
-          settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
-        settings.ipConfiguration.pscConfig.allowedConsumerProjects = (
-            args.allowed_psc_projects
-        )
-
-      if args.IsKnownAndSpecified('clear_allowed_psc_projects'):
-        if not settings.ipConfiguration:
-          settings.ipConfiguration = sql_messages.IpConfiguration()
-        if not settings.ipConfiguration.pscConfig:
-          settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
-        settings.ipConfiguration.pscConfig.allowedConsumerProjects = []
 
       if args.replication_lag_max_seconds_for_recreate is not None:
         settings.replicationLagMaxSeconds = (

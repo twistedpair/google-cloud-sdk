@@ -23,11 +23,6 @@ from apitools.base.py import encoding
 from googlecloudsdk.calliope import arg_parsers
 
 
-from googlecloudsdk.command_lib.dataproc.shared_messages import (
-    authentication_config_factory as acf,
-)
-
-
 class RuntimeConfigFactory(object):
   """Factory for RuntimeConfig message.
 
@@ -39,24 +34,15 @@ class RuntimeConfigFactory(object):
       self,
       dataproc,
       use_config_property=False,
-      authentication_config_factory_override=None,
   ):
     """Factory for RuntimeConfig message.
 
     Args:
       dataproc: Api_lib.dataproc.Dataproc instance.
       use_config_property: Use --property instead of --properties
-      authentication_config_factory_override: Override the default
-        AuthenticationConfigFactory instance. This is a keyword argument.
     """
     self.dataproc = dataproc
     self.use_config_property = use_config_property
-
-    self.authentication_config_factory = authentication_config_factory_override
-    if not self.authentication_config_factory:
-      self.authentication_config_factory = acf.AuthenticationConfigFactory(
-          self.dataproc
-      )
 
   def GetMessage(self, args):
     """Builds a RuntimeConfig message.
@@ -92,10 +78,6 @@ class RuntimeConfigFactory(object):
 
     if args.version:
       kwargs['version'] = args.version
-
-    authentication_config = self.authentication_config_factory.GetMessage(args)
-    if authentication_config:
-      kwargs['authenticationConfig'] = authentication_config
 
     if not kwargs:
       return None

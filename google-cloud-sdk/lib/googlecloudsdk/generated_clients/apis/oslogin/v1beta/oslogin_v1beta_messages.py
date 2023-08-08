@@ -159,6 +159,22 @@ class OsloginUsersProjectsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class OsloginUsersProjectsZonesSignSshPublicKeyRequest(_messages.Message):
+  r"""A OsloginUsersProjectsZonesSignSshPublicKeyRequest object.
+
+  Fields:
+    parent: The parent project and zone for the signing request. This is
+      needed to properly ensure per-organization ISS processing and
+      potentially to provide for the possibility of zone-specific certificates
+      used in the signing process.
+    signSshPublicKeyRequest: A SignSshPublicKeyRequest resource to be passed
+      as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  signSshPublicKeyRequest = _messages.MessageField('SignSshPublicKeyRequest', 2)
+
+
 class OsloginUsersSshPublicKeysCreateRequest(_messages.Message):
   r"""A OsloginUsersSshPublicKeysCreateRequest object.
 
@@ -275,6 +291,26 @@ class SecurityKey(_messages.Message):
   publicKey = _messages.StringField(2)
   universalTwoFactor = _messages.MessageField('UniversalTwoFactor', 3)
   webAuthn = _messages.MessageField('WebAuthn', 4)
+
+
+class SignSshPublicKeyRequest(_messages.Message):
+  r"""A SignSshPublicKeyRequest object.
+
+  Fields:
+    sshPublicKey: The SSH public key to sign.
+  """
+
+  sshPublicKey = _messages.StringField(1)
+
+
+class SignSshPublicKeyResponse(_messages.Message):
+  r"""A SignSshPublicKeyResponse object.
+
+  Fields:
+    signedSshPublicKey: The signed SSH public key to use in the SSH handshake.
+  """
+
+  signedSshPublicKey = _messages.StringField(1)
 
 
 class SshPublicKey(_messages.Message):

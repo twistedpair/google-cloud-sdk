@@ -105,3 +105,9 @@ properties:
       RFC3339 text format. If specified, the instance termination action
       will be performed at the termination time.
     type: string
+  maintenaceInterval:
+    description: |-
+      Specifies the frequency of planned maintenance events.
+    type: string
+    enum:
+    - PERIODIC

@@ -248,9 +248,9 @@ def AddImportExistingResourcesFlag(parser, hidden=False):
       '--import-existing-resources',
       hidden=hidden,
       help=(
-          'By default, Cloud Config Manager will return a failure when'
+          'By default, Infrastructure Manager will return a failure when'
           ' Terraform encounters a 409 code (resource conflict error) during'
-          ' actuation. If this flag is set to true, Cloud Config Manager will'
+          ' actuation. If this flag is set to true, Infrastructure Manager will'
           ' instead attempt to automatically import the resource into the'
           ' Terraform state (for supported resource types) and continue'
           ' actuation.'
@@ -305,18 +305,4 @@ def AddLockFlag(parser, hidden=False):
       required=True,
       hidden=hidden,
       help='Lock ID of the lock file to verify person importing owns lock.',
-  )
-
-
-def DisableValidateUpdateFlag(parser, hidden=False):
-  """Add --disable-validate-update flag."""
-  parser.add_argument(
-      '--disable-validate-update',
-      hidden=hidden,
-      help=(
-          'If this flag is set to true, the unlock mechanism will only unlock'
-          ' the deployment instead of validating the state file and triggering'
-          ' an update deployment workflow.'
-      ),
-      action='store_true',
   )

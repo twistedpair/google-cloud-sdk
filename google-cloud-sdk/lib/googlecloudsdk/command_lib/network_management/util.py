@@ -37,8 +37,11 @@ def GetClearSingleEndpointAttrErrorMsg(endpoints, endpoint_type):
     error_msg.append("At least one of ")
 
   for index, endpoint in enumerate(endpoints):
-    error_msg.append("--{endpoint_type}-{endpoint}".format(
-        endpoint_type=endpoint_type, endpoint=endpoint))
+    error_msg.append(
+        "--{endpoint_type}-{endpoint}".format(
+            endpoint_type=endpoint_type, endpoint=endpoint
+        )
+    )
     if index == 0 and len(endpoints) == 2:
       error_msg.append(" or ")
     elif index == len(endpoints) - 2:
@@ -73,7 +76,9 @@ def AddFieldToUpdateMask(field, patch_request):
 
 def ClearEndpointValue(endpoint, endpoint_name):
   proto_endpoint_fields = {
-      "cloudFunction", "appEngineVersion", "cloudRunRevision"
+      "cloudFunction",
+      "appEngineVersion",
+      "cloudRunRevision",
   }
   if endpoint_name in proto_endpoint_fields:
     # Endpoint is a proto message: Set to None.
@@ -88,29 +93,48 @@ def ClearSingleEndpointAttr(patch_request, endpoint_type, endpoint_name):
   test = patch_request.connectivityTest
   endpoint = getattr(test, endpoint_type)
   endpoint_fields = {
-      "instance", "ipAddress", "gkeMasterCluster", "cloudSqlInstance",
-      "cloudFunction", "appEngineVersion", "cloudRunRevision"
+      "instance",
+      "ipAddress",
+      "gkeMasterCluster",
+      "cloudSqlInstance",
+      "cloudFunction",
+      "appEngineVersion",
+      "cloudRunRevision",
+      "forwardingRule",
   }
   non_empty_endpoint_fields = 0
   for field in endpoint_fields:
     if getattr(endpoint, field, None):
       non_empty_endpoint_fields += 1
-  if (non_empty_endpoint_fields > 1 or
-      not getattr(endpoint, endpoint_name, None)):
+  if non_empty_endpoint_fields > 1 or not getattr(
+      endpoint, endpoint_name, None
+  ):
     ClearEndpointValue(endpoint, endpoint_name)
     setattr(test, endpoint_type, endpoint)
     patch_request.connectivityTest = test
-    return AddFieldToUpdateMask(endpoint_type + "." + endpoint_name,
-                                patch_request)
+    return AddFieldToUpdateMask(
+        endpoint_type + "." + endpoint_name, patch_request
+    )
   else:
     endpoints = [
-        "instance", "ip-address", "gke-master-cluster", "cloud-sql-instance"
+        "instance",
+        "ip-address",
+        "gke-master-cluster",
+        "cloud-sql-instance",
     ]
     if endpoint_type == "source":
-      endpoints.extend(
-          ["cloud-function", "app-engine-version", "cloud-run-revision"])
+      endpoints.extend([
+          "cloud-function",
+          "app-engine-version",
+          "cloud-run-revision",
+      ])
+    if endpoint_type == "destination":
+      endpoints.extend([
+          "forwarding-rule",
+      ])
     raise InvalidInputError(
-        GetClearSingleEndpointAttrErrorMsg(endpoints, endpoint_type))
+        GetClearSingleEndpointAttrErrorMsg(endpoints, endpoint_type)
+    )
 
 
 def ClearEndpointAttrs(unused_ref, args, patch_request):
@@ -125,10 +149,21 @@ def ClearEndpointAttrs(unused_ref, args, patch_request):
       ("clear_source_cloud_run_revision", "source", "cloudRunRevision"),
       ("clear_destination_instance", "destination", "instance"),
       ("clear_destination_ip_address", "destination", "ipAddress"),
-      ("clear_destination_gke_master_cluster", "destination",
-       "gkeMasterCluster"),
-      ("clear_destination_cloud_sql_instance", "destination",
-       "cloudSqlInstance"),
+      (
+          "clear_destination_gke_master_cluster",
+          "destination",
+          "gkeMasterCluster",
+      ),
+      (
+          "clear_destination_cloud_sql_instance",
+          "destination",
+          "cloudSqlInstance",
+      ),
+      (
+          "clear_destination_forwarding_rule",
+          "destination",
+          "forwardingRule",
+      ),
   ]
 
   for flag, endpoint_type, endpoint_name in flags_and_endpoints:
@@ -147,29 +182,48 @@ def ClearSingleEndpointAttrBeta(patch_request, endpoint_type, endpoint_name):
   test = patch_request.connectivityTest
   endpoint = getattr(test, endpoint_type)
   endpoint_fields = {
-      "instance", "ipAddress", "gkeMasterCluster", "cloudSqlInstance",
-      "cloudFunction", "appEngineVersion", "cloudRunRevision"
+      "instance",
+      "ipAddress",
+      "gkeMasterCluster",
+      "cloudSqlInstance",
+      "cloudFunction",
+      "appEngineVersion",
+      "cloudRunRevision",
+      "forwardingRule",
   }
   non_empty_endpoint_fields = 0
   for field in endpoint_fields:
     if getattr(endpoint, field, None):
       non_empty_endpoint_fields += 1
-  if (non_empty_endpoint_fields > 1 or
-      not getattr(endpoint, endpoint_name, None)):
+  if non_empty_endpoint_fields > 1 or not getattr(
+      endpoint, endpoint_name, None
+  ):
     ClearEndpointValue(endpoint, endpoint_name)
     setattr(test, endpoint_type, endpoint)
     patch_request.connectivityTest = test
-    return AddFieldToUpdateMask(endpoint_type + "." + endpoint_name,
-                                patch_request)
+    return AddFieldToUpdateMask(
+        endpoint_type + "." + endpoint_name, patch_request
+    )
   else:
     endpoints = [
-        "instance", "ip-address", "gke-master-cluster", "cloud-sql-instance"
+        "instance",
+        "ip-address",
+        "gke-master-cluster",
+        "cloud-sql-instance",
     ]
     if endpoint_type == "source":
-      endpoints.extend(
-          ["cloud-function", "app-engine-version", "cloud-run-revision"])
+      endpoints.extend([
+          "cloud-function",
+          "app-engine-version",
+          "cloud-run-revision",
+      ])
+    if endpoint_type == "destination":
+      endpoints.extend([
+          "forwarding-rule",
+      ])
     raise InvalidInputError(
-        GetClearSingleEndpointAttrErrorMsg(endpoints, endpoint_type))
+        GetClearSingleEndpointAttrErrorMsg(endpoints, endpoint_type)
+    )
 
 
 def ClearEndpointAttrsBeta(unused_ref, args, patch_request):
@@ -184,10 +238,21 @@ def ClearEndpointAttrsBeta(unused_ref, args, patch_request):
       ("clear_source_cloud_run_revision", "source", "cloudRunRevision"),
       ("clear_destination_instance", "destination", "instance"),
       ("clear_destination_ip_address", "destination", "ipAddress"),
-      ("clear_destination_gke_master_cluster", "destination",
-       "gkeMasterCluster"),
-      ("clear_destination_cloud_sql_instance", "destination",
-       "cloudSqlInstance"),
+      (
+          "clear_destination_gke_master_cluster",
+          "destination",
+          "gkeMasterCluster",
+      ),
+      (
+          "clear_destination_cloud_sql_instance",
+          "destination",
+          "cloudSqlInstance",
+      ),
+      (
+          "clear_destination_forwarding_rule",
+          "destination",
+          "forwardingRule",
+      ),
   ]
 
   for flag, endpoint_type, endpoint_name in flags_and_endpoints:
@@ -218,7 +283,9 @@ def ValidateInstanceNames(unused_ref, args, request):
             "Invalid value for flag {}: {}\n"
             "Expected instance in the following format:\n"
             "  projects/my-project/zones/zone/instances/my-instance".format(
-                flag, instance))
+                flag, instance
+            )
+        )
 
   return request
 
@@ -230,7 +297,8 @@ def ValidateNetworkURIs(unused_ref, args, request):
       "destination_network",
   ]
   network_pattern = re.compile(
-      r"projects/(?:[a-z][a-z0-9-\.:]*[a-z0-9])/global/networks/[-\w]+")
+      r"projects/(?:[a-z][a-z0-9-\.:]*[a-z0-9])/global/networks/[-\w]+"
+  )
   for flag in flags:
     if args.IsSpecified(flag):
       network = getattr(args, flag)
@@ -239,7 +307,9 @@ def ValidateNetworkURIs(unused_ref, args, request):
             "Invalid value for flag {}: {}\n"
             "Expected network in the following format:\n"
             "  projects/my-project/global/networks/my-network".format(
-                flag, network))
+                flag, network
+            )
+        )
 
   return request
 
@@ -258,10 +328,12 @@ def ValidateGKEMasterClustersURIs(unused_ref, args, request):
       cluster = getattr(args, flag)
       if not instance_pattern.match(cluster):
         raise InvalidInputError(
-            "Invalid value for flag {}: {}\n"
-            "Expected Google Kubernetes Engine master cluster in the following format:\n"
-            "  projects/my-project/location/location/clusters/my-cluster"
-            .format(flag, cluster))
+            "Invalid value for flag {}: {}\nExpected Google Kubernetes Engine"
+            " master cluster in the following format:\n "
+            " projects/my-project/location/location/clusters/my-cluster".format(
+                flag, cluster
+            )
+        )
   return request
 
 
@@ -281,8 +353,8 @@ def ValidateCloudSQLInstancesURIs(unused_ref, args, request):
         raise InvalidInputError(
             "Invalid value for flag {}: {}\n"
             "Expected Cloud SQL instance in the following format:\n"
-            "  projects/my-project/instances/my-instance".format(
-                flag, instance))
+            "  projects/my-project/instances/my-instance".format(flag, instance)
+        )
   return request
 
 
@@ -304,7 +376,8 @@ def ValidateCloudFunctionsURIs(unused_ref, args, request):
           "Invalid value for flag {}: {}\n"
           "Expected Cloud Function in the following format:\n"
           "  projects/my-project/locations/location/functions/my-function"
-          .format(flag, function))
+          .format(flag, function)
+      )
   return request
 
 
@@ -314,7 +387,8 @@ def ValidateAppEngineVersionsURIs(unused_ref, args, request):
       "source_app_engine_version",
   ]
   version_pattern = re.compile(
-      r"apps/(?:[a-z][a-z0-9-\.:]*[a-z0-9])/services/[-\w]+/versions/[-\w]+")
+      r"apps/(?:[a-z][a-z0-9-\.:]*[a-z0-9])/services/[-\w]+/versions/[-\w]+"
+  )
   for flag in flags:
     if not args.IsSpecified(flag):
       continue
@@ -325,7 +399,9 @@ def ValidateAppEngineVersionsURIs(unused_ref, args, request):
           "Invalid value for flag {}: {}\n"
           "Expected App Engine version in the following format:\n"
           "  apps/my-project/services/my-service/versions/my-version".format(
-              flag, version))
+              flag, version
+          )
+      )
   return request
 
 
@@ -347,5 +423,29 @@ def ValidateCloudRunRevisionsURIs(unused_ref, args, request):
           "Invalid value for flag {}: {}\n"
           "Expected Cloud Run revision in the following format:\n"
           "  projects/my-project/locations/location/revisions/my-revision"
-          .format(flag, revision))
+          .format(flag, revision)
+      )
+  return request
+
+
+def ValidateForwardingRulesURIs(unused_ref, args, request):
+  """Checks if all provided forwarding rules URIs are in correct format."""
+  flags = [
+      "destination_forwarding_rule",
+  ]
+  forwarding_rule_pattern = re.compile(
+      r"projects/(?:[a-z][a-z0-9-\.:]*[a-z0-9])/(global|regions/[-\w]+)/forwardingRules/[-\w]+"
+  )
+  for flag in flags:
+    if not args.IsSpecified(flag):
+      continue
+
+    forwarding_rule = getattr(args, flag)
+    if not forwarding_rule_pattern.match(forwarding_rule):
+      raise InvalidInputError(
+          "Invalid value for flag {flag}: {forwarding_rule}\n"
+          + "Expected forwarding rule in one of the following formats:\n"
+          + "  projects/my-project/global/forwardingRules/my-forwarding-rule\n"
+          + "  projects/my-project/regions/us-central1/forwardingRules/my-forwarding-rule"
+      )
   return request

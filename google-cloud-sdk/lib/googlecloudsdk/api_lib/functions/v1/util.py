@@ -25,11 +25,13 @@ import functools
 import json
 import re
 
+from apitools.base.py import base_api
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.functions.v1 import exceptions
 from googlecloudsdk.api_lib.functions.v1 import operations
 from googlecloudsdk.api_lib.functions.v2 import util as v2_util
+from googlecloudsdk.api_lib.storage import storage_api as gcs_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions as exceptions_util
@@ -42,6 +44,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import encoding
+from googlecloudsdk.generated_clients.apis.cloudfunctions.v1 import cloudfunctions_v1_messages
 import six.moves.http_client
 
 _DEPLOY_WAIT_NOTICE = 'Deploying function (may take a while - up to 2 minutes)'
@@ -67,6 +70,19 @@ _BUCKET_RESOURCE_URI_RE = re.compile(r'^projects/_/buckets/.{3,222}$')
 _API_NAME = 'cloudfunctions'
 _API_VERSION = 'v1'
 
+_V1_AUTOPUSH_REGIONS = ['asia-east1', 'europe-west6']
+_V1_STAGING_REGIONS = [
+    'southamerica-east1',
+    'us-central1',
+    'us-east1',
+    'us-east4',
+    'us-west1',
+]
+
+_DOCKER_REGISTRY_AR = (
+    cloudfunctions_v1_messages.CloudFunction.DockerRegistryValueValuesEnum.ARTIFACT_REGISTRY
+)
+
 
 def _GetApiVersion(track=calliope_base.ReleaseTrack.GA):  # pylint: disable=unused-argument
   """Returns the current cloudfunctions Api Version configured in the sdk.
@@ -85,7 +101,36 @@ def _GetApiVersion(track=calliope_base.ReleaseTrack.GA):  # pylint: disable=unus
 
 
 def GetApiClientInstance(track=calliope_base.ReleaseTrack.GA):
-  return apis.GetClientInstance(_API_NAME, _GetApiVersion(track))
+  # type: (calliope_base.ReleaseTrack) -> base_api.BaseApiClient
+  """Returns the GCFv1 client instance."""
+  endpoint_override = v2_util.GetApiEndpointOverride()
+
+  if (
+      not endpoint_override
+      or 'autopush-cloudfunctions' not in endpoint_override
+  ):
+    return apis.GetClientInstance(_API_NAME, _GetApiVersion(track))
+
+  # GCFv1 autopush is actually behind the staging API endpoint so temporarily
+  # override the endpoint so that a staging API client is returned.
+  # The GCFv1 mixer routes to the appropriate autopush or staging manager job
+  # based on region.
+  # GFEs route autopush-cloudfunctions.sandbox.googleapis.com to the GCFv2
+  # frontend.
+  log.info(
+      'Temporarily overriding cloudfunctions endpoint to'
+      ' staging-cloudfunctions.sandbox.googleapis.com so that GCFv1 autopush'
+      ' resources can be accessed.'
+  )
+  properties.VALUES.api_endpoint_overrides.Property('cloudfunctions').Set(
+      'https://staging-cloudfunctions.sandbox.googleapis.com/'
+  )
+  client = apis.GetClientInstance(_API_NAME, _GetApiVersion(track))
+  # Reset override in case a GCFv2 autopush client is created later.
+  properties.VALUES.api_endpoint_overrides.Property('cloudfunctions').Set(
+      'https://autopush-cloudfunctions.sandbox.googleapis.com/'
+  )
+  return client
 
 
 def GetResourceManagerApiClientInstance():
@@ -381,7 +426,7 @@ def ListRegions():
   """Returns the list of regions where GCF 1st Gen is supported."""
   client = GetApiClientInstance()
   messages = client.MESSAGES_MODULE
-  return list_pager.YieldFromList(
+  results = list_pager.YieldFromList(
       service=client.projects_locations,
       request=messages.CloudfunctionsProjectsLocationsListRequest(
           name='projects/' + properties.VALUES.core.project.Get(required=True)
@@ -389,6 +434,21 @@ def ListRegions():
       field='locations',
       batch_size_attribute='pageSize',
   )
+
+  # We filter out v1 autopush and staging regions because they lie behind the
+  # same staging API endpoint but they're not distinguishable by environment.
+  if v2_util.GetCloudFunctionsApiEnv() is v2_util.ApiEnv.AUTOPUSH:
+    log.info(
+        'ListRegions: Autopush env detected. Filtering for v1 autopush regions.'
+    )
+    return [r for r in results if r.locationId in _V1_AUTOPUSH_REGIONS]
+  elif v2_util.GetCloudFunctionsApiEnv() is v2_util.ApiEnv.STAGING:
+    log.info(
+        'ListRegions: Staging env detected. Filtering for v1 staging regions.'
+    )
+    return [r for r in results if r.locationId in _V1_STAGING_REGIONS]
+  else:
+    return results
 
 
 # TODO(b/130604453): Remove try_set_invoker option
@@ -531,3 +591,84 @@ def CanAddFunctionIamPolicyBinding(project):
     if needed_permission not in iam_response.permissions:
       can_add = False
   return can_add
+
+
+def ValidateSecureImageRepositoryOrWarn(region_name, project_id):
+  """Validates image repository. Yields security and deprecation warnings.
+
+  Args:
+    region_name: String name of the region to which the function is deployed.
+    project_id: String ID of the Cloud project.
+  """
+  _AddGcrDeprecationWarning()
+  gcr_bucket_url = GetStorageBucketForGcrRepository(region_name, project_id)
+  try:
+    gcr_host_policy = gcs_api.StorageClient().GetIamPolicy(
+        storage_util.BucketReference.FromUrl(gcr_bucket_url)
+    )
+    if gcr_host_policy and iam_util.BindingInPolicy(
+        gcr_host_policy, 'allUsers', 'roles/storage.objectViewer'
+    ):
+      log.warning(
+          "The Container Registry repository that stores this function's "
+          'image is public. This could pose the risk of disclosing '
+          'sensitive data. To mitigate this, either use Artifact Registry '
+          "('--docker_registry=artifact-registry' flag) or change this "
+          'setting in Google Container Registry.\n'
+      )
+  except apitools_exceptions.HttpError:
+    log.warning(
+        'Secuirty check for Container Registry repository that stores this '
+        "function's image has not succeeded. To mitigate risks of disclosing "
+        'sensitive data, it is recommended to keep your repositories '
+        'private. This setting can be verified in Google Container Registry.\n'
+    )
+
+
+def GetStorageBucketForGcrRepository(region_name, project_id):
+  """Retrieves the GCS bucket that backs the GCR repository in specified region.
+
+  Args:
+    region_name: String name of the region to which the function is deployed.
+    project_id: String ID of the Cloud project.
+
+  Returns:
+    String representing the URL of the GCS bucket that backs the GCR repo.
+  """
+  return 'gs://{multiregion}.artifacts.{project_id}.appspot.com'.format(
+      multiregion=_GetGcrMultiregion(region_name),
+      project_id=project_id,
+  )
+
+
+def _GetGcrMultiregion(region_name):
+  """Returns String name of the GCR multiregion for the given region."""
+  # Corresponds to the mapping outlined in go/gcf-regions-to-gcr-domains-map.
+  if region_name.startswith('europe'):
+    return 'eu'
+  elif region_name.startswith('asia') or region_name.startswith('australia'):
+    return 'asia'
+  else:
+    return 'us'
+
+
+def IsGcrRepository(function):
+  # TODO(b/287538740): revisit this condition when the default changes to AR.
+  if function.dockerRepository:
+    return False
+  return (
+      not function.dockerRegistry
+      or function.dockerRegistry != _DOCKER_REGISTRY_AR
+  )
+
+
+def _AddGcrDeprecationWarning():
+  """Adds warning on deprecation of Container Registry."""
+  log.warning(
+      'Effective May 15, 2023, Container Registry (used by default '
+      'by Cloud Functions 1st gen for storing build artifacts) is deprecated:'
+      ' https://cloud.google.com/artifact-registry/docs/transition/tr'
+      'ansition-from-gcr. Artifact Registry is the recommended '
+      'successor that you can use by adding the '
+      "'--docker_registry=artifact-registry' flag.\n"
+  )

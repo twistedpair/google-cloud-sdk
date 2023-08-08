@@ -38,10 +38,12 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.credentials import creds as c_creds
+from googlecloudsdk.core.credentials import exceptions as creds_exceptions
+from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import retry
-
 import six
 
 
@@ -70,14 +72,17 @@ class CommandError(core_exceptions.Error):
     self.cmd = cmd
 
     message_text = '[{0}]'.format(message) if message else None
-    return_code_text = ('return code [{0}]'.format(return_code)
-                        if return_code else None)
+    return_code_text = (
+        'return code [{0}]'.format(return_code) if return_code else None
+    )
     why_failed = ' and '.join(
-        [f for f in [message_text, return_code_text] if f])
+        [f for f in [message_text, return_code_text] if f]
+    )
 
     super(CommandError, self).__init__(
         '[{0}] exited with {1}.'.format(self.cmd, why_failed),
-        exit_code=return_code)
+        exit_code=return_code,
+    )
 
 
 class InvalidConfigurationError(core_exceptions.Error):
@@ -85,8 +90,8 @@ class InvalidConfigurationError(core_exceptions.Error):
 
   def __init__(self, msg, sources, destination):
     super(InvalidConfigurationError, self).__init__(
-        msg + '  Got sources: {}, destination: {}'
-        .format(sources, destination))
+        msg + '  Got sources: {}, destination: {}'.format(sources, destination)
+    )
 
 
 class BadCharacterError(core_exceptions.Error):
@@ -95,6 +100,7 @@ class BadCharacterError(core_exceptions.Error):
 
 class Suite(enum.Enum):
   """Represents an SSH implementation suite."""
+
   OPENSSH = 'OpenSSH'
   PUTTY = 'PuTTY'
 
@@ -113,10 +119,10 @@ class Environment(object):
   Attributes:
     suite: Suite, The suite for this environment.
     bin_path: str, The path where the commands are located. If None, use
-        standard `$PATH`.
+      standard `$PATH`.
     ssh: str, Location of ssh command (or None if not found).
     ssh_term: str, Location of ssh terminal command (or None if not found), for
-        interactive sessions.
+      interactive sessions.
     scp: str, Location of scp command (or None if not found).
     keygen: str, Location of the keygen command (or None if not found).
     ssh_exit_code: int, Exit code indicating SSH command failure.
@@ -135,7 +141,7 @@ class Environment(object):
           'ssh_term': 'putty',
           'scp': 'pscp',
           'keygen': 'winkeygen',
-      }
+      },
   }
 
   # Exit codes indicating that the `ssh` command (not remote) failed
@@ -150,7 +156,7 @@ class Environment(object):
     Args:
       suite: Suite, the suite for this environment.
       bin_path: str, the path where the commands are located. If None, use
-          standard $PATH.
+        standard $PATH.
     """
     self.suite = suite
     self.bin_path = bin_path
@@ -210,6 +216,7 @@ class KeyFileStatus(enum.Enum):
 
 class _KeyFileKind(enum.Enum):
   """List of supported (by gcloud) key file kinds."""
+
   PRIVATE = 'private'
   PUBLIC = 'public'
   PPK = 'PuTTY PPK'
@@ -260,8 +267,8 @@ class Keys(object):
       """Construct a public key from a typical OpenSSH-style key string.
 
       Args:
-        key_string: str, on the format `TYPE DATA [COMMENT]`. Example:
-          `ssh-rsa ABCDEF me@host.com`.
+        key_string: str, on the format `TYPE DATA [COMMENT]`. Example: `ssh-rsa
+          ABCDEF me@host.com`.
 
       Raises:
         InvalidKeyError: The public key file does not contain key (heuristic).
@@ -295,7 +302,8 @@ class Keys(object):
       if include_comment and self.comment:
         out_format += ' {comment}'
       return out_format.format(
-          type=self.key_type, data=self.key_data, comment=self.comment)
+          type=self.key_type, data=self.key_data, comment=self.comment
+      )
 
   class KeyFileData(object):
 
@@ -311,8 +319,8 @@ class Keys(object):
 
     Args:
       key_file: str, The file path to the private SSH key file (other files are
-          derived from this name). Automatically handles symlinks and user
-          expansion.
+        derived from this name). Automatically handles symlinks and user
+        expansion.
       env: Environment, Current environment or None to infer from current.
     """
     private_key_file = os.path.realpath(files.ExpandHomeDir(key_file))
@@ -320,7 +328,7 @@ class Keys(object):
     self.env = env or Environment.Current()
     self.keys = {
         _KeyFileKind.PRIVATE: self.KeyFileData(private_key_file),
-        _KeyFileKind.PUBLIC: self.KeyFileData(private_key_file + '.pub')
+        _KeyFileKind.PUBLIC: self.KeyFileData(private_key_file + '.pub'),
     }
     if self.env.suite is Suite.PUTTY:
       self.keys[_KeyFileKind.PPK] = self.KeyFileData(private_key_file + '.ppk')
@@ -354,10 +362,13 @@ class Keys(object):
       status_padding = max(status_padding, len(data.status.value))
     for kind in self.keys:
       data = self.keys[kind]
-      messages.append('{} {} [{}]\n'.format(
-          (kind.value + ' key').ljust(key_padding + 4),
-          ('(' + data.status.value + ')') .ljust(status_padding + 2),
-          data.filename))
+      messages.append(
+          '{} {} [{}]\n'.format(
+              (kind.value + ' key').ljust(key_padding + 4),
+              ('(' + data.status.value + ')').ljust(status_padding + 2),
+              data.filename,
+          )
+      )
     messages.sort()
     return ''.join(messages)
 
@@ -373,9 +384,11 @@ class Keys(object):
       KeyFileStatus.ABSENT if neither private nor public keys exist.
       KeyFileStatus.BROKEN if there is some key, but it is broken or incomplete.
     """
+
     def ValidateFile(kind):
-      status_or_line = self._WarnOrReadFirstKeyLine(self.keys[kind].filename,
-                                                    kind.value)
+      status_or_line = self._WarnOrReadFirstKeyLine(
+          self.keys[kind].filename, kind.value
+      )
       if isinstance(status_or_line, KeyFileStatus):
         return status_or_line
       else:  # returned line - present
@@ -392,8 +405,11 @@ class Keys(object):
       try:
         self.GetPublicKey()
       except InvalidKeyError:
-        log.warning('The public SSH key file [{}] is corrupt.'
-                    .format(self.keys[_KeyFileKind.PUBLIC]))
+        log.warning(
+            'The public SSH key file [{}] is corrupt.'.format(
+                self.keys[_KeyFileKind.PUBLIC]
+            )
+        )
         self.keys[_KeyFileKind.PUBLIC].status = KeyFileStatus.BROKEN
 
     # Summary
@@ -500,8 +516,8 @@ class Keys(object):
 
     Args:
       overwrite: bool or None, overwrite key files if they are broken.
-      allow_passphrase: bool, if keygeneration occurs, let the user specfiy
-        a passphrase for private key encryption. See `ssh.KeygenCommand` for
+      allow_passphrase: bool, if keygeneration occurs, let the user specfiy a
+        passphrase for private key encryption. See `ssh.KeygenCommand` for
         details on when this is possible.
 
     Raises:
@@ -520,11 +536,15 @@ class Keys(object):
         log.warning('SSH keygen will be executed to generate a key.')
 
       if not os.path.exists(self.dir):
-        msg = ('This tool needs to create the directory [{0}] before being '
-               'able to generate SSH keys.'.format(self.dir))
+        msg = (
+            'This tool needs to create the directory [{0}] before being '
+            'able to generate SSH keys.'.format(self.dir)
+        )
         console_io.PromptContinue(
-            message=msg, cancel_on_no=True,
-            cancel_string='SSH key generation aborted by user.')
+            message=msg,
+            cancel_on_no=True,
+            cancel_string='SSH key generation aborted by user.',
+        )
         files.MakeDir(self.dir, 0o700)
 
       cmd = KeygenCommand(self.key_file, allow_passphrase=allow_passphrase)
@@ -540,7 +560,8 @@ class Keys(object):
       if not os.path.exists(valid_ppk_sentinel):
         if key_files_validity is KeyFileStatus.PRESENT:  # Initial validity
           cmd = KeygenCommand(
-              self.key_file, allow_passphrase=False, reencode_ppk=True)
+              self.key_file, allow_passphrase=False, reencode_ppk=True
+          )
           cmd.Run(self.env)
         try:
           files.WriteFileContents(valid_ppk_sentinel, '')
@@ -601,8 +622,11 @@ class KnownHosts(object):
   """
 
   # TODO(b/33467618): Rename the file itself
-  DEFAULT_PATH = os.path.realpath(files.ExpandHomeDir(
-      os.path.join('~', '.ssh', 'google_compute_known_hosts')))
+  DEFAULT_PATH = os.path.realpath(
+      files.ExpandHomeDir(
+          os.path.join('~', '.ssh', 'google_compute_known_hosts')
+      )
+  )
 
   def __init__(self, known_hosts, file_path):
     """Construct a known hosts representation based on a list of key strings.
@@ -629,8 +653,11 @@ class KnownHosts(object):
       known_hosts = files.ReadFileContents(file_path).splitlines()
     except files.Error as e:
       known_hosts = []
-      log.debug('SSH Known Hosts File [{0}] could not be opened: {1}'
-                .format(file_path, e))
+      log.debug(
+          'SSH Known Hosts File [{0}] could not be opened: {1}'.format(
+              file_path, e
+          )
+      )
     return KnownHosts(known_hosts, file_path)
 
   @classmethod
@@ -693,20 +720,24 @@ class KnownHosts(object):
       overwrite: bool, If true, will overwrite the entries corresponding to
         hostname with the new host_key if it already exists. If false and an
         entry already exists for hostname, will ignore the new host_key values.
+
     Returns:
       bool, True if new keys were added.
     """
     new_keys_added = False
-    new_key_entries = ['{0} {1}'.format(hostname, host_key)
-                       for host_key in host_keys]
+    new_key_entries = [
+        '{0} {1}'.format(hostname, host_key) for host_key in host_keys
+    ]
     if not new_key_entries:
       return new_keys_added
-    existing_entries = [key for key in self.known_hosts
-                        if key.startswith(hostname)]
+    existing_entries = [
+        key for key in self.known_hosts if key.startswith(hostname)
+    ]
     if existing_entries:
       if overwrite:
-        self.known_hosts = [key for key in self.known_hosts
-                            if not key.startswith(hostname)]
+        self.known_hosts = [
+            key for key in self.known_hosts if not key.startswith(hostname)
+        ]
         self.known_hosts.extend(new_key_entries)
         new_keys_added = True
     else:
@@ -718,7 +749,8 @@ class KnownHosts(object):
   def Write(self):
     """Writes the file to disk."""
     files.WriteFileContents(
-        self.file_path, '\n'.join(self.known_hosts) + '\n', private=True)
+        self.file_path, '\n'.join(self.known_hosts) + '\n', private=True
+    )
 
 
 def GetDefaultSshUsername(warn_on_account_user=False):
@@ -745,7 +777,9 @@ def GetDefaultSshUsername(warn_on_account_user=False):
       log.warning(
           'Invalid characters in local username [{0}]. '
           'Using username corresponding to active account: [{1}]'.format(
-              user, account_user))
+              user, account_user
+          )
+      )
     user = account_user
   return user
 
@@ -762,15 +796,17 @@ def MetadataHasEnable(metadata, key_name):
   """
   if not (metadata and metadata.items):
     return None
-  matching_values = [item.value for item in metadata.items
-                     if item.key == key_name]
+  matching_values = [
+      item.value for item in metadata.items if item.key == key_name
+  ]
   if not matching_values:
     return None
   return matching_values[0].lower() == 'true'
 
 
 def FeatureEnabledInMetadata(
-    instance, project, key_name, instance_override=None):
+    instance, project, key_name, instance_override=None
+):
   """Return True if the feature associated with the supplied key is enabled.
 
   If the key is set to 'true' in instance metadata, will return True.
@@ -824,12 +860,16 @@ def CheckSshSecurityKeySupport():
   log.debug(cmd_list)
 
   try:
-    output = six.ensure_str(subprocess.check_output(
-        cmd_list, stderr=subprocess.STDOUT))
+    output = six.ensure_str(
+        subprocess.check_output(cmd_list, stderr=subprocess.STDOUT)
+    )
     log.debug(output)
   except subprocess.CalledProcessError:
-    log.debug('Cannot determine SSH supported key types using command: {0}'
-              .format(' '.join(cmd_list)))
+    log.debug(
+        'Cannot determine SSH supported key types using command: {0}'.format(
+            ' '.join(cmd_list)
+        )
+    )
     return None
 
   keys_supported = output.splitlines()
@@ -852,6 +892,8 @@ class OsloginState(object):
     security_keys_enabled: bool, True if Security Keys should be used for SSH
       authentication.
     user: str, The username that SSH should use for connecting.
+    third_party_user: bool, True if the authenticated user is an external
+      account user.
     ssh_security_key_support: bool, True if the SSH client supports security
       keys.
     environment: str, A hint about the current enviornment. ('ssh' or 'putty')
@@ -859,14 +901,22 @@ class OsloginState(object):
       keys configured in the user's account.
   """
 
-  def __init__(self, oslogin_enabled=False, oslogin_2fa_enabled=False,
-               security_keys_enabled=False, user=None,
-               ssh_security_key_support=None, environment=None,
-               security_keys=None):
+  def __init__(
+      self,
+      oslogin_enabled=False,
+      oslogin_2fa_enabled=False,
+      security_keys_enabled=False,
+      user=None,
+      third_party_user=False,
+      ssh_security_key_support=None,
+      environment=None,
+      security_keys=None,
+  ):
     self.oslogin_enabled = oslogin_enabled
     self.oslogin_2fa_enabled = oslogin_2fa_enabled
     self.security_keys_enabled = security_keys_enabled
     self.user = user
+    self.third_party_user = third_party_user
     self.ssh_security_key_support = ssh_security_key_support
     self.environment = environment
     if security_keys is None:
@@ -880,27 +930,38 @@ class OsloginState(object):
         2FA Enabled: {1}
         Security Keys Enabled: {2}
         Username: {3}
-        SSH Security Key Support: {4}
-        Environment: {5}
+        Third Party User: {4}
+        SSH Security Key Support: {5}
+        Environment: {6}
         Security Keys:
-        {6}
-        """).format(self.oslogin_enabled,
-                    self.oslogin_2fa_enabled,
-                    self.security_keys_enabled,
-                    self.user,
-                    self.ssh_security_key_support,
-                    self.environment,
-                    '\n'.join(self.security_keys))
+        {7}
+        """).format(
+        self.oslogin_enabled,
+        self.oslogin_2fa_enabled,
+        self.security_keys_enabled,
+        self.user,
+        self.third_party_user,
+        self.ssh_security_key_support,
+        self.environment,
+        '\n'.join(self.security_keys),
+    )
 
   def __repr__(self):
-    return ('OsloginState(oslogin_enabled={0}, oslogin_2fa_enabled={1}, '
-            'security_keys_enabled={2}, user={3}, '
-            'ssh_security_key_support={4}, environment={5}, '
-            'security_keys={6})'
-            .format(self.oslogin_enabled, self.oslogin_2fa_enabled,
-                    self.security_keys_enabled, self.user,
-                    self.ssh_security_key_support, self.environment,
-                    self.security_keys))
+    return (
+        'OsloginState(oslogin_enabled={0}, oslogin_2fa_enabled={1}, '
+        'security_keys_enabled={2}, user={3}, third_party_user={4}'
+        'ssh_security_key_support={5}, environment={6}, '
+        'security_keys={7})'.format(
+            self.oslogin_enabled,
+            self.oslogin_2fa_enabled,
+            self.security_keys_enabled,
+            self.user,
+            self.third_party_user,
+            self.ssh_security_key_support,
+            self.environment,
+            self.security_keys,
+        )
+    )
 
 
 def _IsInstanceWindows(instance, messages=None):
@@ -910,45 +971,49 @@ def _IsInstanceWindows(instance, messages=None):
   boot_disk = next(iter(filter(lambda disk: disk.boot, instance.disks)), None)
   guest_os_features = boot_disk.guestOsFeatures if boot_disk else []
   features = [feature.type for feature in guest_os_features or []]
-  return (features and
-          messages.GuestOsFeature.TypeValueValuesEnum.WINDOWS in features)
+  return (
+      features
+      and messages.GuestOsFeature.TypeValueValuesEnum.WINDOWS in features
+  )
 
 
-def GetOsloginState(instance,
-                    project,
-                    requested_user,
-                    public_key,
-                    expiration_time,
-                    release_track,
-                    username_requested=False,
-                    instance_enable_oslogin=None,
-                    instance_enable_2fa=None,
-                    instance_enable_security_keys=None,
-                    messages=None):
+def GetOsloginState(
+    instance,
+    project,
+    requested_user,
+    public_key,
+    expiration_time,
+    release_track,
+    username_requested=False,
+    instance_enable_oslogin=None,
+    instance_enable_2fa=None,
+    instance_enable_security_keys=None,
+    messages=None,
+):
   """Check instance/project metadata for oslogin and return updated username.
 
   Check to see if OS Login is enabled in metadata and if it is, return
   the OS Login user and a boolean value indicating if OS Login is being used.
 
   Args:
-    instance: instance, The object representing the instance we are
-      connecting to. If None, instance metadata will be ignored.
+    instance: instance, The object representing the instance we are connecting
+      to. If None, instance metadata will be ignored.
     project: project, The object representing the current project.
     requested_user: str, The default or requested username to connect as.
     public_key: str, The public key of the user connecting.
     expiration_time: int, Microseconds after epoch when the ssh key should
       expire. If None, an existing key will not be modified and a new key will
-      not be set to expire.  If not None, an existing key may be modified
-      with the new expiry.
+      not be set to expire.  If not None, an existing key may be modified with
+      the new expiry.
     release_track: release_track, The object representing the release track.
     username_requested: bool, True if the user has passed a specific username in
       the args.
-    instance_enable_oslogin: True if the instance's metadata indicates that
-      OS Login is enabled, and False if not enabled. Used when the instance
-      cannot be passed through the instance argument. None if not specified.
-    instance_enable_2fa: True if the instance's metadata indicates that
-      OS Login 2FA is enabled, and False if not enabled. Used when the instance
-      cannot be passed through the instance argument. None if not specified.
+    instance_enable_oslogin: True if the instance's metadata indicates that OS
+      Login is enabled, and False if not enabled. Used when the instance cannot
+      be passed through the instance argument. None if not specified.
+    instance_enable_2fa: True if the instance's metadata indicates that OS Login
+      2FA is enabled, and False if not enabled. Used when the instance cannot be
+      passed through the instance argument. None if not specified.
     instance_enable_security_keys: True if the instance's metadata indicates
       that OS Login security keys are enabled, and False if not enabled. Used
       when the instance cannot be passed through the instance argument. None if
@@ -966,7 +1031,8 @@ def GetOsloginState(instance,
       instance,
       project,
       OSLOGIN_ENABLE_METADATA_KEY,
-      instance_override=instance_enable_oslogin)
+      instance_override=instance_enable_oslogin,
+  )
 
   if not oslogin_enabled:
     # OS Login is disabled by default.
@@ -974,16 +1040,24 @@ def GetOsloginState(instance,
 
   if _IsInstanceWindows(instance, messages=messages):
     log.status.Print(
-        'OS Login is not available on Windows VMs.\nUsing ssh metadata.')
+        'OS Login is not available on Windows VMs.\nUsing ssh metadata.'
+    )
     return oslogin_state
 
   oslogin_state.oslogin_enabled = oslogin_enabled
   oslogin_state.oslogin_2fa_enabled = FeatureEnabledInMetadata(
-      instance, project, OSLOGIN_ENABLE_2FA_METADATA_KEY,
-      instance_override=instance_enable_2fa)
+      instance,
+      project,
+      OSLOGIN_ENABLE_2FA_METADATA_KEY,
+      instance_override=instance_enable_2fa,
+  )
   oslogin_state.security_keys_enabled = FeatureEnabledInMetadata(
-      instance, project, OSLOGIN_ENABLE_SK_METADATA_KEY,
-      instance_override=instance_enable_security_keys)
+      instance,
+      project,
+      OSLOGIN_ENABLE_SK_METADATA_KEY,
+      instance_override=instance_enable_security_keys,
+  )
+  oslogin_state.third_party_user = IsThirdPartyUser()
 
   env = Environment.Current()
   if env.suite == Suite.PUTTY:
@@ -994,33 +1068,44 @@ def GetOsloginState(instance,
   if oslogin_state.security_keys_enabled:
     oslogin_state.ssh_security_key_support = CheckSshSecurityKeySupport()
   oslogin = oslogin_client.OsloginClient(release_track)
-  user_email = (properties.VALUES.auth.impersonate_service_account.Get()
-                or properties.VALUES.core.account.Get())
+  user_email = (
+      properties.VALUES.auth.impersonate_service_account.Get()
+      or properties.VALUES.core.account.Get()
+  )
 
   # Check to see if public key is already in profile and POSIX information
   # exists associated with the project. If either are not set, import an SSH
   # public key. Otherwise update the expiration time if needed.
   login_profile = oslogin.GetLoginProfile(
-      user_email, project.name,
-      include_security_keys=oslogin_state.security_keys_enabled)
+      user_email,
+      project.name,
+      include_security_keys=oslogin_state.security_keys_enabled,
+  )
   if oslogin_state.security_keys_enabled:
     oslogin_state.security_keys = oslogin_utils.GetSecurityKeysFromProfile(
-        user_email, oslogin, profile=login_profile)
+        user_email, oslogin, profile=login_profile
+    )
     if not login_profile.posixAccounts:
       import_response = oslogin.ImportSshPublicKey(user_email, '')
       login_profile = import_response.loginProfile
   else:
     keys = oslogin_utils.GetKeyDictionaryFromProfile(
-        user_email, oslogin, profile=login_profile)
+        user_email, oslogin, profile=login_profile
+    )
     fingerprint = oslogin_utils.FindKeyInKeyList(public_key, keys)
     if not fingerprint or not login_profile.posixAccounts:
-      import_response = oslogin.ImportSshPublicKey(user_email, public_key,
-                                                   expiration_time)
+      import_response = oslogin.ImportSshPublicKey(
+          user_email, public_key, expiration_time
+      )
       login_profile = import_response.loginProfile
     elif expiration_time:
-      oslogin.UpdateSshPublicKey(user_email, fingerprint, keys[fingerprint],
-                                 'expirationTimeUsec',
-                                 expiration_time=expiration_time)
+      oslogin.UpdateSshPublicKey(
+          user_email,
+          fingerprint,
+          keys[fingerprint],
+          'expirationTimeUsec',
+          expiration_time=expiration_time,
+      )
 
   # Get the username for the oslogin user. If the username is the same as the
   # default user, return that one. Otherwise, return the 'primary' username.
@@ -1039,23 +1124,43 @@ def GetOsloginState(instance,
   # to the user, otherwise just add a message to the log.
   if username_requested:
     log.status.Print(
-        'Using OS Login user [{0}] instead of requested user [{1}]'
-        .format(oslogin_user, requested_user))
+        'Using OS Login user [{0}] instead of requested user [{1}]'.format(
+            oslogin_user, requested_user
+        )
+    )
   else:
-    log.info('Using OS Login user [{0}] instead of default user [{1}]'.format(
-        oslogin_user, requested_user))
+    log.info(
+        'Using OS Login user [{0}] instead of default user [{1}]'.format(
+            oslogin_user, requested_user
+        )
+    )
   return oslogin_state
 
 
-def ParseAndSubstituteSSHFlags(args, remote, instance_address,
-                               internal_address):
+def IsThirdPartyUser():
+  """Checks if the Authenticated User is a BYOID User."""
+  try:
+    creds = c_store.LoadFreshCredential(use_google_auth=True)
+  except creds_exceptions.Error:
+    log.debug('Failed to load fresh credentials.')
+    return False
+  creds_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(creds)
+  return creds_type in (
+      c_creds.CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT,
+      c_creds.CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT_USER,
+      c_creds.CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT_AUTHORIZED_USER,
+  )
+
+
+def ParseAndSubstituteSSHFlags(
+    args, remote, instance_address, internal_address
+):
   """Obtain extra flags from the command arguments."""
   extra_flags = []
   if args.ssh_flag:
     for flag in args.ssh_flag:
       if flag:  # Skip any empty flags.
         for flag_part in flag.split():  # We want grouping here
-
           deref_flag = flag_part
 
           # Call replace only when it is necessary. It will lower the chance
@@ -1156,15 +1261,20 @@ def _EscapeProxyCommandArg(s, env):
   Args:
     s: str, Argument to escape. Must be non-empty.
     env: Environment, data about the ssh client.
+
   Raises:
     BadCharacterError: If s contains a bad character.
   """
   for c in s:
-    if not 0x20 <= ord(c) < 0x7f:
+    if not 0x20 <= ord(c) < 0x7F:
       # For ease of implementation we ban control characters and non-ASCII.
       raise BadCharacterError(
-          ('Special character %r (part of %r) couldn\'t be escaped for '
-           'ProxyCommand') % (c, s))
+          (
+              "Special character %r (part of %r) couldn't be escaped for "
+              'ProxyCommand'
+          )
+          % (c, s)
+      )
   if env.suite is Suite.PUTTY:
     # When using proxycmd with putty or plink, 3 unescapes happen:
     # 1 putty/plink does command line -> argv unescape.
@@ -1254,6 +1364,7 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
   Args:
     iap_tunnel_args: iap_tunnel.SshTunnelArgs or None, options about IAP Tunnel.
     env: Environment, data about the ssh client.
+
   Returns:
     [str], the additional arguments for OpenSSH or Putty.
   """
@@ -1273,9 +1384,13 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
     gcloud_command.append(iap_tunnel_args.track)
   port_token = '%port' if env.suite is Suite.PUTTY else '%p'
   gcloud_command.extend([
-      'compute', 'start-iap-tunnel', iap_tunnel_args.instance, port_token,
+      'compute',
+      'start-iap-tunnel',
+      iap_tunnel_args.instance,
+      port_token,
       '--listen-on-stdin',
-      '--project=' + iap_tunnel_args.project])
+      '--project=' + iap_tunnel_args.project,
+  ])
   if iap_tunnel_args.zone:
     gcloud_command.append('--zone=' + iap_tunnel_args.zone)
   if iap_tunnel_args.region:
@@ -1292,8 +1407,12 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
   if env.suite is Suite.PUTTY:
     return ['-proxycmd', ' '.join(gcloud_command)]
   else:
-    return ['-o', ' '.join(['ProxyCommand'] + gcloud_command),
-            '-o', 'ProxyUseFdpass=no']
+    return [
+        '-o',
+        ' '.join(['ProxyCommand'] + gcloud_command),
+        '-o',
+        'ProxyUseFdpass=no',
+    ]
 
 
 class KeygenCommand(object):
@@ -1312,11 +1431,10 @@ class KeygenCommand(object):
   Attributes:
     identity_file: str, path to private key file.
     allow_passphrase: bool, If True, attempt at prompting the user for a
-      passphrase for private key encryption, given that the following
-      conditions are also true:
-      - Running in an OpenSSH environment (Linux and Mac)
-      - Running in interactive mode (from an actual TTY)
-      - Prompts are enabled in gcloud
+      passphrase for private key encryption, given that the following conditions
+      are also true: - Running in an OpenSSH environment (Linux and Mac) -
+      Running in interactive mode (from an actual TTY) - Prompts are enabled in
+      gcloud
     reencode_ppk: bool, If True, reencode the PPK file if it was generated with
       a bad encoding, instead of generating a new key. This is only valid for
       PuTTY.
@@ -1342,8 +1460,9 @@ class KeygenCommand(object):
     """
     env = env or Environment.Current()
     if not env.keygen:
-      raise MissingCommandError('Keygen command not found in the current '
-                                'environment.')
+      raise MissingCommandError(
+          'Keygen command not found in the current environment.'
+      )
     args = [env.keygen]
     if env.suite is Suite.OPENSSH:
       prompt_passphrase = self.allow_passphrase and console_io.CanPrompt()
@@ -1394,9 +1513,19 @@ class SSHCommand(object):
   validation. Specifically, do not add any of the above mentioned flags.
   """
 
-  def __init__(self, remote, port=None, identity_file=None,
-               options=None, extra_flags=None, remote_command=None, tty=None,
-               iap_tunnel_args=None, remainder=None, identity_list=None):
+  def __init__(
+      self,
+      remote,
+      port=None,
+      identity_file=None,
+      options=None,
+      extra_flags=None,
+      remote_command=None,
+      tty=None,
+      iap_tunnel_args=None,
+      remainder=None,
+      identity_list=None,
+  ):
     """Construct a suite independent SSH command.
 
     Note that `extra_flags` and `remote_command` arguments are lists of strings:
@@ -1493,17 +1622,22 @@ class SSHCommand(object):
         # with spaces on the command line; however the -m flag lets one pass in
         # a local file from which to read the remote command.
         with tempfile.NamedTemporaryFile(
-            mode='w+t', delete=False) as self._remote_command_file:
+            mode='w+t', delete=False
+        ) as self._remote_command_file:
           self._remote_command_file.write(' '.join(self.remote_command))
         args.extend(['-m', self._remote_command_file.name])
       else:
         args.extend(self.remote_command)
     return args
 
-  def Run(self, env=None, putty_force_connect=False,
-          explicit_output_file=None,
-          explicit_error_file=None,
-          explicit_input_file=None):
+  def Run(
+      self,
+      env=None,
+      putty_force_connect=False,
+      explicit_output_file=None,
+      explicit_error_file=None,
+      explicit_input_file=None,
+  ):
     """Run the SSH command using the given environment.
 
     Args:
@@ -1539,8 +1673,9 @@ class SSHCommand(object):
     if explicit_input_file:
       extra_popen_kwargs['stdin'] = explicit_input_file
 
-    status = execution_utils.Exec(args, no_exit=True, in_str=in_str,
-                                  **extra_popen_kwargs)
+    status = execution_utils.Exec(
+        args, no_exit=True, in_str=in_str, **extra_popen_kwargs
+    )
 
     # This should only happen if we're using putty.exe with a remote command. In
     # that case the file created earlier via NamedTemporaryFile has to be
@@ -1550,8 +1685,11 @@ class SSHCommand(object):
         os.remove(self._remote_command_file.name)
       except OSError:
         # Not worth crashing over.
-        log.debug('Failed to delete remote command file [{}]'.format(
-            self._remote_command_file.name))
+        log.debug(
+            'Failed to delete remote command file [{}]'.format(
+                self._remote_command_file.name
+            )
+        )
         pass
 
     if status == env.ssh_exit_code:
@@ -1582,9 +1720,19 @@ class SCPCommand(object):
   validation. Specifically, do not add any of the above mentioned flags.
   """
 
-  def __init__(self, sources, destination, recursive=False, compress=False,
-               port=None, identity_file=None, options=None, extra_flags=None,
-               iap_tunnel_args=None, identity_list=None):
+  def __init__(
+      self,
+      sources,
+      destination,
+      recursive=False,
+      compress=False,
+      port=None,
+      identity_file=None,
+      options=None,
+      extra_flags=None,
+      iap_tunnel_args=None,
+      identity_list=None,
+  ):
     """Construct a suite independent SCP command.
 
     Args:
@@ -1627,8 +1775,8 @@ class SCPCommand(object):
     Args:
       sources: [FileReference], see SCPCommand.sources.
       destination: FileReference, see SCPCommand.destination.
-      single_remote: bool, if True, enforce that all remote sources refer
-        to the same Remote (user and host).
+      single_remote: bool, if True, enforce that all remote sources refer to the
+        same Remote (user and host).
       env: Environment, the current environment.
 
     Raises:
@@ -1638,27 +1786,37 @@ class SCPCommand(object):
     env = env or Environment.Current()
 
     if not sources:
-      raise InvalidConfigurationError('No sources provided.', sources,
-                                      destination)
+      raise InvalidConfigurationError(
+          'No sources provided.', sources, destination
+      )
 
     if destination.remote:  # local -> remote
       if any([src.remote for src in sources]):
         raise InvalidConfigurationError(
             'All sources must be local files when destination is remote.',
-            sources, destination)
+            sources,
+            destination,
+        )
     else:  # remote -> local
       if env.suite is Suite.PUTTY and len(sources) != 1:
         raise InvalidConfigurationError(
             'Multiple remote sources not supported by PuTTY.',
-            sources, destination)
+            sources,
+            destination,
+        )
       if not all([src.remote for src in sources]):
         raise InvalidConfigurationError(
             'Source(s) must be remote when destination is local.',
-            sources, destination)
+            sources,
+            destination,
+        )
       if single_remote and len(set([src.remote for src in sources])) != 1:
         raise InvalidConfigurationError(
             'All sources must refer to the same remote when destination is '
-            'local.', sources, destination)
+            'local.',
+            sources,
+            destination,
+        )
 
   def Build(self, env=None):
     """Construct the actual command according to the given environment.
@@ -1676,8 +1834,9 @@ class SCPCommand(object):
     """
     env = env or Environment.Current()
     if not env.scp:
-      raise MissingCommandError('The current environment lacks an SCP (secure '
-                                'copy) client.')
+      raise MissingCommandError(
+          'The current environment lacks an SCP (secure copy) client.'
+      )
     self.Verify(self.sources, self.destination, env=env)
 
     args = [env.scp]
@@ -1752,9 +1911,17 @@ class SSHPoller(object):
   that requires user action.
   """
 
-  def __init__(self, remote, port=None, identity_file=None,
-               options=None, extra_flags=None, max_wait_ms=60*1000,
-               sleep_ms=5*1000, iap_tunnel_args=None):
+  def __init__(
+      self,
+      remote,
+      port=None,
+      identity_file=None,
+      options=None,
+      extra_flags=None,
+      max_wait_ms=60 * 1000,
+      sleep_ms=5 * 1000,
+      iap_tunnel_args=None,
+  ):
     """Construct a poller for an SSH connection.
 
     Args:
@@ -1770,9 +1937,15 @@ class SSHPoller(object):
         Tunnel.
     """
     self.ssh_command = SSHCommand(
-        remote, port=port, identity_file=identity_file, options=options,
-        extra_flags=extra_flags, remote_command=[':'], tty=False,
-        iap_tunnel_args=iap_tunnel_args)
+        remote,
+        port=port,
+        identity_file=identity_file,
+        options=options,
+        extra_flags=extra_flags,
+        remote_command=[':'],
+        tty=False,
+        iap_tunnel_args=iap_tunnel_args,
+    )
     self._sleep_ms = sleep_ms
     self._retryer = retry.Retryer(max_wait_ms=max_wait_ms, jitter_ms=0)
 
@@ -1800,7 +1973,8 @@ class SSHPoller(object):
         self.ssh_command.Run,
         kwargs={'env': env, 'putty_force_connect': putty_force_connect},
         should_retry_if=lambda exc_type, *args: exc_type is CommandError,
-        sleep_ms=self._sleep_ms)
+        sleep_ms=self._sleep_ms,
+    )
 
 
 class FileReference(object):
@@ -1839,8 +2013,8 @@ class FileReference(object):
     file presence exists.
 
     Args:
-      path: str, A path on the canonical scp form `[remote:]path`. If
-        remote, `path` can be empty, e.g. `me@host:`.
+      path: str, A path on the canonical scp form `[remote:]path`. If remote,
+        `path` can be empty, e.g. `me@host:`.
 
     Returns:
       FileReference, the constructed object.

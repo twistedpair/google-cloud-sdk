@@ -502,3 +502,14 @@ def GetSpannerMigrationLogLevelFlag():
   return base.Argument(
       '--log-level',
       help='To configure the log level for the execution (INFO, VERBOSE).')
+
+
+def GetSpannerMigrationWebOpenFlag():
+  return base.Argument('--open', action='store_true',
+                       help='Open the Spanner migration tool web interface in '
+                       'the default browser.')
+
+
+def GetSpannerMigrationWebPortFlag():
+  return base.Argument('--port', help='The port in which Spanner migration tool'
+                       ' will run, defaults to 8080')

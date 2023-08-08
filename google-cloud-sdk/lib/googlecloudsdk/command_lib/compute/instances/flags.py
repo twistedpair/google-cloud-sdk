@@ -3595,3 +3595,15 @@ def AddKeyRevocationActionTypeArgs(parser):
       metavar='POLICY',
       required=False,
       help=help_text)
+
+
+def AddMaintenanceIntervalArgs(parser):
+  """Adds maintenance interval arguments for instance."""
+  help_text = 'Specifies the frequency of planned maintenance events.'
+  choices_text = {'PERIODIC': 'PERIODIC means the VM is a Stable Fleet VM.'}
+  parser.add_argument(
+      '--maintenance-interval',
+      choices=choices_text,
+      type=arg_utils.ChoiceToEnumName,
+      help=help_text,
+  )

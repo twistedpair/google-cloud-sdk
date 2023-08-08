@@ -79,6 +79,9 @@ class JobsClient(object):
     if args.mode is not None:
       msg = _GetTranscoderMessages()
       mode = msg.Job.ModeValueValuesEnum(args.mode)
+    batch_mode_priority = 0
+    if args.batch_mode_priority is not None:
+      batch_mode_priority = args.batch_mode_priority
     optimization = None
     if args.optimization is not None:
       msg = _GetTranscoderMessages()
@@ -94,6 +97,7 @@ class JobsClient(object):
           templateId=template_id,
           labels=labels,
           mode=mode,
+          batchModePriority=batch_mode_priority,
           optimization=optimization,
       )
     else:
@@ -104,35 +108,38 @@ class JobsClient(object):
       job.mode = mode or job.mode
       job.optimization = optimization or job.optimization
     req = self.message.TranscoderProjectsLocationsJobsCreateRequest(
-        parent=parent_ref.RelativeName(), job=job)
+        parent=parent_ref.RelativeName(), job=job
+    )
     return self._service.Create(req)
 
   def Delete(self, job_ref):
     """Delete a job.
 
     Args:
-      job_ref: a resource reference to a
-        transcoder.projects.locations.jobs resource to delete
+      job_ref: a resource reference to a transcoder.projects.locations.jobs
+        resource to delete
 
     Returns:
       Empty: An empty response message.
     """
     req = self.message.TranscoderProjectsLocationsJobsDeleteRequest(
-        name=job_ref.RelativeName())
+        name=job_ref.RelativeName()
+    )
     return self._service.Delete(req)
 
   def Get(self, job_ref):
     """Get a job.
 
     Args:
-      job_ref: a resource reference to a
-        transcoder.projects.locations.jobs resource to get
+      job_ref: a resource reference to a transcoder.projects.locations.jobs
+        resource to get
 
     Returns:
       Job: if available, return the full job information.
     """
     req = self.message.TranscoderProjectsLocationsJobsGetRequest(
-        name=job_ref.RelativeName())
+        name=job_ref.RelativeName()
+    )
     return self._service.Get(req)
 
   def List(self, parent_ref, page_size=100):
@@ -148,11 +155,13 @@ class JobsClient(object):
       Jobs: a list of jobs in the specified location
     """
     req = self.message.TranscoderProjectsLocationsJobsListRequest(
-        parent=parent_ref.RelativeName(), pageSize=page_size)
+        parent=parent_ref.RelativeName(), pageSize=page_size
+    )
     resp = list_pager.YieldFromList(
         service=self._service,
         request=req,
         batch_size=page_size,
         field='jobs',
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
     return resp

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute.reservations import util as reservation_util
+from googlecloudsdk.core.util import times
 
 
 def MakeFutureReservationMessageFromArgs(messages, resources, args,
@@ -44,10 +45,35 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
                                      getattr(args, 'share_setting', None))
   planning_status = MakePlanningStatus(messages,
                                        getattr(args, 'planning_status', None))
-  return MakeFutureReservationMessage(messages, future_reservation_ref.Name(),
-                                      sku_properties, time_window,
-                                      share_settings,
-                                      planning_status)
+
+  enable_auto_delete_reservations = None
+  if args.IsSpecified('auto_delete_auto_created_reservations'):
+    enable_auto_delete_reservations = getattr(
+        args, 'auto_delete_auto_created_reservations'
+    )
+
+  auto_created_reservations_delete_time = None
+  if args.IsSpecified('auto_created_reservations_delete_time'):
+    auto_created_reservations_delete_time = getattr(
+        args, 'auto_created_reservations_delete_time'
+    )
+  auto_created_reservations_duration = None
+  if args.IsSpecified('auto_created_reservations_duration'):
+    auto_created_reservations_duration = getattr(
+        args, 'auto_created_reservations_duration'
+    )
+
+  return MakeFutureReservationMessage(
+      messages,
+      future_reservation_ref.Name(),
+      sku_properties,
+      time_window,
+      share_settings,
+      planning_status,
+      enable_auto_delete_reservations,
+      auto_created_reservations_delete_time,
+      auto_created_reservations_duration,
+  )
 
 
 def MakeAllocatedInstanceProperties(messages,
@@ -139,8 +165,17 @@ def MakePlanningStatus(messages, planning_status):
   return None
 
 
-def MakeFutureReservationMessage(messages, reservation_name, sku_properties,
-                                 time_window, share_settings, planning_status):
+def MakeFutureReservationMessage(
+    messages,
+    reservation_name,
+    sku_properties,
+    time_window,
+    share_settings,
+    planning_status,
+    enable_auto_delete_reservations=None,
+    auto_created_reservations_delete_time=None,
+    auto_created_reservations_duration=None,
+):
   """Constructs a future reservation message object."""
   future_reservation_message = messages.FutureReservation(
       name=reservation_name,
@@ -149,4 +184,19 @@ def MakeFutureReservationMessage(messages, reservation_name, sku_properties,
       planningStatus=planning_status)
   if share_settings:
     future_reservation_message.shareSettings = share_settings
+
+  if enable_auto_delete_reservations is not None:
+    future_reservation_message.autoDeleteAutoCreatedReservations = (
+        enable_auto_delete_reservations
+    )
+
+  if auto_created_reservations_delete_time is not None:
+    future_reservation_message.autoCreatedReservationsDeleteTime = (
+        times.FormatDateTime(auto_created_reservations_delete_time)
+    )
+  if auto_created_reservations_duration is not None:
+    future_reservation_message.autoCreatedReservationsDuration = (
+        messages.Duration(seconds=auto_created_reservations_duration)
+    )
+
   return future_reservation_message

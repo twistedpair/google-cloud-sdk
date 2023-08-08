@@ -29,14 +29,6 @@ def AddFieldToUpdateMask(field, patch_request):
   return patch_request
 
 
-def UpdateDisplayName(unused_instance_ref, args, patch_request):
-  """Python hook to add display name to the redis cluster update request."""
-  if args.IsSpecified('display_name'):
-    patch_request.cluster.displayName = args.display_name
-    patch_request = AddFieldToUpdateMask('display_name', patch_request)
-  return patch_request
-
-
 def UpdateReplicaCount(unused_instance_ref, args, patch_request):
   """Hook to add replica count to the redis cluster update request."""
   if args.IsSpecified('replica_count'):

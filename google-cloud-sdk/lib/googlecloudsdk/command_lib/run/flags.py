@@ -1227,14 +1227,13 @@ def AddParallelismFlag(parser):
 def AddTasksFlag(parser, for_execution_overrides=False):
   """Add job number of tasks flag which maps to job.spec.template.spec.task_count."""
   help_text = (
-      'Number of tasks that must run to completion for the job to be'
+      'Number of tasks that must run to completion for the execution to be'
       ' considered done.'
   )
   if for_execution_overrides:
     help_text += (
         ' If provided, an execution will be created with this value. Otherwise'
-        ' the existing task count of the job is used. Use this flag to trigger'
-        ' multiple runs of the job.'
+        ' the existing task count of the job is used.'
     )
     parser.add_argument(
         '--tasks',
@@ -1242,7 +1241,6 @@ def AddTasksFlag(parser, for_execution_overrides=False):
         help=help_text,
     )
   else:
-    help_text += ' Use this flag to trigger multiple runs of the job.'
     parser.add_argument(
         '--tasks',
         type=arg_parsers.BoundedInt(lower_bound=1),
@@ -1345,37 +1343,39 @@ def AddBinAuthzBreakglassFlag(parser):
   )
 
 
-def AddVpcNetworkFlags(parser, resource_kind='Service'):
+def AddVpcNetworkFlags(parser, resource_kind='service'):
   """Add flags for setting VPC network."""
   parser.add_argument(
       '--network',
       metavar='NETWORK',
       help=(
-          'The Compute Engine network that the Cloud Run {kind} will connect'
-          ' to. If --subnet is also specified, subnet must be a subnetwork of'
-          ' the network specified by this --network flag. To reset this field'
-          ' to its default, pass an empty string.'.format(kind=resource_kind)
+          'The VPC network that the Cloud Run {kind} will be able to send'
+          ' traffic to. If --subnet is also specified, subnet must be a'
+          ' subnetwork of the network specified by this --network flag. To'
+          ' clear existing VPC network settings, use --clear-network.'.format(
+              kind=resource_kind
+          )
       ),
   )
 
 
-def AddVpcSubnetFlags(parser, resource_kind='Service'):
+def AddVpcSubnetFlags(parser, resource_kind='service'):
   """Add flags for setting VPC subnetwork."""
   parser.add_argument(
       '--subnet',
       metavar='SUBNET',
       help=(
-          'The Google Compute Engine subnetwork that the Cloud Run {kind} will'
-          ' connect to. If --network is also specified, subnet must be a'
-          ' subnetwork of the network specified by the --network flag. If'
-          ' --network is not specified, network will be looked up from this'
-          ' subnetwork. To reset this field to its default, pass an empty'
-          ' string.'.format(kind=resource_kind)
+          'The VPC subnetwork that the Cloud Run {kind} will get IPs from. The'
+          ' subnetwork must be `/26` or larger. If --network is also specified,'
+          ' subnet must be a subnetwork of the network specified by the'
+          ' --network flag. If --network is not specified, network will be'
+          ' looked up from this subnetwork. To clear existing VPC network'
+          ' settings, use --clear-network.'.format(kind=resource_kind)
       ),
   )
 
 
-def AddVpcNetworkTagsFlags(parser, resource_kind='Service'):
+def AddVpcNetworkTagsFlags(parser, resource_kind='service'):
   """Add flags for setting VPC network tags."""
   parser.add_argument(
       '--network-tags',
@@ -1383,28 +1383,28 @@ def AddVpcNetworkTagsFlags(parser, resource_kind='Service'):
       type=arg_parsers.ArgList(),
       action=arg_parsers.UpdateAction,
       help=(
-          'Applies the given Compute Engine tags (comma separated) on the '
+          'Applies the given Compute Engine tags (comma separated) to the '
           'Cloud Run {kind}. '
-          'To reset this field to its default, pass an empty string.'.format(
+          'To clear existing tags, use --clear-network-tags.'.format(
               kind=resource_kind
           )
       ),
   )
 
 
-def AddClearVpcNetworkFlags(parser, resource_kind='Service'):
+def AddClearVpcNetworkFlags(parser, resource_kind='service'):
   """Add flags for clearing VPC network."""
   parser.add_argument(
       '--clear-network',
       action='store_true',
       help=(
-          'Disconnect this Cloud Run {kind} from the Google Compute Engine'
-          ' subnetwork it has connected to.'.format(kind=resource_kind)
+          'Disconnect this Cloud Run {kind} from the VPC network it is'
+          ' connected to.'.format(kind=resource_kind)
       ),
   )
 
 
-def AddClearVpcNetworkTagsFlags(parser, resource_kind='Service'):
+def AddClearVpcNetworkTagsFlags(parser, resource_kind='service'):
   """Add flags for clearing VPC network tags."""
   parser.add_argument(
       '--clear-network-tags',
@@ -1416,7 +1416,7 @@ def AddClearVpcNetworkTagsFlags(parser, resource_kind='Service'):
   )
 
 
-def AddVpcNetworkGroupFlags(parser, resource_kind='Service', is_update=False):
+def AddVpcNetworkGroupFlags(parser, resource_kind='service', is_update=False):
   """Add flags for all VPC network settings."""
   group = parser.add_argument_group('Direct VPC egress setting flags group.')
   AddVpcNetworkFlags(group, resource_kind)
@@ -1429,12 +1429,12 @@ def AddVpcNetworkGroupFlags(parser, resource_kind='Service', is_update=False):
   AddClearVpcNetworkTagsFlags(tags_group, resource_kind)
 
 
-def AddVpcNetworkGroupFlagsForCreate(parser, resource_kind='Service'):
+def AddVpcNetworkGroupFlagsForCreate(parser, resource_kind='service'):
   """Add flags for all VPC network settings when creating a resource."""
   AddVpcNetworkGroupFlags(parser, resource_kind, is_update=False)
 
 
-def AddVpcNetworkGroupFlagsForUpdate(parser, resource_kind='Service'):
+def AddVpcNetworkGroupFlagsForUpdate(parser, resource_kind='service'):
   """Add flags for all VPC network settings when updating a resource."""
   group = parser.add_mutually_exclusive_group()
   AddVpcNetworkGroupFlags(group, resource_kind, is_update=True)

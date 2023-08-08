@@ -240,7 +240,19 @@ class ExecutionPrinter(cp.CustomPrinterBase):
     if record.status.failedCount is not None and record.status.failedCount > 0:
       lines.append('{} failed to complete'.format(
           _PluralizedWord('task', record.status.failedCount)))
-    if record.status.completionTime is not None and record.creation_timestamp is not None:
+    if (
+        record.status.cancelledCount is not None
+        and record.status.cancelledCount > 0
+    ):
+      lines.append(
+          '{} cancelled'.format(
+              _PluralizedWord('task', record.status.cancelledCount)
+          )
+      )
+    if (
+        record.status.completionTime is not None
+        and record.creation_timestamp is not None
+    ):
       lines.append('Elapsed time: ' + ExecutionPrinter._elapsedTime(
           record.creation_timestamp, record.status.completionTime))
     if record.status.logUri is not None:

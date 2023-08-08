@@ -20,6 +20,20 @@ location:
     help: |
       The location Id.
 
+globalDefaultLocation:
+  name: location
+  collection: networksecurity.projects.locations
+  attributes:
+  - *project
+  - &globalDefaultLocation
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      The location Id.
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.network_security.util:SetGlobalLocation
+      hint: location is global by default
+
 serverTlsPolicy:
   name: server TLS policy
   collection: networksecurity.projects.locations.serverTlsPolicies
@@ -188,3 +202,27 @@ securityProfileGroup:
     parameter_name: securityProfileGroupsId
     attribute_name: security_profile_group
     help: ID of the security profile group.
+
+sseRealm:
+  name: SSE realm
+  collection: networksecurity.projects.locations.sseRealms
+  request_id_field: sseRealmId
+  attributes:
+  - *project
+  - *globalDefaultLocation
+  - &sseRealm
+    parameter_name: sseRealmsId
+    attribute_name: sse_realm
+    help: Id of the SSE realm.
+
+partnerSSERealm:
+  name: partner SSE realm
+  collection: networksecurity.projects.locations.partnerSSERealms
+  request_id_field: partnerSseRealmId
+  attributes:
+  - *project
+  - *globalDefaultLocation
+  - &partnerSSERealm
+    parameter_name: partnerSSERealmsId
+    attribute_name: partner_sse_realm
+    help: Id of the partner SSE realm.

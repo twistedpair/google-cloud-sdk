@@ -73,12 +73,19 @@ def AddBitbucketServerConfigArgs(parser, update=False):
         '--name',
         required=True,
         help='The config name of the Bitbucket Server connection.')
-    parser.add_argument(
+    network = parser.add_argument_group()
+    network.add_argument(
         '--peered-network',
         help="""\
 VPC network that should be used when making calls to the Bitbucket Server instance.
 
 If not specified, calls will be made over the public internet.
+""")
+    network.add_argument(
+        '--peered-network-ip-range',
+        hidden=True,
+        help="""\
+IP range within the peered network. This is specified in CIDR notation with a slash and the subnet prefix size. Examples: `192.168.0.0/24` or '/29'.
 """)
   if update:
     parser.add_argument(

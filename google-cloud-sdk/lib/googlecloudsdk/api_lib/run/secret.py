@@ -30,16 +30,18 @@ class Secret(k8s_object.KubernetesObject):
 
   @property
   def string_data(self):
-    return k8s_object.ListAsDictionaryWrapper(
+    return k8s_object.KeyValueListAsDictionaryWrapper(
         self._m.stringData.additionalProperties,
         self._messages.Secret.StringDataValue.AdditionalProperty,
         key_field='key',
-        value_field='value')
+        value_field='value',
+    )
 
   @property
   def data(self):
-    return k8s_object.ListAsDictionaryWrapper(
+    return k8s_object.KeyValueListAsDictionaryWrapper(
         self._m.data.additionalProperties,
         self._messages.Secret.DataValue.AdditionalProperty,
         key_field='key',
-        value_field='value')
+        value_field='value',
+    )

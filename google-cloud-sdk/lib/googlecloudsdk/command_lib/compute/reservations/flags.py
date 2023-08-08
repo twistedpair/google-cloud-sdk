@@ -190,6 +190,44 @@ def GetRemoveShareWithFlag(custom_name=None):
       help=help_text)
 
 
+def GetDeleteAtTimeFlag():
+  """Gets the --delete-at-time flag."""
+  help_text = """\
+  Automatically deletes the reservation at a specific time from its creation.
+  The specified time must be an RFC3339 timestamp, which must be
+  formatted as "YYYY-MM-DDTHH:MM:SSZ" where YYYY = year, MM = month, DD = day,
+  HH = hours, MM = minutes, SS = seconds, and Z = time zone in
+  Coordinated Universal Time (UTC). For example, specify 2021-11-20T07:00:00Z.
+  """
+  return base.Argument(
+      '--delete-at-time', type=arg_parsers.Datetime.Parse, help=help_text
+  )
+
+
+def GetDeleteAfterDurationFlag():
+  help_text = """\
+  Automatically deletes the reservations after a specified number of
+  days, hours, minutes, or seconds from its creation. For example,
+  specify 30m for 30 minutes, or 1d2h3m4s for 1 day, 2 hours,
+  3 minutes, and 4 seconds. For more information, see $ gcloud topic datetimes.
+  """
+  return base.Argument(
+      '--delete-after-duration',
+      type=arg_parsers.Duration(),
+      help=help_text,
+  )
+
+
+def GetDisableAutoDelete():
+  """Gets the --disable-auto-delete flag."""
+  help_text = """\
+  Disables the auto-delete setting for the reservation.
+  """
+  return base.Argument(
+      '--disable-auto-delete', action='store_true',
+      help=help_text)
+
+
 def GetResourcePolicyFlag(custom_name=None):
   """Gets the --resource-policies flag."""
   help_text = """\
@@ -220,7 +258,8 @@ def AddCreateFlags(parser,
                    support_fleet=False,
                    support_share_setting=False,
                    support_instance_template=False,
-                   support_ssd_count=False):
+                   support_ssd_count=False,
+                   support_auto_delete=False):
   """Adds all flags needed for the create command."""
   GetDescriptionFlag().AddToParser(parser)
 
@@ -244,8 +283,10 @@ def AddCreateFlags(parser,
 
   # create the instance properties group for the SpecificSkuReservation
   instance_properties_group = base.ArgumentGroup(
-      'Define the individual instance properties for the SpecificSKU reservation.',
-      required=False)
+      'Define the individual instance properties for the SpecificSKU'
+      ' reservation.',
+      required=False,
+  )
   instance_properties_group.AddArgument(GetMinCpuPlatform())
   instance_properties_group.AddArgument(GetMachineType())
   if support_ssd_count:
@@ -271,3 +312,13 @@ def AddCreateFlags(parser,
     share_group.AddArgument(GetSharedSettingFlag())
     share_group.AddArgument(GetShareWithFlag())
     share_group.AddToParser(parser)
+
+  if support_auto_delete:
+    auto_delete_group = base.ArgumentGroup(
+        'Manage auto-delete properties for reservations.',
+        required=False,
+        mutex=True,
+    )
+    auto_delete_group.AddArgument(GetDeleteAtTimeFlag())
+    auto_delete_group.AddArgument(GetDeleteAfterDurationFlag())
+    auto_delete_group.AddToParser(parser)

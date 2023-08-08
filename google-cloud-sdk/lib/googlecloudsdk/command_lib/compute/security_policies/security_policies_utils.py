@@ -254,7 +254,8 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
               conformAction=rate_limit_options['conformAction'],
               exceedAction=rate_limit_options['exceedAction']))
       if 'exceedActionRpcStatus' in rate_limit_options:
-        exceed_action_rpc_status = messages.SecurityPolicyRuleRateLimitOptionsRpcStatus(
+        exceed_action_rpc_status = (
+            messages.SecurityPolicyRuleRateLimitOptionsRpcStatus()
         )
         if 'code' in rate_limit_options['exceedActionRpcStatus']:
           exceed_action_rpc_status.code = rate_limit_options[
@@ -262,7 +263,9 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
         if 'message' in rate_limit_options['exceedActionRpcStatus']:
           exceed_action_rpc_status.message = rate_limit_options[
               'exceedActionRpcStatus']['message']
-        security_policy_rule.rateLimitOptions.exceedActionRpcStatus = exceed_action_rpc_status
+        security_policy_rule.rateLimitOptions.exceedActionRpcStatus = (
+            exceed_action_rpc_status
+        )
       if 'exceedRedirectOptions' in rate_limit_options:
         exceed_redirect_options = messages.SecurityPolicyRuleRedirectOptions()
         if 'type' in rate_limit_options['exceedRedirectOptions']:
@@ -393,10 +396,10 @@ def CreateAdaptiveProtectionConfig(client, args,
   if (args.IsSpecified('enable_layer7_ddos_defense') or
       args.IsSpecified('layer7_ddos_defense_rule_visibility')):
     layer7_ddos_defense_config = (
-        adaptive_protection_config.layer7DdosDefenseConfig
-        if adaptive_protection_config.layer7DdosDefenseConfig is not None else
-        messages.SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(
-        ))
+        (adaptive_protection_config.layer7DdosDefenseConfig)
+        if adaptive_protection_config.layer7DdosDefenseConfig is not None
+        else messages.SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig()
+    )
     if args.IsSpecified('enable_layer7_ddos_defense'):
       layer7_ddos_defense_config.enable = args.enable_layer7_ddos_defense
     if args.IsSpecified('layer7_ddos_defense_rule_visibility'):
@@ -605,7 +608,8 @@ def CreateRateLimitOptions(
   if support_fairshare and (
       args.IsSpecified('exceed_action_rpc_status_code') or
       args.IsSpecified('exceed_action_rpc_status_message')):
-    exceed_action_rpc_status = messages.SecurityPolicyRuleRateLimitOptionsRpcStatus(
+    exceed_action_rpc_status = (
+        messages.SecurityPolicyRuleRateLimitOptionsRpcStatus()
     )
     if args.IsSpecified('exceed_action_rpc_status_code'):
       exceed_action_rpc_status.code = args.exceed_action_rpc_status_code
@@ -782,3 +786,29 @@ def _ConvertUserDefinedFieldBase(base):
   return {'ipv4': 'IPV4', 'ipv6': 'IPV6', 'tcp': 'TCP', 'udp': 'UDP'}.get(
       base, base
   )
+
+
+def CreateLayer7DdosDefenseThresholdConfig(client, args):
+  """Returns a SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfig message."""
+
+  messages = client.messages
+  threshold_config = (
+      messages.SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfig()
+  )
+
+  threshold_config.name = args.threshold_config_name
+
+  if getattr(args, 'auto_deploy_load_threshold', None) is not None:
+    threshold_config.autoDeployLoadThreshold = args.auto_deploy_load_threshold
+  if getattr(args, 'auto_deploy_confidence_threshold', None) is not None:
+    threshold_config.autoDeployConfidenceThreshold = (
+        args.auto_deploy_confidence_threshold
+    )
+  if getattr(args, 'auto_deploy_impacted_baseline_threshold', None) is not None:
+    threshold_config.autoDeployImpactedBaselineThreshold = (
+        args.auto_deploy_impacted_baseline_threshold
+    )
+  if getattr(args, 'auto_deploy_expiration_sec', None) is not None:
+    threshold_config.autoDeployExpirationSec = args.auto_deploy_expiration_sec
+
+  return threshold_config

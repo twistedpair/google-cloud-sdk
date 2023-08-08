@@ -312,6 +312,7 @@ def AddMutationArgs(parser, required=True):
         OS Short Name      OS Version
         centos             8
         centos             7
+        debian             12
         debian             11
         debian             10
         debian             9

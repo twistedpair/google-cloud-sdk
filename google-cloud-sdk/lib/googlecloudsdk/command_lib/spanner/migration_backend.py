@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Spanner migration library functions and utilities for the harbourbridge binary."""
+"""Spanner migration library functions and utilities for the spanner-migration-tool binary."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
@@ -39,12 +39,12 @@ class SpannerMigrationException(c_except.Error):
   """Base Exception for any errors raised by gcloud spanner migration surface."""
 
 
-class HarbourbridgeWrapper(binary_operations.StreamingBinaryBackedOperation):
-  """Binary operation wrapper for harbourbridge commands."""
+class SpannerMigrationWrapper(binary_operations.StreamingBinaryBackedOperation):
+  """Binary operation wrapper for spanner-migration-tool commands."""
 
   def __init__(self, **kwargs):
-    super(HarbourbridgeWrapper, self).__init__(
-        binary='harbourbridge', install_if_missing=True, **kwargs)
+    super(SpannerMigrationWrapper, self).__init__(
+        binary='spanner-migration-tool', install_if_missing=True, **kwargs)
 
   def _ParseSchemaArgs(self,
                        source,
@@ -146,6 +146,16 @@ class HarbourbridgeWrapper(binary_operations.StreamingBinaryBackedOperation):
       exec_args.extend(['--log-level', log_level])
     return exec_args
 
+  def _ParseWebArgs(self, open_flag=False, port=None, **kwargs):
+    """Parse args for the web command."""
+    del kwargs
+    exec_args = ['web']
+    if open_flag:
+      exec_args.append('--open')
+    if port:
+      exec_args.extend(['--port', port])
+    return exec_args
+
   def _ParseArgsForCommand(self, command, **kwargs):
     """Call the parser corresponding to the command."""
     if command == 'schema':
@@ -155,7 +165,7 @@ class HarbourbridgeWrapper(binary_operations.StreamingBinaryBackedOperation):
     elif command == 'schema-and-data':
       return self._ParseSchemaAndDataArgs(**kwargs)
     elif command == 'web':
-      return ['web']
+      return self._ParseWebArgs(**kwargs)
     else:
       raise binary_operations.InvalidOperationForBinary(
-          'Invalid Operation [{}] for harbourbridge'.format(command))
+          'Invalid Operation [{}] for spanner-migration-tool'.format(command))

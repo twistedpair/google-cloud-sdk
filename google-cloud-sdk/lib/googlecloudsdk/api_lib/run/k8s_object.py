@@ -21,10 +21,10 @@ from __future__ import unicode_literals
 
 import abc
 import collections
+
 from apitools.base.protorpclite import messages
 from googlecloudsdk.api_lib.run import condition
 from googlecloudsdk.core.console import console_attr
-
 import six
 
 try:
@@ -42,8 +42,14 @@ CLIENT_GROUP = 'client.knative.dev'
 GOOGLE_GROUP = 'cloud.googleapis.com'
 RUN_GROUP = 'run.googleapis.com'
 
-INTERNAL_GROUPS = (CLIENT_GROUP, SERVING_GROUP, AUTOSCALING_GROUP,
-                   EVENTING_GROUP, GOOGLE_GROUP, RUN_GROUP)
+INTERNAL_GROUPS = (
+    CLIENT_GROUP,
+    SERVING_GROUP,
+    AUTOSCALING_GROUP,
+    EVENTING_GROUP,
+    GOOGLE_GROUP,
+    RUN_GROUP,
+)
 
 AUTHOR_ANNOTATION = SERVING_GROUP + '/creator'
 REGION_LABEL = GOOGLE_GROUP + '/location'
@@ -92,9 +98,11 @@ def InitializedInstance(msg_cls):
 
   Args:
     msg_cls: A message-class to be instantiated.
+
   Returns:
     An instance of the given class, with all fields initialized blank objects.
   """
+
   def Instance(field):
     if field.repeated:
       return []
@@ -104,7 +112,8 @@ def InitializedInstance(msg_cls):
     return isinstance(field, messages.MessageField)
 
   args = {
-      field.name: Instance(field) for field in msg_cls.all_fields()
+      field.name: Instance(field)
+      for field in msg_cls.all_fields()
       if IncludeField(field)
   }
   return msg_cls(**args)
@@ -164,8 +173,11 @@ class KubernetesObject(object):
   def Template(cls, template, messages_mod, kind=None):
     """Wraps a template object: spec and metadata only, no status."""
     msg_cls = getattr(messages_mod, cls.Kind(kind))
-    return cls(msg_cls(spec=template.spec, metadata=template.metadata),
-               messages_mod, kind)
+    return cls(
+        msg_cls(spec=template.spec, metadata=template.metadata),
+        messages_mod,
+        kind,
+    )
 
   @classmethod
   def New(cls, client, namespace, kind=None, api_category=None):
@@ -379,8 +391,10 @@ class KubernetesObject(object):
     # provide '!' for "I'm serving, but not the revision you wanted."
     encoding = console_attr.GetConsoleAttr().GetEncoding()
     if self.ready is None:
-      return self._PickSymbol(
-          '\N{HORIZONTAL ELLIPSIS}', '.', encoding), 'yellow'
+      return (
+          self._PickSymbol('\N{HORIZONTAL ELLIPSIS}', '.', encoding),
+          'yellow',
+      )
     elif self.ready:
       return self._PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding), 'green'
     else:
@@ -392,7 +406,8 @@ class KubernetesObject(object):
         namespace=self.namespace,
         name=self.name,
         uid=self.uid,
-        apiVersion=self.apiVersion)
+        apiVersion=self.apiVersion,
+    )
 
   def Message(self):
     """Return the actual message we've wrapped."""
@@ -419,21 +434,23 @@ class KubernetesObject(object):
 def AnnotationsFromMetadata(messages_mod, metadata):
   if not metadata.annotations:
     metadata.annotations = Meta(messages_mod).AnnotationsValue()
-  return ListAsDictionaryWrapper(
+  return KeyValueListAsDictionaryWrapper(
       metadata.annotations.additionalProperties,
       Meta(messages_mod).AnnotationsValue.AdditionalProperty,
       key_field='key',
-      value_field='value')
+      value_field='value',
+  )
 
 
 def LabelsFromMetadata(messages_mod, metadata):
   if not metadata.labels:
     metadata.labels = Meta(messages_mod).LabelsValue()
-  return ListAsDictionaryWrapper(
+  return KeyValueListAsDictionaryWrapper(
       metadata.labels.additionalProperties,
       Meta(messages_mod).LabelsValue.AdditionalProperty,
       key_field='key',
-      value_field='value')
+      value_field='value',
+  )
 
 
 class LazyListWrapper(collections_abc.MutableSequence):
@@ -483,13 +500,8 @@ class LazyListWrapper(collections_abc.MutableSequence):
     self._l.insert(i, v)
 
 
-class ListAsReadOnlyDictionaryWrapper(collections_abc.Mapping):
+class ListAsDictionaryWrapper(collections_abc.MutableMapping):
   """Wraps repeated messages field with name in a dict-like object.
-
-  This class is a simplified version of ListAsDictionaryWrapper for when there
-  is no single value field on the underlying messages. Compared to
-  ListAsDictionaryWrapper, this class does not directly allow mutating the
-  underlying messages and returns the entire message when getting.
 
   Operations in these classes are O(n) for simplicity. This needs to match the
   live state of the underlying list of messages, including edits made by others.
@@ -511,29 +523,50 @@ class ListAsReadOnlyDictionaryWrapper(collections_abc.Mapping):
 
   def __getitem__(self, key):
     """Implements evaluation of `self[key]`."""
-    for item in self._m:
-      if getattr(item, self._key_field) == key:
-        if self._filter(item):
-          return item
-        break
+    for k, item in self.items():
+      if k == key:
+        return item
     raise KeyError(key)
 
-  def __contains__(self, item):
-    """Implements evaluation of `item in self`."""
-    for list_elem in self._m:
-      if getattr(list_elem, self._key_field) == item:
-        return self._filter(list_elem)
-    return False
+  def __setitem__(self, key, value):
+    setattr(value, self._key_field, key)
+    for index, item in enumerate(self._m):
+      if getattr(item, self._key_field) == key:
+        if not self._filter(item):
+          raise KeyError(key)
+        self._m[index] = value
+        return
+    self._m.append(value)
+
+  def setdefault(self, key, default):
+    for item in self._m:
+      if getattr(item, self._key_field) == key:
+        if not self._filter(item):
+          raise KeyError(key)
+        return item
+    setattr(default, self._key_field, key)
+    self._m.append(default)
+    return default
+
+  def __delitem__(self, key):
+    """Implements evaluation of `del self[key]`."""
+    index_to_delete = None
+    for index, item in enumerate(self._m):
+      if getattr(item, self._key_field) == key:
+        if self._filter(item):
+          index_to_delete = index
+        break
+    if index_to_delete is None:
+      raise KeyError(key)
+    del self._m[index_to_delete]
 
   def __len__(self):
     """Implements evaluation of `len(self)`."""
-    return sum(1 for m in self._m if self._filter(m))
+    return sum(1 for _ in self.items())
 
   def __iter__(self):
     """Returns a generator yielding the message keys."""
-    for item in self._m:
-      if self._filter(item):
-        yield getattr(item, self._key_field)
+    return (item[0] for item in self.items())
 
   def MakeSerializable(self):
     return self._m
@@ -541,11 +574,38 @@ class ListAsReadOnlyDictionaryWrapper(collections_abc.Mapping):
   def __repr__(self):
     return '{}{{{}}}'.format(
         type(self).__name__,
-        ', '.join('{}: {}'.format(k, v) for k, v in self.items()))
+        ', '.join('{}: {}'.format(k, v) for k, v in self.items()),
+    )
+
+  def items(self):
+    return ListItemsView(self)
+
+  def values(self):
+    return ListValuesView(self)
 
 
-class ListAsDictionaryWrapper(ListAsReadOnlyDictionaryWrapper,
-                              collections_abc.MutableMapping):
+class ListItemsView(collections_abc.ItemsView):
+
+  def __iter__(self):
+    for item in self._mapping._m:
+      if self._mapping._filter(item):
+        yield (getattr(item, self._mapping._key_field), item)
+
+
+class ListValuesView(collections_abc.ValuesView):
+
+  def __contains__(self, value):
+    for v in iter(self):
+      if v == value:
+        return True
+    return False
+
+  def __iter__(self):
+    for _, value in self._mapping.items():
+      yield value
+
+
+class KeyValueListAsDictionaryWrapper(ListAsDictionaryWrapper):
   """Wraps repeated messages field with name and value in a dict-like object.
 
   Properties which resemble dictionaries (e.g. environment variables, build
@@ -555,8 +615,14 @@ class ListAsDictionaryWrapper(ListAsReadOnlyDictionaryWrapper,
   fields in a more Python-idiomatic way.
   """
 
-  def __init__(self, to_wrap, item_class,
-               key_field='name', value_field='value', filter_func=None):
+  def __init__(
+      self,
+      to_wrap,
+      item_class,
+      key_field='name',
+      value_field='value',
+      filter_func=None,
+  ):
     """Wrap a list of messages to be accessible as a dictionary.
 
     Arguments:
@@ -568,15 +634,11 @@ class ListAsDictionaryWrapper(ListAsReadOnlyDictionaryWrapper,
         from the wrapped list. This function should take a message as its only
         argument and return True if this message should be included.
     """
-    super(ListAsDictionaryWrapper, self).__init__(
-        to_wrap, key_field=key_field, filter_func=filter_func)
+    super(KeyValueListAsDictionaryWrapper, self).__init__(
+        to_wrap, key_field=key_field, filter_func=filter_func
+    )
     self._item_class = item_class
     self._value_field = value_field
-
-  def __getitem__(self, key):
-    """Implements evaluation of `self[key]`."""
-    item = super(ListAsDictionaryWrapper, self).__getitem__(key)
-    return getattr(item, self._value_field)
 
   def __setitem__(self, key, value):
     """Implements evaluation of `self[key] = value`.
@@ -590,26 +652,24 @@ class ListAsDictionaryWrapper(ListAsReadOnlyDictionaryWrapper,
         hidden by the filter func, this is raised to prevent accidental
         overwrites
     """
-    for item in self._m:
-      if getattr(item, self._key_field) == key:
-        if self._filter(item):
-          setattr(item, self._value_field, value)
-          break
-        else:
-          raise KeyError(key)
-    else:
-      self._m.append(self._item_class(**{
-          self._key_field: key,
-          self._value_field: value}))
+    item = super(KeyValueListAsDictionaryWrapper, self).setdefault(
+        key, self._item_class()
+    )
+    setattr(item, self._value_field, value)
 
-  def __delitem__(self, key):
-    """Implements evaluation of `del self[key]`."""
-    index_to_delete = None
-    for index, item in enumerate(self._m):
-      if getattr(item, self._key_field) == key:
-        if self._filter(item):
-          index_to_delete = index
-        break
-    if index_to_delete is None:
-      raise KeyError(key)
-    del self._m[index_to_delete]
+  def setdefault(self, key, default):
+    default_item = self._item_class(**{self._value_field: default})
+    item = super(KeyValueListAsDictionaryWrapper, self).setdefault(
+        key, default_item
+    )
+    return getattr(item, self._value_field)
+
+  def items(self):
+    return KeyValueListItemsView(self)
+
+
+class KeyValueListItemsView(ListItemsView):
+
+  def __iter__(self):
+    for key, item in super(KeyValueListItemsView, self).__iter__():
+      yield (key, getattr(item, self._mapping._value_field))

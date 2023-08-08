@@ -542,15 +542,28 @@ def _CreateConfig(messages, flags, is_composer_v1):
             messages.CidrBlock(cidrBlock=network) for network in networks
         ])
 
-  composer_v2_flag_used = (
-      flags.scheduler_cpu or flags.worker_cpu or flags.web_server_cpu or
-      flags.scheduler_memory_gb or flags.worker_memory_gb or
-      flags.web_server_memory_gb or flags.scheduler_storage_gb or
-      flags.worker_storage_gb or flags.web_server_storage_gb or
-      flags.min_workers or flags.max_workers or flags.triggerer_memory_gb or
-      flags.triggerer_cpu or flags.enable_triggerer or flags.triggerer_count or
-      flags.dag_processor_cpu or flags.dag_processor_count or
-      flags.dag_processor_memory_gb or flags.dag_processor_storage_gb)
+  composer_v2_flags = [
+      flags.scheduler_cpu,
+      flags.worker_cpu,
+      flags.web_server_cpu,
+      flags.scheduler_memory_gb,
+      flags.worker_memory_gb,
+      flags.web_server_memory_gb,
+      flags.scheduler_storage_gb,
+      flags.worker_storage_gb,
+      flags.web_server_storage_gb,
+      flags.min_workers,
+      flags.max_workers,
+      flags.triggerer_memory_gb,
+      flags.triggerer_cpu,
+      flags.enable_triggerer,
+      flags.triggerer_count,
+      flags.dag_processor_cpu,
+      flags.dag_processor_count,
+      flags.dag_processor_memory_gb,
+      flags.dag_processor_storage_gb,
+  ]
+  composer_v2_flag_used = any(flag is not None for flag in composer_v2_flags)
   if composer_v2_flag_used or (flags.scheduler_count and not is_composer_v1):
     config.workloadsConfig = _CreateWorkloadConfig(messages, flags)
   return config
@@ -578,7 +591,7 @@ def _CreateWorkloadConfig(messages, flags):
       flags.enable_triggerer
       or flags.triggerer_cpu
       or flags.triggerer_memory_gb
-      or flags.triggerer_count
+      or flags.triggerer_count is not None
   ):
     triggerer_count = 1 if flags.enable_triggerer else 0
     if flags.triggerer_count is not None:
@@ -590,7 +603,7 @@ def _CreateWorkloadConfig(messages, flags):
     )
   if (
       flags.dag_processor_cpu
-      or flags.dag_processor_count
+      or flags.dag_processor_count is not None
       or flags.dag_processor_memory_gb
       or flags.dag_processor_storage_gb
   ):

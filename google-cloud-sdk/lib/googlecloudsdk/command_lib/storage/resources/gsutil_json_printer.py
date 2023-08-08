@@ -35,7 +35,12 @@ class GsutilJsonPrinter(resource_printer_base.ResourcePrinter):
   mimic gsutil JSON output.
 
   Printer attributes:
-    empty: Returns this value if the resource is empty. Defaults to printing ''.
+    empty: Returns this value if the resource is empty or if `key` is missing.
+        Defaults to printing ''.
+    key: The key of the record to output. Only recommended when printing a
+        single resource. The full record is printed by default.
+    empty_prefix_key: The key of the record to use as a prefix for the `empty`
+        string when the `key` attribute is specified and lacks a value.
 
   Attributes:
     _empty: True if no records were output.
@@ -51,6 +56,7 @@ class GsutilJsonPrinter(resource_printer_base.ResourcePrinter):
     )
     self._empty = True
     self._delimiter = self._BEGIN_DELIMITER
+    self._prefix = ''
 
   @staticmethod
   def Register():
@@ -68,8 +74,20 @@ class GsutilJsonPrinter(resource_printer_base.ResourcePrinter):
       record: A JSON-serializable object.
       delimit: Dump one record if False, used by PrintSingleRecord().
     """
+    element = record
+    if 'key' in self.attributes:
+      key = self.attributes['key']
+      element = element.get(key, '')
+    if not element:
+      if 'empty_prefix_key' in self.attributes:
+        self._prefix = str(record.get(self.attributes['empty_prefix_key'], ''))
+      # ResourcePrinter.AddRecord() sets self._empty to False before calling
+      # this function, so we remedy that here.
+      self._empty = True
+      return
+
     self._empty = False
-    output = json.dumps(record, sort_keys=True)
+    output = json.dumps(element, sort_keys=True)
     if delimit:
       self._out.write(self._delimiter + output)
       self._delimiter = ','
@@ -82,7 +100,7 @@ class GsutilJsonPrinter(resource_printer_base.ResourcePrinter):
   def Finish(self):
     if self._empty:
       if 'empty' in self.attributes:
-        self._out.write(self.attributes.get('empty'))
+        self._out.write(self._prefix + self.attributes['empty'])
     elif self._delimiter != self._BEGIN_DELIMITER:
       self._out.write(self._END_DELIMITER)
       self._delimiter = self._BEGIN_DELIMITER

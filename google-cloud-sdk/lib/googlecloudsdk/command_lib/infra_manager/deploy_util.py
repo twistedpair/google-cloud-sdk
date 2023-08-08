@@ -265,9 +265,9 @@ def Apply(
     stage_bucket: optional string. Destination for storing local config files
       specified by local source flag. e.g. "gs://bucket-name/".
     ignore_file: optional string, a path to a gcloudignore file.
-    import_existing_resources: By default, Cloud Config Manager will return a
+    import_existing_resources: By default, Infrastructure Manager will return a
       failure when Terraform encounters a 409 code (resource conflict error)
-      during actuation. If this flag is set to true, Cloud Config Manager will
+      during actuation. If this flag is set to true, Infrastructure Manager will
       instead attempt to automatically import the resource into the Terraform
       state (for supported resource types) and continue actuation.
     artifacts_gcs_bucket: User-defined location of Cloud Build logs, artifacts,

@@ -46,16 +46,16 @@ class DeliveryPipelinesClient(object):
     Returns:
       a delivery pipeline object.
     """
-    request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesGetRequest(
-        name=name)
+    request = (
+        self.messages.ClouddeployProjectsLocationsDeliveryPipelinesGetRequest(
+            name=name
+        )
+    )
     return self._service.Get(request)
 
-  def List(self,
-           location,
-           filter_str=None,
-           order_by=None,
-           page_size=0,
-           limit=None):
+  def List(
+      self, location, filter_str=None, order_by=None, page_size=0, limit=None
+  ):
     """Lists Delivery Pipeline resources that belong to a location.
 
     Args:
@@ -71,12 +71,32 @@ class DeliveryPipelinesClient(object):
     Returns:
       Delivery Pipeline list response.
     """
-    list_req = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesListRequest(
-        parent=location, filter=filter_str, orderBy=order_by)
+    list_req = (
+        self.messages.ClouddeployProjectsLocationsDeliveryPipelinesListRequest(
+            parent=location, filter=filter_str, orderBy=order_by
+        )
+    )
     return list_pager.YieldFromList(
         self._service,
         list_req,
         field='deliveryPipelines',
         batch_size=page_size,
         limit=limit,
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
+
+  def RollbackTarget(self, name, request):
+    """Creates a rollback for a given target.
+
+    Args:
+      name: pipeline name
+      request: RollbackTargetRequest
+
+    Returns:
+      RollbackTargetResponse
+    """
+    msg = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesRollbackTargetRequest(
+        name=name,
+        rollbackTargetRequest=request,
+    )
+    return self._service.RollbackTarget(msg)

@@ -45,16 +45,13 @@ import six.moves.urllib.parse
 import six.moves.urllib.request
 
 
-_GA_ENDPOINT = 'https://ssl.google-analytics.com/batch'
-_GA_TID = 'UA-36037335-2'
-_GA_TID_TESTING = 'UA-36037335-13'
-_GA_INSTALLS_CATEGORY = 'Installs'
-_GA_COMMANDS_CATEGORY = 'Commands'
-_GA_HELP_CATEGORY = 'Help'
-_GA_ERROR_CATEGORY = 'Error'
-_GA_EXECUTIONS_CATEGORY = 'Executions'
-_GA_TEST_EXECUTIONS_CATEGORY = 'TestExecutions'
-_GA_CUSTOM_CATEGORY = 'Custom'
+_INSTALLS_CATEGORY = 'Installs'
+_COMMANDS_CATEGORY = 'Commands'
+_HELP_CATEGORY = 'Help'
+_ERROR_CATEGORY = 'Error'
+_EXECUTIONS_CATEGORY = 'Executions'
+_TEST_EXECUTIONS_CATEGORY = 'TestExecutions'
+_CUSTOM_CATEGORY = 'Custom'
 
 _LOAD_EVENT = 'load'
 _RUN_EVENT = 'run'
@@ -179,109 +176,6 @@ class _CommandTimer(object):
     return timings
 
 
-class _GoogleAnalyticsMetricsReporter(object):
-  """A class for handling reporting metrics to Google Analytics (GA).
-
-  See https://developers.google.com/analytics/devguides/collection/protocol/v1
-      /parameters
-  for more information.
-  """
-
-  def __init__(self, common_params, ga_tid=_GA_TID):
-    self._user_agent = common_params.user_agent
-
-    base_event = [
-        ('cd1', common_params.release_channel),
-        ('cd2', common_params.install_type),
-        ('cd3', common_params.metrics_environment),
-        ('cd4', common_params.is_interactive),
-        ('cd5', common_params.python_version),
-        # cd6 passed as argument to Record - cd6 = Flag Names
-        ('cd7', common_params.metrics_environment_version),
-        # cd8 passed as argument to Record - cd8 = Error
-        # cd9 passed as argument to Record - cd9 = Error Extra Info
-        ('cd12', common_params.is_run_from_shell_script),
-        ('cd13', common_params.term_identifier),
-        ('v', '1'),
-        ('tid', ga_tid),
-        ('cid', common_params.client_id),
-    ]
-
-    self._ga_event_params = [
-        ('t', 'event')]
-    self._ga_event_params.extend(base_event)
-
-    self._ga_timing_params = [
-        ('t', 'timing')]
-    self._ga_timing_params.extend(base_event)
-
-    self._ga_events = []
-
-  @property
-  def event_params(self):
-    return self._ga_event_params
-
-  @property
-  def timing_params(self):
-    return self._ga_timing_params
-
-  def Record(self,
-             event,
-             flag_names=None,
-             error=None,
-             error_extra_info_json=None):
-    """Records the given event.
-
-    Args:
-      event: _Event, The event to process.
-      flag_names: str, Comma separated list of flag names used with the action.
-      error: class, The class (not the instance) of the Exception if a user
-        tried to run a command that produced an error.
-      error_extra_info_json: {str: json-serializable}, A json serializable dict
-        of extra info that we want to log with the error. This enables us to
-        write queries that can understand the keys and values in this dict.
-    """
-    params = [
-        ('ec', event.category),
-        ('ea', event.action),
-        ('el', event.label),
-        ('ev', event.value),
-    ]
-    if flag_names is not None:
-      params.append(('cd6', flag_names))
-    if error is not None:
-      params.append(('cd8', error))
-    if error_extra_info_json is not None:
-      params.append(('cd9', error_extra_info_json))
-    params.extend(self.event_params)
-    data = six.moves.urllib.parse.urlencode(params)
-    self._ga_events.append(data)
-
-  def Timings(self, timer):
-    """Extracts Google Analytics timing events from timer."""
-    category, action, _, flag_names = timer.GetContext()
-    event_params = [('utc', category), ('utl', action)]
-    if flag_names is not None:
-      event_params.append(('cd6', flag_names))
-
-    ga_timing_events = []
-    timings = timer.GetTimings()
-    for timing in timings:
-      timing_event = [
-          ('utv', timing[0]),
-          ('utt', timing[1])
-      ]
-      timing_event.extend(event_params)
-      timing_event.extend(self.timing_params)
-      ga_timing_events.append(six.moves.urllib.parse.urlencode(timing_event))
-    return ga_timing_events
-
-  def ToHTTPBeacon(self, timer):
-    data = '\n'.join(self._ga_events + self.Timings(timer))
-    headers = {'user-agent': self._user_agent}
-    return (_GA_ENDPOINT, 'POST', data, headers)
-
-
 class _ClearcutMetricsReporter(object):
   """A class for handling reporting metrics to Clearcut."""
 
@@ -370,16 +264,16 @@ class _ClearcutMetricsReporter(object):
       event_metadata.append({'key': 'extra_error_info',
                              'value': error_extra_info_json})
 
-    if event.category is _GA_EXECUTIONS_CATEGORY:
+    if event.category is _EXECUTIONS_CATEGORY:
       event_metadata.append({'key': 'binary_version', 'value': event.label})
-    elif event.category is _GA_HELP_CATEGORY:
+    elif event.category is _HELP_CATEGORY:
       event_metadata.append({'key': 'help_mode', 'value': event.label})
-    elif event.category is _GA_ERROR_CATEGORY:
+    elif event.category is _ERROR_CATEGORY:
       event_metadata.append(
           {'key': _CLEARCUT_ERROR_TYPE_KEY, 'value': event.label})
-    elif event.category is _GA_INSTALLS_CATEGORY:
+    elif event.category is _INSTALLS_CATEGORY:
       event_metadata.append({'key': 'component_version', 'value': event.label})
-    elif event.category is _GA_CUSTOM_CATEGORY:
+    elif event.category is _CUSTOM_CATEGORY:
       event_metadata.append({'key': event.label, 'value': event.value})
 
     concord_event[_CLEARCUT_EVENT_METADATA_KEY].extend(event_metadata)
@@ -411,12 +305,12 @@ class _ClearcutMetricsReporter(object):
     event_latency, sub_event_latencies = self.Timings(timer)
     command_latency_set = False
     for concord_event, _ in self._clearcut_concord_timed_events:
-      if (concord_event['event_type'] is _GA_COMMANDS_CATEGORY and
+      if (concord_event['event_type'] is _COMMANDS_CATEGORY and
           command_latency_set):
         continue
       concord_event['latency_ms'] = event_latency
       concord_event['sub_event_latency_ms'] = sub_event_latencies
-      command_latency_set = concord_event['event_type'] is _GA_COMMANDS_CATEGORY
+      command_latency_set = concord_event['event_type'] is _COMMANDS_CATEGORY
 
     clearcut_request['log_event'] = []
     for concord_event, event_time_ms in self._clearcut_concord_timed_events:
@@ -452,7 +346,7 @@ class _MetricsCollector(object):
     return _MetricsCollector._instance
 
   @staticmethod
-  def ResetCollectorInstance(disable_cache=None, ga_tid=_GA_TID):
+  def ResetCollectorInstance(disable_cache=None):
     """Reset the singleton _MetricsCollector and reinitialize it.
 
     This should only be used for tests, where we want to collect some metrics
@@ -464,14 +358,12 @@ class _MetricsCollector(object):
           state of metrics. This controls the value to reinitialize the cache.
           None means we will refresh the cache with the default values.
           True/False forces a specific value.
-      ga_tid: The Google Analytics tracking ID to use for metrics collection.
-          Defaults to _GA_TID.
     """
     _MetricsCollector._disabled_cache = disable_cache
     if _MetricsCollector._IsDisabled():
       _MetricsCollector._instance = None
     else:
-      _MetricsCollector._instance = _MetricsCollector(ga_tid)
+      _MetricsCollector._instance = _MetricsCollector()
 
   @staticmethod
   def _IsDisabled():
@@ -491,20 +383,15 @@ class _MetricsCollector(object):
         _MetricsCollector._disabled_cache = disabled
     return _MetricsCollector._disabled_cache
 
-  def __init__(self, ga_tid=_GA_TID):
+  def __init__(self):
     """Initialize a new MetricsCollector.
 
     This should only be invoked through the static GetCollector() function or
     the static ResetCollectorInstance() function.
-
-    Args:
-      ga_tid: The Google Analytics tracking ID to use for metrics collection.
-              Defaults to _GA_TID.
     """
     common_params = CommonParams()
 
     self._metrics_reporters = [
-        _GoogleAnalyticsMetricsReporter(common_params, ga_tid),
         _ClearcutMetricsReporter(common_params)
     ]
 
@@ -555,11 +442,11 @@ class _MetricsCollector(object):
       flag_names: str, Comma separated list of flag names used with the action.
     """
     # We only want to time top level commands
-    if category is _GA_COMMANDS_CATEGORY and self._action_level != 0:
+    if category is _COMMANDS_CATEGORY and self._action_level != 0:
       return
 
     # We want to report error times against the top level action
-    if category is _GA_ERROR_CATEGORY and self._action_level != 0:
+    if category is _ERROR_CATEGORY and self._action_level != 0:
       _, action, _, _ = self._timer.GetContext()
 
     self._timer.SetContext(category, action, label, flag_names)
@@ -651,7 +538,7 @@ def _RecordEventAndSetTimerContext(
     return
 
   # Override label for tests. This way we can filter by test group.
-  if _MetricsCollector.test_group and category is not _GA_ERROR_CATEGORY:
+  if _MetricsCollector.test_group and category is not _ERROR_CATEGORY:
     label = _MetricsCollector.test_group
 
   event = _Event(category=category, action=action, label=label, value=value)
@@ -662,10 +549,10 @@ def _RecordEventAndSetTimerContext(
       error=error,
       error_extra_info_json=error_extra_info_json)
 
-  if category in [_GA_COMMANDS_CATEGORY, _GA_EXECUTIONS_CATEGORY]:
+  if category in [_COMMANDS_CATEGORY, _EXECUTIONS_CATEGORY]:
     collector.SetTimerContext(category, action, flag_names=flag_names)
-  elif category in [_GA_ERROR_CATEGORY, _GA_HELP_CATEGORY,
-                    _GA_TEST_EXECUTIONS_CATEGORY]:
+  elif category in [_ERROR_CATEGORY, _HELP_CATEGORY,
+                    _TEST_EXECUTIONS_CATEGORY]:
     collector.SetTimerContext(category, action, label, flag_names=flag_names)
   # Ignoring installs for now since there could be multiple per cmd execution.
   # Custom events only record a key/value pair, and don't require timer context.
@@ -694,10 +581,10 @@ def CaptureAndLogException(func):
 
 
 def StartTestMetrics(test_group_id, test_method):
-  _MetricsCollector.ResetCollectorInstance(False, _GA_TID_TESTING)
+  _MetricsCollector.ResetCollectorInstance(False)
   _MetricsCollector.test_group = test_group_id
   _RecordEventAndSetTimerContext(
-      _GA_TEST_EXECUTIONS_CATEGORY,
+      _TEST_EXECUTIONS_CATEGORY,
       test_method,
       test_group_id,
       value=0)
@@ -777,7 +664,7 @@ def _GetErrorExtraInfo(error_extra_info):
       queries that can understand the keys and values in this dict.
 
   Returns:
-    str, The value to pass to GA or None.
+    str, The value to pass to Clearcut or None.
   """
   if error_extra_info:
     return json.dumps(error_extra_info, sort_keys=True)
@@ -793,7 +680,7 @@ def Installs(component_id, version_string):
     version_string: str, The version of the component.
   """
   _RecordEventAndSetTimerContext(
-      _GA_INSTALLS_CATEGORY, component_id, version_string)
+      _INSTALLS_CATEGORY, component_id, version_string)
 
 
 @CaptureAndLogException
@@ -813,7 +700,7 @@ def Commands(command_path, version_string='unknown', flag_names=None,
       queries that can understand the keys and values in this dict.
   """
   _RecordEventAndSetTimerContext(
-      _GA_COMMANDS_CATEGORY, command_path, version_string,
+      _COMMANDS_CATEGORY, command_path, version_string,
       flag_names=_GetFlagNameString(flag_names),
       error=_GetExceptionName(error),
       error_extra_info_json=_GetErrorExtraInfo(error_extra_info))
@@ -827,7 +714,7 @@ def Help(command_path, mode):
     command_path: str, The '.' separated name of the calliope command.
     mode: str, The way help was invoked (-h, --help, help).
   """
-  _RecordEventAndSetTimerContext(_GA_HELP_CATEGORY, command_path, mode)
+  _RecordEventAndSetTimerContext(_HELP_CATEGORY, command_path, mode)
 
 
 @CaptureAndLogException
@@ -845,7 +732,7 @@ def Error(command_path, error, flag_names=None, error_extra_info=None):
       queries that can understand the keys and values in this dict.
   """
   _RecordEventAndSetTimerContext(
-      _GA_ERROR_CATEGORY, command_path, _GetExceptionName(error),
+      _ERROR_CATEGORY, command_path, _GetExceptionName(error),
       flag_names=_GetFlagNameString(flag_names),
       error_extra_info_json=_GetErrorExtraInfo(error_extra_info))
 
@@ -859,7 +746,7 @@ def Executions(command_name, version_string='unknown'):
     version_string: str, The version of the command.
   """
   _RecordEventAndSetTimerContext(
-      _GA_EXECUTIONS_CATEGORY, command_name, version_string)
+      _EXECUTIONS_CATEGORY, command_name, version_string)
 
 
 @CaptureAndLogException
@@ -871,7 +758,7 @@ def CustomKeyValue(command_path, key, value):
     key: str, The key recorded for the event.
     value: str. The value recorded for the event.
   """
-  _RecordEventAndSetTimerContext(_GA_CUSTOM_CATEGORY, command_path, key, value)
+  _RecordEventAndSetTimerContext(_CUSTOM_CATEGORY, command_path, key, value)
 
 
 @CaptureAndLogException

@@ -27,31 +27,31 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
 
 
-API_VERSION_FOR_TRACK = {
+_API_VERSION_FOR_TRACK = {
     base.ReleaseTrack.ALPHA: 'v1alpha1',
     base.ReleaseTrack.BETA: 'v1beta1',
     base.ReleaseTrack.GA: 'v1',
 }
-API_NAME = 'networksecurity'
+_API_NAME = 'networksecurity'
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.BETA):
-  api_version = API_VERSION_FOR_TRACK.get(release_track)
-  return apis.GetMessagesModule(API_NAME, api_version)
+  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  return apis.GetMessagesModule(_API_NAME, api_version)
 
 
 def GetClientInstance(release_track=base.ReleaseTrack.BETA):
-  api_version = API_VERSION_FOR_TRACK.get(release_track)
-  return apis.GetClientInstance(API_NAME, api_version)
+  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  return apis.GetClientInstance(_API_NAME, api_version)
 
 
 def GetApiBaseUrl(release_track=base.ReleaseTrack.BETA):
-  api_version = API_VERSION_FOR_TRACK.get(release_track)
-  return resources.GetApiBaseUrlOrThrow(API_NAME, api_version)
+  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  return resources.GetApiBaseUrlOrThrow(_API_NAME, api_version)
 
 
 def GetApiVersion(release_track=base.ReleaseTrack.BETA):
-  return API_VERSION_FOR_TRACK.get(release_track)
+  return _API_VERSION_FOR_TRACK.get(release_track)
 
 
 class Client:
@@ -59,20 +59,36 @@ class Client:
 
   def __init__(self, release_track):
     self._client = GetClientInstance(release_track)
-    self._sp_client = self._client.organizations_locations_securityProfiles
+    self._security_profile_client = (
+        self._client.organizations_locations_securityProfiles
+    )
     self._operations_client = self._client.organizations_locations_operations
     self._locations_client = self._client.organizations_locations
     self.messages = GetMessagesModule(release_track)
     self._resource_parser = resources.Registry()
-    self.api_version = API_VERSION_FOR_TRACK.get(release_track)
+    self.api_version = _API_VERSION_FOR_TRACK.get(release_track)
     self._resource_parser.RegisterApiByName(
-        API_NAME, API_VERSION_FOR_TRACK.get(release_track)
+        _API_NAME, _API_VERSION_FOR_TRACK.get(release_track)
     )
 
   def _ParseSecurityProfileType(self, profile_type):
     return self.messages.SecurityProfile.TypeValueValuesEnum.lookup_by_name(
         profile_type
     )
+
+  def GetSecurityProfile(self, name):
+    """Calls the Security Profile Get API to return the security profile object.
+
+    Args:
+      name: Fully specified Security Profile.
+
+    Returns:
+      Security Profile object.
+    """
+    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesGetRequest(
+        name=name
+    )
+    return self._security_profile_client.Get(api_request)
 
   def GetSecurityProfileEntities(self, name):
     """Calls the Security Profile Get API to return the threat prevention profile object.
@@ -83,10 +99,7 @@ class Client:
     Returns:
       An etag and a Dict of existing Threat Prevention Profile configuration.
     """
-    req = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesGetRequest(
-        name=name
-    )
-    response = self._sp_client.Get(req)
+    response = self.GetSecurityProfile(name)
     if response.threatPreventionProfile is None:
       return response.etag, {
           'severityOverrides': [],
@@ -143,7 +156,7 @@ class Client:
     """
     if has_result:
       poller = waiter.CloudOperationPoller(
-          self._sp_client, self._operations_client
+          self._security_profile_client, self._operations_client
       )
     else:
       poller = waiter.CloudOperationPollerNoResources(self._operations_client)
@@ -240,6 +253,7 @@ class Client:
       operation_type,
       update_mask,
       profile_type='THREAT_PREVENTION',
+      labels=None,
   ):
     """Modify the existing threat prevention profile."""
     etag, existing_threat_prevention_profile_object = (
@@ -273,23 +287,29 @@ class Client:
         ),
         etag=etag,
         type=self._ParseSecurityProfileType(profile_type),
+        labels=labels,
     )
-    req = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesPatchRequest(
+    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesPatchRequest(
         name=name,
         securityProfile=security_profile,
         updateMask=update_mask,
     )
-    return self._sp_client.Patch(req)
+    return self._security_profile_client.Patch(api_request)
 
   def ListOverrides(self, name):
     """Calls the Security Profile Get API to list all Security Profile Overrides."""
-    req = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesGetRequest(
+    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesGetRequest(
         name=name
     )
-    return self._sp_client.Get(req)
+    return self._security_profile_client.Get(api_request)
 
   def DeleteOverride(
-      self, name, overrides, update_mask, profile_type='THREAT_PREVENTION'
+      self,
+      name,
+      overrides,
+      update_mask,
+      profile_type='THREAT_PREVENTION',
+      labels=None,
   ):
     """Delete the existing threat prevention profile override."""
     etag, existing_threat_prevention_profile_object = (
@@ -327,25 +347,33 @@ class Client:
         ),
         etag=etag,
         type=self._ParseSecurityProfileType(profile_type),
+        labels=labels,
     )
-    req = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesPatchRequest(
+    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesPatchRequest(
         name=name,
         securityProfile=security_profile,
         updateMask='threatPreventionProfile',
     )
-    return self._sp_client.Patch(req)
+    return self._security_profile_client.Patch(api_request)
 
   def CreateSecurityProfile(
-      self, name, sp_id, parent, description, profile_type='THREAT_PREVENTION'
+      self,
+      name,
+      sp_id,
+      parent,
+      description,
+      profile_type='THREAT_PREVENTION',
+      labels=None,
   ):
     """Calls the Create Security Profile API."""
     security_profile = self.messages.SecurityProfile(
         name=name,
         description=description,
         type=self._ParseSecurityProfileType(profile_type),
+        labels=labels,
     )
 
-    req = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesCreateRequest(
+    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesCreateRequest(
         parent=parent, securityProfile=security_profile, securityProfileId=sp_id
     )
-    return self._sp_client.Create(req)
+    return self._security_profile_client.Create(api_request)

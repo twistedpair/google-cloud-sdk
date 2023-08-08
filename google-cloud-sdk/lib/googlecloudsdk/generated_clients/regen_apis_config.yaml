@@ -591,6 +591,10 @@ apis:
         projects.regions.clusters.nodeGroups:
           path: projects/{projectId}/regions/{region}/clusters/{clusterName}/nodeGroups/{nodeGroupsId}
       default: true
+  dataprocgdc:
+    v1alpha1:
+      discovery_doc: dataprocgdc_v1alpha1.json
+      default: true
   datastore:
     v1beta1:
       discovery_doc: datastore_v1beta1.json
@@ -991,6 +995,9 @@ apis:
       default: true
     v1beta1:
       discovery_doc: netapp_v1beta1.json
+      default: false
+    v1:
+      discovery_doc: netapp_v1.json
       default: false
   networkconnectivity:
     v1alpha1:
@@ -1701,6 +1708,9 @@ canonical_surfaces:
   dataproc:
     name: dataproc
     command: dataproc
+  dataprocgdc:
+    name: dataprocgdc
+    hidden: true
   datastore:
     name: datastore
     command: datastore

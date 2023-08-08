@@ -221,7 +221,7 @@ def  SetViewParameters(ref, args, request):
 
 
 def  ProcessDatasetOverwrite(ref, args, request):
-  """Process the if-exists flag on datasets create."""
+  """Process the overwrite flag on datasets create."""
   del ref
   dataset_id = request.dataset.datasetReference.datasetId
   project_id = request.projectId

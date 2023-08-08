@@ -338,9 +338,12 @@ def AddReservationArgGroup(parser,
                              support_stable_fleet)
 
   if support_share_setting:
-    share_setting_reservation_group = single_reservation_group.add_argument_group(
-        help='Manage the properties of a shared reservation to create',
-        required=False)
+    share_setting_reservation_group = (
+        single_reservation_group.add_argument_group(
+            help='Manage the properties of a shared reservation to create',
+            required=False,
+        )
+    )
     AddFlagsToShareSettingGroup(share_setting_reservation_group)
 
 
@@ -353,6 +356,7 @@ def AddFlagsToSpecificSkuGroup(group, support_stable_fleet=False):
       reservation_flags.GetMachineType(required=False),
       reservation_flags.GetLocalSsdFlag(),
       reservation_flags.GetAcceleratorFlag(),
+      reservation_flags.GetResourcePolicyFlag(),
   ]
 
   if support_stable_fleet:

@@ -999,6 +999,7 @@ def AddBinauthzFlags(
             required_keys=['name'],
         ),
         metavar='name=BINAUTHZ_POLICY',
+        action='append',
         default=None,
         help=textwrap.dedent("""\
           The relative resource name of the Binary Authorization policy to audit
@@ -2726,7 +2727,14 @@ Type of the node VM boot disk. For version 1.24.0+, defaults to pd-balanced. Bef
   parser.add_argument(
       '--disk-type',
       help=help_text,
-      choices=['pd-standard', 'pd-ssd', 'pd-balanced'],
+      choices=[
+          'pd-standard',
+          'pd-ssd',
+          'pd-balanced',
+          'hyperdisk-balanced',
+          'hyperdisk-extreme',
+          'hyperdisk-throughput',
+      ],
   )
 
 

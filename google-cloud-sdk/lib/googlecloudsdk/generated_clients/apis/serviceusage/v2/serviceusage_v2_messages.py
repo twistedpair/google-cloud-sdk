@@ -16,13 +16,52 @@ from apitools.base.py import extra_types
 package = 'serviceusage'
 
 
+class AddEnableRulesMetadata(_messages.Message):
+  r"""Metadata for the `AddEnableRules` method."""
+
+
+class AddEnableRulesRequest(_messages.Message):
+  r"""The request message of "AddEnableRules" method.
+
+  Fields:
+    flattenGroups: Determine if services in any service groups will be
+      flattened. Only support flatten_groups is true for now.
+    values: The values to add on the parent consumer policy. The following two
+      types are allowed: 1. Service value. For example:
+      "services/serviceusage.googleapis.com". The format is
+      "services/{service_name}". 2. Service group value, which includes its
+      service groups. For example:
+      "services/compute.googleapis.com/groups/dependencies". The format is
+      "services/{service_name}/groups/{service_group_name}". Groups are
+      currently only supported when "flatten_groups" is specified.
+  """
+
+  flattenGroups = _messages.BooleanField(1)
+  values = _messages.StringField(2, repeated=True)
+
+
+class AddEnableRulesResponse(_messages.Message):
+  r"""The response message of "AddEnableRules" method.
+
+  Fields:
+    addedValues: The values added to the parent consumer policy.
+    parent: The parent consumer policy. It can be
+      `projects/12345/consumerPolicies/default`, or
+      `folders/12345/consumerPolicies/default`, or
+      `organizations/12345/consumerPolicies/default`.
+  """
+
+  addedValues = _messages.StringField(1, repeated=True)
+  parent = _messages.StringField(2)
+
+
 class AdminQuotaPolicy(_messages.Message):
   r"""Quota policy created by quota administrator.
 
   Messages:
     DimensionsValue:  If this map is nonempty, then this policy applies only
       to specific values for dimensions defined in the limit unit. For
-      example, an policy on a limit with the unit `1/{project}/{region}` could
+      example, a policy on a limit with the unit `1/{project}/{region}` could
       contain an entry with the key `region` and the value `us-east-1`; the
       policy is only applied to quota consumed in that region. This map has
       the following restrictions: * If `region` appears as a key, its value
@@ -34,9 +73,9 @@ class AdminQuotaPolicy(_messages.Message):
     container: The cloud resource container at which the quota policy is
       created. The format is `{container_type}/{container_number}`
     dimensions:  If this map is nonempty, then this policy applies only to
-      specific values for dimensions defined in the limit unit. For example,
-      an policy on a limit with the unit `1/{project}/{region}` could contain
-      an entry with the key `region` and the value `us-east-1`; the policy is
+      specific values for dimensions defined in the limit unit. For example, a
+      policy on a limit with the unit `1/{project}/{region}` could contain an
+      entry with the key `region` and the value `us-east-1`; the policy is
       only applied to quota consumed in that region. This map has the
       following restrictions: * If `region` appears as a key, its value must
       be a valid Cloud region. * If `zone` appears as a key, its value must be
@@ -58,7 +97,7 @@ class AdminQuotaPolicy(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DimensionsValue(_messages.Message):
     r""" If this map is nonempty, then this policy applies only to specific
-    values for dimensions defined in the limit unit. For example, an policy on
+    values for dimensions defined in the limit unit. For example, a policy on
     a limit with the unit `1/{project}/{region}` could contain an entry with
     the key `region` and the value `us-east-1`; the policy is only applied to
     quota consumed in that region. This map has the following restrictions: *
@@ -152,6 +191,23 @@ class Api(_messages.Message):
   sourceContext = _messages.MessageField('SourceContext', 5)
   syntax = _messages.EnumField('SyntaxValueValuesEnum', 6)
   version = _messages.StringField(7)
+
+
+class ApiInfo(_messages.Message):
+  r"""Information about API.
+
+  Fields:
+    methods: The method names of this interface.
+    name: The fully qualified name of this interface, including package name
+      followed by the interface's simple name.
+    options: The option names of this interface.
+    version: A version string of this interface.
+  """
+
+  methods = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(2)
+  options = _messages.StringField(3, repeated=True)
+  version = _messages.StringField(4)
 
 
 class AuthProvider(_messages.Message):
@@ -487,6 +543,46 @@ class BillingDestination(_messages.Message):
   monitoredResource = _messages.StringField(2)
 
 
+class CheckValueRequest(_messages.Message):
+  r"""The request to test a value against the result of merging consumer
+  policies in the resource hierarchy.
+
+  Fields:
+    checkedValue: Asks "Is this value allowed according to the merged consumer
+      policies from the resource hierarchy?". For example, the value can be a
+      service name to check if the targeted resource can use this service.
+      Current supported value: SERVICE (format: "services/{service}").
+  """
+
+  checkedValue = _messages.StringField(1)
+
+
+class CheckValueResponse(_messages.Message):
+  r"""The response message of "CheckValue" method.
+
+  Enums:
+    ResultValueValuesEnum: The result of the value being checked
+
+  Fields:
+    result: The result of the value being checked
+  """
+
+  class ResultValueValuesEnum(_messages.Enum):
+    r"""The result of the value being checked
+
+    Values:
+      RESULT_UNSPECIFIED: Default unspecified value.
+      ENABLED: The checked value is enabled in that resource.
+      NOT_ENABLED: The checked value is disallowed because it is neither
+        enabled in the resource nor in the resource hierarchy.
+    """
+    RESULT_UNSPECIFIED = 0
+    ENABLED = 1
+    NOT_ENABLED = 2
+
+  result = _messages.EnumField('ResultValueValuesEnum', 1)
+
+
 class ClientLibrarySettings(_messages.Message):
   r"""Details about how and where to publish client libraries.
 
@@ -619,9 +715,12 @@ class ConsumerPolicy(_messages.Message):
     enableRules: Enable rules define usable services and service groups.
     etag: An opaque tag indicating the current version of the policy, used for
       concurrency control.
-    name: Output only. The resource name of the policy. For example,
-      `projects/12345/consumerPolicy`, `folders/12345/consumerPolicy`,
-      `organizations/12345/consumerPolicy`.
+    name: Output only. The resource name of the policy. For example, We only
+      allow consumer policy name as "default" for now:
+      `projects/12345/consumerPolicies/default`,
+      `folders/12345/consumerPolicies/default`,
+      `organizations/12345/consumerPolicies/default`. Legacy format:
+      `projects/12345/consumerPoly`
     updateTime: The last-modified time.
   """
 
@@ -714,9 +813,12 @@ class Control(_messages.Message):
     environment: The service controller environment to use. If empty, no
       control plane feature (like quota and billing) will be enabled. The
       recommended value for most services is servicecontrol.googleapis.com
+    methodPolicies: Defines policies applying to the API methods of the
+      service.
   """
 
   environment = _messages.StringField(1)
+  methodPolicies = _messages.MessageField('MethodPolicy', 2, repeated=True)
 
 
 class CppSettings(_messages.Message):
@@ -790,6 +892,29 @@ class DeleteAdminQuotaPolicyMetadata(_messages.Message):
 
 
 
+class DependencyClosure(_messages.Message):
+  r"""A dependency closure contains all services that this dependency group
+  directly or indirectly depend-on.
+
+  Fields:
+    name: The name of the service dependency group. We only support group name
+      "suv1" now as the primary use case is to migrate SU v1 frontend. For
+      example:
+      "projects/123/services/compute.googleapis.com/dependencies/suv1/closure"
+      The resource name in parent is used for visibility check. It can be a
+      project, folder or organization in the format of `projects/12345`,
+      `folders/12345` and `organizations/12345`.
+    service: The service that owns this dependency group. For example,
+      "services/compute.googleapis.com".
+    values: List of single services that this dependency group directly or
+      indirectly depends-on. For example, "services/oslogin.googleapis.com".
+  """
+
+  name = _messages.StringField(1)
+  service = _messages.StringField(2)
+  values = _messages.StringField(3, repeated=True)
+
+
 class DisableServiceResponse(_messages.Message):
   r"""Response message for the `DisableService` method. This response message
   is assigned to the `response` field of the returned Operation when that
@@ -807,7 +932,7 @@ class Documentation(_messages.Message):
   Example: documentation: summary: > The Google Calendar API gives access to
   most calendar features. pages: - name: Overview content: (== include
   google/foo/overview.md ==) - name: Tutorial content: (== include
-  google/foo/tutorial.md ==) subpages; - name: Java content: (== include
+  google/foo/tutorial.md ==) subpages: - name: Java content: (== include
   google/foo/tutorial_java.md ==) rules: - selector:
   google.calendar.Calendar.Get description: > ... - selector:
   google.calendar.Calendar.Put description: > ... Documentation is provided in
@@ -843,6 +968,9 @@ class Documentation(_messages.Message):
     rules: A list of documentation rules that apply to individual API
       elements. **NOTE:** All service configuration rules follow "last one
       wins" order.
+    sectionOverrides: Specifies section and content to override boilerplate
+      content provided by go/api-docgen. Currently overrides following
+      sections: 1. rest.service.client_libraries
     serviceRootUrl: Specifies the service root url if the default one (the
       service name from the yaml file) is not suitable. This can be seen in
       any fully specified service urls as well as sections that show a base
@@ -857,8 +985,9 @@ class Documentation(_messages.Message):
   overview = _messages.StringField(2)
   pages = _messages.MessageField('Page', 3, repeated=True)
   rules = _messages.MessageField('DocumentationRule', 4, repeated=True)
-  serviceRootUrl = _messages.StringField(5)
-  summary = _messages.StringField(6)
+  sectionOverrides = _messages.MessageField('Page', 5, repeated=True)
+  serviceRootUrl = _messages.StringField(6)
+  summary = _messages.StringField(7)
 
 
 class DocumentationRule(_messages.Message):
@@ -871,6 +1000,9 @@ class DocumentationRule(_messages.Message):
       method, a 'service' definition, or a field). Defaults to leading &
       trailing comments taken from the proto source definition of the proto
       element.
+    disableReplacementWords: String of comma or space separated case-sensitive
+      words for which method/field name replacement will be disabled by
+      go/api-docgen.
     selector: The selector is a comma-separated list of patterns for any
       element such as a method, a field, an enum value. Each pattern is a
       qualified name of the element which may end in "*", indicating a
@@ -882,7 +1014,8 @@ class DocumentationRule(_messages.Message):
 
   deprecationDescription = _messages.StringField(1)
   description = _messages.StringField(2)
-  selector = _messages.StringField(3)
+  disableReplacementWords = _messages.StringField(3)
+  selector = _messages.StringField(4)
 
 
 class DotnetSettings(_messages.Message):
@@ -984,6 +1117,25 @@ class DotnetSettings(_messages.Message):
   renamedServices = _messages.MessageField('RenamedServicesValue', 6)
 
 
+class EffectivePolicy(_messages.Message):
+  r"""Effective Policy contains collapsed policies and metadata from the
+  resource hierarchy.
+
+  Fields:
+    consumerPolicy: A collapsed consumer policy that contains all enable rules
+      from resource hierarchy. Only "enable_rules" field is filled.
+    enableRuleMetadata: Enable rule metadata per each enable rule, which
+      appears in the same order as the enable rules in the consumer policy.
+    name: Output only. The name of the effective policy. Format:
+      "projects/100/effectivePolicy", "folders/101/effectivePolicy",
+      "organizations/102/effectivePolicy".
+  """
+
+  consumerPolicy = _messages.MessageField('ConsumerPolicy', 1)
+  enableRuleMetadata = _messages.MessageField('EnableRuleMetadata', 2, repeated=True)
+  name = _messages.StringField(3)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1052,6 +1204,57 @@ class EnableRule(_messages.Message):
   groups = _messages.StringField(2, repeated=True)
   services = _messages.StringField(3, repeated=True)
   values = _messages.StringField(4, repeated=True)
+
+
+class EnableRuleMetadata(_messages.Message):
+  r"""EnableRuleMetadata contains metadata of an enable rule.
+
+  Messages:
+    EnabledResourcesValue: Map of enabled values as keys and the resource that
+      enable it as values. For example, the key can be
+      "services/serviceusage.googleapis.com" and value can be {"projects/123",
+      "folders/456"} where the service is enabled and the order of the
+      resource list is nearest first in the hierarchy.
+
+  Fields:
+    enabledResources: Map of enabled values as keys and the resource that
+      enable it as values. For example, the key can be
+      "services/serviceusage.googleapis.com" and value can be {"projects/123",
+      "folders/456"} where the service is enabled and the order of the
+      resource list is nearest first in the hierarchy.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnabledResourcesValue(_messages.Message):
+    r"""Map of enabled values as keys and the resource that enable it as
+    values. For example, the key can be "services/serviceusage.googleapis.com"
+    and value can be {"projects/123", "folders/456"} where the service is
+    enabled and the order of the resource list is nearest first in the
+    hierarchy.
+
+    Messages:
+      AdditionalProperty: An additional property for a EnabledResourcesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        EnabledResourcesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnabledResourcesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ResourceList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ResourceList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  enabledResources = _messages.MessageField('EnabledResourcesValue', 1)
 
 
 class EnableServiceResponse(_messages.Message):
@@ -1154,6 +1357,146 @@ class EnumValue(_messages.Message):
   options = _messages.MessageField('Option', 3, repeated=True)
 
 
+class FetchError(_messages.Message):
+  r"""Provides error messages for the failing fetches.
+
+  Fields:
+    error: Details of the error when fetching the value.
+    value: Output only. The name of the value.
+  """
+
+  error = _messages.MessageField('Status', 1)
+  value = _messages.StringField(2)
+
+
+class FetchPublicServiceApisRequest(_messages.Message):
+  r"""The request message of "FetchPublicServiceApis" method.
+
+  Fields:
+    values: Required. The name of the value to get metadata. A valid
+      identifier would be: `services/serviceusage.googleapis.com` Other value
+      types like service group are not allowed for now. A single request can
+      get a maximum of 20 services at a time. If more than 20 services are
+      specified, the request will fail.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class FetchPublicServiceApisResponse(_messages.Message):
+  r"""The response message of "FetchPublicServiceApis" method.
+
+  Fields:
+    errors: If one or more value could not be fetched, this field contains the
+      details about each error. It is empty list if all values get fetched
+      successfully.
+    serviceApisInfos: Information of service APIs. If fetch fails, the
+      corresponding value is present in errors field below, but not in
+      service_apis_infos.
+  """
+
+  errors = _messages.MessageField('FetchError', 1, repeated=True)
+  serviceApisInfos = _messages.MessageField('ServiceApisInfo', 2, repeated=True)
+
+
+class FetchPublicValueInfoRequest(_messages.Message):
+  r"""The request message of "FetchPublicValueInfo" method.
+
+  Fields:
+    values: Required. The name of the value to get metadata. A valid
+      identifier would be: `services/serviceusage.googleapis.com` Other value
+      types like service group are not allowed for now. A single request can
+      get a maximum of 20 services at a time. If more than 20 services are
+      specified, the request will fail.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class FetchPublicValueInfoResponse(_messages.Message):
+  r"""The response message of "FetchPublicValueInfo" method.
+
+  Fields:
+    errors: If one or more value could not be fetched, this field contains the
+      details about each error. It is empty list if all values get fetched
+      successfully.
+    valueInfos: Information of value fields. If fetch fails, the corresponding
+      value is present in errors field below, but not in values_infos.
+  """
+
+  errors = _messages.MessageField('FetchError', 1, repeated=True)
+  valueInfos = _messages.MessageField('ValueInfo', 2, repeated=True)
+
+
+class FetchServiceApisRequest(_messages.Message):
+  r"""The request message of "FetchServiceApis" method.
+
+  Fields:
+    values: Required. The name of the value to get metadata. A valid
+      identifier would be: `services/serviceusage.googleapis.com` Other value
+      types like service group are not allowed in hierarchical service
+      activation internal launch. A single request can get a maximum of 20
+      services at a time. If more than 20 services are specified, the request
+      will fail.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class FetchServiceApisResponse(_messages.Message):
+  r"""The response message of "FetchServiceApis" method.
+
+  Fields:
+    errors: If one or more value could not be fetched, this field contains the
+      details about each error. It is empty list if all values get fetched
+      successfully.
+    name: Required. The name of resource that is checked against for value
+      visibility. It can be a project, folder or organization in the format of
+      `projects/12345`, `folders/12345` and `organizations/12345`.
+    serviceApisInfos: Information of service APIs. If fetch fails, the
+      corresponding value is present in errors field below, but not in
+      service_apis_infos.
+  """
+
+  errors = _messages.MessageField('FetchError', 1, repeated=True)
+  name = _messages.StringField(2)
+  serviceApisInfos = _messages.MessageField('ServiceApisInfo', 3, repeated=True)
+
+
+class FetchValueInfoRequest(_messages.Message):
+  r"""The request message of "FetchValueInfo" method.
+
+  Fields:
+    values: Required. The name of the value to get metadata. A valid
+      identifier would be: `services/serviceusage.googleapis.com` Other value
+      types like service group are not allowed in hierarchical service
+      activation internal launch. A single request can get a maximum of 20
+      services at a time. If more than 20 services are specified, the request
+      will fail.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class FetchValueInfoResponse(_messages.Message):
+  r"""The response message of "FetchValueInfo" method.
+
+  Fields:
+    errors: If one or more value could not be fetched, this field contains the
+      details about each error. It is empty list if all values get fetched
+      successfully.
+    name: Required. The name of resource that is checked against for value
+      visibility. It can be a project, folder or organization in the format of
+      `projects/12345`, `folders/12345` and `organizations/12345`.
+    valueInfos: Information of value fields. If fetch fails, the corresponding
+      value is present in errors field below, but not in values_infos.
+  """
+
+  errors = _messages.MessageField('FetchError', 1, repeated=True)
+  name = _messages.StringField(2)
+  valueInfos = _messages.MessageField('ValueInfo', 3, repeated=True)
+
+
 class Field(_messages.Message):
   r"""A single field of a message type.
 
@@ -1247,6 +1590,34 @@ class Field(_messages.Message):
   options = _messages.MessageField('Option', 8, repeated=True)
   packed = _messages.BooleanField(9)
   typeUrl = _messages.StringField(10)
+
+
+class FieldPolicy(_messages.Message):
+  r"""Google API Policy Annotation This message defines a simple API policy
+  annotation that can be used to annotate API request and response message
+  fields with applicable policies. One field may have multiple applicable
+  policies that must all be satisfied before a request can be processed. This
+  policy annotation is used to generate the overall policy that will be used
+  for automatic runtime policy enforcement and documentation generation.
+
+  Fields:
+    resourcePermission: Specifies the required permission(s) for the resource
+      referred to by the field. It requires the field contains a valid
+      resource reference, and the request must pass the permission checks to
+      proceed. For example, "resourcemanager.projects.get".
+    resourceType: Specifies the resource type for the resource referred to by
+      the field.
+    selector: Selects one or more request or response message fields to apply
+      this `FieldPolicy`. When a `FieldPolicy` is used in proto annotation,
+      the selector must be left as empty. The service config generator will
+      automatically fill the correct value. When a `FieldPolicy` is used in
+      service config, the selector must be a comma-separated string with valid
+      request or response field paths, such as "foo.bar" or "foo.bar,foo.baz".
+  """
+
+  resourcePermission = _messages.StringField(1)
+  resourceType = _messages.StringField(2)
+  selector = _messages.StringField(3)
 
 
 class GetServiceIdentityMetadata(_messages.Message):
@@ -1533,6 +1904,35 @@ class GoogleApiServiceusageV1beta1ServiceIdentity(_messages.Message):
 
   email = _messages.StringField(1)
   uniqueId = _messages.StringField(2)
+
+
+class GoogleApiServiceusageV2MemberInfo(_messages.Message):
+  r"""A service group member that belongs to a certain service group. It can
+  be a service group or a single service.
+
+  Fields:
+    name: The name of a service group member in the format of
+      "services//groups/ if it is a service group or "services/" if it is a
+      single service. For example:
+      "services/container.googleapis.com/groups/core" or
+      "services/container.googleapis.com".
+    reason: A producer-specified reason for a service group member. Must be
+      less than or equal to 100 UTF-8 bytes.
+  """
+
+  name = _messages.StringField(1)
+  reason = _messages.StringField(2)
+
+
+class GroupValue(_messages.Message):
+  r"""Unimplemented. Do not use. GroupValue contains information of a service
+  group.
+
+  Fields:
+    name: The name of the value. Example: `groups/googleSerivice`.
+  """
+
+  name = _messages.StringField(1)
 
 
 class Http(_messages.Message):
@@ -1907,6 +2307,34 @@ class LabelDescriptor(_messages.Message):
   valueType = _messages.EnumField('ValueTypeValueValuesEnum', 3)
 
 
+class ListFlattenedMembersResponse(_messages.Message):
+  r"""The response message of "ListFlattenedMembers" method.
+
+  Fields:
+    flattenedMembers: The flattened members for the specified service group.
+      Note: reason field is not populated since the method lists flattened
+      members.
+    nextPageToken: Token that can be pass to `ListFlattenedMembers` to resume
+      a paginated query.
+  """
+
+  flattenedMembers = _messages.MessageField('GoogleApiServiceusageV2MemberInfo', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListGroupMembersResponse(_messages.Message):
+  r"""The response message of "ListGroupMembers" method.
+
+  Fields:
+    groupMembers: The members for the specified service group.
+    nextPageToken: Token that can be passed to `ListGroupMembers` to resume a
+      paginated query.
+  """
+
+  groupMembers = _messages.MessageField('GoogleApiServiceusageV2MemberInfo', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -1918,6 +2346,52 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListPublicValuesResponse(_messages.Message):
+  r"""The response message of "ListPublicValues" method.
+
+  Fields:
+    nextPageToken: Token that can be passed to `ListPublicValues` to resume a
+      paginated query.
+    valueInfo: The value info from the specified service group. Currently, we
+      only support service values. For example:
+      "services/compute.googleapis.com".
+    values: The public values from the specified service group. Currently, we
+      only support service values. For example:
+      "services/compute.googleapis.com".
+  """
+
+  nextPageToken = _messages.StringField(1)
+  valueInfo = _messages.MessageField('ValueInfo', 2, repeated=True)
+  values = _messages.StringField(3, repeated=True)
+
+
+class ListServiceGroupsResponse(_messages.Message):
+  r"""The response message of "ListServiceGroupsResponse" method.
+
+  Fields:
+    nextPageToken: Token that can be passed to `ListServiceGroups` to resume a
+      paginated query.
+    serviceGroups: The service groups from the specified service.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceGroups = _messages.MessageField('ValueInfo', 2, repeated=True)
+
+
+class ListValuesResponse(_messages.Message):
+  r"""The response message of "ListValues" method.
+
+  Fields:
+    nextPageToken: Token that can be passed to `ListValues` to resume a
+      paginated query.
+    values: The values from the specified service group. Currently, we only
+      support service values. For example: "services/compute.googleapis.com".
+  """
+
+  nextPageToken = _messages.StringField(1)
+  values = _messages.StringField(2, repeated=True)
 
 
 class LogDescriptor(_messages.Message):
@@ -2051,6 +2525,22 @@ class Method(_messages.Message):
   responseStreaming = _messages.BooleanField(5)
   responseTypeUrl = _messages.StringField(6)
   syntax = _messages.EnumField('SyntaxValueValuesEnum', 7)
+
+
+class MethodPolicy(_messages.Message):
+  r"""Defines policies applying to an RPC method.
+
+  Fields:
+    requestPolicies: Policies that are applicable to the request message.
+    selector: Selects a method to which these policies should be enforced, for
+      example, "google.pubsub.v1.Subscriber.CreateSubscription". Refer to
+      selector for syntax details. NOTE: This field must not be set in the
+      proto annotation. It will be automatically filled by the service config
+      compiler .
+  """
+
+  requestPolicies = _messages.MessageField('FieldPolicy', 1, repeated=True)
+  selector = _messages.StringField(2)
 
 
 class MethodSettings(_messages.Message):
@@ -2883,6 +3373,8 @@ class Publishing(_messages.Message):
       PHOTOS: Photos Org.
       STREET_VIEW: Street View Org.
       SHOPPING: Shopping Org.
+      GEO: Geo Org.
+      GENERATIVE_AI: Generative AI - https://developers.generativeai.google
     """
     CLIENT_LIBRARY_ORGANIZATION_UNSPECIFIED = 0
     CLOUD = 1
@@ -2890,6 +3382,8 @@ class Publishing(_messages.Message):
     PHOTOS = 3
     STREET_VIEW = 4
     SHOPPING = 5
+    GEO = 6
+    GENERATIVE_AI = 7
 
   apiShortName = _messages.StringField(1)
   codeownerGithubTeams = _messages.StringField(2, repeated=True)
@@ -3148,6 +3642,95 @@ class QuotaOverride(_messages.Message):
   unit = _messages.StringField(6)
 
 
+class RemoveEnableRulesMetadata(_messages.Message):
+  r"""Metadata for the `RemoveEnableRules` method."""
+
+
+class RemoveEnableRulesRequest(_messages.Message):
+  r"""The request message of "RemoveEnableRules" method.
+
+  Enums:
+    DependentValuesValueValuesEnum: Determine if the dependent values should
+      be checked when remove the values.
+
+  Fields:
+    dependentValues: Determine if the dependent values should be checked when
+      remove the values.
+    values: The values to remove on the parent consumer policy. The following
+      type is allowed: 1. Single service value. For example:
+      "services/serviceusage.googleapis.com". The format is
+      "services/{service_name}."
+  """
+
+  class DependentValuesValueValuesEnum(_messages.Enum):
+    r"""Determine if the dependent values should be checked when remove the
+    values.
+
+    Values:
+      DEPENDENT_VALUES_UNSPECIFIED: When unset, the default behavior is to
+        CHECK.
+      CHECK: If set, an error will be generated if any values depend on the
+        values to be removed.
+      REMOVE: If set, values that depend on the removed one will also be
+        removed.
+      IGNORE: If set, values that depend on the removed one won't be checked
+        or removed.
+    """
+    DEPENDENT_VALUES_UNSPECIFIED = 0
+    CHECK = 1
+    REMOVE = 2
+    IGNORE = 3
+
+  dependentValues = _messages.EnumField('DependentValuesValueValuesEnum', 1)
+  values = _messages.StringField(2, repeated=True)
+
+
+class RemoveEnableRulesResponse(_messages.Message):
+  r"""The response message of "RemoveEnableRules" method.
+
+  Fields:
+    parent: The parent consumer policy. It can be
+      `projects/12345/consumerPolicies/default`, or
+      `folders/12345/consumerPolicies/default`, or
+      `organizations/12345/consumerPolicies/default`.
+    removedValues: The values removed from the parent consumer policy.
+  """
+
+  parent = _messages.StringField(1)
+  removedValues = _messages.StringField(2, repeated=True)
+
+
+class ResourceList(_messages.Message):
+  r"""ResourceList contains the resource hierarchy ordered from leaf to root.
+
+  Fields:
+    resources: List of resources from leaf to root.
+  """
+
+  resources = _messages.StringField(1, repeated=True)
+
+
+class ReverseDependencyClosure(_messages.Message):
+  r"""A reverse dependency closure contains all services that the target
+  service directly or indirectly depend-by.
+
+  Fields:
+    name: The name of service to retrieve the reverse dependency closure. For
+      example, "projects/123/services/compute.googleapis.com/reverseClosure".
+      The resource name in parent is used for visibility check. It can be a
+      project, folder or organization in the format of `projects/12345`,
+      `folders/12345` and `organizations/12345`.
+    service: The service that owns this reverse dependency group. For example,
+      "services/compute.googleapis.com".
+    values: List of services that this service is directly or indirectly
+      depends-by. For example, "services/oslogin.googleapis.com".
+  """
+
+  name = _messages.StringField(1)
+  service = _messages.StringField(2)
+  values = _messages.StringField(3, repeated=True)
+
+
 class RubySettings(_messages.Message):
   r"""Settings for Ruby client libraries.
 
@@ -3156,6 +3739,24 @@ class RubySettings(_messages.Message):
   """
 
   common = _messages.MessageField('CommonLanguageSettings', 1)
+
+
+class ServiceApisInfo(_messages.Message):
+  r"""Information about service and its APIs.
+
+  Fields:
+    apis: APIs information in the service.
+    canonicalOauthScopes: The supported authentication types of this
+      interface. It is google.api.serviceusage.v1.ServiceConfig ->
+      Authentication -> repeated AuthenticationRule -> OAuthRequirements ->
+      string canonical_scopes
+    value: Output only. The name of the value. Example:
+      `services/storage.googleapis.com`.
+  """
+
+  apis = _messages.MessageField('ApiInfo', 1, repeated=True)
+  canonicalOauthScopes = _messages.StringField(2, repeated=True)
+  value = _messages.StringField(3)
 
 
 class ServiceIdentity(_messages.Message):
@@ -3171,6 +3772,187 @@ class ServiceIdentity(_messages.Message):
 
   email = _messages.StringField(1)
   uniqueId = _messages.StringField(2)
+
+
+class ServiceValue(_messages.Message):
+  r"""ServiceValue contains information of a service.
+
+  Fields:
+    dnsAddress: The DNS address at which this service is available.
+    name: The name of the value. Example: `services/storage.googleapis.com`.
+    pricingLink: A link to pricing information for the service, such as
+      https://cloud.google.com/bigquery/pricing.
+    tos: Terms of Service
+  """
+
+  dnsAddress = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pricingLink = _messages.StringField(3)
+  tos = _messages.MessageField('TermsOfService', 4, repeated=True)
+
+
+class ServiceusageCheckValueRequest(_messages.Message):
+  r"""A ServiceusageCheckValueRequest object.
+
+  Fields:
+    checkValueRequest: A CheckValueRequest resource to be passed as the
+      request body.
+    name: Required. Parent resource to check the value against hierarchically.
+      Format: "projects/100", "folders/101" or "organizations/102".
+  """
+
+  checkValueRequest = _messages.MessageField('CheckValueRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ServiceusageConsumerPoliciesAddEnableRulesRequest(_messages.Message):
+  r"""A ServiceusageConsumerPoliciesAddEnableRulesRequest object.
+
+  Fields:
+    addEnableRulesRequest: A AddEnableRulesRequest resource to be passed as
+      the request body.
+    parent: Required. The parent consumer policy. It can be
+      `projects/12345/consumerPolicies/default`, or
+      `folders/12345/consumerPolicies/default`, or
+      `organizations/12345/consumerPolicies/default`.
+  """
+
+  addEnableRulesRequest = _messages.MessageField('AddEnableRulesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ServiceusageConsumerPoliciesGetRequest(_messages.Message):
+  r"""A ServiceusageConsumerPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The name of the consumer policy to retrieve. Format:
+      "projects/100/consumerPolicies/default",
+      "folders/101/consumerPolicies/default",
+      "organizations/102/consumerPolicies/default".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ServiceusageConsumerPoliciesPatchRequest(_messages.Message):
+  r"""A ServiceusageConsumerPoliciesPatchRequest object.
+
+  Fields:
+    consumerPolicy: A ConsumerPolicy resource to be passed as the request
+      body.
+    force: This flag will skip the breaking change detections.
+    name: Output only. The resource name of the policy. For example, We only
+      allow consumer policy name as "default" for now:
+      `projects/12345/consumerPolicies/default`,
+      `folders/12345/consumerPolicies/default`,
+      `organizations/12345/consumerPolicies/default`. Legacy format:
+      `projects/12345/consumerPoly`
+  """
+
+  consumerPolicy = _messages.MessageField('ConsumerPolicy', 1)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+
+
+class ServiceusageConsumerPoliciesRemoveEnableRulesRequest(_messages.Message):
+  r"""A ServiceusageConsumerPoliciesRemoveEnableRulesRequest object.
+
+  Fields:
+    parent: Required. The parent consumer policy. It can be
+      `projects/12345/consumerPolicies/default`, or
+      `folders/12345/consumerPolicies/default`, or
+      `organizations/12345/consumerPolicies/default`.
+    removeEnableRulesRequest: A RemoveEnableRulesRequest resource to be passed
+      as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  removeEnableRulesRequest = _messages.MessageField('RemoveEnableRulesRequest', 2)
+
+
+class ServiceusageFetchServiceApisRequest(_messages.Message):
+  r"""A ServiceusageFetchServiceApisRequest object.
+
+  Fields:
+    fetchServiceApisRequest: A FetchServiceApisRequest resource to be passed
+      as the request body.
+    name: Required. The name of resource that is checked against for value
+      visibility. It can be a project, folder or organization in the format of
+      `projects/12345`, `folders/12345` and `organizations/12345`.
+  """
+
+  fetchServiceApisRequest = _messages.MessageField('FetchServiceApisRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ServiceusageFetchValueInfoRequest(_messages.Message):
+  r"""A ServiceusageFetchValueInfoRequest object.
+
+  Fields:
+    fetchValueInfoRequest: A FetchValueInfoRequest resource to be passed as
+      the request body.
+    name: Required. The name of resource that is checked against for value
+      visibility. It can be a project, folder or organization in the format of
+      `projects/12345`, `folders/12345` and `organizations/12345`.
+  """
+
+  fetchValueInfoRequest = _messages.MessageField('FetchValueInfoRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ServiceusageGetEffectivePolicyRequest(_messages.Message):
+  r"""A ServiceusageGetEffectivePolicyRequest object.
+
+  Fields:
+    name: Required. The name of the effective policy to retrieve. Format:
+      "projects/100/effectivePolicy", "folders/101/effectivePolicy",
+      "organizations/102/effectivePolicy".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ServiceusageGroupsPublicValuesListRequest(_messages.Message):
+  r"""A ServiceusageGroupsPublicValuesListRequest object.
+
+  Fields:
+    group: Optional. The service group which owns this collection of values.
+      If not set, it will default to "groups/googleServices".
+    pageSize: Requested size of the next page of data. Requested page size
+      cannot exceed 200. If not set, the default page size is 50.
+    pageToken: Token identifying which result to start with, which is returned
+      by a previous list call.
+    parent: The parent, service group, which owns this collection of values.
+      For example: "projects/123/groups/googleServices" The resource name in
+      parent is used for visibility check. It can be a project, folder or
+      organization in the format of `projects/12345`, `folders/12345` and
+      `organizations/12345`.
+  """
+
+  group = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
+
+
+class ServiceusageGroupsValuesListRequest(_messages.Message):
+  r"""A ServiceusageGroupsValuesListRequest object.
+
+  Fields:
+    pageSize: Requested size of the next page of data. Requested page size
+      cannot exceed 200. If not set, the default page size is 50.
+    pageToken: Token identifying which result to start with, which is returned
+      by a previous list call.
+    parent: Required. The parent, service group, which owns this collection of
+      values. For example: "projects/123/groups/googleServices" The resource
+      name in parent is used for visibility check. It can be a project, folder
+      or organization in the format of `projects/12345`, `folders/12345` and
+      `organizations/12345`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class ServiceusageOperationsGetRequest(_messages.Message):
@@ -3197,6 +3979,119 @@ class ServiceusageOperationsListRequest(_messages.Message):
   name = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class ServiceusageServicesDependenciesGetClosureRequest(_messages.Message):
+  r"""A ServiceusageServicesDependenciesGetClosureRequest object.
+
+  Fields:
+    name: Required. The name of dependency group to retrieve the closure. We
+      only support group name "suv1" now as the primary use case is to migrate
+      SU v1 frontend. For example:
+      "projects/123/services/compute.googleapis.com/dependencies/suv1/closure"
+      The resource name in parent is used for visibility check. It can be a
+      project, folder or organization in the format of `projects/12345`,
+      `folders/12345` and `organizations/12345`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ServiceusageServicesGetReverseClosureRequest(_messages.Message):
+  r"""A ServiceusageServicesGetReverseClosureRequest object.
+
+  Fields:
+    name: Required. The name of service to retrieve the reverse closure. For
+      example, "projects/123/services/compute.googleapis.com/reverseClosure".
+      The resource name in parent is used for visibility check. It can be a
+      project, folder or organization in the format of `projects/12345`,
+      `folders/12345` and `organizations/12345`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ServiceusageServicesGroupsFlattenedMembersListRequest(_messages.Message):
+  r"""A ServiceusageServicesGroupsFlattenedMembersListRequest object.
+
+  Fields:
+    pageSize: Requested size of the next page of data. Requested page size
+      cannot exceed 200. If not set, the default page size is 50.
+    pageToken: Token identifying which result to start with, which is returned
+      by a previous list call.
+    parent: Required. The parent, service group, which owns this collection of
+      flattened members. For example:
+      "projects/123/services/compute.googleapis.com/groups/dependencies" The
+      resource name in parent is used for visibility check. It can be a
+      project, folder or organization in the format of `projects/12345`,
+      `folders/12345` and `organizations/12345`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ServiceusageServicesGroupsListRequest(_messages.Message):
+  r"""A ServiceusageServicesGroupsListRequest object.
+
+  Fields:
+    pageSize: Requested size of the next page of data. Requested page size
+      cannot exceed 200. If not set, the default page size is 50.
+    pageToken: Token identifying which result to start with, which is returned
+      by a previous list call.
+    parent: Required. The parent, service, which owns this collection of
+      service groups. For example:
+      "projects/123/services/compute.googleapis.com" The resource name in
+      parent is used for visibility check. It can be a project, folder or
+      organization in the format of `projects/12345`, `folders/12345` and
+      `organizations/12345`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ServiceusageServicesGroupsMembersListRequest(_messages.Message):
+  r"""A ServiceusageServicesGroupsMembersListRequest object.
+
+  Fields:
+    pageSize: Requested size of the next page of data. Requested page size
+      cannot exceed 200. If not set, the default page size is 50.
+    pageToken: Token identifying which result to start with, which is returned
+      by a previous list call.
+    parent: Required. The parent, service group, which owns this collection of
+      members. For example:
+      "projects/123/services/compute.googleapis.com/groups/dependencies" The
+      resource name in parent is used for visibility check. It can be a
+      project, folder or organization in the format of `projects/12345`,
+      `folders/12345` and `organizations/12345`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ServiceusageUpdateConsumerPolicyRequest(_messages.Message):
+  r"""A ServiceusageUpdateConsumerPolicyRequest object.
+
+  Fields:
+    consumerPolicy: A ConsumerPolicy resource to be passed as the request
+      body.
+    force: This flag will skip the breaking change detections.
+    name: Output only. The resource name of the policy. For example, We only
+      allow consumer policy name as "default" for now:
+      `projects/12345/consumerPolicies/default`,
+      `folders/12345/consumerPolicies/default`,
+      `organizations/12345/consumerPolicies/default`. Legacy format:
+      `projects/12345/consumerPoly`
+  """
+
+  consumerPolicy = _messages.MessageField('ConsumerPolicy', 1)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
 
 
 class SourceContext(_messages.Message):
@@ -3425,6 +4320,18 @@ class SystemParameters(_messages.Message):
   rules = _messages.MessageField('SystemParameterRule', 1, repeated=True)
 
 
+class TermsOfService(_messages.Message):
+  r"""TermsOfService captures the metadata about a given terms of service
+
+  Fields:
+    title: Title of the terms of service.
+    uri: URL/URI of the terms of service.
+  """
+
+  title = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
 class Type(_messages.Message):
   r"""A protocol buffer message type.
 
@@ -3473,6 +4380,10 @@ class UpdateAdminQuotaPolicyMetadata(_messages.Message):
 
 class UpdateConsumerPolicyLROMetadata(_messages.Message):
   r"""Metadata for the `UpdateConsumerPolicyLRO` method."""
+
+
+class UpdateConsumerPolicyMetadata(_messages.Message):
+  r"""Metadata for the `UpdateConsumerPolicy` method."""
 
 
 class Usage(_messages.Message):
@@ -3529,6 +4440,27 @@ class UsageRule(_messages.Message):
   allowUnregisteredCalls = _messages.BooleanField(1)
   selector = _messages.StringField(2)
   skipServiceControl = _messages.BooleanField(3)
+
+
+class ValueInfo(_messages.Message):
+  r"""Information about the value field. Only support value type as service
+  now.
+
+  Fields:
+    groupValue: The information related to the value if it is a service group.
+    learnmoreLink: For public services, it must point to the product landing
+      page. For private services, it should point to the internal site. For
+      service group, it is TBD.
+    serviceValue: The information related to the value if it is a service.
+    summary: The product summary for this value.
+    title: The product title for this value.
+  """
+
+  groupValue = _messages.MessageField('GroupValue', 1)
+  learnmoreLink = _messages.StringField(2)
+  serviceValue = _messages.MessageField('ServiceValue', 3)
+  summary = _messages.StringField(4)
+  title = _messages.StringField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

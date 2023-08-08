@@ -83,7 +83,6 @@ def AddEditionFlag(parser):
           ),
       },
       default=None,
-      hidden=True,
       help_str='Specifies edition.',
   )
   edition_flag.AddToParser(parser)

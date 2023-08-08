@@ -69,7 +69,7 @@ class KmsConfigsClient(object):
     )
 
   def CreateKmsConfig(self, kmsconfig_ref, async_, kms_config):
-    """Create a Cloud NetApp Kms Config."""
+    """Create a Cloud NetApp KMS Config."""
     request = self.messages.NetappProjectsLocationsKmsConfigsCreateRequest(
         parent=kmsconfig_ref.Parent().RelativeName(),
         kmsConfigId=kmsconfig_ref.Name(),
@@ -95,7 +95,7 @@ class KmsConfigsClient(object):
       labels: the parsed labels value
 
     Returns:
-      The configuration that will be used ass the request body for creating a
+      The configuration that will be used as the request body for creating a
       Cloud NetApp KMS Config.
     """
     kms_config = self.messages.KmsConfig()
@@ -110,9 +110,8 @@ class KmsConfigsClient(object):
 
     Args:
       location_ref: The parsed location of the listed NetApp KMS Configs.
-      limit: The number of Cloud NetApp KMS Configs
-        to limit the results to. This limit is passed to
-        the server and the server does the limiting.
+      limit: The number of Cloud NetApp KMS Configs to limit the results to.
+        This limit is passed to the server and the server does the limiting.
 
     Returns:
       Generator that yields the Cloud NetApp KMS Config.
@@ -233,7 +232,7 @@ class BetaKmsConfigsAdapter(object):
     return kms_config
 
   def UpdateKmsConfig(self, kmsconfig_ref, kms_config, update_mask):
-    """Send a Patch request for the Cloud NetApp Kms Config."""
+    """Send a Patch request for the Cloud NetApp KMS Config."""
     update_request = (
         self.messages.NetappProjectsLocationsKmsConfigsPatchRequest(
             kmsConfig=kms_config,

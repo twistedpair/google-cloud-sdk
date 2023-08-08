@@ -128,14 +128,11 @@ def AddEndpointTypesArg(parser, with_managed_proxy_lb_endpoint_type=False):
   )
 
 
-def AddCommonNatArgs(parser,
-                     for_create=False,
-                     with_private_nat=False,
-                     with_subnet_all=False,
-                     with_auto_network_tier=False):
+def AddCommonNatArgs(
+    parser, for_create=False, with_private_nat=False, with_subnet_all=False
+):
   """Adds common arguments for creating and updating NATs."""
-  if with_auto_network_tier:
-    _AddAutoNetworkTier(parser)
+  _AddAutoNetworkTier(parser)
   _AddIpAllocationArgs(parser, for_create, with_private_nat)
   _AddSubnetworkArgs(parser, for_create, with_subnet_all)
   _AddTimeoutsArgs(parser, for_create)

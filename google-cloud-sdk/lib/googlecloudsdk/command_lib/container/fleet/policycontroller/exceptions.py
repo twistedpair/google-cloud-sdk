@@ -27,3 +27,7 @@ class InvalidPocoMembershipError(exceptions.Error):
 
 class MultiInvalidPocoMembershipsError(exceptions.MultiError):
   """For when multiple memberships do not have Policy Controller enabled."""
+
+
+class MutexError(exceptions.Error):
+  """For when two mutually exclusive flags are specified."""

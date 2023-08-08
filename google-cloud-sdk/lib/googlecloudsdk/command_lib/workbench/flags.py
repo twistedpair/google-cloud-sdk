@@ -525,7 +525,7 @@ def AddRollbackInstanceFlags(parser):
   AddInstanceResource(parser)
   parser.add_argument(
       '--target-snapshot',
-      help='The saved snapshot to rollback to',
+      help='The saved snapshot to rollback to.',
       required=True)
 
 

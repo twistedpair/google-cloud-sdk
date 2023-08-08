@@ -21,8 +21,8 @@ from __future__ import unicode_literals
 from googlecloudsdk.core import exceptions
 
 
-truthy = ['true', 'True', 'TRUE', 'on', 'yes']
-falsey = ['false', 'False', 'FALSE', 'off', 'no']
+truthy = ['true', 'True', 'TRUE', 'on', 'ON', 'yes', 'YES']
+falsey = ['false', 'False', 'FALSE', 'off', 'OFF', 'no', 'NO']
 
 
 class Error(exceptions.Error):

@@ -50,6 +50,33 @@ def GetClusterCreateRequest(args, release_track):
   return req
 
 
+def GetClusterUpgradeRequest(args, release_track):
+  """Get cluster upgrade request message.
+
+  Args:
+    args: comand line arguments.
+    release_track: release track of the command.
+
+  Returns:
+    message obj, cluster upgrade request message.
+  """
+  messages = util.GetMessagesModule(release_track)
+  cluster_ref = GetClusterReference(args)
+  upgrade_cluster_req = messages.UpgradeClusterRequest()
+  upgrade_cluster_req.targetVersion = args.version
+  if args.schedule.upper() != 'IMMEDIATELY':
+    raise ValueError('Unsupported --schedule value: ' + args.schedule)
+  upgrade_cluster_req.schedule = (
+      messages.UpgradeClusterRequest.ScheduleValueValuesEnum(
+          args.schedule.upper()
+      )
+  )
+  req = messages.EdgecontainerProjectsLocationsClustersUpgradeRequest()
+  req.name = cluster_ref.RelativeName()
+  req.upgradeClusterRequest = upgrade_cluster_req
+  return req
+
+
 def PopulateClusterMessage(req, messages, args):
   """Fill the cluster message from command arguments.
 

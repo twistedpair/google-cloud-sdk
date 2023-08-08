@@ -218,7 +218,7 @@ def AddGroupPlacementArgs(parser, messages, track):
   if track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
     parser.add_argument(
         '--max-distance',
-        type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=2),
+        type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=3),
         help='Specifies the number of max logical switches between VMs.'
     )
 

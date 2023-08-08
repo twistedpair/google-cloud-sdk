@@ -230,10 +230,20 @@ class ClustersClient(client.ClientBase):
         'autoRepairConfig': self._vmware_auto_repair_config(args),
         'authorization': self._authorization(args),
         'enableControlPlaneV2': self._enable_control_plane_v2(args),
+        'upgradePolicy': self._upgrade_policy(args),
     }
     if any(kwargs.values()):
       return messages.VmwareCluster(**kwargs)
     return None
+
+  def _upgrade_policy(self, args: parser_extensions.Namespace):
+    """Constructs proto message VmwareClusterUpgradePolicy."""
+    if '--upgrade-control-plane' not in args.GetSpecifiedArgNames():
+      return None
+
+    return messages.VmwareClusterUpgradePolicy(
+        controlPlaneOnly=args.upgrade_control_plane,
+    )
 
   def _enable_control_plane_v2(self, args: parser_extensions.Namespace):
     """While creating a 1.15+ user cluster, default enable_control_plane_v2 to True if not set."""

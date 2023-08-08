@@ -286,3 +286,24 @@ def AddReleaseChannel(parser):
       channel will default to REGULAR.
       """
   )
+
+
+def AddUpgradeVersion(parser):
+  parser.add_argument(
+      '--version',
+      required=True,
+      help="""
+      Target cluster version to upgrade to. For example: "1.5.1".
+      """
+  )
+
+
+def AddUpgradeSchedule(parser):
+  parser.add_argument(
+      '--schedule',
+      required=True,
+      help="""
+      Schedule to upgrade a cluster after the request is acknowledged by Google.
+      Support values: IMMEDIATELY.
+      """
+  )

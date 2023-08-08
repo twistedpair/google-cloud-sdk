@@ -1810,13 +1810,17 @@ class APIAdapter(object):
 
     if options.binauthz_evaluation_mode is not None:
       if options.binauthz_policy_bindings is not None:
+        if len(options.binauthz_policy_bindings) > 1:
+          raise util.Error(
+              'Flag --binauthz-policy-bindings can only be specified once.'
+          )
         cluster.binaryAuthorization = self.messages.BinaryAuthorization(
             evaluationMode=self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
                 options.binauthz_evaluation_mode
             ),
             policyBindings=[
                 self.messages.PolicyBinding(
-                    name=options.binauthz_policy_bindings['name']
+                    name=options.binauthz_policy_bindings[0]['name']
                 )
             ],
         )
@@ -3101,6 +3105,17 @@ class APIAdapter(object):
           options.disable_dataplane_v2_metrics or
           options.dataplane_v2_observability_mode):
       logging = _GetLoggingConfig(options, self.messages)
+      # Fix incorrectly omitting required field.
+      if (options.dataplane_v2_observability_mode and
+          options.enable_dataplane_v2_metrics is None and
+          options.disable_dataplane_v2_metrics is None):
+        cluster = self.GetCluster(cluster_ref)
+        if (cluster and cluster.monitoringConfig and
+            cluster.monitoringConfig.advancedDatapathObservabilityConfig):
+          if cluster.monitoringConfig.advancedDatapathObservabilityConfig.enableMetrics:
+            options.enable_dataplane_v2_metrics = True
+          else:
+            options.disable_dataplane_v2_metrics = True
       monitoring = _GetMonitoringConfig(options, self.messages)
       update = self.messages.ClusterUpdate()
       if logging:
@@ -4913,14 +4928,22 @@ class APIAdapter(object):
           self.messages, binary_authorization.evaluationMode
       ):
         console_io.PromptContinue(
-            message='This will cause the current version of Binary Authorization to be downgraded (not recommended).',
-            cancel_on_no=True)
+            message=(
+                'This will cause the current version of Binary Authorization to'
+                ' be downgraded (not recommended).'
+            ),
+            cancel_on_no=True,
+        )
       binary_authorization = self.messages.BinaryAuthorization(
-          enabled=enable_binauthz)
+          enabled=enable_binauthz
+      )
     else:
       if binauthz_evaluation_mode is not None:
-        binary_authorization.evaluationMode = self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
-            binauthz_evaluation_mode)
+        binary_authorization.evaluationMode = (
+            self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
+                binauthz_evaluation_mode
+            )
+        )
         # Clear the policy and policyBindings field if the updated evaluation
         # mode does not require a policy.
         if not BinauthzEvaluationModeRequiresPolicy(
@@ -4929,9 +4952,15 @@ class APIAdapter(object):
           binary_authorization.policy = None
           binary_authorization.policyBindings = []
       if binauthz_policy_bindings is not None:
+        if len(binauthz_policy_bindings) > 1:
+          raise util.Error(
+              'Flag --binauthz-policy-bindings can only be specified once.'
+          )
         binary_authorization.policy = None
         binary_authorization.policyBindings = [
-            self.messages.PolicyBinding(name=binauthz_policy_bindings['name'])
+            self.messages.PolicyBinding(
+                name=binauthz_policy_bindings[0]['name']
+            )
         ]
     update = self.messages.ClusterUpdate(
         desiredBinaryAuthorization=binary_authorization)

@@ -41,7 +41,10 @@ class AcceleratorConfig(_messages.Message):
 
 
 class AuthenticationConfig(_messages.Message):
-  r"""Configuration for workload authentication
+  r"""Authentication configuration for a workload is used to set the default
+  identity for the workload execution. The config specifies the type of
+  identity (service account or user) that will be used by workloads to access
+  resources on the project(s).
 
   Enums:
     AuthenticationTypeValueValuesEnum: Authentication type for workload
@@ -2820,6 +2823,10 @@ class ExecutionConfig(_messages.Message):
       execution.
 
   Fields:
+    authenticationConfig: Optional. Authentication configuration used to set
+      the default identity for the workload execution. The config specifies
+      the type of identity (service account or user) that will be used by
+      workloads to access resources on the project(s).
     idleTtl: Optional. Applies to sessions only. The duration to keep the
       session alive while it's idling. Exceeding this threshold causes the
       session to terminate. This field cannot be set on a batch workload.
@@ -2873,15 +2880,16 @@ class ExecutionConfig(_messages.Message):
     STANDARD = 2
     HIGH = 3
 
-  idleTtl = _messages.StringField(1)
-  kmsKey = _messages.StringField(2)
-  networkTags = _messages.StringField(3, repeated=True)
-  networkUri = _messages.StringField(4)
-  performanceTier = _messages.EnumField('PerformanceTierValueValuesEnum', 5)
-  serviceAccount = _messages.StringField(6)
-  stagingBucket = _messages.StringField(7)
-  subnetworkUri = _messages.StringField(8)
-  ttl = _messages.StringField(9)
+  authenticationConfig = _messages.MessageField('AuthenticationConfig', 1)
+  idleTtl = _messages.StringField(2)
+  kmsKey = _messages.StringField(3)
+  networkTags = _messages.StringField(4, repeated=True)
+  networkUri = _messages.StringField(5)
+  performanceTier = _messages.EnumField('PerformanceTierValueValuesEnum', 6)
+  serviceAccount = _messages.StringField(7)
+  stagingBucket = _messages.StringField(8)
+  subnetworkUri = _messages.StringField(9)
+  ttl = _messages.StringField(10)
 
 
 class Expr(_messages.Message):
@@ -3756,6 +3764,8 @@ class InstanceGroupConfig(_messages.Message):
       group.The default value for master and worker groups is NON_PREEMPTIBLE.
       This default cannot be changed.The default value for secondary instances
       is PREEMPTIBLE.
+    startupConfig: Optional. Configuration to handle the startup of instances
+      during cluster create and update process.
   """
 
   class PreemptibilityValueValuesEnum(_messages.Enum):
@@ -3801,6 +3811,7 @@ class InstanceGroupConfig(_messages.Message):
   minNumInstances = _messages.IntegerField(11, variant=_messages.Variant.INT32)
   numInstances = _messages.IntegerField(12, variant=_messages.Variant.INT32)
   preemptibility = _messages.EnumField('PreemptibilityValueValuesEnum', 13)
+  startupConfig = _messages.MessageField('StartupConfig', 14)
 
 
 class InstanceReference(_messages.Message):
@@ -4478,10 +4489,14 @@ class ListBatchesResponse(_messages.Message):
     batches: Output only. The batches from the specified collection.
     nextPageToken: A token, which can be sent as page_token to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Output only. List of Batches that could not be included in
+      the response. Attempting to get one of these resources may indicate why
+      it was not included in the list response.
   """
 
   batches = _messages.MessageField('Batch', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListClustersResponse(_messages.Message):
@@ -5855,8 +5870,6 @@ class RuntimeConfig(_messages.Message):
       are used to configure workload execution.
 
   Fields:
-    authenticationConfig: Optional. Authentication configuration for the
-      workload execution.
     containerImage: Optional. Optional custom container image for the job
       runtime environment. If not specified, a default container image will be
       used.
@@ -5891,11 +5904,10 @@ class RuntimeConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  authenticationConfig = _messages.MessageField('AuthenticationConfig', 1)
-  containerImage = _messages.StringField(2)
-  properties = _messages.MessageField('PropertiesValue', 3)
-  repositoryConfig = _messages.MessageField('RepositoryConfig', 4)
-  version = _messages.StringField(5)
+  containerImage = _messages.StringField(1)
+  properties = _messages.MessageField('PropertiesValue', 2)
+  repositoryConfig = _messages.MessageField('RepositoryConfig', 3)
+  version = _messages.StringField(4)
 
 
 class RuntimeInfo(_messages.Message):
@@ -5972,7 +5984,7 @@ class SecurityConfig(_messages.Message):
 
 
 class Session(_messages.Message):
-  r"""A representation of a session in the service.
+  r"""A representation of a session in the service. Next ID: 18
 
   Enums:
     StateValueValuesEnum: Output only. A state of the session.
@@ -6008,6 +6020,7 @@ class Session(_messages.Message):
       ations/[dataproc_region]/sessionTemplates/[template_id]Note that the
       template must be in the same project and Dataproc region.
     spark: Optional. Spark engine config.
+    sparkConnectSession: Optional. Spark connect session config.
     state: Output only. A state of the session.
     stateHistory: Output only. Historical state information for the session.
     stateMessage: Output only. Session state details, such as a failure
@@ -6075,12 +6088,13 @@ class Session(_messages.Message):
   runtimeInfo = _messages.MessageField('RuntimeInfo', 8)
   sessionTemplate = _messages.StringField(9)
   spark = _messages.MessageField('SparkConfig', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  stateHistory = _messages.MessageField('SessionStateHistory', 12, repeated=True)
-  stateMessage = _messages.StringField(13)
-  stateTime = _messages.StringField(14)
-  user = _messages.StringField(15)
-  uuid = _messages.StringField(16)
+  sparkConnectSession = _messages.MessageField('SparkConnectConfig', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  stateHistory = _messages.MessageField('SessionStateHistory', 13, repeated=True)
+  stateMessage = _messages.StringField(14)
+  stateTime = _messages.StringField(15)
+  user = _messages.StringField(16)
+  uuid = _messages.StringField(17)
 
 
 class SessionOperationMetadata(_messages.Message):
@@ -6190,7 +6204,7 @@ class SessionStateHistory(_messages.Message):
 
 
 class SessionTemplate(_messages.Message):
-  r"""A representation of a session template in the service.
+  r"""A representation of a session template in the service. Next ID: 12
 
   Messages:
     LabelsValue: Optional. The labels to associate with sessions created using
@@ -6217,6 +6231,7 @@ class SessionTemplate(_messages.Message):
     name: Required. The resource name of the session template.
     runtimeConfig: Optional. Runtime configuration for session execution.
     spark: Optional. Spark engine config.
+    sparkConnectSession: Optional. Spark connect session config.
     updateTime: Output only. The time template was last updated.
   """
 
@@ -6258,7 +6273,8 @@ class SessionTemplate(_messages.Message):
   name = _messages.StringField(7)
   runtimeConfig = _messages.MessageField('RuntimeConfig', 8)
   spark = _messages.MessageField('SparkConfig', 9)
-  updateTime = _messages.StringField(10)
+  sparkConnectSession = _messages.MessageField('SparkConnectConfig', 10)
+  updateTime = _messages.StringField(11)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -6457,6 +6473,10 @@ class SparkConfig(_messages.Message):
   archiveUris = _messages.StringField(1, repeated=True)
   fileUris = _messages.StringField(2, repeated=True)
   jarFileUris = _messages.StringField(3, repeated=True)
+
+
+class SparkConnectConfig(_messages.Message):
+  r"""Spark connect configuration for an interactive session."""
 
 
 class SparkHistoryServerConfig(_messages.Message):
@@ -6883,6 +6903,23 @@ class StartClusterRequest(_messages.Message):
 
   clusterUuid = _messages.StringField(1)
   requestId = _messages.StringField(2)
+
+
+class StartupConfig(_messages.Message):
+  r"""Configuration to handle the startup of instances during cluster create
+  and update process.
+
+  Fields:
+    requiredRegistrationFraction: Optional. The config setting to enable
+      cluster creation/ updation to be successful only after
+      required_registration_fraction of instances are up and running. This
+      configuration is applicable to only secondary workers for now. The
+      cluster will fail if required_registration_fraction of instances are not
+      available. This will include instance creation, agent registration, and
+      service registration (if enabled).
+  """
+
+  requiredRegistrationFraction = _messages.FloatField(1)
 
 
 class StateHistory(_messages.Message):

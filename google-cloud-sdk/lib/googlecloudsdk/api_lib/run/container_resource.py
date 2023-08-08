@@ -108,7 +108,7 @@ class ContainerResource(k8s_object.KubernetesObject):
   def resource_limits(self):
     """The resource limits as a dictionary { resource name: limit}."""
     self._EnsureResources()
-    return k8s_object.ListAsDictionaryWrapper(
+    return k8s_object.KeyValueListAsDictionaryWrapper(
         self.container.resources.limits.additionalProperties,
         self._messages.ResourceRequirements.LimitsValue.AdditionalProperty,
         key_field='key',
@@ -150,7 +150,7 @@ class ContainerResource(k8s_object.KubernetesObject):
     return {path: vols.get(vol) for path, vol in mounts.items()}
 
 
-class EnvVarsAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
+class EnvVarsAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):
   """Wraps a list of env vars in a dict-like object.
 
   Additionally provides properties to access env vars of specific type in a
@@ -178,7 +178,7 @@ class EnvVarsAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
     Returns:
       A mutable, dict-like object for managing string literal env vars.
     """
-    return k8s_object.ListAsDictionaryWrapper(
+    return k8s_object.KeyValueListAsDictionaryWrapper(
         self._env_vars,
         self._env_var_class,
         filter_func=lambda env_var: env_var.valueFrom is None,
@@ -194,7 +194,7 @@ class EnvVarsAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
           and env_var.valueFrom.secretKeyRef is not None
       )
 
-    return k8s_object.ListAsDictionaryWrapper(
+    return k8s_object.KeyValueListAsDictionaryWrapper(
         self._env_vars,
         self._env_var_class,
         value_field='valueFrom',
@@ -211,7 +211,7 @@ class EnvVarsAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
           and env_var.valueFrom.configMapKeyRef is not None
       )
 
-    return k8s_object.ListAsDictionaryWrapper(
+    return k8s_object.KeyValueListAsDictionaryWrapper(
         self._env_vars,
         self._env_var_class,
         value_field='valueFrom',
@@ -219,7 +219,7 @@ class EnvVarsAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
     )
 
 
-class VolumesAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
+class VolumesAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):
   """Wraps a list of volumes in a dict-like object.
 
   Additionally provides properties to access volumes of specific type in a
@@ -240,7 +240,7 @@ class VolumesAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
   @property
   def secrets(self):
     """Mutable dict-like object for volumes with a secret source type."""
-    return k8s_object.ListAsDictionaryWrapper(
+    return k8s_object.KeyValueListAsDictionaryWrapper(
         self._volumes,
         self._volume_class,
         value_field='secret',
@@ -250,7 +250,7 @@ class VolumesAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
   @property
   def config_maps(self):
     """Mutable dict-like object for volumes with a config map source type."""
-    return k8s_object.ListAsDictionaryWrapper(
+    return k8s_object.KeyValueListAsDictionaryWrapper(
         self._volumes,
         self._volume_class,
         value_field='configMap',
@@ -258,7 +258,9 @@ class VolumesAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
     )
 
 
-class VolumeMountsAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):
+class VolumeMountsAsDictionaryWrapper(
+    k8s_object.KeyValueListAsDictionaryWrapper
+):
   """Wraps a list of volume mounts in a mutable dict-like object.
 
   Additionally provides properties to access mounts that are mounting volumes
@@ -286,7 +288,7 @@ class VolumeMountsAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):
   @property
   def secrets(self):
     """Mutable dict-like object for mounts whose volumes have a secret source type."""
-    return k8s_object.ListAsDictionaryWrapper(
+    return k8s_object.KeyValueListAsDictionaryWrapper(
         self._m,
         self._item_class,
         key_field=self._key_field,
@@ -297,7 +299,7 @@ class VolumeMountsAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):
   @property
   def config_maps(self):
     """Mutable dict-like object for mounts whose volumes have a config map source type."""
-    return k8s_object.ListAsDictionaryWrapper(
+    return k8s_object.KeyValueListAsDictionaryWrapper(
         self._m,
         self._item_class,
         key_field=self._key_field,

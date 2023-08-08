@@ -26,6 +26,7 @@ from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import files
@@ -641,8 +642,18 @@ def BitbucketServerConfigFromArgs(args, update=False):
   secret_location.webhookSecretVersionName = args.webhook_secret_secret_version
   if update or secret_location is not None:
     bbs.secrets = secret_location
-  if not update and args.peered_network is not None:
-    bbs.peeredNetwork = args.peered_network
+  if not update:
+    if args.peered_network is None and args.peered_network_ip_range is not None:
+      raise c_exceptions.RequiredArgumentException(
+          'peered-network-ip-range',
+          (
+              '--peered-network is required when specifying'
+              ' --peered-network-ip-range.'
+          ),
+      )
+    if args.peered_network is not None:
+      bbs.peeredNetwork = args.peered_network
+      bbs.peeredNetworkIpRange = args.peered_network_ip_range
   if args.IsSpecified('ssl_ca_file'):
     bbs.sslCa = args.ssl_ca_file
   return bbs

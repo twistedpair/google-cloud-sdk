@@ -128,6 +128,262 @@ class ActiveDirectory(_messages.Message):
   username = _messages.StringField(21)
 
 
+class Backup(_messages.Message):
+  r"""A NetApp Backup.
+
+  Enums:
+    BackupTypeValueValuesEnum: Output only. Type of backup, manually created
+      or created by a backup policy.
+    StateValueValuesEnum: Output only. The backup state.
+
+  Messages:
+    LabelsValue: Resource labels to represent user provided metadata.
+
+  Fields:
+    backupType: Output only. Type of backup, manually created or created by a
+      backup policy.
+    createTime: Output only. The time when the backup was created.
+    description: A description of the backup with 2048 characters or less.
+      Requests with longer descriptions will be rejected.
+    labels: Resource labels to represent user provided metadata.
+    name: Output only. The resource name of the backup. Format: `projects/{pro
+      ject_id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{ba
+      ckup_id}`.
+    sourceSnapshot: If specified, backup will be created from the given
+      snapshot. If not specified, there will be a new snapshot taken to
+      initiate the backup creation. Format: `projects/{project_id}/locations/{
+      location}/volumes/{volume_id}/snapshots/{snapshot_id}`
+    sourceVolume: Volume full name of this backup belongs to. Format:
+      `projects/{projects_id}/locations/{location}/volumes/{volume_id}`
+    state: Output only. The backup state.
+    volumeUsageBytes: Output only. Size of the file system when the backup was
+      created. When creating a new volume from the backup, the volume capacity
+      will have to be at least as big.
+  """
+
+  class BackupTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of backup, manually created or created by a backup
+    policy.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified backup type.
+      MANUAL: Manual backup type.
+      SCHEDULED: Scheduled backup type.
+    """
+    TYPE_UNSPECIFIED = 0
+    MANUAL = 1
+    SCHEDULED = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The backup state.
+
+    Values:
+      STATE_UNSPECIFIED: State not set.
+      CREATING: Backup is being created. While in this state, the snapshot for
+        the backup point-in-time may not have been created yet, and so the
+        point-in-time may not have been fixed.
+      UPLOADING: Backup is being uploaded. While in this state, none of the
+        writes to the volume will be included in the backup.
+      READY: Backup is available for use.
+      DELETING: Backup is being deleted.
+      ERROR: Backup is not valid and cannot be used for creating new volumes
+        or restoring existing volumes.
+      UPDATING: Backup is being updated.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    UPLOADING = 2
+    READY = 3
+    DELETING = 4
+    ERROR = 5
+    UPDATING = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  backupType = _messages.EnumField('BackupTypeValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  sourceSnapshot = _messages.StringField(6)
+  sourceVolume = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  volumeUsageBytes = _messages.IntegerField(9)
+
+
+class BackupPolicy(_messages.Message):
+  r"""Backup Policy.
+
+  Enums:
+    StateValueValuesEnum: Output only. The backup policy state.
+
+  Messages:
+    LabelsValue: Resource labels to represent user provided metadata.
+
+  Fields:
+    assignedVolumeCount: Output only. The total number of volumes assigned by
+      this backup policy.
+    createTime: Output only. The time when the backup policy was created.
+    dailyBackupLimit: Number of daily backups to keep. Note that the minimum
+      daily backup limit is 2.
+    description: Description of the backup policy.
+    enabled: If enabled, make backups automatically according to the
+      schedules. This will be applied to all volumes that have this policy
+      attached and enforced on volume level. If not specified, default is
+      true.
+    labels: Resource labels to represent user provided metadata.
+    monthlyBackupLimit: Number of monthly backups to keep. Note that the sum
+      of daily, weekly and monthly backups should be greater than 1.
+    name: Output only. The resource name of the backup policy. Format: `projec
+      ts/{project_id}/locations/{location}/backupPolicies/{backupPolicy_id}`.
+    state: Output only. The backup policy state.
+    weeklyBackupLimit: Number of weekly backups to keep. Note that the sum of
+      daily, weekly and monthly backups should be greater than 1.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The backup policy state.
+
+    Values:
+      STATE_UNSPECIFIED: State not set.
+      CREATING: BackupPolicy is being created.
+      READY: BackupPolicy is available for use.
+      DELETING: BackupPolicy is being deleted.
+      ERROR: BackupPolicy is not valid and cannot be used.
+      UPDATING: BackupPolicy is being updated.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    ERROR = 4
+    UPDATING = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  assignedVolumeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(2)
+  dailyBackupLimit = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  description = _messages.StringField(4)
+  enabled = _messages.BooleanField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  monthlyBackupLimit = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  name = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  weeklyBackupLimit = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+
+
+class BackupVault(_messages.Message):
+  r"""A NetApp BackupVault.
+
+  Enums:
+    StateValueValuesEnum: Output only. The backup vault state.
+
+  Messages:
+    LabelsValue: Resource labels to represent user provided metadata.
+
+  Fields:
+    createTime: Output only. Create time of the backup vault.
+    description: Description of the backup vault.
+    labels: Resource labels to represent user provided metadata.
+    name: Output only. The resource name of the backup vault. Format: `project
+      s/{project_id}/locations/{location}/backupVaults/{backupVault_id}`.
+    state: Output only. The backup vault state.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The backup vault state.
+
+    Values:
+      STATE_UNSPECIFIED: State not set.
+      CREATING: BackupVault is being created.
+      READY: BackupVault is available for use.
+      DELETING: BackupVault is being deleted.
+      ERROR: BackupVault is not valid and cannot be used.
+      UPDATING: BackupVault is being updated.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    ERROR = 4
+    UPDATING = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -314,6 +570,52 @@ class ListActiveDirectoriesResponse(_messages.Message):
   """
 
   activeDirectories = _messages.MessageField('ActiveDirectory', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListBackupPoliciesResponse(_messages.Message):
+  r"""ListBackupPoliciesResponse contains all the backup policies requested.
+
+  Fields:
+    backupPolicies: The list of backup policies.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  backupPolicies = _messages.MessageField('BackupPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListBackupVaultsResponse(_messages.Message):
+  r"""ListBackupVaultsResponse is the result of ListBackupVaultsRequest.
+
+  Fields:
+    backupVaults: A list of backupVaults in the project for the specified
+      location.
+    nextPageToken: The token you can use to retrieve the next page of results.
+      Not returned if there are no more results in the list.
+    unreachable: Locations that could not be reached.
+  """
+
+  backupVaults = _messages.MessageField('BackupVault', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListBackupsResponse(_messages.Message):
+  r"""ListBackupsResponse is the result of ListBackupsRequest.
+
+  Fields:
+    backups: A list of backups in the project.
+    nextPageToken: The token you can use to retrieve the next page of results.
+      Not returned if there are no more results in the list.
+    unreachable: Locations that could not be reached.
+  """
+
+  backups = _messages.MessageField('Backup', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -623,6 +925,260 @@ class NetappProjectsLocationsActiveDirectoriesPatchRequest(_messages.Message):
   """
 
   activeDirectory = _messages.MessageField('ActiveDirectory', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetappProjectsLocationsBackupPoliciesCreateRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupPoliciesCreateRequest object.
+
+  Fields:
+    backupPolicy: A BackupPolicy resource to be passed as the request body.
+    backupPolicyId: Required. The ID to use for the backup policy. The ID must
+      be unique within the specified location. This value must start with a
+      lowercase letter followed by up to 62 lowercase letters, numbers, or
+      hyphens, and cannot end with a hyphen.
+    parent: Required. The location to create the backup policies of, in the
+      format `projects/{project_id}/locations/{location}`
+  """
+
+  backupPolicy = _messages.MessageField('BackupPolicy', 1)
+  backupPolicyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetappProjectsLocationsBackupPoliciesDeleteRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The backup policy resource name, in the format `projects/{
+      project_id}/locations/{location}/backupPolicies/{backup_policy_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsBackupPoliciesGetRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The backupPolicy resource name, in the format `projects/{p
+      roject_id}/locations/{location}/backupPolicies/{backup_policy_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsBackupPoliciesListRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupPoliciesListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, the server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListBackupPoliciesRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetappProjectsLocationsBackupPoliciesPatchRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupPoliciesPatchRequest object.
+
+  Fields:
+    backupPolicy: A BackupPolicy resource to be passed as the request body.
+    name: Output only. The resource name of the backup policy. Format: `projec
+      ts/{project_id}/locations/{location}/backupPolicies/{backupPolicy_id}`.
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Backup Policy resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  backupPolicy = _messages.MessageField('BackupPolicy', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetappProjectsLocationsBackupVaultsBackupsCreateRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupVaultsBackupsCreateRequest object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    backupId: Required. The ID to use for the backup. The ID must be unique
+      within the specified backupVault. This value must start with a lowercase
+      letter followed by up to 62 lowercase letters, numbers, or hyphens, and
+      cannot end with a hyphen. Values that do not match this pattern will
+      trigger an INVALID_ARGUMENT error.
+    parent: Required. The NetApp backupVault to create the backups of, in the
+      format `projects/*/locations/*/backupVaults/{backup_vault_id}`
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  backupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetappProjectsLocationsBackupVaultsBackupsDeleteRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupVaultsBackupsDeleteRequest object.
+
+  Fields:
+    name: Required. The backup resource name, in the format `projects/{project
+      _id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{backup
+      _id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsBackupVaultsBackupsGetRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupVaultsBackupsGetRequest object.
+
+  Fields:
+    name: Required. The backup resource name, in the format `projects/{project
+      _id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{backup
+      _id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsBackupVaultsBackupsListRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupVaultsBackupsListRequest object.
+
+  Fields:
+    filter: The standard list filter. If specified, backups will be returned
+      based on the attribute name that matches the filter expression. If
+      empty, then no backups are filtered out. See https://google.aip.dev/160
+    orderBy: Sort results. Supported values are "name", "name desc" or ""
+      (unsorted).
+    pageSize: The maximum number of items to return. The service may return
+      fewer than this value. The maximum value is 1000; values above 1000 will
+      be coerced to 1000.
+    pageToken: The next_page_token value to use if there are additional
+      results to retrieve for this list request.
+    parent: Required. The backupVault for which to retrieve backup
+      information, in the format `projects/{project_id}/locations/{location}/b
+      ackupVaults/{backup_vault_id}`. To retrieve backup information for all
+      locations, use "-" for the `{location}` value. To retrieve backup
+      information for all backupVaults, use "-" for the `{backup_vault_id}`
+      value. To retrieve backup information for a volume, use "-" for the
+      `{backup_vault_id}` value and specify volume full name with the filter.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetappProjectsLocationsBackupVaultsBackupsPatchRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupVaultsBackupsPatchRequest object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    name: Output only. The resource name of the backup. Format: `projects/{pro
+      ject_id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{ba
+      ckup_id}`.
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Backup resource to be updated. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetappProjectsLocationsBackupVaultsCreateRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupVaultsCreateRequest object.
+
+  Fields:
+    backupVault: A BackupVault resource to be passed as the request body.
+    backupVaultId: Required. The ID to use for the backupVault. The ID must be
+      unique within the specified location. The max supported length is 63
+      characters. This value must start with a lowercase letter followed by up
+      to 62 lowercase letters, numbers, or hyphens, and cannot end with a
+      hyphen. Values that do not match this pattern will trigger an
+      INVALID_ARGUMENT error.
+    parent: Required. The location to create the backup vaults, in the format
+      `projects/{project_id}/locations/{location}`
+  """
+
+  backupVault = _messages.MessageField('BackupVault', 1)
+  backupVaultId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetappProjectsLocationsBackupVaultsDeleteRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupVaultsDeleteRequest object.
+
+  Fields:
+    name: Required. The backupVault resource name, in the format `projects/{pr
+      oject_id}/locations/{location}/backupVaults/{backup_vault_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsBackupVaultsGetRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupVaultsGetRequest object.
+
+  Fields:
+    name: Required. The backupVault resource name, in the format
+      `projects/{project_id}/locations/{location}/backupVaults/{backupVault_id
+      }`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsBackupVaultsListRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupVaultsListRequest object.
+
+  Fields:
+    filter: List filter.
+    orderBy: Sort results. Supported values are "name", "name desc" or ""
+      (unsorted).
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value to use if there are additional
+      results to retrieve for this list request.
+    parent: Required. The location for which to retrieve backupVault
+      information, in the format `projects/{project_id}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetappProjectsLocationsBackupVaultsPatchRequest(_messages.Message):
+  r"""A NetappProjectsLocationsBackupVaultsPatchRequest object.
+
+  Fields:
+    backupVault: A BackupVault resource to be passed as the request body.
+    name: Output only. The resource name of the backup vault. Format: `project
+      s/{project_id}/locations/{location}/backupVaults/{backupVault_id}`.
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Backup resource to be updated. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  backupVault = _messages.MessageField('BackupVault', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 

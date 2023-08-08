@@ -908,6 +908,9 @@ class Backup(_messages.Message):
   r"""Message describing Backup object
 
   Enums:
+    DatabaseVersionValueValuesEnum: Output only. The database engine major
+      version of the cluster this backup was created from. Any restored
+      cluster created from this backup will have the same database version.
     StateValueValuesEnum: Output only. The current state of the backup.
     TypeValueValuesEnum: The backup type, which suggests the trigger for the
       backup.
@@ -926,6 +929,9 @@ class Backup(_messages.Message):
     clusterUid: Output only. The system-generated UID of the cluster which was
       used to create this resource.
     createTime: Output only. Create time stamp
+    databaseVersion: Output only. The database engine major version of the
+      cluster this backup was created from. Any restored cluster created from
+      this backup will have the same database version.
     deleteTime: Output only. Delete time stamp
     description: User-provided description of the backup.
     displayName: User-settable and human-readable display name for the Backup.
@@ -962,6 +968,20 @@ class Backup(_messages.Message):
       deleted.
     updateTime: Output only. Update time stamp
   """
+
+  class DatabaseVersionValueValuesEnum(_messages.Enum):
+    r"""Output only. The database engine major version of the cluster this
+    backup was created from. Any restored cluster created from this backup
+    will have the same database version.
+
+    Values:
+      DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
+      POSTGRES_13: DEPRECATED - The database version is Postgres 13.
+      POSTGRES_14: The database version is Postgres 14.
+    """
+    DATABASE_VERSION_UNSPECIFIED = 0
+    POSTGRES_13 = 1
+    POSTGRES_14 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the backup.
@@ -1050,22 +1070,23 @@ class Backup(_messages.Message):
   clusterName = _messages.StringField(2)
   clusterUid = _messages.StringField(3)
   createTime = _messages.StringField(4)
-  deleteTime = _messages.StringField(5)
-  description = _messages.StringField(6)
-  displayName = _messages.StringField(7)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 8)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 9)
-  etag = _messages.StringField(10)
-  expiryQuantity = _messages.MessageField('QuantityBasedExpiry', 11)
-  expiryTime = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  reconciling = _messages.BooleanField(15)
-  sizeBytes = _messages.IntegerField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 5)
+  deleteTime = _messages.StringField(6)
+  description = _messages.StringField(7)
+  displayName = _messages.StringField(8)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 9)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 10)
+  etag = _messages.StringField(11)
+  expiryQuantity = _messages.MessageField('QuantityBasedExpiry', 12)
+  expiryTime = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  reconciling = _messages.BooleanField(16)
+  sizeBytes = _messages.IntegerField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
 
 
 class BackupSource(_messages.Message):
@@ -1085,6 +1106,19 @@ class BackupSource(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class ClientConnectionConfig(_messages.Message):
+  r"""Client connection configuration
+
+  Fields:
+    requireConnectors: Optional. Configuration to enforce connectors only (ex:
+      AuthProxy) connections to the database.
+    sslConfig: Optional. SSL config option for this instance.
+  """
+
+  requireConnectors = _messages.BooleanField(1)
+  sslConfig = _messages.MessageField('SslConfig', 2)
 
 
 class CloudControl2SharedOperationsReconciliationOperationMetadata(_messages.Message):
@@ -1191,9 +1225,8 @@ class Cluster(_messages.Message):
       resources are created and from which they are accessible via Private IP.
       The network must belong to the same project as the cluster. It is
       specified in the form:
-      "projects/{project_number}/global/networks/{network_id}". This is
-      required to create a cluster. It can be updated, but it cannot be
-      removed.
+      "projects/{project}/global/networks/{network_id}". This is required to
+      create a cluster. It can be updated, but it cannot be removed.
     primaryConfig: Output only. Cross Region replication config specific to
       PRIMARY cluster.
     reconciling: Output only. Reconciling
@@ -1515,71 +1548,6 @@ class FailoverInstanceRequest(_messages.Message):
   validateOnly = _messages.BooleanField(2)
 
 
-class GoogleCloudAlloydbConnectorsV1alphaMetadataExchangeRequest(_messages.Message):
-  r"""Message used by AlloyDB connectors to exchange client and connection
-  metadata with the server after a successful TLS handshake. This metadata
-  includes an IAM token, which is used to authenticate users based on their
-  IAM identity. The sole purpose of this message is for the use of AlloyDB
-  connectors. Clients should not rely on this message directly as there can be
-  breaking changes in the future.
-
-  Enums:
-    AuthTypeValueValuesEnum: Authentication type.
-
-  Fields:
-    authType: Authentication type.
-    oauth2Token: IAM token used for both IAM user authentiation and
-      `alloydb.instances.connect` permission check.
-    userAgent: Optional. Connector information.
-  """
-
-  class AuthTypeValueValuesEnum(_messages.Enum):
-    r"""Authentication type.
-
-    Values:
-      AUTH_TYPE_UNSPECIFIED: Authentication type is unspecified and DB_NATIVE
-        is used by default
-      DB_NATIVE: Database native authentication (user/password)
-      AUTO_IAM: Automatic IAM authentication
-    """
-    AUTH_TYPE_UNSPECIFIED = 0
-    DB_NATIVE = 1
-    AUTO_IAM = 2
-
-  authType = _messages.EnumField('AuthTypeValueValuesEnum', 1)
-  oauth2Token = _messages.StringField(2)
-  userAgent = _messages.StringField(3)
-
-
-class GoogleCloudAlloydbConnectorsV1alphaMetadataExchangeResponse(_messages.Message):
-  r"""Message for response to metadata exchange request. The sole purpose of
-  this message is for the use of AlloyDB connectors. Clients should not rely
-  on this message directly as there can be breaking changes in the future.
-
-  Enums:
-    ResponseCodeValueValuesEnum: Response code.
-
-  Fields:
-    error: Optional. Error message.
-    responseCode: Response code.
-  """
-
-  class ResponseCodeValueValuesEnum(_messages.Enum):
-    r"""Response code.
-
-    Values:
-      RESPONSE_CODE_UNSPECIFIED: Unknown response code
-      OK: Success
-      ERROR: Failure
-    """
-    RESPONSE_CODE_UNSPECIFIED = 0
-    OK = 1
-    ERROR = 2
-
-  error = _messages.StringField(1)
-  responseCode = _messages.EnumField('ResponseCodeValueValuesEnum', 2)
-
-
 class GoogleCloudLocationListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -1774,6 +1742,8 @@ class Instance(_messages.Message):
       always UNSPECIFIED. Instances in the read pools are evenly distributed
       across available zones within the region (i.e. read pools with more than
       one node will have a node in at least two zones).
+    clientConnectionConfig: Optional. Client connection specific
+      configurations
     createTime: Output only. Create time stamp
     databaseFlags: Database flags. Set at instance level. * They are copied
       from primary instance on read instance creation. * Read instances can
@@ -1981,25 +1951,26 @@ class Instance(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 2)
-  createTime = _messages.StringField(3)
-  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 4)
-  deleteTime = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  gceZone = _messages.StringField(8)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 9)
-  ipAddress = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  machineConfig = _messages.MessageField('MachineConfig', 12)
-  name = _messages.StringField(13)
-  nodes = _messages.MessageField('Node', 14, repeated=True)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 15)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 16)
-  reconciling = _messages.BooleanField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
-  writableNode = _messages.MessageField('Node', 21)
+  clientConnectionConfig = _messages.MessageField('ClientConnectionConfig', 3)
+  createTime = _messages.StringField(4)
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 5)
+  deleteTime = _messages.StringField(6)
+  displayName = _messages.StringField(7)
+  etag = _messages.StringField(8)
+  gceZone = _messages.StringField(9)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
+  ipAddress = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  machineConfig = _messages.MessageField('MachineConfig', 13)
+  name = _messages.StringField(14)
+  nodes = _messages.MessageField('Node', 15, repeated=True)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 16)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 17)
+  reconciling = _messages.BooleanField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
+  writableNode = _messages.MessageField('Node', 22)
 
 
 class IntegerRestrictions(_messages.Message):

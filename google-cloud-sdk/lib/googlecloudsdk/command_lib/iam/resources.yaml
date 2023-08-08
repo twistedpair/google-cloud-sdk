@@ -210,7 +210,7 @@ workload_identity_pool_namespace_workload_source:
     help: |
       The ID to use for the workload source, which becomes the
       final component of the resource name. This should be in the format of
-      `projects/<project-number>`.
+      `project-<project-number>`.
   disable_auto_completers: false
 
 workload_identity_pool_namespace_workload_source_operation:

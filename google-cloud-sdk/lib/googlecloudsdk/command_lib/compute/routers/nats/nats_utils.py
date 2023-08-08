@@ -69,7 +69,6 @@ def CreateNatMessage(
     compute_holder,
     with_private_nat=False,
     with_subnet_all=False,
-    with_auto_network_tier=False,
 ):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
@@ -94,7 +93,7 @@ def CreateNatMessage(
     params['natIpAllocateOption'] = option
     params['natIps'] = nat_ips
 
-  if with_auto_network_tier and args.auto_network_tier is not None:
+  if args.auto_network_tier is not None:
     params['autoNetworkTier'] = (
         compute_holder.client.messages.RouterNat.AutoNetworkTierValueValuesEnum(
             args.auto_network_tier))
@@ -136,12 +135,9 @@ def CreateNatMessage(
   return compute_holder.client.messages.RouterNat(**params)
 
 
-def UpdateNatMessage(nat,
-                     args,
-                     compute_holder,
-                     with_private_nat=False,
-                     with_subnet_all=False,
-                     with_auto_network_tier=False):
+def UpdateNatMessage(
+    nat, args, compute_holder, with_private_nat=False, with_subnet_all=False
+):
   """Updates a NAT message with the specified arguments."""
   if (args.subnet_option in [
       nat_flags.SubnetOption.ALL_RANGES, nat_flags.SubnetOption.PRIMARY_RANGES
@@ -170,7 +166,7 @@ def UpdateNatMessage(nat,
     nat.natIpAllocateOption = option
     nat.natIps = nat_ips
 
-  if with_auto_network_tier and args.auto_network_tier is not None:
+  if args.auto_network_tier is not None:
     nat.autoNetworkTier = (
         compute_holder.client.messages.RouterNat.AutoNetworkTierValueValuesEnum(
             args.auto_network_tier))

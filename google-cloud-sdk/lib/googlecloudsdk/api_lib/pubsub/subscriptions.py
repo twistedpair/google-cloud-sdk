@@ -33,6 +33,7 @@ CLEAR_RETRY_VALUE = 'clear'
 CLEAR_BIGQUERY_CONFIG_VALUE = 'clear'
 CLEAR_CLOUD_STORAGE_CONFIG_VALUE = 'clear'
 CLEAR_PUSH_NO_WRAPPER_CONFIG_VALUE = 'clear'
+CLEAR_PUBSUB_EXPORT_CONFIG_VALUE = 'clear'
 
 
 class NoFieldsSpecifiedError(exceptions.Error):
@@ -120,7 +121,8 @@ class SubscriptionsClient(object):
              cloud_storage_max_bytes=None,
              cloud_storage_max_duration=None,
              cloud_storage_output_format=None,
-             cloud_storage_write_metadata=None):
+             cloud_storage_write_metadata=None,
+             pubsub_export_topic=None):
     """Creates a Subscription.
 
     Args:
@@ -167,6 +169,7 @@ class SubscriptionsClient(object):
         Cloud Storage.
       cloud_storage_write_metadata (bool): Whether or not to write the
         subscription name and other metadata in the output.
+      pubsub_export_topic (str): The Pubsub topic to which to publish messages.
 
     Returns:
       Subscription: the created subscription
@@ -194,7 +197,8 @@ class SubscriptionsClient(object):
             cloud_storage_bucket, cloud_storage_file_prefix,
             cloud_storage_file_suffix, cloud_storage_max_bytes,
             cloud_storage_max_duration, cloud_storage_output_format,
-            cloud_storage_write_metadata))
+            cloud_storage_write_metadata),
+        pubsubExportConfig=self._PubsubExportConfig(pubsub_export_topic))
     return self._service.Create(subscription)
 
   def Delete(self, subscription_ref):
@@ -408,6 +412,17 @@ class SubscriptionsClient(object):
       return cloud_storage_config
     return None
 
+  def _PubsubExportConfig(self, topic):
+    """Builds PubsubExportConfig message from argument values.
+
+    Args:
+      topic (str): The Pubsub topic to which to publish messages.
+
+    Returns:
+      PubsubExportConfig message or None
+    """
+    return self.messages.PubSubExportConfig(topic=topic) if topic else None
+
   def _HandleMessageRetentionUpdate(self, update_setting):
     if update_setting.value == DEFAULT_MESSAGE_RETENTION_VALUE:
       update_setting.value = None
@@ -430,6 +445,10 @@ class SubscriptionsClient(object):
 
   def _HandlePushNoWrapperUpdate(self, update_setting):
     if update_setting.value == CLEAR_PUSH_NO_WRAPPER_CONFIG_VALUE:
+      update_setting.value = None
+
+  def _HandlePubsubExportConfigUpdate(self, update_setting):
+    if update_setting.value == CLEAR_PUBSUB_EXPORT_CONFIG_VALUE:
       update_setting.value = None
 
   def Patch(self,
@@ -461,7 +480,9 @@ class SubscriptionsClient(object):
             cloud_storage_output_format=None,
             cloud_storage_write_metadata=None,
             clear_cloud_storage_config=False,
-            clear_push_no_wrapper_config=False):
+            clear_push_no_wrapper_config=False,
+            pubsub_export_topic=None,
+            clear_pubsub_export_config=False):
     """Updates a Subscription.
 
     Args:
@@ -512,7 +533,10 @@ class SubscriptionsClient(object):
       clear_cloud_storage_config (bool): If set, clear the Cloud Storage config
         from the subscription.
       clear_push_no_wrapper_config(bool): If set, clear the Push No Wrapper
-        config from the subscription
+        config from the subscription.
+      pubsub_export_topic (str): The Pubsub topic to which to publish messages.
+      clear_pubsub_export_config (bool): If set, clear the Pubsub export config
+        from the subscription.
 
     Returns:
       Subscription: The updated subscription.
@@ -559,6 +583,12 @@ class SubscriptionsClient(object):
             'pushConfig.noWrapper',
             CLEAR_PUSH_NO_WRAPPER_CONFIG_VALUE if clear_push_no_wrapper_config
             else None),
+        _SubscriptionUpdateSetting(
+            'pubsubExportConfig',
+            CLEAR_PUBSUB_EXPORT_CONFIG_VALUE
+            if clear_pubsub_export_config
+            else self._PubsubExportConfig(pubsub_export_topic),
+        ),
     ]
     subscription = self.messages.Subscription(
         name=subscription_ref.RelativeName())
@@ -575,6 +605,8 @@ class SubscriptionsClient(object):
           self._HandleBigQueryConfigUpdate(update_setting)
         if update_setting.field_name == 'cloudStorageConfig':
           self._HandleCloudStorageConfigUpdate(update_setting)
+        if update_setting.field_name == 'pubsubExportConfig':
+          self._HandlePubsubExportConfigUpdate(update_setting)
         if update_setting.field_name == 'pushConfig.noWrapper':
           self._HandlePushNoWrapperUpdate(update_setting)
           if push_config is None:

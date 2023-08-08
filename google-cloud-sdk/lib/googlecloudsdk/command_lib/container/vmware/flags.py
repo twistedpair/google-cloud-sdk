@@ -1865,30 +1865,6 @@ It is not modifiable outside / beyond the  enrollment operation.
   )
 
 
-def AddNodePoolUpgradePolicy(parser: parser_arguments.ArgumentInterceptor):
-  """Upgrade policy of the node pool."""
-  help_text = """Upgrade policy of the node pool.
-
-Examples:
-
-  $ {command}
-      --upgrade-policy independent=True
-
-If independent is set to True, upgrade or downgrade the node pool independently from the control plane.
-"""
-  parser.add_argument(
-      '--upgrade-policy',
-      type=arg_parsers.ArgDict(
-          spec={
-              'independent': arg_parsers.ArgBoolean(),
-          }
-      ),
-      help=help_text,
-      metavar='independent=BOOL',
-      hidden=True,
-  )
-
-
 def _AddVmwareControlPlaneVsphereConfig(
     vmware_control_plane_node_config_group: parser_arguments.ArgumentInterceptor,
     release_track: base.ReleaseTrack = None,
@@ -1941,4 +1917,32 @@ def _AddVmwareVsphereConfig(
           }
       ),
       metavar='datastore=DATASTORE,storage-policy-name=STORAGE_POLICY_NAME',
+  )
+
+
+def AddUpgradePolicy(parser: parser_arguments.ArgumentInterceptor):
+  upgrade_policy_group = parser.add_group(
+      help='Upgrade policy for the cluster.',
+  )
+
+  upgrade_policy_group.add_argument(
+      '--upgrade-control-plane',
+      type=arg_parsers.ArgBoolean(),
+      help=textwrap.dedent("""\
+      If not specified, node pools are upgraded together with the control plane.
+
+      Examples:
+
+        To upgrade control plane only and keep node pools version unchanged,
+
+          ```shell
+          $ {command} --upgrade-control-plane=True
+          ```
+
+        To upgrade both control plane and node pools,
+
+          ```shell
+          $ {command} --upgrade-control-plane=False
+          ```
+      """),
   )
