@@ -3309,14 +3309,58 @@ class GoogleCloudDataplexV1DataProfileResult(_messages.Message):
   the table will have field type specific profile result.
 
   Fields:
+    postScanActionsResult: Output only. The result of post scan actions.
     profile: The profile information per field.
     rowCount: The count of rows scanned.
     scannedData: The data scanned for this result.
   """
 
-  profile = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultProfile', 1)
-  rowCount = _messages.IntegerField(2)
-  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 3)
+  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultPostScanActionsResult', 1)
+  profile = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultProfile', 2)
+  rowCount = _messages.IntegerField(3)
+  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 4)
+
+
+class GoogleCloudDataplexV1DataProfileResultPostScanActionsResult(_messages.Message):
+  r"""The result of post scan actions of DataProfileScan job.
+
+  Fields:
+    bigqueryExportResult: Output only. The result of BigQuery export post scan
+      action.
+  """
+
+  bigqueryExportResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultPostScanActionsResultBigQueryExportResult', 1)
+
+
+class GoogleCloudDataplexV1DataProfileResultPostScanActionsResultBigQueryExportResult(_messages.Message):
+  r"""The result of BigQuery export post scan action.
+
+  Enums:
+    StateValueValuesEnum: Output only. Execution state for the BigQuery
+      exporting.
+
+  Fields:
+    message: Output only. Additional information about the BigQuery exporting.
+    state: Output only. Execution state for the BigQuery exporting.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Execution state for the BigQuery exporting.
+
+    Values:
+      STATE_UNSPECIFIED: The exporting state is unspecified.
+      SUCCEEDED: The exporting completed successfully.
+      FAILED: The exporting is no longer running due to an error.
+      SKIPPED: The exporting is skipped due to no valid scan result to export
+        (usually caused by scan failed).
+    """
+    STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+    SKIPPED = 3
+
+  message = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class GoogleCloudDataplexV1DataProfileResultProfile(_messages.Message):
@@ -3481,6 +3525,7 @@ class GoogleCloudDataplexV1DataProfileSpec(_messages.Message):
     includeFields: Optional. The fields to include in data profile.If not
       specified, all fields at the time of profile scan job execution are
       included, except for ones listed in exclude_fields.
+    postScanActions: Optional. Actions to take upon job completion..
     rowFilter: Optional. A filter applied to all rows in a single DataScan
       job. The filter needs to be a valid SQL expression for a WHERE clause in
       BigQuery standard SQL syntax. Example: col1 >= 0 AND col2 < 10
@@ -3492,8 +3537,31 @@ class GoogleCloudDataplexV1DataProfileSpec(_messages.Message):
 
   excludeFields = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpecSelectedFields', 1)
   includeFields = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpecSelectedFields', 2)
-  rowFilter = _messages.StringField(3)
-  samplingPercent = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  postScanActions = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpecPostScanActions', 3)
+  rowFilter = _messages.StringField(4)
+  samplingPercent = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudDataplexV1DataProfileSpecPostScanActions(_messages.Message):
+  r"""The configuration of post scan actions of DataProfileScan job.
+
+  Fields:
+    bigqueryExport: Optional. If set, results will be exported to the provided
+      BigQuery table.
+  """
+
+  bigqueryExport = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpecPostScanActionsBigQueryExport', 1)
+
+
+class GoogleCloudDataplexV1DataProfileSpecPostScanActionsBigQueryExport(_messages.Message):
+  r"""The configuration of BigQuery export post scan action.
+
+  Fields:
+    resultsTable: Optional. The BigQuery table to export DataProfileScan
+      results to. Format: projects/{project}/datasets/{dataset}/tables/{table}
+  """
+
+  resultsTable = _messages.StringField(1)
 
 
 class GoogleCloudDataplexV1DataProfileSpecSelectedFields(_messages.Message):
@@ -3527,6 +3595,7 @@ class GoogleCloudDataplexV1DataQualityResult(_messages.Message):
   Fields:
     dimensions: A list of results at the dimension level.
     passed: Overall data quality result -- true if all rules passed.
+    postScanActionsResult: Output only. The result of post scan actions.
     rowCount: The count of rows processed.
     rules: A list of all the rules in a job, and their results.
     scannedData: The data scanned for this result.
@@ -3534,9 +3603,52 @@ class GoogleCloudDataplexV1DataQualityResult(_messages.Message):
 
   dimensions = _messages.MessageField('GoogleCloudDataplexV1DataQualityDimensionResult', 1, repeated=True)
   passed = _messages.BooleanField(2)
-  rowCount = _messages.IntegerField(3)
-  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleResult', 4, repeated=True)
-  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 5)
+  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResultPostScanActionsResult', 3)
+  rowCount = _messages.IntegerField(4)
+  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleResult', 5, repeated=True)
+  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 6)
+
+
+class GoogleCloudDataplexV1DataQualityResultPostScanActionsResult(_messages.Message):
+  r"""The result of post scan actions of DataQualityScan job.
+
+  Fields:
+    bigqueryExportResult: Output only. The result of BigQuery export post scan
+      action.
+  """
+
+  bigqueryExportResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResultPostScanActionsResultBigQueryExportResult', 1)
+
+
+class GoogleCloudDataplexV1DataQualityResultPostScanActionsResultBigQueryExportResult(_messages.Message):
+  r"""The result of BigQuery export post scan action.
+
+  Enums:
+    StateValueValuesEnum: Output only. Execution state for the BigQuery
+      exporting.
+
+  Fields:
+    message: Output only. Additional information about the BigQuery exporting.
+    state: Output only. Execution state for the BigQuery exporting.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Execution state for the BigQuery exporting.
+
+    Values:
+      STATE_UNSPECIFIED: The exporting state is unspecified.
+      SUCCEEDED: The exporting completed successfully.
+      FAILED: The exporting is no longer running due to an error.
+      SKIPPED: The exporting is skipped due to no valid scan result to export
+        (usually caused by scan failed).
+    """
+    STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+    SKIPPED = 3
+
+  message = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
@@ -3576,8 +3688,8 @@ class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
     threshold: Optional. The minimum ratio of passing_rows / total_rows
       required to pass this rule, with a range of 0.0, 1.0.0 indicates default
       value (i.e. 1.0).This field is only valid for row-level type rules.
-    uniquenessExpectation: Aggregate rule which evaluates whether the column
-      has duplicates.
+    uniquenessExpectation: Row-level rule which evaluates whether each column
+      value is unique.
   """
 
   column = _messages.StringField(1)
@@ -3628,7 +3740,8 @@ class GoogleCloudDataplexV1DataQualityRuleRegexExpectation(_messages.Message):
   r"""Evaluates whether each column value matches a specified regex.
 
   Fields:
-    regex: A regular expression the column value is expected to match.
+    regex: Optional. A regular expression the column value is expected to
+      match.
   """
 
   regex = _messages.StringField(1)
@@ -3670,7 +3783,7 @@ class GoogleCloudDataplexV1DataQualityRuleRowConditionExpectation(_messages.Mess
   boolean value per row as the result.Example: col1 >= 0 AND col2 < 10
 
   Fields:
-    sqlExpression: The SQL expression.
+    sqlExpression: Optional. The SQL expression.
   """
 
   sqlExpression = _messages.StringField(1)
@@ -3680,7 +3793,7 @@ class GoogleCloudDataplexV1DataQualityRuleSetExpectation(_messages.Message):
   r"""Evaluates whether each column value is contained by a specified set.
 
   Fields:
-    values: Expected values for the column value.
+    values: Optional. Expected values for the column value.
   """
 
   values = _messages.StringField(1, repeated=True)
@@ -3691,26 +3804,26 @@ class GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation(_messages.Me
   specified range.
 
   Enums:
-    StatisticValueValuesEnum: The aggregate metric to evaluate.
+    StatisticValueValuesEnum: Optional. The aggregate metric to evaluate.
 
   Fields:
-    maxValue: The maximum column statistic value allowed for a row to pass
-      this validation.At least one of min_value and max_value need to be
-      provided.
-    minValue: The minimum column statistic value allowed for a row to pass
-      this validation.At least one of min_value and max_value need to be
-      provided.
-    statistic: The aggregate metric to evaluate.
-    strictMaxEnabled: Whether column statistic needs to be strictly lesser
-      than ('<') the maximum, or if equality is allowed.Only relevant if a
-      max_value has been defined. Default = false.
-    strictMinEnabled: Whether column statistic needs to be strictly greater
-      than ('>') the minimum, or if equality is allowed.Only relevant if a
-      min_value has been defined. Default = false.
+    maxValue: Optional. The maximum column statistic value allowed for a row
+      to pass this validation.At least one of min_value and max_value need to
+      be provided.
+    minValue: Optional. The minimum column statistic value allowed for a row
+      to pass this validation.At least one of min_value and max_value need to
+      be provided.
+    statistic: Optional. The aggregate metric to evaluate.
+    strictMaxEnabled: Optional. Whether column statistic needs to be strictly
+      lesser than ('<') the maximum, or if equality is allowed.Only relevant
+      if a max_value has been defined. Default = false.
+    strictMinEnabled: Optional. Whether column statistic needs to be strictly
+      greater than ('>') the minimum, or if equality is allowed.Only relevant
+      if a min_value has been defined. Default = false.
   """
 
   class StatisticValueValuesEnum(_messages.Enum):
-    r"""The aggregate metric to evaluate.
+    r"""Optional. The aggregate metric to evaluate.
 
     Values:
       STATISTIC_UNDEFINED: Unspecified statistic type
@@ -3736,7 +3849,7 @@ class GoogleCloudDataplexV1DataQualityRuleTableConditionExpectation(_messages.Me
   boolean result.Example: MIN(col1) >= 0
 
   Fields:
-    sqlExpression: The SQL expression.
+    sqlExpression: Optional. The SQL expression.
   """
 
   sqlExpression = _messages.StringField(1)
@@ -3848,20 +3961,44 @@ class GoogleCloudDataplexV1DataQualitySpec(_messages.Message):
   r"""DataQualityScan related setting.
 
   Fields:
+    postScanActions: Optional. Actions to take upon job completion.
     rowFilter: Optional. A filter applied to all rows in a single DataScan
       job. The filter needs to be a valid SQL expression for a WHERE clause in
       BigQuery standard SQL syntax. Example: col1 >= 0 AND col2 < 10
-    rules: The list of rules to evaluate against a data source. At least one
-      rule is required.
+    rules: Required. The list of rules to evaluate against a data source. At
+      least one rule is required.
     samplingPercent: Optional. The percentage of the records to be selected
       from the dataset for DataScan. Value can range between 0.0 and 100.0
       with up to 3 significant decimal digits. Sampling is not applied if
       sampling_percent is not specified, 0 or 100.
   """
 
-  rowFilter = _messages.StringField(1)
-  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 2, repeated=True)
-  samplingPercent = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  postScanActions = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpecPostScanActions', 1)
+  rowFilter = _messages.StringField(2)
+  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 3, repeated=True)
+  samplingPercent = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudDataplexV1DataQualitySpecPostScanActions(_messages.Message):
+  r"""The configuration of post scan actions of DataQualityScan.
+
+  Fields:
+    bigqueryExport: Optional. If set, results will be exported to the provided
+      BigQuery table.
+  """
+
+  bigqueryExport = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpecPostScanActionsBigQueryExport', 1)
+
+
+class GoogleCloudDataplexV1DataQualitySpecPostScanActionsBigQueryExport(_messages.Message):
+  r"""The configuration of BigQuery export post scan action.
+
+  Fields:
+    resultsTable: Optional. The BigQuery table to export DataQualityScan
+      results to. Format: projects/{project}/datasets/{dataset}/tables/{table}
+  """
+
+  resultsTable = _messages.StringField(1)
 
 
 class GoogleCloudDataplexV1DataScan(_messages.Message):
@@ -3978,7 +4115,7 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
 
 class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
   r"""These messages contain information about the execution of a datascan.
-  The monitored resource is 'DataScan'
+  The monitored resource is 'DataScan' Next ID: 13
 
   Enums:
     ScopeValueValuesEnum: The scope of the data scan (e.g. full, incremental).
@@ -3987,6 +4124,7 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
     TypeValueValuesEnum: The type of the data scan.
 
   Fields:
+    createTime: The time when the data scan job was created.
     dataProfile: Data profile result for data profile type data scan.
     dataProfileConfigs: Applied configs for data profile type data scan.
     dataQuality: Data quality result for data quality type data scan.
@@ -4022,16 +4160,18 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: Unspecified job state.
-      STARTED: Data scan started.
-      SUCCEEDED: Data scan successfully completed.
-      FAILED: Data scan was unsuccessful.
-      CANCELLED: Data scan was cancelled.
+      STARTED: Data scan job started.
+      SUCCEEDED: Data scan job successfully completed.
+      FAILED: Data scan job was unsuccessful.
+      CANCELLED: Data scan job was cancelled.
+      CREATED: Data scan job was createed.
     """
     STATE_UNSPECIFIED = 0
     STARTED = 1
     SUCCEEDED = 2
     FAILED = 3
     CANCELLED = 4
+    CREATED = 5
 
   class TriggerValueValuesEnum(_messages.Enum):
     r"""The trigger type of the data scan job.
@@ -4057,21 +4197,22 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
     DATA_PROFILE = 1
     DATA_QUALITY = 2
 
-  dataProfile = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataProfileResult', 1)
-  dataProfileConfigs = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataProfileAppliedConfigs', 2)
-  dataQuality = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataQualityResult', 3)
-  dataQualityConfigs = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataQualityAppliedConfigs', 4)
-  dataSource = _messages.StringField(5)
-  endTime = _messages.StringField(6)
-  jobId = _messages.StringField(7)
-  message = _messages.StringField(8)
-  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataScanEventPostScanActionsResult', 9)
-  scope = _messages.EnumField('ScopeValueValuesEnum', 10)
-  specVersion = _messages.StringField(11)
-  startTime = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  trigger = _messages.EnumField('TriggerValueValuesEnum', 14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  createTime = _messages.StringField(1)
+  dataProfile = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataProfileResult', 2)
+  dataProfileConfigs = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataProfileAppliedConfigs', 3)
+  dataQuality = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataQualityResult', 4)
+  dataQualityConfigs = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataQualityAppliedConfigs', 5)
+  dataSource = _messages.StringField(6)
+  endTime = _messages.StringField(7)
+  jobId = _messages.StringField(8)
+  message = _messages.StringField(9)
+  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataScanEventPostScanActionsResult', 10)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 11)
+  specVersion = _messages.StringField(12)
+  startTime = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  trigger = _messages.EnumField('TriggerValueValuesEnum', 15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
 
 
 class GoogleCloudDataplexV1DataScanEventDataProfileAppliedConfigs(_messages.Message):
@@ -4331,6 +4472,7 @@ class GoogleCloudDataplexV1DataTaxonomy(_messages.Message):
 
   Fields:
     attributeCount: Output only. The number of attributes in the DataTaxonomy.
+    classCount: Output only. The number of classes in the DataTaxonomy.
     createTime: Output only. The time when the DataTaxonomy was created.
     description: Optional. Description of the DataTaxonomy.
     displayName: Optional. User friendly display name.
@@ -4372,14 +4514,15 @@ class GoogleCloudDataplexV1DataTaxonomy(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  classCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudDataplexV1DiscoveryEvent(_messages.Message):
@@ -7170,9 +7313,9 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as Delete, the
-      response is google.protobuf.Empty. If the original method is standard
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as Delete, the response
+      is google.protobuf.Empty. If the original method is standard
       Get/Create/Update, the response should be the resource. For other
       methods, the response should have the type XxxResponse, where Xxx is the
       original method name. For example, if the original method name is
@@ -7192,7 +7335,7 @@ class GoogleLongrunningOperation(_messages.Message):
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the name should be a resource name ending with operations/{unique_id}.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as Delete, the response
       is google.protobuf.Empty. If the original method is standard
       Get/Create/Update, the response should be the resource. For other
@@ -7231,9 +7374,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as Delete, the response
-    is google.protobuf.Empty. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as Delete, the response is
+    google.protobuf.Empty. If the original method is standard
     Get/Create/Update, the response should be the resource. For other methods,
     the response should have the type XxxResponse, where Xxx is the original
     method name. For example, if the original method name is TakeSnapshot(),

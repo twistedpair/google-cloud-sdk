@@ -65,6 +65,60 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Create a Group (e.g. creating default group during hub creation).
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsGroupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}/groups',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.global.hubs.groups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['groupId', 'requestId'],
+        relative_path='v1/{+parent}/groups',
+        request_field='group',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsGroupsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a Group.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}/groups/{groupsId}',
+        http_method='DELETE',
+        method_id='networkconnectivity.projects.locations.global.hubs.groups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsGroupsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details about a Network Connectivity Center group.
 
@@ -143,6 +197,33 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsGroupsListRequest',
         response_type_name='ListGroupsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a Network Connectivity Center group.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}/groups/{groupsId}',
+        http_method='PATCH',
+        method_id='networkconnectivity.projects.locations.global.hubs.groups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='group',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsGroupsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -338,6 +419,33 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AcceptSpoke(self, request, global_params=None):
+      r"""Accepts a proposal to attach a Network Connectivity Center spoke to the hub.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('AcceptSpoke')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AcceptSpoke.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}:acceptSpoke',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.global.hubs.acceptSpoke',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:acceptSpoke',
+        request_field='acceptHubSpokeRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new Network Connectivity Center hub in the specified project.
 
@@ -523,6 +631,33 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='hub',
         request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def RejectSpoke(self, request, global_params=None):
+      r"""Rejects a Network Connectivity Center spoke from being attached to the hub. If the spoke was previously in the `ACTIVE` state, it transitions to the `INACTIVE` state and is no longer able to connect to other spokes that are attached to the hub.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('RejectSpoke')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RejectSpoke.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}:rejectSpoke',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.global.hubs.rejectSpoke',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:rejectSpoke',
+        request_field='rejectHubSpokeRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
@@ -2103,7 +2238,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def Reject(self, request, global_params=None):
-      r"""Does one of the following: * Rejects a proposal to attach a Network Connectivity Center spoke to the hub. * Rejects and removes a previously attached spoke from the hub.
+      r"""Rejects a Network Connectivity Center spoke from being attached to the hub. If the spoke was previously in the `ACTIVE` state, it transitions to the `INACTIVE` state and is no longer able to connect to other spokes that are attached to the hub.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsSpokesRejectRequest) input message

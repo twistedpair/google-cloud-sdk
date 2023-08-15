@@ -903,9 +903,12 @@ class Control(_messages.Message):
     environment: The service controller environment to use. If empty, no
       control plane feature (like quota and billing) will be enabled. The
       recommended value for most services is servicecontrol.googleapis.com
+    methodPolicies: Defines policies applying to the API methods of the
+      service.
   """
 
   environment = _messages.StringField(1)
+  methodPolicies = _messages.MessageField('MethodPolicy', 2, repeated=True)
 
 
 class CppSettings(_messages.Message):
@@ -1574,6 +1577,34 @@ class Field(_messages.Message):
   options = _messages.MessageField('Option', 8, repeated=True)
   packed = _messages.BooleanField(9)
   typeUrl = _messages.StringField(10)
+
+
+class FieldPolicy(_messages.Message):
+  r"""Google API Policy Annotation This message defines a simple API policy
+  annotation that can be used to annotate API request and response message
+  fields with applicable policies. One field may have multiple applicable
+  policies that must all be satisfied before a request can be processed. This
+  policy annotation is used to generate the overall policy that will be used
+  for automatic runtime policy enforcement and documentation generation.
+
+  Fields:
+    resourcePermission: Specifies the required permission(s) for the resource
+      referred to by the field. It requires the field contains a valid
+      resource reference, and the request must pass the permission checks to
+      proceed. For example, "resourcemanager.projects.get".
+    resourceType: Specifies the resource type for the resource referred to by
+      the field.
+    selector: Selects one or more request or response message fields to apply
+      this `FieldPolicy`. When a `FieldPolicy` is used in proto annotation,
+      the selector must be left as empty. The service config generator will
+      automatically fill the correct value. When a `FieldPolicy` is used in
+      service config, the selector must be a comma-separated string with valid
+      request or response field paths, such as "foo.bar" or "foo.bar,foo.baz".
+  """
+
+  resourcePermission = _messages.StringField(1)
+  resourceType = _messages.StringField(2)
+  selector = _messages.StringField(3)
 
 
 class FlowErrorDetails(_messages.Message):
@@ -2260,6 +2291,22 @@ class Method(_messages.Message):
   syntax = _messages.EnumField('SyntaxValueValuesEnum', 7)
 
 
+class MethodPolicy(_messages.Message):
+  r"""Defines policies applying to an RPC method.
+
+  Fields:
+    requestPolicies: Policies that are applicable to the request message.
+    selector: Selects a method to which these policies should be enforced, for
+      example, "google.pubsub.v1.Subscriber.CreateSubscription". Refer to
+      selector for syntax details. NOTE: This field must not be set in the
+      proto annotation. It will be automatically filled by the service config
+      compiler .
+  """
+
+  requestPolicies = _messages.MessageField('FieldPolicy', 1, repeated=True)
+  selector = _messages.StringField(2)
+
+
 class MethodSettings(_messages.Message):
   r"""Describes the generator configuration for a method.
 
@@ -2844,8 +2891,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -2867,7 +2914,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -2906,9 +2953,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -3089,7 +3136,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -3097,15 +3144,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.

@@ -46,6 +46,10 @@ class AlertingQueryStep(_messages.Message):
   thresholdCondition = _messages.MessageField('ThresholdTest', 4)
 
 
+class ApproveRedactionOperationResponse(_messages.Message):
+  r"""Response type for ApproveRedaction method."""
+
+
 class BigQueryDataset(_messages.Message):
   r"""Describes a BigQuery dataset that was created by a link.
 
@@ -73,11 +77,11 @@ class BigQueryOptions(_messages.Message):
       to be used instead. In both cases, tables are sharded based on UTC
       timezone.
     usesTimestampColumnPartitioning: Output only. True if new timestamp column
-      based partitioning is in use, false if legacy ingestion-time
-      partitioning is in use.All new sinks will have this field set true and
-      will use timestamp column based partitioning. If use_partitioned_tables
-      is false, this value has no meaning and will be false. Legacy sinks
-      using partitioned tables will have this field set to false.
+      based partitioning is in use, false if legacy ingress-time partitioning
+      is in use.All new sinks will have this field set true and will use
+      timestamp column based partitioning. If use_partitioned_tables is false,
+      this value has no meaning and will be false. Legacy sinks using
+      partitioned tables will have this field set to false.
   """
 
   usePartitionedTables = _messages.BooleanField(1)
@@ -256,7 +260,9 @@ class ChartingQueryStep(_messages.Message):
       set to one of the dimension columns or left empty, which is equivalent.
       If no breakdowns are requested, it may be set to any measure column; if
       breakdowns are requested, sorting by measures is not supported. If
-      sort_order is SORT_ORDER_NONE, this value is not used.
+      sort_order is SORT_ORDER_NONE, this value is not used. If there is an
+      anonymous measure using aggregation "count", use the string "*" to name
+      it here.
     sortOrder: Optional. The sort order that controls the final results.
   """
 
@@ -296,7 +302,7 @@ class CmekSettings(_messages.Message):
       NG]/cryptoKeys/[KEY]" For example:"projects/my-project/locations/us-
       central1/keyRings/my-ring/cryptoKeys/my-key"To enable CMEK for the Log
       Router, set this field to a valid kms_key_name for which the associated
-      service account has the required cloudkms.cryptoKeyEncrypterDecrypter
+      service account has the needed cloudkms.cryptoKeyEncrypterDecrypter
       roles assigned for the key.The Cloud KMS key used by the Log Router can
       be updated by changing the kms_key_name to a new valid key name or
       disabled by setting the key name to an empty string. Encryption
@@ -455,12 +461,12 @@ class DeleteLinkRequest(_messages.Message):
   r"""The parameters to DeleteLink.
 
   Fields:
-    name: Required. The full resource name of the link to delete."projects/PRO
-      JECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organiza
-      tions/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK
-      _ID" "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/B
-      UCKET_ID/links/LINK_ID" "folders/FOLDER_ID/locations/LOCATION_ID/buckets
-      /BUCKET_ID/links/LINK_ID"
+    name: Required. The full resource name of the link to delete. "projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
+      _ID]/links/[LINK_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[L
+      OCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/lo
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
   """
 
   name = _messages.StringField(1)
@@ -487,7 +493,8 @@ class Dimension(_messages.Message):
     sortColumn: Optional. The column name to sort on. This may be set to this
       dimension column or any measure column. If the field is empty, it will
       sort on the dimension column. If sort_order is SORT_ORDER_NONE, this
-      value is not used.
+      value is not used. If there is an anonymous measure using aggregation
+      "count", use the string "*" to name it here.
     sortOrder: Optional. The ordering that defines the behavior of limit. If
       limit is not zero, this may not be set to SORT_ORDER_NONE.Note that this
       will not control the ordering of the rows in the result table in any
@@ -1369,7 +1376,7 @@ class LogEntry(_messages.Message):
       and can only include the following characters: upper and lower case
       alphanumeric characters, forward-slash, underscore, hyphen, and
       period.For backward compatibility, if log_name begins with a forward-
-      slash, such as /projects/..., then the log entry is ingested as usual,
+      slash, such as /projects/..., then the log entry is processed as usual,
       but the forward-slash is removed. Listing the log entry will not show
       the leading slash and filtering for a log name with a leading slash will
       never return any results.
@@ -1426,7 +1433,7 @@ class LogEntry(_messages.Message):
       have timestamps that don't exceed the logs retention period
       (https://cloud.google.com/logging/quotas#logs_retention_periods) in the
       past, and that don't exceed 24 hours in the future. Log entries outside
-      those time boundaries aren't ingested by Logging.
+      those time boundaries are rejected by Logging.
     trace: Optional. The REST resource name of the trace being written to
       Cloud Trace (https://cloud.google.com/trace) in association with this
       log entry. For example, if your trace data is stored in the Cloud
@@ -1906,10 +1913,11 @@ class LogSink(_messages.Message):
       "storage.googleapis.com/[GCS_BUCKET]"
       "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
       "pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]"
-      "logging.googleapis.com/projects/[PROJECT_ID]" The sink's
-      writer_identity, set when the sink is created, must have permission to
-      write to the destination or else the log entries are not exported. For
-      more information, see Exporting Logs with Sinks
+      "logging.googleapis.com/projects/[PROJECT_ID]" "logging.googleapis.com/p
+      rojects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" The
+      sink's writer_identity, set when the sink is created, must have
+      permission to write to the destination or else the log entries are not
+      exported. For more information, see Exporting Logs with Sinks
       (https://cloud.google.com/logging/docs/api/tasks/exporting-logs).
     disabled: Optional. If set to true, then this sink is disabled and it does
       not export any log entries.
@@ -2253,12 +2261,12 @@ class LoggingBillingAccountsLocationsBucketsLinksDeleteRequest(_messages.Message
   r"""A LoggingBillingAccountsLocationsBucketsLinksDeleteRequest object.
 
   Fields:
-    name: Required. The full resource name of the link to delete."projects/PRO
-      JECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organiza
-      tions/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK
-      _ID" "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/B
-      UCKET_ID/links/LINK_ID" "folders/FOLDER_ID/locations/LOCATION_ID/buckets
-      /BUCKET_ID/links/LINK_ID"
+    name: Required. The full resource name of the link to delete. "projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
+      _ID]/links/[LINK_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[L
+      OCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/lo
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
   """
 
   name = _messages.StringField(1, required=True)
@@ -2268,12 +2276,12 @@ class LoggingBillingAccountsLocationsBucketsLinksGetRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsBucketsLinksGetRequest object.
 
   Fields:
-    name: Required. The resource name of the link:"projects/PROJECT_ID/locatio
-      ns/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organizations/ORGANIZAT
-      ION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "billingAc
-      counts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/
-      LINK_ID"
-      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID
+    name: Required. The resource name of the link: "projects/[PROJECT_ID]/loca
+      tions/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "organizations/
+      [ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LIN
+      K_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buc
+      kets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/locations/[LOCATI
+      ON_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
   """
 
   name = _messages.StringField(1, required=True)
@@ -2288,11 +2296,12 @@ class LoggingBillingAccountsLocationsBucketsLinksListRequest(_messages.Message):
     pageToken: Optional. If present, then retrieve the next batch of results
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response.
-    parent: Required. The parent resource whose links are to be listed:"projec
-      ts/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/"
-      "organizations/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/"
-      "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET
-      _ID/" "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/
+    parent: Required. The parent resource whose links are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2545,6 +2554,18 @@ class LoggingBillingAccountsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class LoggingBillingAccountsLocationsOperationsApproveRedactionRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsOperationsApproveRedactionRequest
+  object.
+
+  Fields:
+    name: Required. Name of the redaction operation.For example:"projects/my-
+      project/locations/global/operations/my-operation"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingBillingAccountsLocationsOperationsCancelRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsOperationsCancelRequest object.
 
@@ -2655,8 +2676,9 @@ class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
       sink's destination must be in the same project as the sink itself.If
       this field is set to true, or if the sink is owned by a non-project
       resource such as an organization, then the value of writer_identity will
-      be a unique service account used only for exports from the new sink. For
-      more information, see writer_identity in LogSink.
+      be a service agent (https://cloud.google.com/iam/docs/service-account-
+      types#service-agents) used by the sinks with the same parent. For more
+      information, see writer_identity in LogSink.
   """
 
   customWriterIdentity = _messages.StringField(1)
@@ -2740,9 +2762,10 @@ class LoggingBillingAccountsSinksPatchRequest(_messages.Message):
       values of this field: If the old and new values of this field are both
       false or both true, then there is no change to the sink's
       writer_identity. If the old value is false and the new value is true,
-      then writer_identity is changed to a unique service account. It is an
-      error if the old value is true and the new value is set to false or
-      defaulted to false.
+      then writer_identity is changed to a service agent
+      (https://cloud.google.com/iam/docs/service-account-types#service-agents)
+      owned by Cloud Logging. It is an error if the old value is true and the
+      new value is set to false or defaulted to false.
     updateMask: Optional. Field mask that specifies the fields in sink that
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
@@ -2785,9 +2808,10 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
       values of this field: If the old and new values of this field are both
       false or both true, then there is no change to the sink's
       writer_identity. If the old value is false and the new value is true,
-      then writer_identity is changed to a unique service account. It is an
-      error if the old value is true and the new value is set to false or
-      defaulted to false.
+      then writer_identity is changed to a service agent
+      (https://cloud.google.com/iam/docs/service-account-types#service-agents)
+      owned by Cloud Logging. It is an error if the old value is true and the
+      new value is set to false or defaulted to false.
     updateMask: Optional. Field mask that specifies the fields in sink that
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
@@ -3117,12 +3141,12 @@ class LoggingFoldersLocationsBucketsLinksDeleteRequest(_messages.Message):
   r"""A LoggingFoldersLocationsBucketsLinksDeleteRequest object.
 
   Fields:
-    name: Required. The full resource name of the link to delete."projects/PRO
-      JECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organiza
-      tions/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK
-      _ID" "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/B
-      UCKET_ID/links/LINK_ID" "folders/FOLDER_ID/locations/LOCATION_ID/buckets
-      /BUCKET_ID/links/LINK_ID"
+    name: Required. The full resource name of the link to delete. "projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
+      _ID]/links/[LINK_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[L
+      OCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/lo
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3132,12 +3156,12 @@ class LoggingFoldersLocationsBucketsLinksGetRequest(_messages.Message):
   r"""A LoggingFoldersLocationsBucketsLinksGetRequest object.
 
   Fields:
-    name: Required. The resource name of the link:"projects/PROJECT_ID/locatio
-      ns/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organizations/ORGANIZAT
-      ION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "billingAc
-      counts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/
-      LINK_ID"
-      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID
+    name: Required. The resource name of the link: "projects/[PROJECT_ID]/loca
+      tions/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "organizations/
+      [ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LIN
+      K_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buc
+      kets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/locations/[LOCATI
+      ON_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3152,11 +3176,12 @@ class LoggingFoldersLocationsBucketsLinksListRequest(_messages.Message):
     pageToken: Optional. If present, then retrieve the next batch of results
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response.
-    parent: Required. The parent resource whose links are to be listed:"projec
-      ts/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/"
-      "organizations/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/"
-      "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET
-      _ID/" "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/
+    parent: Required. The parent resource whose links are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3409,6 +3434,17 @@ class LoggingFoldersLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class LoggingFoldersLocationsOperationsApproveRedactionRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsOperationsApproveRedactionRequest object.
+
+  Fields:
+    name: Required. Name of the redaction operation.For example:"projects/my-
+      project/locations/global/operations/my-operation"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingFoldersLocationsOperationsCancelRequest(_messages.Message):
   r"""A LoggingFoldersLocationsOperationsCancelRequest object.
 
@@ -3519,8 +3555,9 @@ class LoggingFoldersSinksCreateRequest(_messages.Message):
       sink's destination must be in the same project as the sink itself.If
       this field is set to true, or if the sink is owned by a non-project
       resource such as an organization, then the value of writer_identity will
-      be a unique service account used only for exports from the new sink. For
-      more information, see writer_identity in LogSink.
+      be a service agent (https://cloud.google.com/iam/docs/service-account-
+      types#service-agents) used by the sinks with the same parent. For more
+      information, see writer_identity in LogSink.
   """
 
   customWriterIdentity = _messages.StringField(1)
@@ -3604,9 +3641,10 @@ class LoggingFoldersSinksPatchRequest(_messages.Message):
       values of this field: If the old and new values of this field are both
       false or both true, then there is no change to the sink's
       writer_identity. If the old value is false and the new value is true,
-      then writer_identity is changed to a unique service account. It is an
-      error if the old value is true and the new value is set to false or
-      defaulted to false.
+      then writer_identity is changed to a service agent
+      (https://cloud.google.com/iam/docs/service-account-types#service-agents)
+      owned by Cloud Logging. It is an error if the old value is true and the
+      new value is set to false or defaulted to false.
     updateMask: Optional. Field mask that specifies the fields in sink that
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
@@ -3649,9 +3687,10 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
       values of this field: If the old and new values of this field are both
       false or both true, then there is no change to the sink's
       writer_identity. If the old value is false and the new value is true,
-      then writer_identity is changed to a unique service account. It is an
-      error if the old value is true and the new value is set to false or
-      defaulted to false.
+      then writer_identity is changed to a service agent
+      (https://cloud.google.com/iam/docs/service-account-types#service-agents)
+      owned by Cloud Logging. It is an error if the old value is true and the
+      new value is set to false or defaulted to false.
     updateMask: Optional. Field mask that specifies the fields in sink that
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
@@ -3823,12 +3862,12 @@ class LoggingLocationsBucketsLinksDeleteRequest(_messages.Message):
   r"""A LoggingLocationsBucketsLinksDeleteRequest object.
 
   Fields:
-    name: Required. The full resource name of the link to delete."projects/PRO
-      JECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organiza
-      tions/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK
-      _ID" "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/B
-      UCKET_ID/links/LINK_ID" "folders/FOLDER_ID/locations/LOCATION_ID/buckets
-      /BUCKET_ID/links/LINK_ID"
+    name: Required. The full resource name of the link to delete. "projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
+      _ID]/links/[LINK_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[L
+      OCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/lo
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3838,12 +3877,12 @@ class LoggingLocationsBucketsLinksGetRequest(_messages.Message):
   r"""A LoggingLocationsBucketsLinksGetRequest object.
 
   Fields:
-    name: Required. The resource name of the link:"projects/PROJECT_ID/locatio
-      ns/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organizations/ORGANIZAT
-      ION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "billingAc
-      counts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/
-      LINK_ID"
-      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID
+    name: Required. The resource name of the link: "projects/[PROJECT_ID]/loca
+      tions/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "organizations/
+      [ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LIN
+      K_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buc
+      kets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/locations/[LOCATI
+      ON_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3858,11 +3897,12 @@ class LoggingLocationsBucketsLinksListRequest(_messages.Message):
     pageToken: Optional. If present, then retrieve the next batch of results
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response.
-    parent: Required. The parent resource whose links are to be listed:"projec
-      ts/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/"
-      "organizations/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/"
-      "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET
-      _ID/" "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/
+    parent: Required. The parent resource whose links are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4081,6 +4121,17 @@ class LoggingLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class LoggingLocationsOperationsApproveRedactionRequest(_messages.Message):
+  r"""A LoggingLocationsOperationsApproveRedactionRequest object.
+
+  Fields:
+    name: Required. Name of the redaction operation.For example:"projects/my-
+      project/locations/global/operations/my-operation"
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class LoggingLocationsOperationsCancelRequest(_messages.Message):
@@ -4408,12 +4459,12 @@ class LoggingOrganizationsLocationsBucketsLinksDeleteRequest(_messages.Message):
   r"""A LoggingOrganizationsLocationsBucketsLinksDeleteRequest object.
 
   Fields:
-    name: Required. The full resource name of the link to delete."projects/PRO
-      JECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organiza
-      tions/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK
-      _ID" "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/B
-      UCKET_ID/links/LINK_ID" "folders/FOLDER_ID/locations/LOCATION_ID/buckets
-      /BUCKET_ID/links/LINK_ID"
+    name: Required. The full resource name of the link to delete. "projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
+      _ID]/links/[LINK_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[L
+      OCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/lo
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
   """
 
   name = _messages.StringField(1, required=True)
@@ -4423,12 +4474,12 @@ class LoggingOrganizationsLocationsBucketsLinksGetRequest(_messages.Message):
   r"""A LoggingOrganizationsLocationsBucketsLinksGetRequest object.
 
   Fields:
-    name: Required. The resource name of the link:"projects/PROJECT_ID/locatio
-      ns/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organizations/ORGANIZAT
-      ION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "billingAc
-      counts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/
-      LINK_ID"
-      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID
+    name: Required. The resource name of the link: "projects/[PROJECT_ID]/loca
+      tions/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "organizations/
+      [ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LIN
+      K_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buc
+      kets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/locations/[LOCATI
+      ON_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
   """
 
   name = _messages.StringField(1, required=True)
@@ -4443,11 +4494,12 @@ class LoggingOrganizationsLocationsBucketsLinksListRequest(_messages.Message):
     pageToken: Optional. If present, then retrieve the next batch of results
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response.
-    parent: Required. The parent resource whose links are to be listed:"projec
-      ts/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/"
-      "organizations/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/"
-      "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET
-      _ID/" "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/
+    parent: Required. The parent resource whose links are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4700,6 +4752,17 @@ class LoggingOrganizationsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class LoggingOrganizationsLocationsOperationsApproveRedactionRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsOperationsApproveRedactionRequest object.
+
+  Fields:
+    name: Required. Name of the redaction operation.For example:"projects/my-
+      project/locations/global/operations/my-operation"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingOrganizationsLocationsOperationsCancelRequest(_messages.Message):
   r"""A LoggingOrganizationsLocationsOperationsCancelRequest object.
 
@@ -4810,8 +4873,9 @@ class LoggingOrganizationsSinksCreateRequest(_messages.Message):
       sink's destination must be in the same project as the sink itself.If
       this field is set to true, or if the sink is owned by a non-project
       resource such as an organization, then the value of writer_identity will
-      be a unique service account used only for exports from the new sink. For
-      more information, see writer_identity in LogSink.
+      be a service agent (https://cloud.google.com/iam/docs/service-account-
+      types#service-agents) used by the sinks with the same parent. For more
+      information, see writer_identity in LogSink.
   """
 
   customWriterIdentity = _messages.StringField(1)
@@ -4895,9 +4959,10 @@ class LoggingOrganizationsSinksPatchRequest(_messages.Message):
       values of this field: If the old and new values of this field are both
       false or both true, then there is no change to the sink's
       writer_identity. If the old value is false and the new value is true,
-      then writer_identity is changed to a unique service account. It is an
-      error if the old value is true and the new value is set to false or
-      defaulted to false.
+      then writer_identity is changed to a service agent
+      (https://cloud.google.com/iam/docs/service-account-types#service-agents)
+      owned by Cloud Logging. It is an error if the old value is true and the
+      new value is set to false or defaulted to false.
     updateMask: Optional. Field mask that specifies the fields in sink that
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
@@ -4940,9 +5005,10 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
       values of this field: If the old and new values of this field are both
       false or both true, then there is no change to the sink's
       writer_identity. If the old value is false and the new value is true,
-      then writer_identity is changed to a unique service account. It is an
-      error if the old value is true and the new value is set to false or
-      defaulted to false.
+      then writer_identity is changed to a service agent
+      (https://cloud.google.com/iam/docs/service-account-types#service-agents)
+      owned by Cloud Logging. It is an error if the old value is true and the
+      new value is set to false or defaulted to false.
     updateMask: Optional. Field mask that specifies the fields in sink that
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
@@ -5229,12 +5295,12 @@ class LoggingProjectsLocationsBucketsLinksDeleteRequest(_messages.Message):
   r"""A LoggingProjectsLocationsBucketsLinksDeleteRequest object.
 
   Fields:
-    name: Required. The full resource name of the link to delete."projects/PRO
-      JECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organiza
-      tions/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK
-      _ID" "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/B
-      UCKET_ID/links/LINK_ID" "folders/FOLDER_ID/locations/LOCATION_ID/buckets
-      /BUCKET_ID/links/LINK_ID"
+    name: Required. The full resource name of the link to delete. "projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
+      _ID]/links/[LINK_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[L
+      OCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/lo
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
   """
 
   name = _messages.StringField(1, required=True)
@@ -5244,12 +5310,12 @@ class LoggingProjectsLocationsBucketsLinksGetRequest(_messages.Message):
   r"""A LoggingProjectsLocationsBucketsLinksGetRequest object.
 
   Fields:
-    name: Required. The resource name of the link:"projects/PROJECT_ID/locatio
-      ns/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organizations/ORGANIZAT
-      ION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "billingAc
-      counts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/
-      LINK_ID"
-      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID
+    name: Required. The resource name of the link: "projects/[PROJECT_ID]/loca
+      tions/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "organizations/
+      [ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LIN
+      K_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buc
+      kets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/locations/[LOCATI
+      ON_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
   """
 
   name = _messages.StringField(1, required=True)
@@ -5264,11 +5330,12 @@ class LoggingProjectsLocationsBucketsLinksListRequest(_messages.Message):
     pageToken: Optional. If present, then retrieve the next batch of results
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response.
-    parent: Required. The parent resource whose links are to be listed:"projec
-      ts/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/"
-      "organizations/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/"
-      "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET
-      _ID/" "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/
+    parent: Required. The parent resource whose links are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5521,6 +5588,17 @@ class LoggingProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class LoggingProjectsLocationsOperationsApproveRedactionRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsOperationsApproveRedactionRequest object.
+
+  Fields:
+    name: Required. Name of the redaction operation.For example:"projects/my-
+      project/locations/global/operations/my-operation"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A LoggingProjectsLocationsOperationsCancelRequest object.
 
@@ -5703,8 +5781,9 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
       sink's destination must be in the same project as the sink itself.If
       this field is set to true, or if the sink is owned by a non-project
       resource such as an organization, then the value of writer_identity will
-      be a unique service account used only for exports from the new sink. For
-      more information, see writer_identity in LogSink.
+      be a service agent (https://cloud.google.com/iam/docs/service-account-
+      types#service-agents) used by the sinks with the same parent. For more
+      information, see writer_identity in LogSink.
   """
 
   customWriterIdentity = _messages.StringField(1)
@@ -5788,9 +5867,10 @@ class LoggingProjectsSinksPatchRequest(_messages.Message):
       values of this field: If the old and new values of this field are both
       false or both true, then there is no change to the sink's
       writer_identity. If the old value is false and the new value is true,
-      then writer_identity is changed to a unique service account. It is an
-      error if the old value is true and the new value is set to false or
-      defaulted to false.
+      then writer_identity is changed to a service agent
+      (https://cloud.google.com/iam/docs/service-account-types#service-agents)
+      owned by Cloud Logging. It is an error if the old value is true and the
+      new value is set to false or defaulted to false.
     updateMask: Optional. Field mask that specifies the fields in sink that
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
@@ -5833,9 +5913,10 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
       values of this field: If the old and new values of this field are both
       false or both true, then there is no change to the sink's
       writer_identity. If the old value is false and the new value is true,
-      then writer_identity is changed to a unique service account. It is an
-      error if the old value is true and the new value is set to false or
-      defaulted to false.
+      then writer_identity is changed to a service agent
+      (https://cloud.google.com/iam/docs/service-account-types#service-agents)
+      owned by Cloud Logging. It is an error if the old value is true and the
+      new value is set to false or defaulted to false.
     updateMask: Optional. Field mask that specifies the fields in sink that
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
@@ -5877,8 +5958,9 @@ class LoggingSinksCreateRequest(_messages.Message):
       sink's destination must be in the same project as the sink itself.If
       this field is set to true, or if the sink is owned by a non-project
       resource such as an organization, then the value of writer_identity will
-      be a unique service account used only for exports from the new sink. For
-      more information, see writer_identity in LogSink.
+      be a service agent (https://cloud.google.com/iam/docs/service-account-
+      types#service-agents) used by the sinks with the same parent. For more
+      information, see writer_identity in LogSink.
   """
 
   customWriterIdentity = _messages.StringField(1)
@@ -5962,9 +6044,10 @@ class LoggingSinksUpdateRequest(_messages.Message):
       values of this field: If the old and new values of this field are both
       false or both true, then there is no change to the sink's
       writer_identity. If the old value is false and the new value is true,
-      then writer_identity is changed to a unique service account. It is an
-      error if the old value is true and the new value is set to false or
-      defaulted to false.
+      then writer_identity is changed to a service agent
+      (https://cloud.google.com/iam/docs/service-account-types#service-agents)
+      owned by Cloud Logging. It is an error if the old value is true and the
+      new value is set to false or defaulted to false.
     updateMask: Optional. Field mask that specifies the fields in sink that
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
@@ -6626,9 +6709,9 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as Delete, the
-      response is google.protobuf.Empty. If the original method is standard
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as Delete, the response
+      is google.protobuf.Empty. If the original method is standard
       Get/Create/Update, the response should be the resource. For other
       methods, the response should have the type XxxResponse, where Xxx is the
       original method name. For example, if the original method name is
@@ -6648,7 +6731,7 @@ class Operation(_messages.Message):
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the name should be a resource name ending with operations/{unique_id}.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as Delete, the response
       is google.protobuf.Empty. If the original method is standard
       Get/Create/Update, the response should be the resource. For other
@@ -6687,9 +6770,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as Delete, the response
-    is google.protobuf.Empty. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as Delete, the response is
+    google.protobuf.Empty. If the original method is standard
     Get/Create/Update, the response should be the resource. For other methods,
     the response should have the type XxxResponse, where Xxx is the original
     method name. For example, if the original method name is TakeSnapshot(),
@@ -6915,23 +6998,24 @@ class QueryResults(_messages.Message):
     RowsValueListEntry: A RowsValueListEntry object.
 
   Fields:
+    executionDuration: The total execution duration of the query.
     nextPageToken: A token that can be sent as page_token to retrieve the next
       page. If this field is omitted, there are no subsequent pages.
-    queryComplete: Whether the query has completed or not. If rows or
-      totalRows are present, this will always be true. If this is false,
-      totalRows will not be available. The client needs to poll on
-      QueryLogEntries specifying the result_reference and wait for results.
+    queryComplete: Whether the query has completed or not. If this is false,
+      the rows, total_rows, and execution_time fields will not be populated.
+      The client needs to poll on ReadQueryResults specifying the
+      result_reference and wait for results.
     restrictionConflicts: Conflicts between the query and the restrictions
       that were requested. Any restrictions present here were ignored when
       executing the query.
     resultReference: An opaque string that can be used as a reference to this
-      query result. This result reference can be used in the QueryLogEntries
-      query to fetch this result up to 24 hours in the future.
+      query result. This result reference can be used in the QueryData query
+      to fetch this result up to 24 hours in the future.
     rows: Query result rows. The number of rows returned depends upon the page
-      size requested. To get any additional rows, you can call QueryLogEntries
-      and specify the result_reference and the page_token.The REST-based
-      representation of this data leverages a series of JSON f,v objects for
-      indicating fields and values.
+      size requested. To get any additional rows, you can call
+      ReadQueryResults and specify the result_reference and the page_token.The
+      REST-based representation of this data leverages a series of JSON f,v
+      objects for indicating fields and values.
     schema: The schema of the results. It shows the columns present in the
       output table. Present only when the query completes successfully.
     totalBytesProcessed: The total number of bytes processed for this query.
@@ -6967,14 +7051,15 @@ class QueryResults(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  nextPageToken = _messages.StringField(1)
-  queryComplete = _messages.BooleanField(2)
-  restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 3, repeated=True)
-  resultReference = _messages.StringField(4)
-  rows = _messages.MessageField('RowsValueListEntry', 5, repeated=True)
-  schema = _messages.MessageField('TableSchema', 6)
-  totalBytesProcessed = _messages.IntegerField(7)
-  totalRows = _messages.IntegerField(8)
+  executionDuration = _messages.StringField(1)
+  nextPageToken = _messages.StringField(2)
+  queryComplete = _messages.BooleanField(3)
+  restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 4, repeated=True)
+  resultReference = _messages.StringField(5)
+  rows = _messages.MessageField('RowsValueListEntry', 6, repeated=True)
+  schema = _messages.MessageField('TableSchema', 7)
+  totalBytesProcessed = _messages.IntegerField(8)
+  totalRows = _messages.IntegerField(9)
 
 
 class QueryStep(_messages.Message):
@@ -7035,6 +7120,9 @@ class ReadQueryResultsRequest(_messages.Message):
     pageToken: Optional. Page token returned by a previous call to
       ReadQueryResults to paginate through the response rows.
     queryStepHandle: Required. A query step handle returned by QueryData.
+    readMetadataOnly: Optional. If this flag is true, no rows will be returned
+      regardless of the value of page_size; the rows, total_rows, and
+      next_page_token members of the response will be empty.
     resourceNames: Required. Names of one or more log views that were used in
       the original query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID
       ]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires appropriate permissions on
@@ -7044,7 +7132,8 @@ class ReadQueryResultsRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   queryStepHandle = _messages.StringField(3)
-  resourceNames = _messages.StringField(4, repeated=True)
+  readMetadataOnly = _messages.BooleanField(4)
+  resourceNames = _messages.StringField(5, repeated=True)
 
 
 class RedactLogEntriesImpact(_messages.Message):
@@ -7054,10 +7143,17 @@ class RedactLogEntriesImpact(_messages.Message):
     endTime: The time impact assessment was completed.
     logEntriesCount: The number of entries in the requested bucket that match
       the requested filter.
+    sqlQuery: The equivalent SQL query to the Logging Query Language filter
+      provided by the user. Only populated for analytics-enabled buckets.
+    userApprovalTime: The time the user's approval of the impact assessment
+      was received. Empty if the impact assessment has not yet finished or the
+      user's approval has not yet been given.
   """
 
   endTime = _messages.StringField(1)
   logEntriesCount = _messages.IntegerField(2)
+  sqlQuery = _messages.StringField(3)
+  userApprovalTime = _messages.StringField(4)
 
 
 class RedactLogEntriesMetadata(_messages.Message):
@@ -7252,7 +7348,7 @@ class Settings(_messages.Message):
   Fields:
     disableDefaultSink: Optional. If set to true, the _Default sink in newly
       created projects and folders will created in a disabled state. This can
-      be used to automatically disable log ingestion if there is already an
+      be used to automatically disable log storage if there is already an
       aggregated sink configured in the hierarchy. The _Default sink can be
       re-enabled manually if needed.
     kmsKeyName: Optional. The resource name for the configured Cloud KMS
@@ -7283,10 +7379,13 @@ class Settings(_messages.Message):
       container. Sinks use this service account as their writer_identity if no
       custom service account is provided.
     name: Output only. The resource name of the settings.
-    storageLocation: Optional. The Cloud region that will be used for _Default
-      and _Required log buckets for newly created projects and folders. For
-      example europe-west1. This setting does not affect the location of
-      custom log buckets.
+    storageLocation: Optional. The storage location that Cloud Logging will
+      use to create new resources when a location is needed but not explicitly
+      provided. The use cases includes: The location of _Default and _Required
+      log bucket for newly created projects and folders.Example value: europe-
+      west1.Note: this setting does not affect the location of resources where
+      a location is explicitly provided when created, such as custom log
+      buckets.
   """
 
   disableDefaultSink = _messages.BooleanField(1)

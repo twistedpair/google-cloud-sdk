@@ -170,14 +170,14 @@ class DestinationVolumeParameters(_messages.Message):
 
 
 class EncryptVolumesRequest(_messages.Message):
-  r"""EncryptVolumesRequest EncryptVolumesRequest specifies the KMS config to
-  encrypt existing volumes.
+  r"""EncryptVolumesRequest specifies the KMS config to encrypt existing
+  volumes.
   """
 
 
 
 class ExportPolicy(_messages.Message):
-  r"""ExportPolicy Defined the export policy for the volume.
+  r"""Defines the export policy for the volume.
 
   Fields:
     rules: Required. List of export policy rules
@@ -319,7 +319,7 @@ class ListActiveDirectoriesResponse(_messages.Message):
 
 
 class ListKmsConfigsResponse(_messages.Message):
-  r"""ListKmsConfigsResponse
+  r"""ListKmsConfigsResponse is the response to a ListKmsConfigsRequest.
 
   Fields:
     kmsConfigs: The list of KmsConfigs
@@ -391,7 +391,7 @@ class ListSnapshotsResponse(_messages.Message):
 
 
 class ListStoragePoolsResponse(_messages.Message):
-  r"""ListStoragePoolsResponse
+  r"""ListStoragePoolsResponse is the response to a ListStoragePoolsRequest.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
@@ -406,7 +406,7 @@ class ListStoragePoolsResponse(_messages.Message):
 
 
 class ListVolumesResponse(_messages.Message):
-  r"""ListVolumesResponse Message for response to listing Volumes
+  r"""Message for response to listing Volumes
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
@@ -520,7 +520,7 @@ class MonthlySchedule(_messages.Message):
 
 
 class MountOption(_messages.Message):
-  r"""MountOption View only mount options for a volume.
+  r"""View only mount options for a volume.
 
   Enums:
     ProtocolValueValuesEnum: Protocol to mount with.
@@ -1184,8 +1184,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1207,7 +1207,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1246,9 +1246,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -1283,7 +1283,7 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  r"""OperationMetadata Represents the metadata of the long-running operation.
+  r"""Represents the metadata of the long-running operation.
 
   Fields:
     apiVersion: Output only. API version used to start the operation.
@@ -1487,8 +1487,7 @@ class RevertVolumeRequest(_messages.Message):
 
 
 class SimpleExportPolicyRule(_messages.Message):
-  r"""SimpleExportPolicyRule An export policy rule describing various export
-  options.
+  r"""An export policy rule describing various export options.
 
   Enums:
     AccessTypeValueValuesEnum: Access type (ReadWrite, ReadOnly, None)
@@ -1550,7 +1549,7 @@ class SimpleExportPolicyRule(_messages.Message):
 
 
 class Snapshot(_messages.Message):
-  r"""Snapshot
+  r"""Snapshot is a point-in-time version of a Volume's content.
 
   Enums:
     StateValueValuesEnum: Output only. The snapshot state.
@@ -1772,9 +1771,9 @@ class StopReplicationRequest(_messages.Message):
 
 
 class StoragePool(_messages.Message):
-  r"""Resources StoragePool StoragePool is a container for volumes with a
-  service level and capacity. Volumes can be created in a pool of sufficient
-  available capacity. StoragePool capacity is what you are billed for.
+  r"""StoragePool is a container for volumes with a service level and
+  capacity. Volumes can be created in a pool of sufficient available capacity.
+  StoragePool capacity is what you are billed for.
 
   Enums:
     EncryptionTypeValueValuesEnum: Output only. Specifies the current pool
@@ -1828,9 +1827,9 @@ class StoragePool(_messages.Message):
     r"""Required. Service level of the storage pool
 
     Values:
-      SERVICE_LEVEL_UNSPECIFIED: Unspecified service level
-      PREMIUM: Premium
-      EXTREME: Extreme
+      SERVICE_LEVEL_UNSPECIFIED: <no description>
+      PREMIUM: <no description>
+      EXTREME: <no description>
       STANDARD: Standard (Software offering)
     """
     SERVICE_LEVEL_UNSPECIFIED = 0
@@ -1930,15 +1929,12 @@ class TransferStats(_messages.Message):
 
 
 class VerifyKmsConfigRequest(_messages.Message):
-  r"""VerifyKmsConfigRequest VerifyKmsConfigRequest specifies the KMS config
-  to be validated.
-  """
-
+  r"""VerifyKmsConfigRequest specifies the KMS config to be validated."""
 
 
 class VerifyKmsConfigResponse(_messages.Message):
-  r"""VerifyKmsConfigResponse VerifyKmsConfigResponse contains the information
-  if the config is correctly and error message.
+  r"""VerifyKmsConfigResponse contains the information if the config is
+  correctly and error message.
 
   Fields:
     healthError: Output only. Error message if config is not healthy.
@@ -1954,12 +1950,13 @@ class VerifyKmsConfigResponse(_messages.Message):
 
 
 class Volume(_messages.Message):
-  r"""Volume Volume provides a filesystem that you can mount.
+  r"""Volume provides a filesystem that you can mount.
 
   Enums:
     EncryptionTypeValueValuesEnum: Output only. Specified the current volume
       encryption key source.
     ProtocolsValueListEntryValuesEnum:
+    RestrictedActionsValueListEntryValuesEnum:
     SecurityStyleValueValuesEnum: Optional. Security Style of the Volume
     ServiceLevelValueValuesEnum: Output only. Service level of the volume
     SmbSettingsValueListEntryValuesEnum:
@@ -1996,6 +1993,8 @@ class Volume(_messages.Message):
       This is optional. If not provided, any available range will be chosen.
     restoreParameters: Optional. Specifies the source of the volume to be
       created from.
+    restrictedActions: Optional. List of actions that are restricted on this
+      volume.
     securityStyle: Optional. Security Style of the Volume
     serviceLevel: Output only. Service level of the volume
     shareName: Required. Share name of the volume
@@ -2043,6 +2042,16 @@ class Volume(_messages.Message):
     NFSV4 = 2
     SMB = 3
 
+  class RestrictedActionsValueListEntryValuesEnum(_messages.Enum):
+    r"""RestrictedActionsValueListEntryValuesEnum enum type.
+
+    Values:
+      RESTRICTED_ACTION_UNSPECIFIED: Unspecified restricted action
+      DELETE: Prevent volume from being deleted when mounted.
+    """
+    RESTRICTED_ACTION_UNSPECIFIED = 0
+    DELETE = 1
+
   class SecurityStyleValueValuesEnum(_messages.Enum):
     r"""Optional. Security Style of the Volume
 
@@ -2059,9 +2068,9 @@ class Volume(_messages.Message):
     r"""Output only. Service level of the volume
 
     Values:
-      SERVICE_LEVEL_UNSPECIFIED: Unspecified service level
-      PREMIUM: Premium
-      EXTREME: Extreme
+      SERVICE_LEVEL_UNSPECIFIED: <no description>
+      PREMIUM: <no description>
+      EXTREME: <no description>
       STANDARD: Standard (Software offering)
     """
     SERVICE_LEVEL_UNSPECIFIED = 0
@@ -2159,18 +2168,19 @@ class Volume(_messages.Message):
   protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 15, repeated=True)
   psaRange = _messages.StringField(16)
   restoreParameters = _messages.MessageField('RestoreParameters', 17)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 18)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 19)
-  shareName = _messages.StringField(20)
-  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 21, repeated=True)
-  snapReserve = _messages.FloatField(22)
-  snapshotDirectory = _messages.BooleanField(23)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  stateDetails = _messages.StringField(26)
-  storagePool = _messages.StringField(27)
-  unixPermissions = _messages.StringField(28)
-  usedGib = _messages.IntegerField(29)
+  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 18, repeated=True)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 19)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 20)
+  shareName = _messages.StringField(21)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 22, repeated=True)
+  snapReserve = _messages.FloatField(23)
+  snapshotDirectory = _messages.BooleanField(24)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  stateDetails = _messages.StringField(27)
+  storagePool = _messages.StringField(28)
+  unixPermissions = _messages.StringField(29)
+  usedGib = _messages.IntegerField(30)
 
 
 class WeeklySchedule(_messages.Message):

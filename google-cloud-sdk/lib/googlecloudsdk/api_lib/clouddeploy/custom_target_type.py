@@ -71,3 +71,16 @@ class CustomTargetTypesClient(object):
             updateMask=CUSTOM_TARGET_TYPE_UPDATE_MASK,
         )
     )
+
+  def Delete(self, name):
+    """Deletes a custom target type resource.
+
+    Args:
+      name: str, custom target type name.
+
+    Returns:
+      The operation message.
+    """
+    return self._service.Delete(
+        self.messages.ClouddeployProjectsLocationsCustomTargetTypesDeleteRequest(
+            name=name, allowMissing=True))

@@ -615,6 +615,70 @@ class DataDiskAssignment(_messages.Message):
   vmInstance = _messages.StringField(2)
 
 
+class DataSamplingConfig(_messages.Message):
+  r"""Configuration options for sampling elements.
+
+  Enums:
+    BehaviorsValueListEntryValuesEnum:
+
+  Fields:
+    behaviors: List of given sampling behaviors to enable. For example,
+      specifying behaviors = [ALWAYS_ON] samples in-flight elements but does
+      not sample exceptions. Can be used to specify multiple behaviors like,
+      behaviors = [ALWAYS_ON, EXCEPTIONS] for specifying periodic sampling and
+      exception sampling. If DISABLED is in the list, then sampling will be
+      disabled and ignore the other given behaviors. Ordering does not matter.
+  """
+
+  class BehaviorsValueListEntryValuesEnum(_messages.Enum):
+    r"""BehaviorsValueListEntryValuesEnum enum type.
+
+    Values:
+      DATA_SAMPLING_BEHAVIOR_UNSPECIFIED: If given, has no effect on sampling
+        behavior. Used as an unknown or unset sentinel value.
+      DISABLED: When given, disables element sampling. Has same behavior as
+        not setting the behavior.
+      ALWAYS_ON: When given, enables sampling in-flight from all PCollections.
+      EXCEPTIONS: When given, enables sampling input elements when a user-
+        defined DoFn causes an exception.
+    """
+    DATA_SAMPLING_BEHAVIOR_UNSPECIFIED = 0
+    DISABLED = 1
+    ALWAYS_ON = 2
+    EXCEPTIONS = 3
+
+  behaviors = _messages.EnumField('BehaviorsValueListEntryValuesEnum', 1, repeated=True)
+
+
+class DataSamplingReport(_messages.Message):
+  r"""Contains per-worker telemetry about the data sampling feature.
+
+  Fields:
+    bytesWrittenDelta: Optional. Delta of bytes written to file from previous
+      report.
+    elementsSampledBytes: Optional. Delta of bytes sampled from previous
+      report.
+    elementsSampledCount: Optional. Delta of number of elements sampled from
+      previous report.
+    exceptionsSampledCount: Optional. Delta of number of samples taken from
+      user code exceptions from previous report.
+    pcollectionsSampledCount: Optional. Delta of number of PCollections
+      sampled from previous report.
+    persistenceErrorsCount: Optional. Delta of errors counts from persisting
+      the samples from previous report.
+    translationErrorsCount: Optional. Delta of errors counts from retrieving,
+      or translating the samples from previous report.
+  """
+
+  bytesWrittenDelta = _messages.IntegerField(1)
+  elementsSampledBytes = _messages.IntegerField(2)
+  elementsSampledCount = _messages.IntegerField(3)
+  exceptionsSampledCount = _messages.IntegerField(4)
+  pcollectionsSampledCount = _messages.IntegerField(5)
+  persistenceErrorsCount = _messages.IntegerField(6)
+  translationErrorsCount = _messages.IntegerField(7)
+
+
 class DataflowClassicTemplateConfig(_messages.Message):
   r"""Dataflow Job information of Classic Template Type. More info about
   dataflow classic templates can be found here
@@ -2263,11 +2327,14 @@ class DebugOptions(_messages.Message):
   r"""Describes any options that have an effect on the debugging of pipelines.
 
   Fields:
+    dataSampling: Configuration options for sampling elements from a running
+      pipeline.
     enableHotKeyLogging: When true, enables the logging of the literal hot key
       to the user's Cloud Logging.
   """
 
-  enableHotKeyLogging = _messages.BooleanField(1)
+  dataSampling = _messages.MessageField('DataSamplingConfig', 1)
+  enableHotKeyLogging = _messages.BooleanField(2)
 
 
 class DeleteSnapshotResponse(_messages.Message):
@@ -2642,6 +2709,8 @@ class Environment(_messages.Message):
       The supported resource type is: Google Cloud Storage:
       storage.googleapis.com/{bucket}/{object}
       bucket.storage.googleapis.com/{object}
+    useStreamingEngineResourceBasedBilling: Output only. Whether the job uses
+      the new streaming engine billing model based on resource usage.
     userAgent: A description of the process that generated the request.
     version: A structure describing which components and their versions of the
       service are required in order to run the job.
@@ -2799,11 +2868,12 @@ class Environment(_messages.Message):
   serviceOptions = _messages.StringField(10, repeated=True)
   shuffleMode = _messages.EnumField('ShuffleModeValueValuesEnum', 11)
   tempStoragePrefix = _messages.StringField(12)
-  userAgent = _messages.MessageField('UserAgentValue', 13)
-  version = _messages.MessageField('VersionValue', 14)
-  workerPools = _messages.MessageField('WorkerPool', 15, repeated=True)
-  workerRegion = _messages.StringField(16)
-  workerZone = _messages.StringField(17)
+  useStreamingEngineResourceBasedBilling = _messages.BooleanField(13)
+  userAgent = _messages.MessageField('UserAgentValue', 14)
+  version = _messages.MessageField('VersionValue', 15)
+  workerPools = _messages.MessageField('WorkerPool', 16, repeated=True)
+  workerRegion = _messages.StringField(17)
+  workerZone = _messages.StringField(18)
 
 
 class ExecutionStageState(_messages.Message):
@@ -4809,8 +4879,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -4832,7 +4902,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -4871,9 +4941,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -5759,6 +5829,57 @@ class SDKInfo(_messages.Message):
   version = _messages.StringField(2)
 
 
+class SdkBug(_messages.Message):
+  r"""A bug found in the Dataflow SDK.
+
+  Enums:
+    SeverityValueValuesEnum: Output only. How severe the SDK bug is.
+    TypeValueValuesEnum: Output only. Describes the impact of this SDK bug.
+
+  Fields:
+    severity: Output only. How severe the SDK bug is.
+    type: Output only. Describes the impact of this SDK bug.
+    uri: Output only. Link to more information on the bug.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Output only. How severe the SDK bug is.
+
+    Values:
+      SEVERITY_UNSPECIFIED: A bug of unknown severity.
+      NOTICE: A minor bug that that may reduce reliability or performance for
+        some jobs. Impact will be minimal or non-existent for most jobs.
+      WARNING: A bug that has some likelihood of causing performance
+        degradation, data loss, or job failures.
+      SEVERE: A bug with extremely significant impact. Jobs may fail
+        erroneously, performance may be severely degraded, and data loss may
+        be very likely.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    NOTICE = 1
+    WARNING = 2
+    SEVERE = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Describes the impact of this SDK bug.
+
+    Values:
+      TYPE_UNSPECIFIED: Unknown issue with this SDK.
+      GENERAL: Catch-all for SDK bugs that don't fit in the below categories.
+      PERFORMANCE: Using this version of the SDK may result in degraded
+        performance.
+      DATALOSS: Using this version of the SDK may cause data loss.
+    """
+    TYPE_UNSPECIFIED = 0
+    GENERAL = 1
+    PERFORMANCE = 2
+    DATALOSS = 3
+
+  severity = _messages.EnumField('SeverityValueValuesEnum', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  uri = _messages.StringField(3)
+
+
 class SdkHarnessContainerImage(_messages.Message):
   r"""Defines an SDK harness container for executing Dataflow pipelines.
 
@@ -5791,6 +5912,7 @@ class SdkVersion(_messages.Message):
     SdkSupportStatusValueValuesEnum: The support status for this SDK version.
 
   Fields:
+    bugs: Output only. Known bugs found in this SDK version.
     sdkSupportStatus: The support status for this SDK version.
     version: The version of the SDK used to run the job.
     versionDisplayName: A readable string describing the version of the SDK.
@@ -5815,9 +5937,10 @@ class SdkVersion(_messages.Message):
     DEPRECATED = 3
     UNSUPPORTED = 4
 
-  sdkSupportStatus = _messages.EnumField('SdkSupportStatusValueValuesEnum', 1)
-  version = _messages.StringField(2)
-  versionDisplayName = _messages.StringField(3)
+  bugs = _messages.MessageField('SdkBug', 1, repeated=True)
+  sdkSupportStatus = _messages.EnumField('SdkSupportStatusValueValuesEnum', 2)
+  version = _messages.StringField(3)
+  versionDisplayName = _messages.StringField(4)
 
 
 class SendDebugCaptureRequest(_messages.Message):
@@ -7849,6 +7972,8 @@ class WorkerMessage(_messages.Message):
       not be used here.
 
   Fields:
+    dataSamplingReport: Optional. Contains metrics related to go/dataflow-
+      data-sampling-telemetry.
     labels: Labels are used to group WorkerMessages. For example, a
       worker_message about a particular container might have the labels: {
       "JOB_ID": "2015-04-22", "WORKER_ID": "wordcount-vm-2015..."
@@ -7894,14 +8019,15 @@ class WorkerMessage(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  time = _messages.StringField(2)
-  workerHealthReport = _messages.MessageField('WorkerHealthReport', 3)
-  workerLifecycleEvent = _messages.MessageField('WorkerLifecycleEvent', 4)
-  workerMessageCode = _messages.MessageField('WorkerMessageCode', 5)
-  workerMetrics = _messages.MessageField('ResourceUtilizationReport', 6)
-  workerShutdownNotice = _messages.MessageField('WorkerShutdownNotice', 7)
-  workerThreadScalingReport = _messages.MessageField('WorkerThreadScalingReport', 8)
+  dataSamplingReport = _messages.MessageField('DataSamplingReport', 1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  time = _messages.StringField(3)
+  workerHealthReport = _messages.MessageField('WorkerHealthReport', 4)
+  workerLifecycleEvent = _messages.MessageField('WorkerLifecycleEvent', 5)
+  workerMessageCode = _messages.MessageField('WorkerMessageCode', 6)
+  workerMetrics = _messages.MessageField('ResourceUtilizationReport', 7)
+  workerShutdownNotice = _messages.MessageField('WorkerShutdownNotice', 8)
+  workerThreadScalingReport = _messages.MessageField('WorkerThreadScalingReport', 9)
 
 
 class WorkerMessageCode(_messages.Message):

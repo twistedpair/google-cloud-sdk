@@ -913,24 +913,6 @@ class ListDashboardsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class ListLabelsRequest(_messages.Message):
-  r"""ListLabelsRequest holds all parameters of the Prometheus upstream API
-  for returning a list of label names.
-
-  Fields:
-    end: The end time to evaluate the query for. Either floating point UNIX
-      seconds or RFC3339 formatted timestamp.
-    match: A list of matchers encoded in the Prometheus label matcher format
-      to constrain the values to series that satisfy them.
-    start: The start time to evaluate the query for. Either floating point
-      UNIX seconds or RFC3339 formatted timestamp.
-  """
-
-  end = _messages.StringField(1)
-  match = _messages.StringField(2)
-  start = _messages.StringField(3)
-
-
 class ListMetricsScopesByMonitoredProjectResponse(_messages.Message):
   r"""Response for the ListMetricsScopesByMonitoredProject method.
 
@@ -1226,46 +1208,22 @@ class MonitoringProjectsLocationPrometheusApiV1LabelValuesRequest(_messages.Mess
   start = _messages.StringField(6)
 
 
-class MonitoringProjectsLocationPrometheusApiV1LabelsListRequest(_messages.Message):
-  r"""A MonitoringProjectsLocationPrometheusApiV1LabelsListRequest object.
-
-  Fields:
-    end: The end time to evaluate the query for. Either floating point UNIX
-      seconds or RFC3339 formatted timestamp.
-    location: Location of the resource information. Has to be "global" now.
-    match: A list of matchers encoded in the Prometheus label matcher format
-      to constrain the values to series that satisfy them.
-    name: The workspace on which to execute the request. It is not part of the
-      open source API but used as a request path prefix to distinguish
-      different virtual Prometheus instances of Google Prometheus Engine. The
-      format is: projects/PROJECT_ID_OR_NUMBER.
-    start: The start time to evaluate the query for. Either floating point
-      UNIX seconds or RFC3339 formatted timestamp.
-  """
-
-  end = _messages.StringField(1)
-  location = _messages.StringField(2, required=True)
-  match = _messages.StringField(3)
-  name = _messages.StringField(4, required=True)
-  start = _messages.StringField(5)
-
-
 class MonitoringProjectsLocationPrometheusApiV1LabelsRequest(_messages.Message):
   r"""A MonitoringProjectsLocationPrometheusApiV1LabelsRequest object.
 
   Fields:
-    listLabelsRequest: A ListLabelsRequest resource to be passed as the
-      request body.
     location: Location of the resource information. Has to be "global" now.
     name: The workspace on which to execute the request. It is not part of the
       open source API but used as a request path prefix to distinguish
       different virtual Prometheus instances of Google Prometheus Engine. The
       format is: projects/PROJECT_ID_OR_NUMBER.
+    queryLabelsRequest: A QueryLabelsRequest resource to be passed as the
+      request body.
   """
 
-  listLabelsRequest = _messages.MessageField('ListLabelsRequest', 1)
-  location = _messages.StringField(2, required=True)
-  name = _messages.StringField(3, required=True)
+  location = _messages.StringField(1, required=True)
+  name = _messages.StringField(2, required=True)
+  queryLabelsRequest = _messages.MessageField('QueryLabelsRequest', 3)
 
 
 class MonitoringProjectsLocationPrometheusApiV1MetadataListRequest(_messages.Message):
@@ -1390,9 +1348,9 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as Delete, the
-      response is google.protobuf.Empty. If the original method is standard
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as Delete, the response
+      is google.protobuf.Empty. If the original method is standard
       Get/Create/Update, the response should be the resource. For other
       methods, the response should have the type XxxResponse, where Xxx is the
       original method name. For example, if the original method name is
@@ -1412,7 +1370,7 @@ class Operation(_messages.Message):
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the name should be a resource name ending with operations/{unique_id}.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as Delete, the response
       is google.protobuf.Empty. If the original method is standard
       Get/Create/Update, the response should be the resource. For other
@@ -1451,9 +1409,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as Delete, the response
-    is google.protobuf.Empty. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as Delete, the response is
+    google.protobuf.Empty. If the original method is standard
     Get/Create/Update, the response should be the resource. For other methods,
     the response should have the type XxxResponse, where Xxx is the original
     method name. For example, if the original method name is TakeSnapshot(),
@@ -1681,6 +1639,24 @@ class QueryInstantRequest(_messages.Message):
   timeout = _messages.StringField(3)
 
 
+class QueryLabelsRequest(_messages.Message):
+  r"""QueryLabelsRequest holds all parameters of the Prometheus upstream API
+  for returning a list of label names.
+
+  Fields:
+    end: The end time to evaluate the query for. Either floating point UNIX
+      seconds or RFC3339 formatted timestamp.
+    match: A list of matchers encoded in the Prometheus label matcher format
+      to constrain the values to series that satisfy them.
+    start: The start time to evaluate the query for. Either floating point
+      UNIX seconds or RFC3339 formatted timestamp.
+  """
+
+  end = _messages.StringField(1)
+  match = _messages.StringField(2)
+  start = _messages.StringField(3)
+
+
 class QueryRangeRequest(_messages.Message):
   r"""QueryRangeRequest holds all parameters of the Prometheus upstream range
   query API plus GCM specific parameters.
@@ -1774,6 +1750,8 @@ class Scorecard(_messages.Message):
   relates to one or more thresholds.
 
   Fields:
+    blankView: Will cause the Scorecard to show only the value, with no
+      indicator to its value relative to its thresholds.
     gaugeView: Will cause the scorecard to show a gauge chart.
     sparkChartView: Will cause the scorecard to show a spark chart.
     thresholds: The thresholds used to determine the state of the scorecard
@@ -1796,10 +1774,11 @@ class Scorecard(_messages.Message):
       Stackdriver metrics API.
   """
 
-  gaugeView = _messages.MessageField('GaugeView', 1)
-  sparkChartView = _messages.MessageField('SparkChartView', 2)
-  thresholds = _messages.MessageField('Threshold', 3, repeated=True)
-  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 4)
+  blankView = _messages.MessageField('Empty', 1)
+  gaugeView = _messages.MessageField('GaugeView', 2)
+  sparkChartView = _messages.MessageField('SparkChartView', 3)
+  thresholds = _messages.MessageField('Threshold', 4, repeated=True)
+  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 5)
 
 
 class SourceContext(_messages.Message):
@@ -2066,6 +2045,7 @@ class Text(_messages.Message):
   Fields:
     content: The text content to be displayed.
     format: How the text content is formatted.
+    style: How the text is styled
   """
 
   class FormatValueValuesEnum(_messages.Enum):
@@ -2082,6 +2062,106 @@ class Text(_messages.Message):
 
   content = _messages.StringField(1)
   format = _messages.EnumField('FormatValueValuesEnum', 2)
+  style = _messages.MessageField('TextStyle', 3)
+
+
+class TextStyle(_messages.Message):
+  r"""Properties that determine how the title and content are styled
+
+  Enums:
+    FontSizeValueValuesEnum: Font sizes for both the title and content. The
+      title will still be larger relative to the content.
+    HorizontalAlignmentValueValuesEnum: The horizontal alignment of both the
+      title and content
+    PaddingValueValuesEnum: The amount of padding around the widget
+    VerticalAlignmentValueValuesEnum: The vertical alignment of both the title
+      and content
+
+  Fields:
+    backgroundColor: The background color as a hex string. "#RRGGBB" or "#RGB"
+    fontSize: Font sizes for both the title and content. The title will still
+      be larger relative to the content.
+    horizontalAlignment: The horizontal alignment of both the title and
+      content
+    padding: The amount of padding around the widget
+    textColor: The text color as a hex string. "#RRGGBB" or "#RGB"
+    verticalAlignment: The vertical alignment of both the title and content
+  """
+
+  class FontSizeValueValuesEnum(_messages.Enum):
+    r"""Font sizes for both the title and content. The title will still be
+    larger relative to the content.
+
+    Values:
+      FONT_SIZE_UNSPECIFIED: No font size specified, will default to FS_LARGE
+      FS_EXTRA_SMALL: Extra small font size
+      FS_SMALL: Small font size
+      FS_MEDIUM: Medium font size
+      FS_LARGE: Large font size
+      FS_EXTRA_LARGE: Extra large font size
+    """
+    FONT_SIZE_UNSPECIFIED = 0
+    FS_EXTRA_SMALL = 1
+    FS_SMALL = 2
+    FS_MEDIUM = 3
+    FS_LARGE = 4
+    FS_EXTRA_LARGE = 5
+
+  class HorizontalAlignmentValueValuesEnum(_messages.Enum):
+    r"""The horizontal alignment of both the title and content
+
+    Values:
+      HORIZONTAL_ALIGNMENT_UNSPECIFIED: No horizontal alignment specified,
+        will default to H_LEFT
+      H_LEFT: Left-align
+      H_CENTER: Center-align
+      H_RIGHT: Right-align
+    """
+    HORIZONTAL_ALIGNMENT_UNSPECIFIED = 0
+    H_LEFT = 1
+    H_CENTER = 2
+    H_RIGHT = 3
+
+  class PaddingValueValuesEnum(_messages.Enum):
+    r"""The amount of padding around the widget
+
+    Values:
+      PADDING_SIZE_UNSPECIFIED: No padding size specified, will default to
+        P_EXTRA_SMALL
+      P_EXTRA_SMALL: Extra small padding
+      P_SMALL: Small padding
+      P_MEDIUM: Medium padding
+      P_LARGE: Large padding
+      P_EXTRA_LARGE: Extra large padding
+    """
+    PADDING_SIZE_UNSPECIFIED = 0
+    P_EXTRA_SMALL = 1
+    P_SMALL = 2
+    P_MEDIUM = 3
+    P_LARGE = 4
+    P_EXTRA_LARGE = 5
+
+  class VerticalAlignmentValueValuesEnum(_messages.Enum):
+    r"""The vertical alignment of both the title and content
+
+    Values:
+      VERTICAL_ALIGNMENT_UNSPECIFIED: No vertical alignment specified, will
+        default to V_TOP
+      V_TOP: Top-align
+      V_CENTER: Center-align
+      V_BOTTOM: Bottom-align
+    """
+    VERTICAL_ALIGNMENT_UNSPECIFIED = 0
+    V_TOP = 1
+    V_CENTER = 2
+    V_BOTTOM = 3
+
+  backgroundColor = _messages.StringField(1)
+  fontSize = _messages.EnumField('FontSizeValueValuesEnum', 2)
+  horizontalAlignment = _messages.EnumField('HorizontalAlignmentValueValuesEnum', 3)
+  padding = _messages.EnumField('PaddingValueValuesEnum', 4)
+  textColor = _messages.StringField(5)
+  verticalAlignment = _messages.EnumField('VerticalAlignmentValueValuesEnum', 6)
 
 
 class Threshold(_messages.Message):
@@ -2233,6 +2313,11 @@ class TimeSeriesQuery(_messages.Message):
   series data from the Stackdriver metrics API.
 
   Fields:
+    outputFullDuration: Optional. If set, Cloud Monitoring will treat the full
+      query duration as the alignment period so that there will be only 1
+      output value.*Note: This could override the configured alignment period
+      except for the cases where a series of data points are expected, like -
+      XyChart - Scorecard's spark chart
     prometheusQuery: A query used to fetch time series with PromQL.
     timeSeriesFilter: Filter parameters to fetch time series.
     timeSeriesFilterRatio: Parameters to fetch a ratio between two time series
@@ -2245,11 +2330,12 @@ class TimeSeriesQuery(_messages.Message):
       MetricDescriptor.
   """
 
-  prometheusQuery = _messages.StringField(1)
-  timeSeriesFilter = _messages.MessageField('TimeSeriesFilter', 2)
-  timeSeriesFilterRatio = _messages.MessageField('TimeSeriesFilterRatio', 3)
-  timeSeriesQueryLanguage = _messages.StringField(4)
-  unitOverride = _messages.StringField(5)
+  outputFullDuration = _messages.BooleanField(1)
+  prometheusQuery = _messages.StringField(2)
+  timeSeriesFilter = _messages.MessageField('TimeSeriesFilter', 3)
+  timeSeriesFilterRatio = _messages.MessageField('TimeSeriesFilterRatio', 4)
+  timeSeriesQueryLanguage = _messages.StringField(5)
+  unitOverride = _messages.StringField(6)
 
 
 class TimeSeriesTable(_messages.Message):

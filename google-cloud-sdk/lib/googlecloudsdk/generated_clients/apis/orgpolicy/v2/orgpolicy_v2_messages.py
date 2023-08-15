@@ -127,7 +127,7 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
   Fields:
     actionType: Allow or deny type.
     condition: Org policy condition/expression. For example:
-      `resource.instanceName.matches("[production|test]_.*_(\d)+")'` or,
+      `resource.instanceName.matches("[production|test]_.*_(\d)+")` or,
       `resource.management.auto_upgrade == true` The max length of the
       condition is 1000 characters.
     description: Detailed information about this custom policy constraint. The
@@ -243,12 +243,12 @@ class GoogleCloudOrgpolicyV2Policy(_messages.Message):
       the policy would have impacted the existing and future resources if it's
       enforced.
     name: Immutable. The resource name of the policy. Must be one of the
-      following forms, where constraint_name is the name of the constraint
+      following forms, where `constraint_name` is the name of the constraint
       which this policy configures: *
       `projects/{project_number}/policies/{constraint_name}` *
       `folders/{folder_id}/policies/{constraint_name}` *
       `organizations/{organization_id}/policies/{constraint_name}` For
-      example, "projects/123/policies/compute.disableSerialPortAccess". Note:
+      example, `projects/123/policies/compute.disableSerialPortAccess`. Note:
       `projects/{project_id}/policies/{constraint_name}` is also an acceptable
       name for API requests, but responses will return the name using the
       equivalent project number.
@@ -343,10 +343,10 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues(_messages.Message):
   prefix is used to denote specific values, and is required only if the value
   contains a ":". Values prefixed with "is:" are treated the same as values
   with no prefix. Ancestry subtrees must be in one of the following formats: -
-  "projects/", e.g. "projects/tokyo-rain-123" - "folders/", e.g.
-  "folders/1234" - "organizations/", e.g. "organizations/1234" The
-  `supports_under` field of the associated `Constraint` defines whether
-  ancestry prefixes can be used.
+  `projects/` (for example, `projects/tokyo-rain-123`) - `folders/` (for
+  example, `folders/1234`) - `organizations/` (for example,
+  `organizations/1234`) The `supports_under` field of the associated
+  `Constraint` defines whether ancestry prefixes can be used.
 
   Fields:
     allowedValues: List of values allowed at this resource.
@@ -454,8 +454,8 @@ class OrgpolicyFoldersPoliciesGetEffectivePolicyRequest(_messages.Message):
   r"""A OrgpolicyFoldersPoliciesGetEffectivePolicyRequest object.
 
   Fields:
-    name: Required. The effective policy to compute. See `Policy` for naming
-      rules.
+    name: Required. The effective policy to compute. See Policy for naming
+      requirements.
   """
 
   name = _messages.StringField(1, required=True)
@@ -465,7 +465,7 @@ class OrgpolicyFoldersPoliciesGetRequest(_messages.Message):
   r"""A OrgpolicyFoldersPoliciesGetRequest object.
 
   Fields:
-    name: Required. Resource name of the policy. See `Policy` for naming
+    name: Required. Resource name of the policy. See Policy for naming
       requirements.
   """
 
@@ -501,12 +501,12 @@ class OrgpolicyFoldersPoliciesPatchRequest(_messages.Message):
     googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
       be passed as the request body.
     name: Immutable. The resource name of the policy. Must be one of the
-      following forms, where constraint_name is the name of the constraint
+      following forms, where `constraint_name` is the name of the constraint
       which this policy configures: *
       `projects/{project_number}/policies/{constraint_name}` *
       `folders/{folder_id}/policies/{constraint_name}` *
       `organizations/{organization_id}/policies/{constraint_name}` For
-      example, "projects/123/policies/compute.disableSerialPortAccess". Note:
+      example, `projects/123/policies/compute.disableSerialPortAccess`. Note:
       `projects/{project_id}/policies/{constraint_name}` is also an acceptable
       name for API requests, but responses will return the name using the
       equivalent project number.
@@ -649,8 +649,8 @@ class OrgpolicyOrganizationsPoliciesGetEffectivePolicyRequest(_messages.Message)
   r"""A OrgpolicyOrganizationsPoliciesGetEffectivePolicyRequest object.
 
   Fields:
-    name: Required. The effective policy to compute. See `Policy` for naming
-      rules.
+    name: Required. The effective policy to compute. See Policy for naming
+      requirements.
   """
 
   name = _messages.StringField(1, required=True)
@@ -660,7 +660,7 @@ class OrgpolicyOrganizationsPoliciesGetRequest(_messages.Message):
   r"""A OrgpolicyOrganizationsPoliciesGetRequest object.
 
   Fields:
-    name: Required. Resource name of the policy. See `Policy` for naming
+    name: Required. Resource name of the policy. See Policy for naming
       requirements.
   """
 
@@ -696,12 +696,12 @@ class OrgpolicyOrganizationsPoliciesPatchRequest(_messages.Message):
     googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
       be passed as the request body.
     name: Immutable. The resource name of the policy. Must be one of the
-      following forms, where constraint_name is the name of the constraint
+      following forms, where `constraint_name` is the name of the constraint
       which this policy configures: *
       `projects/{project_number}/policies/{constraint_name}` *
       `folders/{folder_id}/policies/{constraint_name}` *
       `organizations/{organization_id}/policies/{constraint_name}` For
-      example, "projects/123/policies/compute.disableSerialPortAccess". Note:
+      example, `projects/123/policies/compute.disableSerialPortAccess`. Note:
       `projects/{project_id}/policies/{constraint_name}` is also an acceptable
       name for API requests, but responses will return the name using the
       equivalent project number.
@@ -767,8 +767,8 @@ class OrgpolicyProjectsPoliciesGetEffectivePolicyRequest(_messages.Message):
   r"""A OrgpolicyProjectsPoliciesGetEffectivePolicyRequest object.
 
   Fields:
-    name: Required. The effective policy to compute. See `Policy` for naming
-      rules.
+    name: Required. The effective policy to compute. See Policy for naming
+      requirements.
   """
 
   name = _messages.StringField(1, required=True)
@@ -778,7 +778,7 @@ class OrgpolicyProjectsPoliciesGetRequest(_messages.Message):
   r"""A OrgpolicyProjectsPoliciesGetRequest object.
 
   Fields:
-    name: Required. Resource name of the policy. See `Policy` for naming
+    name: Required. Resource name of the policy. See Policy for naming
       requirements.
   """
 
@@ -814,12 +814,12 @@ class OrgpolicyProjectsPoliciesPatchRequest(_messages.Message):
     googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
       be passed as the request body.
     name: Immutable. The resource name of the policy. Must be one of the
-      following forms, where constraint_name is the name of the constraint
+      following forms, where `constraint_name` is the name of the constraint
       which this policy configures: *
       `projects/{project_number}/policies/{constraint_name}` *
       `folders/{folder_id}/policies/{constraint_name}` *
       `organizations/{organization_id}/policies/{constraint_name}` For
-      example, "projects/123/policies/compute.disableSerialPortAccess". Note:
+      example, `projects/123/policies/compute.disableSerialPortAccess`. Note:
       `projects/{project_id}/policies/{constraint_name}` is also an acceptable
       name for API requests, but responses will return the name using the
       equivalent project number.

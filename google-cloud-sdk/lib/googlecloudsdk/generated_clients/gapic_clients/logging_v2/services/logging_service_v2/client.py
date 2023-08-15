@@ -79,7 +79,7 @@ class LoggingServiceV2ClientMeta(type):
 
 
 class LoggingServiceV2Client(metaclass=LoggingServiceV2ClientMeta):
-    """Service for ingesting and querying logs."""
+    """Service for storing and querying logs."""
 
     @staticmethod
     def _get_default_mtls_endpoint(api_endpoint):
@@ -1040,7 +1040,7 @@ class LoggingServiceV2Client(metaclass=LoggingServiceV2ClientMeta):
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> Iterable[logging.TailLogEntriesResponse]:
-        r"""Streaming read of log entries as they are ingested.
+        r"""Streaming read of log entries as they are received.
         Until the stream is terminated, it will continue reading
         logs.
 

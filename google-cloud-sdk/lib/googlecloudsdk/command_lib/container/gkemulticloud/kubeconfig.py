@@ -88,10 +88,8 @@ def GenerateContext(kind, project_id, location, cluster_id):
   """
   template = 'gke_{kind}_{project_id}_{location}_{cluster_id}'
   return template.format(
-      kind=kind,
-      project_id=project_id,
-      location=location,
-      cluster_id=cluster_id)
+      kind=kind, project_id=project_id, location=location, cluster_id=cluster_id
+  )
 
 
 def GenerateAuthProviderCmdArgs(kind, cluster_id, location, project):
@@ -106,17 +104,17 @@ def GenerateAuthProviderCmdArgs(kind, cluster_id, location, project):
   Returns:
     The command arguments for kubeconfig's authorization provider.
   """
-  template = ('container {kind} clusters print-access-token '
-              '{cluster_id} --project={project} --location={location} '
-              '--format=json --exec-credential')
+  template = (
+      'container {kind} clusters print-access-token '
+      '{cluster_id} --project={project} --location={location} '
+      '--format=json --exec-credential'
+  )
   return template.format(
-      kind=kind, cluster_id=cluster_id, location=location, project=project)
+      kind=kind, cluster_id=cluster_id, location=location, project=project
+  )
 
 
-def GenerateAttachedKubeConfig(cluster,
-                               cluster_id,
-                               context,
-                               cmd_path):
+def GenerateAttachedKubeConfig(cluster, cluster_id, context, cmd_path):
   """Generates a kubeconfig entry for an Anthos Multi-cloud attached cluster.
 
   Args:
@@ -128,25 +126,23 @@ def GenerateAttachedKubeConfig(cluster,
   kubeconfig = kubeconfig_util.Kubeconfig.Default()
   # Use the same key for context, cluster, and user.
   kubeconfig.contexts[context] = kubeconfig_util.Context(
-      context, context, context)
+      context, context, context
+  )
 
   _CheckPreqs()
-  _ConnectGatewayKubeconfig(kubeconfig, cluster, cluster_id, context,
-                            cmd_path)
+  _ConnectGatewayKubeconfig(kubeconfig, cluster, cluster_id, context, cmd_path)
 
   kubeconfig.SetCurrentContext(context)
   kubeconfig.SaveToFile()
   log.status.Print(
       'A new kubeconfig entry "{}" has been generated and set as the '
-      'current context.'.format(context))
+      'current context.'.format(context)
+  )
 
 
-def GenerateKubeconfig(cluster,
-                       cluster_id,
-                       context,
-                       cmd_path,
-                       cmd_args,
-                       private_ep=False):
+def GenerateKubeconfig(
+    cluster, cluster_id, context, cmd_path, cmd_args, private_ep=False
+):
   """Generates a kubeconfig entry for an Anthos Multi-cloud cluster.
 
   Args:
@@ -163,24 +159,28 @@ def GenerateKubeconfig(cluster,
   kubeconfig = kubeconfig_util.Kubeconfig.Default()
   # Use the same key for context, cluster, and user.
   kubeconfig.contexts[context] = kubeconfig_util.Context(
-      context, context, context)
+      context, context, context
+  )
 
   # Only default to use Connect Gateway for 1.21+.
   version = _GetSemver(cluster, cluster_id)
   if private_ep or version < semver.SemVer('1.21.0'):
     _CheckPreqs(private_endpoint=True)
-    _PrivateVPCKubeconfig(kubeconfig, cluster, cluster_id, context, cmd_path,
-                          cmd_args)
+    _PrivateVPCKubeconfig(
+        kubeconfig, cluster, cluster_id, context, cmd_path, cmd_args
+    )
   else:
     _CheckPreqs()
-    _ConnectGatewayKubeconfig(kubeconfig, cluster, cluster_id, context,
-                              cmd_path)
+    _ConnectGatewayKubeconfig(
+        kubeconfig, cluster, cluster_id, context, cmd_path
+    )
 
   kubeconfig.SetCurrentContext(context)
   kubeconfig.SaveToFile()
   log.status.Print(
       'A new kubeconfig entry "{}" has been generated and set as the '
-      'current context.'.format(context))
+      'current context.'.format(context)
+  )
 
 
 def _CheckPreqs(private_endpoint=False):
@@ -188,12 +188,14 @@ def _CheckPreqs(private_endpoint=False):
   util.CheckKubectlInstalled()
   if not private_endpoint:
     project_id = properties.VALUES.core.project.GetOrFail()
-    connect_gateway_util.CheckGatewayApiEnablement(project_id,
-                                                   _GetConnectGatewayEndpoint())
+    connect_gateway_util.CheckGatewayApiEnablement(
+        project_id, _GetConnectGatewayEndpoint()
+    )
 
 
-def _ConnectGatewayKubeconfig(kubeconfig, cluster, cluster_id, context,
-                              cmd_path):
+def _ConnectGatewayKubeconfig(
+    kubeconfig, cluster, cluster_id, context, cmd_path
+):
   """Generates the Connect Gateway kubeconfig entry.
 
   Args:
@@ -207,17 +209,20 @@ def _ConnectGatewayKubeconfig(kubeconfig, cluster, cluster_id, context,
       errors.MissingClusterField: cluster is missing required fields.
   """
   if cluster.fleet is None or cluster.fleet.membership is None:
-    raise errors.MissingClusterField(cluster_id, 'Fleet membership',
-                                     STILL_PROVISIONING_MSG)
-  server = 'https://{}/v1/{}'.format(_GetConnectGatewayEndpoint(),
-                                     cluster.fleet.membership)
+    raise errors.MissingClusterField(
+        cluster_id, 'Fleet membership', STILL_PROVISIONING_MSG
+    )
+  server = 'https://{}/v1/{}'.format(
+      _GetConnectGatewayEndpoint(), cluster.fleet.membership
+  )
   user_kwargs = {'auth_provider': 'gcp', 'auth_provider_cmd_path': cmd_path}
   kubeconfig.users[context] = kubeconfig_util.User(context, **user_kwargs)
   kubeconfig.clusters[context] = gwkubeconfig_util.Cluster(context, server)
 
 
-def _PrivateVPCKubeconfig(kubeconfig, cluster, cluster_id, context, cmd_path,
-                          cmd_args):
+def _PrivateVPCKubeconfig(
+    kubeconfig, cluster, cluster_id, context, cmd_path, cmd_args
+):
   """Generates the kubeconfig entry to connect using private VPC.
 
   Args:
@@ -238,10 +243,12 @@ def _PrivateVPCKubeconfig(kubeconfig, cluster, cluster_id, context, cmd_path,
   else:
     cluster_kwargs['ca_data'] = _GetCaData(cluster.clusterCaCertificate)
   if cluster.endpoint is None:
-    raise errors.MissingClusterField(cluster_id, 'endpoint',
-                                     STILL_PROVISIONING_MSG)
+    raise errors.MissingClusterField(
+        cluster_id, 'endpoint', STILL_PROVISIONING_MSG
+    )
   kubeconfig.clusters[context] = kubeconfig_util.Cluster(
-      context, 'https://{}'.format(cluster.endpoint), **cluster_kwargs)
+      context, 'https://{}'.format(cluster.endpoint), **cluster_kwargs
+  )
 
 
 def ValidateClusterVersion(cluster, cluster_id):
@@ -259,7 +266,8 @@ def ValidateClusterVersion(cluster, cluster_id):
   if version < semver.SemVer('1.20.0'):
     raise errors.UnsupportedClusterVersion(
         'The command get-credentials is supported in cluster version 1.20 '
-        'and newer. For older versions, use get-kubeconfig.')
+        'and newer. For older versions, use get-kubeconfig.'
+    )
 
 
 def _GetCaData(pem):
@@ -296,14 +304,17 @@ def _GetConnectGatewayEndpoint():
   endpoint = properties.VALUES.api_endpoint_overrides.gkemulticloud.Get()
   # Multicloud overrides prod endpoint at run time with the regionalized version
   # so we can't simply check that endpoint is not overridden.
-  if endpoint is None or endpoint.endswith(
-      'gkemulticloud.googleapis.com/') or endpoint.endswith(
-          'preprod-gkemulticloud.sandbox.googleapis.com/'):
+  if (
+      endpoint is None
+      or endpoint.endswith('gkemulticloud.googleapis.com/')
+      or endpoint.endswith('preprod-gkemulticloud.sandbox.googleapis.com/')
+  ):
     return 'connectgateway.googleapis.com'
   if 'staging-gkemulticloud' in endpoint:
     return 'staging-connectgateway.sandbox.googleapis.com'
   if endpoint.startswith('http://localhost') or endpoint.endswith(
-      'gkemulticloud.sandbox.googleapis.com/'):
+      'gkemulticloud.sandbox.googleapis.com/'
+  ):
     return 'autopush-connectgateway.sandbox.googleapis.com'
   raise errors.UnknownApiEndpointOverrideError('gkemulticloud')
 
@@ -315,8 +326,8 @@ def ExecCredential(expiration_timestamp=None, access_token=None):
       'apiVersion': 'client.authentication.k8s.io/v1',
       'status': {
           'expirationTimestamp': expiration_timestamp,
-          'token': access_token
-      }
+          'token': access_token,
+      },
   }
 
 
@@ -339,11 +350,13 @@ def _ExecAuthPlugin(cmd_path, cmd_args):
     # Check if command is in PATH and executable. Else, print critical(RED)
     # warning as kubectl will break if command is not executable.
     try:
-      subprocess.run([command, '--version'],
-                     timeout=5,
-                     check=False,
-                     stdout=subprocess.DEVNULL,
-                     stderr=subprocess.DEVNULL)
+      subprocess.run(
+          [command, '--version'],
+          timeout=5,
+          check=False,
+          stdout=subprocess.DEVNULL,
+          stderr=subprocess.DEVNULL,
+      )
       cmd_path = command
     except Exception:  # pylint: disable=broad-except
       # Provide SDK Full path if command is not in PATH. This helps work
@@ -358,11 +371,13 @@ def _ExecAuthPlugin(cmd_path, cmd_args):
           raise kubeconfig_util.Error(kubeconfig_util.SDK_BIN_PATH_NOT_FOUND)
         else:
           sdk_path_bin_name = os.path.join(sdk_bin_path, command)
-          subprocess.run([sdk_path_bin_name, '--version'],
-                         timeout=5,
-                         check=False,
-                         stdout=subprocess.DEVNULL,
-                         stderr=subprocess.DEVNULL)
+          subprocess.run(
+              [sdk_path_bin_name, '--version'],
+              timeout=5,
+              check=False,
+              stdout=subprocess.DEVNULL,
+              stderr=subprocess.DEVNULL,
+          )
           # update command if sdk_path_bin_name works
           cmd_path = sdk_path_bin_name
       except Exception:  # pylint: disable=broad-except
@@ -373,17 +388,16 @@ def _ExecAuthPlugin(cmd_path, cmd_args):
       'apiVersion': 'client.authentication.k8s.io/v1',
       'provideClusterInfo': True,
       'args': cmd_args.split(' '),
-      'interactiveMode': 'Never'
+      'interactiveMode': 'Never',
   }
 
   endpoint = properties.VALUES.api_endpoint_overrides.gkemulticloud.Get()
   if endpoint:
     cfg['env'] = [{
-        'name':
-            properties.VALUES.api_endpoint_overrides.gkemulticloud
-            .EnvironmentName(),
-        'value':
-            endpoint
+        'name': (
+            properties.VALUES.api_endpoint_overrides.gkemulticloud.EnvironmentName()
+        ),
+        'value': endpoint,
     }]
   return cfg
 
@@ -392,8 +406,10 @@ def CheckClusterHasNodePools(cluster_client, cluster_ref):
   """Checks and gives a warning if the cluster does not have a node pool."""
   try:
     if not cluster_client.HasNodePools(cluster_ref):
-      log.warning('Cluster does not have a node pool. To use Connect Gateway, '
-                  'ensure you have at least one Linux node pool running.')
+      log.warning(
+          'Cluster does not have a node pool. To use Connect Gateway, '
+          'ensure you have at least one Linux node pool running.'
+      )
   # pylint: disable=bare-except, this function is just a warning and should not
   # add new failures.
   except:

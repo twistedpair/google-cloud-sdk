@@ -180,3 +180,8 @@ def ClearFlag(args):
   del args
   return None
 
+
+def ClearAccessRestrictionAllowedServices(args):
+  """Return empty list to clear list type allowed services."""
+  del args
+  return []

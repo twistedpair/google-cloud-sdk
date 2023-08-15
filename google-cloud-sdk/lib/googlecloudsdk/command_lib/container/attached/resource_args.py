@@ -27,7 +27,8 @@ from googlecloudsdk.core import resources
 
 def AttachedClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='cluster', help_text='cluster of the {resource}.')
+      name='cluster', help_text='cluster of the {resource}.'
+  )
 
 
 def LocationAttributeConfig():
@@ -37,8 +38,10 @@ def LocationAttributeConfig():
       help_text='Google Cloud location for the {resource}.',
       fallthroughs=[
           deps.PropertyFallthrough(
-              properties.VALUES.container_attached.location),
-      ])
+              properties.VALUES.container_attached.location
+          ),
+      ],
+  )
 
 
 def GetAttachedClusterResourceSpec():
@@ -47,7 +50,8 @@ def GetAttachedClusterResourceSpec():
       resource_name='cluster',
       attachedClustersId=AttachedClusterAttributeConfig(),
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def GetLocationResourceSpec():
@@ -55,7 +59,8 @@ def GetLocationResourceSpec():
       'gkemulticloud.projects.locations',
       resource_name='location',
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def GetOperationResourceSpec():
@@ -63,7 +68,8 @@ def GetOperationResourceSpec():
       'gkemulticloud.projects.locations.operations',
       resource_name='operation',
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def AddAttachedClusterResourceArg(parser, verb, positional=True):
@@ -79,7 +85,8 @@ def AddAttachedClusterResourceArg(parser, verb, positional=True):
       name,
       GetAttachedClusterResourceSpec(),
       'cluster {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddLocationResourceArg(parser, verb):
@@ -93,19 +100,24 @@ def AddLocationResourceArg(parser, verb):
       '--location',
       GetLocationResourceSpec(),
       'Google Cloud location {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def ParseAttachedClusterResourceArg(args):
   return resources.REGISTRY.ParseRelativeName(
       args.CONCEPTS.cluster.Parse().RelativeName(),
-      collection='gkemulticloud.projects.locations.attachedClusters')
+      collection='gkemulticloud.projects.locations.attachedClusters',
+  )
 
 
 def FleetMembershipAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='fleet_membership',
-      help_text='attached cluster membership of the {resource}, in the form of projects/PROJECT/locations/global/memberships/MEMBERSHIP. '
+      help_text=(
+          'attached cluster membership of the {resource}, in the form of'
+          ' projects/PROJECT/locations/global/memberships/MEMBERSHIP. '
+      ),
   )
 
 
@@ -128,11 +140,13 @@ def AddFleetMembershipResourceArg(parser):
   concept_parsers.ConceptParser.ForResource(
       '--fleet-membership',
       GetFleetMembershipResourceSpec(),
-      'Membership of the registered cluster. Membership can be the membership ID or the full resource name.',
+      'Membership of the registered cluster. Membership can be the membership'
+      ' ID or the full resource name.',
       required=True,
       flag_name_overrides={
           'location': '--fleet-membership-location',
-      }).AddToParser(parser)
+      },
+  ).AddToParser(parser)
 
   parser.set_defaults(fleet_membership_location='global')
 
@@ -148,10 +162,12 @@ def AddOperationResourceArg(parser, verb):
       'operation_id',
       GetOperationResourceSpec(),
       'operation {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def ParseOperationResourceArg(args):
   return resources.REGISTRY.ParseRelativeName(
       args.CONCEPTS.operation_id.Parse().RelativeName(),
-      collection='gkemulticloud.projects.locations.operations')
+      collection='gkemulticloud.projects.locations.operations',
+  )

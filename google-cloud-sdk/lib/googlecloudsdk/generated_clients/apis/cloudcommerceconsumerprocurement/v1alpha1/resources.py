@@ -62,17 +62,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  BILLINGACCOUNTS_ORDERS_ORDERALLOCATIONS = (
-      'billingAccounts.orders.orderAllocations',
-      '{+name}',
-      {
-          '':
-              'billingAccounts/{billingAccountsId}/orders/{ordersId}/'
-              'orderAllocations/{orderAllocationsId}',
-      },
-      ['name'],
-      True
-  )
   BILLINGACCOUNTS_ORDERS_ORDERATTRIBUTIONS = (
       'billingAccounts.orders.orderAttributions',
       'billingAccounts/{billingAccountsId}/orders/{ordersId}/'

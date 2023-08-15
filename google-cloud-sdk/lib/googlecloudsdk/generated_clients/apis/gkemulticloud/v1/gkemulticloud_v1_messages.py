@@ -146,10 +146,11 @@ class GkemulticloudProjectsLocationsAttachedClustersPatchRequest(_messages.Messa
       details on Google Cloud Platform resource names.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
-      only include these fields from AttachedCluster: * `description`. *
-      `annotations`. * `platform_version`. * `authorization.admin_users`. *
-      `logging_config.component_config.enable_components`. *
-      `monitoring_config.managed_prometheus_config.enabled`.
+      only include these fields from AttachedCluster: * `annotations`. *
+      `authorization.admin_users`. * `binary_authorization.evaluation_mode`. *
+      `description`. * `logging_config.component_config.enable_components`. *
+      `monitoring_config.managed_prometheus_config.enabled`. *
+      `platform_version`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -280,7 +281,8 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
       * `config.iam_instance_profile`. * `config.labels`. * `config.tags`. *
       `config.autoscaling_metrics_collection`. *
       `config.autoscaling_metrics_collection.granularity`. *
-      `config.autoscaling_metrics_collection.metrics`.
+      `config.autoscaling_metrics_collection.metrics`. *
+      `config.instance_type`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """
@@ -416,7 +418,29 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       `projects//locations//awsClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
       details on Google Cloud Platform resource names.
-    updateMask: Required.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. The elements of the repeated paths field can
+      only include these fields from AwsCluster: * `description`. *
+      `annotations`. * `control_plane.version`. * `authorization.admin_users`.
+      * `binary_authorization.evaluation_mode`. *
+      `control_plane.aws_services_authentication.role_arn`. *
+      `control_plane.aws_services_authentication.role_session_name`. *
+      `control_plane.config_encryption.kms_key_arn`. *
+      `control_plane.instance_type`. * `control_plane.security_group_ids`. *
+      `control_plane.proxy_config`. * `control_plane.proxy_config.secret_arn`.
+      * `control_plane.proxy_config.secret_version`. *
+      `control_plane.root_volume.size_gib`. *
+      `control_plane.root_volume.volume_type`. *
+      `control_plane.root_volume.iops`. *
+      `control_plane.root_volume.throughput`. *
+      `control_plane.root_volume.kms_key_arn`. * `control_plane.ssh_config`. *
+      `control_plane.ssh_config.ec2_key_pair`. *
+      `control_plane.instance_placement.tenancy`. *
+      `control_plane.iam_instance_profile`. *
+      `logging_config.component_config.enable_components`. *
+      `control_plane.tags`. *
+      `monitoring_config.managed_prometheus_config.enabled`. *
+      `networking.per_node_pool_sg_rules_disabled`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -953,6 +977,8 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
       alphanumerics between.
     authorization: Optional. Configuration related to the cluster RBAC
       settings.
+    binaryAuthorization: Optional. Binary Authorization configuration for this
+      cluster.
     clusterRegion: Output only. The region where this cluster runs. For EKS
       clusters, this is a AWS region. For AKS clusters, this is an Azure
       region.
@@ -1044,24 +1070,25 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   authorization = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClustersAuthorization', 2)
-  clusterRegion = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  distribution = _messages.StringField(6)
-  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterError', 7, repeated=True)
-  etag = _messages.StringField(8)
-  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 9)
-  kubernetesVersion = _messages.StringField(10)
-  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 11)
-  monitoringConfig = _messages.MessageField('GoogleCloudGkemulticloudV1MonitoringConfig', 12)
-  name = _messages.StringField(13)
-  oidcConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedOidcConfig', 14)
-  platformVersion = _messages.StringField(15)
-  reconciling = _messages.BooleanField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 20)
+  binaryAuthorization = _messages.MessageField('GoogleCloudGkemulticloudV1BinaryAuthorization', 3)
+  clusterRegion = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  description = _messages.StringField(6)
+  distribution = _messages.StringField(7)
+  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterError', 8, repeated=True)
+  etag = _messages.StringField(9)
+  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 10)
+  kubernetesVersion = _messages.StringField(11)
+  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 12)
+  monitoringConfig = _messages.MessageField('GoogleCloudGkemulticloudV1MonitoringConfig', 13)
+  name = _messages.StringField(14)
+  oidcConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedOidcConfig', 15)
+  platformVersion = _messages.StringField(16)
+  reconciling = _messages.BooleanField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 21)
 
 
 class GoogleCloudGkemulticloudV1AttachedClusterError(_messages.Message):
@@ -1072,6 +1099,16 @@ class GoogleCloudGkemulticloudV1AttachedClusterError(_messages.Message):
   """
 
   message = _messages.StringField(1)
+
+
+class GoogleCloudGkemulticloudV1AttachedClusterGroup(_messages.Message):
+  r"""Identities of a group-type subject for Attached clusters.
+
+  Fields:
+    group: Required. The name of the group, e.g. `my-group@domain.com`.
+  """
+
+  group = _messages.StringField(1)
 
 
 class GoogleCloudGkemulticloudV1AttachedClusterUser(_messages.Message):
@@ -1088,7 +1125,13 @@ class GoogleCloudGkemulticloudV1AttachedClustersAuthorization(_messages.Message)
   r"""Configuration related to the cluster RBAC settings.
 
   Fields:
-    adminUsers: Required. Users that can perform operations as a cluster
+    adminGroups: Optional. Groups of users that can perform operations as a
+      cluster admin. A managed ClusterRoleBinding will be created to grant the
+      `cluster-admin` ClusterRole to the groups. Up to ten admin groups can be
+      provided. For more info on RBAC, see
+      https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-
+      facing-roles
+    adminUsers: Optional. Users that can perform operations as a cluster
       admin. A managed ClusterRoleBinding will be created to grant the
       `cluster-admin` ClusterRole to the users. Up to ten admin users can be
       provided. For more info on RBAC, see
@@ -1096,7 +1139,8 @@ class GoogleCloudGkemulticloudV1AttachedClustersAuthorization(_messages.Message)
       facing-roles
   """
 
-  adminUsers = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterUser', 1, repeated=True)
+  adminGroups = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterGroup', 1, repeated=True)
+  adminUsers = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterUser', 2, repeated=True)
 
 
 class GoogleCloudGkemulticloudV1AttachedOidcConfig(_messages.Message):
@@ -1150,7 +1194,13 @@ class GoogleCloudGkemulticloudV1AwsAuthorization(_messages.Message):
   r"""Configuration related to the cluster RBAC settings.
 
   Fields:
-    adminUsers: Required. Users that can perform operations as a cluster
+    adminGroups: Optional. Groups of users that can perform operations as a
+      cluster admin. A managed ClusterRoleBinding will be created to grant the
+      `cluster-admin` ClusterRole to the groups. Up to ten admin groups can be
+      provided. For more info on RBAC, see
+      https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-
+      facing-roles
+    adminUsers: Optional. Users that can perform operations as a cluster
       admin. A managed ClusterRoleBinding will be created to grant the
       `cluster-admin` ClusterRole to the users. Up to ten admin users can be
       provided. For more info on RBAC, see
@@ -1158,7 +1208,8 @@ class GoogleCloudGkemulticloudV1AwsAuthorization(_messages.Message):
       facing-roles
   """
 
-  adminUsers = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterUser', 1, repeated=True)
+  adminGroups = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterGroup', 1, repeated=True)
+  adminUsers = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterUser', 2, repeated=True)
 
 
 class GoogleCloudGkemulticloudV1AwsAutoscalingGroupMetricsCollection(_messages.Message):
@@ -1207,6 +1258,8 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
       Cloud region supports a subset of nearby AWS regions. You can call
       GetAwsServerConfig to list all supported AWS regions within a given
       Google Cloud region.
+    binaryAuthorization: Optional. Binary Authorization configuration for this
+      cluster.
     clusterCaCertificate: Output only. PEM encoded x509 certificate of the
       cluster root of trust.
     controlPlane: Required. Configuration related to the cluster control
@@ -1295,23 +1348,24 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   authorization = _messages.MessageField('GoogleCloudGkemulticloudV1AwsAuthorization', 2)
   awsRegion = _messages.StringField(3)
-  clusterCaCertificate = _messages.StringField(4)
-  controlPlane = _messages.MessageField('GoogleCloudGkemulticloudV1AwsControlPlane', 5)
-  createTime = _messages.StringField(6)
-  description = _messages.StringField(7)
-  endpoint = _messages.StringField(8)
-  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterError', 9, repeated=True)
-  etag = _messages.StringField(10)
-  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 11)
-  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 12)
-  monitoringConfig = _messages.MessageField('GoogleCloudGkemulticloudV1MonitoringConfig', 13)
-  name = _messages.StringField(14)
-  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterNetworking', 15)
-  reconciling = _messages.BooleanField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 20)
+  binaryAuthorization = _messages.MessageField('GoogleCloudGkemulticloudV1BinaryAuthorization', 4)
+  clusterCaCertificate = _messages.StringField(5)
+  controlPlane = _messages.MessageField('GoogleCloudGkemulticloudV1AwsControlPlane', 6)
+  createTime = _messages.StringField(7)
+  description = _messages.StringField(8)
+  endpoint = _messages.StringField(9)
+  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterError', 10, repeated=True)
+  etag = _messages.StringField(11)
+  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 12)
+  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 13)
+  monitoringConfig = _messages.MessageField('GoogleCloudGkemulticloudV1MonitoringConfig', 14)
+  name = _messages.StringField(15)
+  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterNetworking', 16)
+  reconciling = _messages.BooleanField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 21)
 
 
 class GoogleCloudGkemulticloudV1AwsClusterError(_messages.Message):
@@ -1322,6 +1376,16 @@ class GoogleCloudGkemulticloudV1AwsClusterError(_messages.Message):
   """
 
   message = _messages.StringField(1)
+
+
+class GoogleCloudGkemulticloudV1AwsClusterGroup(_messages.Message):
+  r"""Identities of a group-type subject for AWS clusters.
+
+  Fields:
+    group: Required. The name of the group, e.g. `my-group@domain.com`.
+  """
+
+  group = _messages.StringField(1)
 
 
 class GoogleCloudGkemulticloudV1AwsClusterNetworking(_messages.Message):
@@ -1955,7 +2019,13 @@ class GoogleCloudGkemulticloudV1AzureAuthorization(_messages.Message):
   r"""Configuration related to the cluster RBAC settings.
 
   Fields:
-    adminUsers: Required. Users that can perform operations as a cluster
+    adminGroups: Optional. Groups of users that can perform operations as a
+      cluster admin. A managed ClusterRoleBinding will be created to grant the
+      `cluster-admin` ClusterRole to the groups. Up to ten admin groups can be
+      provided. For more info on RBAC, see
+      https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-
+      facing-roles
+    adminUsers: Optional. Users that can perform operations as a cluster
       admin. A managed ClusterRoleBinding will be created to grant the
       `cluster-admin` ClusterRole to the users. Up to ten admin users can be
       provided. For more info on RBAC, see
@@ -1963,7 +2033,8 @@ class GoogleCloudGkemulticloudV1AzureAuthorization(_messages.Message):
       facing-roles
   """
 
-  adminUsers = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterUser', 1, repeated=True)
+  adminGroups = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterGroup', 1, repeated=True)
+  adminUsers = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterUser', 2, repeated=True)
 
 
 class GoogleCloudGkemulticloudV1AzureClient(_messages.Message):
@@ -2213,6 +2284,16 @@ class GoogleCloudGkemulticloudV1AzureClusterError(_messages.Message):
   """
 
   message = _messages.StringField(1)
+
+
+class GoogleCloudGkemulticloudV1AzureClusterGroup(_messages.Message):
+  r"""Identities of a group-type subject for Azure clusters.
+
+  Fields:
+    group: Required. The name of the group, e.g. `my-group@domain.com`.
+  """
+
+  group = _messages.StringField(1)
 
 
 class GoogleCloudGkemulticloudV1AzureClusterNetworking(_messages.Message):
@@ -2804,6 +2885,35 @@ class GoogleCloudGkemulticloudV1AzureSshConfig(_messages.Message):
   authorizedKey = _messages.StringField(1)
 
 
+class GoogleCloudGkemulticloudV1BinaryAuthorization(_messages.Message):
+  r"""Configuration for Binary Authorization.
+
+  Enums:
+    EvaluationModeValueValuesEnum: Mode of operation for binauthz policy
+      evaluation. If unspecified, defaults to DISABLED.
+
+  Fields:
+    evaluationMode: Mode of operation for binauthz policy evaluation. If
+      unspecified, defaults to DISABLED.
+  """
+
+  class EvaluationModeValueValuesEnum(_messages.Enum):
+    r"""Mode of operation for binauthz policy evaluation. If unspecified,
+    defaults to DISABLED.
+
+    Values:
+      EVALUATION_MODE_UNSPECIFIED: Default value
+      DISABLED: Disable BinaryAuthorization
+      PROJECT_SINGLETON_POLICY_ENFORCE: Enforce Kubernetes admission requests
+        with BinaryAuthorization using the project's singleton policy.
+    """
+    EVALUATION_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    PROJECT_SINGLETON_POLICY_ENFORCE = 2
+
+  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 1)
+
+
 class GoogleCloudGkemulticloudV1Fleet(_messages.Message):
   r"""Fleet related configuration. Fleets are a Google Cloud concept for
   logically organizing clusters, letting you use and manage multi-cluster
@@ -3197,8 +3307,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -3220,7 +3330,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -3259,9 +3369,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is

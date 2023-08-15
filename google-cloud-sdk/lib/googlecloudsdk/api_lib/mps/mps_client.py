@@ -315,6 +315,28 @@ class MpsClient(object):
     except exceptions.Error as e:
       return e
 
+  def UpdateInstance(self, product, instance_resource,
+                     memory_gib, virtual_cpu_cores):
+    """Update an existing instance share resource."""
+    # pylint: disable=line-too-long
+    updated_fields = []
+    if memory_gib is not None:
+      updated_fields.append('memory_gib')
+    if virtual_cpu_cores is not None:
+      updated_fields.append('virtual_cpu_cores')
+
+    try:
+      if product == _PFORG:
+        instance_msg = self.messages.PowerInstance(
+            name=instance_resource.RelativeName(),
+            memoryGib=memory_gib,
+            virtualCpuCores=virtual_cpu_cores)
+        power_request = self.messages.MarketplacesolutionsProjectsLocationsPowerInstancesPatchRequest(
+            name=instance_resource.RelativeName(), powerInstance=instance_msg, updateMask=','.join(updated_fields))
+        return self.power_instances_service.Patch(power_request)
+    except exceptions.Error as e:
+      return e
+
   def AggregateListVolumes(self, project_resource, product, limit=None):
     """Make a series of List Volume requests."""
     _ValidateProduct(product)

@@ -10,6 +10,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'deploymentmanager'
@@ -179,6 +180,47 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
+
+
+class BulkInsertOperationStatus(_messages.Message):
+  r"""A BulkInsertOperationStatus object.
+
+  Enums:
+    StatusValueValuesEnum: [Output Only] Creation status of BulkInsert
+      operation - information if the flow is rolling forward or rolling back.
+
+  Fields:
+    createdVmCount: [Output Only] Count of VMs successfully created so far.
+    deletedVmCount: [Output Only] Count of VMs that got deleted during
+      rollback.
+    failedToCreateVmCount: [Output Only] Count of VMs that started creating
+      but encountered an error.
+    status: [Output Only] Creation status of BulkInsert operation -
+      information if the flow is rolling forward or rolling back.
+    targetVmCount: [Output Only] Count of VMs originally planned to be
+      created.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Creation status of BulkInsert operation - information if
+    the flow is rolling forward or rolling back.
+
+    Values:
+      STATUS_UNSPECIFIED: <no description>
+      CREATING: Rolling forward - creating VMs.
+      ROLLING_BACK: Rolling back - cleaning up after an error.
+      DONE: Done
+    """
+    STATUS_UNSPECIFIED = 0
+    CREATING = 1
+    ROLLING_BACK = 2
+    DONE = 3
+
+  createdVmCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  deletedVmCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  failedToCreateVmCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
+  targetVmCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class CollectionOverride(_messages.Message):
@@ -1551,6 +1593,48 @@ class InputMapping(_messages.Message):
   value = _messages.StringField(4)
 
 
+class InstancesBulkInsertOperationMetadata(_messages.Message):
+  r"""A InstancesBulkInsertOperationMetadata object.
+
+  Messages:
+    PerLocationStatusValue: Status information per location (location name is
+      key). Example key: zones/us-central1-a
+
+  Fields:
+    perLocationStatus: Status information per location (location name is key).
+      Example key: zones/us-central1-a
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PerLocationStatusValue(_messages.Message):
+    r"""Status information per location (location name is key). Example key:
+    zones/us-central1-a
+
+    Messages:
+      AdditionalProperty: An additional property for a PerLocationStatusValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        PerLocationStatusValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PerLocationStatusValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A BulkInsertOperationStatus attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('BulkInsertOperationStatus', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  perLocationStatus = _messages.MessageField('PerLocationStatusValue', 1)
+
+
 class Manifest(_messages.Message):
   r"""A Manifest object.
 
@@ -1606,7 +1690,7 @@ class Operation(_messages.Message):
   information, read Handling API responses. Operations can be global, regional
   or zonal. - For global operations, use the `globalOperations` resource. -
   For regional operations, use the `regionOperations` resource. - For zonal
-  operations, use the `zonalOperations` resource. For more information, read
+  operations, use the `zoneOperations` resource. For more information, read
   Global, Regional, and Zonal Resources.
 
   Enums:
@@ -1637,6 +1721,8 @@ class Operation(_messages.Message):
       is defined by the server.
     insertTime: [Output Only] The time that this operation was requested. This
       value is in RFC3339 text format.
+    instancesBulkInsertOperationMetadata: A
+      InstancesBulkInsertOperationMetadata attribute.
     kind: [Output Only] Type of the resource. Always `compute#operation` for
       Operation resources.
     name: [Output Only] Name of the operation.
@@ -1653,6 +1739,9 @@ class Operation(_messages.Message):
     region: [Output Only] The URL of the region where the operation resides.
       Only applicable when performing regional operations.
     selfLink: [Output Only] Server-defined URL for the resource.
+    setCommonInstanceMetadataOperationMetadata: [Output Only] If the operation
+      is for projects.setCommonInstanceMetadata, this field will contain
+      information on all underlying zonal actions and their state.
     startTime: [Output Only] The time that this operation was started by the
       server. This value is in RFC3339 text format.
     status: [Output Only] The status of the operation, which can be one of the
@@ -1665,7 +1754,8 @@ class Operation(_messages.Message):
       modifies. For operations related to creating a snapshot, this points to
       the persistent disk that the snapshot was created from.
     user: [Output Only] User who requested the operation, for example:
-      `user@example.com`.
+      `user@example.com` or `alice_smith_identifier
+      (global/workforcePools/example-com-us-employees)`.
     warnings: [Output Only] If warning messages are generated during
       processing of the operation, this field will be populated.
     zone: [Output Only] The URL of the zone where the operation resides. Only
@@ -1856,21 +1946,23 @@ class Operation(_messages.Message):
   httpErrorStatusCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(9)
-  kind = _messages.StringField(10, default='compute#operation')
-  name = _messages.StringField(11)
-  operationGroupId = _messages.StringField(12)
-  operationType = _messages.StringField(13)
-  progress = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  startTime = _messages.StringField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  statusMessage = _messages.StringField(19)
-  targetId = _messages.IntegerField(20, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(21)
-  user = _messages.StringField(22)
-  warnings = _messages.MessageField('WarningsValueListEntry', 23, repeated=True)
-  zone = _messages.StringField(24)
+  instancesBulkInsertOperationMetadata = _messages.MessageField('InstancesBulkInsertOperationMetadata', 10)
+  kind = _messages.StringField(11, default='compute#operation')
+  name = _messages.StringField(12)
+  operationGroupId = _messages.StringField(13)
+  operationType = _messages.StringField(14)
+  progress = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  setCommonInstanceMetadataOperationMetadata = _messages.MessageField('SetCommonInstanceMetadataOperationMetadata', 18)
+  startTime = _messages.StringField(19)
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
+  statusMessage = _messages.StringField(21)
+  targetId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(23)
+  user = _messages.StringField(24)
+  warnings = _messages.MessageField('WarningsValueListEntry', 25, repeated=True)
+  zone = _messages.StringField(26)
 
 
 class OperationsListResponse(_messages.Message):
@@ -1923,7 +2015,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -1931,15 +2023,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -2460,6 +2552,94 @@ class ServiceAccount(_messages.Message):
   email = _messages.StringField(1)
 
 
+class SetCommonInstanceMetadataOperationMetadata(_messages.Message):
+  r"""A SetCommonInstanceMetadataOperationMetadata object.
+
+  Messages:
+    PerLocationOperationsValue: [Output Only] Status information per location
+      (location name is key). Example key: zones/us-central1-a
+
+  Fields:
+    clientOperationId: [Output Only] The client operation id.
+    perLocationOperations: [Output Only] Status information per location
+      (location name is key). Example key: zones/us-central1-a
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PerLocationOperationsValue(_messages.Message):
+    r"""[Output Only] Status information per location (location name is key).
+    Example key: zones/us-central1-a
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        PerLocationOperationsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        PerLocationOperationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PerLocationOperationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A
+          SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clientOperationId = _messages.StringField(1)
+  perLocationOperations = _messages.MessageField('PerLocationOperationsValue', 2)
+
+
+class SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo(_messages.Message):
+  r"""A SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo
+  object.
+
+  Enums:
+    StateValueValuesEnum: [Output Only] Status of the action, which can be one
+      of the following: `PROPAGATING`, `PROPAGATED`, `ABANDONED`, `FAILED`, or
+      `DONE`.
+
+  Fields:
+    error: [Output Only] If state is `ABANDONED` or `FAILED`, this field is
+      populated.
+    state: [Output Only] Status of the action, which can be one of the
+      following: `PROPAGATING`, `PROPAGATED`, `ABANDONED`, `FAILED`, or
+      `DONE`.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Status of the action, which can be one of the following:
+    `PROPAGATING`, `PROPAGATED`, `ABANDONED`, `FAILED`, or `DONE`.
+
+    Values:
+      UNSPECIFIED: <no description>
+      PROPAGATING: Operation is not yet confirmed to have been created in the
+        location.
+      PROPAGATED: Operation is confirmed to be in the location.
+      ABANDONED: Operation not tracked in this location e.g. zone is marked as
+        DOWN.
+      FAILED: Operation is in an error state.
+      DONE: Operation has completed successfully.
+    """
+    UNSPECIFIED = 0
+    PROPAGATING = 1
+    PROPAGATED = 2
+    ABANDONED = 3
+    FAILED = 4
+    DONE = 5
+
+  error = _messages.MessageField('Status', 1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2521,6 +2701,57 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class Status(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
 
 
 class TargetConfiguration(_messages.Message):

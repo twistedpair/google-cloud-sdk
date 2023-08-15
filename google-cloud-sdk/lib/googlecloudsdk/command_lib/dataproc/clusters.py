@@ -169,6 +169,13 @@ def ArgsForClusterRef(
           'server-specified.'
       ),
   )
+  parser.add_argument(
+      '--secondary-worker-required-registration-fraction',
+      help=('The fraction of secondary worker nodes to successfully report '
+            'for cluster create/update success. Defaults to 0.0001.'),
+      type=float,
+      hidden=True,
+  )
 
   if alpha:
     parser.add_argument(
@@ -1316,6 +1323,7 @@ def GetClusterConfig(
     instance_flexibility_policy = GetInstanceFlexibilityPolicy(
         dataproc, args, alpha
     )
+    startup_config = GetStartupConfig(dataproc, args)
     cluster_config.secondaryWorkerConfig = (
         dataproc.messages.InstanceGroupConfig(
             numInstances=num_secondary_workers,
@@ -1332,6 +1340,7 @@ def GetClusterConfig(
                 dataproc, args.secondary_worker_type
             ),
             instanceFlexibilityPolicy=instance_flexibility_policy,
+            startupConfig=startup_config,
         )
     )
 
@@ -1595,6 +1604,23 @@ def GetInstanceFlexibilityPolicy(dataproc, args, alpha):
       provisioningModelMix=provisioning_model_mix,
   )
   return instance_flexibility_policy
+
+
+def GetStartupConfig(dataproc, args):
+  """Get startup config.
+
+  Args:
+    dataproc: Dataproc object that contains client, messages, and resources
+    args: arguments of the request
+
+  Returns:
+    startup_config: Startup config of the secondary worker group.
+  """
+  if args.secondary_worker_required_registration_fraction is None:
+    return None
+  return dataproc.messages.StartupConfig(
+      requiredRegistrationFraction=args.secondary_worker_required_registration_fraction
+  )
 
 
 def CreateCluster(

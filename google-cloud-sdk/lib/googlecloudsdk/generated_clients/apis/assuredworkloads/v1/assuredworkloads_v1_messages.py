@@ -409,6 +409,8 @@ class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
       business justification provided for violation exception. Format: https:/
       /console.cloud.google.com/logs/query;query={logName}{protoPayload.resour
       ceName}{protoPayload.methodName}{timeRange}{organization}
+    exceptionContexts: Output only. List of all the exception detail added for
+      the violation.
     name: Output only. Immutable. Name of the Violation. Format: organizations
       /{organization}/locations/{location}/workloads/{workload_id}/violations/
       {violations_id}
@@ -417,6 +419,8 @@ class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
       Format: projects/{project_number}/policies/{constraint_name}
       folders/{folder_id}/policies/{constraint_name}
       organizations/{organization_id}/policies/{constraint_name}
+    orgPolicyConstraint: Output only. Immutable. The org-policy-constraint
+      that was incorrectly changed, which resulted in this violation.
     remediation: Output only. Compliance violation remediation
     resolveTime: Output only. Time of the event which fixed the Violation. If
       the violation is ACTIVE this will be empty.
@@ -446,12 +450,30 @@ class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
   category = _messages.StringField(5)
   description = _messages.StringField(6)
   exceptionAuditLogLink = _messages.StringField(7)
-  name = _messages.StringField(8)
-  nonCompliantOrgPolicy = _messages.StringField(9)
-  remediation = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationRemediation', 10)
-  resolveTime = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
+  exceptionContexts = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationExceptionContext', 8, repeated=True)
+  name = _messages.StringField(9)
+  nonCompliantOrgPolicy = _messages.StringField(10)
+  orgPolicyConstraint = _messages.StringField(11)
+  remediation = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationRemediation', 12)
+  resolveTime = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  updateTime = _messages.StringField(15)
+
+
+class GoogleCloudAssuredworkloadsV1ViolationExceptionContext(_messages.Message):
+  r"""Violation exception detail. Next Id: 6
+
+  Fields:
+    acknowledgementTime: Timestamp when the violation was acknowledged.
+    comment: Business justification provided towards the acknowledgement of
+      the violation.
+    userName: Name of the user (or service account) who acknowledged the
+      violation.
+  """
+
+  acknowledgementTime = _messages.StringField(1)
+  comment = _messages.StringField(2)
+  userName = _messages.StringField(3)
 
 
 class GoogleCloudAssuredworkloadsV1ViolationRemediation(_messages.Message):
@@ -854,14 +876,17 @@ class GoogleCloudAssuredworkloadsV1WorkloadPartnerPermissions(_messages.Message)
   workload
 
   Fields:
+    assuredWorkloadsMonitoring: Optional. Allow partner to view violation
+      alerts.
     dataLogsViewer: Allow the partner to view inspectability logs and
       monitoring violations.
-    remediateFolderViolations: Allow partner to monitor folder and remediate
-      violations
+    serviceAccessApprover: Optional. Allow partner to view access approval
+      logs.
   """
 
-  dataLogsViewer = _messages.BooleanField(1)
-  remediateFolderViolations = _messages.BooleanField(2)
+  assuredWorkloadsMonitoring = _messages.BooleanField(1)
+  dataLogsViewer = _messages.BooleanField(2)
+  serviceAccessApprover = _messages.BooleanField(3)
 
 
 class GoogleCloudAssuredworkloadsV1WorkloadResourceInfo(_messages.Message):
@@ -1016,8 +1041,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1039,7 +1064,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1078,9 +1103,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is

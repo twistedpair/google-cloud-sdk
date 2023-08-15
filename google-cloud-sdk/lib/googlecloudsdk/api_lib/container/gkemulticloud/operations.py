@@ -48,9 +48,12 @@ class OperationsClient(client.ClientBase):
             message=message,
             detail_message_callback=poller.GetDetailMessage,
             aborted_message='Aborting wait for operation {}.\n'.format(
-                operation_ref)),
+                operation_ref
+            ),
+        ),
         wait_ceiling_ms=constants.MAX_LRO_POLL_INTERVAL_MS,
-        max_wait_ms=constants.MAX_LRO_WAIT_MS)
+        max_wait_ms=constants.MAX_LRO_WAIT_MS,
+    )
 
   def Cancel(self, operation_ref):
     """Cancels an ongoing LRO.
@@ -79,7 +82,8 @@ class _Poller(waiter.CloudOperationPollerNoResources):
     """See base class."""
     request_type = self.operation_service.GetRequestType('Get')
     operation = self.operation_service.Get(
-        request_type(name=operation_ref.RelativeName()))
+        request_type(name=operation_ref.RelativeName())
+    )
     if operation.metadata is not None:
       metadata = encoding.MessageToPyValue(operation.metadata)
       if 'statusDetail' in metadata:

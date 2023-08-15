@@ -798,6 +798,7 @@ class Environment(_messages.Message):
       lowercase letters, numbers, or hyphens, and cannot end with a hyphen.
     satisfiesPzs: Output only. Reserved for future use.
     state: The current state of the environment.
+    storageConfig: Optional. Storage configuration for this environment.
     updateTime: Output only. The time at which this environment was last
       modified.
     uuid: Output only. The UUID (Universally Unique IDentifier) associated
@@ -860,8 +861,9 @@ class Environment(_messages.Message):
   name = _messages.StringField(4)
   satisfiesPzs = _messages.BooleanField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
-  uuid = _messages.StringField(8)
+  storageConfig = _messages.MessageField('StorageConfig', 7)
+  updateTime = _messages.StringField(8)
+  uuid = _messages.StringField(9)
 
 
 class EnvironmentConfig(_messages.Message):
@@ -1313,7 +1315,8 @@ class NodeConfig(_messages.Message):
       case of overlap, IPs from this range will not be accessible in the
       user's VPC network. Cannot be updated. If not specified, the default
       value of '100.64.128.0/20' is used. This field is supported for Cloud
-      Composer environments in versions composer-2.50.*-airflow-*.*.*.
+      Composer environments in versions composer-3.*.*-airflow-*.*.* and
+      newer.
     composerNetworkAttachment: Optional. Network Attachment that Cloud
       Composer environment is connected to, which provides connectivity with a
       user's VPC network. Takes precedence over network and subnetwork
@@ -1323,7 +1326,7 @@ class NodeConfig(_messages.Message):
       disabled. Network attachment must be provided in format projects/{projec
       t}/regions/{region}/networkAttachments/{networkAttachment}. This field
       is supported for Cloud Composer environments in versions
-      composer-2.50.*-airflow-*.*.*.
+      composer-3.*.*-airflow-*.*.* and newer.
     diskSizeGb: Optional. The disk size in GB used for node VMs. Minimum size
       is 30GB. If unspecified, defaults to 100GB. Cannot be updated. This
       field is supported for Cloud Composer environments in versions
@@ -1432,8 +1435,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1455,7 +1458,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1494,9 +1497,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -1680,7 +1683,7 @@ class PrivateEnvironmentConfig(_messages.Message):
       `NodeConfig.composer_network_attachment` field are specified). If
       `false`, the builds also have access to the internet. This field is
       supported for Cloud Composer environments in versions
-      composer-2.50.*-airflow-*.*.* and newer.
+      composer-3.*.*-airflow-*.*.* and newer.
     enablePrivateEnvironment: Optional. If `true`, a Private IP Cloud Composer
       environment is created. If this field is set to true,
       `IPAllocationPolicy.use_ip_aliases` must be set to true for Cloud
@@ -1802,7 +1805,7 @@ class SoftwareConfig(_messages.Message):
     WebServerPluginsModeValueValuesEnum: Optional. Whether or not the web
       server uses custom plugins. If unspecified, the field defaults to
       `PLUGINS_ENABLED`. This field is supported for Cloud Composer
-      environments in versions composer-2.50.*-airflow-2.*.*.
+      environments in versions composer-3.*.*-airflow-*.*.* and newer.
 
   Messages:
     AirflowConfigOverridesValue: Optional. Apache Airflow configuration
@@ -1898,14 +1901,14 @@ class SoftwareConfig(_messages.Message):
     webServerPluginsMode: Optional. Whether or not the web server uses custom
       plugins. If unspecified, the field defaults to `PLUGINS_ENABLED`. This
       field is supported for Cloud Composer environments in versions
-      composer-2.50.*-airflow-2.*.*.
+      composer-3.*.*-airflow-*.*.* and newer.
   """
 
   class WebServerPluginsModeValueValuesEnum(_messages.Enum):
     r"""Optional. Whether or not the web server uses custom plugins. If
     unspecified, the field defaults to `PLUGINS_ENABLED`. This field is
     supported for Cloud Composer environments in versions
-    composer-2.50.*-airflow-2.*.*.
+    composer-3.*.*-airflow-*.*.* and newer.
 
     Values:
       WEB_SERVER_PLUGINS_MODE_UNSPECIFIED: Default mode.
@@ -2170,6 +2173,17 @@ class StopAirflowCommandResponse(_messages.Message):
   output = _messages.StringField(2, repeated=True)
 
 
+class StorageConfig(_messages.Message):
+  r"""The configuration for data storage in the environment.
+
+  Fields:
+    bucket: Optional. The name of the Cloud Storage bucket used by the
+      environment. No `gs://` prefix.
+  """
+
+  bucket = _messages.StringField(1)
+
+
 class TaskLogsRetentionConfig(_messages.Message):
   r"""The configuration setting for Task Logs.
 
@@ -2294,7 +2308,7 @@ class WorkloadsConfig(_messages.Message):
   Fields:
     dagProcessor: Optional. Resources used by Airflow DAG processors. This
       field is supported for Cloud Composer environments in versions
-      composer-2.50.*-airflow-*.*.*.
+      composer-3.*.*-airflow-*.*.* and newer.
     scheduler: Optional. Resources used by Airflow schedulers.
     triggerer: Optional. Resources used by Airflow triggerers.
     webServer: Optional. Resources used by Airflow web server.

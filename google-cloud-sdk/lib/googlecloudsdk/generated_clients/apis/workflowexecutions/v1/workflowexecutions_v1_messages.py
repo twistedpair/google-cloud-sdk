@@ -108,6 +108,8 @@ class Execution(_messages.Message):
       FAILED: The execution failed with an error.
       CANCELLED: The execution was stopped intentionally.
       UNAVAILABLE: Execution data is unavailable. See the `state_error` field.
+      QUEUED: Request has been placed in the backlog for processing at a later
+        time.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -115,6 +117,7 @@ class Execution(_messages.Message):
     FAILED = 3
     CANCELLED = 4
     UNAVAILABLE = 5
+    QUEUED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

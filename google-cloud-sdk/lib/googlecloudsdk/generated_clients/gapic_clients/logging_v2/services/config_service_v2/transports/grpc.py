@@ -509,7 +509,7 @@ class ConfigServiceV2GrpcTransport(ConfigServiceV2Transport):
             logging_config.LogView]:
         r"""Return a callable for the get view method over gRPC.
 
-        Gets a view on a log bucket..
+        Gets a view on a log bucket.
 
         Returns:
             Callable[[~.GetViewRequest],
@@ -674,10 +674,10 @@ class ConfigServiceV2GrpcTransport(ConfigServiceV2Transport):
         r"""Return a callable for the create sink method over gRPC.
 
         Creates a sink that exports specified log entries to a
-        destination. The export of newly-ingested log entries begins
-        immediately, unless the sink's ``writer_identity`` is not
-        permitted to write to the destination. A sink can export log
-        entries only from the resource owning the sink.
+        destination. The export begins upon ingress, unless the sink's
+        ``writer_identity`` is not permitted to write to the
+        destination. A sink can export log entries only from the
+        resource owning the sink.
 
         Returns:
             Callable[[~.CreateSinkRequest],

@@ -186,6 +186,10 @@ class Cluster(_messages.Message):
 class ClusterNetworking(_messages.Message):
   r"""Cluster-wide networking configuration.
 
+  Enums:
+    NetworkTypeValueValuesEnum: Output only. IP addressing type of this
+      cluster i.e. SINGLESTACK_V4 vs DUALSTACK_V4_V6
+
   Fields:
     clusterIpv4CidrBlocks: Required. All pods in the cluster are assigned an
       RFC1918 IPv4 address from these blocks. Only a single block is
@@ -194,6 +198,8 @@ class ClusterNetworking(_messages.Message):
       and all pods in the cluster are assigned an IPv6 address from these
       blocks alongside from an IPv4 address. Only a single block is supported.
       This field cannot be changed after creation.
+    networkType: Output only. IP addressing type of this cluster i.e.
+      SINGLESTACK_V4 vs DUALSTACK_V4_V6
     servicesIpv4CidrBlocks: Required. All services in the cluster are assigned
       an RFC1918 IPv4 address from these blocks. Only a single block is
       supported. This field cannot be changed after creation.
@@ -203,10 +209,24 @@ class ClusterNetworking(_messages.Message):
       supported. This field cannot be changed after creation.
   """
 
+  class NetworkTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. IP addressing type of this cluster i.e. SINGLESTACK_V4 vs
+    DUALSTACK_V4_V6
+
+    Values:
+      NETWORK_TYPE_UNSPECIFIED: Unknown cluster type
+      SINGLESTACK_V4: SingleStack v4 address only cluster
+      DUALSTACK_V4_V6: DualStack cluster - support v4 and v6 address
+    """
+    NETWORK_TYPE_UNSPECIFIED = 0
+    SINGLESTACK_V4 = 1
+    DUALSTACK_V4_V6 = 2
+
   clusterIpv4CidrBlocks = _messages.StringField(1, repeated=True)
   clusterIpv6CidrBlocks = _messages.StringField(2, repeated=True)
-  servicesIpv4CidrBlocks = _messages.StringField(3, repeated=True)
-  servicesIpv6CidrBlocks = _messages.StringField(4, repeated=True)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 3)
+  servicesIpv4CidrBlocks = _messages.StringField(4, repeated=True)
+  servicesIpv6CidrBlocks = _messages.StringField(5, repeated=True)
 
 
 class ClusterUser(_messages.Message):
@@ -1314,8 +1334,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1337,7 +1357,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1376,9 +1396,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -1800,11 +1820,58 @@ class VpnConnection(_messages.Message):
 class ZoneMetadata(_messages.Message):
   r"""A Google Distributed Cloud Edge zone where edge machines are located.
 
+  Messages:
+    RackTypesValue: The map keyed by rack name and has value of RackType.
+
   Fields:
     quota: Quota for resources in this zone.
+    rackTypes: The map keyed by rack name and has value of RackType.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RackTypesValue(_messages.Message):
+    r"""The map keyed by rack name and has value of RackType.
+
+    Messages:
+      AdditionalProperty: An additional property for a RackTypesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type RackTypesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RackTypesValue object.
+
+      Enums:
+        ValueValueValuesEnum:
+
+      Fields:
+        key: Name of the additional property.
+        value: A ValueValueValuesEnum attribute.
+      """
+
+      class ValueValueValuesEnum(_messages.Enum):
+        r"""ValueValueValuesEnum enum type.
+
+        Values:
+          RACK_TYPE_UNSPECIFIED: Unspecified rack type, single rack also
+            belongs to this type.
+          BASE: Base rack type, a pair of two modified Config-1 racks
+            containing Aggregation switches.
+          EXPANSION: Expansion rack type, also known as standalone racks,
+            added by customers on demand.
+        """
+        RACK_TYPE_UNSPECIFIED = 0
+        BASE = 1
+        EXPANSION = 2
+
+      key = _messages.StringField(1)
+      value = _messages.EnumField('ValueValueValuesEnum', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   quota = _messages.MessageField('Quota', 1, repeated=True)
+  rackTypes = _messages.MessageField('RackTypesValue', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -38,31 +38,39 @@ class ClientBase(object):
     kwargs = {
         'project': flags.GetFleetProject(args),
     }
-    return self._messages.GoogleCloudGkemulticloudV1Fleet(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1Fleet(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _MaxPodsConstraint(self, args):
     kwargs = {'maxPodsPerNode': flags.GetMaxPodsPerNode(args)}
-    return self._messages.GoogleCloudGkemulticloudV1MaxPodsConstraint(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1MaxPodsConstraint(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _Labels(self, args, parent_type):
     labels = flags.GetNodeLabels(args)
     if not labels:
       return None
     label_type = parent_type.LabelsValue.AdditionalProperty
-    return parent_type.LabelsValue(additionalProperties=[
-        label_type(key=k, value=v) for k, v in labels.items()
-    ])
+    return parent_type.LabelsValue(
+        additionalProperties=[
+            label_type(key=k, value=v) for k, v in labels.items()
+        ]
+    )
 
   def _Tags(self, args, parent_type):
     tags = flags.GetTags(args)
     if not tags:
       return None
     tag_type = parent_type.TagsValue.AdditionalProperty
-    return parent_type.TagsValue(additionalProperties=[
-        tag_type(key=k, value=v) for k, v in tags.items()
-    ])
+    return parent_type.TagsValue(
+        additionalProperties=[tag_type(key=k, value=v) for k, v in tags.items()]
+    )
 
   def _Annotations(self, args, parent_type):
     """Parses the annotations from the args.
@@ -78,9 +86,19 @@ class ClientBase(object):
     if not annotations:
       return None
     annotation_type = parent_type.AnnotationsValue.AdditionalProperty
-    return parent_type.AnnotationsValue(additionalProperties=[
-        annotation_type(key=k, value=v) for k, v in annotations.items()
-    ])
+    return parent_type.AnnotationsValue(
+        additionalProperties=[
+            annotation_type(key=k, value=v) for k, v in annotations.items()
+        ]
+    )
+
+  def _BinaryAuthorization(self, args):
+    evaluation_mode = flags.GetBinauthzEvaluationMode(args)
+    if not evaluation_mode:
+      return None
+    return self._messages.GoogleCloudGkemulticloudV1BinaryAuthorization(
+        evaluationMode=evaluation_mode
+    )
 
   def List(self, parent_ref, page_size=None, limit=None, parent_field='parent'):
     """Lists gkemulticloud API resources.
@@ -99,7 +117,7 @@ class ClientBase(object):
     req = self._service.GetRequestType('List')(**kwargs)
     kwargs = {
         'field': self._list_result_field,
-        'batch_size_attribute': 'pageSize'
+        'batch_size_attribute': 'pageSize',
     }
     if limit:
       kwargs['limit'] = limit
@@ -118,11 +136,17 @@ class ClientBase(object):
     req = self._service.GetRequestType('Get')(name=resource_ref.RelativeName())
     return self._service.Get(req)
 
-  def Delete(self, resource_ref, validate_only=None, allow_missing=None,
-             ignore_errors=None):
+  def Delete(
+      self,
+      resource_ref,
+      validate_only=None,
+      allow_missing=None,
+      ignore_errors=None,
+  ):
     """Deletes a gkemulticloud API resource."""
     req = self._service.GetRequestType('Delete')(
-        name=resource_ref.RelativeName())
+        name=resource_ref.RelativeName()
+    )
     if validate_only:
       req.validateOnly = True
     if allow_missing:
@@ -134,7 +158,8 @@ class ClientBase(object):
   def HasNodePools(self, cluster_ref):
     """Checks if the cluster has a node pool."""
     req = self._service.GetRequestType('List')(
-        parent=cluster_ref.RelativeName(), pageSize=1)
+        parent=cluster_ref.RelativeName(), pageSize=1
+    )
     res = self._service.List(req)
     node_pools = getattr(res, self._list_result_field, None)
     return True if node_pools else False

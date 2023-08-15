@@ -42,7 +42,7 @@ from .client import LoggingServiceV2Client
 
 
 class LoggingServiceV2AsyncClient:
-    """Service for ingesting and querying logs."""
+    """Service for storing and querying logs."""
 
     _client: LoggingServiceV2Client
 
@@ -886,7 +886,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> Awaitable[AsyncIterable[logging.TailLogEntriesResponse]]:
-        r"""Streaming read of log entries as they are ingested.
+        r"""Streaming read of log entries as they are received.
         Until the stream is terminated, it will continue reading
         logs.
 

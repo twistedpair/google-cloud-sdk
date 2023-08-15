@@ -51,6 +51,27 @@ class AlertPolicyClient(object):
         name=policy_ref.RelativeName())
     return self._service.Get(request)
 
+  def List(self, project_ref, list_filter=None):
+    """List Monitoring Alert Policies.
+
+    "list_filter" must be a valid filter expression or an empty value. For more
+    information, see
+    https://cloud.google.com/monitoring/api/v3/sorting-and-filtering
+
+    Args:
+      project_ref: resources.Resource, Resource reference to the policy to be
+        updated.
+      list_filter: str, filter to be included in the ListAlertPOliciesRequest.
+
+    Returns:
+      Alert policies that match the given filter. If no filter is given, fetches
+      all policies from the target project.
+    """
+    request = self.messages.MonitoringProjectsAlertPoliciesListRequest(
+        name=project_ref.RelativeName(), filter=list_filter or ''
+    )
+    return self._service.List(request)
+
   def Update(self, policy_ref, policy, fields=None):
     """Updates a Monitoring Alert Policy.
 

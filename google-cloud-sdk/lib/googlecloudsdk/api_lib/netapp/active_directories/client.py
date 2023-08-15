@@ -19,11 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.netapp.constants import ACTIVE_DIRECTORY_RESOURCE
-from googlecloudsdk.api_lib.netapp.constants import OPERATIONS_COLLECTION
-from googlecloudsdk.api_lib.netapp.util import GetClientInstance
-from googlecloudsdk.api_lib.netapp.util import GetMessagesModule
-from googlecloudsdk.api_lib.netapp.util import VERSION_MAP
+from googlecloudsdk.api_lib.netapp import constants
+from googlecloudsdk.api_lib.netapp import util as netapp_api_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
@@ -38,9 +35,11 @@ class ActiveDirectoriesClient(object):
       self._adapter = AlphaActiveDirectoriesAdapter()
     elif release_track == base.ReleaseTrack.BETA:
       self._adapter = BetaActiveDirectoriesAdapter()
+    elif release_track == base.ReleaseTrack.GA:
+      self._adapter = ActiveDirectoriesAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
-          VERSION_MAP[release_track]))
+          netapp_api_util.VERSION_MAP[release_track]))
 
   @property
   def client(self):
@@ -155,7 +154,7 @@ class ActiveDirectoriesClient(object):
     if async_:
       return create_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        create_op.name, collection=OPERATIONS_COLLECTION)
+        create_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
   def ListActiveDirectories(self, location_ref, limit=None):
@@ -179,7 +178,7 @@ class ActiveDirectoriesClient(object):
     return list_pager.YieldFromList(
         self.client.projects_locations_activeDirectories,
         request,
-        field=ACTIVE_DIRECTORY_RESOURCE,
+        field=constants.ACTIVE_DIRECTORY_RESOURCE,
         limit=limit,
         batch_size_attribute='pageSize')
 
@@ -203,7 +202,7 @@ class ActiveDirectoriesClient(object):
     if async_:
       return delete_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        delete_op.name, collection=OPERATIONS_COLLECTION)
+        delete_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
   def ParseUpdatedActiveDirectoryConfig(self,
@@ -267,37 +266,43 @@ class ActiveDirectoriesClient(object):
     if async_:
       return update_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        update_op.name, collection=OPERATIONS_COLLECTION)
+        update_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
 
-class BetaActiveDirectoriesAdapter(object):
-  """Adapter for the Beta Cloud NetApp Files API for Active Directories."""
+class ActiveDirectoriesAdapter(object):
+  """Adapter for the Cloud NetApp Files API for Active Directories."""
 
   def __init__(self):
-    self.release_track = base.ReleaseTrack.BETA
-    self.client = GetClientInstance(release_track=self.release_track)
-    self.messages = GetMessagesModule(release_track=self.release_track)
+    self.release_track = base.ReleaseTrack.GA
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )
 
-  def ParseUpdatedActiveDirectoryConfig(self,
-                                        activedirectory_config,
-                                        domain=None,
-                                        site=None,
-                                        dns=None,
-                                        net_bios_prefix=None,
-                                        organizational_unit=None,
-                                        aes_encryption=None,
-                                        username=None,
-                                        password=None,
-                                        backup_operators=None,
-                                        security_operators=None,
-                                        kdc_hostname=None,
-                                        kdc_ip=None,
-                                        nfs_users_with_ldap=None,
-                                        ldap_signing=None,
-                                        encrypt_dc_connections=None,
-                                        description=None,
-                                        labels=None):
+  def ParseUpdatedActiveDirectoryConfig(
+      self,
+      activedirectory_config,
+      domain=None,
+      site=None,
+      dns=None,
+      net_bios_prefix=None,
+      organizational_unit=None,
+      aes_encryption=None,
+      username=None,
+      password=None,
+      backup_operators=None,
+      security_operators=None,
+      kdc_hostname=None,
+      kdc_ip=None,
+      nfs_users_with_ldap=None,
+      ldap_signing=None,
+      encrypt_dc_connections=None,
+      description=None,
+      labels=None,
+  ):
     """Parses updates into an active directory config."""
     if domain is not None:
       activedirectory_config.domain = domain
@@ -348,12 +353,29 @@ class BetaActiveDirectoriesAdapter(object):
     return update_op
 
 
+class BetaActiveDirectoriesAdapter(ActiveDirectoriesAdapter):
+  """Adapter for the Beta Cloud NetApp Files API for Active Directories."""
+
+  def __init__(self):
+    super(BetaActiveDirectoriesAdapter, self).__init__()
+    self.release_track = base.ReleaseTrack.BETA
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )
+
+
 class AlphaActiveDirectoriesAdapter(BetaActiveDirectoriesAdapter):
   """Adapter for the Alpha Cloud NetApp Files API for Active Directories."""
 
   def __init__(self):
     super(AlphaActiveDirectoriesAdapter, self).__init__()
     self.release_track = base.ReleaseTrack.ALPHA
-    self.client = GetClientInstance(release_track=self.release_track)
-    self.messages = GetMessagesModule(release_track=self.release_track)
-
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )

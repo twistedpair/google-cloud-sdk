@@ -61,6 +61,7 @@ class Cluster(_messages.Message):
       managed by GEC.
     clusterCaCertificate: Output only. The PEM-encoded public certificate of
       the cluster's CA.
+    controlPlane: Optional. The configuration of the cluster control plane.
     controlPlaneEncryption: Optional. Remote control plane disk encryption
       options. This field is only used when enabling CMEK support.
     controlPlaneVersion: Output only. The control plane release version
@@ -70,6 +71,8 @@ class Cluster(_messages.Message):
       in this cluster. If unspecified, the Kubernetes default value will be
       used.
     endpoint: Output only. The IP address of the Kubernetes API server.
+    externalLoadBalancerIpv4AddressPools: Optional. Address pools for cluster
+      data plane external load balancing.
     fleet: Required. Fleet configuration.
     labels: Labels associated with this resource.
     maintenancePolicy: Optional. Cluster-wide maintenance policy
@@ -80,6 +83,7 @@ class Cluster(_messages.Message):
       nodes. This field can be empty if the cluster does not have any worker
       nodes.
     port: Output only. The port number of the Kubernetes API server.
+    systemAddonsConfig: Optional. The configuration of the system add-ons.
     updateTime: Output only. The time when the cluster was last updated.
   """
 
@@ -109,19 +113,22 @@ class Cluster(_messages.Message):
 
   authorization = _messages.MessageField('Authorization', 1)
   clusterCaCertificate = _messages.StringField(2)
-  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 3)
-  controlPlaneVersion = _messages.StringField(4)
-  createTime = _messages.StringField(5)
-  defaultMaxPodsPerNode = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(7)
-  fleet = _messages.MessageField('Fleet', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 10)
-  name = _messages.StringField(11)
-  networking = _messages.MessageField('ClusterNetworking', 12)
-  nodeVersion = _messages.StringField(13)
-  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(15)
+  controlPlane = _messages.MessageField('ControlPlane', 3)
+  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 4)
+  controlPlaneVersion = _messages.StringField(5)
+  createTime = _messages.StringField(6)
+  defaultMaxPodsPerNode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(8)
+  externalLoadBalancerIpv4AddressPools = _messages.StringField(9, repeated=True)
+  fleet = _messages.MessageField('Fleet', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 12)
+  name = _messages.StringField(13)
+  networking = _messages.MessageField('ClusterNetworking', 14)
+  nodeVersion = _messages.StringField(15)
+  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 17)
+  updateTime = _messages.StringField(18)
 
 
 class ClusterNetworking(_messages.Message):
@@ -148,6 +155,23 @@ class ClusterUser(_messages.Message):
   """
 
   username = _messages.StringField(1)
+
+
+class ControlPlane(_messages.Message):
+  r"""Configuration of the cluster control plane.
+
+  Fields:
+    local: Local control plane configuration. Warning: Local control plane
+      clusters must be created in their own project. Local control plane
+      clusters cannot coexist in the same project with any other type of
+      clusters, including non-GDCE clusters. Mixing local control plane GDCE
+      clusters with any other type of clusters in the same project can result
+      in data loss.
+    remote: Remote control plane configuration.
+  """
+
+  local = _messages.MessageField('Local', 1)
+  remote = _messages.MessageField('Remote', 2)
 
 
 class ControlPlaneEncryption(_messages.Message):
@@ -620,6 +644,20 @@ class GenerateAccessTokenResponse(_messages.Message):
   expireTime = _messages.StringField(2)
 
 
+class Ingress(_messages.Message):
+  r"""Config for the Ingress add-on which allows customers to create an
+  Ingress object to manage external access to the servers in a cluster. The
+  add-on consists of istiod and istio-ingress.
+
+  Fields:
+    disabled: Optional. Whether Ingress is disabled.
+    ipv4Vip: Optional. Ingress VIP.
+  """
+
+  disabled = _messages.BooleanField(1)
+  ipv4Vip = _messages.StringField(2)
+
+
 class ListClustersResponse(_messages.Message):
   r"""List of clusters in a location.
 
@@ -700,6 +738,49 @@ class ListVpnConnectionsResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   unreachable = _messages.StringField(2, repeated=True)
   vpnConnections = _messages.MessageField('VpnConnection', 3, repeated=True)
+
+
+class Local(_messages.Message):
+  r"""Configuration specific to clusters with a control plane hosted locally.
+  Warning: Local control plane clusters must be created in their own project.
+  Local control plane clusters cannot coexist in the same project with any
+  other type of clusters, including non-GDCE clusters. Mixing local control
+  plane GDCE clusters with any other type of clusters in the same project can
+  result in data loss.
+
+  Enums:
+    SharedDeploymentPolicyValueValuesEnum: Policy configuration about how user
+      applications are deployed.
+
+  Fields:
+    machineFilter: Only machines matching this filter will be allowed to host
+      control plane nodes. The filtering language accepts strings like
+      "name=", and is documented here: [AIP-160](https://google.aip.dev/160).
+    nodeCount: The number of nodes to serve as replicas of the Control Plane.
+    nodeLocation: Name of the Google Distributed Cloud Edge zones where this
+      node pool will be created. For example: `us-central1-edge-customer-a`.
+    sharedDeploymentPolicy: Policy configuration about how user applications
+      are deployed.
+  """
+
+  class SharedDeploymentPolicyValueValuesEnum(_messages.Enum):
+    r"""Policy configuration about how user applications are deployed.
+
+    Values:
+      SHARED_DEPLOYMENT_POLICY_UNSPECIFIED: Unspecified.
+      ALLOWED: User applications can be deployed both on control plane and
+        worker nodes.
+      DISALLOWED: User applications can not be deployed on control plane nodes
+        and can only be deployed on worker nodes.
+    """
+    SHARED_DEPLOYMENT_POLICY_UNSPECIFIED = 0
+    ALLOWED = 1
+    DISALLOWED = 2
+
+  machineFilter = _messages.StringField(1)
+  nodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nodeLocation = _messages.StringField(3)
+  sharedDeploymentPolicy = _messages.EnumField('SharedDeploymentPolicyValueValuesEnum', 4)
 
 
 class LocalDiskEncryption(_messages.Message):
@@ -1023,8 +1104,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1046,7 +1127,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1085,9 +1166,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -1175,6 +1256,12 @@ class RecurringTimeWindow(_messages.Message):
 
   recurrence = _messages.StringField(1)
   window = _messages.MessageField('TimeWindow', 2)
+
+
+class Remote(_messages.Message):
+  r"""Configuration specific to clusters with a control plane hosted remotely.
+  """
+
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1289,6 +1376,16 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class SystemAddonsConfig(_messages.Message):
+  r"""Config that customers are allowed to define for GDCE system add-ons.
+
+  Fields:
+    ingress: Optional. Config for Ingress.
+  """
+
+  ingress = _messages.MessageField('Ingress', 1)
 
 
 class TimeWindow(_messages.Message):
@@ -1407,11 +1504,58 @@ class VpnConnection(_messages.Message):
 class ZoneMetadata(_messages.Message):
   r"""A Google Distributed Cloud Edge zone where edge machines are located.
 
+  Messages:
+    RackTypesValue: The map keyed by rack name and has value of RackType.
+
   Fields:
     quota: Quota for resources in this zone.
+    rackTypes: The map keyed by rack name and has value of RackType.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RackTypesValue(_messages.Message):
+    r"""The map keyed by rack name and has value of RackType.
+
+    Messages:
+      AdditionalProperty: An additional property for a RackTypesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type RackTypesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RackTypesValue object.
+
+      Enums:
+        ValueValueValuesEnum:
+
+      Fields:
+        key: Name of the additional property.
+        value: A ValueValueValuesEnum attribute.
+      """
+
+      class ValueValueValuesEnum(_messages.Enum):
+        r"""ValueValueValuesEnum enum type.
+
+        Values:
+          RACK_TYPE_UNSPECIFIED: Unspecified rack type, single rack also
+            belongs to this type.
+          BASE: Base rack type, a pair of two modified Config-1 racks
+            containing Aggregation switches.
+          EXPANSION: Expansion rack type, also known as standalone racks,
+            added by customers on demand.
+        """
+        RACK_TYPE_UNSPECIFIED = 0
+        BASE = 1
+        EXPANSION = 2
+
+      key = _messages.StringField(1)
+      value = _messages.EnumField('ValueValueValuesEnum', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   quota = _messages.MessageField('Quota', 1, repeated=True)
+  rackTypes = _messages.MessageField('RackTypesValue', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

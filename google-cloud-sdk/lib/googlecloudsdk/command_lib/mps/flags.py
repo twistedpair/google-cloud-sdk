@@ -59,22 +59,22 @@ def AddInstanceBootImageNameArgToParse(parser):
       required=True)
 
 
-def AddInstanceMemoryGibArgToParse(parser):
+def AddInstanceMemoryGibArgToParse(parser, required=True):
   """Adds memory size to create Instance."""
   parser.add_argument(
       '--memory-gib',
       help='The memory size used to create instance in Gib',
       type=int,
-      required=True)
+      required=required)
 
 
-def AddInstanceVirtualCpuCoresArgToParse(parser):
+def AddInstanceVirtualCpuCoresArgToParse(parser, required=True):
   """Adds virtual CPU Cores argument for Instance."""
   parser.add_argument(
       '--virtual-cpu-cores',
       help='Processor for the instance',
       type=float,
-      required=True)
+      required=required)
 
 
 def AddInstanceVirtualCpuTypeArgToParse(parser):
@@ -85,8 +85,7 @@ def AddInstanceVirtualCpuTypeArgToParse(parser):
           'UNSPECIFIED':
           'Unspecified',
           'DEDICATED':
-          'Dedicated processors. '
-          'Processor counts for this type must be whole numbers.',
+          'Dedicated processors. ',
           'UNCAPPED_SHARED':
           'Uncapped shared processors',
           'CAPPED_SHARED':

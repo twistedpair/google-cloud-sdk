@@ -50,11 +50,9 @@ TARGET_ID_FIELD = 'targetId'
 ID_FIELD = 'id'
 ADVANCE_ROLLOUT_RULE_FIELD = 'advanceRolloutRule'
 PROMOTE_RELEASE_RULE_FIELD = 'promoteReleaseRule'
-TO_TARGET_ID_FIELD = 'toTargetId'
-PHASE_FIELD = 'phase'
-PHASES_FIELD = 'phases'
-FROM_PHASES_FIELD = 'fromPhases'
-TO_PHASE_FIELD = 'toPhase'
+DESTINATION_TARGET_ID_FIELD = 'destinationTargetId'
+SOURCE_PHASES_FIELD = 'sourcePhases'
+DESTINATION_PHASE_FIELD = 'destinationPhase'
 TARGET_FIELD = 'target'
 METADATA_FIELDS = [ANNOTATIONS_FIELD, LABELS_FIELD]
 EXCLUDE_FIELDS = [
@@ -438,8 +436,8 @@ def SetAutomationRules(messages, automation, rules):
       promote_release = messages.PromoteReleaseRule(
           id=message.get(NAME_FIELD),
           wait=_WaitMinToSec(message.get(WAIT_FIELD)),
-          targetId=message.get(TO_TARGET_ID_FIELD),
-          phase=message.get(TO_PHASE_FIELD),
+          destinationTargetId=message.get(DESTINATION_TARGET_ID_FIELD),
+          destinationPhase=message.get(DESTINATION_PHASE_FIELD),
       )
       automation_rule.promoteReleaseRule = promote_release
     if rule.get(ADVANCE_ROLLOUT_FIELD):
@@ -447,7 +445,7 @@ def SetAutomationRules(messages, automation, rules):
       advance_rollout = messages.AdvanceRolloutRule(
           id=message.get(NAME_FIELD),
           wait=_WaitMinToSec(message.get(WAIT_FIELD)),
-          phases=message.get(FROM_PHASES_FIELD),
+          sourcePhases=message.get(SOURCE_PHASES_FIELD),
       )
       automation_rule.advanceRolloutRule = advance_rollout
     automation.rules.append(automation_rule)
@@ -483,10 +481,14 @@ def ExportAutomationRules(manifest, rules):
       promote = {}
       resource[PROMOTE_RELEASE_FIELD] = promote
       promote[NAME_FIELD] = getattr(message, ID_FIELD)
-      if getattr(message, TARGET_ID_FIELD):
-        promote[TO_TARGET_ID_FIELD] = getattr(message, TARGET_ID_FIELD)
-      if getattr(message, PHASE_FIELD):
-        promote[TO_PHASE_FIELD] = getattr(message, PHASE_FIELD)
+      if getattr(message, DESTINATION_TARGET_ID_FIELD):
+        promote[DESTINATION_TARGET_ID_FIELD] = getattr(
+            message, DESTINATION_TARGET_ID_FIELD
+        )
+      if getattr(message, DESTINATION_PHASE_FIELD):
+        promote[DESTINATION_PHASE_FIELD] = getattr(
+            message, DESTINATION_PHASE_FIELD
+        )
       if getattr(message, WAIT_FIELD):
         promote[WAIT_FIELD] = _WaitSecToMin(getattr(message, WAIT_FIELD))
     if getattr(rule, ADVANCE_ROLLOUT_RULE_FIELD):
@@ -494,8 +496,8 @@ def ExportAutomationRules(manifest, rules):
       resource[ADVANCE_ROLLOUT_FIELD] = advance
       message = getattr(rule, ADVANCE_ROLLOUT_RULE_FIELD)
       advance[NAME_FIELD] = getattr(message, ID_FIELD)
-      if getattr(message, PHASES_FIELD):
-        advance[FROM_PHASES_FIELD] = getattr(message, PHASES_FIELD)
+      if getattr(message, SOURCE_PHASES_FIELD):
+        advance[SOURCE_PHASES_FIELD] = getattr(message, SOURCE_PHASES_FIELD)
       if getattr(message, WAIT_FIELD):
         advance[WAIT_FIELD] = _WaitSecToMin(getattr(message, WAIT_FIELD))
     manifest[RULES_FIELD].append(resource)

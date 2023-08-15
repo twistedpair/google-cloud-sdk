@@ -18,21 +18,26 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import argparse
-from typing import Any, Dict
+from typing import Dict
 
+from apitools.base.protorpclite import messages
 from googlecloudsdk.api_lib.container.fleet import util as fleet_util
+from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.container.fleet.features import base
 from googlecloudsdk.command_lib.container.fleet.policycontroller import exceptions
 
 # Type alias for a mapping of membership paths to corresponding specs.
-SpecMapping = Dict[str, Any]
+SpecMapping = Dict[str, messages.Message]
 
 
 class PocoCommand:
   """A mixin for Policy Controller specific functionality."""
 
-  def path_specs(self, args: argparse.Namespace) -> SpecMapping:
+  def current_specs(self) -> SpecMapping:
+    """Fetches the current specs from the server."""
+    return self.hubclient.ToPyDict(self.GetFeature().membershipSpecs)
+
+  def path_specs(self, args: parser_extensions.Namespace) -> SpecMapping:
     """Retrieves memberships specied by the command that exist in the Feature.
 
     Args:
@@ -45,31 +50,34 @@ class PocoCommand:
       exceptions.DisabledMembershipError: If the membership is invalid or not
       enabled.
     """
-    # Get all specs for memberships
-    memberships = [
-        fleet_util.MembershipPartialName(p)
-        for p in base.ParseMembershipsPlural(
+    # These memberships have their project id in their full path.
+    # Shorten to a set of 'region/membership' paths.
+    memberships_paths = {
+        fleet_util.MembershipPartialName(path)
+        for path in base.ParseMembershipsPlural(
             args, search=True, prompt=True, prompt_cancel=False, autoselect=True
         )
-    ]
-    specs = self.hubclient.ToPyDict(self.GetFeature().membershipSpecs)
+    }
 
-    # Contextual function for determining if a membership (path) is enabled.
-    def f(path) -> bool:
-      return fleet_util.MembershipPartialName(path) in memberships
+    # These specs have their project number in their full path.
+    specs = {
+        fleet_util.MembershipPartialName(path): (path, spec)
+        for path, spec in self.current_specs().items()
+        if fleet_util.MembershipPartialName(path) in memberships_paths
+    }
 
-    # Report error if any memberships are missing
-    errors = [
+    # Ensure that we find all the memberships we are looking for.
+    missing = [
         exceptions.InvalidPocoMembershipError(
             'Policy Controller is not enabled for membership {}'.format(path)
         )
-        for path in specs.keys() if not f(path)
+        for path in memberships_paths if path not in specs
     ]
-    if errors:
-      raise exceptions.InvalidPocoMembershipError(errors)
+    if missing:
+      raise exceptions.InvalidPocoMembershipError(missing)
 
-    # Otherwise send back path->spec mapping.
-    return specs
+    # Drop the short path info and send back the specs, if they were all found.
+    return {path: spec for (path, spec) in specs.values()}
 
   def update_specs(self, specs: SpecMapping) -> None:
     """Merges spec changes and sends and update to the API.
@@ -81,11 +89,9 @@ class PocoCommand:
     Returns:
       None
     """
-    orig = self.hubclient.ToPyDict(self.GetFeature().membershipSpecs)
-    merged = {path: specs.get(path, spec) for path, spec in orig.items()}
     self.Update(
         ['membership_specs'],
         self.messages.Feature(
-            membershipSpecs=self.hubclient.ToMembershipSpecs(merged)
+            membershipSpecs=self.hubclient.ToMembershipSpecs(specs)
         ),
     )

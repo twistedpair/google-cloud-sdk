@@ -103,6 +103,9 @@ NC_POD_PIDS_LIMIT = 'podPidsLimit'
 NC_LINUX_CONFIG = 'linuxConfig'
 NC_SYSCTL = 'sysctl'
 NC_CGROUP_MODE = 'cgroupMode'
+NC_HUGEPAGE = 'hugepageConfig'
+NC_HUGEPAGE_2M = 'hugepage_size2m'
+NC_HUGEPAGE_1G = 'hugepage_size1g'
 
 
 class Error(core_exceptions.Error):
@@ -428,19 +431,23 @@ class ClusterConfig(object):
       project_id: project that owns this cluster.
       use_internal_ip: whether to persist the internal IP of the endpoint.
       cross_connect_subnetwork: full path of the cross connect subnet whose
-      endpoint to persist (optional)
+        endpoint to persist (optional)
       use_private_fqdn: whether to persist the private fqdn.
       use_dns_endpoint: whether to generate dns endpoint address.
+
     Returns:
       ClusterConfig of the persisted data.
     Raises:
       Error: if cluster has no endpoint (will be the case for first few
         seconds while cluster is PROVISIONING).
     """
-    endpoint = _GetClusterEndpoint(cluster, use_internal_ip,
-                                    cross_connect_subnetwork,
-                                    use_private_fqdn,
-                                    use_dns_endpoint)
+    endpoint = _GetClusterEndpoint(
+        cluster,
+        use_internal_ip,
+        cross_connect_subnetwork,
+        use_private_fqdn,
+        use_dns_endpoint,
+    )
     kwargs = {
         'cluster_name': cluster.name,
         'zone_id': cluster.zone,
@@ -624,6 +631,7 @@ def LoadSystemConfigFromYAML(node_config, content, messages):
     _CheckNodeConfigFields(NC_LINUX_CONFIG, linux_config_opts, {
         NC_SYSCTL: dict,
         NC_CGROUP_MODE: str,
+        NC_HUGEPAGE: dict,
     })
     node_config.linuxNodeConfig = messages.LinuxNodeConfig()
     sysctl_opts = linux_config_opts.get(NC_SYSCTL)
@@ -656,6 +664,17 @@ def LoadSystemConfigFromYAML(node_config, content, messages):
             .format(cgroup_mode_opts))
       node_config.linuxNodeConfig.cgroupMode = cgroup_mode_mapping[
           cgroup_mode_opts]
+    # Parse hugepages.
+    hugepage_opts = linux_config_opts.get(NC_HUGEPAGE)
+    if hugepage_opts:
+      node_config.linuxNodeConfig.hugepages = (
+          messages.HugepagesConfig())
+      hugepage_size2m = hugepage_opts.get(NC_HUGEPAGE_2M)
+      if hugepage_size2m:
+        node_config.linuxNodeConfig.hugepages.hugepageSize2m = hugepage_size2m
+      hugepage_size1g = hugepage_opts.get(NC_HUGEPAGE_1G)
+      if hugepage_size1g:
+        node_config.linuxNodeConfig.hugepages.hugepageSize1g = hugepage_size1g
 
 
 def _CheckNodeConfigFields(parent_name, parent, spec):
@@ -770,6 +789,79 @@ def _GetStackTypeCustomMappings():
   }
 
 
+def GetCreateInTransitEncryptionConfigMapper(messages, hidden=False):
+  """Returns a mapper from text options to the InTransitEncryptionConfig enum.
+
+  Args:
+    messages: The message module.
+    hidden: Whether the flag should be hidden in the choice_arg.
+  """
+
+  help_text = """
+Sets the in-transit encryption type for dataplane v2 clusters.
+
+--in-transit-encryption must be one of:
+
+  inter-node-transparent
+    Changes clusters to use transparent, dataplane v2, node-to-node encryption.
+
+  none:
+    Disables dataplane v2 in-transit encryption.
+
+  $ gcloud container clusters create \
+      --in-transit-encryption=inter-node-transparent
+  $ gcloud container clusters create \
+      --in-transit-encryption=none
+"""
+  return arg_utils.ChoiceEnumMapper(
+      '--in-transit-encryption',
+      messages.NetworkConfig.InTransitEncryptionConfigValueValuesEnum,
+      _GetInTransitEncryptionConfigCustomMappings(),
+      hidden=hidden,
+      help_str=help_text,
+  )
+
+
+def GetUpdateInTransitEncryptionConfigMapper(messages, hidden=False):
+  """Returns a mapper from text options to the InTransitEncryptionConfig enum.
+
+  Args:
+    messages: The message module.
+    hidden: Whether the flag should be a hidden flag.
+  """
+
+  help_text = """
+Updates the in-transit encryption type for dataplane v2 clusters.
+
+--in-transit-encryption must be one of:
+
+  inter-node-transparent
+    Changes clusters to use transparent, dataplane v2, node-to-node encryption.
+
+  none:
+    Disables dataplane v2 in-transit encryption.
+
+  $ gcloud container clusters update \
+      --in-transit-encryption=inter-node-transparent
+  $ gcloud container clusters update \
+      --in-transit-encryption=none
+"""
+  return arg_utils.ChoiceEnumMapper(
+      '--in-transit-encryption',
+      messages.ClusterUpdate.DesiredInTransitEncryptionConfigValueValuesEnum,
+      _GetInTransitEncryptionConfigCustomMappings(),
+      hidden=hidden,
+      help_str=help_text,
+  )
+
+
+def _GetInTransitEncryptionConfigCustomMappings():
+  return {
+      'IN_TRANSIT_ENCRYPTION_INTER_NODE_TRANSPARENT': 'inter-node-transparent',
+      'IN_TRANSIT_ENCRYPTION_DISABLED': 'none',
+  }
+
+
 def GetCreateStackTypeMapper(messages, hidden=False):
   """Returns a mapper from text options to the StackType enum.
 
@@ -799,7 +891,8 @@ STACK_TYPE must be one of:
       messages.IPAllocationPolicy.StackTypeValueValuesEnum,
       _GetStackTypeCustomMappings(),
       hidden=hidden,
-      help_str=help_text)
+      help_str=help_text,
+  )
 
 
 def GetUpdateStackTypeMapper(messages, hidden=False):

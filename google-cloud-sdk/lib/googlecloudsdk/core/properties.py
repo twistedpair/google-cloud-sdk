@@ -1192,6 +1192,7 @@ class _SectionApiEndpointOverrides(_Section):
         'datapipelines', command='gcloud datapipelines')
     self.dataplex = self._Add('dataplex', command='gcloud dataplex')
     self.dataproc = self._Add('dataproc', command='gcloud dataproc')
+    self.dataprocgdc = self._Add('dataprocgdc', hidden=True)
     self.datastore = self._Add('datastore', command='gcloud datastore')
     self.datastream = self._Add('datastream', command='gcloud datastream')
     self.deploymentmanager = self._Add(
@@ -1231,6 +1232,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.krmapihosting = self._Add(
         'krmapihosting', command='gcloud anthos config controller')
     self.kubernetespolicy = self._Add('kubernetespolicy', hidden=True)
+    self.inframanager = self._Add(
+        'inframanager', command='gcloud infra-manager')
     self.language = self._Add('language', command='gcloud ml language')
     self.lifesciences = self._Add('lifesciences', command='gcloud lifesciences')
     self.logging = self._Add('logging', command='gcloud logging')

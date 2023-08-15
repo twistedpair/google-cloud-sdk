@@ -341,6 +341,30 @@ def AddSkipPipelineLookup(parser):
   )
 
 
+def AddRollbackOfRollout(parser):
+  """Add --rollback-of-rollout flag."""
+  help_text = textwrap.dedent("""\
+  If set, this validates whether the rollout name specified by the flag matches
+  the rollout on the target.
+
+  Examples:
+
+  Validate that `test-rollout` is the rollout to rollback on the target.
+
+    $ {command} --rollback-of-rollout=projects/test-project/locations/us-central1/deliveryPipelines/test-pipeline/releases/test-release/rollouts/test-rollout
+
+  """)
+
+  parser.add_argument(
+      '--rollback-of-rollout',
+      help=help_text,
+      hidden=False,
+      # By default, None is used.
+      default=None,
+      required=False,
+  )
+
+
 def AddStartingPhaseId(parser):
   """Add --starting-phase-id flag."""
   help_text = textwrap.dedent(
@@ -524,4 +548,3 @@ def AddDeployParametersFlag(parser, hidden=False):
       hidden=hidden,
       help=help_text,
   )
-

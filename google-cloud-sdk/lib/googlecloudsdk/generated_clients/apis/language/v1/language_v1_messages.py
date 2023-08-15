@@ -1224,13 +1224,14 @@ class Status(_messages.Message):
 
 
 class TextSpan(_messages.Message):
-  r"""Represents an output piece of text.
+  r"""Represents a text span in the input document.
 
   Fields:
     beginOffset: The API calculates the beginning offset of the content in the
       original document according to the EncodingType specified in the API
       request.
-    content: The content of the output text.
+    content: The content of the text span, which is a substring of the
+      document.
   """
 
   beginOffset = _messages.IntegerField(1, variant=_messages.Variant.INT32)

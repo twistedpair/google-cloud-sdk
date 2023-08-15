@@ -163,16 +163,16 @@ class CreateEnvironmentFlags:
     support_web_server_plugins: bool or None, whether to enable/disable the
       support for web server plugins
     dag_processor_cpu: float or None, CPU allocated to Airflow dag processor.
-      Can be specified only in Composer 2.5.
+      Can be specified only in Composer 3.
     dag_processor_count: int or None, number of Airflow dag processors. Can be
-      specified only in Composer 2.5.
+      specified only in Composer 3.
     dag_processor_memory_gb: float or None, memory allocated to Airflow dag
-      processor. Can be specified only in Composer 2.5.
+      processor. Can be specified only in Composer 3.
     dag_processor_storage_gb: float or None, storage allocated to Airflow dag
-      processor. Can be specified only in Composer 2.5.
+      processor. Can be specified only in Composer 3.
     composer_internal_ipv4_cidr_block: str or None. The IP range in CIDR
       notation to use internally by Cloud Composer. Can be specified only in
-      Composer 2.5.
+      Composer 3.
   """
 
   # TODO(b/154131605): This a type that is an immutable data object. Can't use

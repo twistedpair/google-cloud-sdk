@@ -14,19 +14,42 @@ from apitools.base.py import extra_types
 package = 'networkconnectivity'
 
 
+class AcceptHubSpokeRequest(_messages.Message):
+  r"""The request for HubService.AcceptHubSpoke.
+
+  Fields:
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    spokeUri: Required. The URI of the spoke to accept into the hub.
+  """
+
+  requestId = _messages.StringField(1)
+  spokeUri = _messages.StringField(2)
+
+
 class AcceptSpokeRequest(_messages.Message):
   r"""The request for HubService.AcceptSpoke.
 
   Fields:
-    requestId: Optional. A unique request ID (optional). If you specify this
-      ID, you can use it in cases when you need to retry your request. When
-      you need to retry, this ID lets the server know that it can ignore the
-      request if it has already been completed. The server guarantees that for
-      at least 60 minutes after the first request. For example, consider a
-      situation where you make an initial request and the request times out.
-      If you make the request again with the same request ID, the server can
-      check to see whether the original operation was received. If it was, the
-      server ignores the second request. This behavior prevents clients from
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
       mistakenly creating duplicate commitments. The request ID must be a
       valid UUID, with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -39,15 +62,15 @@ class ActivateSpokeRequest(_messages.Message):
   r"""The request for HubService.ActivateSpoke.
 
   Fields:
-    requestId: Optional. A unique request ID (optional). If you specify this
-      ID, you can use it in cases when you need to retry your request. When
-      you need to retry, this ID lets the server know that it can ignore the
-      request if it has already been completed. The server guarantees that for
-      at least 60 minutes after the first request. For example, consider a
-      situation where you make an initial request and the request times out.
-      If you make the request again with the same request ID, the server can
-      check to see whether the original operation was received. If it was, the
-      server ignores the second request. This behavior prevents clients from
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
       mistakenly creating duplicate commitments. The request ID must be a
       valid UUID, with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -117,6 +140,23 @@ class AuditLogConfig(_messages.Message):
 
   exemptedMembers = _messages.StringField(1, repeated=True)
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class AutoAccept(_messages.Message):
+  r"""The auto-accept setting for a group controls whether proposed spokes are
+  automatically attached to the hub. If auto-accept is enabled, the spoke
+  immediately is attached to the hub and becomes part of the group. In this
+  case, the new spoke is in the ACTIVE state. If auto-accept is disabled, the
+  spoke goes to the INACTIVE state, and it must be reviewed and accepted by a
+  hub administrator.
+
+  Fields:
+    autoAcceptProjects: A list of project ids or project numbers for which you
+      want to enable auto-accept. The auto-accept setting is applied to spokes
+      being created or updated in these projects.
+  """
+
+  autoAcceptProjects = _messages.StringField(1, repeated=True)
 
 
 class Binding(_messages.Message):
@@ -211,10 +251,13 @@ class ConsumerPscConfig(_messages.Message):
         other constraints like connections limit.
       CONNECTION_POLICY_MISSING: No Service Connection Policy found for this
         network and Service Class
+      POLICY_LIMIT_REACHED: Service Connection Policy limit reached for this
+        network and Service Class
     """
     STATE_UNSPECIFIED = 0
     VALID = 1
     CONNECTION_POLICY_MISSING = 2
+    POLICY_LIMIT_REACHED = 3
 
   disableGlobalAccess = _messages.BooleanField(1)
   network = _messages.StringField(2)
@@ -232,6 +275,8 @@ class ConsumerPscConnection(_messages.Message):
 
   Fields:
     error: The most recent error during operating this connection.
+    errorInfo: Output only. The error info for the latest error during
+      operating this connection.
     errorType: The error type indicates whether the error is consumer facing,
       producer facing or system internal.
     forwardingRule: The URI of the consumer forwarding rule created. Example:
@@ -286,30 +331,31 @@ class ConsumerPscConnection(_messages.Message):
     DELETING = 4
 
   error = _messages.MessageField('GoogleRpcStatus', 1)
-  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 2)
-  forwardingRule = _messages.StringField(3)
-  gceOperation = _messages.StringField(4)
-  ip = _messages.StringField(5)
-  network = _messages.StringField(6)
-  project = _messages.StringField(7)
-  pscConnectionId = _messages.StringField(8)
-  serviceAttachmentUri = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  errorInfo = _messages.MessageField('GoogleRpcErrorInfo', 2)
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 3)
+  forwardingRule = _messages.StringField(4)
+  gceOperation = _messages.StringField(5)
+  ip = _messages.StringField(6)
+  network = _messages.StringField(7)
+  project = _messages.StringField(8)
+  pscConnectionId = _messages.StringField(9)
+  serviceAttachmentUri = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class DeactivateSpokeRequest(_messages.Message):
   r"""The request for HubService.DeactivateSpoke.
 
   Fields:
-    requestId: Optional. A unique request ID (optional). If you specify this
-      ID, you can use it in cases when you need to retry your request. When
-      you need to retry, this ID lets the server know that it can ignore the
-      request if it has already been completed. The server guarantees that for
-      at least 60 minutes after the first request. For example, consider a
-      situation where you make an initial request and the request times out.
-      If you make the request again with the same request ID, the server can
-      check to see whether the original operation was received. If it was, the
-      server ignores the second request. This behavior prevents clients from
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
       mistakenly creating duplicate commitments. The request ID must be a
       valid UUID, with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -427,8 +473,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -450,7 +496,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -489,9 +535,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -523,6 +569,82 @@ class GoogleLongrunningOperation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class GoogleRpcErrorInfo(_messages.Message):
+  r"""Describes the cause of the error with structured details. Example of an
+  error when contacting the "pubsub.googleapis.com" API when it is not
+  enabled: { "reason": "API_DISABLED" "domain": "googleapis.com" "metadata": {
+  "resource": "projects/123", "service": "pubsub.googleapis.com" } } This
+  response indicates that the pubsub.googleapis.com API is not enabled.
+  Example of an error that is returned when attempting to create a Spanner
+  instance in a region that is out of stock: { "reason": "STOCKOUT" "domain":
+  "spanner.googleapis.com", "metadata": { "availableRegions": "us-central1,us-
+  east2" } }
+
+  Messages:
+    MetadataValue: Additional structured details about this error. Keys should
+      match /[a-zA-Z0-9-_]/ and be limited to 64 characters in length. When
+      identifying the current value of an exceeded limit, the units should be
+      contained in the key, not the value. For example, rather than
+      {"instanceLimit": "100/request"}, should be returned as,
+      {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
+      instances that can be created in a single (batch) request.
+
+  Fields:
+    domain: The logical grouping to which the "reason" belongs. The error
+      domain is typically the registered service name of the tool or product
+      that generates the error. Example: "pubsub.googleapis.com". If the error
+      is generated by some common infrastructure, the error domain must be a
+      globally unique value that identifies the infrastructure. For Google API
+      infrastructure, the error domain is "googleapis.com".
+    metadata: Additional structured details about this error. Keys should
+      match /[a-zA-Z0-9-_]/ and be limited to 64 characters in length. When
+      identifying the current value of an exceeded limit, the units should be
+      contained in the key, not the value. For example, rather than
+      {"instanceLimit": "100/request"}, should be returned as,
+      {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
+      instances that can be created in a single (batch) request.
+    reason: The reason of the error. This is a constant value that identifies
+      the proximate cause of the error. Error reasons are unique within a
+      particular domain of errors. This should be at most 63 characters and
+      match a regular expression of `A-Z+[A-Z0-9]`, which represents
+      UPPER_SNAKE_CASE.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Additional structured details about this error. Keys should match
+    /[a-zA-Z0-9-_]/ and be limited to 64 characters in length. When
+    identifying the current value of an exceeded limit, the units should be
+    contained in the key, not the value. For example, rather than
+    {"instanceLimit": "100/request"}, should be returned as,
+    {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
+    instances that can be created in a single (batch) request.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  domain = _messages.StringField(1)
+  metadata = _messages.MessageField('MetadataValue', 2)
+  reason = _messages.StringField(3)
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -592,6 +714,7 @@ class Group(_messages.Message):
       managing-labels#requirements).
 
   Fields:
+    autoAccept: Optional. The auto-accept setting for this group.
     createTime: Output only. The time the group was created.
     description: Optional. The description of the group.
     labels: Optional. Labels in key:value format. For more information about
@@ -600,6 +723,9 @@ class Group(_messages.Message):
     name: Immutable. The name of the group. Group names must be unique. They
       use the following form: `projects/{project_number}/locations/global/hubs
       /{hub}/groups/{group_id}`
+    routeTable: Output only. The name of the route table that corresponds to
+      this group. They use the following form: `projects/{project_number}/loca
+      tions/global/hubs/{hub_id}/routeTables/{route_table_id}`
     state: Output only. The current lifecycle state of this group.
     uid: Output only. The Google-generated UUID for the group. This value is
       unique across all group resources. If a group is deleted and another
@@ -663,13 +789,15 @@ class Group(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  uid = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  autoAccept = _messages.MessageField('AutoAccept', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  routeTable = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class Hub(_messages.Message):
@@ -681,6 +809,15 @@ class Hub(_messages.Message):
   be associated with any VPC network in your project.
 
   Enums:
+    PolicyModeValueValuesEnum: The policy mode of this hub. This field can be
+      either PRESET or CUSTOM. If unspecified, the policy_mode defaults to
+      PRESET.
+    PresetTopologyValueValuesEnum: The topology implemented in this hub.
+      Currently, this field is only used when policy_mode = PRESET. The
+      available preset topologies are MESH and STAR. If preset_topology is
+      unspecified and policy_mode = PRESET, the preset_topology defaults to
+      MESH. When policy_mode = CUSTOM, the preset_topology is set to
+      PRESET_TOPOLOGY_UNSPECIFIED.
     StateValueValuesEnum: Output only. The current lifecycle state of this
       hub.
 
@@ -699,6 +836,14 @@ class Hub(_messages.Message):
     name: Immutable. The name of the hub. Hub names must be unique. They use
       the following form:
       `projects/{project_number}/locations/global/hubs/{hub_id}`
+    policyMode: The policy mode of this hub. This field can be either PRESET
+      or CUSTOM. If unspecified, the policy_mode defaults to PRESET.
+    presetTopology: The topology implemented in this hub. Currently, this
+      field is only used when policy_mode = PRESET. The available preset
+      topologies are MESH and STAR. If preset_topology is unspecified and
+      policy_mode = PRESET, the preset_topology defaults to MESH. When
+      policy_mode = CUSTOM, the preset_topology is set to
+      PRESET_TOPOLOGY_UNSPECIFIED.
     routeTables: Output only. The route tables that belong to this hub. They
       use the following form: `projects/{project_number}/locations/global/hubs
       /{hub_id}/routeTables/{route_table_id}` This field is read-only. Network
@@ -717,6 +862,43 @@ class Hub(_messages.Message):
       the same name is created, the new hub is assigned a different unique_id.
     updateTime: Output only. The time the hub was last updated.
   """
+
+  class PolicyModeValueValuesEnum(_messages.Enum):
+    r"""The policy mode of this hub. This field can be either PRESET or
+    CUSTOM. If unspecified, the policy_mode defaults to PRESET.
+
+    Values:
+      POLICY_MODE_UNSPECIFIED: Policy mode is unspecified. It defaults to
+        PRESET with preset_topology = MESH.
+      PRESET: Hub uses one of the preset topologies.
+      CUSTOM: Hub can freely specify the topology using groups and policy.
+    """
+    POLICY_MODE_UNSPECIFIED = 0
+    PRESET = 1
+    CUSTOM = 2
+
+  class PresetTopologyValueValuesEnum(_messages.Enum):
+    r"""The topology implemented in this hub. Currently, this field is only
+    used when policy_mode = PRESET. The available preset topologies are MESH
+    and STAR. If preset_topology is unspecified and policy_mode = PRESET, the
+    preset_topology defaults to MESH. When policy_mode = CUSTOM, the
+    preset_topology is set to PRESET_TOPOLOGY_UNSPECIFIED.
+
+    Values:
+      PRESET_TOPOLOGY_UNSPECIFIED: Preset topology is unspecified. When
+        policy_mode = PRESET, it defaults to MESH.
+      PRESET_TOPOLOGY_DISALLOWED: No preset topology is allowed. It is used
+        when policy_mode is `custom`.
+      MESH: Mesh topology is implemented. Group `default` is automatically
+        created. All spokes in the hub are added to group `default`.
+      STAR: Star topology is implemented. Two groups, `central` and `edge`,
+        are automatically created along with hub creation. Spokes have to join
+        one of the groups during creation.
+    """
+    PRESET_TOPOLOGY_UNSPECIFIED = 0
+    PRESET_TOPOLOGY_DISALLOWED = 1
+    MESH = 2
+    STAR = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of this hub.
@@ -777,12 +959,14 @@ class Hub(_messages.Message):
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  routeTables = _messages.StringField(5, repeated=True)
-  routingVpcs = _messages.MessageField('RoutingVPC', 6, repeated=True)
-  spokeSummary = _messages.MessageField('SpokeSummary', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  uniqueId = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  policyMode = _messages.EnumField('PolicyModeValueValuesEnum', 5)
+  presetTopology = _messages.EnumField('PresetTopologyValueValuesEnum', 6)
+  routeTables = _messages.StringField(7, repeated=True)
+  routingVpcs = _messages.MessageField('RoutingVPC', 8, repeated=True)
+  spokeSummary = _messages.MessageField('SpokeSummary', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  uniqueId = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -855,9 +1039,12 @@ class InternalRange(_messages.Message):
       OVERLAP_UNSPECIFIED: No overlap overrides.
       OVERLAP_ROUTE_RANGE: Allow creation of static routes more specific that
         the current internal range.
+      OVERLAP_EXISTING_SUBNET_RANGE: Allow creation of internal ranges that
+        overlap with existing subnets.
     """
     OVERLAP_UNSPECIFIED = 0
     OVERLAP_ROUTE_RANGE = 1
+    OVERLAP_EXISTING_SUBNET_RANGE = 2
 
   class PeeringValueValuesEnum(_messages.Enum):
     r"""The type of peering set for this internal range.
@@ -994,9 +1181,9 @@ class LinkedVpcNetwork(_messages.Message):
   r"""An existing VPC network.
 
   Fields:
-    excludeExportRanges: Optional. IP Ranges encompassing the subnets to be
+    excludeExportRanges: Optional. IP ranges encompassing the subnets to be
       excluded from peering.
-    uri: Required. The URI of the VPC network resource
+    uri: Required. The URI of the VPC network resource.
   """
 
   excludeExportRanges = _messages.StringField(1, repeated=True)
@@ -1347,6 +1534,20 @@ class NetworkconnectivityProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeRequest
+  object.
+
+  Fields:
+    acceptHubSpokeRequest: A AcceptHubSpokeRequest resource to be passed as
+      the request body.
+    name: Required. The name of the hub.
+  """
+
+  acceptHubSpokeRequest = _messages.MessageField('AcceptHubSpokeRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class NetworkconnectivityProjectsLocationsGlobalHubsCreateRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsGlobalHubsCreateRequest object.
 
@@ -1354,15 +1555,15 @@ class NetworkconnectivityProjectsLocationsGlobalHubsCreateRequest(_messages.Mess
     hub: A Hub resource to be passed as the request body.
     hubId: Required. A unique identifier for the hub.
     parent: Required. The parent resource.
-    requestId: Optional. A unique request ID (optional). If you specify this
-      ID, you can use it in cases when you need to retry your request. When
-      you need to retry, this ID lets the server know that it can ignore the
-      request if it has already been completed. The server guarantees that for
-      at least 60 minutes after the first request. For example, consider a
-      situation where you make an initial request and the request times out.
-      If you make the request again with the same request ID, the server can
-      check to see whether the original operation was received. If it was, the
-      server ignores the second request. This behavior prevents clients from
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
       mistakenly creating duplicate commitments. The request ID must be a
       valid UUID, with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -1379,15 +1580,15 @@ class NetworkconnectivityProjectsLocationsGlobalHubsDeleteRequest(_messages.Mess
 
   Fields:
     name: Required. The name of the hub to delete.
-    requestId: Optional. A unique request ID (optional). If you specify this
-      ID, you can use it in cases when you need to retry your request. When
-      you need to retry, this ID lets the server know that it can ignore the
-      request if it has already been completed. The server guarantees that for
-      at least 60 minutes after the first request. For example, consider a
-      situation where you make an initial request and the request times out.
-      If you make the request again with the same request ID, the server can
-      check to see whether the original operation was received. If it was, the
-      server ignores the second request. This behavior prevents clients from
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
       mistakenly creating duplicate commitments. The request ID must be a
       valid UUID, with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -1432,6 +1633,58 @@ class NetworkconnectivityProjectsLocationsGlobalHubsGetRequest(_messages.Message
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsGroupsCreateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsGroupsCreateRequest
+  object.
+
+  Fields:
+    group: A Group resource to be passed as the request body.
+    groupId: Required. A unique identifier for the group
+    parent: Required. The parent resource.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  group = _messages.MessageField('Group', 1)
+  groupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsGroupsDeleteRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsGroupsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the group to delete.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class NetworkconnectivityProjectsLocationsGlobalHubsGroupsGetIamPolicyRequest(_messages.Message):
@@ -1489,6 +1742,40 @@ class NetworkconnectivityProjectsLocationsGlobalHubsGroupsListRequest(_messages.
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsGroupsPatchRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsGroupsPatchRequest
+  object.
+
+  Fields:
+    group: A Group resource to be passed as the request body.
+    name: Immutable. The name of the group. Group names must be unique. They
+      use the following form: `projects/{project_number}/locations/global/hubs
+      /{hub}/groups/{group_id}`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. In the case of an update to an existing group, field
+      mask is used to specify the fields to be overwritten. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field is overwritten if it is in the mask. If the user does
+      not provide a mask, then all fields are overwritten.
+  """
+
+  group = _messages.MessageField('Group', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworkconnectivityProjectsLocationsGlobalHubsGroupsSetIamPolicyRequest(_messages.Message):
@@ -1549,8 +1836,8 @@ class NetworkconnectivityProjectsLocationsGlobalHubsListSpokesRequest(_messages.
   object.
 
   Enums:
-    ViewValueValuesEnum: The view of the spoke to return. The view you use
-      determines which spoke fields are included in the response.
+    ViewValueValuesEnum: The view of the spoke to return. The view that you
+      use determines which spoke fields are included in the response.
 
   Fields:
     filter: An expression that filters the list of results.
@@ -1564,13 +1851,13 @@ class NetworkconnectivityProjectsLocationsGlobalHubsListSpokesRequest(_messages.
       If the spoke_locations field is populated, the list of results includes
       only spokes in the specified location. If the spoke_locations field is
       not populated, the list of results includes spokes in all locations.
-    view: The view of the spoke to return. The view you use determines which
-      spoke fields are included in the response.
+    view: The view of the spoke to return. The view that you use determines
+      which spoke fields are included in the response.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""The view of the spoke to return. The view you use determines which
-    spoke fields are included in the response.
+    r"""The view of the spoke to return. The view that you use determines
+    which spoke fields are included in the response.
 
     Values:
       SPOKE_VIEW_UNSPECIFIED: The spoke view is unspecified. When the spoke
@@ -1603,15 +1890,15 @@ class NetworkconnectivityProjectsLocationsGlobalHubsPatchRequest(_messages.Messa
     name: Immutable. The name of the hub. Hub names must be unique. They use
       the following form:
       `projects/{project_number}/locations/global/hubs/{hub_id}`
-    requestId: Optional. A unique request ID (optional). If you specify this
-      ID, you can use it in cases when you need to retry your request. When
-      you need to retry, this ID lets the server know that it can ignore the
-      request if it has already been completed. The server guarantees that for
-      at least 60 minutes after the first request. For example, consider a
-      situation where you make an initial request and the request times out.
-      If you make the request again with the same request ID, the server can
-      check to see whether the original operation was received. If it was, the
-      server ignores the second request. This behavior prevents clients from
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
       mistakenly creating duplicate commitments. The request ID must be a
       valid UUID, with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -1626,6 +1913,20 @@ class NetworkconnectivityProjectsLocationsGlobalHubsPatchRequest(_messages.Messa
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeRequest
+  object.
+
+  Fields:
+    name: Required. The name of the hub.
+    rejectHubSpokeRequest: A RejectHubSpokeRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rejectHubSpokeRequest = _messages.MessageField('RejectHubSpokeRequest', 2)
 
 
 class NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesGetRequest(_messages.Message):
@@ -2059,7 +2360,8 @@ class NetworkconnectivityProjectsLocationsServiceClassesCreateRequest(_messages.
   object.
 
   Fields:
-    parent: Required. The parent resource's name of the ServiceClass.
+    parent: Required. The parent resource's name of the ServiceClass. ex.
+      projects/123/locations/us-east1
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2157,7 +2459,8 @@ class NetworkconnectivityProjectsLocationsServiceClassesListRequest(_messages.Me
     orderBy: Sort the results by a certain order.
     pageSize: The maximum number of results per page that should be returned.
     pageToken: The page token.
-    parent: Required. The parent resource's name.
+    parent: Required. The parent resource's name. ex.
+      projects/123/locations/us-east1
   """
 
   filter = _messages.StringField(1)
@@ -2240,6 +2543,7 @@ class NetworkconnectivityProjectsLocationsServiceConnectionMapsCreateRequest(_me
 
   Fields:
     parent: Required. The parent resource's name of the ServiceConnectionMap.
+      ex. projects/123/locations/us-east1
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2341,7 +2645,8 @@ class NetworkconnectivityProjectsLocationsServiceConnectionMapsListRequest(_mess
     orderBy: Sort the results by a certain order.
     pageSize: The maximum number of results per page that should be returned.
     pageToken: The page token.
-    parent: Required. The parent resource's name.
+    parent: Required. The parent resource's name. ex.
+      projects/123/locations/us-east1
   """
 
   filter = _messages.StringField(1)
@@ -2427,7 +2732,7 @@ class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesCreateRequest
 
   Fields:
     parent: Required. The parent resource's name of the
-      ServiceConnectionPolicy.
+      ServiceConnectionPolicy. ex. projects/123/locations/us-east1
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2530,7 +2835,8 @@ class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesListRequest(_
     orderBy: Sort the results by a certain order.
     pageSize: The maximum number of results per page that should be returned.
     pageToken: The page token.
-    parent: Required. The parent resource's name.
+    parent: Required. The parent resource's name. ex.
+      projects/123/locations/us-east1
   """
 
   filter = _messages.StringField(1)
@@ -2617,7 +2923,7 @@ class NetworkconnectivityProjectsLocationsServiceConnectionTokensCreateRequest(_
 
   Fields:
     parent: Required. The parent resource's name of the
-      ServiceConnectionToken.
+      ServiceConnectionToken. ex. projects/123/locations/us-east1
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2692,7 +2998,8 @@ class NetworkconnectivityProjectsLocationsServiceConnectionTokensListRequest(_me
     orderBy: Sort the results by a certain order.
     pageSize: The maximum number of results per page that should be returned.
     pageToken: The page token.
-    parent: Required. The parent resource's name.
+    parent: Required. The parent resource's name. ex.
+      projects/123/locations/us-east1
   """
 
   filter = _messages.StringField(1)
@@ -2733,15 +3040,15 @@ class NetworkconnectivityProjectsLocationsSpokesCreateRequest(_messages.Message)
 
   Fields:
     parent: Required. The parent resource.
-    requestId: Optional. A unique request ID (optional). If you specify this
-      ID, you can use it in cases when you need to retry your request. When
-      you need to retry, this ID lets the server know that it can ignore the
-      request if it has already been completed. The server guarantees that for
-      at least 60 minutes after the first request. For example, consider a
-      situation where you make an initial request and the request times out.
-      If you make the request again with the same request ID, the server can
-      check to see whether the original operation was received. If it was, the
-      server ignores the second request. This behavior prevents clients from
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
       mistakenly creating duplicate commitments. The request ID must be a
       valid UUID, with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -2773,15 +3080,15 @@ class NetworkconnectivityProjectsLocationsSpokesDeleteRequest(_messages.Message)
 
   Fields:
     name: Required. The name of the spoke to delete.
-    requestId: Optional. A unique request ID (optional). If you specify this
-      ID, you can use it in cases when you need to retry your request. When
-      you need to retry, this ID lets the server know that it can ignore the
-      request if it has already been completed. The server guarantees that for
-      at least 60 minutes after the first request. For example, consider a
-      situation where you make an initial request and the request times out.
-      If you make the request again with the same request ID, the server can
-      check to see whether the original operation was received. If it was, the
-      server ignores the second request. This behavior prevents clients from
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
       mistakenly creating duplicate commitments. The request ID must be a
       valid UUID, with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -2852,15 +3159,15 @@ class NetworkconnectivityProjectsLocationsSpokesPatchRequest(_messages.Message):
     name: Immutable. The name of the spoke. Spoke names must be unique. They
       use the following form:
       `projects/{project_number}/locations/{region}/spokes/{spoke_id}`
-    requestId: Optional. A unique request ID (optional). If you specify this
-      ID, you can use it in cases when you need to retry your request. When
-      you need to retry, this ID lets the server know that it can ignore the
-      request if it has already been completed. The server guarantees that for
-      at least 60 minutes after the first request. For example, consider a
-      situation where you make an initial request and the request times out.
-      If you make the request again with the same request ID, the server can
-      check to see whether the original operation was received. If it was, the
-      server ignores the second request. This behavior prevents clients from
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
       mistakenly creating duplicate commitments. The request ID must be a
       valid UUID, with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -2974,7 +3281,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -2982,15 +3289,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -3162,6 +3469,8 @@ class PscConnection(_messages.Message):
       within the consumer VPC.
     consumerTargetProject: The project where the PSC connection is created.
     error: The most recent error during operating this connection.
+    errorInfo: Output only. The error info for the latest error during
+      operating this connection.
     errorType: The error type indicates whether the error is consumer facing,
       producer facing or system internal.
     gceOperation: The last Compute Engine operation to setup PSC connection.
@@ -3206,26 +3515,51 @@ class PscConnection(_messages.Message):
   consumerForwardingRule = _messages.StringField(2)
   consumerTargetProject = _messages.StringField(3)
   error = _messages.MessageField('GoogleRpcStatus', 4)
-  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 5)
-  gceOperation = _messages.StringField(6)
-  pscConnectionId = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  errorInfo = _messages.MessageField('GoogleRpcErrorInfo', 5)
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 6)
+  gceOperation = _messages.StringField(7)
+  pscConnectionId = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+
+
+class RejectHubSpokeRequest(_messages.Message):
+  r"""The request for HubService.RejectHubSpoke.
+
+  Fields:
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    spokeUri: Required. The URI of the spoke to reject from the hub.
+  """
+
+  requestId = _messages.StringField(1)
+  spokeUri = _messages.StringField(2)
 
 
 class RejectSpokeRequest(_messages.Message):
   r"""The request for HubService.RejectSpoke.
 
   Fields:
-    details: Optional. Additional Details behind the rejection
-    requestId: Optional. A unique request ID (optional). If you specify this
-      ID, you can use it in cases when you need to retry your request. When
-      you need to retry, this ID lets the server know that it can ignore the
-      request if it has already been completed. The server guarantees that for
-      at least 60 minutes after the first request. For example, consider a
-      situation where you make an initial request and the request times out.
-      If you make the request again with the same request ID, the server can
-      check to see whether the original operation was received. If it was, the
-      server ignores the second request. This behavior prevents clients from
+    details: Optional. Additional information provided by the hub
+      administrator in the `RejectSpoke` call.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
       mistakenly creating duplicate commitments. The request ID must be a
       valid UUID, with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -3261,9 +3595,9 @@ class Route(_messages.Message):
     location: Output only. The location of the route. Uses the following form:
       "projects/{project}/locations/{location}" Example:
       projects/1234/locations/us-central1
-    name: Immutable. The name of the route. Route names must be unique. They
-      use the following form: `projects/{project_number}/locations/global/hubs
-      /{hub}/routeTables/{route_table_id}/routes/{route_id}`
+    name: Immutable. The name of the route. Route names must be unique. Route
+      names use the following form: `projects/{project_number}/locations/globa
+      l/hubs/{hub}/routeTables/{route_table_id}/routes/{route_id}`
     nextHopVpcNetwork: Immutable. The destination VPC network for packets on
       this route.
     spoke: Immutable. The spoke that this route leads to. Example:
@@ -3274,7 +3608,7 @@ class Route(_messages.Message):
     uid: Output only. The Google-generated UUID for the route. This value is
       unique across all Network Connectivity Center route resources. If a
       route is deleted and another with the same name is created, the new
-      route is assigned a different unique_id.
+      route is assigned a different `uid`.
     updateTime: Output only. The time the route was last updated.
   """
 
@@ -3381,14 +3715,14 @@ class RouteTable(_messages.Message):
     labels: Optional labels in key:value format. For more information about
       labels, see [Requirements for labels](https://cloud.google.com/resource-
       manager/docs/creating-managing-labels#requirements).
-    name: Immutable. The name of the route table. Route Table names must be
+    name: Immutable. The name of the route table. Route table names must be
       unique. They use the following form: `projects/{project_number}/location
       s/global/hubs/{hub}/routeTables/{route_table_id}`
     state: Output only. The current lifecycle state of this route table.
     uid: Output only. The Google-generated UUID for the route table. This
       value is unique across all route table resources. If a route table is
       deleted and another with the same name is created, the new route table
-      is assigned a different unique_id.
+      is assigned a different `uid`.
     updateTime: Output only. The time the route table was last updated.
   """
 
@@ -3508,8 +3842,6 @@ class ServiceClass(_messages.Message):
     serviceClass: Output only. The generated service class name. Use this name
       to refer to the Service class in Service Connection Maps and Service
       Connection Policies.
-    serviceConnectionMaps: Output only. URIs of all Service Connection Maps
-      using this service class.
     updateTime: Output only. Time when the ServiceClass was updated.
   """
 
@@ -3543,8 +3875,7 @@ class ServiceClass(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   serviceClass = _messages.StringField(6)
-  serviceConnectionMaps = _messages.StringField(7, repeated=True)
-  updateTime = _messages.StringField(8)
+  updateTime = _messages.StringField(7)
 
 
 class ServiceConnectionMap(_messages.Message):
@@ -3804,7 +4135,7 @@ class Spoke(_messages.Message):
   connectivity resources. When you create a spoke, you associate it with a
   hub. You must also identify a value for exactly one of the following fields:
   * linked_vpn_tunnels * linked_interconnect_attachments *
-  linked_router_appliance_instances
+  linked_router_appliance_instances * linked_vpc_network
 
   Enums:
     SpokeTypeValueValuesEnum: Output only. The type of resource associated
@@ -3835,13 +4166,14 @@ class Spoke(_messages.Message):
     name: Immutable. The name of the spoke. Spoke names must be unique. They
       use the following form:
       `projects/{project_number}/locations/{region}/spokes/{spoke_id}`
-    reasons: Output only. The reasons for current state of the spoke.
+    reasons: Output only. The reasons for current state of the spoke. Only
+      present when the spoke is in the `INACTIVE` state.
     spokeType: Output only. The type of resource associated with the spoke.
     state: Output only. The current lifecycle state of this spoke.
     uniqueId: Output only. The Google-generated UUID for the spoke. This value
       is unique across all spoke resources. If a spoke is deleted and another
       with the same name is created, the new spoke is assigned a different
-      unique_id.
+      `unique_id`.
     updateTime: Output only. The time the spoke was last updated.
   """
 

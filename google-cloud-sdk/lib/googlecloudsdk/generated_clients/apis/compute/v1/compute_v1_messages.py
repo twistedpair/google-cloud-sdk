@@ -5889,6 +5889,47 @@ class BulkInsertInstanceResourcePerInstanceProperties(_messages.Message):
   name = _messages.StringField(2)
 
 
+class BulkInsertOperationStatus(_messages.Message):
+  r"""A BulkInsertOperationStatus object.
+
+  Enums:
+    StatusValueValuesEnum: [Output Only] Creation status of BulkInsert
+      operation - information if the flow is rolling forward or rolling back.
+
+  Fields:
+    createdVmCount: [Output Only] Count of VMs successfully created so far.
+    deletedVmCount: [Output Only] Count of VMs that got deleted during
+      rollback.
+    failedToCreateVmCount: [Output Only] Count of VMs that started creating
+      but encountered an error.
+    status: [Output Only] Creation status of BulkInsert operation -
+      information if the flow is rolling forward or rolling back.
+    targetVmCount: [Output Only] Count of VMs originally planned to be
+      created.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Creation status of BulkInsert operation - information if
+    the flow is rolling forward or rolling back.
+
+    Values:
+      CREATING: Rolling forward - creating VMs.
+      DONE: Done
+      ROLLING_BACK: Rolling back - cleaning up after an error.
+      STATUS_UNSPECIFIED: <no description>
+    """
+    CREATING = 0
+    DONE = 1
+    ROLLING_BACK = 2
+    STATUS_UNSPECIFIED = 3
+
+  createdVmCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  deletedVmCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  failedToCreateVmCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
+  targetVmCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
 class CacheInvalidationRule(_messages.Message):
   r"""A CacheInvalidationRule object.
 
@@ -41399,6 +41440,48 @@ class InstancesAddResourcePoliciesRequest(_messages.Message):
   resourcePolicies = _messages.StringField(1, repeated=True)
 
 
+class InstancesBulkInsertOperationMetadata(_messages.Message):
+  r"""A InstancesBulkInsertOperationMetadata object.
+
+  Messages:
+    PerLocationStatusValue: Status information per location (location name is
+      key). Example key: zones/us-central1-a
+
+  Fields:
+    perLocationStatus: Status information per location (location name is key).
+      Example key: zones/us-central1-a
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PerLocationStatusValue(_messages.Message):
+    r"""Status information per location (location name is key). Example key:
+    zones/us-central1-a
+
+    Messages:
+      AdditionalProperty: An additional property for a PerLocationStatusValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        PerLocationStatusValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PerLocationStatusValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A BulkInsertOperationStatus attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('BulkInsertOperationStatus', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  perLocationStatus = _messages.MessageField('PerLocationStatusValue', 1)
+
+
 class InstancesGetEffectiveFirewallsResponse(_messages.Message):
   r"""A InstancesGetEffectiveFirewallsResponse object.
 
@@ -42181,16 +42264,16 @@ class InterconnectAttachment(_messages.Message):
       ready to use. - OS_UNPROVISIONED: The attachment is not ready to use
       yet, because turnup is not complete.
     pairingKey: [Output only for type PARTNER. Input only for
-      PARTNER_PROVIDER. Not present for DEDICATED]. The opaque identifier of
-      an PARTNER attachment used to initiate provisioning with a selected
+      PARTNER_PROVIDER. Not present for DEDICATED]. The opaque identifier of a
+      PARTNER attachment used to initiate provisioning with a selected
       partner. Of the form "XXXXX/region/domain"
     partnerAsn: Optional BGP ASN for the router supplied by a Layer 3 Partner
       if they configured BGP on behalf of the customer. Output only for
       PARTNER type, input only for PARTNER_PROVIDER, not available for
       DEDICATED.
     partnerMetadata: Informational metadata about Partner attachments from
-      Partners to display to customers. Output only for for PARTNER type,
-      mutable for PARTNER_PROVIDER, not available for DEDICATED.
+      Partners to display to customers. Output only for PARTNER type, mutable
+      for PARTNER_PROVIDER, not available for DEDICATED.
     privateInterconnectInfo: [Output Only] Information specific to an
       InterconnectAttachment. This property is populated if the interconnect
       that this is attached to is of type DEDICATED.
@@ -51381,6 +51464,8 @@ class Operation(_messages.Message):
       is defined by the server.
     insertTime: [Output Only] The time that this operation was requested. This
       value is in RFC3339 text format.
+    instancesBulkInsertOperationMetadata: A
+      InstancesBulkInsertOperationMetadata attribute.
     kind: [Output Only] Type of the resource. Always `compute#operation` for
       Operation resources.
     name: [Output Only] Name of the operation.
@@ -51628,22 +51713,23 @@ class Operation(_messages.Message):
   httpErrorStatusCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(9)
-  kind = _messages.StringField(10, default='compute#operation')
-  name = _messages.StringField(11)
-  operationGroupId = _messages.StringField(12)
-  operationType = _messages.StringField(13)
-  progress = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  setCommonInstanceMetadataOperationMetadata = _messages.MessageField('SetCommonInstanceMetadataOperationMetadata', 17)
-  startTime = _messages.StringField(18)
-  status = _messages.EnumField('StatusValueValuesEnum', 19)
-  statusMessage = _messages.StringField(20)
-  targetId = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(22)
-  user = _messages.StringField(23)
-  warnings = _messages.MessageField('WarningsValueListEntry', 24, repeated=True)
-  zone = _messages.StringField(25)
+  instancesBulkInsertOperationMetadata = _messages.MessageField('InstancesBulkInsertOperationMetadata', 10)
+  kind = _messages.StringField(11, default='compute#operation')
+  name = _messages.StringField(12)
+  operationGroupId = _messages.StringField(13)
+  operationType = _messages.StringField(14)
+  progress = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  setCommonInstanceMetadataOperationMetadata = _messages.MessageField('SetCommonInstanceMetadataOperationMetadata', 18)
+  startTime = _messages.StringField(19)
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
+  statusMessage = _messages.StringField(21)
+  targetId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(23)
+  user = _messages.StringField(24)
+  warnings = _messages.MessageField('WarningsValueListEntry', 25, repeated=True)
+  zone = _messages.StringField(26)
 
 
 class OperationAggregatedList(_messages.Message):
@@ -53165,7 +53251,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -53173,15 +53259,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -58222,7 +58308,10 @@ class Route(_messages.Message):
     description: An optional description of this resource. Provide this field
       when you create the resource.
     destRange: The destination range of outgoing packets that this route
-      applies to. Both IPv4 and IPv6 are supported.
+      applies to. Both IPv4 and IPv6 are supported. Must specify an IPv4 range
+      (e.g. 192.0.2.0/24) or an IPv6 range in RFC 4291 format (e.g.
+      2001:db8::/32). IPv6 range will be displayed using RFC 5952 compressed
+      format.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of this resource. Always compute#routes for Route
@@ -58252,7 +58341,12 @@ class Route(_messages.Message):
       ps://www.googleapis.com/compute/v1/projects/project/zones/zone/instances
       /
     nextHopIp: The network IP address of an instance that should handle
-      matching packets. Only IPv4 is supported.
+      matching packets. Both IPv6 address and IPv4 addresses are supported.
+      Must specify an IPv4 address in dot-decimal notation (e.g. 192.0.2.99)
+      or an IPv6 address in RFC 4291 format (e.g. 2001:db8::2d9:51:0:0 or
+      2001:db8:0:0:2d9:51:0:0). IPv6 addresses will be displayed using RFC
+      5952 compressed format (e.g. 2001:db8::2d9:51:0:0). Should never be an
+      IPv4-mapped IPv6 address.
     nextHopNetwork: The URL of the local network if it should handle matching
       packets.
     nextHopPeering: [Output Only] The network peering name that should handle
@@ -59511,8 +59605,8 @@ class RouterNat(_messages.Message):
 
   Enums:
     AutoNetworkTierValueValuesEnum: The network tier to use when automatically
-      reserving IP addresses. Must be one of: PREMIUM, STANDARD. If not
-      specified, PREMIUM tier will be used.
+      reserving NAT IP addresses. Must be one of: PREMIUM, STANDARD. If not
+      specified, then the current project-level default tier is used.
     EndpointTypesValueListEntryValuesEnum:
     NatIpAllocateOptionValueValuesEnum: Specify the NatIpAllocateOption, which
       can take one of the following values: - MANUAL_ONLY: Uses only Nat IP
@@ -59532,9 +59626,9 @@ class RouterNat(_messages.Message):
       other Router.Nat section in any Router for this network in this region.
 
   Fields:
-    autoNetworkTier: The network tier to use when automatically reserving IP
-      addresses. Must be one of: PREMIUM, STANDARD. If not specified, PREMIUM
-      tier will be used.
+    autoNetworkTier: The network tier to use when automatically reserving NAT
+      IP addresses. Must be one of: PREMIUM, STANDARD. If not specified, then
+      the current project-level default tier is used.
     drainNatIps: A list of URLs of the IP resources to be drained. These IPs
       must be valid static external IPs that have been assigned to the NAT.
       These IPs should be used for updating/patching a NAT only.
@@ -59599,9 +59693,9 @@ class RouterNat(_messages.Message):
   """
 
   class AutoNetworkTierValueValuesEnum(_messages.Enum):
-    r"""The network tier to use when automatically reserving IP addresses.
-    Must be one of: PREMIUM, STANDARD. If not specified, PREMIUM tier will be
-    used.
+    r"""The network tier to use when automatically reserving NAT IP addresses.
+    Must be one of: PREMIUM, STANDARD. If not specified, then the current
+    project-level default tier is used.
 
     Values:
       FIXED_STANDARD: Public internet quality with fixed bandwidth.
@@ -72761,12 +72855,12 @@ class VpnTunnel(_messages.Message):
       VPN tunnel is created. Possible values are: `0`, `1`, `2`, `3`. The
       number of IDs in use depends on the external VPN gateway redundancy
       type.
-    peerGcpGateway: URL of the peer side HA GCP VPN gateway to which this VPN
+    peerGcpGateway: URL of the peer side HA VPN gateway to which this VPN
       tunnel is connected. Provided by the client when the VPN tunnel is
       created. This field can be used when creating highly available VPN from
       VPC network to VPC network, the field is exclusive with the field
       peerExternalGateway. If provided, the VPN tunnel will automatically use
-      the same vpnGatewayInterface ID in the peer GCP VPN gateway.
+      the same vpnGatewayInterface ID in the peer Google Cloud VPN gateway.
     peerIp: IP address of the peer VPN gateway. Only IPv4 is supported.
     region: [Output Only] URL of the region where the VPN tunnel resides. You
       must specify this field as part of the HTTP request URL. It is not

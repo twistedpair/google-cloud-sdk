@@ -73,6 +73,18 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsDeleteRequest(_messages.Mes
   name = _messages.StringField(2, required=True)
 
 
+class AssuredworkloadsOrganizationsLocationsWorkloadsEnableResourceMonitoringRequest(_messages.Message):
+  r"""A AssuredworkloadsOrganizationsLocationsWorkloadsEnableResourceMonitorin
+  gRequest object.
+
+  Fields:
+    name: Required. The `name` field is used to identify the workload. Format:
+      organizations/{org_id}/locations/{location_id}/workloads/{workload_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AssuredworkloadsOrganizationsLocationsWorkloadsGetRequest(_messages.Message):
   r"""A AssuredworkloadsOrganizationsLocationsWorkloadsGetRequest object.
 
@@ -105,33 +117,6 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsListRequest(_messages.Messa
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
-
-
-class AssuredworkloadsOrganizationsLocationsWorkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest(_messages.Message):
-  r"""A AssuredworkloadsOrganizationsLocationsWorkloadsOrganizationsLocationsW
-  orkloadsAnalyzeWorkloadMoveRequest object.
-
-  Fields:
-    project: The source type is a project. Specify the project's relative
-      resource name, formatted as either a project number or a project ID:
-      "projects/{PROJECT_NUMBER}" or "projects/{PROJECT_ID}" For example:
-      "projects/951040570662" when specifying a project number, or
-      "projects/my-project-123" when specifying a project ID.
-    source: The source type is a project-based workload. Specify the
-      workloads's relative resource name, formatted as: "organizations/{ORGANI
-      ZATION_ID}/locations/{LOCATION_ID}/workloads/{WORKLOAD_ID}" For example:
-      "organizations/123/locations/us-east1/workloads/assured-workload-1"
-    target: Required. The resource ID of the folder-based destination
-      workload. This workload is where the source project will hypothetically
-      be moved to. Specify the workload's relative resource name, formatted
-      as: "organizations/{ORGANIZATION_ID}/locations/{LOCATION_ID}/workloads/{
-      WORKLOAD_ID}" For example: "organizations/123/locations/us-
-      east1/workloads/assured-workload-2"
-  """
-
-  project = _messages.StringField(1)
-  source = _messages.StringField(2, required=True)
-  target = _messages.StringField(3, required=True)
 
 
 class AssuredworkloadsOrganizationsLocationsWorkloadsPatchRequest(_messages.Message):
@@ -229,6 +214,12 @@ class AssuredworkloadsProjectsOrganizationsLocationsWorkloadsAnalyzeWorkloadMove
   MoveRequest object.
 
   Fields:
+    analyzeChildAssets: Optional. Indicates if all child assets of the source
+      resource should also be analyzed in addition to the source.
+    pageSize: Optional. Page size. If a value is not specified, the default
+      value of 10 is used.
+    pageToken: Optional. The page token from the previous response. It needs
+      to be passed in the second and following requests.
     project: The source type is a project. Specify the project's relative
       resource name, formatted as either a project number or a project ID:
       "projects/{PROJECT_NUMBER}" or "projects/{PROJECT_ID}" For example:
@@ -237,24 +228,33 @@ class AssuredworkloadsProjectsOrganizationsLocationsWorkloadsAnalyzeWorkloadMove
     source: The source type is a project-based workload. Specify the
       workloads's relative resource name, formatted as: "organizations/{ORGANI
       ZATION_ID}/locations/{LOCATION_ID}/workloads/{WORKLOAD_ID}" For example:
-      "organizations/123/locations/us-east1/workloads/assured-workload-1"
+      "organizations/123/locations/us-east1/workloads/assured-workload-1" This
+      option is now deprecated.
     target: Required. The resource ID of the folder-based destination
-      workload. This workload is where the source project will hypothetically
+      workload. This workload is where the source resource will hypothetically
       be moved to. Specify the workload's relative resource name, formatted
       as: "organizations/{ORGANIZATION_ID}/locations/{LOCATION_ID}/workloads/{
       WORKLOAD_ID}" For example: "organizations/123/locations/us-
       east1/workloads/assured-workload-2"
   """
 
-  project = _messages.StringField(1, required=True)
-  source = _messages.StringField(2)
-  target = _messages.StringField(3, required=True)
+  analyzeChildAssets = _messages.BooleanField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4, required=True)
+  source = _messages.StringField(5)
+  target = _messages.StringField(6, required=True)
 
 
 class GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationRequest(_messages.Message):
   r"""Request for acknowledging the violation Next Id: 5
 
+  Enums:
+    AcknowledgeTypeValueValuesEnum: Optional. Acknowledge type of specified
+      violation.
+
   Fields:
+    acknowledgeType: Optional. Acknowledge type of specified violation.
     comment: Required. Business justification explaining the need for
       violation acknowledgement
     nonCompliantOrgPolicy: Optional. This field is deprecated and will be
@@ -265,8 +265,22 @@ class GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationRequest(_messages.Me
       organizations/{organization_id}/policies/{constraint_name}
   """
 
-  comment = _messages.StringField(1)
-  nonCompliantOrgPolicy = _messages.StringField(2)
+  class AcknowledgeTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Acknowledge type of specified violation.
+
+    Values:
+      ACKNOWLEDGE_TYPE_UNSPECIFIED: Acknowledge type unspecified.
+      SINGLE_VIOLATION: Acknowledge only the specific violation.
+      EXISTING_CHILD_RESOURCE_VIOLATIONS: Acknowledge specified orgPolicy
+        violation and also associated resource violations.
+    """
+    ACKNOWLEDGE_TYPE_UNSPECIFIED = 0
+    SINGLE_VIOLATION = 1
+    EXISTING_CHILD_RESOURCE_VIOLATIONS = 2
+
+  acknowledgeType = _messages.EnumField('AcknowledgeTypeValueValuesEnum', 1)
+  comment = _messages.StringField(2)
+  nonCompliantOrgPolicy = _messages.StringField(3)
 
 
 class GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationResponse(_messages.Message):
@@ -274,15 +288,38 @@ class GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationResponse(_messages.M
 
 
 class GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse(_messages.Message):
-  r"""A response that includes the analysis of the hypothetical resource move.
+  r"""Response containing the analysis results for the hypothetical resource
+  move.
 
   Fields:
+    assetMoveAnalyses: List of analysis results for each asset in scope.
     blockers: A list of blockers that should be addressed before moving the
       source project or project-based workload to the destination folder-based
-      workload.
+      workload. This field is now deprecated.
+    nextPageToken: The next page token. Is empty if the last page is reached.
   """
 
-  blockers = _messages.StringField(1, repeated=True)
+  assetMoveAnalyses = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1AssetMoveAnalysis', 1, repeated=True)
+  blockers = _messages.StringField(2, repeated=True)
+  nextPageToken = _messages.StringField(3)
+
+
+class GoogleCloudAssuredworkloadsV1beta1AssetMoveAnalysis(_messages.Message):
+  r"""Represents move analysis results for an asset.
+
+  Fields:
+    analysisGroups: List of eligible analyses performed for the asset.
+    asset: The full resource name of the asset being analyzed. Example: //comp
+      ute.googleapis.com/projects/my_project_123/zones/zone1/instances/instanc
+      e1
+    assetType: Type of the asset being analyzed. Possible values will be among
+      the ones listed [here](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types#searchable_asset_types).
+  """
+
+  analysisGroups = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1MoveAnalysisGroup', 1, repeated=True)
+  asset = _messages.StringField(2)
+  assetType = _messages.StringField(3)
 
 
 class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_messages.Message):
@@ -355,6 +392,10 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
   resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 5, repeated=True)
 
 
+class GoogleCloudAssuredworkloadsV1beta1EnableResourceMonitoringResponse(_messages.Message):
+  r"""Response for EnableResourceMonitoring endpoint."""
+
+
 class GoogleCloudAssuredworkloadsV1beta1ListViolationsResponse(_messages.Message):
   r"""Response of ListViolations endpoint.
 
@@ -378,6 +419,46 @@ class GoogleCloudAssuredworkloadsV1beta1ListWorkloadsResponse(_messages.Message)
 
   nextPageToken = _messages.StringField(1)
   workloads = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1Workload', 2, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsV1beta1MoveAnalysisGroup(_messages.Message):
+  r"""Represents a logical group of checks performed for an asset. If
+  successful, the group contains the analysis result, otherwise it contains an
+  error with the failure reason.
+
+  Fields:
+    analysisResult: Result of a successful analysis.
+    displayName: Name of the analysis group.
+    error: Error details for a failed analysis.
+  """
+
+  analysisResult = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1MoveAnalysisResult', 1)
+  displayName = _messages.StringField(2)
+  error = _messages.MessageField('GoogleRpcStatus', 3)
+
+
+class GoogleCloudAssuredworkloadsV1beta1MoveAnalysisResult(_messages.Message):
+  r"""Represents the successful move analysis results for a group.
+
+  Fields:
+    blockers: List of blockers. If not resolved, these will result in
+      compliance violations in the target.
+    warnings: List of warnings. These are risks that may or may not result in
+      compliance violations.
+  """
+
+  blockers = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1MoveImpact', 1, repeated=True)
+  warnings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1MoveImpact', 2, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsV1beta1MoveImpact(_messages.Message):
+  r"""Represents the impact of moving the asset to the target.
+
+  Fields:
+    detail: Explanation of the impact.
+  """
+
+  detail = _messages.StringField(1)
 
 
 class GoogleCloudAssuredworkloadsV1beta1RestrictAllowedResourcesRequest(_messages.Message):
@@ -427,6 +508,7 @@ class GoogleCloudAssuredworkloadsV1beta1Violation(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. State of the violation
+    ViolationTypeValueValuesEnum: Output only. Type of the violation
 
   Fields:
     acknowledged: A boolean that indicates if the violation is acknowledged
@@ -434,6 +516,9 @@ class GoogleCloudAssuredworkloadsV1beta1Violation(_messages.Message):
       acknowledged first. Check exception_contexts to find the last time the
       violation was acknowledged when there are more than one violations. This
       field will be absent when acknowledged field is marked as false.
+    associatedOrgPolicyViolationId: Optional. Output only. Violation Id of the
+      org-policy violation due to which the resource violation is caused.
+      Empty for org-policy violations.
     auditLogLink: Output only. Immutable. Audit Log Link for violated resource
       Format: https://console.cloud.google.com/logs/query;query={logName}{prot
       oPayload.resourceName}{timeRange}{folder}
@@ -446,6 +531,8 @@ class GoogleCloudAssuredworkloadsV1beta1Violation(_messages.Message):
       business justification provided for violation exception. Format: https:/
       /console.cloud.google.com/logs/query;query={logName}{protoPayload.resour
       ceName}{protoPayload.methodName}{timeRange}{organization}
+    exceptionContexts: Output only. List of all the exception detail added for
+      the violation.
     name: Output only. Immutable. Name of the Violation. Format: organizations
       /{organization}/locations/{location}/workloads/{workload_id}/violations/
       {violations_id}
@@ -454,12 +541,22 @@ class GoogleCloudAssuredworkloadsV1beta1Violation(_messages.Message):
       Format: projects/{project_number}/policies/{constraint_name}
       folders/{folder_id}/policies/{constraint_name}
       organizations/{organization_id}/policies/{constraint_name}
+    orgPolicyConstraint: Output only. Immutable. The org-policy-constraint
+      that was incorrectly changed, which resulted in this violation.
+    parentProjectNumber: Optional. Output only. Parent project number where
+      resource is present. Empty for org-policy violations.
     remediation: Output only. Compliance violation remediation
     resolveTime: Output only. Time of the event which fixed the Violation. If
       the violation is ACTIVE this will be empty.
+    resourceName: Optional. Output only. Name of the resource like
+      //storage.googleapis.com/myprojectxyz-testbucket. Empty for org-policy
+      violations.
+    resourceType: Optional. Output only. Type of the resource like
+      compute.googleapis.com/Disk, etc. Empty for org-policy violations.
     state: Output only. State of the violation
     updateTime: Output only. The last time when the Violation record was
       updated.
+    violationType: Output only. Type of the violation
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -476,19 +573,54 @@ class GoogleCloudAssuredworkloadsV1beta1Violation(_messages.Message):
     UNRESOLVED = 2
     EXCEPTION = 3
 
+  class ViolationTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of the violation
+
+    Values:
+      VIOLATION_TYPE_UNSPECIFIED: Unspecified type.
+      ORG_POLICY: Org Policy Violation.
+      RESOURCE: Resource Violation.
+    """
+    VIOLATION_TYPE_UNSPECIFIED = 0
+    ORG_POLICY = 1
+    RESOURCE = 2
+
   acknowledged = _messages.BooleanField(1)
   acknowledgementTime = _messages.StringField(2)
-  auditLogLink = _messages.StringField(3)
-  beginTime = _messages.StringField(4)
-  category = _messages.StringField(5)
-  description = _messages.StringField(6)
-  exceptionAuditLogLink = _messages.StringField(7)
-  name = _messages.StringField(8)
-  nonCompliantOrgPolicy = _messages.StringField(9)
-  remediation = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1ViolationRemediation', 10)
-  resolveTime = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
+  associatedOrgPolicyViolationId = _messages.StringField(3)
+  auditLogLink = _messages.StringField(4)
+  beginTime = _messages.StringField(5)
+  category = _messages.StringField(6)
+  description = _messages.StringField(7)
+  exceptionAuditLogLink = _messages.StringField(8)
+  exceptionContexts = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1ViolationExceptionContext', 9, repeated=True)
+  name = _messages.StringField(10)
+  nonCompliantOrgPolicy = _messages.StringField(11)
+  orgPolicyConstraint = _messages.StringField(12)
+  parentProjectNumber = _messages.StringField(13)
+  remediation = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1ViolationRemediation', 14)
+  resolveTime = _messages.StringField(15)
+  resourceName = _messages.StringField(16)
+  resourceType = _messages.StringField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  updateTime = _messages.StringField(19)
+  violationType = _messages.EnumField('ViolationTypeValueValuesEnum', 20)
+
+
+class GoogleCloudAssuredworkloadsV1beta1ViolationExceptionContext(_messages.Message):
+  r"""Violation exception detail. Next Id: 6
+
+  Fields:
+    acknowledgementTime: Timestamp when the violation was acknowledged.
+    comment: Business justification provided towards the acknowledgement of
+      the violation.
+    userName: Name of the user (or service account) who acknowledged the
+      violation.
+  """
+
+  acknowledgementTime = _messages.StringField(1)
+  comment = _messages.StringField(2)
+  userName = _messages.StringField(3)
 
 
 class GoogleCloudAssuredworkloadsV1beta1ViolationRemediation(_messages.Message):
@@ -611,7 +743,6 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       by the ResourceUsageRestriction org policy. Invoke
       RestrictAllowedResources endpoint to allow your project developers to
       use these services in their environment."
-    controls: Output only. Controls associated with the customer workload
     createTime: Output only. Immutable. The Workload creation timestamp.
     displayName: Required. The user-assigned display name of the Workload.
       When present it must be between 4 to 30 characters. Allowed characters
@@ -648,6 +779,10 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       folder resource which is a child of the Workload parent. If not
       specified all resources are created under the parent organization.
       Format: folders/{folder_id}
+    resourceMonitoringEnabled: Output only. Indicates whether resource
+      monitoring is enabled for workload or not. It is true when Resource feed
+      is subscribed to AWM topic and AWM Service Agent Role is binded to AW
+      Service Account for resource Assured workload.
     resourceSettings: Input only. Resource properties that are used to
       customize workload resources. These properties (such as custom project
       id) will be used to create workload resources if possible. This field is
@@ -773,22 +908,22 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 3)
   complianceStatus = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceStatus', 4)
   compliantButDisallowedServices = _messages.StringField(5, repeated=True)
-  controls = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceControls', 6)
-  createTime = _messages.StringField(7)
-  displayName = _messages.StringField(8)
-  ekmProvisioningResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse', 9)
-  enableSovereignControls = _messages.BooleanField(10)
-  etag = _messages.StringField(11)
-  fedrampHighSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings', 12)
-  fedrampModerateSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings', 13)
-  il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings', 14)
-  kajEnrollmentState = _messages.EnumField('KajEnrollmentStateValueValuesEnum', 15)
-  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 16)
-  labels = _messages.MessageField('LabelsValue', 17)
-  name = _messages.StringField(18)
-  partner = _messages.EnumField('PartnerValueValuesEnum', 19)
-  partnerPermissions = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadPartnerPermissions', 20)
-  provisionedResourcesParent = _messages.StringField(21)
+  createTime = _messages.StringField(6)
+  displayName = _messages.StringField(7)
+  ekmProvisioningResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse', 8)
+  enableSovereignControls = _messages.BooleanField(9)
+  etag = _messages.StringField(10)
+  fedrampHighSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings', 11)
+  fedrampModerateSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings', 12)
+  il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings', 13)
+  kajEnrollmentState = _messages.EnumField('KajEnrollmentStateValueValuesEnum', 14)
+  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  name = _messages.StringField(17)
+  partner = _messages.EnumField('PartnerValueValuesEnum', 18)
+  partnerPermissions = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadPartnerPermissions', 19)
+  provisionedResourcesParent = _messages.StringField(20)
+  resourceMonitoringEnabled = _messages.BooleanField(21)
   resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 22, repeated=True)
   resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 23, repeated=True)
   saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse', 24)
@@ -806,42 +941,24 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(_messages.Message):
   kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 1)
 
 
-class GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceControls(_messages.Message):
-  r"""Controls enabled to the user associated with this workload
-
-  Fields:
-    appliedOrgPolicies: Output only. Org policies currently applied by this
-      Assured Workload
-  """
-
-  appliedOrgPolicies = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceControlsOrgPolicyControl', 1, repeated=True)
-
-
-class GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceControlsOrgPolicyControl(_messages.Message):
-  r"""An org policy control applied by Assured Workloads
-
-  Fields:
-    constraint: Output only. Constraint name of the org policy control
-      Example: constraints/gcp.resourcelocations
-    version: Output only. Org policy version
-  """
-
-  constraint = _messages.StringField(1)
-  version = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
 class GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceStatus(_messages.Message):
   r"""Represents the Compliance Status of this workload
 
   Fields:
+    acknowledgedResourceViolationCount: Number of current resource violations
+      which are not acknowledged.
     acknowledgedViolationCount: Number of current orgPolicy violations which
+      are acknowledged.
+    activeResourceViolationCount: Number of current resource violations which
       are acknowledged.
     activeViolationCount: Number of current orgPolicy violations which are not
       acknowledged.
   """
 
-  acknowledgedViolationCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  activeViolationCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  acknowledgedResourceViolationCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  acknowledgedViolationCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  activeResourceViolationCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  activeViolationCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse(_messages.Message):
@@ -973,14 +1090,17 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadPartnerPermissions(_messages.Mes
   workload
 
   Fields:
+    assuredWorkloadsMonitoring: Optional. Allow partner to view violation
+      alerts.
     dataLogsViewer: Allow the partner to view inspectability logs and
       monitoring violations.
-    remediateFolderViolations: Allow partner to monitor folder and remediate
-      violations
+    serviceAccessApprover: Optional. Allow partner to view access approval
+      logs.
   """
 
-  dataLogsViewer = _messages.BooleanField(1)
-  remediateFolderViolations = _messages.BooleanField(2)
+  assuredWorkloadsMonitoring = _messages.BooleanField(1)
+  dataLogsViewer = _messages.BooleanField(2)
+  serviceAccessApprover = _messages.BooleanField(3)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo(_messages.Message):
@@ -1135,8 +1255,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1158,7 +1278,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1197,9 +1317,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is

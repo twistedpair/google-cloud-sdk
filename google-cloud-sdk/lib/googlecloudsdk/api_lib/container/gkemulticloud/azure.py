@@ -28,8 +28,11 @@ class _AzureClientBase(client.ClientBase):
   """Base class for Azure gkemulticloud API clients."""
 
   def _Cluster(self, cluster_ref, args):
-    azure_client = resource_args.ParseAzureClientResourceArg(args).RelativeName(
-    ) if hasattr(args, 'client') and args.IsSpecified('client') else None
+    azure_client = (
+        resource_args.ParseAzureClientResourceArg(args).RelativeName()
+        if hasattr(args, 'client') and args.IsSpecified('client')
+        else None
+    )
     cluster_type = self._messages.GoogleCloudGkemulticloudV1AzureCluster
     kwargs = {
         'annotations': self._Annotations(args, cluster_type),
@@ -46,16 +49,22 @@ class _AzureClientBase(client.ClientBase):
         'networking': self._ClusterNetworking(args),
         'resourceGroupId': flags.GetResourceGroupId(args),
     }
-    return self._messages.GoogleCloudGkemulticloudV1AzureCluster(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AzureCluster(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _AzureServicesAuthentication(self, args):
     kwargs = {
         'applicationId': flags.GetAzureApplicationID(args),
         'tenantId': flags.GetAzureTenantID(args),
     }
+    if not any(kwargs.values()):
+      return None
     return self._messages.GoogleCloudGkemulticloudV1AzureServicesAuthentication(
-        **kwargs) if any(kwargs.values()) else None
+        **kwargs
+    )
 
   def _Client(self, client_ref, args):
     kwargs = {
@@ -63,8 +72,11 @@ class _AzureClientBase(client.ClientBase):
         'name': client_ref.azureClientsId,
         'tenantId': getattr(args, 'tenant_id', None),
     }
-    return self._messages.GoogleCloudGkemulticloudV1AzureClient(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AzureClient(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _NodePool(self, node_pool_ref, args):
     nodepool_type = self._messages.GoogleCloudGkemulticloudV1AzureNodePool
@@ -77,10 +89,13 @@ class _AzureClientBase(client.ClientBase):
         'maxPodsConstraint': self._MaxPodsConstraint(args),
         'name': node_pool_ref.azureNodePoolsId,
         'subnetId': flags.GetSubnetID(args),
-        'version': flags.GetNodeVersion(args)
+        'version': flags.GetNodeVersion(args),
     }
-    return self._messages.GoogleCloudGkemulticloudV1AzureNodePool(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AzureNodePool(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _DiskTemplate(self, args, kind):
     kwargs = {}
@@ -88,24 +103,33 @@ class _AzureClientBase(client.ClientBase):
       kwargs['sizeGib'] = flags.GetRootVolumeSize(args)
     elif kind == 'main':
       kwargs['sizeGib'] = flags.GetMainVolumeSize(args)
-    return self._messages.GoogleCloudGkemulticloudV1AzureDiskTemplate(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AzureDiskTemplate(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _ProxyConfig(self, args):
     kwargs = {
         'resourceGroupId': flags.GetProxyResourceGroupId(args),
         'secretId': flags.GetProxySecretId(args),
     }
-    return self._messages.GoogleCloudGkemulticloudV1AzureProxyConfig(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AzureProxyConfig(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _ConfigEncryption(self, args):
     kwargs = {
         'keyId': flags.GetConfigEncryptionKeyId(args),
         'publicKey': flags.GetConfigEncryptionPublicKey(args),
     }
-    return self._messages.GoogleCloudGkemulticloudV1AzureConfigEncryption(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AzureConfigEncryption(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _Authorization(self, args):
     admin_users = flags.GetAdminUsers(args)
@@ -114,28 +138,36 @@ class _AzureClientBase(client.ClientBase):
     kwargs = {
         'adminUsers': [
             self._messages.GoogleCloudGkemulticloudV1AzureClusterUser(
-                username=u) for u in admin_users
+                username=u
+            )
+            for u in admin_users
         ]
     }
-    return self._messages.GoogleCloudGkemulticloudV1AzureAuthorization(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AzureAuthorization(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _ClusterNetworking(self, args):
     kwargs = {
-        'podAddressCidrBlocks':
-            flags.GetPodAddressCidrBlocks(args),
-        'serviceAddressCidrBlocks':
-            flags.GetServiceAddressCidrBlocks(args),
-        'serviceLoadBalancerSubnetId':
-            flags.GetServiceLoadBalancerSubnetId(args),
-        'virtualNetworkId':
-            flags.GetVnetId(args),
+        'podAddressCidrBlocks': flags.GetPodAddressCidrBlocks(args),
+        'serviceAddressCidrBlocks': flags.GetServiceAddressCidrBlocks(args),
+        'serviceLoadBalancerSubnetId': flags.GetServiceLoadBalancerSubnetId(
+            args
+        ),
+        'virtualNetworkId': flags.GetVnetId(args),
     }
+    if not any(kwargs.values()):
+      return None
     return self._messages.GoogleCloudGkemulticloudV1AzureClusterNetworking(
-        **kwargs) if any(kwargs.values()) else None
+        **kwargs
+    )
 
   def _ControlPlane(self, args):
-    control_plane_type = self._messages.GoogleCloudGkemulticloudV1AzureControlPlane
+    control_plane_type = (
+        self._messages.GoogleCloudGkemulticloudV1AzureControlPlane
+    )
     kwargs = {
         'configEncryption': self._ConfigEncryption(args),
         'databaseEncryption': self._DatabaseEncryption(args),
@@ -150,30 +182,42 @@ class _AzureClientBase(client.ClientBase):
         'version': flags.GetClusterVersion(args),
         'vmSize': flags.GetVMSize(args),
     }
-    return self._messages.GoogleCloudGkemulticloudV1AzureControlPlane(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AzureControlPlane(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _SshConfig(self, args):
     kwargs = {
         'authorizedKey': flags.GetSSHPublicKey(args),
     }
-    return self._messages.GoogleCloudGkemulticloudV1AzureSshConfig(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AzureSshConfig(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _DatabaseEncryption(self, args):
     kwargs = {
         'keyId': flags.GetDatabaseEncryptionKeyId(args),
     }
+    if not any(kwargs.values()):
+      return None
     return self._messages.GoogleCloudGkemulticloudV1AzureDatabaseEncryption(
-        **kwargs) if any(kwargs.values()) else None
+        **kwargs
+    )
 
   def _Autoscaling(self, args):
     kwargs = {
         'minNodeCount': flags.GetMinNodes(args),
         'maxNodeCount': flags.GetMaxNodes(args),
     }
+    if not any(kwargs.values()):
+      return None
     return self._messages.GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling(
-        **kwargs) if any(kwargs.values()) else None
+        **kwargs
+    )
 
   def _NodeConfig(self, args):
     node_config_type = self._messages.GoogleCloudGkemulticloudV1AzureNodeConfig
@@ -188,15 +232,21 @@ class _AzureClientBase(client.ClientBase):
         'taints': flags.GetNodeTaints(args),
         'vmSize': flags.GetVMSize(args),
     }
-    return self._messages.GoogleCloudGkemulticloudV1AzureNodeConfig(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AzureNodeConfig(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _NodeManagement(self, args):
     kwargs = {
         'autoRepair': flags.GetAutoRepair(args),
     }
-    return self._messages.GoogleCloudGkemulticloudV1AzureNodeManagement(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AzureNodeManagement(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
 
 class ClustersClient(_AzureClientBase):
@@ -209,27 +259,39 @@ class ClustersClient(_AzureClientBase):
 
   def Create(self, cluster_ref, args):
     """Creates a new Anthos cluster on Azure."""
-    req = self._messages.GkemulticloudProjectsLocationsAzureClustersCreateRequest(
-        azureClusterId=cluster_ref.azureClustersId,
-        googleCloudGkemulticloudV1AzureCluster=self._Cluster(cluster_ref, args),
-        parent=cluster_ref.Parent().RelativeName(),
-        validateOnly=flags.GetValidateOnly(args))
+    req = (
+        self._messages.GkemulticloudProjectsLocationsAzureClustersCreateRequest(
+            azureClusterId=cluster_ref.azureClustersId,
+            googleCloudGkemulticloudV1AzureCluster=self._Cluster(
+                cluster_ref, args
+            ),
+            parent=cluster_ref.Parent().RelativeName(),
+            validateOnly=flags.GetValidateOnly(args),
+        )
+    )
     return self._service.Create(req)
 
   def GenerateAccessToken(self, cluster_ref):
     """Generates an access token for an Azure cluster."""
     req = self._service.GetRequestType('GenerateAzureAccessToken')(
-        azureCluster=cluster_ref.RelativeName())
+        azureCluster=cluster_ref.RelativeName()
+    )
     return self._service.GenerateAzureAccessToken(req)
 
   def Update(self, cluster_ref, args):
     """Updates an Anthos cluster on Azure."""
-    req = self._messages.GkemulticloudProjectsLocationsAzureClustersPatchRequest(
-        googleCloudGkemulticloudV1AzureCluster=self._Cluster(cluster_ref, args),
-        name=cluster_ref.RelativeName(),
-        updateMask=update_mask.GetUpdateMask(
-            args, update_mask.AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS),
-        validateOnly=flags.GetValidateOnly(args))
+    req = (
+        self._messages.GkemulticloudProjectsLocationsAzureClustersPatchRequest(
+            googleCloudGkemulticloudV1AzureCluster=self._Cluster(
+                cluster_ref, args
+            ),
+            name=cluster_ref.RelativeName(),
+            updateMask=update_mask.GetUpdateMask(
+                args, update_mask.AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS
+            ),
+            validateOnly=flags.GetValidateOnly(args),
+        )
+    )
     return self._service.Patch(req)
 
 
@@ -246,20 +308,25 @@ class NodePoolsClient(_AzureClientBase):
     req = self._messages.GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsCreateRequest(
         azureNodePoolId=nodepool_ref.azureNodePoolsId,
         googleCloudGkemulticloudV1AzureNodePool=self._NodePool(
-            nodepool_ref, args),
+            nodepool_ref, args
+        ),
         parent=nodepool_ref.Parent().RelativeName(),
-        validateOnly=flags.GetValidateOnly(args))
+        validateOnly=flags.GetValidateOnly(args),
+    )
     return self._service.Create(req)
 
   def Update(self, nodepool_ref, args):
     """Updates a node pool in an Anthos cluster on Azure."""
     req = self._messages.GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsPatchRequest(
         googleCloudGkemulticloudV1AzureNodePool=self._NodePool(
-            nodepool_ref, args),
+            nodepool_ref, args
+        ),
         name=nodepool_ref.RelativeName(),
         updateMask=update_mask.GetUpdateMask(
-            args, update_mask.AZURE_NODEPOOL_ARGS_TO_UPDATE_MASKS),
-        validateOnly=flags.GetValidateOnly(args))
+            args, update_mask.AZURE_NODEPOOL_ARGS_TO_UPDATE_MASKS
+        ),
+        validateOnly=flags.GetValidateOnly(args),
+    )
     return self._service.Patch(req)
 
 
@@ -273,9 +340,14 @@ class ClientsClient(_AzureClientBase):
 
   def Create(self, client_ref, args):
     """Creates a new Azure client."""
-    req = self._messages.GkemulticloudProjectsLocationsAzureClientsCreateRequest(
-        googleCloudGkemulticloudV1AzureClient=self._Client(client_ref, args),
-        azureClientId=client_ref.azureClientsId,
-        parent=client_ref.Parent().RelativeName(),
-        validateOnly=flags.GetValidateOnly(args))
+    req = (
+        self._messages.GkemulticloudProjectsLocationsAzureClientsCreateRequest(
+            googleCloudGkemulticloudV1AzureClient=self._Client(
+                client_ref, args
+            ),
+            azureClientId=client_ref.azureClientsId,
+            parent=client_ref.Parent().RelativeName(),
+            validateOnly=flags.GetValidateOnly(args),
+        )
+    )
     return self._service.Create(req)

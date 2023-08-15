@@ -76,7 +76,7 @@ class LogEntry(proto.Message):
 
             For backward compatibility, if ``log_name`` begins with a
             forward-slash, such as ``/projects/...``, then the log entry
-            is ingested as usual, but the forward-slash is removed.
+            is processed as usual, but the forward-slash is removed.
             Listing the log entry will not show the leading slash and
             filtering for a log name with a leading slash will never
             return any results.
@@ -122,7 +122,7 @@ class LogEntry(proto.Message):
             the `logs retention
             period <https://cloud.google.com/logging/quotas#logs_retention_periods>`__
             in the past, and that don't exceed 24 hours in the future.
-            Log entries outside those time boundaries aren't ingested by
+            Log entries outside those time boundaries are rejected by
             Logging.
         receive_timestamp (google.protobuf.timestamp_pb2.Timestamp):
             Output only. The time the log entry was

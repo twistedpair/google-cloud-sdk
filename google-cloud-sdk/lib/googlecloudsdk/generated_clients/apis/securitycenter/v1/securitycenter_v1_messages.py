@@ -216,6 +216,175 @@ class AssetDiscoveryConfig(_messages.Message):
   projectIds = _messages.StringField(3, repeated=True)
 
 
+class AttackExposure(_messages.Message):
+  r"""An attack exposure contains the results of an attack path simulation
+  run.
+
+  Enums:
+    StateValueValuesEnum: What state this AttackExposure is in. This captures
+      whether or not an attack exposure has been calculated or not.
+
+  Fields:
+    attackExposureResult: The resource name of the attack path simulation
+      result that contains the details regarding this attack exposure score.
+      Example: organizations/123/attackExposureResults/456
+    exposedHighValueResourcesCount: The number of high value resources that
+      are exposed as a result of this finding.
+    exposedLowValueResourcesCount: The number of high value resources that are
+      exposed as a result of this finding.
+    exposedMediumValueResourcesCount: The number of medium value resources
+      that are exposed as a result of this finding.
+    latestCalculationTime: The most recent time the attack exposure was
+      updated on this finding.
+    score: A number between 0 (inclusive) and infinity that represents how
+      important this finding is to remediate. The higher the score, the more
+      important it is to remediate.
+    state: What state this AttackExposure is in. This captures whether or not
+      an attack exposure has been calculated or not.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""What state this AttackExposure is in. This captures whether or not an
+    attack exposure has been calculated or not.
+
+    Values:
+      STATE_UNSPECIFIED: The state is not specified.
+      CALCULATED: The attack exposure has been calculated.
+      NOT_CALCULATED: The attack exposure has not been calculated.
+    """
+    STATE_UNSPECIFIED = 0
+    CALCULATED = 1
+    NOT_CALCULATED = 2
+
+  attackExposureResult = _messages.StringField(1)
+  exposedHighValueResourcesCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  exposedLowValueResourcesCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  exposedMediumValueResourcesCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  latestCalculationTime = _messages.StringField(5)
+  score = _messages.FloatField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+
+
+class AttackPath(_messages.Message):
+  r"""A path that an attacker could take to reach an exposed resource.
+
+  Fields:
+    edges: A list of the edges between nodes in this attack path.
+    name: The attack path name, for example,
+      `organizations/12/simulation/34/valuedResources/56/attackPaths/78`
+    pathNodes: A list of nodes that exist in this attack path.
+  """
+
+  edges = _messages.MessageField('AttackPathEdge', 1, repeated=True)
+  name = _messages.StringField(2)
+  pathNodes = _messages.MessageField('AttackPathNode', 3, repeated=True)
+
+
+class AttackPathEdge(_messages.Message):
+  r"""Represents a connection between a source node and a destination node in
+  this attack path.
+
+  Fields:
+    destination: The attack node uuid of the destination node.
+    source: The attack node uuid of the source node.
+  """
+
+  destination = _messages.StringField(1)
+  source = _messages.StringField(2)
+
+
+class AttackPathNode(_messages.Message):
+  r"""Represents one point that an attacker passes through in this attack
+  path.
+
+  Fields:
+    associatedFindings: The findings associated with this node in the attack
+      path.
+    attackSteps: A list of attack step nodes that exist in this attack path
+      node.
+    displayName: Human-readable name of this resource.
+    resource: The name of the resource at this point in the attack path. The
+      format of the name follows the Cloud Asset Inventory [resource name
+      format]("https://cloud.google.com/asset-inventory/docs/resource-name-
+      format")
+    resourceType: The [supported resource
+      type](https://cloud.google.com/asset-inventory/docs/supported-asset-
+      types")
+    uuid: Unique id of the attack path node.
+  """
+
+  associatedFindings = _messages.MessageField('PathNodeAssociatedFinding', 1, repeated=True)
+  attackSteps = _messages.MessageField('AttackStepNode', 2, repeated=True)
+  displayName = _messages.StringField(3)
+  resource = _messages.StringField(4)
+  resourceType = _messages.StringField(5)
+  uuid = _messages.StringField(6)
+
+
+class AttackStepNode(_messages.Message):
+  r"""Detailed steps the attack can take between path nodes.
+
+  Enums:
+    TypeValueValuesEnum: Attack step type. Can be either AND, OR or DEFENSE
+
+  Messages:
+    LabelsValue: Attack step labels for metadata
+
+  Fields:
+    description: Attack step description
+    displayName: User friendly name of the attack step
+    labels: Attack step labels for metadata
+    type: Attack step type. Can be either AND, OR or DEFENSE
+    uuid: Unique ID for one Node
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Attack step type. Can be either AND, OR or DEFENSE
+
+    Values:
+      NODE_TYPE_UNSPECIFIED: Type not specified
+      NODE_TYPE_AND: Incoming edge joined with AND
+      NODE_TYPE_OR: Incoming edge joined with OR
+      NODE_TYPE_DEFENSE: Incoming edge is defense
+      NODE_TYPE_ATTACKER: Incoming edge is attacker
+    """
+    NODE_TYPE_UNSPECIFIED = 0
+    NODE_TYPE_AND = 1
+    NODE_TYPE_OR = 2
+    NODE_TYPE_DEFENSE = 3
+    NODE_TYPE_ATTACKER = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Attack step labels for metadata
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  uuid = _messages.StringField(5)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -277,6 +446,26 @@ class AuditLogConfig(_messages.Message):
 
   exemptedMembers = _messages.StringField(1, repeated=True)
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class BatchCreateResourceValueConfigsRequest(_messages.Message):
+  r"""Request message to create multiple resource value configs
+
+  Fields:
+    requests: Required. The resource value configs to be created.
+  """
+
+  requests = _messages.MessageField('CreateResourceValueConfigRequest', 1, repeated=True)
+
+
+class BatchCreateResourceValueConfigsResponse(_messages.Message):
+  r"""Response message for BatchCreateResourceValueConfigs
+
+  Fields:
+    resourceValueConfigs: The resource value configs created
+  """
+
+  resourceValueConfigs = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceValueConfig', 1, repeated=True)
 
 
 class Binding(_messages.Message):
@@ -501,6 +690,7 @@ class Container(_messages.Message):
   r"""Container associated with the finding.
 
   Fields:
+    createTime: The time that the container was created.
     imageId: Optional container image ID, if provided by the container
       runtime. Uniquely identifies the container image launched using a
       container image digest.
@@ -510,10 +700,23 @@ class Container(_messages.Message):
       This string can identify a container image version using mutable tags.
   """
 
-  imageId = _messages.StringField(1)
-  labels = _messages.MessageField('Label', 2, repeated=True)
-  name = _messages.StringField(3)
-  uri = _messages.StringField(4)
+  createTime = _messages.StringField(1)
+  imageId = _messages.StringField(2)
+  labels = _messages.MessageField('Label', 3, repeated=True)
+  name = _messages.StringField(4)
+  uri = _messages.StringField(5)
+
+
+class CreateResourceValueConfigRequest(_messages.Message):
+  r"""Request message to create single resource value config
+
+  Fields:
+    parent: Required. Resource name of the new ResourceValueConfig's parent.
+    resourceValueConfig: Required. The resource value config being created.
+  """
+
+  parent = _messages.StringField(1)
+  resourceValueConfig = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceValueConfig', 2)
 
 
 class CustomModuleValidationError(_messages.Message):
@@ -932,9 +1135,9 @@ class EnvironmentVariable(_messages.Message):
 
 
 class EventThreatDetectionCustomModule(_messages.Message):
-  r"""An event threat detection custom module is a Cloud SCC resource that
-  contains the configuration and enablement state of a custom module, which
-  enables ETD to write certain findings to Cloud SCC.
+  r"""Represents an instance of an Event Threat Detection custom module,
+  including its full module name, display name, enablement state, and last
+  updated time. You can create a custom module at the organization level only.
 
   Enums:
     EnablementStateValueValuesEnum: The state of enablement for the module at
@@ -957,9 +1160,9 @@ class EventThreatDetectionCustomModule(_messages.Message):
     enablementState: The state of enablement for the module at the given level
       of the hierarchy.
     lastEditor: Output only. The editor the module was last updated by.
-    name: Immutable. The resource name of the ETD custom module. Its format
-      is: * "organizations/{organization}/eventThreatDetectionSettings/customM
-      odules/{module}". *
+    name: Immutable. The resource name of the Event Threat Detection custom
+      module. Its format is: * "organizations/{organization}/eventThreatDetect
+      ionSettings/customModules/{module}". *
       "folders/{folder}/eventThreatDetectionSettings/customModules/{module}".
       * "projects/{project}/eventThreatDetectionSettings/customModules/{module
       }".
@@ -1150,6 +1353,8 @@ class Finding(_messages.Message):
   Fields:
     access: Access details associated with the finding, such as more
       information on the caller, which method was accessed, and from where.
+    attackExposure: The results of an attack path simulation relevant to this
+      finding.
     canonicalName: The canonical name of the finding. It's either "organizatio
       ns/{organization_id}/sources/{source_id}/findings/{finding_id}",
       "folders/{folder_id}/sources/{source_id}/findings/{finding_id}" or
@@ -1443,44 +1648,45 @@ class Finding(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   access = _messages.MessageField('Access', 1)
-  canonicalName = _messages.StringField(2)
-  category = _messages.StringField(3)
-  cloudDlpDataProfile = _messages.MessageField('CloudDlpDataProfile', 4)
-  cloudDlpInspection = _messages.MessageField('CloudDlpInspection', 5)
-  compliances = _messages.MessageField('Compliance', 6, repeated=True)
-  connections = _messages.MessageField('Connection', 7, repeated=True)
-  contacts = _messages.MessageField('ContactsValue', 8)
-  containers = _messages.MessageField('Container', 9, repeated=True)
-  createTime = _messages.StringField(10)
-  database = _messages.MessageField('Database', 11)
-  description = _messages.StringField(12)
-  eventTime = _messages.StringField(13)
-  exfiltration = _messages.MessageField('Exfiltration', 14)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 15)
-  externalUri = _messages.StringField(16)
-  files = _messages.MessageField('File', 17, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 18)
-  iamBindings = _messages.MessageField('IamBinding', 19, repeated=True)
-  indicator = _messages.MessageField('Indicator', 20)
-  kernelRootkit = _messages.MessageField('KernelRootkit', 21)
-  kubernetes = _messages.MessageField('Kubernetes', 22)
-  mitreAttack = _messages.MessageField('MitreAttack', 23)
-  moduleName = _messages.StringField(24)
-  mute = _messages.EnumField('MuteValueValuesEnum', 25)
-  muteAnnotation = _messages.StringField(26)
-  muteInitiator = _messages.StringField(27)
-  muteUpdateTime = _messages.StringField(28)
-  name = _messages.StringField(29)
-  nextSteps = _messages.StringField(30)
-  parent = _messages.StringField(31)
-  parentDisplayName = _messages.StringField(32)
-  processes = _messages.MessageField('Process', 33, repeated=True)
-  resourceName = _messages.StringField(34)
-  securityMarks = _messages.MessageField('SecurityMarks', 35)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 36)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 37)
-  state = _messages.EnumField('StateValueValuesEnum', 38)
-  vulnerability = _messages.MessageField('Vulnerability', 39)
+  attackExposure = _messages.MessageField('AttackExposure', 2)
+  canonicalName = _messages.StringField(3)
+  category = _messages.StringField(4)
+  cloudDlpDataProfile = _messages.MessageField('CloudDlpDataProfile', 5)
+  cloudDlpInspection = _messages.MessageField('CloudDlpInspection', 6)
+  compliances = _messages.MessageField('Compliance', 7, repeated=True)
+  connections = _messages.MessageField('Connection', 8, repeated=True)
+  contacts = _messages.MessageField('ContactsValue', 9)
+  containers = _messages.MessageField('Container', 10, repeated=True)
+  createTime = _messages.StringField(11)
+  database = _messages.MessageField('Database', 12)
+  description = _messages.StringField(13)
+  eventTime = _messages.StringField(14)
+  exfiltration = _messages.MessageField('Exfiltration', 15)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 16)
+  externalUri = _messages.StringField(17)
+  files = _messages.MessageField('File', 18, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 19)
+  iamBindings = _messages.MessageField('IamBinding', 20, repeated=True)
+  indicator = _messages.MessageField('Indicator', 21)
+  kernelRootkit = _messages.MessageField('KernelRootkit', 22)
+  kubernetes = _messages.MessageField('Kubernetes', 23)
+  mitreAttack = _messages.MessageField('MitreAttack', 24)
+  moduleName = _messages.StringField(25)
+  mute = _messages.EnumField('MuteValueValuesEnum', 26)
+  muteAnnotation = _messages.StringField(27)
+  muteInitiator = _messages.StringField(28)
+  muteUpdateTime = _messages.StringField(29)
+  name = _messages.StringField(30)
+  nextSteps = _messages.StringField(31)
+  parent = _messages.StringField(32)
+  parentDisplayName = _messages.StringField(33)
+  processes = _messages.MessageField('Process', 34, repeated=True)
+  resourceName = _messages.StringField(35)
+  securityMarks = _messages.MessageField('SecurityMarks', 36)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 37)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 38)
+  state = _messages.EnumField('StateValueValuesEnum', 39)
+  vulnerability = _messages.MessageField('Vulnerability', 40)
 
 
 class Folder(_messages.Message):
@@ -1856,6 +2062,103 @@ class GoogleCloudSecuritycenterV1ResourceSelector(_messages.Message):
   """
 
   resourceTypes = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
+  r"""A resource value config is a mapping configuration of user's tag values
+  to resource values. Used by the attack path simulation.
+
+  Enums:
+    ResourceValueValueValuesEnum: Required. Resource value level this
+      expression represents
+
+  Messages:
+    ResourceLabelsSelectorValue: List of resource labels to search for,
+      evaluated with AND. E.g. "resource_labels_selector": {"key": "value",
+      "env": "prod"} will match resources with labels "key": "value" AND
+      "env": "prod" https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels
+
+  Fields:
+    createTime: Output only. Timestamp this resource value config was created.
+    description: Description of the resource value config.
+    name: Name for the resource value config
+    resourceLabelsSelector: List of resource labels to search for, evaluated
+      with AND. E.g. "resource_labels_selector": {"key": "value", "env":
+      "prod"} will match resources with labels "key": "value" AND "env":
+      "prod" https://cloud.google.com/resource-manager/docs/creating-managing-
+      labels
+    resourceType: Apply resource_value only to resources that match
+      resource_type. resource_type will be checked with "AND" of other
+      resources. E.g. "storage.googleapis.com/Bucket" with resource_value
+      "HIGH" will apply "HIGH" value only to "storage.googleapis.com/Bucket"
+      resources.
+    resourceValue: Required. Resource value level this expression represents
+    scope: Project or folder to scope this config to. For example,
+      "project/456" would apply this config only to resources in "project/456"
+      scope will be checked with "AND" of other resources.
+    tagValues: Required. Tag values combined with AND to check against. Values
+      in the form "tagValues/123" E.g. [ "tagValues/123", "tagValues/456",
+      "tagValues/789" ] https://cloud.google.com/resource-
+      manager/docs/tags/tags-creating-and-managing
+    updateTime: Output only. Timestamp this resource value config was last
+      updated.
+  """
+
+  class ResourceValueValueValuesEnum(_messages.Enum):
+    r"""Required. Resource value level this expression represents
+
+    Values:
+      RESOURCE_VALUE_UNSPECIFIED: Unspecific value
+      HIGH: High resource value
+      MEDIUM: Medium resource value
+      LOW: Low resource value
+      NONE: No resource value, e.g. ignore these resources
+    """
+    RESOURCE_VALUE_UNSPECIFIED = 0
+    HIGH = 1
+    MEDIUM = 2
+    LOW = 3
+    NONE = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceLabelsSelectorValue(_messages.Message):
+    r"""List of resource labels to search for, evaluated with AND. E.g.
+    "resource_labels_selector": {"key": "value", "env": "prod"} will match
+    resources with labels "key": "value" AND "env": "prod"
+    https://cloud.google.com/resource-manager/docs/creating-managing-labels
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceLabelsSelectorValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceLabelsSelectorValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceLabelsSelectorValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  resourceLabelsSelector = _messages.MessageField('ResourceLabelsSelectorValue', 4)
+  resourceType = _messages.StringField(5)
+  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 6)
+  scope = _messages.StringField(7)
+  tagValues = _messages.StringField(8, repeated=True)
+  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -2720,6 +3023,20 @@ class ListAssetsResult(_messages.Message):
   stateChange = _messages.EnumField('StateChangeValueValuesEnum', 2)
 
 
+class ListAttackPathsResponse(_messages.Message):
+  r"""Response message for listing the attack paths for a given simulation or
+  valued resource.
+
+  Fields:
+    attackPaths: The attack paths that the attack path simulation identified.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results.
+  """
+
+  attackPaths = _messages.MessageField('AttackPath', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListBigQueryExportsResponse(_messages.Message):
   r"""Response message for listing BigQuery exports.
 
@@ -2734,8 +3051,8 @@ class ListBigQueryExportsResponse(_messages.Message):
 
 
 class ListDescendantEventThreatDetectionCustomModulesResponse(_messages.Message):
-  r"""Response for listing current and descendant resident
-  EventThreatDetectionCustomModules.
+  r"""Response for listing current and descendant resident Event Threat
+  Detection custom modules.
 
   Fields:
     eventThreatDetectionCustomModules: Custom modules belonging to the
@@ -2793,7 +3110,7 @@ class ListEffectiveSecurityHealthAnalyticsCustomModulesResponse(_messages.Messag
 
 
 class ListEventThreatDetectionCustomModulesResponse(_messages.Message):
-  r"""Response for listing EventThreatDetectionCustomModules.
+  r"""Response for listing Event Threat Detection custom modules.
 
   Fields:
     eventThreatDetectionCustomModules: Custom modules belonging to the
@@ -2901,6 +3218,20 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListResourceValueConfigsResponse(_messages.Message):
+  r"""Response message to list resource value configs
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is empty, there are no subsequent pages.
+    resourceValueConfigs: The resource value configs from the specified
+      parent.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resourceValueConfigs = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceValueConfig', 2, repeated=True)
+
+
 class ListSecurityHealthAnalyticsCustomModulesResponse(_messages.Message):
   r"""Response message for listing Security Health Analytics custom modules.
 
@@ -2926,6 +3257,23 @@ class ListSourcesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   sources = _messages.MessageField('Source', 2, repeated=True)
+
+
+class ListValuedResourcesResponse(_messages.Message):
+  r"""Response message for listing the valued resources for a given
+  simulation.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results.
+    totalSize: The estimated total number of results matching the query.
+    valuedResources: The valued resources that the attack path simulation
+      identified.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  totalSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  valuedResources = _messages.MessageField('ValuedResource', 3, repeated=True)
 
 
 class MemoryHashSignature(_messages.Message):
@@ -3046,6 +3394,7 @@ class MitreAttack(_messages.Message):
       ACCESS_TOKEN_MANIPULATION: T1134
       ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
       DEFAULT_ACCOUNTS: T1078.001
+      INHIBIT_SYSTEM_RECOVERY: T1490
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -3083,6 +3432,7 @@ class MitreAttack(_messages.Message):
     ACCESS_TOKEN_MANIPULATION = 33
     ABUSE_ELEVATION_CONTROL_MECHANISM = 34
     DEFAULT_ACCOUNTS = 35
+    INHIBIT_SYSTEM_RECOVERY = 36
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -3161,6 +3511,7 @@ class MitreAttack(_messages.Message):
       ACCESS_TOKEN_MANIPULATION: T1134
       ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
       DEFAULT_ACCOUNTS: T1078.001
+      INHIBIT_SYSTEM_RECOVERY: T1490
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -3198,6 +3549,7 @@ class MitreAttack(_messages.Message):
     ACCESS_TOKEN_MANIPULATION = 33
     ABUSE_ELEVATION_CONTROL_MECHANISM = 34
     DEFAULT_ACCOUNTS = 35
+    INHIBIT_SYSTEM_RECOVERY = 36
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -3267,8 +3619,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -3290,7 +3642,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -3329,9 +3681,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -3385,6 +3737,22 @@ class OrganizationSettings(_messages.Message):
   name = _messages.StringField(3)
 
 
+class PathNodeAssociatedFinding(_messages.Message):
+  r"""A finding that is associated with this node in the attack path.
+
+  Fields:
+    canonicalFinding: Canonical name of the associated findings. Example:
+      organizations/123/sources/456/findings/789
+    findingCategory: The additional taxonomy group within findings from a
+      given source.
+    name: Full resource name of the finding.
+  """
+
+  canonicalFinding = _messages.StringField(1)
+  findingCategory = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
 class Pod(_messages.Message):
   r"""A Kubernetes Pod.
 
@@ -3415,7 +3783,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -3423,15 +3791,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -3577,6 +3945,16 @@ class Resource(_messages.Message):
   projectDisplayName = _messages.StringField(6)
   projectName = _messages.StringField(7)
   type = _messages.StringField(8)
+
+
+class ResourceValueConfigMetadata(_messages.Message):
+  r"""Metadata about a ResourceValueConfig. For example, id and name.
+
+  Fields:
+    name: Resource value config name
+  """
+
+  name = _messages.StringField(1)
 
 
 class Role(_messages.Message):
@@ -3956,58 +4334,6 @@ class SecuritycenterFoldersBigQueryExportsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
-class SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesCreateRequest(_messages.Message):
-  r"""A
-  SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesCreateRequest
-  object.
-
-  Fields:
-    eventThreatDetectionCustomModule: A EventThreatDetectionCustomModule
-      resource to be passed as the request body.
-    parent: Required. The new custom module's parent. Its format is: *
-      "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
-  """
-
-  eventThreatDetectionCustomModule = _messages.MessageField('EventThreatDetectionCustomModule', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesDeleteRequest(_messages.Message):
-  r"""A
-  SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesDeleteRequest
-  object.
-
-  Fields:
-    name: Required. Name of the custom module to delete. Its format is: * "org
-      anizations/{organization}/eventThreatDetectionSettings/customModules/{mo
-      dule}". *
-      "folders/{folder}/eventThreatDetectionSettings/customModules/{module}".
-      * "projects/{project}/eventThreatDetectionSettings/customModules/{module
-      }".
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesGetRequest(_messages.Message):
-  r"""A
-  SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesGetRequest
-  object.
-
-  Fields:
-    name: Required. Name of the custom module to get. Its format is: * "organi
-      zations/{organization}/eventThreatDetectionSettings/customModules/{modul
-      e}". *
-      "folders/{folder}/eventThreatDetectionSettings/customModules/{module}".
-      * "projects/{project}/eventThreatDetectionSettings/customModules/{module
-      }".
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesListDescendantRequest(_messages.Message):
   r"""A SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesListDesc
   endantRequest object.
@@ -4022,64 +4348,14 @@ class SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesListDescenda
       retrieve the subsequent page. When paginating, all other parameters
       provided to `ListDescendantEventThreatDetectionCustomModules` must match
       the call that provided the page token.
-    parent: Required. Name of the parent to list custom modules. Its format
-      is: * "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
+    parent: Required. Name of the parent to list custom modules under. Its
+      format is: *
+      "organizations/{organization}/eventThreatDetectionSettings".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesListRequest(_messages.Message):
-  r"""A
-  SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesListRequest
-  object.
-
-  Fields:
-    pageSize: The maximum number of modules to return. The service may return
-      fewer than this value. If unspecified, at most 10 configs will be
-      returned. The maximum value is 1000; values above 1000 will be coerced
-      to 1000.
-    pageToken: A page token, received from a previous
-      `ListEventThreatDetectionCustomModules` call. Provide this to retrieve
-      the subsequent page. When paginating, all other parameters provided to
-      `ListEventThreatDetectionCustomModules` must match the call that
-      provided the page token.
-    parent: Required. Name of the parent to list custom modules. Its format
-      is: * "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesPatchRequest(_messages.Message):
-  r"""A
-  SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesPatchRequest
-  object.
-
-  Fields:
-    eventThreatDetectionCustomModule: A EventThreatDetectionCustomModule
-      resource to be passed as the request body.
-    name: Immutable. The resource name of the ETD custom module. Its format
-      is: * "organizations/{organization}/eventThreatDetectionSettings/customM
-      odules/{module}". *
-      "folders/{folder}/eventThreatDetectionSettings/customModules/{module}".
-      * "projects/{project}/eventThreatDetectionSettings/customModules/{module
-      }".
-    updateMask: The list of fields to be updated. If empty all mutable fields
-      will be updated.
-  """
-
-  eventThreatDetectionCustomModule = _messages.MessageField('EventThreatDetectionCustomModule', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
 
 
 class SecuritycenterFoldersEventThreatDetectionSettingsEffectiveCustomModulesGetRequest(_messages.Message):
@@ -4087,11 +4363,9 @@ class SecuritycenterFoldersEventThreatDetectionSettingsEffectiveCustomModulesGet
   sGetRequest object.
 
   Fields:
-    name: Required. The resource name of the effective ETD custom module. Its
-      format is: * "organizations/{organization}/eventThreatDetectionSettings/
-      effectiveCustomModules/{module}". * "folders/{folder}/eventThreatDetecti
-      onSettings/effectiveCustomModules/{module}". * "projects/{project}/event
-      ThreatDetectionSettings/effectiveCustomModules/{module}".
+    name: Required. The resource name of the effective Event Threat Detection
+      custom module. Its format is: * "organizations/{organization}/eventThrea
+      tDetectionSettings/effectiveCustomModules/{module}".
   """
 
   name = _messages.StringField(1, required=True)
@@ -4111,35 +4385,14 @@ class SecuritycenterFoldersEventThreatDetectionSettingsEffectiveCustomModulesLis
       retrieve the subsequent page. When paginating, all other parameters
       provided to `ListEffectiveEventThreatDetectionCustomModules` must match
       the call that provided the page token.
-    parent: Required. Name of the parent to list custom modules. Its format
-      is: * "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
+    parent: Required. Name of the parent to list custom modules for. Its
+      format is: *
+      "organizations/{organization}/eventThreatDetectionSettings".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class SecuritycenterFoldersEventThreatDetectionSettingsValidateCustomModuleRequest(_messages.Message):
-  r"""A
-  SecuritycenterFoldersEventThreatDetectionSettingsValidateCustomModuleRequest
-  object.
-
-  Fields:
-    parent: Required. Resource name of the parent to validate the Custom
-      Module under. Its format is: *
-      "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
-    validateEventThreatDetectionCustomModuleRequest: A
-      ValidateEventThreatDetectionCustomModuleRequest resource to be passed as
-      the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  validateEventThreatDetectionCustomModuleRequest = _messages.MessageField('ValidateEventThreatDetectionCustomModuleRequest', 2)
 
 
 class SecuritycenterFoldersFindingsBulkMuteRequest(_messages.Message):
@@ -5007,9 +5260,7 @@ class SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesCreate
     eventThreatDetectionCustomModule: A EventThreatDetectionCustomModule
       resource to be passed as the request body.
     parent: Required. The new custom module's parent. Its format is: *
-      "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
+      "organizations/{organization}/eventThreatDetectionSettings".
   """
 
   eventThreatDetectionCustomModule = _messages.MessageField('EventThreatDetectionCustomModule', 1)
@@ -5023,10 +5274,7 @@ class SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesDelete
   Fields:
     name: Required. Name of the custom module to delete. Its format is: * "org
       anizations/{organization}/eventThreatDetectionSettings/customModules/{mo
-      dule}". *
-      "folders/{folder}/eventThreatDetectionSettings/customModules/{module}".
-      * "projects/{project}/eventThreatDetectionSettings/customModules/{module
-      }".
+      dule}".
   """
 
   name = _messages.StringField(1, required=True)
@@ -5039,10 +5287,7 @@ class SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesGetReq
   Fields:
     name: Required. Name of the custom module to get. Its format is: * "organi
       zations/{organization}/eventThreatDetectionSettings/customModules/{modul
-      e}". *
-      "folders/{folder}/eventThreatDetectionSettings/customModules/{module}".
-      * "projects/{project}/eventThreatDetectionSettings/customModules/{module
-      }".
+      e}".
   """
 
   name = _messages.StringField(1, required=True)
@@ -5062,10 +5307,9 @@ class SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesListDe
       retrieve the subsequent page. When paginating, all other parameters
       provided to `ListDescendantEventThreatDetectionCustomModules` must match
       the call that provided the page token.
-    parent: Required. Name of the parent to list custom modules. Its format
-      is: * "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
+    parent: Required. Name of the parent to list custom modules under. Its
+      format is: *
+      "organizations/{organization}/eventThreatDetectionSettings".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5087,10 +5331,9 @@ class SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesListRe
       the subsequent page. When paginating, all other parameters provided to
       `ListEventThreatDetectionCustomModules` must match the call that
       provided the page token.
-    parent: Required. Name of the parent to list custom modules. Its format
-      is: * "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
+    parent: Required. Name of the parent to list custom modules under. Its
+      format is: *
+      "organizations/{organization}/eventThreatDetectionSettings".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5105,9 +5348,9 @@ class SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesPatchR
   Fields:
     eventThreatDetectionCustomModule: A EventThreatDetectionCustomModule
       resource to be passed as the request body.
-    name: Immutable. The resource name of the ETD custom module. Its format
-      is: * "organizations/{organization}/eventThreatDetectionSettings/customM
-      odules/{module}". *
+    name: Immutable. The resource name of the Event Threat Detection custom
+      module. Its format is: * "organizations/{organization}/eventThreatDetect
+      ionSettings/customModules/{module}". *
       "folders/{folder}/eventThreatDetectionSettings/customModules/{module}".
       * "projects/{project}/eventThreatDetectionSettings/customModules/{module
       }".
@@ -5125,11 +5368,9 @@ class SecuritycenterOrganizationsEventThreatDetectionSettingsEffectiveCustomModu
   ModulesGetRequest object.
 
   Fields:
-    name: Required. The resource name of the effective ETD custom module. Its
-      format is: * "organizations/{organization}/eventThreatDetectionSettings/
-      effectiveCustomModules/{module}". * "folders/{folder}/eventThreatDetecti
-      onSettings/effectiveCustomModules/{module}". * "projects/{project}/event
-      ThreatDetectionSettings/effectiveCustomModules/{module}".
+    name: Required. The resource name of the effective Event Threat Detection
+      custom module. Its format is: * "organizations/{organization}/eventThrea
+      tDetectionSettings/effectiveCustomModules/{module}".
   """
 
   name = _messages.StringField(1, required=True)
@@ -5149,10 +5390,9 @@ class SecuritycenterOrganizationsEventThreatDetectionSettingsEffectiveCustomModu
       retrieve the subsequent page. When paginating, all other parameters
       provided to `ListEffectiveEventThreatDetectionCustomModules` must match
       the call that provided the page token.
-    parent: Required. Name of the parent to list custom modules. Its format
-      is: * "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
+    parent: Required. Name of the parent to list custom modules for. Its
+      format is: *
+      "organizations/{organization}/eventThreatDetectionSettings".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5167,9 +5407,7 @@ class SecuritycenterOrganizationsEventThreatDetectionSettingsValidateCustomModul
   Fields:
     parent: Required. Resource name of the parent to validate the Custom
       Module under. Its format is: *
-      "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
+      "organizations/{organization}/eventThreatDetectionSettings".
     validateEventThreatDetectionCustomModuleRequest: A
       ValidateEventThreatDetectionCustomModuleRequest resource to be passed as
       the request body.
@@ -5426,6 +5664,82 @@ class SecuritycenterOrganizationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class SecuritycenterOrganizationsResourceValueConfigsBatchCreateRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsResourceValueConfigsBatchCreateRequest
+  object.
+
+  Fields:
+    batchCreateResourceValueConfigsRequest: A
+      BatchCreateResourceValueConfigsRequest resource to be passed as the
+      request body.
+    parent: Required. Resource name of the new ResourceValueConfig's parent.
+      The parent field in the CreateResourceValueConfigRequest messages must
+      either be empty or match this field.
+  """
+
+  batchCreateResourceValueConfigsRequest = _messages.MessageField('BatchCreateResourceValueConfigsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuritycenterOrganizationsResourceValueConfigsDeleteRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsResourceValueConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the ResourceValueConfig to delete
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsResourceValueConfigsGetRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsResourceValueConfigsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource value config to retrieve. Its format
+      is organizations/{organization}/resourceValueConfigs/{config_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsResourceValueConfigsListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsResourceValueConfigsListRequest object.
+
+  Fields:
+    pageSize: The number of results to return. The service may return fewer
+      than this value. If unspecified, at most 10 configs will be returned.
+      The maximum value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: A page token, received from a previous
+      `ListResourceValueConfigs` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListResourceValueConfigs` must match the call that provided the page
+      token. page_size can be specified, and the new page_size will be used.
+    parent: Required. The parent, which owns the collection of resource value
+      configs. Its format is "organizations/[organization_id]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterOrganizationsResourceValueConfigsPatchRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsResourceValueConfigsPatchRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1ResourceValueConfig: A
+      GoogleCloudSecuritycenterV1ResourceValueConfig resource to be passed as
+      the request body.
+    name: Name for the resource value config
+    updateMask: The list of fields to be updated. If empty all mutable fields
+      will be updated.
+  """
+
+  googleCloudSecuritycenterV1ResourceValueConfig = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceValueConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModulesCreateRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCustomModule
   sCreateRequest object.
@@ -5606,6 +5920,149 @@ class SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsEffectiveCustomM
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterOrganizationsSimulationsAttackExposureResultsAttackPathsListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSimulationsAttackExposureResultsAttackPaths
+  ListRequest object.
+
+  Fields:
+    filter: The filter expression that filters the attack path in the
+      response. Supported fields: * `valued_resources` supports =
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListAttackPathsResponse`;
+      indicates that this is a continuation of a prior `ListAttackPaths` call,
+      and that the system should return the next page of data.
+    parent: Required. Name of parent to list attack paths. Valid formats:
+      "organizations/{organization}",
+      "organizations/{organization}/simulations/{simulation}" "organizations/{
+      organization}/simulations/{simulation}/attackExposureResults/{attack_exp
+      osure_result_v2}" "organizations/{organization}/simulations/{simulation}
+      /valuedResources/{valued_resource}"
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SecuritycenterOrganizationsSimulationsAttackExposureResultsValuedResourcesListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSimulationsAttackExposureResultsValuedResou
+  rcesListRequest object.
+
+  Fields:
+    filter: The filter expression that filters the valued resources in the
+      response. Supported fields: * `resource_value` supports = *
+      `resource_type` supports =
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListValuedResourcesResponse`;
+      indicates that this is a continuation of a prior `ListValuedResources`
+      call, and that the system should return the next page of data.
+    parent: Required. Name of parent to list valued resources. Valid formats:
+      "organizations/{organization}",
+      "organizations/{organization}/simulations/{simulation}" "organizations/{
+      organization}/simulations/{simulation}/attackExposureResults/{attack_exp
+      osure_result_v2}"
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SecuritycenterOrganizationsSimulationsAttackPathsListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSimulationsAttackPathsListRequest object.
+
+  Fields:
+    filter: The filter expression that filters the attack path in the
+      response. Supported fields: * `valued_resources` supports =
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListAttackPathsResponse`;
+      indicates that this is a continuation of a prior `ListAttackPaths` call,
+      and that the system should return the next page of data.
+    parent: Required. Name of parent to list attack paths. Valid formats:
+      "organizations/{organization}",
+      "organizations/{organization}/simulations/{simulation}" "organizations/{
+      organization}/simulations/{simulation}/attackExposureResults/{attack_exp
+      osure_result_v2}" "organizations/{organization}/simulations/{simulation}
+      /valuedResources/{valued_resource}"
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SecuritycenterOrganizationsSimulationsGetRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSimulationsGetRequest object.
+
+  Fields:
+    name: Required. The organization name or simulation name of this
+      simulation Valid format:
+      "organizations/{organization}/simulations/latest"
+      "organizations/{organization}/simulations/{simulation}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsSimulationsValuedResourcesAttackPathsListRequest(_messages.Message):
+  r"""A
+  SecuritycenterOrganizationsSimulationsValuedResourcesAttackPathsListRequest
+  object.
+
+  Fields:
+    filter: The filter expression that filters the attack path in the
+      response. Supported fields: * `valued_resources` supports =
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListAttackPathsResponse`;
+      indicates that this is a continuation of a prior `ListAttackPaths` call,
+      and that the system should return the next page of data.
+    parent: Required. Name of parent to list attack paths. Valid formats:
+      "organizations/{organization}",
+      "organizations/{organization}/simulations/{simulation}" "organizations/{
+      organization}/simulations/{simulation}/attackExposureResults/{attack_exp
+      osure_result_v2}" "organizations/{organization}/simulations/{simulation}
+      /valuedResources/{valued_resource}"
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SecuritycenterOrganizationsSimulationsValuedResourcesListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSimulationsValuedResourcesListRequest
+  object.
+
+  Fields:
+    filter: The filter expression that filters the valued resources in the
+      response. Supported fields: * `resource_value` supports = *
+      `resource_type` supports =
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListValuedResourcesResponse`;
+      indicates that this is a continuation of a prior `ListValuedResources`
+      call, and that the system should return the next page of data.
+    parent: Required. Name of parent to list valued resources. Valid formats:
+      "organizations/{organization}",
+      "organizations/{organization}/simulations/{simulation}" "organizations/{
+      organization}/simulations/{simulation}/attackExposureResults/{attack_exp
+      osure_result_v2}"
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class SecuritycenterOrganizationsSourcesCreateRequest(_messages.Message):
@@ -6201,58 +6658,6 @@ class SecuritycenterProjectsBigQueryExportsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
-class SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesCreateRequest(_messages.Message):
-  r"""A
-  SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesCreateRequest
-  object.
-
-  Fields:
-    eventThreatDetectionCustomModule: A EventThreatDetectionCustomModule
-      resource to be passed as the request body.
-    parent: Required. The new custom module's parent. Its format is: *
-      "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
-  """
-
-  eventThreatDetectionCustomModule = _messages.MessageField('EventThreatDetectionCustomModule', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesDeleteRequest(_messages.Message):
-  r"""A
-  SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesDeleteRequest
-  object.
-
-  Fields:
-    name: Required. Name of the custom module to delete. Its format is: * "org
-      anizations/{organization}/eventThreatDetectionSettings/customModules/{mo
-      dule}". *
-      "folders/{folder}/eventThreatDetectionSettings/customModules/{module}".
-      * "projects/{project}/eventThreatDetectionSettings/customModules/{module
-      }".
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesGetRequest(_messages.Message):
-  r"""A
-  SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesGetRequest
-  object.
-
-  Fields:
-    name: Required. Name of the custom module to get. Its format is: * "organi
-      zations/{organization}/eventThreatDetectionSettings/customModules/{modul
-      e}". *
-      "folders/{folder}/eventThreatDetectionSettings/customModules/{module}".
-      * "projects/{project}/eventThreatDetectionSettings/customModules/{module
-      }".
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesListDescendantRequest(_messages.Message):
   r"""A SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesListDes
   cendantRequest object.
@@ -6267,64 +6672,14 @@ class SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesListDescend
       retrieve the subsequent page. When paginating, all other parameters
       provided to `ListDescendantEventThreatDetectionCustomModules` must match
       the call that provided the page token.
-    parent: Required. Name of the parent to list custom modules. Its format
-      is: * "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
+    parent: Required. Name of the parent to list custom modules under. Its
+      format is: *
+      "organizations/{organization}/eventThreatDetectionSettings".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesListRequest(_messages.Message):
-  r"""A
-  SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesListRequest
-  object.
-
-  Fields:
-    pageSize: The maximum number of modules to return. The service may return
-      fewer than this value. If unspecified, at most 10 configs will be
-      returned. The maximum value is 1000; values above 1000 will be coerced
-      to 1000.
-    pageToken: A page token, received from a previous
-      `ListEventThreatDetectionCustomModules` call. Provide this to retrieve
-      the subsequent page. When paginating, all other parameters provided to
-      `ListEventThreatDetectionCustomModules` must match the call that
-      provided the page token.
-    parent: Required. Name of the parent to list custom modules. Its format
-      is: * "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesPatchRequest(_messages.Message):
-  r"""A
-  SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesPatchRequest
-  object.
-
-  Fields:
-    eventThreatDetectionCustomModule: A EventThreatDetectionCustomModule
-      resource to be passed as the request body.
-    name: Immutable. The resource name of the ETD custom module. Its format
-      is: * "organizations/{organization}/eventThreatDetectionSettings/customM
-      odules/{module}". *
-      "folders/{folder}/eventThreatDetectionSettings/customModules/{module}".
-      * "projects/{project}/eventThreatDetectionSettings/customModules/{module
-      }".
-    updateMask: The list of fields to be updated. If empty all mutable fields
-      will be updated.
-  """
-
-  eventThreatDetectionCustomModule = _messages.MessageField('EventThreatDetectionCustomModule', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
 
 
 class SecuritycenterProjectsEventThreatDetectionSettingsEffectiveCustomModulesGetRequest(_messages.Message):
@@ -6332,11 +6687,9 @@ class SecuritycenterProjectsEventThreatDetectionSettingsEffectiveCustomModulesGe
   esGetRequest object.
 
   Fields:
-    name: Required. The resource name of the effective ETD custom module. Its
-      format is: * "organizations/{organization}/eventThreatDetectionSettings/
-      effectiveCustomModules/{module}". * "folders/{folder}/eventThreatDetecti
-      onSettings/effectiveCustomModules/{module}". * "projects/{project}/event
-      ThreatDetectionSettings/effectiveCustomModules/{module}".
+    name: Required. The resource name of the effective Event Threat Detection
+      custom module. Its format is: * "organizations/{organization}/eventThrea
+      tDetectionSettings/effectiveCustomModules/{module}".
   """
 
   name = _messages.StringField(1, required=True)
@@ -6356,34 +6709,14 @@ class SecuritycenterProjectsEventThreatDetectionSettingsEffectiveCustomModulesLi
       retrieve the subsequent page. When paginating, all other parameters
       provided to `ListEffectiveEventThreatDetectionCustomModules` must match
       the call that provided the page token.
-    parent: Required. Name of the parent to list custom modules. Its format
-      is: * "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
+    parent: Required. Name of the parent to list custom modules for. Its
+      format is: *
+      "organizations/{organization}/eventThreatDetectionSettings".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class SecuritycenterProjectsEventThreatDetectionSettingsValidateCustomModuleRequest(_messages.Message):
-  r"""A SecuritycenterProjectsEventThreatDetectionSettingsValidateCustomModule
-  Request object.
-
-  Fields:
-    parent: Required. Resource name of the parent to validate the Custom
-      Module under. Its format is: *
-      "organizations/{organization}/eventThreatDetectionSettings". *
-      "folders/{folder}/eventThreatDetectionSettings". *
-      "projects/{project}/eventThreatDetectionSettings".
-    validateEventThreatDetectionCustomModuleRequest: A
-      ValidateEventThreatDetectionCustomModuleRequest resource to be passed as
-      the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  validateEventThreatDetectionCustomModuleRequest = _messages.MessageField('ValidateEventThreatDetectionCustomModuleRequest', 2)
 
 
 class SecuritycenterProjectsFindingsBulkMuteRequest(_messages.Message):
@@ -7173,6 +7506,22 @@ class SimulatedResult(_messages.Message):
   noViolation = _messages.MessageField('Empty', 3)
 
 
+class Simulation(_messages.Message):
+  r"""Attack path simulation
+
+  Fields:
+    createTime: Output only. Time simulation was created
+    name: Full resource name of the Simulation:
+      organizations/123/simulations/456
+    resourceValueConfigsMetadata: Resource value configurations' metadata used
+      in this simulation. Maximum of 100.
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  resourceValueConfigsMetadata = _messages.MessageField('ResourceValueConfigMetadata', 3, repeated=True)
+
+
 class Source(_messages.Message):
   r"""Security Command Center finding source. A finding source is an entity or
   a mechanism that can produce a finding. A source is like a container of
@@ -7499,7 +7848,7 @@ class TestSecurityHealthAnalyticsCustomModuleResponse(_messages.Message):
 
 
 class ValidateEventThreatDetectionCustomModuleRequest(_messages.Message):
-  r"""Request to validate an EventThreatDetectionCustomModule.
+  r"""Request to validate an Event Threat Detection custom module.
 
   Fields:
     rawText: Required. The raw text of the module's contents. Used to generate
@@ -7512,7 +7861,7 @@ class ValidateEventThreatDetectionCustomModuleRequest(_messages.Message):
 
 
 class ValidateEventThreatDetectionCustomModuleResponse(_messages.Message):
-  r"""Response to validating an Event Threat Detection Custom Module.
+  r"""Response to validating an Event Threat Detection custom module.
 
   Fields:
     errors: A list of errors returned by the validator. If the list is empty,
@@ -7520,6 +7869,50 @@ class ValidateEventThreatDetectionCustomModuleResponse(_messages.Message):
   """
 
   errors = _messages.MessageField('CustomModuleValidationErrors', 1)
+
+
+class ValuedResource(_messages.Message):
+  r"""A resource that is determined to have value to a user's system
+
+  Enums:
+    ResourceValueValueValuesEnum: How valuable this resource is.
+
+  Fields:
+    displayName: Human-readable name of the valued resource.
+    exposedScore: Exposed score for this valued resource. A value of 0 means
+      no exposure was detected exposure.
+    name: Valued resource name, for example, e.g.:
+      `organizations/123/simulations/456/valuedResources/789`
+    resource: The [full resource name](https://cloud.google.com/apis/design/re
+      source_names#full_resource_name) of the valued resource.
+    resourceType: The [resource type](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types) of the valued resource.
+    resourceValue: How valuable this resource is.
+    resourceValueConfigsUsed: List of resource value configurations' metadata
+      used to determine the value of this resource. Maximum of 100.
+  """
+
+  class ResourceValueValueValuesEnum(_messages.Enum):
+    r"""How valuable this resource is.
+
+    Values:
+      RESOURCE_VALUE_UNSPECIFIED: The resource value isn't specified.
+      RESOURCE_VALUE_LOW: This is a low-value resource.
+      RESOURCE_VALUE_MEDIUM: This is a medium-value resource.
+      RESOURCE_VALUE_HIGH: This is a high-value resource.
+    """
+    RESOURCE_VALUE_UNSPECIFIED = 0
+    RESOURCE_VALUE_LOW = 1
+    RESOURCE_VALUE_MEDIUM = 2
+    RESOURCE_VALUE_HIGH = 3
+
+  displayName = _messages.StringField(1)
+  exposedScore = _messages.FloatField(2)
+  name = _messages.StringField(3)
+  resource = _messages.StringField(4)
+  resourceType = _messages.StringField(5)
+  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 6)
+  resourceValueConfigsUsed = _messages.MessageField('ResourceValueConfigMetadata', 7, repeated=True)
 
 
 class Vulnerability(_messages.Message):

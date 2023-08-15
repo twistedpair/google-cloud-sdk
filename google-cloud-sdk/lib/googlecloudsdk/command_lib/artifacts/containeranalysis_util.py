@@ -569,6 +569,9 @@ def _CreateFilterForImages(prefixes, custom_filter, images):
 def _ComputeSLSABuildLevel(provenance):
   """Computes SLSA build level from a build provenance.
 
+  Determines SLSA Level based on a list of occurrences,
+  preferring data from SLSA v1.0 occurrences over others.
+
   Args:
     provenance: build provenance list containing build occurrences.
 
@@ -578,16 +581,36 @@ def _ComputeSLSABuildLevel(provenance):
   """
   if not provenance:
     return 'unknown'
-  builds = [
-      p for p in provenance
-      if hasattr(p, 'build') and hasattr(p.build, 'intotoStatement')
+
+  builder_id_v1 = 'https://cloudbuild.googleapis.com/GoogleHostedWorker'
+  builds_v1 = [
+      p for p in provenance if p.build and p.build.inTotoSlsaProvenanceV1
   ]
-  if not builds or not hasattr(builds[0].build, 'intotoStatement'):
+  for build_v1 in builds_v1:
+    provenance_v1 = build_v1.build.inTotoSlsaProvenanceV1
+    # GCB Build Occurrences that populate SLSA v1.0 data
+    # always have SLSA Level 3.
+    if (
+        provenance_v1.predicate
+        and provenance_v1.predicate.runDetails
+        and provenance_v1.predicate.runDetails.builder
+        and provenance_v1.predicate.runDetails.builder.id
+        and provenance_v1.predicate.runDetails.builder.id == builder_id_v1
+    ):
+      return 3
+
+  # No SLSA v1.0 data was found, just compute the SLSA level from
+  # the first occurrence found with defined slsaProvenance.
+  builds_v0_1 = [
+      p for p in provenance if p.build and p.build.intotoStatement
+  ]
+  if not builds_v0_1:
     return 'unknown'
-  intoto = builds[0].build.intotoStatement
+  provenance = builds_v0_1[0]
+  intoto = provenance.build.intotoStatement
 
   if _HasSteps(intoto):
-    if _HasValidKey(builds[0]):
+    if _HasValidKey(provenance):
       if _HasLevel3BuildVersion(intoto):
         return 3
       return 2

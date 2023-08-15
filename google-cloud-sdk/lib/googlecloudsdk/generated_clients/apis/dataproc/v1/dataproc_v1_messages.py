@@ -1762,6 +1762,14 @@ class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
     clusterUuid: Optional. Specifying the cluster_uuid means the RPC should
       fail (with error NOT_FOUND) if cluster with specified UUID does not
       exist.
+    gracefulTerminationTimeout: Optional. The graceful termination timeout for
+      the deletion of the cluster. Indicate the time the request will wait to
+      complete the running jobs on the cluster before its forceful deletion.
+      Default value is 0 indicating that the user has not enabled the graceful
+      termination. Value can be between 60 second and 6 Hours, in case the
+      graceful termination is enabled. (There is no separate flag to check the
+      enabling or disabling of graceful termination, it can be checked by the
+      values in the field).
     projectId: Required. The ID of the Google Cloud Platform project that the
       cluster belongs to.
     region: Required. The Dataproc region in which to handle the request.
@@ -1778,9 +1786,10 @@ class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
 
   clusterName = _messages.StringField(1, required=True)
   clusterUuid = _messages.StringField(2)
-  projectId = _messages.StringField(3, required=True)
-  region = _messages.StringField(4, required=True)
-  requestId = _messages.StringField(5)
+  gracefulTerminationTimeout = _messages.StringField(3)
+  projectId = _messages.StringField(4, required=True)
+  region = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
 
 
 class DataprocProjectsRegionsClustersDiagnoseRequest(_messages.Message):
@@ -4588,10 +4597,14 @@ class ListWorkflowTemplatesResponse(_messages.Message):
       this value as the page_token in a subsequent
       ListWorkflowTemplatesRequest.
     templates: Output only. WorkflowTemplates list.
+    unreachable: Output only. List of workflow templates that could not be
+      included in the response. Attempting to get one of these resources may
+      indicate why it was not included in the list response.
   """
 
   nextPageToken = _messages.StringField(1)
   templates = _messages.MessageField('WorkflowTemplate', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class LoggingConfig(_messages.Message):
@@ -5073,9 +5086,9 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as Delete, the
-      response is google.protobuf.Empty. If the original method is standard
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as Delete, the response
+      is google.protobuf.Empty. If the original method is standard
       Get/Create/Update, the response should be the resource. For other
       methods, the response should have the type XxxResponse, where Xxx is the
       original method name. For example, if the original method name is
@@ -5095,7 +5108,7 @@ class Operation(_messages.Message):
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the name should be a resource name ending with operations/{unique_id}.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as Delete, the response
       is google.protobuf.Empty. If the original method is standard
       Get/Create/Update, the response should be the resource. For other
@@ -5134,9 +5147,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as Delete, the response
-    is google.protobuf.Empty. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as Delete, the response is
+    google.protobuf.Empty. If the original method is standard
     Get/Create/Update, the response should be the resource. For other methods,
     the response should have the type XxxResponse, where Xxx is the original
     method name. For example, if the original method name is TakeSnapshot(),

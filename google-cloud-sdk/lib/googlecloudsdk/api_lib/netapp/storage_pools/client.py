@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.netapp import constants
-from googlecloudsdk.api_lib.netapp import util
+from googlecloudsdk.api_lib.netapp import util as netapp_api_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
@@ -37,9 +37,11 @@ class StoragePoolsClient(object):
       self._adapter = AlphaStoragePoolsAdapter()
     elif self.release_track == base.ReleaseTrack.BETA:
       self._adapter = BetaStoragePoolsAdapter()
+    elif self.release_track == base.ReleaseTrack.GA:
+      self._adapter = StoragePoolsAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
-          util.VERSION_MAP[release_track]))
+          netapp_api_util.VERSION_MAP[release_track]))
 
   @property
   def client(self):
@@ -196,13 +198,17 @@ class StoragePoolsClient(object):
     return self.WaitForOperation(operation_ref)
 
 
-class BetaStoragePoolsAdapter(object):
-  """Adapter for the Beta Cloud NetApp Files API for Active Directories."""
+class StoragePoolsAdapter(object):
+  """Adapter for the Cloud NetApp Files API for Storage Pools."""
 
   def __init__(self):
-    self.release_track = base.ReleaseTrack.BETA
-    self.client = util.GetClientInstance(release_track=self.release_track)
-    self.messages = util.GetMessagesModule(release_track=self.release_track)
+    self.release_track = base.ReleaseTrack.GA
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )
 
   def ParseStoragePoolConfig(
       self,
@@ -281,12 +287,29 @@ class BetaStoragePoolsAdapter(object):
     return update_op
 
 
+class BetaStoragePoolsAdapter(StoragePoolsAdapter):
+  """Adapter for the Beta Cloud NetApp Files API for Storage Pools."""
+
+  def __init__(self):
+    super(BetaStoragePoolsAdapter, self).__init__()
+    self.release_track = base.ReleaseTrack.BETA
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )
+
+
 class AlphaStoragePoolsAdapter(BetaStoragePoolsAdapter):
-  """Adapter for the Alpha Cloud NetApp Files API for Active Directories."""
+  """Adapter for the Alpha Cloud NetApp Files API for Storage Pools."""
 
   def __init__(self):
     super(AlphaStoragePoolsAdapter, self).__init__()
     self.release_track = base.ReleaseTrack.ALPHA
-    self.client = util.GetClientInstance(release_track=self.release_track)
-    self.messages = util.GetMessagesModule(release_track=self.release_track)
-
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )

@@ -47,16 +47,16 @@ class AdvanceRolloutOperation(_messages.Message):
   Fields:
     destinationPhase: Output only. The phase to which the rollout will be
       advanced to.
-    initialPhase: Output only. The phase of a deployment that initiated the
-      operation.
     rollout: Output only. The name of the rollout that initiates the
       `AutomationRun`.
+    sourcePhase: Output only. The phase of a deployment that initiated the
+      operation.
     wait: Output only. How long the operation will be paused.
   """
 
   destinationPhase = _messages.StringField(1)
-  initialPhase = _messages.StringField(2)
-  rollout = _messages.StringField(3)
+  rollout = _messages.StringField(2)
+  sourcePhase = _messages.StringField(3)
   wait = _messages.StringField(4)
 
 
@@ -90,8 +90,14 @@ class AdvanceRolloutRule(_messages.Message):
       rule.
     id: Required. ID of the rule. This id must be unique in the `Automation`
       resource to which this rule belongs. The format is a-z{0,62}.
-    phases: Optional. Proceeds only after phase name matched any one in the
-      list. This value must consist of lower-case letters, numbers, and
+    phases: Optional. Deprecated: use source_phases instead. Proceeds only
+      after phase name matched any one in the list. This value must consist of
+      lower-case letters, numbers, and hyphens, start with a letter and end
+      with a letter or a number, and have a max length of 63 characters. In
+      other words, it must match the following regex:
+      `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
+    sourcePhases: Optional. Proceeds only after phase name matched any one in
+      the list. This value must consist of lower-case letters, numbers, and
       hyphens, start with a letter and end with a letter or a number, and have
       a max length of 63 characters. In other words, it must match the
       following regex: `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
@@ -117,8 +123,9 @@ class AdvanceRolloutRule(_messages.Message):
   condition = _messages.MessageField('AutomationRuleCondition', 1)
   id = _messages.StringField(2)
   phases = _messages.StringField(3, repeated=True)
-  wait = _messages.StringField(4)
-  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 5)
+  sourcePhases = _messages.StringField(4, repeated=True)
+  wait = _messages.StringField(5)
+  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 6)
 
 
 class AnthosCluster(_messages.Message):
@@ -583,9 +590,11 @@ class CanaryDeployment(_messages.Message):
       a part of a `Rollout`. List is expected in ascending order and each
       integer n is 0 <= n < 100.
     postdeploy: Optional. Configuration for the postdeploy job of the last
-      phase. If this is not configured, postdeploy job will not be present.
+      phase. If this is not configured, there will be no postdeploy job for
+      this phase.
     predeploy: Optional. Configuration for the predeploy job of the first
-      phase. If this is not configured, predeploy job will not be present.
+      phase. If this is not configured, there will be no predeploy job for
+      this phase.
     verify: Whether to run verify tests after each percentage deployment.
   """
 
@@ -2502,8 +2511,8 @@ class DeployJobRun(_messages.Message):
         deploy-service-account#required_permissions).
       EXECUTION_FAILED: The deploy operation did not complete successfully;
         check Cloud Build logs.
-      DEADLINE_EXCEEDED: The deploy build did not complete within the alloted
-        time.
+      DEADLINE_EXCEEDED: The deploy job run did not complete within the
+        alloted time.
       MISSING_RESOURCES_FOR_CANARY: There were missing resources in the
         runtime environment required for a canary deployment. Check the Cloud
         Build logs for more information.
@@ -2774,10 +2783,10 @@ class DeploymentJobs(_messages.Message):
   Fields:
     deployJob: Output only. The deploy Job. This is the deploy job in the
       phase.
-    postdeployJob: Output only. The postdeploy Job. This is the postdeploy job
-      in the phase. This is the last job of the phase.
-    predeployJob: Output only. The predeploy Job. This is the predeploy job in
-      the phase. This is the first job of the phase.
+    postdeployJob: Output only. The postdeploy Job, which is the last job on
+      the phase.
+    predeployJob: Output only. The predeploy Job, which is the first job on
+      the phase.
     verifyJob: Output only. The verify Job. Runs after a deploy if the deploy
       succeeds.
   """
@@ -3406,8 +3415,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -3429,7 +3438,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -3468,9 +3477,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -3603,11 +3612,10 @@ class PhaseConfig(_messages.Message):
       characters. In other words, it must match the following regex:
       `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
     postdeploy: Optional. Configuration for the postdeploy job of this phase.
-      If this is not configured, postdeploy job will not be present for this
+      If this is not configured, there will be no postdeploy job for this
       phase.
     predeploy: Optional. Configuration for the predeploy job of this phase. If
-      this is not configured, predeploy job will not be present for this
-      phase.
+      this is not configured, there will be no predeploy job for this phase.
     profiles: Skaffold profiles to use when rendering the manifest for this
       phase. These are in addition to the profiles list specified in the
       `DeliveryPipeline` stage.
@@ -3668,7 +3676,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -3676,15 +3684,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -3777,7 +3785,7 @@ class Postdeploy(_messages.Message):
   r"""Postdeploy contains the postdeploy job configuration information.
 
   Fields:
-    actions: Optional. A sequence of skaffold custom actions to invoke during
+    actions: Optional. A sequence of Skaffold custom actions to invoke during
       execution of the postdeploy job.
   """
 
@@ -3826,7 +3834,7 @@ class PostdeployJobRun(_messages.Message):
         deploy-service-account#required_permissions).
       EXECUTION_FAILED: The postdeploy operation did not complete
         successfully; check Cloud Build logs.
-      DEADLINE_EXCEEDED: The postdeploy build did not complete within the
+      DEADLINE_EXCEEDED: The postdeploy job run did not complete within the
         alloted time.
       CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's
         request. See failure_message for additional details.
@@ -3846,7 +3854,7 @@ class Predeploy(_messages.Message):
   r"""Predeploy contains the predeploy job configuration information.
 
   Fields:
-    actions: Optional. A sequence of skaffold custom actions to invoke during
+    actions: Optional. A sequence of Skaffold custom actions to invoke during
       execution of the predeploy job.
   """
 
@@ -3894,7 +3902,7 @@ class PredeployJobRun(_messages.Message):
         deploy-service-account#required_permissions).
       EXECUTION_FAILED: The predeploy operation did not complete successfully;
         check Cloud Build logs.
-      DEADLINE_EXCEEDED: The predeploy build did not complete within the
+      DEADLINE_EXCEEDED: The predeploy job run did not complete within the
         alloted time.
       CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's
         request. See failure_message for additional details.
@@ -3962,17 +3970,27 @@ class PromoteReleaseRule(_messages.Message):
   Fields:
     condition: Output only. Information around the state of the Automation
       rule.
+    destinationPhase: Optional. The starting phase of the rollout created by
+      this operation. Default to the first phase.
+    destinationTargetId: Optional. The ID of the stage in the pipeline to
+      which this `Release` is deploying. If unspecified, default it to the
+      next stage in the promotion flow. The value of this field could be one
+      of the following: * The last segment of a target name. It only needs the
+      ID to determine if the target is one of the stages in the promotion
+      sequence defined in the pipeline. * "@next", the next target in the
+      promotion sequence.
     id: Required. ID of the rule. This id must be unique in the `Automation`
       resource to which this rule belongs. The format is a-z{0,62}.
-    phase: Optional. The starting phase of the rollout created by this
-      operation. Default to the first phase.
-    targetId: Optional. The ID of the stage in the pipeline to which this
-      `Release` is deploying. If unspecified, default it to the next stage in
-      the promotion flow. The value of this field could be one of the
-      following: * The last segment of a target name. It only needs the ID to
-      determine if the target is one of the stages in the promotion sequence
-      defined in the pipeline. * "@next", the next target in the promotion
-      sequence.
+    phase: Optional. Deprecated: use destination_phase instead. The starting
+      phase of the rollout created by this operation. Default to the first
+      phase.
+    targetId: Optional. Deprecated: use destination_target_id instead. The ID
+      of the stage in the pipeline to which this `Release` is deploying. If
+      unspecified, default it to the next stage in the promotion flow. The
+      value of this field could be one of the following: * The last segment of
+      a target name. It only needs the ID to determine if the target is one of
+      the stages in the promotion sequence defined in the pipeline. * "@next",
+      the next target in the promotion sequence.
     wait: Optional. How long the release need to be paused until being
       promoted to the next target.
     waitPolicy: Optional. WaitForDeployPolicy delays a release promotion when
@@ -3994,11 +4012,13 @@ class PromoteReleaseRule(_messages.Message):
     LATEST = 2
 
   condition = _messages.MessageField('AutomationRuleCondition', 1)
-  id = _messages.StringField(2)
-  phase = _messages.StringField(3)
-  targetId = _messages.StringField(4)
-  wait = _messages.StringField(5)
-  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 6)
+  destinationPhase = _messages.StringField(2)
+  destinationTargetId = _messages.StringField(3)
+  id = _messages.StringField(4)
+  phase = _messages.StringField(5)
+  targetId = _messages.StringField(6)
+  wait = _messages.StringField(7)
+  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 8)
 
 
 class Range(_messages.Message):
@@ -5651,8 +5671,8 @@ class VerifyJobRun(_messages.Message):
         deploy-service-account#required_permissions).
       EXECUTION_FAILED: The verify operation did not complete successfully;
         check Cloud Build logs.
-      DEADLINE_EXCEEDED: The verify build did not complete within the alloted
-        time.
+      DEADLINE_EXCEEDED: The verify job run did not complete within the
+        alloted time.
       VERIFICATION_CONFIG_NOT_FOUND: No Skaffold verify configuration was
         found.
       CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's

@@ -146,6 +146,20 @@ def add_clone_resource_arg(parser):
       required=False).AddToParser(parser)
 
 
+def _get_appliance_uri(appliance):
+  return resources.REGISTRY.Parse(
+      appliance.name,
+      params={'projectsId': properties.VALUES.core.project.Get()},
+      collection=APPLIANCES_COLLECTION).SelfLink()
+
+
+def _get_order_uri(order):
+  return resources.REGISTRY.Parse(
+      order.name,
+      params={'projectsId': properties.VALUES.core.project.Get()},
+      collection=ORDERS_COLLECTION).SelfLink()
+
+
 def add_list_resource_args(parser, listing_orders=True):
   """Add both order and appliance resource arguments for list commands.
 
@@ -160,9 +174,11 @@ def add_list_resource_args(parser, listing_orders=True):
   if listing_orders:
     orders_help = primary_help.format('orders', verb)
     appliances_help = secondary_help.format('appliances', 'orders', verb)
+    parser.display_info.AddUriFunc(_get_order_uri)
   else:
     appliances_help = primary_help.format('appliances', verb)
     orders_help = secondary_help.format('orders', 'appliances', verb)
+    parser.display_info.AddUriFunc(_get_appliance_uri)
 
   arg_specs = [
       presentation_specs.ResourcePresentationSpec(

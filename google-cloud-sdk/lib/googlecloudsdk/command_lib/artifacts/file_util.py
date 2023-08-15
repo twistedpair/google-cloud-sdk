@@ -30,3 +30,14 @@ def EscapeFileName(ref):
       repositoriesId=ref.repositoriesId,
       filesId=ref.filesId.replace("/", "%2F").replace("+", "%2B"),
   )
+
+
+def EscapeFileNameFromIDs(project_id, location_id, repo_id, file_id):
+  """Escapes slashes and pluses from request names."""
+  return resources.REGISTRY.Create(
+      "artifactregistry.projects.locations.repositories.files",
+      projectsId=project_id,
+      locationsId=location_id,
+      repositoriesId=repo_id,
+      filesId=file_id.replace("/", "%2F").replace("+", "%2B"),
+  )

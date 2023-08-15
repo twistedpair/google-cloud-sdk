@@ -143,13 +143,40 @@ class FaultInjectionTargetMatcher(_messages.Message):
 class FaultPepStatus(_messages.Message):
   r"""Message describing Faults and its Policy Enforcement Points(PEP)
 
+  Enums:
+    StateValueValuesEnum: Output only. Message describing fault status
+
   Fields:
     fault: Message describing the fault config
     pepStatus: Message describing the PEPStatus
+    state: Output only. Message describing fault status
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Message describing fault status
+
+    Values:
+      STATE_UNSPECIFIED: Default state.
+      APPLY_IN_PROGRESS: Apply fault is queued.
+      APPLIED: Fault apply is completed.
+      STOP_IN_PROGRESS: Stop apply in progress
+      STOPPED: fault apply stopped
+      ABORTED: Fault apply aborted.
+      APPLY_ERRORED: Fault apply errored.
+      STOP_ERRORED: Fault stop errored.
+    """
+    STATE_UNSPECIFIED = 0
+    APPLY_IN_PROGRESS = 1
+    APPLIED = 2
+    STOP_IN_PROGRESS = 3
+    STOPPED = 4
+    ABORTED = 5
+    APPLY_ERRORED = 6
+    STOP_ERRORED = 7
 
   fault = _messages.MessageField('Fault', 1)
   pepStatus = _messages.MessageField('PepStatus', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class FaultinjectiontestingProjectsLocationsExperimentsCreateRequest(_messages.Message):
@@ -777,8 +804,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -800,7 +827,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -839,9 +866,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -906,14 +933,16 @@ class OriginResource(_messages.Message):
   r"""Message describing OriginResource.
 
   Fields:
+    backendServices: list of backend services from sd resource.
     forwardingRule: forwarding_rule from sd resource.
     pathRule: path_rule from sd resource. example: /payment-service.
     uri: url_map from sd resource.
   """
 
-  forwardingRule = _messages.StringField(1)
-  pathRule = _messages.StringField(2)
-  uri = _messages.StringField(3)
+  backendServices = _messages.StringField(1, repeated=True)
+  forwardingRule = _messages.StringField(2)
+  pathRule = _messages.StringField(3)
+  uri = _messages.StringField(4)
 
 
 class PathMatcher(_messages.Message):
@@ -932,39 +961,18 @@ class PathMatcher(_messages.Message):
 class PepResourceStatus(_messages.Message):
   r"""Message describing PepResourceStatus.
 
-  Enums:
-    StateValueValuesEnum: Default to STATE_UNSPECIFIED.
-
   Fields:
     errorMessage: Error message is any.
     injectionTime: Time of fault injection for this endpoint.
     originResource: UrlMap is the origin resource for L7 LB. HTTP route is the
       origin resource for TD.
-    state: Default to STATE_UNSPECIFIED.
+    status: Status from PO.
   """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Default to STATE_UNSPECIFIED.
-
-    Values:
-      STATE_UNSPECIFIED: Default state.
-      QUEUED: Apply fault is queued.
-      IN_PROGRESS: Fault apply is in progress.
-      COMPLETED: Fault apply completed.
-      ABORTED: Fault apply aborted.
-      ERRORED: Fault apply errored.
-    """
-    STATE_UNSPECIFIED = 0
-    QUEUED = 1
-    IN_PROGRESS = 2
-    COMPLETED = 3
-    ABORTED = 4
-    ERRORED = 5
 
   errorMessage = _messages.StringField(1)
   injectionTime = _messages.StringField(2)
   originResource = _messages.MessageField('OriginResource', 3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  status = _messages.MessageField('Status', 4)
 
 
 class PepStatus(_messages.Message):

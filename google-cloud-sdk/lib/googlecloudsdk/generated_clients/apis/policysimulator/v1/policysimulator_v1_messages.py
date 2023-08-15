@@ -20,6 +20,217 @@ from apitools.base.py import extra_types
 package = 'policysimulator'
 
 
+class GoogleCloudOrgpolicyV2AlternatePolicySpec(_messages.Message):
+  r"""Similar to PolicySpec but with an extra 'launch' field for launch
+  reference. The PolicySpec here is specific for dry-run/darklaunch.
+
+  Fields:
+    launch: Reference to the launch that will be used while audit logging and
+      to control the launch. Should be set only in the alternate policy.
+    spec: Specify constraint for configurations of Google Cloud resources.
+  """
+
+  launch = _messages.StringField(1)
+  spec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 2)
+
+
+class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
+  r"""A custom constraint defined by customers which can *only* be applied to
+  the given resource types and organization. By creating a custom constraint,
+  customers can apply policies of this custom constraint. *Creating a custom
+  constraint itself does NOT apply any policy enforcement*.
+
+  Enums:
+    ActionTypeValueValuesEnum: Allow or deny type.
+    MethodTypesValueListEntryValuesEnum:
+
+  Fields:
+    actionType: Allow or deny type.
+    condition: Org policy condition/expression. For example:
+      `resource.instanceName.matches("[production|test]_.*_(\d)+")` or,
+      `resource.management.auto_upgrade == true` The max length of the
+      condition is 1000 characters.
+    description: Detailed information about this custom policy constraint. The
+      max length of the description is 2000 characters.
+    displayName: One line display name for the UI. The max length of the
+      display_name is 200 characters.
+    methodTypes: All the operations being applied for this constraint.
+    name: Immutable. Name of the constraint. This is unique within the
+      organization. Format of the name should be * `organizations/{organizatio
+      n_id}/customConstraints/{custom_constraint_id}` Example:
+      `organizations/123/customConstraints/custom.createOnlyE2TypeVms` The max
+      length is 70 characters and the minimum length is 1. Note that the
+      prefix `organizations/{organization_id}/customConstraints/` is not
+      counted.
+    resourceTypes: Immutable. The resource instance type on which this policy
+      applies. Format will be of the form : `/` Example: *
+      `compute.googleapis.com/Instance`.
+    updateTime: Output only. The last time this custom constraint was updated.
+      This represents the last time that the `CreateCustomConstraint` or
+      `UpdateCustomConstraint` RPC was called
+  """
+
+  class ActionTypeValueValuesEnum(_messages.Enum):
+    r"""Allow or deny type.
+
+    Values:
+      ACTION_TYPE_UNSPECIFIED: Unspecified. Results in an error.
+      ALLOW: Allowed action type.
+      DENY: Deny action type.
+    """
+    ACTION_TYPE_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+
+  class MethodTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""MethodTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      METHOD_TYPE_UNSPECIFIED: Unspecified. Results in an error.
+      CREATE: Constraint applied when creating the resource.
+      UPDATE: Constraint applied when updating the resource.
+      DELETE: Constraint applied when deleting the resource. Not supported
+        yet.
+    """
+    METHOD_TYPE_UNSPECIFIED = 0
+    CREATE = 1
+    UPDATE = 2
+    DELETE = 3
+
+  actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
+  condition = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  methodTypes = _messages.EnumField('MethodTypesValueListEntryValuesEnum', 5, repeated=True)
+  name = _messages.StringField(6)
+  resourceTypes = _messages.StringField(7, repeated=True)
+  updateTime = _messages.StringField(8)
+
+
+class GoogleCloudOrgpolicyV2Policy(_messages.Message):
+  r"""Defines an organization policy which is used to specify constraints for
+  configurations of Google Cloud resources.
+
+  Fields:
+    alternate: Deprecated.
+    dryRunSpec: Dry-run policy. Audit-only policy, can be used to monitor how
+      the policy would have impacted the existing and future resources if it's
+      enforced.
+    name: Immutable. The resource name of the policy. Must be one of the
+      following forms, where `constraint_name` is the name of the constraint
+      which this policy configures: *
+      `projects/{project_number}/policies/{constraint_name}` *
+      `folders/{folder_id}/policies/{constraint_name}` *
+      `organizations/{organization_id}/policies/{constraint_name}` For
+      example, `projects/123/policies/compute.disableSerialPortAccess`. Note:
+      `projects/{project_id}/policies/{constraint_name}` is also an acceptable
+      name for API requests, but responses will return the name using the
+      equivalent project number.
+    spec: Basic information about the Organization Policy.
+  """
+
+  alternate = _messages.MessageField('GoogleCloudOrgpolicyV2AlternatePolicySpec', 1)
+  dryRunSpec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 2)
+  name = _messages.StringField(3)
+  spec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 4)
+
+
+class GoogleCloudOrgpolicyV2PolicySpec(_messages.Message):
+  r"""Defines a Google Cloud policy specification which is used to specify
+  constraints for configurations of Google Cloud resources.
+
+  Fields:
+    etag: An opaque tag indicating the current version of the policy, used for
+      concurrency control. This field is ignored if used in a `CreatePolicy`
+      request. When the policy` is returned from either a `GetPolicy` or a
+      `ListPolicies` request, this `etag` indicates the version of the current
+      policy to use when executing a read-modify-write loop. When the policy
+      is returned from a `GetEffectivePolicy` request, the `etag` will be
+      unset.
+    inheritFromParent: Determines the inheritance behavior for this policy. If
+      `inherit_from_parent` is true, policy rules set higher up in the
+      hierarchy (up to the closest root) are inherited and present in the
+      effective policy. If it is false, then no rules are inherited, and this
+      policy becomes the new root for evaluation. This field can be set only
+      for policies which configure list constraints.
+    reset: Ignores policies set above this resource and restores the
+      `constraint_default` enforcement behavior of the specific constraint at
+      this resource. This field can be set in policies for either list or
+      boolean constraints. If set, `rules` must be empty and
+      `inherit_from_parent` must be set to false.
+    rules: In policies for boolean constraints, the following requirements
+      apply: - There must be one and only one policy rule where condition is
+      unset. - Boolean policy rules with conditions must set `enforced` to the
+      opposite of the policy rule without a condition. - During policy
+      evaluation, policy rules with conditions that are true for a target
+      resource take precedence.
+    updateTime: Output only. The time stamp this was previously updated. This
+      represents the last time a call to `CreatePolicy` or `UpdatePolicy` was
+      made for that policy.
+  """
+
+  etag = _messages.StringField(1)
+  inheritFromParent = _messages.BooleanField(2)
+  reset = _messages.BooleanField(3)
+  rules = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpecPolicyRule', 4, repeated=True)
+  updateTime = _messages.StringField(5)
+
+
+class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
+  r"""A rule used to express this policy.
+
+  Fields:
+    allowAll: Setting this to true means that all values are allowed. This
+      field can be set only in policies for list constraints.
+    condition: A condition which determines whether this rule is used in the
+      evaluation of the policy. When set, the `expression` field in the `Expr'
+      must include from 1 to 10 subexpressions, joined by the "||" or "&&"
+      operators. Each subexpression must be of the form
+      "resource.matchTag('/tag_key_short_name, 'tag_value_short_name')". or
+      "resource.matchTagId('tagKeys/key_id', 'tagValues/value_id')". where
+      key_name and value_name are the resource names for Label Keys and
+      Values. These names are available from the Tag Manager Service. An
+      example expression is: "resource.matchTag('123456789/environment,
+      'prod')". or "resource.matchTagId('tagKeys/123', 'tagValues/456')".
+    denyAll: Setting this to true means that all values are denied. This field
+      can be set only in policies for list constraints.
+    enforce: If `true`, then the policy is enforced. If `false`, then any
+      configuration is acceptable. This field can be set only in policies for
+      boolean constraints.
+    values: List of values to be used for this policy rule. This field can be
+      set only in policies for list constraints.
+  """
+
+  allowAll = _messages.BooleanField(1)
+  condition = _messages.MessageField('GoogleTypeExpr', 2)
+  denyAll = _messages.BooleanField(3)
+  enforce = _messages.BooleanField(4)
+  values = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues', 5)
+
+
+class GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues(_messages.Message):
+  r"""A message that holds specific allowed and denied values. This message
+  can define specific values and subtrees of the Resource Manager resource
+  hierarchy (`Organizations`, `Folders`, `Projects`) that are allowed or
+  denied. This is achieved by using the `under:` and optional `is:` prefixes.
+  The `under:` prefix is used to denote resource subtree values. The `is:`
+  prefix is used to denote specific values, and is required only if the value
+  contains a ":". Values prefixed with "is:" are treated the same as values
+  with no prefix. Ancestry subtrees must be in one of the following formats: -
+  `projects/` (for example, `projects/tokyo-rain-123`) - `folders/` (for
+  example, `folders/1234`) - `organizations/` (for example,
+  `organizations/1234`) The `supports_under` field of the associated
+  `Constraint` defines whether ancestry prefixes can be used.
+
+  Fields:
+    allowedValues: List of values allowed at this resource.
+    deniedValues: List of values denied at this resource.
+  """
+
+  allowedValues = _messages.StringField(1, repeated=True)
+  deniedValues = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudPolicysimulatorV1AccessStateDiff(_messages.Message):
   r"""A summary and comparison of the principal's access under the current
   (baseline) policies and the proposed (simulated) policies for a single
@@ -708,6 +919,342 @@ class GoogleCloudPolicysimulatorV1ReplayResultsSummary(_messages.Message):
   unchangedCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudPolicysimulatorV1alphaGenerateOrgPolicyViolationsPreviewOperationMetadata(_messages.Message):
+  r"""GenerateOrgPolicyViolationsPreviewOperationMetadata is metadata about an
+  OrgPolicyViolationsPreview generations operation.
+
+  Enums:
+    StateValueValuesEnum: The current state of the operation.
+
+  Fields:
+    requestTime: Time when the request was received.
+    resourcesFound: Total number of resources that need scanning. Should equal
+      resource_scanned + resources_pending
+    resourcesPending: Number of resources still to scan.
+    resourcesScanned: Number of resources already scanned.
+    startTime: Time when the request started processing, i.e. when the state
+      was set to RUNNING.
+    state: The current state of the operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current state of the operation.
+
+    Values:
+      PREVIEW_STATE_UNSPECIFIED: The state is unspecified.
+      PREVIEW_PENDING: The OrgPolicyViolationsPreview has not been created
+        yet.
+      PREVIEW_RUNNING: The OrgPolicyViolationsPreview is currently being
+        created.
+      PREVIEW_SUCCEEDED: The OrgPolicyViolationsPreview creation finished
+        successfully.
+      PREVIEW_FAILED: The OrgPolicyViolationsPreview creation failed with an
+        error.
+    """
+    PREVIEW_STATE_UNSPECIFIED = 0
+    PREVIEW_PENDING = 1
+    PREVIEW_RUNNING = 2
+    PREVIEW_SUCCEEDED = 3
+    PREVIEW_FAILED = 4
+
+  requestTime = _messages.StringField(1)
+  resourcesFound = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  resourcesPending = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  resourcesScanned = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlay(_messages.Message):
+  r"""The proposed changes to OrgPolicy.
+
+  Fields:
+    customConstraints: The OrgPolicy CustomConstraint changes to preview
+      violations for. Any existing CustomConstraints with the same name will
+      be overridden in the simulation. That is, violations will be determined
+      as if all custom constraints in the overlay were instantiated.
+    policies: The OrgPolicy changes to preview violations for. Any existing
+      OrgPolicies with the same name will be overridden in the simulation.
+      That is, violations will be determined as if all policies in the overlay
+      were created or updated.
+  """
+
+  customConstraints = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlayCustomConstraintOverlay', 1, repeated=True)
+  policies = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlayPolicyOverlay', 2, repeated=True)
+
+
+class GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlayCustomConstraintOverlay(_messages.Message):
+  r"""A change to an OrgPolicy custom constraint.
+
+  Fields:
+    customConstraint: The new or updated custom constraint.
+    customConstraintParent: Resource the constraint is attached to. Example:
+      "organization/987654"
+  """
+
+  customConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2CustomConstraint', 1)
+  customConstraintParent = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlayPolicyOverlay(_messages.Message):
+  r"""A change to an OrgPolicy.
+
+  Fields:
+    policy: The new or updated OrgPolicy.
+    policyParent: The parent of the policy we are attaching to. Example:
+      "projects/123456"
+  """
+
+  policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 1)
+  policyParent = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview(_messages.Message):
+  r"""OrgPolicyViolationsPreview is a resource providing a preview of the
+  violations that will exist if an OrgPolicy change is made. The list of
+  violations are modeled as child resources and retrieved via a
+  ListOrgPolicyViolations API call. There are potentially more
+  OrgPolicyViolations than could fit in an embedded field. Thus, the use of a
+  child resource instead of a field.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the
+      `OrgPolicyViolationsPreview`.
+
+  Fields:
+    name: Output only. The resource name of the `OrgPolicyViolationsPreview`.
+      It has the following format: `organizations/{organization}/locations/{lo
+      cation}/orgPolicyViolationsPreviews/{orgPolicyViolationsPreview}`
+      Example: `organizations/my-example-
+      org/locations/global/orgPolicyViolationsPreviews/506a5f7f`
+    overlay: Required. The proposed changes we are previewing violations for.
+    resourceCounts: Output only. A summary of the state of all resources
+      scanned for compliance with the changed OrgPolicy.
+    state: Output only. The state of the `OrgPolicyViolationsPreview`.
+    violationsCount: Output only. The number of OrgPolicyViolations in this
+      `OrgPolicyViolationsPreview`. This count may differ from
+      `resource_summary.noncompliant_count` because each OrgPolicyViolation is
+      specific to a resource **and** constraint. If there are multiple
+      constraints being evaluated (i.e. multiple policies in the overlay), a
+      single resource may violate multiple constraints.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the `OrgPolicyViolationsPreview`.
+
+    Values:
+      PREVIEW_STATE_UNSPECIFIED: The state is unspecified.
+      PREVIEW_PENDING: The OrgPolicyViolationsPreview has not been created
+        yet.
+      PREVIEW_RUNNING: The OrgPolicyViolationsPreview is currently being
+        created.
+      PREVIEW_SUCCEEDED: The OrgPolicyViolationsPreview creation finished
+        successfully.
+      PREVIEW_FAILED: The OrgPolicyViolationsPreview creation failed with an
+        error.
+    """
+    PREVIEW_STATE_UNSPECIFIED = 0
+    PREVIEW_PENDING = 1
+    PREVIEW_RUNNING = 2
+    PREVIEW_SUCCEEDED = 3
+    PREVIEW_FAILED = 4
+
+  name = _messages.StringField(1)
+  overlay = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlay', 2)
+  resourceCounts = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreviewResourceCounts', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  violationsCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreviewResourceCounts(_messages.Message):
+  r"""A summary of the state of all resources scanned for compliance with the
+  changed OrgPolicy.
+
+  Fields:
+    compliant: Number of scanned resources with zero violations.
+    errors: Number of resources that returned an error when scanned.
+    noncompliant: Number of scanned resources with at least one violation.
+    scanned: Number of resources checked for compliance. Must equal:
+      unenforced + noncompliant + compliant + error
+    unenforced: Number of resources where the constraint was not enforced,
+      i.e. the Policy set `enforced: false` for that resource.
+  """
+
+  compliant = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  errors = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  noncompliant = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  scanned = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  unenforced = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudPolicysimulatorV1betaGenerateOrgPolicyViolationsPreviewOperationMetadata(_messages.Message):
+  r"""GenerateOrgPolicyViolationsPreviewOperationMetadata is metadata about an
+  OrgPolicyViolationsPreview generations operation.
+
+  Enums:
+    StateValueValuesEnum: The current state of the operation.
+
+  Fields:
+    requestTime: Time when the request was received.
+    resourcesFound: Total number of resources that need scanning. Should equal
+      resource_scanned + resources_pending
+    resourcesPending: Number of resources still to scan.
+    resourcesScanned: Number of resources already scanned.
+    startTime: Time when the request started processing, i.e. when the state
+      was set to RUNNING.
+    state: The current state of the operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current state of the operation.
+
+    Values:
+      PREVIEW_STATE_UNSPECIFIED: The state is unspecified.
+      PREVIEW_PENDING: The OrgPolicyViolationsPreview has not been created
+        yet.
+      PREVIEW_RUNNING: The OrgPolicyViolationsPreview is currently being
+        created.
+      PREVIEW_SUCCEEDED: The OrgPolicyViolationsPreview creation finished
+        successfully.
+      PREVIEW_FAILED: The OrgPolicyViolationsPreview creation failed with an
+        error.
+    """
+    PREVIEW_STATE_UNSPECIFIED = 0
+    PREVIEW_PENDING = 1
+    PREVIEW_RUNNING = 2
+    PREVIEW_SUCCEEDED = 3
+    PREVIEW_FAILED = 4
+
+  requestTime = _messages.StringField(1)
+  resourcesFound = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  resourcesPending = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  resourcesScanned = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlay(_messages.Message):
+  r"""The proposed changes to OrgPolicy.
+
+  Fields:
+    customConstraints: The OrgPolicy CustomConstraint changes to preview
+      violations for. Any existing CustomConstraints with the same name will
+      be overridden in the simulation. That is, violations will be determined
+      as if all custom constraints in the overlay were instantiated.
+    policies: The OrgPolicy changes to preview violations for. Any existing
+      OrgPolicies with the same name will be overridden in the simulation.
+      That is, violations will be determined as if all policies in the overlay
+      were created or updated.
+  """
+
+  customConstraints = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayCustomConstraintOverlay', 1, repeated=True)
+  policies = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayPolicyOverlay', 2, repeated=True)
+
+
+class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayCustomConstraintOverlay(_messages.Message):
+  r"""A change to an OrgPolicy custom constraint.
+
+  Fields:
+    customConstraint: The new or updated custom constraint.
+    customConstraintParent: Resource the constraint is attached to. Example:
+      "organization/987654"
+  """
+
+  customConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2CustomConstraint', 1)
+  customConstraintParent = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayPolicyOverlay(_messages.Message):
+  r"""A change to an OrgPolicy.
+
+  Fields:
+    policy: The new or updated OrgPolicy.
+    policyParent: The parent of the policy we are attaching to. Example:
+      "projects/123456"
+  """
+
+  policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 1)
+  policyParent = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreview(_messages.Message):
+  r"""OrgPolicyViolationsPreview is a resource providing a preview of the
+  violations that will exist if an OrgPolicy change is made. The list of
+  violations are modeled as child resources and retrieved via a
+  ListOrgPolicyViolations API call. There are potentially more
+  OrgPolicyViolations than could fit in an embedded field. Thus, the use of a
+  child resource instead of a field.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the
+      `OrgPolicyViolationsPreview`.
+
+  Fields:
+    name: Output only. The resource name of the `OrgPolicyViolationsPreview`.
+      It has the following format: `organizations/{organization}/locations/{lo
+      cation}/orgPolicyViolationsPreviews/{orgPolicyViolationsPreview}`
+      Example: `organizations/my-example-
+      org/locations/global/orgPolicyViolationsPreviews/506a5f7f`
+    overlay: Required. The proposed changes we are previewing violations for.
+    resourceCounts: Output only. A summary of the state of all resources
+      scanned for compliance with the changed OrgPolicy.
+    state: Output only. The state of the `OrgPolicyViolationsPreview`.
+    violationsCount: Output only. The number of OrgPolicyViolations in this
+      `OrgPolicyViolationsPreview`. This count may differ from
+      `resource_summary.noncompliant_count` because each OrgPolicyViolation is
+      specific to a resource **and** constraint. If there are multiple
+      constraints being evaluated (i.e. multiple policies in the overlay), a
+      single resource may violate multiple constraints.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the `OrgPolicyViolationsPreview`.
+
+    Values:
+      PREVIEW_STATE_UNSPECIFIED: The state is unspecified.
+      PREVIEW_PENDING: The OrgPolicyViolationsPreview has not been created
+        yet.
+      PREVIEW_RUNNING: The OrgPolicyViolationsPreview is currently being
+        created.
+      PREVIEW_SUCCEEDED: The OrgPolicyViolationsPreview creation finished
+        successfully.
+      PREVIEW_FAILED: The OrgPolicyViolationsPreview creation failed with an
+        error.
+    """
+    PREVIEW_STATE_UNSPECIFIED = 0
+    PREVIEW_PENDING = 1
+    PREVIEW_RUNNING = 2
+    PREVIEW_SUCCEEDED = 3
+    PREVIEW_FAILED = 4
+
+  name = _messages.StringField(1)
+  overlay = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyOverlay', 2)
+  resourceCounts = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreviewResourceCounts', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  violationsCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreviewResourceCounts(_messages.Message):
+  r"""A summary of the state of all resources scanned for compliance with the
+  changed OrgPolicy.
+
+  Fields:
+    compliant: Number of scanned resources with zero violations.
+    errors: Number of resources that returned an error when scanned.
+    noncompliant: Number of scanned resources with at least one violation.
+    scanned: Number of resources checked for compliance. Must equal:
+      unenforced + noncompliant + compliant + error
+    unenforced: Number of resources where the constraint was not enforced,
+      i.e. the Policy set `enforced: false` for that resource.
+  """
+
+  compliant = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  errors = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  noncompliant = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  scanned = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  unenforced = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
 class GoogleIamV1AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -844,7 +1391,7 @@ class GoogleIamV1Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -852,15 +1399,15 @@ class GoogleIamV1Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -932,8 +1479,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -955,7 +1502,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -994,9 +1541,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is

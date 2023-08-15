@@ -677,20 +677,24 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
       metavar='ROUTING_POLICY_DATA',
       required=required,
       type=RoutingPolicyDataArgType,
-      help='The routing policy data supports one of two formats below, '
-      'depending on the choice of routing-policy-type.\n\n'
-      'For --routing-policy-type = "WRR" this flag indicates the weighted '
-      'round robin policy data. The field accepts a semicolon-delimited list '
-      'of the format "${weight_percent}=${rrdata},${rrdata}". Specify weight '
-      'as a non-negative number (0 is allowed). Ratio of traffic '
-      'routed to the target is calculated from the ratio of individual weight '
-      'over the total across all weights.\n\n'
-      'For --routing-policy-type = "GEO" this flag indicates the geo-locations '
-      'policy data. The field accepts a semicolon-delimited list of the format '
-      '"${region}=${rrdata},${rrdata}". Each rrdata can either be '
-      'an IP address or a reference to a forwarding rule of the format '
-      'FORWARDING_RULE_NAME", "FORWARDING_RULE_NAME@region", or the full '
-      'resource path of the forwarding rule.')
+      help=(
+          'The routing policy data supports one of two formats below, depending'
+          ' on the choice of routing-policy-type.\n\nFor --routing-policy-type'
+          ' = "WRR" this flag indicates the weighted round robin policy data.'
+          ' The field accepts a semicolon-delimited list of the format'
+          ' "${weight_percent}=${rrdata},${rrdata}". Specify weight as a'
+          ' non-negative number (0 is allowed). Ratio of traffic routed to the'
+          ' target is calculated from the ratio of individual weight over the'
+          ' total across all weights.\n\nFor --routing-policy-type = "GEO" this'
+          ' flag indicates the geo-locations policy data. The field accepts a'
+          ' semicolon-delimited list of the format'
+          ' "${region}=${rrdata},${rrdata}". Each rrdata can either be an IP'
+          ' address or a reference to a forwarding rule of the format'
+          ' "FORWARDING_RULE_NAME", "FORWARDING_RULE_NAME@{region}",'
+          ' "FORWARDING_RULE_NAME@global", or the full resource path of the'
+          ' forwarding rule.'
+      ),
+  )
 
 
 # Response Policy Flags
@@ -717,7 +721,9 @@ CHANGES_FORMAT = 'table(id, startTime, status)'
 def _FormatHealthCheckTarget(health_check_target):
   fields = ('ipAddress', 'port', 'ipProtocol', 'networkUrl', 'project',
             'region', 'loadBalancerType')
-  return ', '.join(health_check_target[f] for f in fields)
+  return ', '.join(
+      health_check_target[f] for f in fields if f in health_check_target
+  )
 
 
 def _FormatRrdata(routing_policy_item):

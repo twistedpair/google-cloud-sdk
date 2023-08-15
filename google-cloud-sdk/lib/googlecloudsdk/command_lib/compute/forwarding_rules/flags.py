@@ -219,6 +219,20 @@ SUBNET_ARG = compute_flags.ResourceArgument(
                         ' region of the forwarding rule.'))
 
 
+IP_COLLECTION_ARG = compute_flags.ResourceArgument(
+    name='--ip-collection',
+    required=False,
+    resource_name='public delegated prefix',
+    regional_collection='compute.publicDelegatedPrefixes',
+    short_help='Resource reference to a PublicDelegatedPrefix.',
+    detailed_help="""
+        Resource reference to a PublicDelegatedPrefix. The PDP must
+        be a sub-PDP in EXTERNAL_IPV6_FORWARDING_RULE_CREATION mode.
+        """,
+    region_explanation=('If not specified, the region is set to the'
+                        ' region of the forwarding rule.'))
+
+
 def TargetGrpcProxyArg():
   """Return a resource argument for parsing a target gRPC proxy."""
 
@@ -441,7 +455,8 @@ def AddUpdateTargetArgs(parser,
 def AddCreateArgs(parser,
                   include_psc_google_apis=False,
                   include_target_service_attachment=False,
-                  include_regional_tcp_proxy=False):
+                  include_regional_tcp_proxy=False,
+                  include_ip_collection=False):
   """Adds common flags for creating forwarding rules."""
   AddUpdateTargetArgs(parser, include_psc_google_apis,
                       include_target_service_attachment,
@@ -449,6 +464,9 @@ def AddCreateArgs(parser,
 
   NetworkArg().AddArgument(parser)
   SUBNET_ARG.AddArgument(parser)
+
+  if include_ip_collection:
+    IP_COLLECTION_ARG.AddArgument(parser)
 
   AddLoadBalancingScheme(
       parser,

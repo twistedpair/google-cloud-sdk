@@ -40,9 +40,6 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
-    self.organizations_locations_workloads_organizations_locations_workloads = self.OrganizationsLocationsWorkloadsOrganizationsLocationsWorkloadsService(self)
-    self.organizations_locations_workloads_organizations_locations = self.OrganizationsLocationsWorkloadsOrganizationsLocationsService(self)
-    self.organizations_locations_workloads_organizations = self.OrganizationsLocationsWorkloadsOrganizationsService(self)
     self.organizations_locations_workloads_violations = self.OrganizationsLocationsWorkloadsViolationsService(self)
     self.organizations_locations_workloads = self.OrganizationsLocationsWorkloadsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
@@ -115,63 +112,6 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
-
-  class OrganizationsLocationsWorkloadsOrganizationsLocationsWorkloadsService(base_api.BaseApiService):
-    """Service class for the organizations_locations_workloads_organizations_locations_workloads resource."""
-
-    _NAME = 'organizations_locations_workloads_organizations_locations_workloads'
-
-    def __init__(self, client):
-      super(AssuredworkloadsV1beta1.OrganizationsLocationsWorkloadsOrganizationsLocationsWorkloadsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def AnalyzeWorkloadMove(self, request, global_params=None):
-      r"""Analyzes a hypothetical move of a source project or project-based workload to a target (destination) folder-based workload.
-
-      Args:
-        request: (AssuredworkloadsOrganizationsLocationsWorkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse) The response message.
-      """
-      config = self.GetMethodConfig('AnalyzeWorkloadMove')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    AnalyzeWorkloadMove.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}/organizations/{organizationsId1}/locations/{locationsId1}/workloads/{workloadsId1}:analyzeWorkloadMove',
-        http_method='GET',
-        method_id='assuredworkloads.organizations.locations.workloads.organizations.locations.workloads.analyzeWorkloadMove',
-        ordered_params=['source', 'target'],
-        path_params=['source', 'target'],
-        query_params=['project'],
-        relative_path='v1beta1/{+source}/{+target}:analyzeWorkloadMove',
-        request_field='',
-        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest',
-        response_type_name='GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse',
-        supports_download=False,
-    )
-
-  class OrganizationsLocationsWorkloadsOrganizationsLocationsService(base_api.BaseApiService):
-    """Service class for the organizations_locations_workloads_organizations_locations resource."""
-
-    _NAME = 'organizations_locations_workloads_organizations_locations'
-
-    def __init__(self, client):
-      super(AssuredworkloadsV1beta1.OrganizationsLocationsWorkloadsOrganizationsLocationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class OrganizationsLocationsWorkloadsOrganizationsService(base_api.BaseApiService):
-    """Service class for the organizations_locations_workloads_organizations resource."""
-
-    _NAME = 'organizations_locations_workloads_organizations'
-
-    def __init__(self, client):
-      super(AssuredworkloadsV1beta1.OrganizationsLocationsWorkloadsOrganizationsService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class OrganizationsLocationsWorkloadsViolationsService(base_api.BaseApiService):
     """Service class for the organizations_locations_workloads_violations resource."""
@@ -328,6 +268,33 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def EnableResourceMonitoring(self, request, global_params=None):
+      r"""Enable resource violation monitoring for a workload.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsEnableResourceMonitoringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAssuredworkloadsV1beta1EnableResourceMonitoringResponse) The response message.
+      """
+      config = self.GetMethodConfig('EnableResourceMonitoring')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableResourceMonitoring.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}:enableResourceMonitoring',
+        http_method='POST',
+        method_id='assuredworkloads.organizations.locations.workloads.enableResourceMonitoring',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:enableResourceMonitoring',
+        request_field='',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsEnableResourceMonitoringRequest',
+        response_type_name='GoogleCloudAssuredworkloadsV1beta1EnableResourceMonitoringResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets Assured Workload associated with a CRM Node.
 
@@ -467,7 +434,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
           }
 
     def AnalyzeWorkloadMove(self, request, global_params=None):
-      r"""Analyzes a hypothetical move of a source project or project-based workload to a target (destination) folder-based workload.
+      r"""Analyzes a hypothetical move of a source resource to a target(destination) folder-based workload to surface compliance risks.
 
       Args:
         request: (AssuredworkloadsProjectsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest) input message
@@ -485,7 +452,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         method_id='assuredworkloads.projects.organizations.locations.workloads.analyzeWorkloadMove',
         ordered_params=['project', 'target'],
         path_params=['project', 'target'],
-        query_params=['source'],
+        query_params=['analyzeChildAssets', 'pageSize', 'pageToken', 'source'],
         relative_path='v1beta1/{+project}/{+target}:analyzeWorkloadMove',
         request_field='',
         request_type_name='AssuredworkloadsProjectsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest',

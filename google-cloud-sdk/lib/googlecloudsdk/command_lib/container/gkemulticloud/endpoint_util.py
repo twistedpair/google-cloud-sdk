@@ -55,10 +55,12 @@ def _ValidateLocation(location):
     locations.sort()
     raise exceptions.InvalidArgumentException(
         '--location',
-        '{bad_location} is not a valid location. Allowed values: [{location_list}].'
-        .format(
+        '{bad_location} is not a valid location. Allowed values:'
+        ' [{location_list}].'.format(
             bad_location=location,
-            location_list=', '.join('\'{}\''.format(r) for r in locations)))
+            location_list=', '.join("'{}'".format(r) for r in locations),
+        ),
+    )
 
 
 def _AppendLocation(endpoint, location):
@@ -96,5 +98,6 @@ def GkemulticloudEndpointOverride(location, track=base.ReleaseTrack.GA):
 def _GetEffectiveEndpoint(location, track=base.ReleaseTrack.GA):
   """Returns regional GKE Multi-cloud Endpoint."""
   endpoint = apis.GetEffectiveApiEndpoint(
-      api_util.MODULE_NAME, api_util.GetApiVersionForTrack(track))
+      api_util.MODULE_NAME, api_util.GetApiVersionForTrack(track)
+  )
   return _AppendLocation(endpoint, location)

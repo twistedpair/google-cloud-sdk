@@ -77,6 +77,8 @@ class Assessment(_messages.Message):
       vulnerability.
     shortDescription: A one sentence description of this Vex.
     state: Provides the state of this Vulnerability assessment.
+    vulnerabilityId: The vulnerability identifier for this Assessment. Will
+      hold one of common identifiers e.g. CVE, GHSA etc.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -106,6 +108,7 @@ class Assessment(_messages.Message):
   remediations = _messages.MessageField('Remediation', 6, repeated=True)
   shortDescription = _messages.StringField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
+  vulnerabilityId = _messages.StringField(9)
 
 
 class Attestation(_messages.Message):
@@ -234,10 +237,84 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BuildDefinition(_messages.Message):
+  r"""A BuildDefinition object.
+
+  Messages:
+    ExternalParametersValue: A ExternalParametersValue object.
+    InternalParametersValue: A InternalParametersValue object.
+
+  Fields:
+    buildType: A string attribute.
+    externalParameters: A ExternalParametersValue attribute.
+    internalParameters: A InternalParametersValue attribute.
+    resolvedDependencies: A ResourceDescriptor attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExternalParametersValue(_messages.Message):
+    r"""A ExternalParametersValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExternalParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExternalParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InternalParametersValue(_messages.Message):
+    r"""A InternalParametersValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a InternalParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InternalParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  buildType = _messages.StringField(1)
+  externalParameters = _messages.MessageField('ExternalParametersValue', 2)
+  internalParameters = _messages.MessageField('InternalParametersValue', 3)
+  resolvedDependencies = _messages.MessageField('ResourceDescriptor', 4, repeated=True)
+
+
 class BuildDetails(_messages.Message):
   r"""Message encapsulating build provenance details.
 
   Fields:
+    inTotoSlsaProvenanceV1: In-Toto Slsa Provenance V1 represents a slsa
+      provenance meeting the slsa spec, wrapped in an in-toto statement. This
+      allows for direct jsonification of a to-spec in-toto slsa statement with
+      a to-spec slsa provenance.
     intotoProvenance: Deprecated. See InTotoStatement for the replacement. In-
       toto Provenance representation as defined in spec.
     intotoStatement: In-toto Statement representation as defined in spec. The
@@ -256,10 +333,25 @@ class BuildDetails(_messages.Message):
       to prevent incompatibilities with future changes.
   """
 
-  intotoProvenance = _messages.MessageField('InTotoProvenance', 1)
-  intotoStatement = _messages.MessageField('InTotoStatement', 2)
-  provenance = _messages.MessageField('BuildProvenance', 3)
-  provenanceBytes = _messages.StringField(4)
+  inTotoSlsaProvenanceV1 = _messages.MessageField('InTotoSlsaProvenanceV1', 1)
+  intotoProvenance = _messages.MessageField('InTotoProvenance', 2)
+  intotoStatement = _messages.MessageField('InTotoStatement', 3)
+  provenance = _messages.MessageField('BuildProvenance', 4)
+  provenanceBytes = _messages.StringField(5)
+
+
+class BuildMetadata(_messages.Message):
+  r"""A BuildMetadata object.
+
+  Fields:
+    finishedOn: A string attribute.
+    invocationId: A string attribute.
+    startedOn: A string attribute.
+  """
+
+  finishedOn = _messages.StringField(1)
+  invocationId = _messages.StringField(2)
+  startedOn = _messages.StringField(3)
 
 
 class BuildProvenance(_messages.Message):
@@ -381,7 +473,7 @@ class BuildSignature(_messages.Message):
 
 
 class BuildStep(_messages.Message):
-  r"""A step in the build pipeline. Next ID: 20
+  r"""A step in the build pipeline. Next ID: 21
 
   Enums:
     StatusValueValuesEnum: Output only. Status of the build step. At this
@@ -402,6 +494,9 @@ class BuildStep(_messages.Message):
       entrypoint, the `args` are used as arguments to that entrypoint. If the
       image does not define an entrypoint, the first element in args is used
       as the entrypoint, and the remainder will be used as arguments.
+    automapSubstitutions: Option to include built-in and custom substitutions
+      as env variables for this build step. This option will override the
+      global option in BuildOption.
     dir: Working directory to use when running this step's container. If this
       value is a relative path, it is relative to the build's working
       directory. If this value is absolute, it may be outside the build's
@@ -492,20 +587,21 @@ class BuildStep(_messages.Message):
   allowExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
   allowFailure = _messages.BooleanField(2)
   args = _messages.StringField(3, repeated=True)
-  dir = _messages.StringField(4)
-  entrypoint = _messages.StringField(5)
-  env = _messages.StringField(6, repeated=True)
-  exitCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  id = _messages.StringField(8)
-  name = _messages.StringField(9)
-  pullTiming = _messages.MessageField('TimeSpan', 10)
-  script = _messages.StringField(11)
-  secretEnv = _messages.StringField(12, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  timeout = _messages.StringField(14)
-  timing = _messages.MessageField('TimeSpan', 15)
-  volumes = _messages.MessageField('Volume', 16, repeated=True)
-  waitFor = _messages.StringField(17, repeated=True)
+  automapSubstitutions = _messages.BooleanField(4)
+  dir = _messages.StringField(5)
+  entrypoint = _messages.StringField(6)
+  env = _messages.StringField(7, repeated=True)
+  exitCode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  id = _messages.StringField(9)
+  name = _messages.StringField(10)
+  pullTiming = _messages.MessageField('TimeSpan', 11)
+  script = _messages.StringField(12)
+  secretEnv = _messages.StringField(13, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  timeout = _messages.StringField(15)
+  timing = _messages.MessageField('TimeSpan', 16)
+  volumes = _messages.MessageField('Volume', 17, repeated=True)
+  waitFor = _messages.StringField(18, repeated=True)
 
 
 class BuildType(_messages.Message):
@@ -1324,6 +1420,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
       configuration file.
 
   Fields:
+    automapSubstitutions: Option to include built-in and custom substitutions
+      as env variables for all build steps.
     defaultLogsBucketBehavior: Optional. Option to specify how default logs
       buckets are setup.
     diskSizeGb: Requested disk size for the VM that runs the build. Note that
@@ -1378,7 +1476,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
       DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED: Unspecified.
       REGIONAL_USER_OWNED_BUCKET: Bucket is located in user-owned project in
         the same region as the build. The builder service account must have
-        access to create and write to GCS buckets in the build project.
+        access to create and write to Cloud Storage buckets in the build
+        project.
     """
     DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED = 0
     REGIONAL_USER_OWNED_BUCKET = 1
@@ -1475,20 +1574,21 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
     MUST_MATCH = 0
     ALLOW_LOOSE = 1
 
-  defaultLogsBucketBehavior = _messages.EnumField('DefaultLogsBucketBehaviorValueValuesEnum', 1)
-  diskSizeGb = _messages.IntegerField(2)
-  dynamicSubstitutions = _messages.BooleanField(3)
-  env = _messages.StringField(4, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 5)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 6)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 7)
-  pool = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption', 8)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 9)
-  secretEnv = _messages.StringField(10, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 11, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 12)
-  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 13, repeated=True)
-  workerPool = _messages.StringField(14)
+  automapSubstitutions = _messages.BooleanField(1)
+  defaultLogsBucketBehavior = _messages.EnumField('DefaultLogsBucketBehaviorValueValuesEnum', 2)
+  diskSizeGb = _messages.IntegerField(3)
+  dynamicSubstitutions = _messages.BooleanField(4)
+  env = _messages.StringField(5, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 6)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 7)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 8)
+  pool = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption', 9)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 10)
+  secretEnv = _messages.StringField(11, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 12, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 13)
+  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 14, repeated=True)
+  workerPool = _messages.StringField(15)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption(_messages.Message):
@@ -1529,6 +1629,9 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
       entrypoint, the `args` are used as arguments to that entrypoint. If the
       image does not define an entrypoint, the first element in args is used
       as the entrypoint, and the remainder will be used as arguments.
+    automapSubstitutions: Option to include built-in and custom substitutions
+      as env variables for this build step. This option will override the
+      global option in BuildOption.
     dir: Working directory to use when running this step's container. If this
       value is a relative path, it is relative to the build's working
       directory. If this value is absolute, it may be outside the build's
@@ -1617,20 +1720,21 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
   allowExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
   allowFailure = _messages.BooleanField(2)
   args = _messages.StringField(3, repeated=True)
-  dir = _messages.StringField(4)
-  entrypoint = _messages.StringField(5)
-  env = _messages.StringField(6, repeated=True)
-  exitCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  id = _messages.StringField(8)
-  name = _messages.StringField(9)
-  pullTiming = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 10)
-  script = _messages.StringField(11)
-  secretEnv = _messages.StringField(12, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  timeout = _messages.StringField(14)
-  timing = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 15)
-  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 16, repeated=True)
-  waitFor = _messages.StringField(17, repeated=True)
+  automapSubstitutions = _messages.BooleanField(4)
+  dir = _messages.StringField(5)
+  entrypoint = _messages.StringField(6)
+  env = _messages.StringField(7, repeated=True)
+  exitCode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  id = _messages.StringField(9)
+  name = _messages.StringField(10)
+  pullTiming = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 11)
+  script = _messages.StringField(12)
+  secretEnv = _messages.StringField(13, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  timeout = _messages.StringField(15)
+  timing = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 16)
+  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 17, repeated=True)
+  waitFor = _messages.StringField(18, repeated=True)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildWarning(_messages.Message):
@@ -3880,6 +3984,23 @@ class InTotoProvenance(_messages.Message):
   recipe = _messages.MessageField('Recipe', 4)
 
 
+class InTotoSlsaProvenanceV1(_messages.Message):
+  r"""A InTotoSlsaProvenanceV1 object.
+
+  Fields:
+    _type: InToto spec defined at https://github.com/in-
+      toto/attestation/tree/main/spec#statement
+    predicate: A SlsaProvenanceV1 attribute.
+    predicateType: A string attribute.
+    subject: A Subject attribute.
+  """
+
+  _type = _messages.StringField(1)
+  predicate = _messages.MessageField('SlsaProvenanceV1', 2)
+  predicateType = _messages.StringField(3)
+  subject = _messages.MessageField('Subject', 4, repeated=True)
+
+
 class InTotoStatement(_messages.Message):
   r"""Spec defined at https://github.com/in-
   toto/attestation/tree/main/spec#statement The serialized InTotoStatement
@@ -4464,8 +4585,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -4487,7 +4608,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -4526,9 +4647,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -4843,7 +4964,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -4851,15 +4972,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     bindings: Associates a list of `members`, or principals, with a `role`.
@@ -4921,6 +5042,47 @@ class Product(_messages.Message):
   id = _messages.StringField(1)
   identifierHelper = _messages.MessageField('IdentifierHelper', 2)
   name = _messages.StringField(3)
+
+
+class ProvenanceBuilder(_messages.Message):
+  r"""A ProvenanceBuilder object.
+
+  Messages:
+    VersionValue: A VersionValue object.
+
+  Fields:
+    builderDependencies: A ResourceDescriptor attribute.
+    id: A string attribute.
+    version: A VersionValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class VersionValue(_messages.Message):
+    r"""A VersionValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a VersionValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type VersionValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a VersionValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  builderDependencies = _messages.MessageField('ResourceDescriptor', 1, repeated=True)
+  id = _messages.StringField(2)
+  version = _messages.MessageField('VersionValue', 3)
 
 
 class Publisher(_messages.Message):
@@ -5412,6 +5574,95 @@ class Resource(_messages.Message):
   uri = _messages.StringField(3)
 
 
+class ResourceDescriptor(_messages.Message):
+  r"""A ResourceDescriptor object.
+
+  Messages:
+    AnnotationsValue: A AnnotationsValue object.
+    DigestValue: A DigestValue object.
+
+  Fields:
+    annotations: A AnnotationsValue attribute.
+    content: A byte attribute.
+    digest: A DigestValue attribute.
+    downloadLocation: A string attribute.
+    mediaType: A string attribute.
+    name: A string attribute.
+    uri: A string attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""A AnnotationsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""A DigestValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  content = _messages.BytesField(2)
+  digest = _messages.MessageField('DigestValue', 3)
+  downloadLocation = _messages.StringField(4)
+  mediaType = _messages.StringField(5)
+  name = _messages.StringField(6)
+  uri = _messages.StringField(7)
+
+
+class RunDetails(_messages.Message):
+  r"""A RunDetails object.
+
+  Fields:
+    builder: A ProvenanceBuilder attribute.
+    byproducts: A ResourceDescriptor attribute.
+    metadata: A BuildMetadata attribute.
+  """
+
+  builder = _messages.MessageField('ProvenanceBuilder', 1)
+  byproducts = _messages.MessageField('ResourceDescriptor', 2, repeated=True)
+  metadata = _messages.MessageField('BuildMetadata', 3)
+
+
 class SBOMReferenceNote(_messages.Message):
   r"""The note representing an SBOM reference.
 
@@ -5673,6 +5924,20 @@ class SlsaProvenance(_messages.Message):
   materials = _messages.MessageField('Material', 2, repeated=True)
   metadata = _messages.MessageField('SlsaMetadata', 3)
   recipe = _messages.MessageField('SlsaRecipe', 4)
+
+
+class SlsaProvenanceV1(_messages.Message):
+  r"""Keep in sync with schema at https://github.com/slsa-
+  framework/slsa/blob/main/docs/provenance/schema/v1/provenance.proto Builder
+  renamed to ProvenanceBuilder because of Java conflicts.
+
+  Fields:
+    buildDefinition: A BuildDefinition attribute.
+    runDetails: A RunDetails attribute.
+  """
+
+  buildDefinition = _messages.MessageField('BuildDefinition', 1)
+  runDetails = _messages.MessageField('RunDetails', 2)
 
 
 class SlsaProvenanceZeroTwo(_messages.Message):
@@ -6263,6 +6528,8 @@ class VexAssessment(_messages.Message):
     remediations: Specifies details on how to handle (and presumably, fix) a
       vulnerability.
     state: Provides the state of this Vulnerability assessment.
+    vulnerabilityId: The vulnerability identifier for this Assessment. Will
+      hold one of common identifiers e.g. CVE, GHSA etc.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -6291,6 +6558,7 @@ class VexAssessment(_messages.Message):
   relatedUris = _messages.MessageField('URI', 5, repeated=True)
   remediations = _messages.MessageField('Remediation', 6, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 7)
+  vulnerabilityId = _messages.StringField(8)
 
 
 class Volume(_messages.Message):

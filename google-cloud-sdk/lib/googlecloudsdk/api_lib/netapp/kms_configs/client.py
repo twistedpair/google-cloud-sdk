@@ -19,11 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.netapp.constants import KMS_CONFIG_RESOURCE
-from googlecloudsdk.api_lib.netapp.constants import OPERATIONS_COLLECTION
-from googlecloudsdk.api_lib.netapp.util import GetClientInstance
-from googlecloudsdk.api_lib.netapp.util import GetMessagesModule
-from googlecloudsdk.api_lib.netapp.util import VERSION_MAP
+from googlecloudsdk.api_lib.netapp import constants
+from googlecloudsdk.api_lib.netapp import util as netapp_api_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
@@ -36,9 +33,11 @@ class KmsConfigsClient(object):
   def __init__(self, release_track=base.ReleaseTrack.BETA):
     if release_track == base.ReleaseTrack.BETA:
       self._adapter = BetaKmsConfigsAdapter()
+    elif release_track == base.ReleaseTrack.GA:
+      self._adapter = KmsConfigsAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
-          VERSION_MAP[release_track]))
+          netapp_api_util.VERSION_MAP[release_track]))
 
   @property
   def client(self):
@@ -79,7 +78,7 @@ class KmsConfigsClient(object):
     if async_:
       return create_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        create_op.name, collection=OPERATIONS_COLLECTION
+        create_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 
@@ -125,7 +124,7 @@ class KmsConfigsClient(object):
     return list_pager.YieldFromList(
         self.client.projects_locations_kmsConfigs,
         request,
-        field=KMS_CONFIG_RESOURCE,
+        field=constants.KMS_CONFIG_RESOURCE,
         limit=limit,
         batch_size_attribute='pageSize')
 
@@ -149,7 +148,7 @@ class KmsConfigsClient(object):
     if async_:
       return delete_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        delete_op.name, collection=OPERATIONS_COLLECTION
+        delete_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 
@@ -170,7 +169,7 @@ class KmsConfigsClient(object):
     if async_:
       return update_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        update_op.name, collection=OPERATIONS_COLLECTION)
+        update_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
   def ParseUpdatedKmsConfig(self,
@@ -196,7 +195,7 @@ class KmsConfigsClient(object):
     if async_:
       return encrypt_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        encrypt_op.name, collection=OPERATIONS_COLLECTION)
+        encrypt_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
   def VerifyKmsConfig(self, kmsconfig_ref):
@@ -211,13 +210,17 @@ class KmsConfigsClient(object):
     )
 
 
-class BetaKmsConfigsAdapter(object):
-  """Adapter for the Beta Cloud NetApp Files API for KMS Configs."""
+class KmsConfigsAdapter(object):
+  """Adapter for the Cloud NetApp Files API for KMS Configs."""
 
   def __init__(self):
-    self.release_track = base.ReleaseTrack.BETA
-    self.client = GetClientInstance(release_track=self.release_track)
-    self.messages = GetMessagesModule(release_track=self.release_track)
+    self.release_track = base.ReleaseTrack.GA
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )
 
   def ParseUpdatedKmsConfig(
       self, kms_config, crypto_key_name=None, description=None, labels=None
@@ -241,3 +244,17 @@ class BetaKmsConfigsAdapter(object):
     update_op = self.client.projects_locations_kmsConfigs.Patch(
         update_request)
     return update_op
+
+
+class BetaKmsConfigsAdapter(KmsConfigsAdapter):
+  """Adapter for the Beta Cloud NetApp Files API for KMS Configs."""
+
+  def __init__(self):
+    super(BetaKmsConfigsAdapter, self).__init__()
+    self.release_track = base.ReleaseTrack.BETA
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )

@@ -118,6 +118,7 @@ BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'remove_annotations': 'annotations',
     'set_annotations': 'annotations',
     'binauthz_evaluation_mode': 'binary_authorization.evaluation_mode',
+    'upgrade_control_plane': 'upgrade_policy.control_plane_only',
 }
 
 BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS = {

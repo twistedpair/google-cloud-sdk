@@ -32,3 +32,15 @@ def PatchCustomTargetType(resource):
     The operation message
   """
   return custom_target_type.CustomTargetTypesClient().Patch(resource)
+
+
+def DeleteCustomTargetType(name):
+  """Deletes a custom target type resource.
+
+  Args:
+    name: str, custom target type name.
+
+  Returns:
+    The operation message
+  """
+  return custom_target_type.CustomTargetTypesClient().Delete(name)

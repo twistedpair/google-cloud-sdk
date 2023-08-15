@@ -442,6 +442,37 @@ workforce_pool:
       Disables the workforce pool. You cannot use a disabled workforce pool to
       perform new token exchanges or sign-ins using any provider in the workforce pool. Specify
       `--no-disabled` to enable a disabled pool.
+  clearable_allowed_services:
+    group:
+      mutex: true
+      hidden: true
+      params:
+      - arg_name: clear-allowed-services
+        api_field: workforcePool.accessRestrictions.allowedServices
+        type: bool
+        default: false
+        processor: googlecloudsdk.command_lib.iam.hooks:ClearAccessRestrictionAllowedServices
+        hidden: true
+        help_text: |-
+          Clear the allowed services configuration.
+      - arg_name: allowed-services
+        api_field: workforcePool.accessRestrictions.allowedServices
+        hidden: true
+        type:
+          arg_dict:
+            flatten: false
+            spec:
+            - api_field: domain
+              arg_name: domain
+        help_text: |-
+          Services allowed for web sign-in with the workforce pool.
+  disable_programmatic_signin:
+    api_field: workforcePool.accessRestrictions.disableProgrammaticSignin
+    arg_name: disable-programmatic-signin
+    hidden: true
+    help_text: |-
+      Disable the programatic sign in for workforce pool users. Specify
+       `--no-disable-security-token-exchange` to enable the programatic sign in.
 
 workforce_pool_provider:
   display_name:

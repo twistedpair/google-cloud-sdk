@@ -1244,16 +1244,6 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
-        'v1alpha1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.config.v1alpha1',
-                    client_classpath='config_v1alpha1_client.ConfigV1alpha1',
-                    base_url='https://config.googleapis.com/',
-                    messages_modulepath='config_v1alpha1_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
         'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(

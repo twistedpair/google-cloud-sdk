@@ -19,11 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.netapp.constants import OPERATIONS_COLLECTION
-from googlecloudsdk.api_lib.netapp.constants import SNAPSHOT_RESOURCE
-from googlecloudsdk.api_lib.netapp.util import GetClientInstance
-from googlecloudsdk.api_lib.netapp.util import GetMessagesModule
-from googlecloudsdk.api_lib.netapp.util import VERSION_MAP
+from googlecloudsdk.api_lib.netapp import constants
+from googlecloudsdk.api_lib.netapp import util as netapp_api_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
@@ -38,9 +35,11 @@ class SnapshotsClient(object):
       self._adapter = AlphaSnapshotsAdapter()
     elif release_track == base.ReleaseTrack.BETA:
       self._adapter = BetaSnapshotsAdapter()
+    elif release_track == base.ReleaseTrack.GA:
+      self._adapter = SnapshotsAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
-          VERSION_MAP[release_track]))
+          netapp_api_util.VERSION_MAP[release_track]))
 
   @property
   def client(self):
@@ -81,7 +80,7 @@ class SnapshotsClient(object):
     if async_:
       return create_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        create_op.name, collection=OPERATIONS_COLLECTION
+        create_op.name, collection=netapp_api_util.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 
@@ -124,7 +123,7 @@ class SnapshotsClient(object):
     return list_pager.YieldFromList(
         self.client.projects_locations_volumes_snapshots,
         request,
-        field=SNAPSHOT_RESOURCE,
+        field=constants.SNAPSHOT_RESOURCE,
         limit=limit,
         batch_size_attribute='pageSize',
     )
@@ -143,7 +142,7 @@ class SnapshotsClient(object):
     if async_:
       return delete_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        delete_op.name, collection=OPERATIONS_COLLECTION)
+        delete_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
   def GetSnapshot(self, snapshot_ref):
@@ -188,17 +187,21 @@ class SnapshotsClient(object):
     if async_:
       return update_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        update_op.name, collection=OPERATIONS_COLLECTION)
+        update_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
 
-class BetaSnapshotsAdapter(object):
-  """Adapter for the Beta Cloud NetApp Files API Snapshot resource."""
+class SnapshotsAdapter(object):
+  """Adapter for the Cloud NetApp Files API Snapshot resource."""
 
   def __init__(self):
-    self.release_track = base.ReleaseTrack.BETA
-    self.client = GetClientInstance(release_track=self.release_track)
-    self.messages = GetMessagesModule(release_track=self.release_track)
+    self.release_track = base.ReleaseTrack.GA
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )
 
   def UpdateSnapshot(self, snapshot_ref, snapshot_config, update_mask):
     """Send a Patch request for the Cloud NetApp Snapshot."""
@@ -223,11 +226,29 @@ class BetaSnapshotsAdapter(object):
     return snapshot_config
 
 
+class BetaSnapshotsAdapter(SnapshotsAdapter):
+  """Adapter for the Beta Cloud NetApp Files API Snapshot resource."""
+
+  def __init__(self):
+    super(BetaSnapshotsAdapter, self).__init__()
+    self.release_track = base.ReleaseTrack.BETA
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )
+
+
 class AlphaSnapshotsAdapter(BetaSnapshotsAdapter):
   """Adapter for the Alpha Cloud NetApp Files API Snapshot resource."""
 
   def __init__(self):
     super(AlphaSnapshotsAdapter, self).__init__()
     self.release_track = base.ReleaseTrack.ALPHA
-    self.client = GetClientInstance(release_track=self.release_track)
-    self.messages = GetMessagesModule(release_track=self.release_track)
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )

@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
@@ -90,14 +89,11 @@ def AddSpotInstanceTypes(parser, kind='node pool'):
   )
 
 
-def AddOnDemandOrSpotInstanceType(parser, track, kind='node pool'):
+def AddOnDemandOrSpotInstanceType(parser, kind='node pool'):
   """Adds instance configurtion for creating node pool."""
   group = parser.add_group('Node pool instance configuration', mutex=True)
-  if track == base.ReleaseTrack.GA:
-    AddInstanceType(group, kind)
-  else:
-    AddInstanceType(group, kind)
-    AddSpotInstanceTypes(group, kind)
+  AddInstanceType(group, kind)
+  AddSpotInstanceTypes(group, kind)
 
 
 def GetSpotInstanceTypes(args):
@@ -216,8 +212,7 @@ def AddSecurityGroupFlagsForUpdate(parser, noun):
 
 
 def AddPerNodePoolSGRules(parser):
-  """Adds --disable-per-node-pool-sg-rules flag to parser.
-  """
+  """Adds --disable-per-node-pool-sg-rules flag to parser."""
 
   parser.add_argument(
       '--disable-per-node-pool-sg-rules',
@@ -229,8 +224,8 @@ def AddPerNodePoolSGRules(parser):
           'the control plane security group. When disabled, at least one '
           'security group that allows node pools to send traffic to '
           'the control plane on ports TCP/443 and TCP/8132 must be provided.'
-          ),
-      )
+      ),
+  )
 
 
 def GetPerNodePoolSGRulesDisabled(parser):
@@ -238,10 +233,11 @@ def GetPerNodePoolSGRulesDisabled(parser):
 
 
 def AddPerNodePoolSGRulesForUpdate(parser):
-  """Adds --disable-per-node-pool-sg-rules and --enable-per-node-pool-sg-rules flags to parser.
-  """
+  """Adds --disable-per-node-pool-sg-rules and --enable-per-node-pool-sg-rules flags to parser."""
 
-  group = parser.add_group('Default per node pool security group rules', mutex=True)
+  group = parser.add_group(
+      'Default per node pool security group rules', mutex=True
+  )
   AddPerNodePoolSGRules(group)
   group.add_argument(
       '--enable-per-node-pool-sg-rules',
@@ -251,8 +247,8 @@ def AddPerNodePoolSGRulesForUpdate(parser):
       help=(
           'Enable the default per node pool subnet security group rules on '
           'the control plane security group.'
-          ),
-      )
+      ),
+  )
 
 
 def _VolumeTypeEnumMapper(prefix):

@@ -45,9 +45,9 @@ class Animation(_messages.Message):
 
 
 class AnimationEnd(_messages.Message):
-  r"""End previous overlay animation from the video. Without AnimationEnd, the
-  overlay object will keep the state of previous animation until the end of
-  the video.
+  r"""End previous overlay animation from the video. Without `AnimationEnd`,
+  the overlay object will keep the state of previous animation until the end
+  of the video.
 
   Fields:
     startTimeOffset: The time to end overlay object, in seconds. Default: 0
@@ -135,16 +135,17 @@ class Audio(_messages.Message):
 
 
 class AudioMapping(_messages.Message):
-  r"""The mapping for the `Job.edit_list` atoms with audio `EditAtom.inputs`.
+  r"""The mapping for the JobConfig.edit_list atoms with audio
+  EditAtom.inputs.
 
   Fields:
-    atomKey: Required. The `EditAtom.key` that references the atom with audio
-      inputs in the `Job.edit_list`.
+    atomKey: Required. The EditAtom.key that references the atom with audio
+      inputs in the JobConfig.edit_list.
     gainDb: Audio volume control in dB. Negative values decrease volume,
       positive values increase. The default is 0.
     inputChannel: Required. The zero-based index of the channel in the input
       audio stream.
-    inputKey: Required. The `Input.key` that identifies the input file.
+    inputKey: Required. The Input.key that identifies the input file.
     inputTrack: Required. The zero-based index of the track in the input file.
     outputChannel: Required. The zero-based index of the channel in the output
       audio stream.
@@ -180,8 +181,8 @@ class AudioStream(_messages.Message):
       more information, see
       https://www.unicode.org/reports/tr35/#Unicode_locale_identifier. Not
       supported in MP4 files.
-    mapping: The mapping for the `Job.edit_list` atoms with audio
-      `EditAtom.inputs`.
+    mapping: The mapping for the JobConfig.edit_list atoms with audio
+      EditAtom.inputs.
     sampleRateHertz: The audio sample rate in Hertz. The default is 48000
       Hertz.
   """
@@ -265,23 +266,27 @@ class DashConfig(_messages.Message):
 
   Enums:
     SegmentReferenceSchemeValueValuesEnum: The segment reference scheme for a
-      `DASH` manifest. The default is `SEGMENT_LIST`
+      `DASH` manifest. The default is `SEGMENT_LIST`.
 
   Fields:
     segmentReferenceScheme: The segment reference scheme for a `DASH`
-      manifest. The default is `SEGMENT_LIST`
+      manifest. The default is `SEGMENT_LIST`.
   """
 
   class SegmentReferenceSchemeValueValuesEnum(_messages.Enum):
     r"""The segment reference scheme for a `DASH` manifest. The default is
-    `SEGMENT_LIST`
+    `SEGMENT_LIST`.
 
     Values:
       SEGMENT_REFERENCE_SCHEME_UNSPECIFIED: The segment reference scheme is
         not specified.
-      SEGMENT_LIST: Lists the URLs of media files for each segment.
-      SEGMENT_TEMPLATE_NUMBER: Lists each segment from a template with
-        $Number$ variable.
+      SEGMENT_LIST: Explicitly lists the URLs of media files for each segment.
+        For example, if SegmentSettings.individual_segments is `true`, then
+        the manifest contains fields similar to the following: ```xml ... ```
+      SEGMENT_TEMPLATE_NUMBER: SegmentSettings.individual_segments must be set
+        to `true` to use this segment reference scheme. Uses the DASH
+        specification `` tag to determine the URLs of media files for each
+        segment. For example: ```xml ... ```
     """
     SEGMENT_REFERENCE_SCHEME_UNSPECIFIED = 0
     SEGMENT_LIST = 1
@@ -356,8 +361,8 @@ class EditAtom(_messages.Message):
     endTimeOffset: End time in seconds for the atom, relative to the input
       file timeline. When `end_time_offset` is not specified, the `inputs` are
       used until the end of the atom.
-    inputs: List of `Input.key`s identifying files that should be used in this
-      atom. The listed `inputs` must have the same timeline.
+    inputs: List of Input.key values identifying files that should be used in
+      this atom. The listed `inputs` must have the same timeline.
     key: A unique key for this atom. Must be specified when using advanced
       mapping.
     startTimeOffset: Start time in seconds for the atom, relative to the input
@@ -434,8 +439,8 @@ class H264CodecSettings(_messages.Message):
       quantizer. A higher value equals a lower bitrate but smoother image. The
       default is 0.
     bFrameCount: The number of consecutive B-frames. Must be greater than or
-      equal to zero. Must be less than `VideoStream.gop_frame_count` if set.
-      The default is 0.
+      equal to zero. Must be less than H264CodecSettings.gop_frame_count if
+      set. The default is 0.
     bPyramid: Allow B-pyramid for reference frame selection. This may not be
       supported on all decoders. The default is `false`.
     bitrateBps: Required. The video bitrate in bits per second. The minimum
@@ -444,8 +449,8 @@ class H264CodecSettings(_messages.Message):
       highest quality and 36 is the most efficient compression. The default is
       21.
     enableTwoPass: Use two-pass encoding strategy to achieve better video
-      quality. `VideoStream.rate_control_mode` must be `vbr`. The default is
-      `false`.
+      quality. H264CodecSettings.rate_control_mode must be `vbr`. The default
+      is `false`.
     entropyCoder: The entropy coder to use. The default is `cabac`. Supported
       entropy coders: - `cavlc` - `cabac`
     frameRate: Required. The target video frame rate in frames per second
@@ -487,19 +492,18 @@ class H264CodecSettings(_messages.Message):
       compatible](https://trac.ffmpeg.org/wiki/Encode/H.264#Tune). Note that
       certain values for this field may cause the transcoder to override other
       fields you set in the `H264CodecSettings` message.
-    rateControlMode: Specify the `rate_control_mode`. The default is `vbr`.
-      Supported rate control modes: - `vbr` - variable bitrate - `crf` -
-      constant rate factor
+    rateControlMode: Specify the mode. The default is `vbr`. Supported rate
+      control modes: - `vbr` - variable bitrate - `crf` - constant rate factor
     tune: Enforces the specified codec tune. The available options are
       [FFmpeg-compatible](https://trac.ffmpeg.org/wiki/Encode/H.264#Tune).
       Note that certain values for this field may cause the transcoder to
       override other fields you set in the `H264CodecSettings` message.
     vbvFullnessBits: Initial fullness of the Video Buffering Verifier (VBV)
       buffer in bits. Must be greater than zero. The default is equal to 90%
-      of `VideoStream.vbv_size_bits`.
+      of H264CodecSettings.vbv_size_bits.
     vbvSizeBits: Size of the Video Buffering Verifier (VBV) buffer in bits.
       Must be greater than zero. The default is equal to
-      `VideoStream.bitrate_bps`.
+      H264CodecSettings.bitrate_bps.
     widthPixels: The width of the video in pixels. Must be an even integer.
       When not specified, the width is adjusted to match the specified height
       and input aspect ratio. If both are omitted, the input width is used.
@@ -542,8 +546,8 @@ class H265CodecSettings(_messages.Message):
       quantizer. A higher value equals a lower bitrate but smoother image. The
       default is 0.
     bFrameCount: The number of consecutive B-frames. Must be greater than or
-      equal to zero. Must be less than `VideoStream.gop_frame_count` if set.
-      The default is 0.
+      equal to zero. Must be less than H265CodecSettings.gop_frame_count if
+      set. The default is 0.
     bPyramid: Allow B-pyramid for reference frame selection. This may not be
       supported on all decoders. The default is `false`.
     bitrateBps: Required. The video bitrate in bits per second. The minimum
@@ -552,8 +556,8 @@ class H265CodecSettings(_messages.Message):
       highest quality and 36 is the most efficient compression. The default is
       21.
     enableTwoPass: Use two-pass encoding strategy to achieve better video
-      quality. `VideoStream.rate_control_mode` must be `vbr`. The default is
-      `false`.
+      quality. H265CodecSettings.rate_control_mode must be `vbr`. The default
+      is `false`.
     frameRate: Required. The target video frame rate in frames per second
       (FPS). Must be less than or equal to 120. Will default to the input
       frame rate if larger than the input frame rate. The API will generate an
@@ -597,16 +601,15 @@ class H265CodecSettings(_messages.Message):
       compatible](https://x265.readthedocs.io/). Note that certain values for
       this field may cause the transcoder to override other fields you set in
       the `H265CodecSettings` message.
-    rateControlMode: Specify the `rate_control_mode`. The default is `vbr`.
-      Supported rate control modes: - `vbr` - variable bitrate - `crf` -
-      constant rate factor
+    rateControlMode: Specify the mode. The default is `vbr`. Supported rate
+      control modes: - `vbr` - variable bitrate - `crf` - constant rate factor
     tune: Enforces the specified codec tune. The available options are
       [FFmpeg-compatible](https://trac.ffmpeg.org/wiki/Encode/H.265). Note
       that certain values for this field may cause the transcoder to override
       other fields you set in the `H265CodecSettings` message.
     vbvFullnessBits: Initial fullness of the Video Buffering Verifier (VBV)
       buffer in bits. Must be greater than zero. The default is equal to 90%
-      of `VideoStream.vbv_size_bits`.
+      of H265CodecSettings.vbv_size_bits.
     vbvSizeBits: Size of the Video Buffering Verifier (VBV) buffer in bits.
       Must be greater than zero. The default is equal to
       `VideoStream.bitrate_bps`.
@@ -670,7 +673,7 @@ class Input(_messages.Message):
     uri: URI of the media. Input files must be at least 5 seconds in duration
       and stored in Cloud Storage (for example,
       `gs://bucket/inputs/file.mp4`). If empty, the value is populated from
-      `Job.input_uri`. See [Supported input and output
+      Job.input_uri. See [Supported input and output
       formats](https://cloud.google.com/transcoder/docs/concepts/supported-
       input-and-output-formats).
   """
@@ -696,14 +699,15 @@ class Job(_messages.Message):
 
   Fields:
     batchModePriority: The processing priority of a batch job. This field can
-      only be set for batch mode jobs, and the default value is 0. This value
+      only be set for batch mode jobs. The default value is 0. This value
       cannot be negative. Higher values correspond to higher priorities for
       the job.
     config: The configuration for this job.
     createTime: Output only. The time the job was created.
     endTime: Output only. The time the transcoding finished.
     error: Output only. An error object that describes the reason for the
-      failure. This property is always present when `state` is `FAILED`.
+      failure. This property is always present when ProcessingState is
+      `FAILED`.
     inputUri: Input only. Specify the `input_uri` to populate empty `uri`
       fields in each element of `Job.config.inputs` or
       `JobTemplate.config.inputs` when using template. URI of the media. Input
@@ -774,8 +778,8 @@ class Job(_messages.Message):
       PENDING: The job is enqueued and will be picked up for processing soon.
       RUNNING: The job is being processed.
       SUCCEEDED: The job has been completed successfully.
-      FAILED: The job has failed. For additional information, see
-        `failure_reason` and `failure_details`
+      FAILED: The job has failed. For additional information, see [Troubleshoo
+        ting](https://cloud.google.com/transcoder/docs/troubleshooting).
     """
     PROCESSING_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -831,7 +835,7 @@ class JobConfig(_messages.Message):
   Fields:
     adBreaks: List of ad breaks. Specifies where to insert ad break tags in
       the output manifests.
-    editList: List of `Edit atom`s. Defines the ultimate timeline of the
+    editList: List of edit atoms. Defines the ultimate timeline of the
       resulting file or manifest.
     elementaryStreams: List of elementary streams.
     encryptions: List of encryption configurations for the content. Each
@@ -942,11 +946,11 @@ class Manifest(_messages.Message):
   Fields:
     dash: `DASH` manifest configuration.
     fileName: The name of the generated file. The default is `manifest` with
-      the extension suffix corresponding to the `Manifest.type`.
-    muxStreams: Required. List of user given `MuxStream.key`s that should
-      appear in this manifest. When `Manifest.type` is `HLS`, a media manifest
-      with name `MuxStream.key` and `.m3u8` extension is generated for each
-      element of the `Manifest.mux_streams`.
+      the extension suffix corresponding to the Manifest.type.
+    muxStreams: Required. List of user supplied MuxStream.key values that
+      should appear in this manifest. When Manifest.type is `HLS`, a media
+      manifest with name MuxStream.key and `.m3u8` extension is generated for
+      each element in this list.
     type: Required. Type of the manifest.
   """
 
@@ -990,16 +994,15 @@ class MuxStream(_messages.Message):
       `mp4` - `vtt` See also: [Supported input and output
       formats](https://cloud.google.com/transcoder/docs/concepts/supported-
       input-and-output-formats)
-    elementaryStreams: List of `ElementaryStream.key`s multiplexed in this
+    elementaryStreams: List of ElementaryStream.key values multiplexed in this
       stream.
     encryptionId: Identifier of the encryption configuration to use. If
       omitted, output will be unencrypted.
-    fileName: The name of the generated file. The default is `MuxStream.key`
-      with the extension suffix corresponding to the `MuxStream.container`.
+    fileName: The name of the generated file. The default is MuxStream.key
+      with the extension suffix corresponding to the MuxStream.container.
       Individual segments also have an incremental 10-digit zero-padded suffix
       starting from 0 before the extension, such as `mux_stream0000000123.ts`.
-    key: A unique key for this multiplexed stream. HLS media manifests will be
-      named `MuxStream.key` with the `.m3u8` extension suffix.
+    key: A unique key for this multiplexed stream.
     segmentSettings: Segment settings for `ts`, `fmp4` and `vtt`.
   """
 
@@ -1028,7 +1031,7 @@ class Output(_messages.Message):
 
   Fields:
     uri: URI for the output file(s). For example, `gs://my-bucket/outputs/`.
-      If empty, the value is populated from `Job.output_uri`. See [Supported
+      If empty, the value is populated from Job.output_uri. See [Supported
       input and output
       formats](https://cloud.google.com/transcoder/docs/concepts/supported-
       input-and-output-formats).
@@ -1041,7 +1044,7 @@ class Overlay(_messages.Message):
   r"""Overlay configuration.
 
   Fields:
-    animations: List of Animations. The list should be chronological, without
+    animations: List of animations. The list should be chronological, without
       any time overlap.
     image: Image overlay.
   """
@@ -1314,12 +1317,12 @@ class Status(_messages.Message):
 
 
 class TextMapping(_messages.Message):
-  r"""The mapping for the `Job.edit_list` atoms with text `EditAtom.inputs`.
+  r"""The mapping for the JobConfig.edit_list atoms with text EditAtom.inputs.
 
   Fields:
-    atomKey: Required. The `EditAtom.key` that references atom with text
-      inputs in the `Job.edit_list`.
-    inputKey: Required. The `Input.key` that identifies the input file.
+    atomKey: Required. The EditAtom.key that references atom with text inputs
+      in the JobConfig.edit_list.
+    inputKey: Required. The Input.key that identifies the input file.
     inputTrack: Required. The zero-based index of the track in the input file.
   """
 
@@ -1340,8 +1343,8 @@ class TextStream(_messages.Message):
       more information, see
       https://www.unicode.org/reports/tr35/#Unicode_locale_identifier. Not
       supported in MP4 files.
-    mapping: The mapping for the `Job.edit_list` atoms with text
-      `EditAtom.inputs`.
+    mapping: The mapping for the JobConfig.edit_list atoms with text
+      EditAtom.inputs.
   """
 
   codec = _messages.StringField(1)
@@ -1532,8 +1535,8 @@ class Vp9CodecSettings(_messages.Message):
       compatible](https://www.webmproject.org/vp9/profiles/). Note that
       certain values for this field may cause the transcoder to override other
       fields you set in the `Vp9CodecSettings` message.
-    rateControlMode: Specify the `rate_control_mode`. The default is `vbr`.
-      Supported rate control modes: - `vbr` - variable bitrate
+    rateControlMode: Specify the mode. The default is `vbr`. Supported rate
+      control modes: - `vbr` - variable bitrate
     widthPixels: The width of the video in pixels. Must be an even integer.
       When not specified, the width is adjusted to match the specified height
       and input aspect ratio. If both are omitted, the input width is used.

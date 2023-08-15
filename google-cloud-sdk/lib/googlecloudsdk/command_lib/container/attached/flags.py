@@ -39,10 +39,7 @@ To retrieve a list of valid versions, run:
 Replace ``LOCATION'' with the target Google Cloud location for the cluster.
 """
 
-  parser.add_argument(
-      '--platform-version',
-      required=required,
-      help=help_text)
+  parser.add_argument('--platform-version', required=required, help=help_text)
 
 
 def GetPlatformVersion(args):
@@ -53,7 +50,8 @@ def AddIssuerUrl(parser, required=False):
   parser.add_argument(
       '--issuer-url',
       required=required,
-      help=('Issuer url of the cluster to attach.'))
+      help='Issuer url of the cluster to attach.',
+  )
 
 
 def GetIssuerUrl(args):
@@ -61,9 +59,7 @@ def GetIssuerUrl(args):
 
 
 def AddOidcJwks(parser):
-  parser.add_argument(
-      '--oidc-jwks',
-      help=('OIDC JWKS of the cluster to attach.'))
+  parser.add_argument('--oidc-jwks', help='OIDC JWKS of the cluster to attach.')
 
 
 def GetOidcJwks(args):
@@ -78,7 +74,8 @@ If this flag is set, gcloud will read the issuer URL and JWKs from the cluster's
 api server.
 """
   parser.add_argument(
-      '--has-private-issuer', help=help_text, action='store_true')
+      '--has-private-issuer', help=help_text, action='store_true'
+  )
 
 
 def GetHasPrivateIssuer(args):
@@ -112,10 +109,7 @@ Examples:
   $ {command} --distribution=aks
   $ {command} --distribution=eks
 """
-  parser.add_argument(
-      '--distribution',
-      required=required,
-      help=help_text)
+  parser.add_argument('--distribution', required=required, help=help_text)
 
 
 def GetDistribution(args):
@@ -134,7 +128,8 @@ There is no way to completely remove admin users after setting.
       type=arg_parsers.ArgList(),
       metavar='USER',
       required=False,
-      help=help_txt)
+      help=help_txt,
+  )
 
 
 def GetAdminUsers(args):
@@ -178,10 +173,7 @@ def AddIgnoreErrors(parser):
   during deleting in-cluster resources. Using this parameter may
   result in orphaned resources in the cluster.
   """
-  parser.add_argument(
-      '--ignore-errors',
-      action='store_true',
-      help=help_txt)
+  parser.add_argument('--ignore-errors', action='store_true', help=help_txt)
 
 
 def GetIgnoreErrors(args):

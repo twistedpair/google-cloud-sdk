@@ -279,6 +279,10 @@ def AddDescribeViolationFlags(parser):
   AddViolationResourceArgToParser(parser, verb='describe')
 
 
+def AddEnableResourceMonitoringFlags(parser):
+  AddWorkloadResourceArgToParser(parser, verb='enable-resource-monitoring')
+
+
 def AddUpdateWorkloadFlags(parser):
   """Method to add update workload flags."""
   AddWorkloadResourceArgToParser(parser, verb='update')

@@ -477,7 +477,7 @@ class GoogleCloudDocumentaiUiv1beta3AutoLabelDocumentsMetadata(_messages.Message
   r"""Metadata of the auto-labeling documents operation.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
     individualAutoLabelStatuses: The list of individual auto-labeling statuses
       of the dataset documents.
     totalDocumentCount: Total number of the auto-labeling documents.
@@ -509,7 +509,7 @@ class GoogleCloudDocumentaiUiv1beta3BatchDeleteDocumentsMetadata(_messages.Messa
   r"""A GoogleCloudDocumentaiUiv1beta3BatchDeleteDocumentsMetadata object.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
     errorDocumentCount: Total number of documents that failed to be deleted in
       storage.
     individualBatchDeleteStatuses: The list of response details of each
@@ -547,7 +547,7 @@ class GoogleCloudDocumentaiUiv1beta3BatchMoveDocumentsMetadata(_messages.Message
     DestSplitTypeValueValuesEnum: The destination dataset split type.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
     destDatasetType: The destination dataset split type.
     destSplitType: The destination dataset split type.
     individualBatchMoveStatuses: The list of response details of each
@@ -559,7 +559,6 @@ class GoogleCloudDocumentaiUiv1beta3BatchMoveDocumentsMetadata(_messages.Message
 
     Values:
       DATASET_SPLIT_TYPE_UNSPECIFIED: Default value if the enum is not set.
-        go/protodosdonts#do-include-an-unspecified-value-in-an-enum
       DATASET_SPLIT_TRAIN: Identifies the train documents.
       DATASET_SPLIT_TEST: Identifies the test documents.
       DATASET_SPLIT_UNASSIGNED: Identifies the unassigned documents.
@@ -574,7 +573,6 @@ class GoogleCloudDocumentaiUiv1beta3BatchMoveDocumentsMetadata(_messages.Message
 
     Values:
       DATASET_SPLIT_TYPE_UNSPECIFIED: Default value if the enum is not set.
-        go/protodosdonts#do-include-an-unspecified-value-in-an-enum
       DATASET_SPLIT_TRAIN: Identifies the train documents.
       DATASET_SPLIT_TEST: Identifies the test documents.
       DATASET_SPLIT_UNASSIGNED: Identifies the unassigned documents.
@@ -799,7 +797,7 @@ class GoogleCloudDocumentaiUiv1beta3ExportDocumentsMetadata(_messages.Message):
   r"""Metadata of the batch export documents operation.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
     individualExportStatuses: The list of response details of each document.
     splitExportStats: The list of statistics for each dataset split type.
   """
@@ -841,7 +839,6 @@ class GoogleCloudDocumentaiUiv1beta3ExportDocumentsMetadataSplitExportStat(_mess
 
     Values:
       DATASET_SPLIT_TYPE_UNSPECIFIED: Default value if the enum is not set.
-        go/protodosdonts#do-include-an-unspecified-value-in-an-enum
       DATASET_SPLIT_TRAIN: Identifies the train documents.
       DATASET_SPLIT_TEST: Identifies the test documents.
       DATASET_SPLIT_UNASSIGNED: Identifies the unassigned documents.
@@ -883,7 +880,7 @@ class GoogleCloudDocumentaiUiv1beta3ImportDocumentsMetadata(_messages.Message):
   r"""Metadata of the import document operation.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
     importConfigValidationResults: Validation statuses of the batch documents
       import config.
     individualImportStatuses: The list of response details of each document.
@@ -898,9 +895,9 @@ class GoogleCloudDocumentaiUiv1beta3ImportDocumentsMetadata(_messages.Message):
 
 
 class GoogleCloudDocumentaiUiv1beta3ImportDocumentsMetadataImportConfigValidationResult(_messages.Message):
-  r"""The validation status of each import config. Status is set to errors if
-  there is no documents to import in the import_config, or OK if the operation
-  will try to proceed at least one document.
+  r"""The validation status of each import config. Status is set to an error
+  if there are no documents to import in the `import_config`, or `OK` if the
+  operation will try to proceed with at least one document.
 
   Fields:
     inputGcsSource: The source Cloud Storage URI specified in the import
@@ -959,7 +956,7 @@ class GoogleCloudDocumentaiUiv1beta3ResyncDatasetMetadata(_messages.Message):
   r"""The metadata proto of ResyncDataset method.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
     datasetResyncStatuses: The list of dataset resync statuses. Not checked
       when `dataset_documents` is specified in ResyncRequest.
     individualDocumentResyncStatuses: The list of document resync statuses.
@@ -1060,8 +1057,8 @@ class GoogleCloudDocumentaiUiv1beta3RevisionRef(_messages.Message):
     r"""Reads the revision by the predefined case.
 
     Values:
-      REVISION_CASE_UNSPECIFIED: Unspecified case, fallback to read the
-        LATEST_HUMAN_REVIEW.
+      REVISION_CASE_UNSPECIFIED: Unspecified case, fall back to read the
+        `LATEST_HUMAN_REVIEW`.
       LATEST_HUMAN_REVIEW: The latest revision made by a human.
       LATEST_TIMESTAMP: The latest revision based on timestamp.
       BASE_OCR_REVISION: The first (OCR) revision.
@@ -1080,7 +1077,7 @@ class GoogleCloudDocumentaiUiv1beta3SampleDocumentsMetadata(_messages.Message):
   r"""Metadata of the sample documents operation.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
@@ -1191,7 +1188,7 @@ class GoogleCloudDocumentaiUiv1beta3UpdateDatasetOperationMetadata(_messages.Mes
   r"""A GoogleCloudDocumentaiUiv1beta3UpdateDatasetOperationMetadata object.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
@@ -2869,7 +2866,7 @@ class GoogleCloudDocumentaiV1OcrConfig(_messages.Message):
       current ML-based layout detection algorithm. Customers can choose the
       best suitable layout algorithm based on their situation.
     computeStyleInfo: Turn on font id model and returns font style
-      information.
+      information. Use PremiumFeatures.compute_style_info instead.
     enableImageQualityScores: Enables intelligent document quality scores
       after OCR. Can help with diagnosing why OCR responses are of poor
       quality for a given input. Adds additional latency comparable to regular
@@ -2969,6 +2966,7 @@ class GoogleCloudDocumentaiV1Processor(_messages.Message):
       `projects/{project}/locations/{location}/processors/{processor}`
     processEndpoint: Output only. Immutable. The http endpoint that can be
       called to invoke processing.
+    processorVersionAliases: Output only. The processor version aliases.
     state: Output only. The state of the processor.
     type: The processor type, such as: `OCR_PROCESSOR`, `INVOICE_PROCESSOR`.
       To get a list of processor types, see FetchProcessorTypes.
@@ -3012,8 +3010,9 @@ class GoogleCloudDocumentaiV1Processor(_messages.Message):
   kmsKeyName = _messages.StringField(4)
   name = _messages.StringField(5)
   processEndpoint = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  type = _messages.StringField(8)
+  processorVersionAliases = _messages.MessageField('GoogleCloudDocumentaiV1ProcessorVersionAlias', 7, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  type = _messages.StringField(9)
 
 
 class GoogleCloudDocumentaiV1ProcessorType(_messages.Message):
@@ -3116,7 +3115,8 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
       this version.
     displayName: The display name of the processor version.
     documentSchema: The schema of the processor version. Describes the output.
-    googleManaged: Denotes that this `ProcessorVersion` is managed by Google.
+    googleManaged: Output only. Denotes that this `ProcessorVersion` is
+      managed by Google.
     kmsKeyName: The KMS key name used for encryption.
     kmsKeyVersionName: The KMS key version with which data is encrypted.
     latestEvaluation: The most recently invoked evaluation for the processor
@@ -3165,6 +3165,18 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
+class GoogleCloudDocumentaiV1ProcessorVersionAlias(_messages.Message):
+  r"""Contains the alias and the aliased resource name of processor version.
+
+  Fields:
+    alias: The alias in the form of `processor_version` resource name.
+    processorVersion: The resource name of aliased processor version.
+  """
+
+  alias = _messages.StringField(1)
+  processorVersion = _messages.StringField(2)
+
+
 class GoogleCloudDocumentaiV1ProcessorVersionDeprecationInfo(_messages.Message):
   r"""Information about the upcoming deprecation of this processor version.
 
@@ -3184,12 +3196,17 @@ class GoogleCloudDocumentaiV1RawDocument(_messages.Message):
 
   Fields:
     content: Inline document content.
+    displayName: The display name of the document, it supports all Unicode
+      characters except the following: `*`, `?`, `[`, `]`, `%`, `{`, `}`,`'`,
+      `\"`, `,` `~`, `=` and `:` are reserved. If not specified, a default ID
+      will be generated.
     mimeType: An IANA MIME type (RFC6838) indicating the nature and format of
       the content.
   """
 
   content = _messages.BytesField(1)
-  mimeType = _messages.StringField(2)
+  displayName = _messages.StringField(2)
+  mimeType = _messages.StringField(3)
 
 
 class GoogleCloudDocumentaiV1ReviewDocumentOperationMetadata(_messages.Message):
@@ -5560,7 +5577,7 @@ class GoogleCloudDocumentaiV1beta3BatchDeleteDocumentsMetadata(_messages.Message
   r"""A GoogleCloudDocumentaiV1beta3BatchDeleteDocumentsMetadata object.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
     errorDocumentCount: Total number of documents that failed to be deleted in
       storage.
     individualBatchDeleteStatuses: The list of response details of each
@@ -5968,7 +5985,7 @@ class GoogleCloudDocumentaiV1beta3ImportDocumentsMetadata(_messages.Message):
   r"""Metadata of the import document operation.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
     importConfigValidationResults: Validation statuses of the batch documents
       import config.
     individualImportStatuses: The list of response details of each document.
@@ -5983,9 +6000,9 @@ class GoogleCloudDocumentaiV1beta3ImportDocumentsMetadata(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1beta3ImportDocumentsMetadataImportConfigValidationResult(_messages.Message):
-  r"""The validation status of each import config. Status is set to errors if
-  there is no documents to import in the import_config, or OK if the operation
-  will try to proceed at least one document.
+  r"""The validation status of each import config. Status is set to an error
+  if there are no documents to import in the `import_config`, or `OK` if the
+  operation will try to proceed with at least one document.
 
   Fields:
     inputGcsSource: The source Cloud Storage URI specified in the import
@@ -6129,8 +6146,8 @@ class GoogleCloudDocumentaiV1beta3RevisionRef(_messages.Message):
     r"""Reads the revision by the predefined case.
 
     Values:
-      REVISION_CASE_UNSPECIFIED: Unspecified case, fallback to read the
-        LATEST_HUMAN_REVIEW.
+      REVISION_CASE_UNSPECIFIED: Unspecified case, fall back to read the
+        `LATEST_HUMAN_REVIEW`.
       LATEST_HUMAN_REVIEW: The latest revision made by a human.
       LATEST_TIMESTAMP: The latest revision based on timestamp.
       BASE_OCR_REVISION: The first (OCR) revision.
@@ -6225,7 +6242,7 @@ class GoogleCloudDocumentaiV1beta3UpdateDatasetOperationMetadata(_messages.Messa
   r"""A GoogleCloudDocumentaiV1beta3UpdateDatasetOperationMetadata object.
 
   Fields:
-    commonMetadata: The basic metadata of the long running operation.
+    commonMetadata: The basic metadata of the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
@@ -6347,8 +6364,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -6370,7 +6387,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -6409,9 +6426,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is

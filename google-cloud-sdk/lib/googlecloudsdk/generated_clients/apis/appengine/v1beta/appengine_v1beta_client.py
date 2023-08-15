@@ -46,6 +46,7 @@ class AppengineV1beta(base_api.BaseApiClient):
     self.apps_firewall = self.AppsFirewallService(self)
     self.apps_locations = self.AppsLocationsService(self)
     self.apps_operations = self.AppsOperationsService(self)
+    self.apps_runtimes = self.AppsRuntimesService(self)
     self.apps_services_versions_instances = self.AppsServicesVersionsInstancesService(self)
     self.apps_services_versions = self.AppsServicesVersionsService(self)
     self.apps_services = self.AppsServicesService(self)
@@ -688,6 +689,43 @@ class AppengineV1beta(base_api.BaseApiClient):
         request_field='',
         request_type_name='AppengineAppsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class AppsRuntimesService(base_api.BaseApiService):
+    """Service class for the apps_runtimes resource."""
+
+    _NAME = 'apps_runtimes'
+
+    def __init__(self, client):
+      super(AppengineV1beta.AppsRuntimesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all the available runtimes for the application.
+
+      Args:
+        request: (AppengineAppsRuntimesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRuntimesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/apps/{appsId}/runtimes',
+        http_method='GET',
+        method_id='appengine.apps.runtimes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['environment', 'pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/runtimes',
+        request_field='',
+        request_type_name='AppengineAppsRuntimesListRequest',
+        response_type_name='ListRuntimesResponse',
         supports_download=False,
     )
 

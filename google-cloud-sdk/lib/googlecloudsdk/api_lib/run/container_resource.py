@@ -18,9 +18,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import functools
 
 from googlecloudsdk.api_lib.run import k8s_object
+
+try:
+  # Python 3.3 and above.
+  collections_abc = collections.abc
+except AttributeError:
+  collections_abc = collections
 
 CLOUDSQL_ANNOTATION = k8s_object.RUN_GROUP + '/cloudsql-instances'
 VPC_ACCESS_ANNOTATION = 'run.googleapis.com/vpc-access-connector'
@@ -58,10 +65,7 @@ class ContainerResource(k8s_object.KubernetesObject):
     the returned object (i.e. setting and deleting keys) modify the underlying
     nested env vars fields.
     """
-    if self.container:
-      return EnvVarsAsDictionaryWrapper(
-          self.container.env, self._messages.EnvVar
-      )
+    return self.container.env_vars
 
   @property
   def image(self):
@@ -72,48 +76,33 @@ class ContainerResource(k8s_object.KubernetesObject):
   def image(self, value):
     self.container.image = value
 
-  def _EnsureResources(self):
-    limits_cls = self._messages.ResourceRequirements.LimitsValue
-    if self.container.resources is not None:
-      if self.container.resources.limits is None:
-        self.container.resources.limits = k8s_object.InitializedInstance(
-            limits_cls
-        )
-    else:
-      self.container.resources = k8s_object.InitializedInstance(
-          self._messages.ResourceRequirements
-      )
-    # These fields are in the schema due to an error in interperetation of the
-    # Knative spec. We're removing them, so never send any contents for them.
-    try:
-      self.container.resources.limitsInMap = None
-      self.container.resources.requestsInMap = None
-    except AttributeError:
-      # The fields only exist in the v1alpha1 spec, if we're working with a
-      # different version, this is safe to ignore
-      pass
-
   @property
   def container(self):
     """The container in the revisionTemplate."""
-    if len(self.spec.containers) == 1:
-      return self.spec.containers[0]
-    else:
-      for container in self.spec.containers:
-        if container.ports:
-          return container
+    containers = self.containers.values()
+    if not containers:
+      return self.containers['']
+
+    if len(containers) == 1:
+      return next(iter(containers))
+
+    for container in containers:
+      if container.ports:
+        return container
+
     raise ValueError('missing ingress container')
+
+  @property
+  def containers(self):
+    """The containers in the revisionTemplate."""
+    return ContainersAsDictionaryWrapper(
+        self.spec.containers, self.volumes, self._messages
+    )
 
   @property
   def resource_limits(self):
     """The resource limits as a dictionary { resource name: limit}."""
-    self._EnsureResources()
-    return k8s_object.KeyValueListAsDictionaryWrapper(
-        self.container.resources.limits.additionalProperties,
-        self._messages.ResourceRequirements.LimitsValue.AdditionalProperty,
-        key_field='key',
-        value_field='value',
-    )
+    return self.container.resource_limits
 
   @property
   def volumes(self):
@@ -136,10 +125,7 @@ class ContainerResource(k8s_object.KubernetesObject):
     (e.g. `.secrets` that can be used to access a mutable dict-like object for
     a volume mounts that mount volumes of a given type.
     """
-    if self.container:
-      return VolumeMountsAsDictionaryWrapper(
-          self.volumes, self.container.volumeMounts, self._messages.VolumeMount
-      )
+    return self.container.volume_mounts
 
   def MountedVolumeJoin(self, subgroup=None):
     vols = self.volumes
@@ -148,6 +134,141 @@ class ContainerResource(k8s_object.KubernetesObject):
       vols = getattr(vols, subgroup)
       mounts = getattr(mounts, subgroup)
     return {path: vols.get(vol) for path, vol in mounts.items()}
+
+
+class Container(object):
+  """Wraps a container message with dict-like wrappers for env_vars, volume_mounts, and resource_limits.
+
+  All other properties are delegated to the underlying container message.
+  """
+
+  def __init__(self, volumes, messages_mod, container=None, **kwargs):
+    if not container:
+      container = messages_mod.Container(**kwargs)
+    object.__setattr__(self, '_volumes', volumes)
+    object.__setattr__(self, '_messages', messages_mod)
+    object.__setattr__(self, '_m', container)
+
+  @property
+  def env_vars(self):
+    """Returns a mutable, dict-like object to manage env vars.
+
+    The returned object can be used like a dictionary, and any modifications to
+    the returned object (i.e. setting and deleting keys) modify the underlying
+    nested env vars fields.
+    """
+    return EnvVarsAsDictionaryWrapper(self._m.env, self._messages.EnvVar)
+
+  @property
+  def volume_mounts(self):
+    """Returns a mutable, dict-like object to manage volume mounts.
+
+    The returned object can be used like a dictionary, and any modifications to
+    the returned object (i.e. setting and deleting keys) modify the underlying
+    nested volume mounts. There are additional properties on the object
+    (e.g. `.secrets` that can be used to access a mutable dict-like object for
+    a volume mounts that mount volumes of a given type.
+    """
+    return VolumeMountsAsDictionaryWrapper(
+        self._volumes, self._m.volumeMounts, self._messages.VolumeMount
+    )
+
+  def _EnsureResources(self):
+    limits_cls = self._messages.ResourceRequirements.LimitsValue
+    if self.resources is not None:
+      if self.resources.limits is None:
+        self.resources.limits = k8s_object.InitializedInstance(limits_cls)
+    else:
+      self.resources = k8s_object.InitializedInstance(
+          self._messages.ResourceRequirements
+      )
+
+  @property
+  def resource_limits(self):
+    """The resource limits as a dictionary { resource name: limit}."""
+    self._EnsureResources()
+    return k8s_object.KeyValueListAsDictionaryWrapper(
+        self.resources.limits.additionalProperties,
+        self._messages.ResourceRequirements.LimitsValue.AdditionalProperty,
+        key_field='key',
+        value_field='value',
+    )
+
+  def MakeSerializable(self):
+    return self._m
+
+  def __getattr__(self, name):
+    return getattr(self._m, name)
+
+  def __setattr__(self, name, value):
+    setattr(self._m, name, value)
+
+
+class ContainerSequenceWrapper(collections_abc.MutableSequence):
+  """Wraps a list of containers wrapping each element with the Container wrapper class."""
+
+  def __init__(self, containers_to_wrap, volumes, messages_mod):
+    super(ContainerSequenceWrapper, self).__init__()
+    self._containers = containers_to_wrap
+    self._volumes = volumes
+    self._messages = messages_mod
+
+  def __getitem__(self, index):
+    return Container(self._volumes, self._messages, self._containers[index])
+
+  def __len__(self):
+    return len(self._containers)
+
+  def __setitem__(self, index, container):
+    self._containers[index] = container.MakeSerializable()
+
+  def __delitem__(self, index):
+    del self._containers[index]
+
+  def insert(self, index, value):
+    self._containers.insert(index, value.MakeSerializable())
+
+  def MakeSerializable(self):
+    return self._containers
+
+
+class ContainersAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):
+  """Wraps a list of containers in a mutable dict-like object mapping containers by name.
+
+  Accessing a container name that does not exist will automatically add a new
+  container with the specified name to the underlying list.
+  """
+
+  def __init__(self, containers_to_wrap, volumes, messages_mod):
+    """Wraps a list of containers in a mutable dict-like object.
+
+    Args:
+      containers_to_wrap: list[Container], list of containers to treat as a
+        dict.
+      volumes: the volumes defined in the containing resource used to classify
+        volume mounts
+      messages_mod: the messages module
+    """
+    self._volumes = volumes
+    self._messages = messages_mod
+    super(ContainersAsDictionaryWrapper, self).__init__(
+        ContainerSequenceWrapper(containers_to_wrap, volumes, messages_mod)
+    )
+
+  def __getitem__(self, key):
+    try:
+      return super(ContainersAsDictionaryWrapper, self).__getitem__(key)
+    except KeyError:
+      container = Container(self._volumes, self._messages, name=key)
+      self._m.append(container)
+      return container
+
+  def MakeSerializable(self):
+    return (
+        super(ContainersAsDictionaryWrapper, self)
+        .MakeSerializable()  # ContainerSequenceWrapper
+        .MakeSerializable()
+    )
 
 
 class EnvVarsAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):

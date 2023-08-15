@@ -102,7 +102,8 @@ def GetSslPolicyArgumentForOtherResource(proxy_type, required=False):
       detailed_help="""\
         A reference to an SSL policy resource that defines the server-side
         support for SSL features and affects the connections between clients
-        and the {proxy_type} proxy load balancer. The SSL policy must exist and cannot be
+        and load balancers that are using the {proxy_type} proxy. The SSL
+        policy must exist and cannot be
         deleted while referenced by a target {proxy_type} proxy.
         """.format(proxy_type=proxy_type))
 
@@ -136,7 +137,8 @@ def GetSslPolicyMultiScopeArgumentForOtherResource(proxy_type, required=False):
       detailed_help="""\
         A reference to an SSL policy resource that defines the server-side
         support for SSL features and affects the connections between clients
-        and the {proxy_type} proxy load balancer. The SSL policy must exist and cannot be
+        and load balancers that are using the {proxy_type} proxy. The SSL
+        policy must exist and cannot be
         deleted while referenced by a target {proxy_type} proxy.
         """.format(proxy_type=proxy_type))
 

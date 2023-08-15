@@ -58,7 +58,8 @@ class Deployment(_messages.Message):
       manage and automate the execution of data processing jobs.
     createTime: Output only. [Output only] Create time stamp
     deploymentView: Output only. [Output only] Details about the deployment.
-    fabricId: Fabric ID of the Deployment.
+    fabricId: Fabric ID of the Deployment. This resource will be in the format
+      "projects/*/locations/*/fabrics/{fabric_id}".
     labels: Labels as key value pairs
     lake: Dataplex Lake that the assets are attached to.
     lakeInfo: Input only. LakeInfo supplied by the consumer. TDF would create
@@ -91,6 +92,7 @@ class Deployment(_messages.Message):
       FAILED: Resource encountered an error.
       MALFORMED: Resource is in inderministic state.
       SUSPENDED: Resource is suspended and no longer being managed actively.
+      UPDATING: Resource is being updated.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -100,6 +102,7 @@ class Deployment(_messages.Message):
     FAILED = 5
     MALFORMED = 6
     SUSPENDED = 7
+    UPDATING = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -260,6 +263,8 @@ class DeploymentAssetBigQueryTable(_messages.Message):
       the table will persist indefinitely. Expired tables will be deleted and
       their storage reclaimed.
     name: BigQuery table name.
+    schemaGcsPath: The BigQuery schema file path in the cloud storage. The
+      path is specified as gs://bucket_name/object_path.
     schemaPath: The BigQuery schema file path in the cloud storage.
     timePartitioning: Time partitioning information for the table.
   """
@@ -268,8 +273,9 @@ class DeploymentAssetBigQueryTable(_messages.Message):
   dataset = _messages.StringField(2)
   expirationDays = _messages.IntegerField(3)
   name = _messages.StringField(4)
-  schemaPath = _messages.MessageField('DeploymentAssetBigQueryTableGcsFile', 5)
-  timePartitioning = _messages.MessageField('DeploymentAssetBigQueryTableTimePartitioning', 6)
+  schemaGcsPath = _messages.StringField(5)
+  schemaPath = _messages.MessageField('DeploymentAssetBigQueryTableGcsFile', 6)
+  timePartitioning = _messages.MessageField('DeploymentAssetTimePartitioning', 7)
 
 
 class DeploymentAssetBigQueryTableGcsFile(_messages.Message):
@@ -282,22 +288,6 @@ class DeploymentAssetBigQueryTableGcsFile(_messages.Message):
 
   bucketName = _messages.StringField(1)
   fileName = _messages.StringField(2)
-
-
-class DeploymentAssetBigQueryTableTimePartitioning(_messages.Message):
-  r"""TimePartitioning configures time-based partitioning for the table.
-
-  Fields:
-    field: The field used to determine how to create a time-based partition.
-      If time-based partitioning is enabled without this value, the table is
-      partitioned based on the load time.
-    type: Required. The supported types are DAY, HOUR, MONTH, and YEAR, which
-      will generate one partition per day, hour, month, and year,
-      respectively.
-  """
-
-  field = _messages.StringField(1)
-  type = _messages.StringField(2)
 
 
 class DeploymentAssetGcsBucket(_messages.Message):
@@ -337,6 +327,22 @@ class DeploymentAssetPubSubTopic(_messages.Message):
   name = _messages.StringField(1)
 
 
+class DeploymentAssetTimePartitioning(_messages.Message):
+  r"""TimePartitioning configures time-based partitioning for the table.
+
+  Fields:
+    field: The field used to determine how to create a time-based partition.
+      If time-based partitioning is enabled without this value, the table is
+      partitioned based on the load time.
+    type: Required. The supported types are DAY, HOUR, MONTH, and YEAR, which
+      will generate one partition per day, hour, month, and year,
+      respectively.
+  """
+
+  field = _messages.StringField(1)
+  type = _messages.StringField(2)
+
+
 class DeploymentAssetUfdmTable(_messages.Message):
   r"""The BigQuery table for UfDM.
 
@@ -346,6 +352,7 @@ class DeploymentAssetUfdmTable(_messages.Message):
   Fields:
     dataset: The BigQuery dataset name.
     name: The name of the BigQuery table.
+    timePartitioning: Time partitioning information for the table.
     type: The type of ufdm schema.
   """
 
@@ -356,23 +363,24 @@ class DeploymentAssetUfdmTable(_messages.Message):
       TYPE_UNSPECIFIED: Default value. This value is unused.
       FLOW: type for flow event data.
       SESSION: type for session event data.
-      HTTP: type for http event data.
+      RAN_PERFORMANCE_METRIC: type for RAN Performance Data.
     """
     TYPE_UNSPECIFIED = 0
     FLOW = 1
     SESSION = 2
-    HTTP = 3
+    RAN_PERFORMANCE_METRIC = 3
 
   dataset = _messages.StringField(1)
   name = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  timePartitioning = _messages.MessageField('DeploymentAssetTimePartitioning', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class DeploymentLake(_messages.Message):
   r"""Lake represents a lake in Dataplex.
 
   Fields:
-    lakeId: LakeID for the Dataplex Lake.
+    lakeId: Required. LakeID for the Dataplex Lake.
     metastore: Metastore service in the DataprocMetastore.
   """
 
@@ -384,7 +392,7 @@ class DeploymentLakeInfo(_messages.Message):
   r"""LakeInfo contains Dataplex Lake to be created.
 
   Fields:
-    lake: Lake in the Dataplex.
+    lake: Required. Lake in the Dataplex.
   """
 
   lake = _messages.MessageField('DeploymentLake', 1)
@@ -407,11 +415,14 @@ class DeploymentProcess(_messages.Message):
     ParametersValue: Process parameters.
 
   Fields:
+    bqInsertJob: BqInsertJob represents the details about the bq sql job.
     dataflowJob: DataflowJob represents the details about the dataflow job.
     id: Process ID.
     inputAssetIds: Input assets for process, used for recording dependency.
+    interval: interval reprsents configuration to schedule a job.
     outputAssetIds: Output assets for process, used for recording dependency.
     parameters: Process parameters.
+    runAfter: Info of processes after which this process will run.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -438,11 +449,53 @@ class DeploymentProcess(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  dataflowJob = _messages.MessageField('DeploymentProcessDataflowJob', 1)
-  id = _messages.StringField(2)
-  inputAssetIds = _messages.StringField(3, repeated=True)
-  outputAssetIds = _messages.StringField(4, repeated=True)
-  parameters = _messages.MessageField('ParametersValue', 5)
+  bqInsertJob = _messages.MessageField('DeploymentProcessBqInsertJob', 1)
+  dataflowJob = _messages.MessageField('DeploymentProcessDataflowJob', 2)
+  id = _messages.StringField(3)
+  inputAssetIds = _messages.StringField(4, repeated=True)
+  interval = _messages.StringField(5)
+  outputAssetIds = _messages.StringField(6, repeated=True)
+  parameters = _messages.MessageField('ParametersValue', 7)
+  runAfter = _messages.MessageField('DeploymentProcessRunAfter', 8)
+
+
+class DeploymentProcessBqInsertJob(_messages.Message):
+  r"""BqInsertJob represents sql job and its configurations.
+
+  Fields:
+    queryParameters: query_parameters to pass values to SQL file. Example: If
+      the parameter name is ingestion_time, the way to access it in sql file
+      is @ingestion_time. Query parameters can not be used to substitute table
+      names.
+    sqlGcsFilePath: Required. Google Cloud Storage bucket path where SQL file
+      is stored. Format "gs:////.sql" or just ".sql" for relative paths in
+      case of custom templates.
+    tableNameParameters: Table names can not be updated using queryparameter.
+      If any table name substitution is required, you must specify it using
+      this. For example: if param name is source_table, param value can be
+      accessed in SQL file like {{ params.source_table }}.
+  """
+
+  queryParameters = _messages.MessageField('QueryParameter', 1, repeated=True)
+  sqlGcsFilePath = _messages.StringField(2)
+  tableNameParameters = _messages.MessageField('DeploymentProcessBqInsertJobTableNameParameter', 3, repeated=True)
+
+
+class DeploymentProcessBqInsertJobTableNameParameter(_messages.Message):
+  r"""Support to update Table names in SQL file at runtime.
+
+  Fields:
+    name: This is param name for table name substitution in SQL because table
+      names can not be updated using queryparameter. For example: if param
+      name is source_table, it can be accessed in SQL file like {{
+      params.source_table }}.
+    value: Value of table name. Value must be of format
+      {projectID}.{datasetID}.{tableID} or {datasetID}.{tableID}. Any other
+      value would be invalid.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class DeploymentProcessDataflowJob(_messages.Message):
@@ -537,6 +590,30 @@ class DeploymentProcessDataflowJobAlertRatio(_messages.Message):
   numeratorMetric = _messages.StringField(2)
 
 
+class DeploymentProcessRunAfter(_messages.Message):
+  r"""Info of processes after which the current process will run.
+
+  Fields:
+    processes: Triggering process info.
+  """
+
+  processes = _messages.MessageField('DeploymentProcessRunAfterProcessInfo', 1, repeated=True)
+
+
+class DeploymentProcessRunAfterProcessInfo(_messages.Message):
+  r"""Process after which current process runs.
+
+  Fields:
+    awaitCompletion: Decides whether to wait for the completion of this
+      triggered process and then update the status of triggering process or
+      not.
+    id: Required. Process ID of the triggering process.
+  """
+
+  awaitCompletion = _messages.BooleanField(1)
+  id = _messages.StringField(2)
+
+
 class DeploymentView(_messages.Message):
   r"""DeploymentView represents all details about template deployment.
 
@@ -590,6 +667,7 @@ class Fabric(_messages.Message):
       FAILED: Resource encountered an error.
       MALFORMED: Resource is in inderministic state.
       SUSPENDED: Resource is suspended and no longer being managed actively.
+      UPDATING: Resource is being updated.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -599,6 +677,7 @@ class Fabric(_messages.Message):
     FAILED = 5
     MALFORMED = 6
     SUSPENDED = 7
+    UPDATING = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -861,8 +940,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -884,7 +963,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -923,9 +1002,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -988,6 +1067,17 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(8)
 
 
+class ParseTemplateSpecRequest(_messages.Message):
+  r"""Message for parsing a custom template
+
+  Fields:
+    templateGcsPath: Required. Cloud Storage path for custom template of
+      format "gs:///"
+  """
+
+  templateGcsPath = _messages.StringField(1)
+
+
 class PublicTemplate(_messages.Message):
   r"""Message describing Template object
 
@@ -999,6 +1089,93 @@ class PublicTemplate(_messages.Message):
 
   name = _messages.StringField(1)
   parameters = _messages.MessageField('TemplateParameter', 2, repeated=True)
+
+
+class QueryParameter(_messages.Message):
+  r"""A parameter given to a query.
+
+  Fields:
+    name: Optional. If unset, this is a positional parameter. Otherwise,
+      should be unique within a query.
+    parameterType: Required. The type of this parameter.
+    parameterValue: Required. The value of this parameter.
+  """
+
+  name = _messages.StringField(1)
+  parameterType = _messages.MessageField('QueryParameterType', 2)
+  parameterValue = _messages.MessageField('QueryParameterValue', 3)
+
+
+class QueryParameterStructType(_messages.Message):
+  r"""The type of a struct parameter.
+
+  Fields:
+    description: Optional. Human-oriented description of the field.
+    name: Optional. The name of this field.
+    type: Required. The type of this field.
+  """
+
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  type = _messages.MessageField('QueryParameterType', 3)
+
+
+class QueryParameterType(_messages.Message):
+  r"""The type of a query parameter.
+
+  Fields:
+    arrayType: Optional. The type of the array's elements, if this is an
+      array.
+    structTypes: Optional. The types of the fields of this struct, in order,
+      if this is a struct.
+    type: Required. The top level type of this field.
+  """
+
+  arrayType = _messages.MessageField('QueryParameterType', 1)
+  structTypes = _messages.MessageField('QueryParameterStructType', 2, repeated=True)
+  type = _messages.StringField(3)
+
+
+class QueryParameterValue(_messages.Message):
+  r"""The value of a query parameter.
+
+  Messages:
+    StructValuesValue: The struct field values.
+
+  Fields:
+    arrayValues: Optional. The array values, if this is an array type.
+    structValues: The struct field values.
+    value: Optional. The value of this value, if a simple scalar type.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StructValuesValue(_messages.Message):
+    r"""The struct field values.
+
+    Messages:
+      AdditionalProperty: An additional property for a StructValuesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type StructValuesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a StructValuesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A QueryParameterValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('QueryParameterValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  arrayValues = _messages.MessageField('QueryParameterValue', 1, repeated=True)
+  structValues = _messages.MessageField('StructValuesValue', 2)
+  value = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1215,7 +1392,8 @@ class TelecomdatafabricProjectsLocationsDeploymentsPatchRequest(_messages.Messag
       overwritten in the Deployment resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      does not provide a mask then all fields will be overwritten. Currently
+      only `lake` or `lake_info` can be updated if not already set.
   """
 
   deployment = _messages.MessageField('Deployment', 1)
@@ -1483,6 +1661,19 @@ class TelecomdatafabricProjectsLocationsTemplatesListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class TelecomdatafabricProjectsLocationsTemplatesParseRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsTemplatesParseRequest object.
+
+  Fields:
+    parent: Required. Parent value for ListPublicTemplatesRequest
+    parseTemplateSpecRequest: A ParseTemplateSpecRequest resource to be passed
+      as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  parseTemplateSpecRequest = _messages.MessageField('ParseTemplateSpecRequest', 2)
+
+
 class Template(_messages.Message):
   r"""Message describing Template object
 
@@ -1559,6 +1750,17 @@ class TemplateParameterOneOf(_messages.Message):
   """
 
   acceptableValues = _messages.StringField(1, repeated=True)
+
+
+class TemplateSpec(_messages.Message):
+  r"""Message describing Custom Template
+
+  Fields:
+    parameters: Output only. Parameters will be used by template during
+      provisioning.
+  """
+
+  parameters = _messages.MessageField('TemplateParameter', 1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

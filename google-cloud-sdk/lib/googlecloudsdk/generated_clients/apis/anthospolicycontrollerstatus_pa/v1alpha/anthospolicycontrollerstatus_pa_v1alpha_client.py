@@ -427,13 +427,13 @@ class AnthospolicycontrollerstatusPaV1alpha(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""ListMemberships returns runtime status from memberships of a fleet.
+      r"""ListMembershipsProducer returns runtime status from memberships of a fleet.
 
       Args:
         request: (AnthospolicycontrollerstatusPaProjectsMembershipsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListMembershipsResponse) The response message.
+        (ListMembershipsProducerResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -449,7 +449,7 @@ class AnthospolicycontrollerstatusPaV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+parent}/memberships',
         request_field='',
         request_type_name='AnthospolicycontrollerstatusPaProjectsMembershipsListRequest',
-        response_type_name='ListMembershipsResponse',
+        response_type_name='ListMembershipsProducerResponse',
         supports_download=False,
     )
 

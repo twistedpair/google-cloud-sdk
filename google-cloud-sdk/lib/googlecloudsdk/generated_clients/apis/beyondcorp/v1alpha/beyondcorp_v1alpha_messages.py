@@ -275,6 +275,19 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGetRequ
   name = _messages.StringField(1, required=True)
 
 
+class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesListRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesLis
+  tRequest object.
+
+  Fields:
+    parent: Required. The parent partnerTenant to which the BrowserDlpRules
+      belong. Format: `organizations/{organization_id}/locations/global/partne
+      rTenants/{partner_tenant_id}`
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesPatchRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesPat
   chRequest object.
@@ -684,130 +697,6 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsTestIamPermissionsRequ
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
-
-
-class BeyondcorpOrganizationsLocationsGlobalTenantsCreateRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalTenantsCreateRequest object.
-
-  Fields:
-    googleCloudBeyondcorpPartnerservicesV1alphaTenant: A
-      GoogleCloudBeyondcorpPartnerservicesV1alphaTenant resource to be passed
-      as the request body.
-    parent: Required. The resource name of the Tenant using the form:
-      `organizations/{organization_id}/locations/global`
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  googleCloudBeyondcorpPartnerservicesV1alphaTenant = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaTenant', 1)
-  parent = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-
-
-class BeyondcorpOrganizationsLocationsGlobalTenantsDeleteRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalTenantsDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class BeyondcorpOrganizationsLocationsGlobalTenantsGetRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalTenantsGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the Tenant using the form:
-      `organizations/{organization_id}/locations/global/tenants/{tenant_id}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsCreateRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsCreateRequest
-  object.
-
-  Fields:
-    googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig: A
-      GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig resource to be
-      passed as the request body.
-    parent: Required. The resource name of the Tenant using the form:
-      `organizations/{organization_id}/locations/global/tenants/{tenant_id}`
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig', 1)
-  parent = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-
-
-class BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsDeleteRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsDeleteRequest
-  object.
-
-  Fields:
-    name: Required. Name of the resource.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsGetRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalTenantsProxyConfigsGetRequest
-  object.
-
-  Fields:
-    name: Required. The resource name of the ProxyConfig using the form: `orga
-      nizations/{organization_id}/locations/global/tenants/{tenant_id}/proxyCo
-      nfigs/{proxy_config_id}`
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest(_messages.Message):
@@ -1652,6 +1541,68 @@ class BeyondcorpProjectsLocationsAppGatewaysSetIamPolicyRequest(_messages.Messag
 
 class BeyondcorpProjectsLocationsAppGatewaysTestIamPermissionsRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsAppGatewaysTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpProjectsLocationsApplicationDomainsGetIamPolicyRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsApplicationDomainsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpProjectsLocationsApplicationDomainsSetIamPolicyRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsApplicationDomainsSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpProjectsLocationsApplicationDomainsTestIamPermissionsRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsApplicationDomainsTestIamPermissionsRequest
   object.
 
   Fields:
@@ -3848,6 +3799,16 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaGroup(_messages.Message):
   id = _messages.StringField(2)
 
 
+class GoogleCloudBeyondcorpPartnerservicesV1alphaListBrowserDlpRulesResponse(_messages.Message):
+  r"""Message for response to listing BrowserDlpRules.
+
+  Fields:
+    browserDlpRules: The list of BrowserDlpRule objects.
+  """
+
+  browserDlpRules = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule', 1, repeated=True)
+
+
 class GoogleCloudBeyondcorpPartnerservicesV1alphaListPartnerTenantsResponse(_messages.Message):
   r"""Message for response to listing PartnerTenants.
 
@@ -4008,32 +3969,6 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaRuleSetting(_messages.Message):
 
   type = _messages.StringField(1)
   value = _messages.MessageField('ValueValue', 2)
-
-
-class GoogleCloudBeyondcorpPartnerservicesV1alphaTenant(_messages.Message):
-  r"""Information about a BeyoncCorp Enterprise Tenant.
-
-  Fields:
-    createTime: Output only. Timestamp when the resource was created.
-    displayName: Optional. An arbitrary caller-provided name for the Tenant.
-      Cannot exceed 64 characters.
-    googleGroupEmail: Optional. Google group email to which the Tenant is
-      enabled.
-    googleGroupId: Optional. Google group ID to which the Tenant is enabled.
-    name: Output only. Unique resource name of the Tenant. The name is ignored
-      when creating Tenant.
-    partnerMetadata: Optional. Metadata provided by the Partner associated
-      with Tenant.
-    updateTime: Output only. Timestamp when the resource was last modified.
-  """
-
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  googleGroupEmail = _messages.StringField(3)
-  googleGroupId = _messages.StringField(4)
-  name = _messages.StringField(5)
-  partnerMetadata = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerMetadata', 6)
-  updateTime = _messages.StringField(7)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaTransportInfo(_messages.Message):
@@ -4610,7 +4545,7 @@ class GoogleIamV1Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -4618,15 +4553,15 @@ class GoogleIamV1Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -4743,8 +4678,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -4766,7 +4701,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -4805,9 +4740,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is

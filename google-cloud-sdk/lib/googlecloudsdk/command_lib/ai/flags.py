@@ -1292,6 +1292,19 @@ def GetEmailsArg(required=True):
       required=required)
 
 
+def GetNotificationChannelsArg(required=True):
+  return base.Argument(
+      '--notification-channels',
+      metavar='NOTIFICATION_CHANNELS',
+      type=arg_parsers.ArgList(),
+      default=[],
+      help=(
+          'Comma-separated notification channel list. e.g.'
+          ' --notification-channels=projects/fake-project/notificationChannels/123,projects/fake-project/notificationChannels/456'
+      ),
+      required=required)
+
+
 def GetPredictionSamplingRateArg(required=True, default=1.0):
   return base.Argument(
       '--prediction-sampling-rate',

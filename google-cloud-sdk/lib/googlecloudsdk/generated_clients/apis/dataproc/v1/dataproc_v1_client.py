@@ -1549,7 +1549,7 @@ class DataprocV1(base_api.BaseApiClient):
         method_id='dataproc.projects.regions.clusters.delete',
         ordered_params=['projectId', 'region', 'clusterName'],
         path_params=['clusterName', 'projectId', 'region'],
-        query_params=['clusterUuid', 'requestId'],
+        query_params=['clusterUuid', 'gracefulTerminationTimeout', 'requestId'],
         relative_path='v1/projects/{projectId}/regions/{region}/clusters/{clusterName}',
         request_field='',
         request_type_name='DataprocProjectsRegionsClustersDeleteRequest',

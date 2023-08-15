@@ -509,7 +509,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
         method_id='sql.instances.delete',
         ordered_params=['project', 'instance'],
         path_params=['instance', 'project'],
-        query_params=['finalBackupDescription', 'finalBackupRetentionDays', 'skipFinalBackup'],
+        query_params=['finalBackupDescription', 'finalBackupExpiryTime', 'finalBackupTtlDays', 'skipFinalBackup'],
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}',
         request_field='',
         request_type_name='SqlInstancesDeleteRequest',

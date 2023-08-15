@@ -924,6 +924,7 @@ class OSPolicy(_messages.Message):
       compliant even if the policy has nothing to validate or enforce.
     description: Policy description. Length of the description is limited to
       1024 characters.
+    fingerprint: OSPolicy fingerprint (checksum)
     id: Required. The id of the OS policy with the following restrictions: *
       Must contain only lowercase letters, numbers, and hyphens. * Must start
       with a letter. * Must be between 1-63 characters. * Must end with a
@@ -956,9 +957,10 @@ class OSPolicy(_messages.Message):
 
   allowNoResourceGroupMatch = _messages.BooleanField(1)
   description = _messages.StringField(2)
-  id = _messages.StringField(3)
-  mode = _messages.EnumField('ModeValueValuesEnum', 4)
-  resourceGroups = _messages.MessageField('OSPolicyResourceGroup', 5, repeated=True)
+  fingerprint = _messages.StringField(3)
+  id = _messages.StringField(4)
+  mode = _messages.EnumField('ModeValueValuesEnum', 5)
+  resourceGroups = _messages.MessageField('OSPolicyResourceGroup', 6, repeated=True)
 
 
 class OSPolicyAssignment(_messages.Message):
@@ -1864,8 +1866,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1887,7 +1889,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1926,9 +1928,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is

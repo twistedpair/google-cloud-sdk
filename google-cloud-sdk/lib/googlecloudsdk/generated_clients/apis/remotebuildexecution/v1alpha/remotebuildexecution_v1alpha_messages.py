@@ -974,7 +974,10 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
     dockerCacheHit: Indicates whether we are using a cached Docker image
       (true) or had to pull the Docker image (false) for this command.
     dockerImageName: Docker Image name.
-    inputCacheMiss: The input cache miss ratio.
+    inputCacheMissBytes: The input cache miss rate as a fraction of the total
+      size of input files.
+    inputCacheMissFiles: The input cache miss rate as a fraction of the number
+      of input files.
     numErrors: The number of errors reported.
     numWarnings: The number of warnings reported.
     outputLocation: Indicates whether output files and/or output directories
@@ -1045,11 +1048,12 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
   cmUsage = _messages.EnumField('CmUsageValueValuesEnum', 1)
   dockerCacheHit = _messages.BooleanField(2)
   dockerImageName = _messages.StringField(3)
-  inputCacheMiss = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  numErrors = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  numWarnings = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  outputLocation = _messages.EnumField('OutputLocationValueValuesEnum', 7)
-  usedAsyncContainer = _messages.BooleanField(8)
+  inputCacheMissBytes = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  inputCacheMissFiles = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  numErrors = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  numWarnings = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  outputLocation = _messages.EnumField('OutputLocationValueValuesEnum', 8)
+  usedAsyncContainer = _messages.BooleanField(9)
 
 
 class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
@@ -1294,13 +1298,18 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaAutoscale(_messages.Message)
   r"""Autoscale defines the autoscaling policy of a worker pool.
 
   Fields:
-    maxSize: The maximal number of workers. Must be equal to or greater than
-      min_size.
-    minSize: The minimal number of workers. Must be greater than 0.
+    maxSize: Optional. The maximal number of workers. Must be equal to or
+      greater than min_size.
+    minIdleWorkers: Optional. The minimum number of idle workers the
+      autoscaler will aim to have in the pool at all times that are
+      immediately available to accept a surge in build traffic. The pool size
+      will still be constrained by min_size and max_size.
+    minSize: Optional. The minimal number of workers. Must be greater than 0.
   """
 
   maxSize = _messages.IntegerField(1)
-  minSize = _messages.IntegerField(2)
+  minIdleWorkers = _messages.IntegerField(2)
+  minSize = _messages.IntegerField(3)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messages.Message):
@@ -2295,8 +2304,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -2318,7 +2327,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -2357,9 +2366,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is

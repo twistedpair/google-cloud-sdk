@@ -87,7 +87,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""DeleteActiveDirectory Delete the active directory specified in the request.
+      r"""Delete the active directory specified in the request.
 
       Args:
         request: (NetappProjectsLocationsActiveDirectoriesDeleteRequest) input message
@@ -114,7 +114,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""DescribeActiveDirectory Describes a specified active directory.
+      r"""Describes a specified active directory.
 
       Args:
         request: (NetappProjectsLocationsActiveDirectoriesGetRequest) input message
@@ -141,7 +141,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListActiveDirectories Lists active directories.
+      r"""Lists active directories.
 
       Args:
         request: (NetappProjectsLocationsActiveDirectoriesListRequest) input message
@@ -168,7 +168,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""UpdateActiveDirectory Update the parameters of an active directories.
+      r"""Update the parameters of an active directories.
 
       Args:
         request: (NetappProjectsLocationsActiveDirectoriesPatchRequest) input message
@@ -205,7 +205,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""CreateKmsConfig Creates a new KMS config.
+      r"""Creates a new KMS config.
 
       Args:
         request: (NetappProjectsLocationsKmsConfigsCreateRequest) input message
@@ -232,7 +232,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""DeleteKmsConfig Warning! This operation will permanently delete the Kms config.
+      r"""Warning! This operation will permanently delete the Kms config.
 
       Args:
         request: (NetappProjectsLocationsKmsConfigsDeleteRequest) input message
@@ -259,7 +259,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Encrypt(self, request, global_params=None):
-      r"""EncryptVolumes Encrypt the existing volumes without CMEK encryption with the desired the KMS config for the whole region.
+      r"""Encrypt the existing volumes without CMEK encryption with the desired the KMS config for the whole region.
 
       Args:
         request: (NetappProjectsLocationsKmsConfigsEncryptRequest) input message
@@ -286,7 +286,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""GetKmsConfig Returns the description of the specified KMS config by kms_config_id.
+      r"""Returns the description of the specified KMS config by kms_config_id.
 
       Args:
         request: (NetappProjectsLocationsKmsConfigsGetRequest) input message
@@ -313,7 +313,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListKmsConfigs Returns descriptions of all KMS configs owned by the caller.
+      r"""Returns descriptions of all KMS configs owned by the caller.
 
       Args:
         request: (NetappProjectsLocationsKmsConfigsListRequest) input message
@@ -340,7 +340,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""UpdateKmsConfig Updates the Kms config properties with the full spec.
+      r"""Updates the Kms config properties with the full spec.
 
       Args:
         request: (NetappProjectsLocationsKmsConfigsPatchRequest) input message
@@ -367,7 +367,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Verify(self, request, global_params=None):
-      r"""VerifyKmsConfigRequest Verifies KMS config reachability.
+      r"""Verifies KMS config reachability.
 
       Args:
         request: (NetappProjectsLocationsKmsConfigsVerifyRequest) input message
@@ -522,7 +522,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""CreateStoragePool Creates a new storage pool.
+      r"""Creates a new storage pool.
 
       Args:
         request: (NetappProjectsLocationsStoragePoolsCreateRequest) input message
@@ -549,7 +549,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""DeleteStoragePool Warning! This operation will permanently delete the storage pool.
+      r"""Warning! This operation will permanently delete the storage pool.
 
       Args:
         request: (NetappProjectsLocationsStoragePoolsDeleteRequest) input message
@@ -576,7 +576,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""GetStoragePool Returns the description of the specified storage pool by poolId.
+      r"""Returns the description of the specified storage pool by poolId.
 
       Args:
         request: (NetappProjectsLocationsStoragePoolsGetRequest) input message
@@ -603,7 +603,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListStoragePools Returns descriptions of all storage pools owned by the caller.
+      r"""Returns descriptions of all storage pools owned by the caller.
 
       Args:
         request: (NetappProjectsLocationsStoragePoolsListRequest) input message
@@ -630,7 +630,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""UpdateStoragePool Updates the storage pool properties with the full spec.
+      r"""Updates the storage pool properties with the full spec.
 
       Args:
         request: (NetappProjectsLocationsStoragePoolsPatchRequest) input message
@@ -829,7 +829,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def ReverseDirection(self, request, global_params=None):
-      r"""ReverseReplicationDirection reverses direction of replication. Source becomes destination and destination becomes source.
+      r"""Reverses direction of replication. Source becomes destination and destination becomes source.
 
       Args:
         request: (NetappProjectsLocationsVolumesReplicationsReverseDirectionRequest) input message
@@ -1038,7 +1038,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""CreateVolume Creates a new Volume in a given project and location.
+      r"""Creates a new Volume in a given project and location.
 
       Args:
         request: (NetappProjectsLocationsVolumesCreateRequest) input message
@@ -1065,7 +1065,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""DeleteVolume Deletes a single Volume.
+      r"""Deletes a single Volume.
 
       Args:
         request: (NetappProjectsLocationsVolumesDeleteRequest) input message
@@ -1092,7 +1092,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""GetVolume Gets details of a single Volume.
+      r"""Gets details of a single Volume.
 
       Args:
         request: (NetappProjectsLocationsVolumesGetRequest) input message
@@ -1119,7 +1119,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListVolumes Lists Volumes in a given project.
+      r"""Lists Volumes in a given project.
 
       Args:
         request: (NetappProjectsLocationsVolumesListRequest) input message
@@ -1146,7 +1146,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""UpdateVolume Updates the parameters of a single Volume.
+      r"""Updates the parameters of a single Volume.
 
       Args:
         request: (NetappProjectsLocationsVolumesPatchRequest) input message

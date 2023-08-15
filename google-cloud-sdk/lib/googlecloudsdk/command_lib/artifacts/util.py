@@ -348,10 +348,16 @@ def DeleteVersionTags(ver_ref, ver_args, request):
     return request
   client = _GetClientForResource(ver_ref)
   messages = _GetMessagesForResource(ver_ref)
+  package = resources.REGISTRY.Create(
+      "artifactregistry.projects.locations.repositories.packages",
+      projectsId=ver_ref.projectsId,
+      locationsId=ver_ref.locationsId,
+      repositoriesId=ver_ref.repositoriesId,
+      packagesId=ver_ref.packagesId.replace("/", "%2F").replace("+", "%2B"))
   tag_list = ar_requests.ListTags(client, messages,
-                                  ver_ref.Parent().RelativeName())
+                                  package.RelativeName())
   for tag in tag_list:
-    if tag.version != ver_ref.RelativeName():
+    if tag.version != request.name:
       continue
     ar_requests.DeleteTag(client, messages, tag.name)
   return request

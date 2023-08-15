@@ -29,7 +29,8 @@ from googlecloudsdk.core.console import console_io
 
 def _GetOperationResource(op):
   return resources.REGISTRY.ParseRelativeName(
-      op.name, collection='gkemulticloud.projects.locations.operations')
+      op.name, collection='gkemulticloud.projects.locations.operations'
+  )
 
 
 def _GetOperationTarget(op):
@@ -39,8 +40,8 @@ def _GetOperationTarget(op):
     if 'target' in metadata:
       op_cluster = metadata['target']
   return resources.REGISTRY.ParseRelativeName(
-      op_cluster,
-      collection='gkemulticloud.projects.locations.attachedClusters')
+      op_cluster, collection='gkemulticloud.projects.locations.attachedClusters'
+  )
 
 
 def _LogAndWaitForOperation(op, async_, message):
@@ -80,11 +81,9 @@ def ClientMessage(name, action=None, region=None):
   return msg
 
 
-def Create(resource_ref=None,
-           resource_client=None,
-           args=None,
-           kind=None,
-           message=None):
+def Create(
+    resource_ref=None, resource_client=None, args=None, kind=None, message=None
+):
   """Runs a create command for gkemulticloud.
 
   Args:
@@ -108,11 +107,9 @@ def Create(resource_ref=None,
   return resource_client.Get(resource_ref)
 
 
-def Update(resource_ref=None,
-           resource_client=None,
-           args=None,
-           kind=None,
-           message=None):
+def Update(
+    resource_ref=None, resource_client=None, args=None, kind=None, message=None
+):
   """Runs an update command for gkemulticloud.
 
   Args:
@@ -137,24 +134,31 @@ def Update(resource_ref=None,
 
 
 def _DeletePrompt(kind, items):
+  """Generates a delete prompt for a resource."""
   title = 'The following {} will be deleted.'
-  if kind == constants.AWS_CLUSTER_KIND or kind == constants.AZURE_CLUSTER_KIND or kind == constants.ATTACHED_CLUSTER_KIND:
+  if (
+      kind == constants.AWS_CLUSTER_KIND
+      or kind == constants.AZURE_CLUSTER_KIND
+      or kind == constants.ATTACHED_CLUSTER_KIND
+  ):
     title = title.format('clusters')
-  elif kind == constants.AWS_NODEPOOL_KIND or kind == constants.AZURE_NODEPOOL_KIND:
+  elif (
+      kind == constants.AWS_NODEPOOL_KIND
+      or kind == constants.AZURE_NODEPOOL_KIND
+  ):
     title = title.format('node pool')
   elif kind == constants.AZURE_CLIENT_KIND:
     title = title.format('client')
   console_io.PromptContinue(
       message=gke_util.ConstructList(title, items),
       throw_if_unattended=True,
-      cancel_on_no=True)
+      cancel_on_no=True,
+  )
 
 
-def Delete(resource_ref=None,
-           resource_client=None,
-           args=None,
-           kind=None,
-           message=None):
+def Delete(
+    resource_ref=None, resource_client=None, args=None, kind=None, message=None
+):
   """Runs a delete command for gkemulticloud.
 
   Args:
@@ -173,9 +177,12 @@ def Delete(resource_ref=None,
   async_ = getattr(args, 'async_', False)
   allow_missing = getattr(args, 'allow_missing', False)
   ignore_errors = getattr(args, 'ignore_errors', False)
-  op = resource_client.Delete(resource_ref, validate_only=validate_only,
-                              allow_missing=allow_missing,
-                              ignore_errors=ignore_errors)
+  op = resource_client.Delete(
+      resource_ref,
+      validate_only=validate_only,
+      allow_missing=allow_missing,
+      ignore_errors=ignore_errors,
+  )
   if validate_only:
     args.format = 'disable'
     return
@@ -193,9 +200,11 @@ def CancelOperationMessage(name, kind):
   Returns:
     The operation cancellation message.
   """
-  msg = ('Cancelation of operation {0} has been requested. '
-         'Please use gcloud container {1} operations describe {2} to '
-         'check if the operation has been cancelled successfully.')
+  msg = (
+      'Cancelation of operation {0} has been requested. '
+      'Please use gcloud container {1} operations describe {2} to '
+      'check if the operation has been cancelled successfully.'
+  )
   return msg.format(name, kind, name)
 
 
@@ -209,15 +218,18 @@ def CancelOperationPrompt(op_name):
   console_io.PromptContinue(
       message=message.format(op_name),
       throw_if_unattended=True,
-      cancel_on_no=True)
+      cancel_on_no=True,
+  )
 
 
-def Import(location_ref=None,
-           resource_client=None,
-           fleet_membership_ref=None,
-           args=None,
-           kind=None,
-           message=None):
+def Import(
+    location_ref=None,
+    resource_client=None,
+    fleet_membership_ref=None,
+    args=None,
+    kind=None,
+    message=None,
+):
   """Runs an import command for gkemulticloud.
 
   Args:
@@ -234,7 +246,8 @@ def Import(location_ref=None,
   op = resource_client.Import(
       location_ref=location_ref,
       fleet_membership_ref=fleet_membership_ref,
-      args=args)
+      args=args,
+  )
   validate_only = getattr(args, 'validate_only', False)
   if validate_only:
     args.format = 'disable'

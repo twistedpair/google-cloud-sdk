@@ -101,6 +101,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'forwardingRule'],
       True
   )
+  FUTURERESERVATIONS = (
+      'futureReservations',
+      'projects/{project}/zones/{zone}/futureReservations/{futureReservation}',
+      {},
+      ['project', 'zone', 'futureReservation'],
+      True
+  )
   GLOBALADDRESSES = (
       'globalAddresses',
       'projects/{project}/global/addresses/{address}',
@@ -200,6 +207,13 @@ class Collections(enum.Enum):
       'projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}',
       {},
       ['project', 'zone', 'instanceGroup'],
+      True
+  )
+  INSTANCESETTINGS = (
+      'instanceSettings',
+      'projects/{project}/zones/{zone}/instanceSettings',
+      {},
+      ['project', 'zone'],
       True
   )
   INSTANCETEMPLATES = (

@@ -18,9 +18,9 @@ class Accelerator(_messages.Message):
   r"""An accelerator card attached to the instance.
 
   Fields:
-    count: Number of accelerator cards exposed to the instance.
-    type: Type of accelerator resource to attach to the instance, for example,
-      "nvidia-tesla-p100".
+    count: Optional. Number of accelerator cards exposed to the instance.
+    type: Optional. Type of accelerator resource to attach to the instance,
+      for example, `"nvidia-tesla-p100"`.
   """
 
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -158,14 +158,16 @@ class Container(_messages.Message):
   r"""A Docker container.
 
   Messages:
-    EnvValue: Environment variables passed to the container's entrypoint.
+    EnvValue: Optional. Environment variables passed to the container's
+      entrypoint.
 
   Fields:
-    args: Arguments passed to the entrypoint.
-    command: If set, overrides the default ENTRYPOINT specified by the image.
-    env: Environment variables passed to the container's entrypoint.
-    image: A Docker container image that defines a custom environment. Cloud
-      Workstations provides a number of [preconfigured
+    args: Optional. Arguments passed to the entrypoint.
+    command: Optional. If set, overrides the default ENTRYPOINT specified by
+      the image.
+    env: Optional. Environment variables passed to the container's entrypoint.
+    image: Optional. A Docker container image that defines a custom
+      environment. Cloud Workstations provides a number of [preconfigured
       images](https://cloud.google.com/workstations/docs/preconfigured-base-
       images), but you can create your own [custom container
       images](https://cloud.google.com/workstations/docs/custom-container-
@@ -173,14 +175,15 @@ class Container(_messages.Message):
       field must be specified in the workstation configuration and must have
       permission to pull the specified image. Otherwise, the image must be
       publicly accessible.
-    runAsUser: If set, overrides the USER specified in the image with the
-      given uid.
-    workingDir: If set, overrides the default DIR specified by the image.
+    runAsUser: Optional. If set, overrides the USER specified in the image
+      with the given uid.
+    workingDir: Optional. If set, overrides the default DIR specified by the
+      image.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvValue(_messages.Message):
-    r"""Environment variables passed to the container's entrypoint.
+    r"""Optional. Environment variables passed to the container's entrypoint.
 
     Messages:
       AdditionalProperty: An additional property for a EnvValue object.
@@ -219,8 +222,8 @@ class CustomerEncryptionKey(_messages.Message):
 
   Fields:
     kmsKey: Immutable. The name of the Google Cloud KMS encryption key. For
-      example, `projects/PROJECT_ID/locations/REGION/keyRings/KEY_RING/cryptoK
-      eys/KEY_NAME`. The key must be in the same region as the workstation
+      example, `"projects/PROJECT_ID/locations/REGION/keyRings/KEY_RING/crypto
+      Keys/KEY_NAME"`. The key must be in the same region as the workstation
       configuration.
     kmsKeyServiceAccount: Immutable. The service account to use with the
       specified KMS key. We recommend that you use a separate service account
@@ -275,8 +278,8 @@ class GceConfidentialInstanceConfig(_messages.Message):
   r"""A set of Compute Engine Confidential VM instance options.
 
   Fields:
-    enableConfidentialCompute: Whether the instance has confidential compute
-      enabled.
+    enableConfidentialCompute: Optional. Whether the instance has confidential
+      compute enabled.
   """
 
   enableConfidentialCompute = _messages.BooleanField(1)
@@ -286,45 +289,76 @@ class GceInstance(_messages.Message):
   r"""A runtime using a Compute Engine instance.
 
   Fields:
-    accelerators: A list of the type and count of accelerator cards attached
-      to the instance.
-    bootDiskSizeGb: The size of the boot disk for the VM in gigabytes (GB).
-      The minimum boot disk size is `30` GB. Defaults to `50` GB.
-    confidentialInstanceConfig: A set of Compute Engine Confidential VM
-      instance options.
-    disablePublicIpAddresses: When set to true, disables public IP addresses
-      for VMs. If you disable public IP addresses, you must set up Private
-      Google Access or Cloud NAT on your network. If you use Private Google
-      Access and you use `private.googleapis.com` or
+    accelerators: Optional. A list of the type and count of accelerator cards
+      attached to the instance.
+    bootDiskSizeGb: Optional. The size of the boot disk for the VM in
+      gigabytes (GB). The minimum boot disk size is `30` GB. Defaults to `50`
+      GB.
+    confidentialInstanceConfig: Optional. A set of Compute Engine Confidential
+      VM instance options.
+    disablePublicIpAddresses: Optional. When set to true, disables public IP
+      addresses for VMs. If you disable public IP addresses, you must set up
+      Private Google Access or Cloud NAT on your network. If you use Private
+      Google Access and you use `private.googleapis.com` or
       `restricted.googleapis.com` for Container Registry and Artifact
       Registry, make sure that you set up DNS records for domains `*.gcr.io`
       and `*.pkg.dev`. Defaults to false (VMs have public IP addresses).
-    enableNestedVirtualization: Whether to enable nested virtualization on
-      instances.
-    machineType: The type of machine to use for VM instances-for example,
-      `e2-standard-4`. For more information about machine types that Cloud
-      Workstations supports, see the list of [available machine
+    enableNestedVirtualization: Optional. Whether to enable nested
+      virtualization on Cloud Workstations VMs created under this workstation
+      configuration. Nested virtualization lets you run virtual machine (VM)
+      instances inside your workstation. Before enabling nested
+      virtualization, consider the following important considerations. Cloud
+      Workstations instances are subject to the [same restrictions as Compute
+      Engine
+      instances](https://cloud.google.com/compute/docs/instances/nested-
+      virtualization/overview#restrictions): * **Organization policy**:
+      projects, folders, or organizations may be restricted from creating
+      nested VMs if the **Disable VM nested virtualization** constraint is
+      enforced in the organization policy. For more information, see the
+      Compute Engine section, [Checking whether nested virtualization is
+      allowed](https://cloud.google.com/compute/docs/instances/nested-
+      virtualization/managing-
+      constraint#checking_whether_nested_virtualization_is_allowed). *
+      **Performance**: nested VMs might experience a 10% or greater decrease
+      in performance for workloads that are CPU-bound and possibly greater
+      than a 10% decrease for workloads that are input/output bound. *
+      **Machine Type**: nested virtualization can only be enabled on
+      workstation configurations that specify a machine_type in the N1 or N2
+      machine series. * **GPUs**: nested virtualization may not be enabled on
+      workstation configurations with accelerators. * **Operating System**:
+      Because [Container-Optimized
+      OS](https://cloud.google.com/compute/docs/images/os-details#container-
+      optimized_os_cos) does not support nested virtualization, when nested
+      virtualization is enabled, the underlying Compute Engine VM instances
+      boot from an [Ubuntu
+      LTS](https://cloud.google.com/compute/docs/images/os-details#ubuntu_lts)
+      image.
+    machineType: Optional. The type of machine to use for VM instances-for
+      example, `"e2-standard-4"`. For more information about machine types
+      that Cloud Workstations supports, see the list of [available machine
       types](https://cloud.google.com/workstations/docs/available-machine-
       types).
-    poolSize: The number of VMs that the system should keep idle so that new
-      workstations can be started quickly for new users. Defaults to `0` in
-      the API.
+    poolSize: Optional. The number of VMs that the system should keep idle so
+      that new workstations can be started quickly for new users. Defaults to
+      `0` in the API.
     pooledInstances: Output only. Number of instances currently available in
       the pool for faster workstation startup.
-    serviceAccount: The email address of the service account for Cloud
-      Workstations VMs created with this configuration. When specified, be
-      sure that the service account has `logginglogEntries.create` permission
-      on the project so it can write logs out to Cloud Logging. If using a
-      custom container image, the service account must have permissions to
-      pull the specified image. If you as the administrator want to be able to
-      `ssh` into the underlying VM, you need to set this value to a service
-      account for which you have the `iam.serviceAccounts.actAs` permission.
-      Conversely, if you don't want anyone to be able to `ssh` into the
-      underlying VM, use a service account where no one has that permission.
-      If not set, VMs run with a service account provided by the Cloud
-      Workstations service, and the image must be publicly accessible.
-    shieldedInstanceConfig: A set of Compute Engine Shielded instance options.
-    tags: Network tags to add to the Compute Engine machines backing the
+    serviceAccount: Optional. The email address of the service account for
+      Cloud Workstations VMs created with this configuration. When specified,
+      be sure that the service account has `logginglogEntries.create`
+      permission on the project so it can write logs out to Cloud Logging. If
+      using a custom container image, the service account must have
+      permissions to pull the specified image. If you as the administrator
+      want to be able to `ssh` into the underlying VM, you need to set this
+      value to a service account for which you have the
+      `iam.serviceAccounts.actAs` permission. Conversely, if you don't want
+      anyone to be able to `ssh` into the underlying VM, use a service account
+      where no one has that permission. If not set, VMs run with a service
+      account provided by the Cloud Workstations service, and the image must
+      be publicly accessible.
+    shieldedInstanceConfig: Optional. A set of Compute Engine Shielded
+      instance options.
+    tags: Optional. Network tags to add to the Compute Engine VMs backing the
       workstations. This option applies [network
       tags](https://cloud.google.com/vpc/docs/add-remove-network-tags) to VMs
       created with this configuration. These network tags enable the creation
@@ -348,40 +382,41 @@ class GceInstance(_messages.Message):
 
 class GceRegionalPersistentDisk(_messages.Message):
   r"""A PersistentDirectory backed by a Compute Engine regional persistent
-  disk. The `persistentDirectories[]` field is repeated, but it may contain
-  only one entry. It creates a [persistent
+  disk. The persistent_directories field is repeated, but it may contain only
+  one entry. It creates a [persistent
   disk](https://cloud.google.com/compute/docs/disks/persistent-disks) that
   mounts to the workstation VM at `/home` when the session starts and detaches
   when the session ends. If this field is empty, workstations created with
   this configuration do not have a persistent home directory.
 
   Enums:
-    ReclaimPolicyValueValuesEnum: Whether the persistent disk should be
-      deleted when the workstation is deleted. Valid values are `DELETE` and
-      `RETAIN`. Defaults to `DELETE`.
+    ReclaimPolicyValueValuesEnum: Optional. Whether the persistent disk should
+      be deleted when the workstation is deleted. Valid values are `DELETE`
+      and `RETAIN`. Defaults to `DELETE`.
 
   Fields:
-    diskType: The [type of the persistent
+    diskType: Optional. The [type of the persistent
       disk](https://cloud.google.com/compute/docs/disks#disk-types) for the
-      home directory. Defaults to `pd-standard`.
-    fsType: Type of file system that the disk should be formatted with. The
-      workstation image must support this file system type. Must be empty if
-      source_snapshot is set. Defaults to `ext4`.
-    reclaimPolicy: Whether the persistent disk should be deleted when the
-      workstation is deleted. Valid values are `DELETE` and `RETAIN`. Defaults
-      to `DELETE`.
-    sizeGb: The GB capacity of a persistent home directory for each
+      home directory. Defaults to `"pd-standard"`.
+    fsType: Optional. Type of file system that the disk should be formatted
+      with. The workstation image must support this file system type. Must be
+      empty if source_snapshot is set. Defaults to `"ext4"`.
+    reclaimPolicy: Optional. Whether the persistent disk should be deleted
+      when the workstation is deleted. Valid values are `DELETE` and `RETAIN`.
+      Defaults to `DELETE`.
+    sizeGb: Optional. The GB capacity of a persistent home directory for each
       workstation created with this configuration. Must be empty if
-      `source_snapshot` is set. Valid values are `10`, `50`, `100`, `200`,
+      source_snapshot is set. Valid values are `10`, `50`, `100`, `200`,
       `500`, or `1000`. Defaults to `200`. If less than `200` GB, the
-      `diskType` must be `pd-balanced` or `pd-ssd`.
-    sourceSnapshot: Name of the snapshot to use as the source for the disk. If
-      set, size_gb and fs_type must be empty.
+      disk_type must be `"pd-balanced"` or `"pd-ssd"`.
+    sourceSnapshot: Optional. Name of the snapshot to use as the source for
+      the disk. If set, size_gb and fs_type must be empty.
   """
 
   class ReclaimPolicyValueValuesEnum(_messages.Enum):
-    r"""Whether the persistent disk should be deleted when the workstation is
-    deleted. Valid values are `DELETE` and `RETAIN`. Defaults to `DELETE`.
+    r"""Optional. Whether the persistent disk should be deleted when the
+    workstation is deleted. Valid values are `DELETE` and `RETAIN`. Defaults
+    to `DELETE`.
 
     Values:
       RECLAIM_POLICY_UNSPECIFIED: Do not use.
@@ -404,10 +439,10 @@ class GceShieldedInstanceConfig(_messages.Message):
   r"""A set of Compute Engine Shielded instance options.
 
   Fields:
-    enableIntegrityMonitoring: Whether the instance has integrity monitoring
-      enabled.
-    enableSecureBoot: Whether the instance has Secure Boot enabled.
-    enableVtpm: Whether the instance has the vTPM enabled.
+    enableIntegrityMonitoring: Optional. Whether the instance has integrity
+      monitoring enabled.
+    enableSecureBoot: Optional. Whether the instance has Secure Boot enabled.
+    enableVtpm: Optional. Whether the instance has the vTPM enabled.
   """
 
   enableIntegrityMonitoring = _messages.BooleanField(1)
@@ -542,9 +577,9 @@ class ListWorkstationsResponse(_messages.Message):
   r"""Response message for ListWorkstations.
 
   Fields:
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    unreachable: Unreachable resources.
+    nextPageToken: Optional. Token to retrieve the next page of results, or
+      empty if there are no more results in the list.
+    unreachable: Optional. Unreachable resources.
     workstations: The requested workstations.
   """
 
@@ -563,8 +598,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -586,7 +621,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -625,9 +660,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -691,7 +726,8 @@ class PersistentDirectory(_messages.Message):
 
   Fields:
     gcePd: A PersistentDirectory backed by a Compute Engine persistent disk.
-    mountPath: Location of this directory in the running workstation.
+    mountPath: Optional. Location of this directory in the running
+      workstation.
   """
 
   gcePd = _messages.MessageField('GceRegionalPersistentDisk', 1)
@@ -711,7 +747,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -719,15 +755,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -777,23 +813,24 @@ class Policy(_messages.Message):
 
 
 class PrivateClusterConfig(_messages.Message):
-  r"""Configuration options for private clusters.
+  r"""Configuration options for private workstation clusters.
 
   Fields:
-    allowedProjects: Additional projects that are allowed to attach to the
-      workstation cluster's service attachment. By default, the workstation
-      cluster's project and the VPC host project (if different) are allowed.
+    allowedProjects: Optional. Additional projects that are allowed to attach
+      to the workstation cluster's service attachment. By default, the
+      workstation cluster's project and the VPC host project (if different)
+      are allowed.
     clusterHostname: Output only. Hostname for the workstation cluster. This
       field will be populated only when private endpoint is enabled. To access
-      workstations in the cluster, create a new DNS zone mapping this domain
-      name to an internal IP address and a forwarding rule mapping that
-      address to the service attachment.
+      workstations in the workstation cluster, create a new DNS zone mapping
+      this domain name to an internal IP address and a forwarding rule mapping
+      that address to the service attachment.
     enablePrivateEndpoint: Immutable. Whether Workstations endpoint is
       private.
     serviceAttachmentUri: Output only. Service attachment URI for the
       workstation cluster. The service attachemnt is created when private
-      endpoint is enabled. To access workstations in the cluster, configure
-      access to the managed service using [Private Service
+      endpoint is enabled. To access workstations in the workstation cluster,
+      configure access to the managed service using [Private Service
       Connect](https://cloud.google.com/vpc/docs/configure-private-service-
       connect-services).
   """
@@ -808,8 +845,8 @@ class ReadinessCheck(_messages.Message):
   r"""A readiness check to be performed on a workstation.
 
   Fields:
-    path: Path to which the request should be sent.
-    port: Port to which the request should be sent.
+    path: Optional. Path to which the request should be sent.
+    port: Optional. Port to which the request should be sent.
   """
 
   path = _messages.StringField(1)
@@ -900,10 +937,10 @@ class StartWorkstationRequest(_messages.Message):
   r"""Request message for StartWorkstation.
 
   Fields:
-    etag: If set, the request will be rejected if the latest version of the
-      workstation on the server does not have this ETag.
-    validateOnly: If set, validate the request and preview the review, but do
-      not actually apply it.
+    etag: Optional. If set, the request will be rejected if the latest version
+      of the workstation on the server does not have this ETag.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually apply it.
   """
 
   etag = _messages.StringField(1)
@@ -965,10 +1002,10 @@ class StopWorkstationRequest(_messages.Message):
   r"""Request message for StopWorkstation.
 
   Fields:
-    etag: If set, the request will be rejected if the latest version of the
-      workstation on the server does not have this ETag.
-    validateOnly: If set, validate the request and preview the review, but do
-      not actually apply it.
+    etag: Optional. If set, the request will be rejected if the latest version
+      of the workstation on the server does not have this ETag.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually apply it.
   """
 
   etag = _messages.StringField(1)
@@ -1007,35 +1044,40 @@ class Workstation(_messages.Message):
     StateValueValuesEnum: Output only. Current state of the workstation.
 
   Messages:
-    AnnotationsValue: Client-specified annotations.
-    EnvValue: Environment variables passed to the workstation container's
-      entrypoint.
-    LabelsValue: Client-specified labels that are applied to the resource and
-      that are also propagated to the underlying Compute Engine resources.
+    AnnotationsValue: Optional. Client-specified annotations.
+    EnvValue: Optional. Environment variables passed to the workstation
+      container's entrypoint.
+    LabelsValue: Optional.
+      [Labels](https://cloud.google.com/workstations/docs/label-resources)
+      that are applied to the workstation and that are also propagated to the
+      underlying Compute Engine resources.
 
   Fields:
-    annotations: Client-specified annotations.
-    createTime: Output only. Time when this resource was created.
-    deleteTime: Output only. Time when this resource was soft-deleted.
-    displayName: Human-readable name for this resource.
-    env: Environment variables passed to the workstation container's
+    annotations: Optional. Client-specified annotations.
+    createTime: Output only. Time when this workstation was created.
+    deleteTime: Output only. Time when this workstation was soft-deleted.
+    displayName: Optional. Human-readable name for this workstation.
+    env: Optional. Environment variables passed to the workstation container's
       entrypoint.
-    etag: Checksum computed by the server. May be sent on update and delete
-      requests to make sure that the client has an up-to-date value before
-      proceeding.
+    etag: Optional. Checksum computed by the server. May be sent on update and
+      delete requests to make sure that the client has an up-to-date value
+      before proceeding.
     host: Output only. Host to which clients can send HTTPS traffic that will
       be received by the workstation. Authorized traffic will be received to
       the workstation as HTTP on port 80. To send traffic to a different port,
       clients may prefix the host with the destination port in the format
       `{port}-{host}`.
-    labels: Client-specified labels that are applied to the resource and that
-      are also propagated to the underlying Compute Engine resources.
-    name: Full name of this resource.
-    reconciling: Output only. Indicates whether this resource is currently
+    labels: Optional.
+      [Labels](https://cloud.google.com/workstations/docs/label-resources)
+      that are applied to the workstation and that are also propagated to the
+      underlying Compute Engine resources.
+    name: Full name of this workstation.
+    reconciling: Output only. Indicates whether this workstation is currently
       being updated to match its intended state.
     state: Output only. Current state of the workstation.
-    uid: Output only. A system-assigned unique identifier for this resource.
-    updateTime: Output only. Time when this resource was most recently
+    uid: Output only. A system-assigned unique identifier for this
+      workstation.
+    updateTime: Output only. Time when this workstation was most recently
       updated.
   """
 
@@ -1059,7 +1101,7 @@ class Workstation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""Client-specified annotations.
+    r"""Optional. Client-specified annotations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1084,7 +1126,7 @@ class Workstation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvValue(_messages.Message):
-    r"""Environment variables passed to the workstation container's
+    r"""Optional. Environment variables passed to the workstation container's
     entrypoint.
 
     Messages:
@@ -1109,8 +1151,9 @@ class Workstation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Client-specified labels that are applied to the resource and that are
-    also propagated to the underlying Compute Engine resources.
+    r"""Optional. [Labels](https://cloud.google.com/workstations/docs/label-
+    resources) that are applied to the workstation and that are also
+    propagated to the underlying Compute Engine resources.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1148,50 +1191,58 @@ class Workstation(_messages.Message):
 
 
 class WorkstationCluster(_messages.Message):
-  r"""A grouping of workstation configurations and the associated workstations
-  in that region.
+  r"""A workstation cluster resource in the Cloud Workstations API. Defines a
+  group of workstations in a particular region and the VPC network they're
+  attached to.
 
   Messages:
-    AnnotationsValue: Client-specified annotations.
-    LabelsValue: Client-specified labels that are applied to the resource and
-      that are also propagated to the underlying Compute Engine resources.
+    AnnotationsValue: Optional. Client-specified annotations.
+    LabelsValue: Optional.
+      [Labels](https://cloud.google.com/workstations/docs/label-resources)
+      that are applied to the workstation cluster and that are also propagated
+      to the underlying Compute Engine resources.
 
   Fields:
-    annotations: Client-specified annotations.
-    conditions: Output only. Status conditions describing the current resource
-      state.
+    annotations: Optional. Client-specified annotations.
+    conditions: Output only. Status conditions describing the workstation
+      cluster's current state.
     controlPlaneIp: Output only. The private IP address of the control plane
-      for this cluster. Workstation VMs need access to this IP address to work
-      with the service, so make sure that your firewall rules allow egress
-      from the workstation VMs to this address.
-    createTime: Output only. Time when this resource was created.
-    degraded: Output only. Whether this resource is in degraded mode, in which
-      case it may require user action to restore full functionality. Details
-      can be found in the `conditions` field.
-    deleteTime: Output only. Time when this resource was soft-deleted.
-    displayName: Human-readable name for this resource.
-    etag: Checksum computed by the server. May be sent on update and delete
-      requests to make sure that the client has an up-to-date value before
-      proceeding.
-    labels: Client-specified labels that are applied to the resource and that
-      are also propagated to the underlying Compute Engine resources.
-    name: Full name of this resource.
+      for this workstation cluster. Workstation VMs need access to this IP
+      address to work with the service, so make sure that your firewall rules
+      allow egress from the workstation VMs to this address.
+    createTime: Output only. Time when this workstation cluster was created.
+    degraded: Output only. Whether this workstation cluster is in degraded
+      mode, in which case it may require user action to restore full
+      functionality. Details can be found in conditions.
+    deleteTime: Output only. Time when this workstation cluster was soft-
+      deleted.
+    displayName: Optional. Human-readable name for this workstation cluster.
+    etag: Optional. Checksum computed by the server. May be sent on update and
+      delete requests to make sure that the client has an up-to-date value
+      before proceeding.
+    labels: Optional.
+      [Labels](https://cloud.google.com/workstations/docs/label-resources)
+      that are applied to the workstation cluster and that are also propagated
+      to the underlying Compute Engine resources.
+    name: Full name of this workstation cluster.
     network: Immutable. Name of the Compute Engine network in which instances
-      associated with this cluster will be created.
-    privateClusterConfig: Configuration for private cluster.
-    reconciling: Output only. Indicates whether this resource is currently
-      being updated to match its intended state.
+      associated with this workstation cluster will be created.
+    privateClusterConfig: Optional. Configuration for private workstation
+      cluster.
+    reconciling: Output only. Indicates whether this workstation cluster is
+      currently being updated to match its intended state.
     subnetwork: Immutable. Name of the Compute Engine subnetwork in which
-      instances associated with this cluster will be created. Must be part of
-      the subnetwork specified for this cluster.
-    uid: Output only. A system-assigned unique identifier for this resource.
-    updateTime: Output only. Time when this resource was most recently
-      updated.
+      instances associated with this workstation cluster will be created. Must
+      be part of the subnetwork specified for this workstation cluster.
+    uid: Output only. A system-assigned unique identifier for this workstation
+      cluster.
+    updateTime: Output only. Time when this workstation cluster was most
+      recently updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""Client-specified annotations.
+    r"""Optional. Client-specified annotations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1216,8 +1267,9 @@ class WorkstationCluster(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Client-specified labels that are applied to the resource and that are
-    also propagated to the underlying Compute Engine resources.
+    r"""Optional. [Labels](https://cloud.google.com/workstations/docs/label-
+    resources) that are applied to the workstation cluster and that are also
+    propagated to the underlying Compute Engine resources.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1258,31 +1310,41 @@ class WorkstationCluster(_messages.Message):
 
 
 class WorkstationConfig(_messages.Message):
-  r"""A set of configuration options that describe how a workstation runs.
-  Workstation configurations are intended to be shared across multiple
-  workstations.
+  r"""A workstation configuration resource in the Cloud Workstations API.
+  Workstation configurations act as templates for workstations. The
+  workstation configuration defines details such as the workstation virtual
+  machine (VM) instance type, persistent storage, container image defining
+  environment, which IDE or Code Editor to use, and more. Administrators and
+  platform teams can also use [Identity and Access Management
+  (IAM)](https://cloud.google.com/iam/docs/overview) rules to grant access to
+  teams or to individual developers.
 
   Messages:
-    AnnotationsValue: Client-specified annotations.
-    LabelsValue: Client-specified labels that are applied to the resource and
-      that are also propagated to the underlying Compute Engine resources.
+    AnnotationsValue: Optional. Client-specified annotations.
+    LabelsValue: Optional.
+      [Labels](https://cloud.google.com/workstations/docs/label-resources)
+      that are applied to the workstation configuration and that are also
+      propagated to the underlying Compute Engine resources.
 
   Fields:
-    annotations: Client-specified annotations.
+    annotations: Optional. Client-specified annotations.
     conditions: Output only. Status conditions describing the current resource
       state.
-    container: Container that runs upon startup for each workstation using
-      this workstation configuration.
-    createTime: Output only. Time when this resource was created.
+    container: Optional. Container that runs upon startup for each workstation
+      using this workstation configuration.
+    createTime: Output only. Time when this workstation configuration was
+      created.
     degraded: Output only. Whether this resource is degraded, in which case it
       may require user action to restore full functionality. See also the
-      `conditions` field.
-    deleteTime: Output only. Time when this resource was soft-deleted.
-    displayName: Human-readable name for this resource.
-    enableAuditAgent: Whether to enable Linux `auditd` logging on the
-      workstation. When enabled, a service account must also be specified that
-      has `logging.buckets.write` permission on the project. Operating system
-      audit logging is distinct from [Cloud Audit
+      conditions field.
+    deleteTime: Output only. Time when this workstation configuration was
+      soft-deleted.
+    displayName: Optional. Human-readable name for this workstation
+      configuration.
+    enableAuditAgent: Optional. Whether to enable Linux `auditd` logging on
+      the workstation. When enabled, a service account must also be specified
+      that has `logging.buckets.write` permission on the project. Operating
+      system audit logging is distinct from [Cloud Audit
       Logs](https://cloud.google.com/workstations/docs/audit-logging).
     encryptionKey: Immutable. Encrypts resources of this workstation
       configuration using a customer-managed encryption key (CMEK). If
@@ -1297,49 +1359,54 @@ class WorkstationConfig(_messages.Message):
       might be lost. If the encryption key is revoked, the workstation session
       automatically stops within 7 hours. Immutable after the workstation
       configuration is created.
-    etag: Checksum computed by the server. May be sent on update and delete
-      requests to make sure that the client has an up-to-date value before
-      proceeding.
-    host: Runtime host for the workstation.
-    idleTimeout: Number of seconds to wait before automatically stopping a
-      workstation after it last received user traffic. A value of `0s`
-      indicates that Cloud Workstations VMs created with this configuration
-      should never time out due to idleness. Provide
+    etag: Optional. Checksum computed by the server. May be sent on update and
+      delete requests to make sure that the client has an up-to-date value
+      before proceeding.
+    host: Optional. Runtime host for the workstation.
+    idleTimeout: Optional. Number of seconds to wait before automatically
+      stopping a workstation after it last received user traffic. A value of
+      `"0s"` indicates that Cloud Workstations VMs created with this
+      configuration should never time out due to idleness. Provide
       [duration](https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#duration) terminated by `s` for
-      seconds-for example, `7200s` (2 hours). The default is `1200s` (20
+      seconds-for example, `"7200s"` (2 hours). The default is `"1200s"` (20
       minutes).
-    labels: Client-specified labels that are applied to the resource and that
-      are also propagated to the underlying Compute Engine resources.
-    name: Full name of this resource.
-    persistentDirectories: Directories to persist across workstation sessions.
-    readinessChecks: Readiness checks to perform when starting a workstation
-      using this workstation configuration. Mark a workstation as running only
-      after all specified readiness checks return 200 status codes.
-    reconciling: Output only. Indicates whether this resource is currently
-      being updated to match its intended state.
-    runningTimeout: Number of seconds that a workstation can run until it is
-      automatically shut down. We recommend that workstations be shut down
-      daily to reduce costs and so that security updates can be applied upon
-      restart. The `idleTimeout` and `runningTimeout` parameters are
-      independent of each other. Note that the `runningTimeout` parameter
-      shuts down VMs after the specified time, regardless of whether or not
-      the VMs are idle. Provide duration terminated by `s` for seconds-for
-      example, `54000s` (15 hours). Defaults to `43200s` (12 hours). A value
-      of `0` indicates that workstations using this configuration should never
-      time out. If `encryption_key` is set, it must be greater than `0` and
-      less than `86400s` (24 hours). Warning: A value of `0s` indicates that
-      Cloud Workstations VMs created with this configuration have no maximum
-      running time. This is strongly discouraged because you incur costs and
-      will not pick up security updates.
-    uid: Output only. A system-assigned unique identifier for this resource.
-    updateTime: Output only. Time when this resource was most recently
-      updated.
+    labels: Optional.
+      [Labels](https://cloud.google.com/workstations/docs/label-resources)
+      that are applied to the workstation configuration and that are also
+      propagated to the underlying Compute Engine resources.
+    name: Full name of this workstation configuration.
+    persistentDirectories: Optional. Directories to persist across workstation
+      sessions.
+    readinessChecks: Optional. Readiness checks to perform when starting a
+      workstation using this workstation configuration. Mark a workstation as
+      running only after all specified readiness checks return 200 status
+      codes.
+    reconciling: Output only. Indicates whether this workstation configuration
+      is currently being updated to match its intended state.
+    runningTimeout: Optional. Number of seconds that a workstation can run
+      until it is automatically shut down. We recommend that workstations be
+      shut down daily to reduce costs and so that security updates can be
+      applied upon restart. The idle_timeout and running_timeout fields are
+      independent of each other. Note that the running_timeout field shuts
+      down VMs after the specified time, regardless of whether or not the VMs
+      are idle. Provide duration terminated by `s` for seconds-for example,
+      `"54000s"` (15 hours). Defaults to `"43200s"` (12 hours). A value of
+      `"0s"` indicates that workstations using this configuration should never
+      time out. If encryption_key is set, it must be greater than `"0s"` and
+      less than `"86400s"` (24 hours). Warning: A value of `"0s"` indicates
+      that Cloud Workstations VMs created with this configuration have no
+      maximum running time. This is strongly discouraged because you incur
+      costs and will not pick up security updates.
+    uid: Output only. A system-assigned unique identifier for this workstation
+      configuration.
+    updateTime: Output only. Time when this workstation configuration was most
+      recently updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""Client-specified annotations.
+    r"""Optional. Client-specified annotations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1364,7 +1431,8 @@ class WorkstationConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Client-specified labels that are applied to the resource and that are
+    r"""Optional. [Labels](https://cloud.google.com/workstations/docs/label-
+    resources) that are applied to the workstation configuration and that are
     also propagated to the underlying Compute Engine resources.
 
     Messages:
@@ -1463,8 +1531,8 @@ class WorkstationsProjectsLocationsWorkstationClustersCreateRequest(_messages.Me
 
   Fields:
     parent: Required. Parent resource name.
-    validateOnly: If set, validate the request and preview the review, but do
-      not actually apply it.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually apply it.
     workstationCluster: A WorkstationCluster resource to be passed as the
       request body.
     workstationClusterId: Required. ID to use for the workstation cluster.
@@ -1480,14 +1548,14 @@ class WorkstationsProjectsLocationsWorkstationClustersDeleteRequest(_messages.Me
   r"""A WorkstationsProjectsLocationsWorkstationClustersDeleteRequest object.
 
   Fields:
-    etag: If set, the request will be rejected if the latest version of the
-      workstation cluster on the server does not have this ETag.
-    force: If set, any workstation configurations and workstations in the
-      workstation cluster are also deleted. Otherwise, the request only works
-      if the workstation cluster has no configurations or workstations.
+    etag: Optional. If set, the request will be rejected if the latest version
+      of the workstation cluster on the server does not have this ETag.
+    force: Optional. If set, any workstation configurations and workstations
+      in the workstation cluster are also deleted. Otherwise, the request only
+      works if the workstation cluster has no configurations or workstations.
     name: Required. Name of the workstation cluster to delete.
-    validateOnly: If set, validate the request and preview the review, but do
-      not apply it.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not apply it.
   """
 
   etag = _messages.StringField(1)
@@ -1510,9 +1578,9 @@ class WorkstationsProjectsLocationsWorkstationClustersListRequest(_messages.Mess
   r"""A WorkstationsProjectsLocationsWorkstationClustersListRequest object.
 
   Fields:
-    pageSize: Maximum number of items to return.
-    pageToken: next_page_token value returned from a previous List request, if
-      any.
+    pageSize: Optional. Maximum number of items to return.
+    pageToken: Optional. next_page_token value returned from a previous List
+      request, if any.
     parent: Required. Parent resource name.
   """
 
@@ -1525,14 +1593,14 @@ class WorkstationsProjectsLocationsWorkstationClustersPatchRequest(_messages.Mes
   r"""A WorkstationsProjectsLocationsWorkstationClustersPatchRequest object.
 
   Fields:
-    allowMissing: If set, and the workstation cluster is not found, a new
-      workstation cluster will be created. In this situation, update_mask is
-      ignored.
-    name: Full name of this resource.
+    allowMissing: Optional. If set, and the workstation cluster is not found,
+      a new workstation cluster will be created. In this situation,
+      update_mask is ignored.
+    name: Full name of this workstation cluster.
     updateMask: Required. Mask that specifies which fields in the workstation
       cluster should be updated.
-    validateOnly: If set, validate the request and preview the review, but do
-      not actually apply it.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually apply it.
     workstationCluster: A WorkstationCluster resource to be passed as the
       request body.
   """
@@ -1550,8 +1618,8 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsCreateRe
 
   Fields:
     parent: Required. Parent resource name.
-    validateOnly: If set, validate the request and preview the review, but do
-      not actually apply it.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually apply it.
     workstationConfig: A WorkstationConfig resource to be passed as the
       request body.
     workstationConfigId: Required. ID to use for the workstation
@@ -1569,14 +1637,14 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsDeleteRe
   teRequest object.
 
   Fields:
-    etag: If set, the request is rejected if the latest version of the
-      workstation configuration on the server does not have this ETag.
-    force: If set, any workstations in the workstation configuration are also
-      deleted. Otherwise, the request works only if the workstation
+    etag: Optional. If set, the request is rejected if the latest version of
+      the workstation configuration on the server does not have this ETag.
+    force: Optional. If set, any workstations in the workstation configuration
+      are also deleted. Otherwise, the request works only if the workstation
       configuration has no workstations.
     name: Required. Name of the workstation configuration to delete.
-    validateOnly: If set, validate the request and preview the review, but do
-      not actually apply it.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually apply it.
   """
 
   etag = _messages.StringField(1)
@@ -1629,9 +1697,9 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsListRequ
   Request object.
 
   Fields:
-    pageSize: Maximum number of items to return.
-    pageToken: next_page_token value returned from a previous List request, if
-      any.
+    pageSize: Optional. Maximum number of items to return.
+    pageToken: Optional. next_page_token value returned from a previous List
+      request, if any.
     parent: Required. Parent resource name.
   """
 
@@ -1645,9 +1713,9 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsListUsab
   UsableRequest object.
 
   Fields:
-    pageSize: Maximum number of items to return.
-    pageToken: next_page_token value returned from a previous List request, if
-      any.
+    pageSize: Optional. Maximum number of items to return.
+    pageToken: Optional. next_page_token value returned from a previous List
+      request, if any.
     parent: Required. Parent resource name.
   """
 
@@ -1661,14 +1729,14 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsPatchReq
   hRequest object.
 
   Fields:
-    allowMissing: If set and the workstation configuration is not found, a new
-      workstation configuration will be created. In this situation,
-      update_mask is ignored.
-    name: Full name of this resource.
+    allowMissing: Optional. If set and the workstation configuration is not
+      found, a new workstation configuration will be created. In this
+      situation, update_mask is ignored.
+    name: Full name of this workstation configuration.
     updateMask: Required. Mask specifying which fields in the workstation
       configuration should be updated.
-    validateOnly: If set, validate the request and preview the review, but do
-      not actually apply it.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually apply it.
     workstationConfig: A WorkstationConfig resource to be passed as the
       request body.
   """
@@ -1720,8 +1788,8 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstat
 
   Fields:
     parent: Required. Parent resource name.
-    validateOnly: If set, validate the request and preview the review, but do
-      not actually apply it.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually apply it.
     workstation: A Workstation resource to be passed as the request body.
     workstationId: Required. ID to use for the workstation.
   """
@@ -1737,11 +1805,11 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstat
   stationsDeleteRequest object.
 
   Fields:
-    etag: If set, the request will be rejected if the latest version of the
-      workstation on the server does not have this ETag.
+    etag: Optional. If set, the request will be rejected if the latest version
+      of the workstation on the server does not have this ETag.
     name: Required. Name of the workstation to delete.
-    validateOnly: If set, validate the request and preview the review, but do
-      not actually apply it.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually apply it.
   """
 
   etag = _messages.StringField(1)
@@ -1807,9 +1875,9 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstat
   stationsListRequest object.
 
   Fields:
-    pageSize: Maximum number of items to return.
-    pageToken: next_page_token value returned from a previous List request, if
-      any.
+    pageSize: Optional. Maximum number of items to return.
+    pageToken: Optional. next_page_token value returned from a previous List
+      request, if any.
     parent: Required. Parent resource name.
   """
 
@@ -1823,9 +1891,9 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstat
   stationsListUsableRequest object.
 
   Fields:
-    pageSize: Maximum number of items to return.
-    pageToken: next_page_token value returned from a previous List request, if
-      any.
+    pageSize: Optional. Maximum number of items to return.
+    pageToken: Optional. next_page_token value returned from a previous List
+      request, if any.
     parent: Required. Parent resource name.
   """
 
@@ -1839,14 +1907,14 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstat
   stationsPatchRequest object.
 
   Fields:
-    allowMissing: If set and the workstation configuration is not found, a new
-      workstation configuration is created. In this situation, update_mask is
-      ignored.
-    name: Full name of this resource.
+    allowMissing: Optional. If set and the workstation configuration is not
+      found, a new workstation configuration is created. In this situation,
+      update_mask is ignored.
+    name: Full name of this workstation.
     updateMask: Required. Mask specifying which fields in the workstation
       configuration should be updated.
-    validateOnly: If set, validate the request and preview the review, but do
-      not actually apply it.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually apply it.
     workstation: A Workstation resource to be passed as the request body.
   """
 

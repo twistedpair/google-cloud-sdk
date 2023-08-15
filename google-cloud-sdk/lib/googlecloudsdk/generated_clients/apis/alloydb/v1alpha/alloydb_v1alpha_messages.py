@@ -948,6 +948,9 @@ class Backup(_messages.Message):
   r"""Message describing Backup object
 
   Enums:
+    DatabaseVersionValueValuesEnum: Output only. The database engine major
+      version of the cluster this backup was created from. Any restored
+      cluster created from this backup will have the same database version.
     StateValueValuesEnum: Output only. The current state of the backup.
     TypeValueValuesEnum: The backup type, which suggests the trigger for the
       backup.
@@ -966,6 +969,9 @@ class Backup(_messages.Message):
     clusterUid: Output only. The system-generated UID of the cluster which was
       used to create this resource.
     createTime: Output only. Create time stamp
+    databaseVersion: Output only. The database engine major version of the
+      cluster this backup was created from. Any restored cluster created from
+      this backup will have the same database version.
     deleteTime: Output only. Delete time stamp
     description: User-provided description of the backup.
     displayName: User-settable and human-readable display name for the Backup.
@@ -994,8 +1000,7 @@ class Backup(_messages.Message):
       (https://google.aip.dev/128#reconciliation), if true, indicates that the
       service is actively updating the resource. This can happen due to user-
       triggered updates or system actions like failover or maintenance.
-    satisfiesPzs: Indicates if the backup satisfies physical zone seperation.
-      https://cloud.google.com/locations/docs/zone-separation.
+    satisfiesPzs: Reserved for future use.
     sizeBytes: Output only. The size of the backup in bytes.
     state: Output only. The current state of the backup.
     type: The backup type, which suggests the trigger for the backup.
@@ -1004,6 +1009,22 @@ class Backup(_messages.Message):
       deleted.
     updateTime: Output only. Update time stamp
   """
+
+  class DatabaseVersionValueValuesEnum(_messages.Enum):
+    r"""Output only. The database engine major version of the cluster this
+    backup was created from. Any restored cluster created from this backup
+    will have the same database version.
+
+    Values:
+      DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
+      POSTGRES_13: DEPRECATED - The database version is Postgres 13.
+      POSTGRES_14: The database version is Postgres 14.
+      POSTGRES_15: The database version is Postgres 15.
+    """
+    DATABASE_VERSION_UNSPECIFIED = 0
+    POSTGRES_13 = 1
+    POSTGRES_14 = 2
+    POSTGRES_15 = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the backup.
@@ -1092,23 +1113,24 @@ class Backup(_messages.Message):
   clusterName = _messages.StringField(2)
   clusterUid = _messages.StringField(3)
   createTime = _messages.StringField(4)
-  deleteTime = _messages.StringField(5)
-  description = _messages.StringField(6)
-  displayName = _messages.StringField(7)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 8)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 9)
-  etag = _messages.StringField(10)
-  expiryQuantity = _messages.MessageField('QuantityBasedExpiry', 11)
-  expiryTime = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  reconciling = _messages.BooleanField(15)
-  satisfiesPzs = _messages.BooleanField(16)
-  sizeBytes = _messages.IntegerField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  type = _messages.EnumField('TypeValueValuesEnum', 19)
-  uid = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 5)
+  deleteTime = _messages.StringField(6)
+  description = _messages.StringField(7)
+  displayName = _messages.StringField(8)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 9)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 10)
+  etag = _messages.StringField(11)
+  expiryQuantity = _messages.MessageField('QuantityBasedExpiry', 12)
+  expiryTime = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  reconciling = _messages.BooleanField(16)
+  satisfiesPzs = _messages.BooleanField(17)
+  sizeBytes = _messages.IntegerField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  type = _messages.EnumField('TypeValueValuesEnum', 20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
 
 
 class BackupSource(_messages.Message):
@@ -1247,9 +1269,8 @@ class Cluster(_messages.Message):
       resources are created and from which they are accessible via Private IP.
       The network must belong to the same project as the cluster. It is
       specified in the form:
-      "projects/{project_number}/global/networks/{network_id}". This is
-      required to create a cluster. It can be updated, but it cannot be
-      removed.
+      "projects/{project}/global/networks/{network_id}". This is required to
+      create a cluster. It can be updated, but it cannot be removed.
     networkConfig: A NetworkConfig attribute.
     primaryConfig: Output only. Cross Region replication config specific to
       PRIMARY cluster.
@@ -1259,8 +1280,7 @@ class Cluster(_messages.Message):
       service is actively updating the resource to reconcile them. This can
       happen due to user-triggered updates or system actions like failover or
       maintenance.
-    satisfiesPzs: Indicates if the cluster satisfies physical zone seperation.
-      https://cloud.google.com/locations/docs/zone-separation.
+    satisfiesPzs: Reserved for future use.
     secondaryConfig: Cross Region replication config specific to SECONDARY
       cluster.
     sslConfig: SSL configuration for this AlloyDB cluster.
@@ -1297,10 +1317,12 @@ class Cluster(_messages.Message):
       DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
       POSTGRES_13: DEPRECATED - The database version is Postgres 13.
       POSTGRES_14: The database version is Postgres 14.
+      POSTGRES_15: The database version is Postgres 15.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
     POSTGRES_14 = 2
+    POSTGRES_15 = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current serving state of the cluster.
@@ -1421,20 +1443,26 @@ class ConnectionInfo(_messages.Message):
 
   Fields:
     instanceUid: Output only. The unique ID of the Instance.
-    ipAddress: Output only. The IP address for the Instance. This is the
-      connection endpoint for an end-user application.
+    ipAddress: Output only. The private network IP address for the Instance.
+      This is the default IP for the instance and is always created (even if
+      enable_public_ip is set). This is the connection endpoint for an end-
+      user application.
     name: The name of the ConnectionInfo singleton resource, e.g.: projects/{p
       roject}/locations/{location}/clusters/*/instances/*/connectionInfo This
       field currently has no semantic meaning.
     pemCertificateChain: Output only. The pem-encoded chain that may be used
       to verify the X.509 certificate. Expected to be in issuer-to-root order
       according to RFC 5246.
+    publicIpAddress: Output only. The public IP addresses for the Instance.
+      This is available ONLY when enable_public_ip is set. This is the
+      connection endpoint for an end-user application.
   """
 
   instanceUid = _messages.StringField(1)
   ipAddress = _messages.StringField(2)
   name = _messages.StringField(3)
   pemCertificateChain = _messages.StringField(4, repeated=True)
+  publicIpAddress = _messages.StringField(5)
 
 
 class ContinuousBackupConfig(_messages.Message):
@@ -1648,71 +1676,6 @@ class GenerateClientCertificateResponse(_messages.Message):
   pemCertificateChain = _messages.StringField(3, repeated=True)
 
 
-class GoogleCloudAlloydbConnectorsV1alphaMetadataExchangeRequest(_messages.Message):
-  r"""Message used by AlloyDB connectors to exchange client and connection
-  metadata with the server after a successful TLS handshake. This metadata
-  includes an IAM token, which is used to authenticate users based on their
-  IAM identity. The sole purpose of this message is for the use of AlloyDB
-  connectors. Clients should not rely on this message directly as there can be
-  breaking changes in the future.
-
-  Enums:
-    AuthTypeValueValuesEnum: Authentication type.
-
-  Fields:
-    authType: Authentication type.
-    oauth2Token: IAM token used for both IAM user authentiation and
-      `alloydb.instances.connect` permission check.
-    userAgent: Optional. Connector information.
-  """
-
-  class AuthTypeValueValuesEnum(_messages.Enum):
-    r"""Authentication type.
-
-    Values:
-      AUTH_TYPE_UNSPECIFIED: Authentication type is unspecified and DB_NATIVE
-        is used by default
-      DB_NATIVE: Database native authentication (user/password)
-      AUTO_IAM: Automatic IAM authentication
-    """
-    AUTH_TYPE_UNSPECIFIED = 0
-    DB_NATIVE = 1
-    AUTO_IAM = 2
-
-  authType = _messages.EnumField('AuthTypeValueValuesEnum', 1)
-  oauth2Token = _messages.StringField(2)
-  userAgent = _messages.StringField(3)
-
-
-class GoogleCloudAlloydbConnectorsV1alphaMetadataExchangeResponse(_messages.Message):
-  r"""Message for response to metadata exchange request. The sole purpose of
-  this message is for the use of AlloyDB connectors. Clients should not rely
-  on this message directly as there can be breaking changes in the future.
-
-  Enums:
-    ResponseCodeValueValuesEnum: Response code.
-
-  Fields:
-    error: Optional. Error message.
-    responseCode: Response code.
-  """
-
-  class ResponseCodeValueValuesEnum(_messages.Enum):
-    r"""Response code.
-
-    Values:
-      RESPONSE_CODE_UNSPECIFIED: Unknown response code
-      OK: Success
-      ERROR: Failure
-    """
-    RESPONSE_CODE_UNSPECIFIED = 0
-    OK = 1
-    ERROR = 2
-
-  error = _messages.StringField(1)
-  responseCode = _messages.EnumField('ResponseCodeValueValuesEnum', 2)
-
-
 class GoogleCloudLocationListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -1923,6 +1886,7 @@ class Instance(_messages.Message):
     deleteTime: Output only. Delete time stamp
     displayName: User-settable and human-readable display name for the
       Instance.
+    enablePublicIp: Optional. Enabling public ip for the Instance.
     etag: For Resource freshness validation (https://google.aip.dev/154)
     gceZone: The Compute Engine zone that the instance should serve from, per
       https://cloud.google.com/compute/docs/regions-zones This can ONLY be
@@ -1955,8 +1919,7 @@ class Instance(_messages.Message):
       service is actively updating the resource to reconcile them. This can
       happen due to user-triggered updates or system actions like failover or
       maintenance.
-    satisfiesPzs: Indicates if the instance satisfies physical zone
-      seperation. https://cloud.google.com/locations/docs/zone-separation.
+    satisfiesPzs: Reserved for future use.
     state: Output only. The current serving state of the instance.
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
@@ -2127,23 +2090,24 @@ class Instance(_messages.Message):
   databaseFlags = _messages.MessageField('DatabaseFlagsValue', 5)
   deleteTime = _messages.StringField(6)
   displayName = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  gceZone = _messages.StringField(9)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
-  ipAddress = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  machineConfig = _messages.MessageField('MachineConfig', 13)
-  name = _messages.StringField(14)
-  nodes = _messages.MessageField('Node', 15, repeated=True)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 16)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 17)
-  reconciling = _messages.BooleanField(18)
-  satisfiesPzs = _messages.BooleanField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  uid = _messages.StringField(21)
-  updatePolicy = _messages.MessageField('UpdatePolicy', 22)
-  updateTime = _messages.StringField(23)
-  writableNode = _messages.MessageField('Node', 24)
+  enablePublicIp = _messages.BooleanField(8)
+  etag = _messages.StringField(9)
+  gceZone = _messages.StringField(10)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 11)
+  ipAddress = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  machineConfig = _messages.MessageField('MachineConfig', 14)
+  name = _messages.StringField(15)
+  nodes = _messages.MessageField('Node', 16, repeated=True)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 17)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 18)
+  reconciling = _messages.BooleanField(19)
+  satisfiesPzs = _messages.BooleanField(20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  uid = _messages.StringField(22)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 23)
+  updateTime = _messages.StringField(24)
+  writableNode = _messages.MessageField('Node', 25)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -2339,8 +2303,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -2362,7 +2326,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -2401,9 +2365,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -3051,14 +3015,14 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
 
     Values:
       INSTANCE_TYPE_UNSPECIFIED: <no description>
-      PRIMARY: A regular primary database instance
+      PRIMARY: A regular primary database instance.
       READ_REPLICA: An instance acting as a read-replica.
-      INSTANCE_TYPE_OTHER: For rest of the other category
+      OTHER: For rest of the other categories.
     """
     INSTANCE_TYPE_UNSPECIFIED = 0
     PRIMARY = 1
     READ_REPLICA = 2
-    INSTANCE_TYPE_OTHER = 3
+    OTHER = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
@@ -3161,8 +3125,8 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     type: Type of specific database product. It could be CloudSQL, AlloyDB
       etc..
     version: Version of the underlying database engine. Example values: For
-      MySQL, it could be "MySQL_8.0", "MySQL_5.7" etc.. For PostGres, it could
-      be "Postgres_14", "Postgres_15" etc..
+      MySQL, it could be "8.0", "5.7" etc.. For Postgres, it could be "14",
+      "15" etc..
   """
 
   class EngineValueValuesEnum(_messages.Enum):
@@ -3260,10 +3224,12 @@ class SupportedDatabaseFlag(_messages.Message):
       DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
       POSTGRES_13: DEPRECATED - The database version is Postgres 13.
       POSTGRES_14: The database version is Postgres 14.
+      POSTGRES_15: The database version is Postgres 15.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
     POSTGRES_14 = 2
+    POSTGRES_15 = 3
 
   class ValueTypeValueValuesEnum(_messages.Enum):
     r"""ValueTypeValueValuesEnum enum type.

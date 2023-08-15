@@ -610,6 +610,33 @@ class TelecomdatafabricV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Parse(self, request, global_params=None):
+      r"""Parses a custom template will parse custom template create by user and will return template specification.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsTemplatesParseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TemplateSpec) The response message.
+      """
+      config = self.GetMethodConfig('Parse')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Parse.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/templates:parse',
+        http_method='POST',
+        method_id='telecomdatafabric.projects.locations.templates.parse',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/templates:parse',
+        request_field='parseTemplateSpecRequest',
+        request_type_name='TelecomdatafabricProjectsLocationsTemplatesParseRequest',
+        response_type_name='TemplateSpec',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 

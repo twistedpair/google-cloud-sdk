@@ -353,7 +353,8 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Consumer(_messages.Message):
-  r"""Contains information of the customer's network configurations.
+  r"""Contains information of the customer's network configurations.Next
+  available ID: 5
 
   Fields:
     endpointUri: Output only. The URI of the endpoint used to access the
@@ -1965,7 +1966,8 @@ class MoveTableToDatabaseResponse(_messages.Message):
 
 
 class NetworkConfig(_messages.Message):
-  r"""Network configuration for the Dataproc Metastore service.
+  r"""Network configuration for the Dataproc Metastore service.Next available
+  ID: 4
 
   Fields:
     consumers: Immutable. The consumer-side network configuration for the
@@ -1985,9 +1987,9 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as Delete, the
-      response is google.protobuf.Empty. If the original method is standard
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as Delete, the response
+      is google.protobuf.Empty. If the original method is standard
       Get/Create/Update, the response should be the resource. For other
       methods, the response should have the type XxxResponse, where Xxx is the
       original method name. For example, if the original method name is
@@ -2007,7 +2009,7 @@ class Operation(_messages.Message):
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the name should be a resource name ending with operations/{unique_id}.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as Delete, the response
       is google.protobuf.Empty. If the original method is standard
       Get/Create/Update, the response should be the resource. For other
@@ -2046,9 +2048,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as Delete, the response
-    is google.protobuf.Empty. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as Delete, the response is
+    google.protobuf.Empty. If the original method is standard
     Get/Create/Update, the response should be the resource. For other methods,
     the response should have the type XxxResponse, where Xxx is the original
     method name. For example, if the original method name is TakeSnapshot(),

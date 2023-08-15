@@ -34,17 +34,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  FOLDERS_EVENTTHREATDETECTIONSETTINGS_CUSTOMMODULES = (
-      'folders.eventThreatDetectionSettings.customModules',
-      '{+name}',
-      {
-          '':
-              'folders/{foldersId}/eventThreatDetectionSettings/'
-              'customModules/{customModulesId}',
-      },
-      ['name'],
-      True
-  )
   FOLDERS_EVENTTHREATDETECTIONSETTINGS_EFFECTIVECUSTOMMODULES = (
       'folders.eventThreatDetectionSettings.effectiveCustomModules',
       '{+name}',
@@ -191,6 +180,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_RESOURCEVALUECONFIGS = (
+      'organizations.resourceValueConfigs',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/resourceValueConfigs/'
+              '{resourceValueConfigsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_SECURITYHEALTHANALYTICSSETTINGS_CUSTOMMODULES = (
       'organizations.securityHealthAnalyticsSettings.customModules',
       '{+name}',
@@ -211,6 +211,16 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/'
               'securityHealthAnalyticsSettings/effectiveCustomModules/'
               '{effectiveCustomModulesId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_SIMULATIONS = (
+      'organizations.simulations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/simulations/{simulationsId}',
       },
       ['name'],
       True
@@ -239,17 +249,6 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/bigQueryExports/{bigQueryExportsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_EVENTTHREATDETECTIONSETTINGS_CUSTOMMODULES = (
-      'projects.eventThreatDetectionSettings.customModules',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/eventThreatDetectionSettings/'
-              'customModules/{customModulesId}',
       },
       ['name'],
       True

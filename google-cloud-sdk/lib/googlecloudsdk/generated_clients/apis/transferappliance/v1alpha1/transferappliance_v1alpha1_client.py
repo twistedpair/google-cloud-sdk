@@ -58,7 +58,7 @@ class TransferapplianceV1alpha1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets details of the Credential. # .
+      r"""Gets Credentials of the appliance.
 
       Args:
         request: (TransferapplianceProjectsLocationsAppliancesCredentialsGetRequest) input message
@@ -203,7 +203,7 @@ class TransferapplianceV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Appliance.
+      r"""Updates Appliance resource parameters.
 
       Args:
         request: (TransferapplianceProjectsLocationsAppliancesPatchRequest) input message

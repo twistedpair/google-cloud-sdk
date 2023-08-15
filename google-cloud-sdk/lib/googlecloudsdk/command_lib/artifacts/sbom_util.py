@@ -918,6 +918,8 @@ def ExportSbom(args):
 
   artifact = _GetARDockerImage(uri)
   project = util.GetProject(args)
+  if artifact.project:
+    project = artifact.project
   resp = ca_requests.ExportSbomV1beta1(
       project, 'https://{}'.format(artifact.resource_uri)
   )

@@ -193,10 +193,98 @@ class BinarySourceInfo(_messages.Message):
   sourceVersion = _messages.MessageField('PackageVersion', 2)
 
 
+class BuildDefinition(_messages.Message):
+  r"""A BuildDefinition object.
+
+  Messages:
+    ExternalParametersValue: A ExternalParametersValue object.
+    InternalParametersValue: A InternalParametersValue object.
+
+  Fields:
+    buildType: A string attribute.
+    externalParameters: A ExternalParametersValue attribute.
+    internalParameters: A InternalParametersValue attribute.
+    resolvedDependencies: A ResourceDescriptor attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExternalParametersValue(_messages.Message):
+    r"""A ExternalParametersValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExternalParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExternalParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InternalParametersValue(_messages.Message):
+    r"""A InternalParametersValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a InternalParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InternalParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  buildType = _messages.StringField(1)
+  externalParameters = _messages.MessageField('ExternalParametersValue', 2)
+  internalParameters = _messages.MessageField('InternalParametersValue', 3)
+  resolvedDependencies = _messages.MessageField('ResourceDescriptor', 4, repeated=True)
+
+
+class BuildMetadata(_messages.Message):
+  r"""A BuildMetadata object.
+
+  Fields:
+    finishedOn: A string attribute.
+    invocationId: A string attribute.
+    startedOn: A string attribute.
+  """
+
+  finishedOn = _messages.StringField(1)
+  invocationId = _messages.StringField(2)
+  startedOn = _messages.StringField(3)
+
+
 class BuildOccurrence(_messages.Message):
   r"""Details of a build occurrence.
 
   Fields:
+    inTotoSlsaProvenanceV1: In-Toto Slsa Provenance V1 represents a slsa
+      provenance meeting the slsa spec, wrapped in an in-toto statement. This
+      allows for direct jsonification of a to-spec in-toto slsa statement with
+      a to-spec slsa provenance.
     intotoProvenance: Deprecated. See InTotoStatement for the replacement. In-
       toto Provenance representation as defined in spec.
     intotoStatement: In-toto Statement representation as defined in spec. The
@@ -215,10 +303,11 @@ class BuildOccurrence(_messages.Message):
       to prevent incompatibilities with future changes.
   """
 
-  intotoProvenance = _messages.MessageField('InTotoProvenance', 1)
-  intotoStatement = _messages.MessageField('InTotoStatement', 2)
-  provenance = _messages.MessageField('BuildProvenance', 3)
-  provenanceBytes = _messages.StringField(4)
+  inTotoSlsaProvenanceV1 = _messages.MessageField('InTotoSlsaProvenanceV1', 1)
+  intotoProvenance = _messages.MessageField('InTotoProvenance', 2)
+  intotoStatement = _messages.MessageField('InTotoStatement', 3)
+  provenance = _messages.MessageField('BuildProvenance', 4)
+  provenanceBytes = _messages.StringField(5)
 
 
 class BuildProvenance(_messages.Message):
@@ -647,6 +736,7 @@ class DiscoveryOccurrence(_messages.Message):
     continuousAnalysis: Whether the resource is continuously analyzed.
     cpe: The CPE of the resource being scanned.
     lastScanTime: The last time this resource was scanned.
+    sbomStatus: The status of an SBOM generation.
   """
 
   class AnalysisStatusValueValuesEnum(_messages.Enum):
@@ -690,6 +780,7 @@ class DiscoveryOccurrence(_messages.Message):
   continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 6)
   cpe = _messages.StringField(7)
   lastScanTime = _messages.StringField(8)
+  sbomStatus = _messages.MessageField('SBOMStatus', 9)
 
 
 class Empty(_messages.Message):
@@ -1069,6 +1160,23 @@ class InTotoProvenance(_messages.Message):
   materials = _messages.StringField(2, repeated=True)
   metadata = _messages.MessageField('Metadata', 3)
   recipe = _messages.MessageField('Recipe', 4)
+
+
+class InTotoSlsaProvenanceV1(_messages.Message):
+  r"""A InTotoSlsaProvenanceV1 object.
+
+  Fields:
+    _type: InToto spec defined at https://github.com/in-
+      toto/attestation/tree/main/spec#statement
+    predicate: A SlsaProvenanceV1 attribute.
+    predicateType: A string attribute.
+    subject: A Subject attribute.
+  """
+
+  _type = _messages.StringField(1)
+  predicate = _messages.MessageField('SlsaProvenanceV1', 2)
+  predicateType = _messages.StringField(3)
+  subject = _messages.MessageField('Subject', 4, repeated=True)
 
 
 class InTotoStatement(_messages.Message):
@@ -1527,8 +1635,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1550,7 +1658,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1589,9 +1697,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -1835,6 +1943,47 @@ class ProjectRepoId(_messages.Message):
   repoName = _messages.StringField(2)
 
 
+class ProvenanceBuilder(_messages.Message):
+  r"""A ProvenanceBuilder object.
+
+  Messages:
+    VersionValue: A VersionValue object.
+
+  Fields:
+    builderDependencies: A ResourceDescriptor attribute.
+    id: A string attribute.
+    version: A VersionValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class VersionValue(_messages.Message):
+    r"""A VersionValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a VersionValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type VersionValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a VersionValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  builderDependencies = _messages.MessageField('ResourceDescriptor', 1, repeated=True)
+  id = _messages.StringField(2)
+  version = _messages.MessageField('VersionValue', 3)
+
+
 class Recipe(_messages.Message):
   r"""Steps taken to build the artifact. For a TaskRun, typically each
   container corresponds to one step in the recipe.
@@ -1991,6 +2140,95 @@ class RepoId(_messages.Message):
   uid = _messages.StringField(2)
 
 
+class ResourceDescriptor(_messages.Message):
+  r"""A ResourceDescriptor object.
+
+  Messages:
+    AnnotationsValue: A AnnotationsValue object.
+    DigestValue: A DigestValue object.
+
+  Fields:
+    annotations: A AnnotationsValue attribute.
+    content: A byte attribute.
+    digest: A DigestValue attribute.
+    downloadLocation: A string attribute.
+    mediaType: A string attribute.
+    name: A string attribute.
+    uri: A string attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""A AnnotationsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""A DigestValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  content = _messages.BytesField(2)
+  digest = _messages.MessageField('DigestValue', 3)
+  downloadLocation = _messages.StringField(4)
+  mediaType = _messages.StringField(5)
+  name = _messages.StringField(6)
+  uri = _messages.StringField(7)
+
+
+class RunDetails(_messages.Message):
+  r"""A RunDetails object.
+
+  Fields:
+    builder: A ProvenanceBuilder attribute.
+    byproducts: A ResourceDescriptor attribute.
+    metadata: A BuildMetadata attribute.
+  """
+
+  builder = _messages.MessageField('ProvenanceBuilder', 1)
+  byproducts = _messages.MessageField('ResourceDescriptor', 2, repeated=True)
+  metadata = _messages.MessageField('BuildMetadata', 3)
+
+
 class SBOMReferenceOccurrence(_messages.Message):
   r"""The occurrence representing an SBOM reference as applied to a specific
   resource. The occurrence follows the DSSE specification. See
@@ -2008,6 +2246,34 @@ class SBOMReferenceOccurrence(_messages.Message):
   payload = _messages.MessageField('SbomReferenceIntotoPayload', 1)
   payloadType = _messages.StringField(2)
   signatures = _messages.MessageField('EnvelopeSignature', 3, repeated=True)
+
+
+class SBOMStatus(_messages.Message):
+  r"""The status of an SBOM generation.
+
+  Enums:
+    SbomStateValueValuesEnum: The progress of the SBOM generation.
+
+  Fields:
+    error: If there was an error generating an SBOM, this will indicate what
+      that error was.
+    sbomState: The progress of the SBOM generation.
+  """
+
+  class SbomStateValueValuesEnum(_messages.Enum):
+    r"""The progress of the SBOM generation.
+
+    Values:
+      SBOM_STATE_UNSPECIFIED: Default unknown state.
+      PENDING: SBOM scanning is pending.
+      COMPLETE: SBOM scanning has completed.
+    """
+    SBOM_STATE_UNSPECIFIED = 0
+    PENDING = 1
+    COMPLETE = 2
+
+  error = _messages.StringField(1)
+  sbomState = _messages.EnumField('SbomStateValueValuesEnum', 2)
 
 
 class SbomReferenceIntotoPayload(_messages.Message):
@@ -2189,6 +2455,20 @@ class SlsaProvenance(_messages.Message):
   materials = _messages.MessageField('Material', 2, repeated=True)
   metadata = _messages.MessageField('SlsaMetadata', 3)
   recipe = _messages.MessageField('SlsaRecipe', 4)
+
+
+class SlsaProvenanceV1(_messages.Message):
+  r"""Keep in sync with schema at https://github.com/slsa-
+  framework/slsa/blob/main/docs/provenance/schema/v1/provenance.proto Builder
+  renamed to ProvenanceBuilder because of Java conflicts.
+
+  Fields:
+    buildDefinition: A BuildDefinition attribute.
+    runDetails: A RunDetails attribute.
+  """
+
+  buildDefinition = _messages.MessageField('BuildDefinition', 1)
+  runDetails = _messages.MessageField('RunDetails', 2)
 
 
 class SlsaProvenanceZeroTwo(_messages.Message):
@@ -2716,7 +2996,8 @@ class VexAssessment(_messages.Message):
 
   Fields:
     cve: Holds the MITRE standard Common Vulnerabilities and Exposures (CVE)
-      tracking number for the vulnerability.
+      tracking number for the vulnerability. Deprecated: Use vulnerability_id
+      instead to denote CVEs.
     impacts: Contains information about the impact of this vulnerability, this
       will change with time.
     justification: Justification provides the justification when the state of
@@ -2729,6 +3010,8 @@ class VexAssessment(_messages.Message):
     remediations: Specifies details on how to handle (and presumably, fix) a
       vulnerability.
     state: Provides the state of this Vulnerability assessment.
+    vulnerabilityId: The vulnerability identifier for this Assessment. Will
+      hold one of common identifiers e.g. CVE, GHSA etc.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -2757,6 +3040,7 @@ class VexAssessment(_messages.Message):
   relatedUris = _messages.MessageField('RelatedUrl', 5, repeated=True)
   remediations = _messages.MessageField('Remediation', 6, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 7)
+  vulnerabilityId = _messages.StringField(8)
 
 
 class VulnerabilityOccurrence(_messages.Message):

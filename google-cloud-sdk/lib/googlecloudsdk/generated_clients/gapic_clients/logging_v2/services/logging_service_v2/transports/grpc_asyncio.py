@@ -33,7 +33,7 @@ from .grpc import LoggingServiceV2GrpcTransport
 class LoggingServiceV2GrpcAsyncIOTransport(LoggingServiceV2Transport):
     """gRPC AsyncIO backend transport for LoggingServiceV2.
 
-    Service for ingesting and querying logs.
+    Service for storing and querying logs.
 
     This class defines the same methods as the primary client, so the
     primary client can load the underlying transport implementation
@@ -382,7 +382,7 @@ class LoggingServiceV2GrpcAsyncIOTransport(LoggingServiceV2Transport):
             Awaitable[logging.TailLogEntriesResponse]]:
         r"""Return a callable for the tail log entries method over gRPC.
 
-        Streaming read of log entries as they are ingested.
+        Streaming read of log entries as they are received.
         Until the stream is terminated, it will continue reading
         logs.
 

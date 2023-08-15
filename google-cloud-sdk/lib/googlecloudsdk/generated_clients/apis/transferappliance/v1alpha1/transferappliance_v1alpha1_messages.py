@@ -24,42 +24,57 @@ class Appliance(_messages.Message):
 
   Messages:
     AnnotationsValue: User annotations. See
-      https://google.aip.dev/128#annotations
-    LabelsValue: Labels as key value pairs
+      https://google.aip.dev/128#annotations The key must be between 0 and 63
+      characters long. The value must be between 0 and 63 characters long.
+    LabelsValue: Labels as key value pairs. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. * Label keys must be
+      between 1 and 63 characters long. * Label values must be between 0 and
+      63 characters long. * Keys and values can contain only lowercase
+      letters, numeric characters, underscores, and dashes.
 
   Fields:
     annotations: User annotations. See https://google.aip.dev/128#annotations
+      The key must be between 0 and 63 characters long. The value must be
+      between 0 and 63 characters long.
     applianceServiceAccount: Optional. Appliance service account used for
       accessing customer resources. Follow the steps mentioned here (Online
       transfer with transfer appliance :- https://cloud.google.com/transfer-
       appliance/docs/4.0/prepare-online#user_sa, Edge appliance :-
       https://cloud.google.com/distributed-cloud/edge-
       appliance/docs/configure-cloud#appliance_sa) before setting this field.
-    attestationPasscode: Optional. Attestation code of the appliance. If the
-      customer runs offline attestation on the appliance, update this field
-      with attestation_passcode retrieved on successful attestation. The field
-      can only be updated to correct attestation_passcode. If the provided
-      attestation passcode is wrong, the API will return an error.
-    blockedByCustomer: If true,VerificationState is BLOCKED_BY_CUSTOMER. This
-      field is used to BLOCK and UNBLOCK the appliance by customer. To BLOCK
-      the appliance use UpdateAppliance request with blocked_by_customer:true.
-      To UNBLOCK the appliance use UpdateAppliance request with
-      blocked_by_customer:false. IMP: To Unblock the appliance don't use empty
-      updatemask in req since merge of fields happens in empty updatemask.
-      merge(true, false) = true, which implies UpdateRequest don't unblock the
-      appliance. Use instead wildcard * or nonempty updatemask with
-      blocked_by_customer field
-    createTime: Output only. [Output only] Create time stamp
+    atSecureCustomerLocation: Optional. Indicate whether the appliance is in
+      the possession of the customer. Once the customer confirms the appliance
+      is in hand, this field will be updated to true; and this field will be
+      changed to false once the appliance is not being used by the customer.
+    attestationPasscode: Optional. Attestation passcode of the appliance. If
+      the customer runs offline attestation on the appliance, update this
+      field with attestation_passcode retrieved on successful attestation. The
+      field can only be updated to correct attestation_passcode. If the
+      provided attestation passcode is wrong, the API will return an error.
+    createTime: Output only. Create time.
     customerManagedKey: The resource name of the customer-managed KMS key used
       to encrypt data on the appliance. If none is set, a Google-managed key
       will be used. The name looks like
       "projects//locations//keyRings//cryptoKeys//cryptoKeyVersions/".
-    deleteTime: Output only. Delete time stamp.
+    customerRevokedAccess: Optional. If true, VerificationState is
+      BLOCKED_BY_CUSTOMER or BLOCKED_BY_CUSTOMER_AND_GOOGLE. This field is
+      used to block and unblock the appliance by customer. To block the
+      appliance use the UpdateAppliance method with
+      customer_revoked_access:true. To unblock the appliance use the
+      UpdateAppliance method with customer_revoked_access:false. IMPORTANT: To
+      unblock the appliance don't use empty update_mask in UpdateAppliance
+      request since merge of fields happens in empty updatemask. Use instead
+      wildcard * or nonempty updatemask with customer_revoked_access field.
+    deleteTime: Output only. Delete time.
     displayName: A mutable, user-settable name for the resource. It does not
       need to be unique and should be less than 64 characters.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding. See
+    etag: Strongly validated etag, computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding. See
       https://google.aip.dev/154.
     finalizationCode: The code displayed when finalizing the appliance. The
       return_label_uri in the shipment_info field will not be available until
@@ -68,7 +83,15 @@ class Appliance(_messages.Message):
       for purposes like online transfer or monitoring.
     kubernetesFeature: Optional. The Kubernetes configuration for this
       appliance (only valid if it is Edge Appliance).
-    labels: Labels as key value pairs
+    labels: Labels as key value pairs. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. * Label keys must be
+      between 1 and 63 characters long. * Label values must be between 0 and
+      63 characters long. * Keys and values can contain only lowercase
+      letters, numeric characters, underscores, and dashes.
     lastVerified: Output only. Indicates when appliance was last verified.
     maintenanceInfo: Output only. Details of the software updates for the
       appliance.
@@ -78,14 +101,15 @@ class Appliance(_messages.Message):
       which they want to block all updates and relative order in which their
       appliances can receive updates.
     model: The hardware form factor of the appliance.
-    name: name of resource
+    name: Name of resource.
     offlineExportFeature: Optional. Export configuration for offline
       appliance.
     offlineImportFeature: The offline import configuration for this appliance.
     onlineEnabled: Optional. Whether the appliance can communicate with GCP
       for purposes like online transfer or monitoring.
     onlineImportFeature: The online import configuration for this appliance.
-    order: Output only. The order associated with the appliance.
+    order: Output only. The order associated with the appliance. Format:
+      projects/{project}/locations/{location}/orders/{order}
     projectSetupCompleted: Optional. Project setup completed is set to true
       after the customer successfully sets up the project using the Cloud
       Setup app or the Pantheon widget.
@@ -97,15 +121,16 @@ class Appliance(_messages.Message):
       maintenance.
     serialNumber: Output only. Serial Number uniquely identifies a physical
       appliance.
-    sessionId: Output only. [Output only] Unique identifier for the session,
-      computed when the resource is created.
+    sessionId: Output only. session_id is a 16 character Unique identifier for
+      the session, computed when the resource is created. Example:
+      US-a123-b2cd.
     shipmentInfo: Details of the appliance's shipment.
     state: Output only. The state of the physical appliance.
-    stateChangeTime: Output only. [Output only] Record the time of latest
-      appliance state change.
+    stateChangeTime: Output only. Record the time of latest appliance state
+      change.
     subscriptionInfo: Optional. Details of the appliance subscription.
     uid: Output only. A system-assigned, unique identifier for the resource.
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. Update time.
     verificationState: Output only. Indicates whether appliance has been
       verified by Google.
   """
@@ -178,7 +203,7 @@ class Appliance(_messages.Message):
         have a reason not to trust the software running on the appliance, who
         has access to it, where it is, etc.
       BLOCKED_BY_CUSTOMER_AND_GOOGLE: Appliance has been blocked by both
-        google and customer
+        google and customer.
     """
     VERIFICATION_STATE_UNSPECIFIED = 0
     UNVERIFIED = 1
@@ -189,7 +214,9 @@ class Appliance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""User annotations. See https://google.aip.dev/128#annotations
+    r"""User annotations. See https://google.aip.dev/128#annotations The key
+    must be between 0 and 63 characters long. The value must be between 0 and
+    63 characters long.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -214,7 +241,15 @@ class Appliance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Labels as key value pairs. Labels must meet the following constraints:
+    * Keys and values can contain only lowercase letters, numeric characters,
+    underscores, and dashes. * All characters must use UTF-8 encoding, and
+    international characters are allowed. * Keys must start with a lowercase
+    letter or international character. * Each resource is limited to a maximum
+    of 64 labels. * Label keys must be between 1 and 63 characters long. *
+    Label values must be between 0 and 63 characters long. * Keys and values
+    can contain only lowercase letters, numeric characters, underscores, and
+    dashes.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -238,38 +273,39 @@ class Appliance(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   applianceServiceAccount = _messages.StringField(2)
-  attestationPasscode = _messages.StringField(3)
-  blockedByCustomer = _messages.BooleanField(4)
+  atSecureCustomerLocation = _messages.BooleanField(3)
+  attestationPasscode = _messages.StringField(4)
   createTime = _messages.StringField(5)
   customerManagedKey = _messages.StringField(6)
-  deleteTime = _messages.StringField(7)
-  displayName = _messages.StringField(8)
-  etag = _messages.StringField(9)
-  finalizationCode = _messages.StringField(10)
-  internetEnabled = _messages.BooleanField(11)
-  kubernetesFeature = _messages.MessageField('KubernetesFeature', 12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  lastVerified = _messages.MessageField('DateTime', 14)
-  maintenanceInfo = _messages.MessageField('MaintenanceInfo', 15)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 16)
-  model = _messages.EnumField('ModelValueValuesEnum', 17)
-  name = _messages.StringField(18)
-  offlineExportFeature = _messages.MessageField('OfflineExportFeature', 19)
-  offlineImportFeature = _messages.MessageField('OfflineImportFeature', 20)
-  onlineEnabled = _messages.BooleanField(21)
-  onlineImportFeature = _messages.MessageField('OnlineImportFeature', 22)
-  order = _messages.StringField(23)
-  projectSetupCompleted = _messages.BooleanField(24)
-  reconciling = _messages.BooleanField(25)
-  serialNumber = _messages.StringField(26)
-  sessionId = _messages.StringField(27)
-  shipmentInfo = _messages.MessageField('ShipmentInfo', 28)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  stateChangeTime = _messages.StringField(30)
-  subscriptionInfo = _messages.MessageField('SubscriptionInfo', 31)
-  uid = _messages.StringField(32)
-  updateTime = _messages.StringField(33)
-  verificationState = _messages.EnumField('VerificationStateValueValuesEnum', 34)
+  customerRevokedAccess = _messages.BooleanField(7)
+  deleteTime = _messages.StringField(8)
+  displayName = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  finalizationCode = _messages.StringField(11)
+  internetEnabled = _messages.BooleanField(12)
+  kubernetesFeature = _messages.MessageField('KubernetesFeature', 13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  lastVerified = _messages.MessageField('DateTime', 15)
+  maintenanceInfo = _messages.MessageField('MaintenanceInfo', 16)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 17)
+  model = _messages.EnumField('ModelValueValuesEnum', 18)
+  name = _messages.StringField(19)
+  offlineExportFeature = _messages.MessageField('OfflineExportFeature', 20)
+  offlineImportFeature = _messages.MessageField('OfflineImportFeature', 21)
+  onlineEnabled = _messages.BooleanField(22)
+  onlineImportFeature = _messages.MessageField('OnlineImportFeature', 23)
+  order = _messages.StringField(24)
+  projectSetupCompleted = _messages.BooleanField(25)
+  reconciling = _messages.BooleanField(26)
+  serialNumber = _messages.StringField(27)
+  sessionId = _messages.StringField(28)
+  shipmentInfo = _messages.MessageField('ShipmentInfo', 29)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
+  stateChangeTime = _messages.StringField(31)
+  subscriptionInfo = _messages.MessageField('SubscriptionInfo', 32)
+  uid = _messages.StringField(33)
+  updateTime = _messages.StringField(34)
+  verificationState = _messages.EnumField('VerificationStateValueValuesEnum', 35)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -284,12 +320,14 @@ class ContactInfo(_messages.Message):
     business: The name of the business, if applicable.
     contactName: The name of the primary contact.
     email: The email of the primary contact.
-    familyName: The family name of the primary contact.
-    givenName: The given name of the primary contact.
+    familyName: The family name of the primary contact. Deprecated: Use
+      contact_name instead.
+    givenName: The given name of the primary contact. Deprecated: Use
+      contact_name instead.
     phone: The phone number of the primary contact. Should be given in E.164
       format consisting of the country calling code (1 to 3 digits) and the
       subscriber number, with no additional spaces or formatting, e.g.
-      "15552220123"
+      "15552220123".
   """
 
   additionalEmails = _messages.StringField(1, repeated=True)
@@ -302,33 +340,59 @@ class ContactInfo(_messages.Message):
 
 
 class Credential(_messages.Message):
-  r"""Credential is login username & password for a appliance
+  r"""Credential is login username & password for an appliance.
 
   Messages:
-    LabelsValue: Labels as key value pairs
+    LabelsValue: Labels as key value pairs. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. * Label keys must be
+      between 1 and 63 characters long and must conform to the following
+      regular expression: a-z{0,62}. * Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      [a-z0-9_-]{0,63}.
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. Create time.
     credentialSharedFirstTime: Output only. Timestamp when the credentials are
       shared with the customer for the first time.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding. See
       https://google.aip.dev/154.
-    labels: Labels as key value pairs
+    labels: Labels as key value pairs. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. * Label keys must be
+      between 1 and 63 characters long and must conform to the following
+      regular expression: a-z{0,62}. * Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      [a-z0-9_-]{0,63}.
     name: Unique name of the credential resource. username is the unique
       idenifier for the credential resource. Fromat:
       projects/*/locations/*/Appliances/*/Credentials/ Ex:
       projects/zimbruplayground/locations/us-
       central1/Appliances/myappliance/Credentials/ta_customer,
       projects/p1/locations/l1/Appliances/a1/Credentials/ta_operator
-    password: Output only. Password of the Credential
-    updateTime: Output only. [Output only] Update time stamp
+    password: Output only. Password of the Credential.
+    updateTime: Output only. Update time.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Labels as key value pairs. Labels must meet the following constraints:
+    * Keys and values can contain only lowercase letters, numeric characters,
+    underscores, and dashes. * All characters must use UTF-8 encoding, and
+    international characters are allowed. * Keys must start with a lowercase
+    letter or international character. * Each resource is limited to a maximum
+    of 64 labels. * Label keys must be between 1 and 63 characters long and
+    must conform to the following regular expression: a-z{0,62}. * Label
+    values must be between 0 and 63 characters long and must conform to the
+    regular expression [a-z0-9_-]{0,63}.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -509,10 +573,14 @@ class KubernetesFeature(_messages.Message):
 
 
 class ListAppliancesResponse(_messages.Message):
-  r"""Message for response to listing Appliances
+  r"""Response message for the ListAppliances method.
 
   Fields:
-    appliances: The list of Appliance
+    appliances: The list of Appliance. If the `{location}` value in the
+      request is "-", the response contains a list of instances from all
+      locations. In case any location is unreachable, the response will only
+      return management servers in reachable locations and the 'unreachable'
+      field will be populated with a list of unreachable locations.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -550,12 +618,16 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListOrdersResponse(_messages.Message):
-  r"""Message for response to listing Orders
+  r"""Response message for the ListOrders method.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
       return.
-    orders: The list of Order
+    orders: The list of Order. If the `{location}` value in the request is
+      "-", the response contains a list of instances from all locations. In
+      case any location is unreachable, the response will only return
+      management servers in reachable locations and the 'unreachable' field
+      will be populated with a list of unreachable locations.
     unreachable: Locations that could not be reached.
   """
 
@@ -565,12 +637,16 @@ class ListOrdersResponse(_messages.Message):
 
 
 class ListSavedAddressesResponse(_messages.Message):
-  r"""Message for response to listing SavedAddresses
+  r"""Response message for the ListSavedAddresses method.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
       return.
-    savedAddresses: The list of SavedAddress
+    savedAddresses: The list of SavedAddress. If the `{location}` value in the
+      request is "-", the response contains a list of instances from all
+      locations. In case any location is unreachable, the response will only
+      return management servers in reachable locations and the 'unreachable'
+      field will be populated with a list of unreachable locations.
     unreachable: Locations that could not be reached.
   """
 
@@ -821,7 +897,7 @@ class OnlineImportFeature(_messages.Message):
 
   Fields:
     destination: The destination of the transfer.
-    jobName: Output only.
+    jobName: Output only. The Transfer Job Name for Online Imports.
     transferResults: Output only. The results of the transfer.
   """
 
@@ -840,8 +916,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -863,7 +939,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -902,9 +978,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -970,36 +1046,54 @@ class Order(_messages.Message):
 
   Enums:
     DatacenterLocationValueValuesEnum: Output only. Datacenter location used
-      for register session
+      to register the session.
     StateValueValuesEnum: Output only. The state of the order.
 
   Messages:
     AnnotationsValue: User annotations. See
-      https://google.aip.dev/128#annotations
-    LabelsValue: Labels as key value pairs
+      https://google.aip.dev/128#annotations.
+    LabelsValue: Labels as key value pairs. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. * Label keys must be
+      between 1 and 63 characters long and must conform to the following
+      regular expression: a-z{0,62}. * Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      [a-z0-9_-]{0,63}.
 
   Fields:
     address: The address to ship the order to. See https://github.com/googleap
-      is/googleapis/blob/master/google/type/postal_address.proto
-    annotations: User annotations. See https://google.aip.dev/128#annotations
+      is/googleapis/blob/master/google/type/postal_address.proto.
+    annotations: User annotations. See https://google.aip.dev/128#annotations.
     appliances: The appliances included in this order.
     cancelled: Whether the order has been cancelled. For an order that is in
-      the PREPARING state, setting this to true will cause the order to move
+      the FULFILLING state, setting this to true will cause the order to move
       to the CANCELLED state.
-    createTime: Output only. [Output only] Create time stamp
-    datacenterLocation: Output only. Datacenter location used for register
-      session
-    deleteTime: Output only. Delete time stamp.
+    createTime: Output only. Create time.
+    datacenterLocation: Output only. Datacenter location used to register the
+      session.
+    deleteTime: Output only. Delete time.
     deliveryNotes: Free text notes included in the order, for any additional
       details that should be passed on to the shipping company.
     displayName: A mutable, user-settable name for the resource. It does not
       need to be unique and should be less than 64 characters.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding. See
+    etag: Strongly validated etag, computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding. See
       https://google.aip.dev/154.
-    labels: Labels as key value pairs
-    name: name of resource
+    labels: Labels as key value pairs. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. * Label keys must be
+      between 1 and 63 characters long and must conform to the following
+      regular expression: a-z{0,62}. * Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      [a-z0-9_-]{0,63}.
+    name: name of resource.
     orderContact: Contact information used for general communication from
       Google about the order and its appliances.
     reconciling: Output only. Reconciling
@@ -1014,22 +1108,22 @@ class Order(_messages.Message):
       the Submit method were called on the order. For an order that is in the
       DRAFT state, setting this to true will also cause it to be submitted.
     state: Output only. The state of the order.
-    submitTime: Output only. [Output only] Submit time stamp
+    submitTime: Output only. Submit time.
     uid: Output only. A system-assigned, unique identifier for the resource.
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. Update time.
   """
 
   class DatacenterLocationValueValuesEnum(_messages.Enum):
-    r"""Output only. Datacenter location used for register session
+    r"""Output only. Datacenter location used to register the session.
 
     Values:
       DATACENTER_LOCATION_UNSPECIFIED: Default value. Should not be used.
       US: US datacenter location.
-      EU: Europe datacenter location.
+      EU: EU datacenter location.
       SGP: Singapore datacenter location.
       SIN: Singapore datacenter location.
       UK: UK datacenter location.
-      JPN: Japan dataceter location.
+      JPN: Japan datacenter location.
     """
     DATACENTER_LOCATION_UNSPECIFIED = 0
     US = 1
@@ -1061,7 +1155,7 @@ class Order(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""User annotations. See https://google.aip.dev/128#annotations
+    r"""User annotations. See https://google.aip.dev/128#annotations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1086,7 +1180,15 @@ class Order(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Labels as key value pairs. Labels must meet the following constraints:
+    * Keys and values can contain only lowercase letters, numeric characters,
+    underscores, and dashes. * All characters must use UTF-8 encoding, and
+    international characters are allowed. * Keys must start with a lowercase
+    letter or international character. * Each resource is limited to a maximum
+    of 64 labels. * Label keys must be between 1 and 63 characters long and
+    must conform to the following regular expression: a-z{0,62}. * Label
+    values must be between 0 and 63 characters long and must conform to the
+    regular expression [a-z0-9_-]{0,63}.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1296,22 +1398,40 @@ class SavedAddress(_messages.Message):
 
   Messages:
     AnnotationsValue: User annotations. See
-      https://google.aip.dev/128#annotations
-    LabelsValue: Labels as key value pairs
+      https://google.aip.dev/128#annotations.
+    LabelsValue: Labels as key value pairs. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. * Label keys must be
+      between 1 and 63 characters long and must conform to the following
+      regular expression: a-z{0,62}. * Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      [a-z0-9_-]{0,63}.
 
   Fields:
-    address: The saved shipping address
-    annotations: User annotations. See https://google.aip.dev/128#annotations
-    createTime: Output only. [Output only] Create time stamp
+    address: The saved shipping address.
+    annotations: User annotations. See https://google.aip.dev/128#annotations.
+    createTime: Output only. Create time.
     deleteTime: Output only. Delete time stamp.
     displayName: A mutable, user-settable name for the resource. It does not
       need to be unique and should be less than 64 characters.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding. See
+    etag: Strongly validated etag, computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding. See
       https://google.aip.dev/154.
-    labels: Labels as key value pairs
-    name: name of resource
+    labels: Labels as key value pairs. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. * Label keys must be
+      between 1 and 63 characters long and must conform to the following
+      regular expression: a-z{0,62}. * Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      [a-z0-9_-]{0,63}.
+    name: name of resource.
     reconciling: Output only. Reconciling
       (https://google.aip.dev/128#reconciliation). Set to true if the current
       state of SavedAddress does not match the user's intended state, and the
@@ -1320,13 +1440,14 @@ class SavedAddress(_messages.Message):
       maintenance.
     shippingContact: Contact information used for the shipments to the given
       address.
-    uid: Output only. A system-assigned, unique identifier for the resource.
-    updateTime: Output only. [Output only] Update time stamp
+    uid: Output only. A system-assigned, unique identifier (UUID4) for the
+      resource.
+    updateTime: Output only. Update time.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""User annotations. See https://google.aip.dev/128#annotations
+    r"""User annotations. See https://google.aip.dev/128#annotations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1351,7 +1472,15 @@ class SavedAddress(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Labels as key value pairs. Labels must meet the following constraints:
+    * Keys and values can contain only lowercase letters, numeric characters,
+    underscores, and dashes. * All characters must use UTF-8 encoding, and
+    international characters are allowed. * Keys must start with a lowercase
+    letter or international character. * Each resource is limited to a maximum
+    of 64 labels. * Label keys must be between 1 and 63 characters long and
+    must conform to the following regular expression: a-z{0,62}. * Label
+    values must be between 0 and 63 characters long and must conform to the
+    regular expression [a-z0-9_-]{0,63}.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1536,11 +1665,12 @@ class Status(_messages.Message):
 
 
 class SubmitOrderRequest(_messages.Message):
-  r"""Message for submitting an order.
+  r"""Request message for the SubmitOrder method.
 
   Fields:
-    etag: This checksum is computed by the server to ensure the client has an
-      up-to-date value before proceeding. See https://google.aip.dev/154.
+    etag: Strongly validated etag, computed by the server to ensure the client
+      has an up-to-date value before proceeding. See
+      https://google.aip.dev/154.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1581,7 +1711,8 @@ class Subscription(_messages.Message):
     endTime: Output only. The target end time of the subscription.
     errorStateInfo: Output only. Additional information on why the
       subscription is in error state.
-    etag: Output only. A consistency token set by subscription server.
+    etag: Output only. Strongly validated etag, a consistency token set by
+      subscription server.
     externalId: Output only. A unique field across all subscription. We use to
       identify the appliance.
     name: Output only. This is an ID which uniquely identifies the
@@ -1788,6 +1919,10 @@ class TransferResults(_messages.Message):
     bytesCopiedCount: Output only. The total number of bytes successfully
       copied to the destination.
     bytesFoundCount: Output only. The total number of bytes found.
+    directoriesFoundCount: Output only. The number of directories found while
+      listing. For example, if the root directory of the transfer is `base/`
+      and there are two other directories, `a/` and `b/` under this directory,
+      the count after listing `base/`, `base/a/` and `base/b/` is 3.
     endTime: Output only. The time that this transfer finished.
     errorLog: Output only. A URI to a file containing information about any
       files/directories that could not be transferred, or blank if there were
@@ -1799,10 +1934,11 @@ class TransferResults(_messages.Message):
 
   bytesCopiedCount = _messages.IntegerField(1)
   bytesFoundCount = _messages.IntegerField(2)
-  endTime = _messages.StringField(3)
-  errorLog = _messages.StringField(4)
-  objectsCopiedCount = _messages.IntegerField(5)
-  objectsFoundCount = _messages.IntegerField(6)
+  directoriesFoundCount = _messages.IntegerField(3)
+  endTime = _messages.StringField(4)
+  errorLog = _messages.StringField(5)
+  objectsCopiedCount = _messages.IntegerField(6)
+  objectsFoundCount = _messages.IntegerField(7)
 
 
 class TransferapplianceProjectsLocationsAppliancesCreateRequest(_messages.Message):
@@ -1810,9 +1946,8 @@ class TransferapplianceProjectsLocationsAppliancesCreateRequest(_messages.Messag
 
   Fields:
     appliance: A Appliance resource to be passed as the request body.
-    applianceId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and appliance_id from the
-      method_signature of Create RPC
+    applianceId: Required. Id of the Appliance. See
+      https://google.aip.dev/133#user-specified-ids for naming specifications.
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -1841,7 +1976,7 @@ class TransferapplianceProjectsLocationsAppliancesCredentialsGetRequest(_message
   object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1851,9 +1986,10 @@ class TransferapplianceProjectsLocationsAppliancesDeleteRequest(_messages.Messag
   r"""A TransferapplianceProjectsLocationsAppliancesDeleteRequest object.
 
   Fields:
-    etag: This checksum is computed by the server to ensure the client has an
-      up-to-date value before proceeding. See https://google.aip.dev/154.
-    name: Required. Name of the resource
+    etag: Strongly validated etag, computed by the server to ensure the client
+      has an up-to-date value before proceeding. See
+      https://google.aip.dev/154.
+    name: Required. Name of the resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1879,7 +2015,7 @@ class TransferapplianceProjectsLocationsAppliancesGetRequest(_messages.Message):
   r"""A TransferapplianceProjectsLocationsAppliancesGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1889,12 +2025,15 @@ class TransferapplianceProjectsLocationsAppliancesListRequest(_messages.Message)
   r"""A TransferapplianceProjectsLocationsAppliancesListRequest object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
+    filter: Filtering results. See https://google.aip.dev/160 for more
+      details.
+    orderBy: Field to sort by. See https://google.aip.dev/132#ordering for
+      more details.
     pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
+      requested. If unspecified, server will use the default size of 500.
+      Maximum allowed page_size is 1000.
     pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListAppliancesRequest
+    parent: Required. Parent value for ListAppliancesRequest.
   """
 
   filter = _messages.StringField(1)
@@ -1911,7 +2050,7 @@ class TransferapplianceProjectsLocationsAppliancesPatchRequest(_messages.Message
     allowMissing: Optional. If set to true, updating an `Appliance` that does
       not exist will result in the creation of a new `Appliance`.
     appliance: A Appliance resource to be passed as the request body.
-    name: name of resource
+    name: Name of resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1927,7 +2066,7 @@ class TransferapplianceProjectsLocationsAppliancesPatchRequest(_messages.Message
       overwritten in the Appliance resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      does not provide a mask then all populated fields will be overwritten.
     validateOnly: Optional. If set to true, the request is validated and the
       user is provided with an expected result, but no actual change is made.
   """
@@ -2024,9 +2163,8 @@ class TransferapplianceProjectsLocationsOrdersCreateRequest(_messages.Message):
 
   Fields:
     order: A Order resource to be passed as the request body.
-    orderId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and order_id from the method_signature of
-      Create RPC
+    orderId: Required. Id of the requesting order. See
+      https://google.aip.dev/133#user-specified-ids for naming specifications.
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -2054,9 +2192,10 @@ class TransferapplianceProjectsLocationsOrdersDeleteRequest(_messages.Message):
   r"""A TransferapplianceProjectsLocationsOrdersDeleteRequest object.
 
   Fields:
-    etag: This checksum is computed by the server to ensure the client has an
-      up-to-date value before proceeding. See https://google.aip.dev/154.
-    name: Required. Name of the resource
+    etag: Strongly validated etag, computed by the server to ensure the client
+      has an up-to-date value before proceeding. See
+      https://google.aip.dev/154.
+    name: Required. Name of the resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2082,7 +2221,7 @@ class TransferapplianceProjectsLocationsOrdersGetRequest(_messages.Message):
   r"""A TransferapplianceProjectsLocationsOrdersGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2092,12 +2231,15 @@ class TransferapplianceProjectsLocationsOrdersListRequest(_messages.Message):
   r"""A TransferapplianceProjectsLocationsOrdersListRequest object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
+    filter: Filtering results. See https://google.aip.dev/160 for more
+      details.
+    orderBy: Field to sort by. See https://google.aip.dev/132#ordering for
+      more details.
     pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
+      requested. If unspecified, server will pick the default size of 500.
+      Maximum allowed page_size is 1000.
     pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListOrdersRequest
+    parent: Required. Parent value for ListOrdersRequest.
   """
 
   filter = _messages.StringField(1)
@@ -2113,7 +2255,7 @@ class TransferapplianceProjectsLocationsOrdersPatchRequest(_messages.Message):
   Fields:
     allowMissing: Optional. If set to true, updating a `Order` that does not
       exist will result in the creation of a new `Order`.
-    name: name of resource
+    name: name of resource.
     order: A Order resource to be passed as the request body.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -2130,7 +2272,7 @@ class TransferapplianceProjectsLocationsOrdersPatchRequest(_messages.Message):
       overwritten in the Order resource by the update. The fields specified in
       the update_mask are relative to the resource, not the full request. A
       field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
+      provide a mask then all populated fields will be overwritten.
     validateOnly: Optional. If set to true, the request is validated and the
       user is provided with an expected result, but no actual change is made.
   """
@@ -2173,9 +2315,8 @@ class TransferapplianceProjectsLocationsSavedAddressesCreateRequest(_messages.Me
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     savedAddress: A SavedAddress resource to be passed as the request body.
-    savedAddressId: Required. Id of the requesting object If auto-generating
-      Id server-side, remove this field and saved_address_id from the
-      method_signature of Create RPC
+    savedAddressId: Required. Id of the requesting SavedAddress. See
+      https://google.aip.dev/133#user-specified-ids for naming specifications.
     validateOnly: Optional. If set to true, the request is validated and the
       user is provided with an expected result, but no actual change is made.
   """
@@ -2191,9 +2332,10 @@ class TransferapplianceProjectsLocationsSavedAddressesDeleteRequest(_messages.Me
   r"""A TransferapplianceProjectsLocationsSavedAddressesDeleteRequest object.
 
   Fields:
-    etag: This checksum is computed by the server to ensure the client has an
-      up-to-date value before proceeding. See https://google.aip.dev/154.
-    name: Required. Name of the resource
+    etag: Strongly validated etag, computed by the server to ensure the client
+      has an up-to-date value before proceeding. See
+      https://google.aip.dev/154.
+    name: Required. Name of the resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2219,7 +2361,7 @@ class TransferapplianceProjectsLocationsSavedAddressesGetRequest(_messages.Messa
   r"""A TransferapplianceProjectsLocationsSavedAddressesGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2229,12 +2371,15 @@ class TransferapplianceProjectsLocationsSavedAddressesListRequest(_messages.Mess
   r"""A TransferapplianceProjectsLocationsSavedAddressesListRequest object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
+    filter: Filtering results. See https://google.aip.dev/160 for more
+      details.
+    orderBy: Field to sort by. See https://google.aip.dev/132#ordering for
+      more details.
     pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
+      requested. If unspecified, server will pick the default size of 500.
+      Maximum allowed page_size is 1000.
     pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListSavedAddressesRequest
+    parent: Required. Parent value for ListSavedAddressesRequest.
   """
 
   filter = _messages.StringField(1)
@@ -2250,7 +2395,7 @@ class TransferapplianceProjectsLocationsSavedAddressesPatchRequest(_messages.Mes
   Fields:
     allowMissing: Optional. If set to true, updating a `SavedAddress` that
       does not exist will result in the creation of a new `SavedAddress`.
-    name: name of resource
+    name: name of resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2267,7 +2412,7 @@ class TransferapplianceProjectsLocationsSavedAddressesPatchRequest(_messages.Mes
       overwritten in the SavedAddress resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      does not provide a mask then all populated fields will be overwritten.
     validateOnly: Optional. If set to true, the request is validated and the
       user is provided with an expected result, but no actual change is made.
   """

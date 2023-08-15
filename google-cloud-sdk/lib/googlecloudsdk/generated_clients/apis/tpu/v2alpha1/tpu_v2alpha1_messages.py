@@ -145,6 +145,19 @@ class BestEffort(_messages.Message):
   r"""BestEffort tier definition."""
 
 
+class BootDiskConfig(_messages.Message):
+  r"""Boot disk configurations.
+
+  Fields:
+    customerEncryptionKey: Optional. Customer encryption key for boot disk.
+    enableConfidentialCompute: Optional. Whether the boot disk will be created
+      with confidential compute mode.
+  """
+
+  customerEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 1)
+  enableConfidentialCompute = _messages.BooleanField(2)
+
+
 class ChipCoordinate(_messages.Message):
   r"""Represents a single chip in a logical traffic matrix.
 
@@ -218,6 +231,26 @@ class CustomTrafficMatrix(_messages.Message):
   """
 
   shapeGeneratedEntry = _messages.MessageField('ShapeGeneratedEntry', 1, repeated=True)
+
+
+class CustomerEncryptionKey(_messages.Message):
+  r"""Customer's encryption key.
+
+  Fields:
+    kmsKeyName: The name of the encryption key that is stored in Google Cloud
+      KMS. For example: "kmsKeyName":
+      "projects/kms_project_id/locations/region/keyRings/
+      key_region/cryptoKeys/key The fully-qualifed key name may be returned
+      for resource GET requests. For example: "kmsKeyName":
+      "projects/kms_project_id/locations/region/keyRings/
+      key_region/cryptoKeys/key /cryptoKeyVersions/1
+  """
+
+  kmsKeyName = _messages.StringField(1)
+
+
+class DefaultUniformTrafficMatrix(_messages.Message):
+  r"""See notes in `LogicalTrafficMatrix.default_uniform_traffic_matrix`"""
 
 
 class DeletingData(_messages.Message):
@@ -538,6 +571,24 @@ class LogicalTrafficMatrix(_messages.Message):
     customTrafficMatrix: Custom generator syntax used to represent chip-chip
       granularity traffic matrix (TM) that is too large to be reasonably
       represented as a simple adjacency list.
+    defaultUniformTrafficMatrix: Generates a default uniform traffic matrix,
+      functionally equivalent to a slice-to-slice, all-to-all traffic matrix
+      where each slice sends the same amount of traffic to all other slices.
+      Notes: - Borg uses this default-generated traffic matrix to achieve
+      best-effort, superblock-compact placement for the affinity group. - Borg
+      may or may not report default-generated demands to the Datacenter
+      Network for proactive provisioning; to depend on this behavior use an
+      alternate representation such as `slice_to_slice_adjacency_list`. - This
+      representation is likely a good fit for "small" workloads (e.g. 4 VLP
+      slices) that wish to benefit from best-effort superblock colocation
+      without needing to provide a detailed traffic matrix. - This option is
+      likely not a good fit for "large" workloads with non-uniform traffic
+      patterns (e.g. a 100 VLP slice workload with 10 data parallel replicas
+      communicating in an all-to-all pattern and 10 pipeline stages
+      communicating in a bidirection ring pattern), as it does not give Borg
+      enough detail on which of the slices should be colocated in the same
+      superblock as other slices. At the largest (e.g. cell-wide) scale, this
+      devolves into "random" placement.
     sliceToSliceAdjacencyList: Adjacency list representation of a slice->slice
       granularity TM. Slice-to-slice encoding assumes traffic flows out of
       each slice uniformly. This assumption is inconsequential for superblock
@@ -546,7 +597,8 @@ class LogicalTrafficMatrix(_messages.Message):
   """
 
   customTrafficMatrix = _messages.MessageField('CustomTrafficMatrix', 1)
-  sliceToSliceAdjacencyList = _messages.MessageField('SliceToSliceAdjacencyList', 2)
+  defaultUniformTrafficMatrix = _messages.MessageField('DefaultUniformTrafficMatrix', 2)
+  sliceToSliceAdjacencyList = _messages.MessageField('SliceToSliceAdjacencyList', 3)
 
 
 class MultiNodeParams(_messages.Message):
@@ -668,6 +720,7 @@ class Node(_messages.Message):
     acceleratorType: The type of hardware accelerators associated with this
       node.
     apiVersion: Output only. The API version that created this Node.
+    bootDiskConfig: Optional. Boot disk configuration.
     cidrBlock: The CIDR block that the TPU node will use when selecting an IP
       address. This CIDR block must be a /29 block; the Compute Engine
       networks API forbids a smaller block, and using a larger block would be
@@ -831,27 +884,28 @@ class Node(_messages.Message):
   acceleratorConfig = _messages.MessageField('AcceleratorConfig', 1)
   acceleratorType = _messages.StringField(2)
   apiVersion = _messages.EnumField('ApiVersionValueValuesEnum', 3)
-  cidrBlock = _messages.StringField(4)
-  createTime = _messages.StringField(5)
-  dataDisks = _messages.MessageField('AttachedDisk', 6, repeated=True)
-  description = _messages.StringField(7)
-  health = _messages.EnumField('HealthValueValuesEnum', 8)
-  healthDescription = _messages.StringField(9)
-  id = _messages.IntegerField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  metadata = _messages.MessageField('MetadataValue', 12)
-  multisliceNode = _messages.BooleanField(13)
-  name = _messages.StringField(14)
-  networkConfig = _messages.MessageField('NetworkConfig', 15)
-  networkEndpoints = _messages.MessageField('NetworkEndpoint', 16, repeated=True)
-  queuedResource = _messages.StringField(17)
-  runtimeVersion = _messages.StringField(18)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 19)
-  serviceAccount = _messages.MessageField('ServiceAccount', 20)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  symptoms = _messages.MessageField('Symptom', 23, repeated=True)
-  tags = _messages.StringField(24, repeated=True)
+  bootDiskConfig = _messages.MessageField('BootDiskConfig', 4)
+  cidrBlock = _messages.StringField(5)
+  createTime = _messages.StringField(6)
+  dataDisks = _messages.MessageField('AttachedDisk', 7, repeated=True)
+  description = _messages.StringField(8)
+  health = _messages.EnumField('HealthValueValuesEnum', 9)
+  healthDescription = _messages.StringField(10)
+  id = _messages.IntegerField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  metadata = _messages.MessageField('MetadataValue', 13)
+  multisliceNode = _messages.BooleanField(14)
+  name = _messages.StringField(15)
+  networkConfig = _messages.MessageField('NetworkConfig', 16)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 17, repeated=True)
+  queuedResource = _messages.StringField(18)
+  runtimeVersion = _messages.StringField(19)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 20)
+  serviceAccount = _messages.MessageField('ServiceAccount', 21)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  symptoms = _messages.MessageField('Symptom', 24, repeated=True)
+  tags = _messages.StringField(25, repeated=True)
 
 
 class NodeSpec(_messages.Message):
@@ -860,7 +914,8 @@ class NodeSpec(_messages.Message):
   node(s) to be created.
 
   Fields:
-    multiNodeParams: Fields to specify in case of multi-node request.
+    multiNodeParams: Optional. Fields to specify in case of multi-node
+      request.
     node: Required. The node.
     nodeId: The unqualified resource name. Should follow the
       `^[A-Za-z0-9_.~+%-]+$` regex format. This is only specified when
@@ -886,8 +941,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -909,7 +964,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -948,9 +1003,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -1056,6 +1111,8 @@ class QueuedResourceState(_messages.Message):
 
   Enums:
     StateValueValuesEnum: State of the QueuedResource request.
+    StateInitiatorValueValuesEnum: Output only. The initiator of the
+      QueuedResources's current state.
 
   Fields:
     acceptedData: Further data for the accepted state.
@@ -1065,9 +1122,23 @@ class QueuedResourceState(_messages.Message):
     failedData: Further data for the failed state.
     provisioningData: Further data for the provisioning state.
     state: State of the QueuedResource request.
+    stateInitiator: Output only. The initiator of the QueuedResources's
+      current state.
     suspendedData: Further data for the suspended state.
     suspendingData: Further data for the suspending state.
   """
+
+  class StateInitiatorValueValuesEnum(_messages.Enum):
+    r"""Output only. The initiator of the QueuedResources's current state.
+
+    Values:
+      STATE_INITIATOR_UNSPECIFIED: The state initiator is unspecified.
+      USER: The current QueuedResource state was initiated by the user.
+      SERVICE: The current QueuedResource state was initiated by the service.
+    """
+    STATE_INITIATOR_UNSPECIFIED = 0
+    USER = 1
+    SERVICE = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""State of the QueuedResource request.
@@ -1111,8 +1182,9 @@ class QueuedResourceState(_messages.Message):
   failedData = _messages.MessageField('FailedData', 5)
   provisioningData = _messages.MessageField('ProvisioningData', 6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
-  suspendedData = _messages.MessageField('SuspendedData', 8)
-  suspendingData = _messages.MessageField('SuspendingData', 9)
+  stateInitiator = _messages.EnumField('StateInitiatorValueValuesEnum', 8)
+  suspendedData = _messages.MessageField('SuspendedData', 9)
+  suspendingData = _messages.MessageField('SuspendingData', 10)
 
 
 class QueueingPolicy(_messages.Message):

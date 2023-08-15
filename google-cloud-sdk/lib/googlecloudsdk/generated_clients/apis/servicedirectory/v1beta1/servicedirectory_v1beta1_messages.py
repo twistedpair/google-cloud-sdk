@@ -15,6 +15,20 @@ from apitools.base.py import extra_types
 package = 'servicedirectory'
 
 
+class Asset(_messages.Message):
+  r"""Asset associated with Service Directory resource.
+
+  Fields:
+    resource: Required. Schemaless uri for the component Examples :
+      //compute.googleapis.com/projects/1234/zones/us-
+      east1-c/instanceGroups/mig1
+      //compute.googleapis.com/projects/1234/regions/us-
+      east1/forwardingRules/fr1
+  """
+
+  resource = _messages.StringField(1)
+
+
 class Attributes(_messages.Message):
   r"""Attributes are structured data attached to a given resource.
 
@@ -231,18 +245,6 @@ class CloudAuditOptions(_messages.Message):
   logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
-class Component(_messages.Message):
-  r"""Component associated with this workload.
-
-  Fields:
-    resource: Required. Schemaless uri for the component Example :
-      //compute.googleapis.com/projects/1234/zones/us-
-      east1-c/instanceGroups/mig1
-  """
-
-  resource = _messages.StringField(1)
-
-
 class Condition(_messages.Message):
   r"""A condition to be met.
 
@@ -372,13 +374,11 @@ class ContactInfo(_messages.Message):
     channel: Optional. Channel to use to reach the contact, eg. pager, email
     displayName: Optional. Display name of the contact.
     email: Optional. Email of the contact.
-    user: Optional. User name of the contact.
   """
 
   channel = _messages.StringField(1)
   displayName = _messages.StringField(2)
   email = _messages.StringField(3)
-  user = _messages.StringField(4)
 
 
 class CounterOptions(_messages.Message):
@@ -765,19 +765,6 @@ class ListNamespacesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class ListRegistrationPoliciesResponse(_messages.Message):
-  r"""The response message for RegistrationService.ListRegistrationPolicies.
-
-  Fields:
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    registrationPolicies: The list of registration policies.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  registrationPolicies = _messages.MessageField('RegistrationPolicy', 2, repeated=True)
-
-
 class ListServicesResponse(_messages.Message):
   r"""The response message for RegistrationService.ListServices.
 
@@ -988,7 +975,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -996,15 +983,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -1061,67 +1048,6 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
-class RegistrationPolicy(_messages.Message):
-  r"""An individual RegistrationPolicy. A list of policies that can be applied
-  to a Service Directory project in order to register the Service Workloads
-  associated with the resources in the policies.
-
-  Fields:
-    name: Required. Immutable. The resource name for the Registration Policy
-      in the format `projects/*/locations/*/registrationPolicies/*`.
-    namespace: Optional. Service Directory Namespace name to which the
-      Registration Policy is applied. Only one Registration Policy is allowed
-      for a given namespace. Default Namespace is goog-sdrp-default.
-    resourcePolicies: Required. The list of ResourcePolicy which are
-      applicable to the Registration Policy.
-  """
-
-  name = _messages.StringField(1)
-  namespace = _messages.StringField(2)
-  resourcePolicies = _messages.MessageField('ResourcePolicy', 3, repeated=True)
-
-
-class ReliabilityAttributes(_messages.Message):
-  r"""Reliability Attributes associated with workload.
-
-  Enums:
-    CriticalityValueValuesEnum: Optional. Criticality with respect to
-      reliability associated with this workload.
-
-  Fields:
-    criticality: Optional. Criticality with respect to reliability associated
-      with this workload.
-    owners: Optional. List of contacts for reliability owners of this service.
-      These owners indicate who to contact in case of a reliability issue,
-      such as an outage.
-  """
-
-  class CriticalityValueValuesEnum(_messages.Enum):
-    r"""Optional. Criticality with respect to reliability associated with this
-    workload.
-
-    Values:
-      CRITICALITY_UNSPECIFIED: Default. Workload is not supported and is not
-        explected to provide any guarantees.
-      MISSION_CRITICAL: The workload is mission-critical to the organization.
-      UNIT_CRITICAL: The workload is critical to a unit within the
-        organization.
-      HIGH: The workload may not directly affect the mission of a specific
-        unit, but is of high importance to the organization.
-      MEDIUM: The workload is of medium importance to the organization.
-      LOW: The workload is of low importance to the organization.
-    """
-    CRITICALITY_UNSPECIFIED = 0
-    MISSION_CRITICAL = 1
-    UNIT_CRITICAL = 2
-    HIGH = 3
-    MEDIUM = 4
-    LOW = 5
-
-  criticality = _messages.EnumField('CriticalityValueValuesEnum', 1)
-  owners = _messages.MessageField('ContactInfo', 2, repeated=True)
-
-
 class ResolveServiceRequest(_messages.Message):
   r"""The request message for LookupService.ResolveService. Looks up a service
   by its name, returns the service and its endpoints.
@@ -1168,39 +1094,6 @@ class ResolveServiceResponse(_messages.Message):
   """
 
   service = _messages.MessageField('Service', 1)
-
-
-class ResourcePolicy(_messages.Message):
-  r"""Resource Policies applied to the Registration Policy.
-
-  Enums:
-    KindValueValuesEnum: Required. The type of resource which needs to be
-      registered to the Service Workload.
-
-  Fields:
-    kind: Required. The type of resource which needs to be registered to the
-      Service Workload.
-    selector: Required. The selector used to specify resources. Only applies
-      to those in the same project and region as the Service Directory
-      registration policy. Following fields can be selected for MIGs: name,
-      zone, region. Example - 'zone == us-east-c && name != my-secret-mig'
-      selects all zonal MIGs in us-east1-c except those named my-secret-mig.
-      Represents CEL expression.
-  """
-
-  class KindValueValuesEnum(_messages.Enum):
-    r"""Required. The type of resource which needs to be registered to the
-    Service Workload.
-
-    Values:
-      KIND_UNSPECIFIED: Default. Should not be used.
-      KIND_MIG: GCP Managed Instance Group resource.
-    """
-    KIND_UNSPECIFIED = 0
-    KIND_MIG = 1
-
-  kind = _messages.EnumField('KindValueValuesEnum', 1)
-  selector = _messages.MessageField('Expr', 2)
 
 
 class Rule(_messages.Message):
@@ -1256,51 +1149,12 @@ class Rule(_messages.Message):
   permissions = _messages.StringField(7, repeated=True)
 
 
-class SecurityAttributes(_messages.Message):
-  r"""Security Attributes associated with workload.
-
-  Enums:
-    CriticalityValueValuesEnum: Optional. Criticality with respect to security
-      associated with this workload. An example of a security-critical
-      workload could be a workload handling sensitive data.
-
-  Fields:
-    criticality: Optional. Criticality with respect to security associated
-      with this workload. An example of a security-critical workload could be
-      a workload handling sensitive data.
-    owners: Optional. List of contacts for security owners of this service.
-  """
-
-  class CriticalityValueValuesEnum(_messages.Enum):
-    r"""Optional. Criticality with respect to security associated with this
-    workload. An example of a security-critical workload could be a workload
-    handling sensitive data.
-
-    Values:
-      CRITICALITY_UNSPECIFIED: Default. Workload is not supported and is not
-        explected to provide any guarantees.
-      MISSION_CRITICAL: The workload is mission-critical to the organization.
-      UNIT_CRITICAL: The workload is critical to a unit within the
-        organization.
-      HIGH: The workload may not directly affect the mission of a specific
-        unit, but is of high importance to the organization.
-      MEDIUM: The workload is of medium importance to the organization.
-      LOW: The workload is of low importance to the organization.
-    """
-    CRITICALITY_UNSPECIFIED = 0
-    MISSION_CRITICAL = 1
-    UNIT_CRITICAL = 2
-    HIGH = 3
-    MEDIUM = 4
-    LOW = 5
-
-  criticality = _messages.EnumField('CriticalityValueValuesEnum', 1)
-  owners = _messages.MessageField('ContactInfo', 2, repeated=True)
-
-
 class Service(_messages.Message):
   r"""An individual service. A service contains a name and optional metadata.
   A service must exist before endpoints can be added to it.
+
+  Enums:
+    CriticalityValueValuesEnum: Optional. Criticality level of this service.
 
   Messages:
     MetadataValue: Optional. Metadata for the service. This data can be
@@ -1320,21 +1174,20 @@ class Service(_messages.Message):
       Directory.
 
   Fields:
+    assets: Output only. Assets that are part of this service (output only).
+      Example for Google Compute Engine assets: [
+      //compute.googleapis.com/projects/1234/regions/us-
+      east1/forwardingRules/fr1 ]
     attributes: Optional. Attributes associated with this Service.
-    businessOwners: Optional. List of contacts for business owners of this
-      service. This includes team members who are responsible for business
-      outcomes, customer escalations, or P&L of a service
     createTime: Output only. The timestamp when the service was created.
     criteria: Optional. Criteria to apply to identify components belonging to
       this service. Only one criteria allowed. Eg. create service representing
-      forwarding rule fr1: [ { type: FORWARDING_RULE, key: COMPONENT_NAME,
-      value: '//compute.googleapis.com/projects/123/zones/us-
+      forwarding rule fr1: [ { key: FORWARDING_RULE, value:
+      '//compute.googleapis.com/projects/123/zones/us-
       east1-c/forwardingRules/fr1' } ]
+    criticality: Optional. Criticality level of this service.
     description: Optional. Human readable explanation of the service and what
       it does.
-    devOwners: Optional. List of contacts for developers of this service. This
-      includes application engineers and architects writing and updating this
-      service.
     displayName: Optional. User-friendly display name for service.
     endpoints: Output only. Endpoints associated with this service. Returned
       on LookupService.ResolveService. Control plane clients should use
@@ -1363,10 +1216,6 @@ class Service(_messages.Message):
       read/write to the same location in Service Directory.
     name: Immutable. The resource name for the service in the format
       `projects/*/locations/*/namespaces/*/services/*`.
-    operatorOwners: Optional. List of contacts for operator owners of this
-      service. This includes SRE and ops teams that are responsible for
-      troubleshooting a service, responding to outages or unhealthiness, and
-      maintaining availability.
     owners: Optional. List of contacts for this service. This can include
       application engineers, architects, SRE, ops team, business owners etc.
     serviceIdentities: Optional. Authorized Service Identities. If provided,
@@ -1379,11 +1228,25 @@ class Service(_messages.Message):
     updateTime: Output only. The timestamp when the service was last updated.
       Note: endpoints being created/deleted/updated within the service are not
       considered service updates for the purpose of this timestamp.
-    workloads: Output only. Service to Workload relationship is 1:1, 1:N, N:1,
-      N:M The list could be empty if the service is opaque (i.e. PSC endpoint
-      of SaaS) and do not have workloads. Example: /projects/123/locations/us-
-      east1/namespaces/ns/serviceWorkloads/sw1
   """
+
+  class CriticalityValueValuesEnum(_messages.Enum):
+    r"""Optional. Criticality level of this service.
+
+    Values:
+      CRITICALITY_UNSPECIFIED: Default. Resource is not supported and is not
+        expected to provide any guarantees.
+      MISSION_CRITICAL: The resource is mission-critical to the organization.
+      HIGH: The resource may not directly affect the mission of a specific
+        unit, but is of high importance to the organization.
+      MEDIUM: The resource is of medium importance to the organization.
+      LOW: The resource is of low importance to the organization.
+    """
+    CRITICALITY_UNSPECIFIED = 0
+    MISSION_CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
@@ -1422,24 +1285,22 @@ class Service(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  attributes = _messages.MessageField('Attributes', 1)
-  businessOwners = _messages.MessageField('ContactInfo', 2, repeated=True)
+  assets = _messages.MessageField('Asset', 1, repeated=True)
+  attributes = _messages.MessageField('Attributes', 2)
   createTime = _messages.StringField(3)
   criteria = _messages.MessageField('ServiceCriteria', 4, repeated=True)
-  description = _messages.StringField(5)
-  devOwners = _messages.MessageField('ContactInfo', 6, repeated=True)
+  criticality = _messages.EnumField('CriticalityValueValuesEnum', 5)
+  description = _messages.StringField(6)
   displayName = _messages.StringField(7)
   endpoints = _messages.MessageField('Endpoint', 8, repeated=True)
   environment = _messages.StringField(9)
   hostname = _messages.StringField(10)
   metadata = _messages.MessageField('MetadataValue', 11)
   name = _messages.StringField(12)
-  operatorOwners = _messages.MessageField('ContactInfo', 13, repeated=True)
-  owners = _messages.MessageField('ContactInfo', 14, repeated=True)
-  serviceIdentities = _messages.MessageField('ServiceIdentity', 15, repeated=True)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
-  workloads = _messages.StringField(18, repeated=True)
+  owners = _messages.MessageField('ContactInfo', 13, repeated=True)
+  serviceIdentities = _messages.MessageField('ServiceIdentity', 14, repeated=True)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class ServiceCriteria(_messages.Message):
@@ -1447,11 +1308,9 @@ class ServiceCriteria(_messages.Message):
 
   Enums:
     KeyValueValuesEnum: Required. Key for criteria.
-    TypeValueValuesEnum: Required. Type of compute this service represents.
 
   Fields:
     key: Required. Key for criteria.
-    type: Required. Type of compute this service represents.
     value: Required. Criteria value to match against for the associated
       criteria key. Example: //compute.googleapis.com/projects/123/regions/us-
       west1/forwardingRules/fr1
@@ -1462,24 +1321,28 @@ class ServiceCriteria(_messages.Message):
 
     Values:
       CRITERIA_KEY_UNSPECIFIED: Default. Criteria.key is unspecified.
-      COMPONENT_NAME: The criteria key is Component Name.
+      FORWARDING_RULE: Criteria type of Forwarding Rule. Example value:
+        //compute.googleapis.com/projects/123/regions/us-
+        west1/forwardingRules/fr1
+      GKE_GATEWAY: Criteria type of GKE Gateway. Example value:
+        //container.googleapis.com/projects/123/zones/us-
+        central1-a/clusters/my-cluster/k8s/apis/gateway.networking.k8s.io/v1al
+        pha2/namespaces/default/gateways/my-gateway
+      APP_HUB_SERVICE: Criteria type of App Hub service. Example value:
+        //servicedirectory.googleapis.com/projects/1234/locations/us-
+        west1/namespaces/my-ns/services/gshoe-service
+      APP_HUB_WORKLOAD: Criteria type of App Hub workload. Example value:
+        //servicedirectory.googleapis.com/projects/1234/locations/us-
+        west1/namespaces/my-ns/workloads/gshoe-workload
     """
     CRITERIA_KEY_UNSPECIFIED = 0
-    COMPONENT_NAME = 1
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. Type of compute this service represents.
-
-    Values:
-      CRITERIA_TYPE_UNSPECIFIED: Default. The criteria type is unspecified.
-      FORWARDING_RULE: Criteria type of Forwarding Rule.
-    """
-    CRITERIA_TYPE_UNSPECIFIED = 0
     FORWARDING_RULE = 1
+    GKE_GATEWAY = 2
+    APP_HUB_SERVICE = 3
+    APP_HUB_WORKLOAD = 4
 
   key = _messages.EnumField('KeyValueValuesEnum', 1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
-  value = _messages.StringField(3)
+  value = _messages.StringField(2)
 
 
 class ServiceIdentity(_messages.Message):
@@ -1644,57 +1507,6 @@ class ServicedirectoryProjectsLocationsNamespacesPatchRequest(_messages.Message)
   name = _messages.StringField(1, required=True)
   namespace = _messages.MessageField('Namespace', 2)
   updateMask = _messages.StringField(3)
-
-
-class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetIamPolicyRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetIamPolic
-  yRequest object.
-
-  Fields:
-    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsSetIamPolicyRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsSetIamPolic
-  yRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsTestIamPermissionsRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsTestIamPerm
-  issionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class ServicedirectoryProjectsLocationsNamespacesServicesCreateRequest(_messages.Message):
@@ -2185,164 +1997,6 @@ class ServicedirectoryProjectsLocationsNamespacesWorkloadsTestIamPermissionsRequ
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class ServicedirectoryProjectsLocationsRegistrationPoliciesCreateRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsRegistrationPoliciesCreateRequest
-  object.
-
-  Fields:
-    parent: Required. The resource name of the namespace this registration
-      policy will belong to.
-    registrationPolicy: A RegistrationPolicy resource to be passed as the
-      request body.
-    registrationPolicyId: Required. The Resource ID must be 1-63 characters
-      long, and comply with [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt).
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the
-      first character must be a lowercase letter, and all following characters
-      must be a dash, lowercase letter, or digit, except the last character,
-      which cannot be a dash.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  registrationPolicy = _messages.MessageField('RegistrationPolicy', 2)
-  registrationPolicyId = _messages.StringField(3)
-
-
-class ServicedirectoryProjectsLocationsRegistrationPoliciesDeleteRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsRegistrationPoliciesDeleteRequest
-  object.
-
-  Fields:
-    name: Required. The name of the registration policy to delete.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ServicedirectoryProjectsLocationsRegistrationPoliciesGetIamPolicyRequest(_messages.Message):
-  r"""A
-  ServicedirectoryProjectsLocationsRegistrationPoliciesGetIamPolicyRequest
-  object.
-
-  Fields:
-    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class ServicedirectoryProjectsLocationsRegistrationPoliciesGetRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsRegistrationPoliciesGetRequest
-  object.
-
-  Fields:
-    name: Required. The name of the registration policy to get.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ServicedirectoryProjectsLocationsRegistrationPoliciesListRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsRegistrationPoliciesListRequest
-  object.
-
-  Fields:
-    filter: Optional. The filter to list results by. General `filter` string
-      syntax: ` ()` * `` can be any field name on the RegistrationPolicy
-      proto. For example: `name`, `namespace`, or `resource_policies` * `` can
-      be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`, and
-      is roughly the same as `=` * `` must be the same data type as field * ``
-      can be `AND`, `OR`, `NOT` Examples of valid filters: *
-      `resource.kind:MIG` returns all the registration policies with MIGs
-      associated with them * `name>projects/my-project/locations/us-
-      east1/registrationPolicies/registration-policy-c` returns registration
-      policies that have names that are alphabetically later than the string,
-      so "registration-policy-e" is returned but "registration-policy-a" is
-      not For more information about filtering, see [API
-      Filtering](https://aip.dev/160).
-    orderBy: Optional. The order to list results by. General `order_by` string
-      syntax: ` () (,)` * `` allows values: `name`, `namespace` * `` ascending
-      or descending order by ``. If this is left blank, `asc` is used Note
-      that an empty `order_by` string results in default order, which is order
-      by `name` in ascending order.
-    pageSize: Optional. The maximum number of items to return. maximum default
-      page size is 10000 for unfiltered queries and 25 for filtered queries
-    pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
-    parent: Required. The resource name of the namespace whose service
-      workloads you'd like to list.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class ServicedirectoryProjectsLocationsRegistrationPoliciesPatchRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsRegistrationPoliciesPatchRequest
-  object.
-
-  Fields:
-    allowMissing: If set to true, and the registration policy is not found, a
-      new registration policy will be created. -- Will remain GOOGLE_INTERNAL
-      visibility post-launch.
-    name: Required. Immutable. The resource name for the Registration Policy
-      in the format `projects/*/locations/*/registrationPolicies/*`.
-    registrationPolicy: A RegistrationPolicy resource to be passed as the
-      request body.
-    updateMask: Required. List of fields to be updated in this request.
-      Allowable fields: `resource_policies'
-  """
-
-  allowMissing = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  registrationPolicy = _messages.MessageField('RegistrationPolicy', 3)
-  updateMask = _messages.StringField(4)
-
-
-class ServicedirectoryProjectsLocationsRegistrationPoliciesSetIamPolicyRequest(_messages.Message):
-  r"""A
-  ServicedirectoryProjectsLocationsRegistrationPoliciesSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class ServicedirectoryProjectsLocationsRegistrationPoliciesTestIamPermissionsRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsRegistrationPoliciesTestIamPermission
-  sRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -2448,52 +2102,42 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class Workload(_messages.Message):
-  r"""An individual Workload. A logical collection of components that provide
-  the same functionality, with a common set of core attributes, that power
+  r"""An individual Workload. A logical collection of assets that provide the
+  same functionality, with a common set of core attributes, that power
   services in Service Directory and to which policies can be applied.
 
   Enums:
     CriticalityValueValuesEnum: Optional. Criticality of this workload.
 
   Fields:
-    businessOwners: Optional. List of contacts for business owners of this
-      workload. This includes team members who are responsible for business
-      outcomes, customer escalations, or P&L of a service.
-    components: Output only. Components that are part of this workload (output
-      only). Example for Google Compute Engine components: [
+    assets: Output only. Assets that are part of this workload (output only).
+      Example for Google Compute Engine assets: [
       //compute.googleapis.com/projects/1234/zones/us-
       east1-c/instanceGroups/mig1,
       //compute.googleapis.com/projects/1234/zones/us-
       east1-a/instanceGroups/mig2 ]
     createTime: Output only. The timestamp when this workload was created in
       Service Directory.
-    criteria: Optional. Criteria to apply to identify components belonging to
-      this workload. Used to auto-populate the components fields. Repeated
-      list of tuples of . Multiple values are treated as OR expression, and
-      components matching any of the entries will be selected. Eg. select all
-      resources of workloadType behind backend service bs1: [ { type:
-      MANAGED_INSTANCE_GROUPS key: BACKEND_SERVICE, value:
-      '//compute.googleapis.com/projects/123/zones/us-
+    criteria: Optional. Criteria to apply to identify assets belonging to this
+      workload. Used to auto-populate the assets fields. Repeated list of
+      tuples of . Multiple values are treated as OR expression, and assets
+      matching any of the entries will be selected. Eg. select all resources
+      of workloadType behind backend service bs1: [ { key: BACKEND_SERVICE,
+      value: '//compute.googleapis.com/projects/123/zones/us-
       east1-c/backendServices/bs1' } ] Eg. select all resources of
-      workloadType behind backend services in bs1 or bs2: [ { type:
-      MANAGED_INSTANCE_GROUPS, key: BACKEND_SERVICE, value:
-      '//compute.googleapis.com/projects/123/zones/us-
-      east1-c/backendServices/bs1' }, { type : MANAGED_INSTANCE_GROUPS, key:
-      BACKEND_SERVICE, value:
+      workloadType behind backend services in bs1 or bs2: [ { key:
+      BACKEND_SERVICE, value: '//compute.googleapis.com/projects/123/zones/us-
+      east1-c/backendServices/bs1' }, { key: BACKEND_SERVICE, value:
       '//compute.googleapis.com/projects/123/regions/us-
       east1/backendServices/bs2' }, ] Eg. select resources explicitly by name
-      to be part of the workload: [ { type : MANAGED_INSTANCE_GROUPS, key:
-      COMPONENT_NAME, value: '//compute.googleapis.com/projects/1234/zones/us-
-      east1-c/instanceGroups/mig1' }, { type : MANAGED_INSTANCE_GROUPS, key:
-      COMPONENT_NAME, value:
+      to be part of the workload: [ { key: INSTANCE_GROUP, value:
+      '//compute.googleapis.com/projects/1234/zones/us-
+      east1-c/instanceGroups/mig1' }, { key: INSTANCE_GROUP, value:
       '//compute.googleapis.com/projects/1234/regions/us-
       east1/instanceGroups/mig2' } ]
     criticality: Optional. Criticality of this workload.
     description: Optional. Human readable explanation of the workload and what
       it does.
-    devOwners: Optional. List of contacts for developer owners of this
-      workload. This includes application engineers and architects writing and
-      updating this workload.
     displayName: Optional. Friendly name. User modifiable.
     environment: Optional. User-friendly string that indicates the environment
       for this workload.
@@ -2501,16 +2145,8 @@ class Workload(_messages.Message):
       workload. This field should stay GOOGLE_INTERNAL post launch.
     name: Immutable. The resource name for the workload in the format
       `projects/*/locations/*/namespaces/*/workloads/*`.
-    operatorOwners: Optional. List of contacts for operator owners of this
-      workload. This includes SRE and ops teams that are responsible for
-      troubleshooting a workload, responding to outages or unhealthiness, and
-      maintaining availability.
     owners: Optional. List of contacts for this workload. This can include
       application engineers, architects, SRE, ops team, business owners etc.
-    reliabilityAttributes: Optional. Properties related to reliability of this
-      workload.
-    securityAttributes: Optional. Properties related to security of this
-      workload.
     uid: Output only. A globally unique identifier (in UUID4 format) for this
       workload.
     updateTime: Output only. The timestamp when the workload was last updated
@@ -2521,54 +2157,43 @@ class Workload(_messages.Message):
     r"""Optional. Criticality of this workload.
 
     Values:
-      CRITICALITY_UNSPECIFIED: Default. Workload is not supported and is not
-        explected to provide any guarantees.
-      MISSION_CRITICAL: The workload is mission-critical to the organization.
-      UNIT_CRITICAL: The workload is critical to a unit within the
-        organization.
-      HIGH: The workload may not directly affect the mission of a specific
+      CRITICALITY_UNSPECIFIED: Default. Resource is not supported and is not
+        expected to provide any guarantees.
+      MISSION_CRITICAL: The resource is mission-critical to the organization.
+      HIGH: The resource may not directly affect the mission of a specific
         unit, but is of high importance to the organization.
-      MEDIUM: The workload is of medium importance to the organization.
-      LOW: The workload is of low importance to the organization.
+      MEDIUM: The resource is of medium importance to the organization.
+      LOW: The resource is of low importance to the organization.
     """
     CRITICALITY_UNSPECIFIED = 0
     MISSION_CRITICAL = 1
-    UNIT_CRITICAL = 2
-    HIGH = 3
-    MEDIUM = 4
-    LOW = 5
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
 
-  businessOwners = _messages.MessageField('ContactInfo', 1, repeated=True)
-  components = _messages.MessageField('Component', 2, repeated=True)
-  createTime = _messages.StringField(3)
-  criteria = _messages.MessageField('WorkloadCriteria', 4, repeated=True)
-  criticality = _messages.EnumField('CriticalityValueValuesEnum', 5)
-  description = _messages.StringField(6)
-  devOwners = _messages.MessageField('ContactInfo', 7, repeated=True)
-  displayName = _messages.StringField(8)
-  environment = _messages.StringField(9)
-  internalAttributes = _messages.MessageField('InternalAttributes', 10)
-  name = _messages.StringField(11)
-  operatorOwners = _messages.MessageField('ContactInfo', 12, repeated=True)
-  owners = _messages.MessageField('ContactInfo', 13, repeated=True)
-  reliabilityAttributes = _messages.MessageField('ReliabilityAttributes', 14)
-  securityAttributes = _messages.MessageField('SecurityAttributes', 15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  assets = _messages.MessageField('Asset', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  criteria = _messages.MessageField('WorkloadCriteria', 3, repeated=True)
+  criticality = _messages.EnumField('CriticalityValueValuesEnum', 4)
+  description = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  environment = _messages.StringField(7)
+  internalAttributes = _messages.MessageField('InternalAttributes', 8)
+  name = _messages.StringField(9)
+  owners = _messages.MessageField('ContactInfo', 10, repeated=True)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class WorkloadCriteria(_messages.Message):
-  r"""Criteria to apply to identify components belonging to this workload.
-  Used to auto-populate the components field.
+  r"""Criteria to apply to identify assets belonging to this workload. Used to
+  auto-populate the assets field.
 
   Enums:
     KeyValueValuesEnum: Required. Key for criteria.
-    TypeValueValuesEnum: Required. Type of compute this workload is composed
-      of.
 
   Fields:
     key: Required. Key for criteria.
-    type: Required. Type of compute this workload is composed of.
     value: Required. Criteria value to match against for the associated
       criteria key. Example: //compute.googleapis.com/projects/123/regions/us-
       west1/backendServices/bs1
@@ -2579,27 +2204,15 @@ class WorkloadCriteria(_messages.Message):
 
     Values:
       CRITERIA_KEY_UNSPECIFIED: Default. Criteria.key is unspecified.
-      COMPONENT_NAME: The criteria key is Component Name.
+      INSTANCE_GROUP: The criteria key is Instance Group.
       BACKEND_SERVICE: The criteria key is Backend Service.
     """
     CRITERIA_KEY_UNSPECIFIED = 0
-    COMPONENT_NAME = 1
+    INSTANCE_GROUP = 1
     BACKEND_SERVICE = 2
 
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. Type of compute this workload is composed of.
-
-    Values:
-      CRITERIA_TYPE_UNSPECIFIED: Default. The criteria type is unspecified.
-      MANAGED_INSTANCE_GROUPS: The criteria type is mananged instacne group
-        (MIGs).
-    """
-    CRITERIA_TYPE_UNSPECIFIED = 0
-    MANAGED_INSTANCE_GROUPS = 1
-
   key = _messages.EnumField('KeyValueValuesEnum', 1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
-  value = _messages.StringField(3)
+  value = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

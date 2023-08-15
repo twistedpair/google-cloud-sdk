@@ -1356,7 +1356,7 @@ class GoogleIamV1Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -1364,15 +1364,15 @@ class GoogleIamV1Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -2353,14 +2353,14 @@ class RRSetRoutingPolicyLoadBalancerTarget(_messages.Message):
 
     Values:
       none: <no description>
-      regionalL4ilb: Indicates that the load balancer configuration refers to
-        a Regional Internal Network Load Balancer.
-      regionalL7ilb: Indicates that the load balancer configuration refers to
-        a Regional Internal Application Load Balancer.
+      globalL7ilb: Global internal Application Load Balancer
+      regionalL4ilb: Regional internal passthrough Network Load Balancer
+      regionalL7ilb: Regional internal Application Load Balancer
     """
     none = 0
-    regionalL4ilb = 1
-    regionalL7ilb = 2
+    globalL7ilb = 1
+    regionalL4ilb = 2
+    regionalL7ilb = 3
 
   ipAddress = _messages.StringField(1)
   ipProtocol = _messages.EnumField('IpProtocolValueValuesEnum', 2)

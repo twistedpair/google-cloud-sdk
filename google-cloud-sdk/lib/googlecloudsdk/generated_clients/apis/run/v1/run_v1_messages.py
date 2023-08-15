@@ -442,12 +442,14 @@ class ContainerOverride(_messages.Message):
   r"""Per container override specification.
 
   Fields:
-    args: Arguments to the entrypoint. Will replace existing args for override
-      if present. Must be empty if `clear_args` is set to true.
-    clearArgs: Optional. True if the intention is to clear out existing args
-      list.
-    env: List of environment variables to set in the container. Will be merged
-      with existing env for override.
+    args: Arguments to the entrypoint. The specified arguments replace and
+      override any existing entrypoint arguments. Must be empty if
+      `clear_args` is set to true.
+    clearArgs: Optional. Set to True to clear all existing arguments.
+    env: List of environment variables to set in the container. All specified
+      environment variables are merged with existing environment variables.
+      When the specified environment variables exist, these values override
+      any existing values.
     name: The name of the container specified as a DNS_LABEL.
   """
 
@@ -554,10 +556,9 @@ class DomainMappingStatus(_messages.Message):
 
 
 class EmptyDirVolumeSource(_messages.Message):
-  r"""Ephemeral storage which can be backed by real disks (HD, SSD), network
-  storage or memory (i.e. tmpfs). For now only in memory (tmpfs) is supported.
-  It is ephemeral in the sense that when the sandbox is taken down, the data
-  is destroyed with it (it does not persist across sandbox runs).
+  r"""In memory (tmpfs) ephemeral storage. It is ephemeral in the sense that
+  when the sandbox is taken down, the data is destroyed with it (it does not
+  persist across sandbox runs).
 
   Fields:
     medium: The medium on which the data is stored. The default is "" which
@@ -567,11 +568,10 @@ class EmptyDirVolumeSource(_messages.Message):
     sizeLimit: Limit on the storage usable by this EmptyDir volume. The size
       limit is also applicable for memory medium. The maximum usage on memory
       medium EmptyDir would be the minimum value between the SizeLimit
-      specified here and the sum of memory limits of all containers in a pod.
-      This field's values are of the 'Quantity' k8s type:
-      https://kubernetes.io/docs/reference/kubernetes-api/common-
-      definitions/quantity/. The default is nil which means that the limit is
-      undefined. More info:
+      specified here and the sum of memory limits of all containers. The
+      default is nil which means that the limit is undefined. More info:
+      https://cloud.google.com/run/docs/configuring/in-memory-
+      volumes#configure-volume. Info in Kubernetes:
       https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
   """
 
@@ -1608,7 +1608,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -1616,15 +1616,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -2108,9 +2108,8 @@ class RunJobRequest(_messages.Message):
 
   Fields:
     overrides: Optional. Private preview feature. Currently only available by
-      invitation. Overrides specification for a given execution of a job. If
-      provided, overrides will be applied to update the execution or task
-      spec.
+      invitation. Overrides specification for a given execution of a job. The
+      specified values update the specification of the created execution.
   """
 
   overrides = _messages.MessageField('Overrides', 1)

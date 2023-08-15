@@ -78,7 +78,7 @@ def _ConstructContinuousBackupConfig(alloydb_messages, args, update=False):
   return continuous_backup_config
 
 
-def _ConstructClusterForCreateRequestGABeta(alloydb_messages, args):
+def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
   """Returns the cluster for GA create request based on args."""
   cluster = alloydb_messages.Cluster()
   cluster.network = args.network
@@ -105,9 +105,16 @@ def _ConstructClusterForCreateRequestGABeta(alloydb_messages, args):
   return cluster
 
 
+def _ConstructClusterForCreateRequestBeta(alloydb_messages, args):
+  """Returns the cluster for beta create request based on args."""
+  cluster = _ConstructClusterForCreateRequestGA(alloydb_messages, args)
+  cluster.databaseVersion = args.database_version
+  return cluster
+
+
 def _ConstructClusterForCreateRequestAlpha(alloydb_messages, args):
   """Returns the cluster for alpha create request based on args."""
-  cluster = _ConstructClusterForCreateRequestGABeta(alloydb_messages, args)
+  cluster = _ConstructClusterForCreateRequestBeta(alloydb_messages, args)
 
   if args.allocated_ip_range_name:
     cluster.networkConfig = alloydb_messages.NetworkConfig(
@@ -117,9 +124,19 @@ def _ConstructClusterForCreateRequestAlpha(alloydb_messages, args):
   return cluster
 
 
-def ConstructCreateRequestFromArgsGABeta(alloydb_messages, location_ref, args):
+def ConstructCreateRequestFromArgsGA(alloydb_messages, location_ref, args):
   """Returns the cluster create request for GA track based on args."""
-  cluster = _ConstructClusterForCreateRequestGABeta(alloydb_messages, args)
+  cluster = _ConstructClusterForCreateRequestGA(alloydb_messages, args)
+
+  return alloydb_messages.AlloydbProjectsLocationsClustersCreateRequest(
+      cluster=cluster,
+      clusterId=args.cluster,
+      parent=location_ref.RelativeName())
+
+
+def ConstructCreateRequestFromArgsBeta(alloydb_messages, location_ref, args):
+  """Returns the cluster create request for beta track based on args."""
+  cluster = _ConstructClusterForCreateRequestBeta(alloydb_messages, args)
 
   return alloydb_messages.AlloydbProjectsLocationsClustersCreateRequest(
       cluster=cluster,

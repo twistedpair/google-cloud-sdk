@@ -1997,7 +1997,8 @@ class StorageObjectAccessControlsDeleteRequest(_messages.Message):
       opposed to the latest version, the default).
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
   """
@@ -2025,7 +2026,8 @@ class StorageObjectAccessControlsGetRequest(_messages.Message):
       opposed to the latest version, the default).
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
   """
@@ -2046,7 +2048,8 @@ class StorageObjectAccessControlsInsertRequest(_messages.Message):
       opposed to the latest version, the default).
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     objectAccessControl: A ObjectAccessControl resource to be passed as the
       request body.
     userProject: The project to be billed for this request. Required for
@@ -2069,7 +2072,8 @@ class StorageObjectAccessControlsListRequest(_messages.Message):
       opposed to the latest version, the default).
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
   """
@@ -2092,7 +2096,8 @@ class StorageObjectAccessControlsPatchRequest(_messages.Message):
       opposed to the latest version, the default).
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     objectAccessControl: A ObjectAccessControl resource to be passed as the
       request body.
     userProject: The project to be billed for this request. Required for
@@ -2119,7 +2124,8 @@ class StorageObjectAccessControlsUpdateRequest(_messages.Message):
       opposed to the latest version, the default).
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     objectAccessControl: A ObjectAccessControl resource to be passed as the
       request body.
     userProject: The project to be billed for this request. Required for
@@ -2148,7 +2154,8 @@ class StorageObjectsComposeRequest(_messages.Message):
       destination object is stored in this bucket.
     destinationObject: Name of the new object. For information about how to
       URL encode object names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     destinationPredefinedAcl: Apply a predefined set of access controls to the
       destination object.
     ifGenerationMatch: Makes the operation conditional on whether the object's
@@ -2211,7 +2218,7 @@ class StorageObjectsCopyRequest(_messages.Message):
     destinationBucket: Name of the bucket in which to store the new object.
       Overrides the provided object metadata's bucket value, if any.For
       information about how to URL encode object names to be path safe, see
-      [Encoding URI Path Parts](http://cloud/storage/docs/request-
+      [Encoding URI Path Parts](https://cloud.google.com/storage/docs/request-
       endpoints#encoding).
     destinationKmsKeyName: Resource name of the Cloud KMS key, of the form
       projects/my-project/locations/global/keyRings/my-kr/cryptoKeys/my-key,
@@ -2252,7 +2259,8 @@ class StorageObjectsCopyRequest(_messages.Message):
       object (as opposed to the latest version, the default).
     sourceObject: Name of the source object. For information about how to URL
       encode object names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
   """
@@ -2331,7 +2339,8 @@ class StorageObjectsDeleteRequest(_messages.Message):
       object's current metageneration does not match the given value.
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
   """
@@ -2359,7 +2368,8 @@ class StorageObjectsGetIamPolicyRequest(_messages.Message):
       opposed to the latest version, the default).
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
   """
@@ -2393,7 +2403,8 @@ class StorageObjectsGetRequest(_messages.Message):
       object's current metageneration does not match the given value.
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     projection: Set of properties to return. Defaults to noAcl.
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
@@ -2456,7 +2467,8 @@ class StorageObjectsInsertRequest(_messages.Message):
     name: Name of the object. Required when the object metadata is not
       otherwise provided. Overrides the object metadata's name value, if any.
       For information about how to URL encode object names to be path safe,
-      see [Encoding URI Path Parts](http://cloud/storage/docs/request-
+      see [Encoding URI Path
+      Parts](https://cloud.google.com/storage/docs/request-
       endpoints#encoding).
     object: A Object resource to be passed as the request body.
     predefinedAcl: Apply a predefined set of access controls to this object.
@@ -2602,7 +2614,8 @@ class StorageObjectsPatchRequest(_messages.Message):
       object's current metageneration does not match the given value.
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     objectResource: A Object resource to be passed as the request body.
     predefinedAcl: Apply a predefined set of access controls to this object.
     projection: Set of properties to return. Defaults to full.
@@ -2677,7 +2690,8 @@ class StorageObjectsRewriteRequest(_messages.Message):
       metadata is not otherwise provided. Overrides the object metadata's name
       value, if any. For information about how to URL encode object names to
       be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     destinationPredefinedAcl: Apply a predefined set of access controls to the
       destination object.
     ifGenerationMatch: Makes the operation conditional on whether the object's
@@ -2722,7 +2736,8 @@ class StorageObjectsRewriteRequest(_messages.Message):
       object (as opposed to the latest version, the default).
     sourceObject: Name of the source object. For information about how to URL
       encode object names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
   """
@@ -2792,7 +2807,8 @@ class StorageObjectsSetIamPolicyRequest(_messages.Message):
       opposed to the latest version, the default).
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     policy: A Policy resource to be passed as the request body.
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
@@ -2814,7 +2830,8 @@ class StorageObjectsTestIamPermissionsRequest(_messages.Message):
       opposed to the latest version, the default).
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     permissions: Permissions to test.
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
@@ -2852,7 +2869,8 @@ class StorageObjectsUpdateRequest(_messages.Message):
       object's current metageneration does not match the given value.
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see [Encoding URI Path
-      Parts](http://cloud/storage/docs/request-endpoints#encoding).
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     objectResource: A Object resource to be passed as the request body.
     predefinedAcl: Apply a predefined set of access controls to this object.
     projection: Set of properties to return. Defaults to full.

@@ -446,23 +446,25 @@ class GoogleCloudPolicytroubleshooterIamV3betaConditionContextEffectiveTag(_mess
   inheritance status of the effective tag.
 
   Fields:
-    inherited: Indicates the inheritance status of a tag value attached to the
-      given resource. If the tag value is inherited from one of the resource's
-      ancestors, inherited will be true. If false, then the tag value is
-      directly attached to the resource, inherited will be false.
-    namespacedTagKey: The namespaced name of the TagKey. Can be in the form
-      `{organization_id}/{tag_key_short_name}` or
+    inherited: Output only. Indicates the inheritance status of a tag value
+      attached to the given resource. If the tag value is inherited from one
+      of the resource's ancestors, inherited will be true. If false, then the
+      tag value is directly attached to the resource, inherited will be false.
+    namespacedTagKey: Output only. The namespaced name of the TagKey. Can be
+      in the form `{organization_id}/{tag_key_short_name}` or
       `{project_id}/{tag_key_short_name}` or
       `{project_number}/{tag_key_short_name}`.
-    namespacedTagValue: The namespaced name of the TagValue. Can be in the
-      form `{organization_id}/{tag_key_short_name}/{tag_value_short_name}` or
+    namespacedTagValue: Output only. The namespaced name of the TagValue. Can
+      be in the form
+      `{organization_id}/{tag_key_short_name}/{tag_value_short_name}` or
       `{project_id}/{tag_key_short_name}/{tag_value_short_name}` or
       `{project_number}/{tag_key_short_name}/{tag_value_short_name}`.
-    tagKey: The name of the TagKey, in the format `tagKeys/{id}`, such as
-      `tagKeys/123`.
+    tagKey: Output only. The name of the TagKey, in the format `tagKeys/{id}`,
+      such as `tagKeys/123`.
     tagKeyParentName: The parent name of the tag key. Must be in the format
       `organizations/{organization_id}` or `projects/{project_number}`
-    tagValue: Resource name for TagValue in the format `tagValues/456`.
+    tagValue: Output only. Resource name for TagValue in the format
+      `tagValues/456`.
   """
 
   inherited = _messages.BooleanField(1)
@@ -1751,7 +1753,7 @@ class GoogleIamV1Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -1759,15 +1761,15 @@ class GoogleIamV1Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.

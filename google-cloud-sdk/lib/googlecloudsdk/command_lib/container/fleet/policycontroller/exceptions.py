@@ -31,3 +31,11 @@ class MultiInvalidPocoMembershipsError(exceptions.MultiError):
 
 class MutexError(exceptions.Error):
   """For when two mutually exclusive flags are specified."""
+
+
+class InvalidMonitoringBackendError(exceptions.Error):
+  """For when the API message for the monitoring backend isn't available.
+
+  This may be due to a mismatch between what the API proto supports and what
+  the gcloud SDK expects to support (constants.MONITORING_BACKEND).
+  """

@@ -88,7 +88,7 @@ class Backup(_messages.Message):
     StateValueValuesEnum: Output only. Current state of the Backup
 
   Messages:
-    LabelsValue: A set of custom labels supplied by user.
+    LabelsValue: Optional. A set of custom labels supplied by user.
 
   Fields:
     allNamespaces: Output only. If True, all namespaces were included in the
@@ -105,17 +105,17 @@ class Backup(_messages.Message):
       data. Controlled by the parent BackupPlan's include_volume_data value.
     createTime: Output only. The timestamp when this Backup resource was
       created.
-    deleteLockDays: Minimum age for this Backup (in days). If this field is
-      set to a non-zero value, the Backup will be "locked" against deletion
-      (either manual or automatic deletion) for the number of days provided
-      (measured from the creation time of the Backup). MUST be an integer
-      value between 0-90 (inclusive). Defaults to parent BackupPlan's
+    deleteLockDays: Optional. Minimum age for this Backup (in days). If this
+      field is set to a non-zero value, the Backup will be "locked" against
+      deletion (either manual or automatic deletion) for the number of days
+      provided (measured from the creation time of the Backup). MUST be an
+      integer value between 0-90 (inclusive). Defaults to parent BackupPlan's
       backup_delete_lock_days setting and may only be increased (either at
       creation time or in a subsequent update).
     deleteLockExpireTime: Output only. The time at which an existing delete
       lock will expire for this backup (calculated from create_time +
       delete_lock_days).
-    description: User specified descriptive string for this Backup.
+    description: Optional. User specified descriptive string for this Backup.
     encryptionKey: Output only. The customer managed encryption key that was
       used to encrypt the Backup's artifacts. Inherited from the parent
       BackupPlan's encryption_key value.
@@ -127,7 +127,7 @@ class Backup(_messages.Message):
       `GetBackup`, and systems are expected to put that etag in the request to
       `UpdateBackup` or `DeleteBackup` to ensure that their change will be
       applied to the same version of the resource.
-    labels: A set of custom labels supplied by user.
+    labels: Optional. A set of custom labels supplied by user.
     manual: Output only. This flag indicates whether this Backup resource was
       created manually by a user or via a schedule in the BackupPlan. A value
       of True means that the Backup was created manually.
@@ -141,7 +141,7 @@ class Backup(_messages.Message):
       the Backup.
     resourceCount: Output only. The total number of Kubernetes resources
       included in the Backup.
-    retainDays: The age (in days) after which this Backup will be
+    retainDays: Optional. The age (in days) after which this Backup will be
       automatically deleted. Must be an integer value >= 0: - If 0, no
       automatic deletion will occur for this Backup. - If not 0, this must be
       >= delete_lock_days and <= 365. Once a Backup is created, this value may
@@ -191,7 +191,7 @@ class Backup(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""A set of custom labels supplied by user.
+    r"""Optional. A set of custom labels supplied by user.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -249,16 +249,16 @@ class BackupConfig(_messages.Message):
 
   Fields:
     allNamespaces: If True, include all namespaced resources
-    encryptionKey: This defines a customer managed encryption key that will be
-      used to encrypt the "config" portion (the Kubernetes resources) of
-      Backups created via this plan. Default (empty): Config backup artifacts
-      will not be encrypted.
-    includeSecrets: This flag specifies whether Kubernetes Secret resources
-      should be included when they fall into the scope of Backups. Default:
-      False
-    includeVolumeData: This flag specifies whether volume data should be
-      backed up when PVCs are included in the scope of a Backup. Default:
-      False
+    encryptionKey: Optional. This defines a customer managed encryption key
+      that will be used to encrypt the "config" portion (the Kubernetes
+      resources) of Backups created via this plan. Default (empty): Config
+      backup artifacts will not be encrypted.
+    includeSecrets: Optional. This flag specifies whether Kubernetes Secret
+      resources should be included when they fall into the scope of Backups.
+      Default: False
+    includeVolumeData: Optional. This flag specifies whether volume data
+      should be backed up when PVCs are included in the scope of a Backup.
+      Default: False
     permissiveMode: Optional. If false, Backups will fail when Backup for GKE
       detects Kubernetes configuration that is non-standard or requires
       additional setup to restore. Default: False
@@ -287,25 +287,26 @@ class BackupPlan(_messages.Message):
       deactivated on an Update
 
   Messages:
-    LabelsValue: A set of custom labels supplied by user.
+    LabelsValue: Optional. A set of custom labels supplied by user.
 
   Fields:
-    backupConfig: Defines the configuration of Backups created via this
-      BackupPlan.
-    backupSchedule: Defines a schedule for automatic Backup creation via this
-      BackupPlan.
+    backupConfig: Optional. Defines the configuration of Backups created via
+      this BackupPlan.
+    backupSchedule: Optional. Defines a schedule for automatic Backup creation
+      via this BackupPlan.
     cluster: Required. Immutable. The source cluster from which Backups will
       be created via this BackupPlan. Valid formats: -
       `projects/*/locations/*/clusters/*` - `projects/*/zones/*/clusters/*`
     createTime: Output only. The timestamp when this BackupPlan resource was
       created.
-    deactivated: This flag indicates whether this BackupPlan has been
-      deactivated. Setting this field to True locks the BackupPlan such that
-      no further updates will be allowed (except deletes), including the
+    deactivated: Optional. This flag indicates whether this BackupPlan has
+      been deactivated. Setting this field to True locks the BackupPlan such
+      that no further updates will be allowed (except deletes), including the
       deactivated field itself. It also prevents any new Backups from being
       created via this BackupPlan (including scheduled Backups). Default:
       False
-    description: User specified descriptive string for this BackupPlan.
+    description: Optional. User specified descriptive string for this
+      BackupPlan.
     etag: Output only. `etag` is used for optimistic concurrency control as a
       way to help prevent simultaneous updates of a backup plan from
       overwriting each other. It is strongly suggested that systems make use
@@ -314,13 +315,13 @@ class BackupPlan(_messages.Message):
       response to `GetBackupPlan`, and systems are expected to put that etag
       in the request to `UpdateBackupPlan` or `DeleteBackupPlan` to ensure
       that their change will be applied to the same version of the resource.
-    labels: A set of custom labels supplied by user.
+    labels: Optional. A set of custom labels supplied by user.
     name: Output only. The full name of the BackupPlan resource. Format:
       `projects/*/locations/*/backupPlans/*`
     protectedPodCount: Output only. The number of Kubernetes Pods backed up in
       the last successful Backup created via this BackupPlan.
-    retentionPolicy: RetentionPolicy governs lifecycle of Backups created
-      under this plan.
+    retentionPolicy: Optional. RetentionPolicy governs lifecycle of Backups
+      created under this plan.
     rpoRiskLevel: Output only. A number that represents the current risk level
       of this BackupPlan from RPO perspective with 1 being no risk and 5 being
       highest risk.
@@ -364,7 +365,7 @@ class BackupPlan(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""A set of custom labels supplied by user.
+    r"""Optional. A set of custom labels supplied by user.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -469,24 +470,26 @@ class ClusterMetadata(_messages.Message):
   r"""Information about the GKE cluster from which this Backup was created.
 
   Messages:
-    BackupCrdVersionsValue: A list of the Backup for GKE CRD versions found in
-      the cluster.
+    BackupCrdVersionsValue: Output only. A list of the Backup for GKE CRD
+      versions found in the cluster.
 
   Fields:
-    anthosVersion: Anthos version
-    backupCrdVersions: A list of the Backup for GKE CRD versions found in the
-      cluster.
-    cluster: The source cluster from which this Backup was created. Valid
-      formats: - `projects/*/locations/*/clusters/*` -
+    anthosVersion: Output only. Anthos version
+    backupCrdVersions: Output only. A list of the Backup for GKE CRD versions
+      found in the cluster.
+    cluster: Output only. The source cluster from which this Backup was
+      created. Valid formats: - `projects/*/locations/*/clusters/*` -
       `projects/*/zones/*/clusters/*` This is inherited from the parent
       BackupPlan's cluster field.
-    gkeVersion: GKE version
-    k8sVersion: The Kubernetes server version of the source cluster.
+    gkeVersion: Output only. GKE version
+    k8sVersion: Output only. The Kubernetes server version of the source
+      cluster.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class BackupCrdVersionsValue(_messages.Message):
-    r"""A list of the Backup for GKE CRD versions found in the cluster.
+    r"""Output only. A list of the Backup for GKE CRD versions found in the
+    cluster.
 
     Messages:
       AdditionalProperty: An additional property for a BackupCrdVersionsValue
@@ -530,18 +533,19 @@ class ClusterResourceRestoreScope(_messages.Message):
   PersistentVolume
 
   Fields:
-    allGroupKinds: If True, all valid cluster-scoped resources will be
-      restored. Mutually exclusive to any other field in the message.
-    excludedGroupKinds: A list of cluster-scoped resource group kinds to NOT
-      restore from the backup. If specified, all valid cluster-scoped
-      resources will be restored except for those specified in the list.
-      Mutually exclusive to any other field in the message.
-    noGroupKinds: If True, no cluster-scoped resources will be restored. This
-      has the same restore scope as if the message is not defined. Mutually
-      exclusive to any other field in the message.
-    selectedGroupKinds: A list of cluster-scoped resource group kinds to
-      restore from the backup. If specified, only the selected resources will
+    allGroupKinds: Optional. If True, all valid cluster-scoped resources will
       be restored. Mutually exclusive to any other field in the message.
+    excludedGroupKinds: Optional. A list of cluster-scoped resource group
+      kinds to NOT restore from the backup. If specified, all valid cluster-
+      scoped resources will be restored except for those specified in the
+      list. Mutually exclusive to any other field in the message.
+    noGroupKinds: Optional. If True, no cluster-scoped resources will be
+      restored. This has the same restore scope as if the message is not
+      defined. Mutually exclusive to any other field in the message.
+    selectedGroupKinds: Optional. A list of cluster-scoped resource group
+      kinds to restore from the backup. If specified, only the selected
+      resources will be restored. Mutually exclusive to any other field in the
+      message.
   """
 
   allGroupKinds = _messages.BooleanField(1)
@@ -583,7 +587,7 @@ class DayOfWeekList(_messages.Message):
     DaysOfWeekValueListEntryValuesEnum:
 
   Fields:
-    daysOfWeek: A list of days of week.
+    daysOfWeek: Optional. A list of days of week.
   """
 
   class DaysOfWeekValueListEntryValuesEnum(_messages.Enum):
@@ -625,7 +629,7 @@ class EncryptionKey(_messages.Message):
   Backup artifacts.
 
   Fields:
-    gcpKmsEncryptionKey: Google Cloud KMS encryption key. Format:
+    gcpKmsEncryptionKey: Optional. Google Cloud KMS encryption key. Format:
       `projects/*/locations/*/keyRings/*/cryptoKeys/*`
   """
 
@@ -693,16 +697,26 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GetBackupIndexDownloadUrlResponse(_messages.Message):
+  r"""Response message for GetBackupIndexDownloadUrl.
+
+  Fields:
+    signedUrl: A string attribute.
+  """
+
+  signedUrl = _messages.StringField(1)
+
+
 class GkebackupProjectsLocationsBackupPlansBackupsCreateRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsBackupPlansBackupsCreateRequest object.
 
   Fields:
     backup: A Backup resource to be passed as the request body.
-    backupId: The client-provided short name for the Backup resource. This
-      name must: - be between 1 and 63 characters long (inclusive) - consist
-      of only lower-case ASCII letters, numbers, and dashes - start with a
-      lower-case letter - end with a lower-case letter or number - be unique
-      within the set of Backups in this BackupPlan
+    backupId: Optional. The client-provided short name for the Backup
+      resource. This name must: - be between 1 and 63 characters long
+      (inclusive) - consist of only lower-case ASCII letters, numbers, and
+      dashes - start with a lower-case letter - end with a lower-case letter
+      or number - be unique within the set of Backups in this BackupPlan
     parent: Required. The BackupPlan within which to create the Backup.
       Format: `projects/*/locations/*/backupPlans/*`
   """
@@ -716,11 +730,11 @@ class GkebackupProjectsLocationsBackupPlansBackupsDeleteRequest(_messages.Messag
   r"""A GkebackupProjectsLocationsBackupPlansBackupsDeleteRequest object.
 
   Fields:
-    etag: If provided, this value must match the current value of the target
-      Backup's etag field or the request is rejected.
-    force: If set to true, any VolumeBackups below this Backup will also be
-      deleted. Otherwise, the request will only succeed if the Backup has no
-      VolumeBackups.
+    etag: Optional. If provided, this value must match the current value of
+      the target Backup's etag field or the request is rejected.
+    force: Optional. If set to true, any VolumeBackups below this Backup will
+      also be deleted. Otherwise, the request will only succeed if the Backup
+      has no VolumeBackups.
     name: Required. Name of the Backup resource. Format:
       `projects/*/locations/*/backupPlans/*/backups/*`
   """
@@ -728,6 +742,19 @@ class GkebackupProjectsLocationsBackupPlansBackupsDeleteRequest(_messages.Messag
   etag = _messages.StringField(1)
   force = _messages.BooleanField(2)
   name = _messages.StringField(3, required=True)
+
+
+class GkebackupProjectsLocationsBackupPlansBackupsGetBackupIndexDownloadUrlRequest(_messages.Message):
+  r"""A
+  GkebackupProjectsLocationsBackupPlansBackupsGetBackupIndexDownloadUrlRequest
+  object.
+
+  Fields:
+    backup: Required. Full name of Backup resource. Format: projects/{project}
+      /locations/{location}/backupPlans/{backup_plan}/backups/{backup}
+  """
+
+  backup = _messages.StringField(1, required=True)
 
 
 class GkebackupProjectsLocationsBackupPlansBackupsGetIamPolicyRequest(_messages.Message):
@@ -772,14 +799,14 @@ class GkebackupProjectsLocationsBackupPlansBackupsListRequest(_messages.Message)
   r"""A GkebackupProjectsLocationsBackupPlansBackupsListRequest object.
 
   Fields:
-    filter: Field match expression used to filter the results.
-    orderBy: Field by which to sort the results.
-    pageSize: The target number of results to return in a single response. If
-      not specified, a default value will be chosen by the service. Note that
-      the response may inclue a partial list and a caller should only rely on
-      the response's next_page_token to determine if there are more instances
-      left to be queried.
-    pageToken: The value of next_page_token received from a previous
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
       `ListBackups` call. Provide this to retrieve the subsequent page in a
       multi-page list of results. When paginating, all other parameters
       provided to `ListBackups` must match the call that provided the page
@@ -802,13 +829,13 @@ class GkebackupProjectsLocationsBackupPlansBackupsPatchRequest(_messages.Message
     backup: A Backup resource to be passed as the request body.
     name: Output only. The fully qualified name of the Backup.
       `projects/*/locations/*/backupPlans/*/backups/*`
-    updateMask: This is used to specify the fields to be overwritten in the
-      Backup targeted for update. The values for each of these updated fields
-      will be taken from the `backup_plan` provided with this request. Field
-      names are relative to the root of the resource. If no `update_mask` is
-      provided, all fields in `backup` will be written to the target Backup
-      resource. Note that OUTPUT_ONLY and IMMUTABLE fields in `backup` are
-      ignored and are not used to update the target Backup.
+    updateMask: Optional. This is used to specify the fields to be overwritten
+      in the Backup targeted for update. The values for each of these updated
+      fields will be taken from the `backup_plan` provided with this request.
+      Field names are relative to the root of the resource. If no
+      `update_mask` is provided, all fields in `backup` will be written to the
+      target Backup resource. Note that OUTPUT_ONLY and IMMUTABLE fields in
+      `backup` are ignored and are not used to update the target Backup.
   """
 
   backup = _messages.MessageField('Backup', 1)
@@ -895,14 +922,14 @@ class GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsListRequest(_mess
   object.
 
   Fields:
-    filter: Field match expression used to filter the results.
-    orderBy: Field by which to sort the results.
-    pageSize: The target number of results to return in a single response. If
-      not specified, a default value will be chosen by the service. Note that
-      the response may inclue a partial list and a caller should only rely on
-      the response's next_page_token to determine if there are more instances
-      left to be queried.
-    pageToken: The value of next_page_token received from a previous
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
       `ListVolumeBackups` call. Provide this to retrieve the subsequent page
       in a multi-page list of results. When paginating, all other parameters
       provided to `ListVolumeBackups` must match the call that provided the
@@ -976,8 +1003,8 @@ class GkebackupProjectsLocationsBackupPlansDeleteRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsBackupPlansDeleteRequest object.
 
   Fields:
-    etag: If provided, this value must match the current value of the target
-      BackupPlan's etag field or the request is rejected.
+    etag: Optional. If provided, this value must match the current value of
+      the target BackupPlan's etag field or the request is rejected.
     name: Required. Fully qualified BackupPlan name. Format:
       `projects/*/locations/*/backupPlans/*`
   """
@@ -1027,14 +1054,14 @@ class GkebackupProjectsLocationsBackupPlansListRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsBackupPlansListRequest object.
 
   Fields:
-    filter: Field match expression used to filter the results.
-    orderBy: Field by which to sort the results.
-    pageSize: The target number of results to return in a single response. If
-      not specified, a default value will be chosen by the service. Note that
-      the response may inclue a partial list and a caller should only rely on
-      the response's next_page_token to determine if there are more instances
-      left to be queried.
-    pageToken: The value of next_page_token received from a previous
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
       `ListBackupPlans` call. Provide this to retrieve the subsequent page in
       a multi-page list of results. When paginating, all other parameters
       provided to `ListBackupPlans` must match the call that provided the page
@@ -1057,10 +1084,10 @@ class GkebackupProjectsLocationsBackupPlansPatchRequest(_messages.Message):
     backupPlan: A BackupPlan resource to be passed as the request body.
     name: Output only. The full name of the BackupPlan resource. Format:
       `projects/*/locations/*/backupPlans/*`
-    updateMask: This is used to specify the fields to be overwritten in the
-      BackupPlan targeted for update. The values for each of these updated
-      fields will be taken from the `backup_plan` provided with this request.
-      Field names are relative to the root of the resource (e.g.,
+    updateMask: Optional. This is used to specify the fields to be overwritten
+      in the BackupPlan targeted for update. The values for each of these
+      updated fields will be taken from the `backup_plan` provided with this
+      request. Field names are relative to the root of the resource (e.g.,
       `description`, `backup_config.include_volume_data`, etc.) If no
       `update_mask` is provided, all fields in `backup_plan` will be written
       to the target BackupPlan resource. Note that OUTPUT_ONLY and IMMUTABLE
@@ -1209,11 +1236,11 @@ class GkebackupProjectsLocationsRestorePlansDeleteRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsRestorePlansDeleteRequest object.
 
   Fields:
-    etag: If provided, this value must match the current value of the target
-      RestorePlan's etag field or the request is rejected.
-    force: If set to true, any Restores below this RestorePlan will also be
-      deleted. Otherwise, the request will only succeed if the RestorePlan has
-      no Restores.
+    etag: Optional. If provided, this value must match the current value of
+      the target RestorePlan's etag field or the request is rejected.
+    force: Optional. If set to true, any Restores below this RestorePlan will
+      also be deleted. Otherwise, the request will only succeed if the
+      RestorePlan has no Restores.
     name: Required. Fully qualified RestorePlan name. Format:
       `projects/*/locations/*/restorePlans/*`
   """
@@ -1264,14 +1291,14 @@ class GkebackupProjectsLocationsRestorePlansListRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsRestorePlansListRequest object.
 
   Fields:
-    filter: Field match expression used to filter the results.
-    orderBy: Field by which to sort the results.
-    pageSize: The target number of results to return in a single response. If
-      not specified, a default value will be chosen by the service. Note that
-      the response may inclue a partial list and a caller should only rely on
-      the response's next_page_token to determine if there are more instances
-      left to be queried.
-    pageToken: The value of next_page_token received from a previous
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
       `ListRestorePlans` call. Provide this to retrieve the subsequent page in
       a multi-page list of results. When paginating, all other parameters
       provided to `ListRestorePlans` must match the call that provided the
@@ -1294,10 +1321,10 @@ class GkebackupProjectsLocationsRestorePlansPatchRequest(_messages.Message):
     name: Output only. The full name of the RestorePlan resource. Format:
       `projects/*/locations/*/restorePlans/*`.
     restorePlan: A RestorePlan resource to be passed as the request body.
-    updateMask: This is used to specify the fields to be overwritten in the
-      RestorePlan targeted for update. The values for each of these updated
-      fields will be taken from the `restore_plan` provided with this request.
-      Field names are relative to the root of the resource. If no
+    updateMask: Optional. This is used to specify the fields to be overwritten
+      in the RestorePlan targeted for update. The values for each of these
+      updated fields will be taken from the `restore_plan` provided with this
+      request. Field names are relative to the root of the resource. If no
       `update_mask` is provided, all fields in `restore_plan` will be written
       to the target RestorePlan resource. Note that OUTPUT_ONLY and IMMUTABLE
       fields in `restore_plan` are ignored and are not used to update the
@@ -1332,11 +1359,11 @@ class GkebackupProjectsLocationsRestorePlansRestoresDeleteRequest(_messages.Mess
   r"""A GkebackupProjectsLocationsRestorePlansRestoresDeleteRequest object.
 
   Fields:
-    etag: If provided, this value must match the current value of the target
-      Restore's etag field or the request is rejected.
-    force: If set to true, any VolumeRestores below this restore will also be
-      deleted. Otherwise, the request will only succeed if the restore has no
-      VolumeRestores.
+    etag: Optional. If provided, this value must match the current value of
+      the target Restore's etag field or the request is rejected.
+    force: Optional. If set to true, any VolumeRestores below this restore
+      will also be deleted. Otherwise, the request will only succeed if the
+      restore has no VolumeRestores.
     name: Required. Full name of the Restore Format:
       `projects/*/locations/*/restorePlans/*/restores/*`
   """
@@ -1388,14 +1415,14 @@ class GkebackupProjectsLocationsRestorePlansRestoresListRequest(_messages.Messag
   r"""A GkebackupProjectsLocationsRestorePlansRestoresListRequest object.
 
   Fields:
-    filter: Field match expression used to filter the results.
-    orderBy: Field by which to sort the results.
-    pageSize: The target number of results to return in a single response. If
-      not specified, a default value will be chosen by the service. Note that
-      the response may inclue a partial list and a caller should only rely on
-      the response's next_page_token to determine if there are more instances
-      left to be queried.
-    pageToken: The value of next_page_token received from a previous
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
       `ListRestores` call. Provide this to retrieve the subsequent page in a
       multi-page list of results. When paginating, all other parameters
       provided to `ListRestores` must match the call that provided the page
@@ -1418,13 +1445,13 @@ class GkebackupProjectsLocationsRestorePlansRestoresPatchRequest(_messages.Messa
     name: Output only. The full name of the Restore resource. Format:
       `projects/*/locations/*/restorePlans/*/restores/*`
     restore: A Restore resource to be passed as the request body.
-    updateMask: This is used to specify the fields to be overwritten in the
-      Restore targeted for update. The values for each of these updated fields
-      will be taken from the `restore` provided with this request. Field names
-      are relative to the root of the resource. If no `update_mask` is
-      provided, all fields in `restore` will be written to the target Restore
-      resource. Note that OUTPUT_ONLY and IMMUTABLE fields in `restore` are
-      ignored and are not used to update the target Restore.
+    updateMask: Optional. This is used to specify the fields to be overwritten
+      in the Restore targeted for update. The values for each of these updated
+      fields will be taken from the `restore` provided with this request.
+      Field names are relative to the root of the resource. If no
+      `update_mask` is provided, all fields in `restore` will be written to
+      the target Restore resource. Note that OUTPUT_ONLY and IMMUTABLE fields
+      in `restore` are ignored and are not used to update the target Restore.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1512,14 +1539,14 @@ class GkebackupProjectsLocationsRestorePlansRestoresVolumeRestoresListRequest(_m
   object.
 
   Fields:
-    filter: Field match expression used to filter the results.
-    orderBy: Field by which to sort the results.
-    pageSize: The target number of results to return in a single response. If
-      not specified, a default value will be chosen by the service. Note that
-      the response may inclue a partial list and a caller should only rely on
-      the response's next_page_token to determine if there are more instances
-      left to be queried.
-    pageToken: The value of next_page_token received from a previous
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
       `ListVolumeRestores` call. Provide this to retrieve the subsequent page
       in a multi-page list of results. When paginating, all other parameters
       provided to `ListVolumeRestores` must match the call that provided the
@@ -1629,8 +1656,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1652,7 +1679,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1691,9 +1718,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -1784,10 +1811,10 @@ class GroupKind(_messages.Message):
   for identifying specific "types" of resources to restore.
 
   Fields:
-    resourceGroup: API group string of a Kubernetes resource, e.g.
+    resourceGroup: Optional. API group string of a Kubernetes resource, e.g.
       "apiextensions.k8s.io", "storage.k8s.io", etc. Note: use empty string
       for core API group
-    resourceKind: Kind of a Kubernetes resource, e.g.
+    resourceKind: Optional. Kind of a Kubernetes resource, e.g.
       "CustomResourceDefinition", "StorageClass", etc.
   """
 
@@ -1982,8 +2009,8 @@ class NamespacedName(_messages.Message):
   r"""A reference to a namespaced resource in Kubernetes.
 
   Fields:
-    name: The name of the Kubernetes resource.
-    namespace: The Namespace of the Kubernetes resource.
+    name: Optional. The name of the Kubernetes resource.
+    namespace: Optional. The Namespace of the Kubernetes resource.
   """
 
   name = _messages.StringField(1)
@@ -1994,7 +2021,7 @@ class NamespacedNames(_messages.Message):
   r"""A list of namespaced Kubernetes resources.
 
   Fields:
-    namespacedNames: A list of namespaced Kubernetes resources.
+    namespacedNames: Optional. A list of namespaced Kubernetes resources.
   """
 
   namespacedNames = _messages.MessageField('NamespacedName', 1, repeated=True)
@@ -2004,7 +2031,7 @@ class Namespaces(_messages.Message):
   r"""A list of Kubernetes Namespaces
 
   Fields:
-    namespaces: A list of Kubernetes Namespaces
+    namespaces: Optional. A list of Kubernetes Namespaces
   """
 
   namespaces = _messages.StringField(1, repeated=True)
@@ -2050,7 +2077,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -2058,15 +2085,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -2121,22 +2148,23 @@ class ResourceFilter(_messages.Message):
   restoration from a backup.
 
   Fields:
-    groupKinds: (Filtering parameter) Any resource subject to transformation
-      must belong to one of the listed "types". If this field is not provided,
-      no type filtering will be performed (all resources of all types matching
-      previous filtering parameters will be candidates for transformation).
-    jsonPath: This is a [JSONPath] (https://github.com/json-
+    groupKinds: Optional. (Filtering parameter) Any resource subject to
+      transformation must belong to one of the listed "types". If this field
+      is not provided, no type filtering will be performed (all resources of
+      all types matching previous filtering parameters will be candidates for
+      transformation).
+    jsonPath: Optional. This is a [JSONPath] (https://github.com/json-
       path/JsonPath/blob/master/README.md) expression that matches specific
       fields of candidate resources and it operates as a filtering parameter
       (resources that are not matched with this expression will not be
       candidates for transformation).
-    namespaces: (Filtering parameter) Any resource subject to transformation
-      must be contained within one of the listed Kubernetes Namespace in the
-      Backup. If this field is not provided, no namespace filtering will be
-      performed (all resources in all Namespaces, including all cluster-scoped
-      resources, will be candidates for transformation). To mix cluster-scoped
-      and namespaced resources in the same rule, use an empty string ("") as
-      one of the target namespaces.
+    namespaces: Optional. (Filtering parameter) Any resource subject to
+      transformation must be contained within one of the listed Kubernetes
+      Namespace in the Backup. If this field is not provided, no namespace
+      filtering will be performed (all resources in all Namespaces, including
+      all cluster-scoped resources, will be candidates for transformation). To
+      mix cluster-scoped and namespaced resources in the same rule, use an
+      empty string ("") as one of the target namespaces.
   """
 
   groupKinds = _messages.MessageField('GroupKind', 1, repeated=True)
@@ -2268,34 +2296,35 @@ class RestoreConfig(_messages.Message):
   r"""Configuration of a restore. Next id: 12
 
   Enums:
-    ClusterResourceConflictPolicyValueValuesEnum: Defines the behavior for
-      handling the situation where cluster-scoped resources being restored
-      already exist in the target cluster. This MUST be set to a value other
-      than CLUSTER_RESOURCE_CONFLICT_POLICY_UNSPECIFIED if
+    ClusterResourceConflictPolicyValueValuesEnum: Optional. Defines the
+      behavior for handling the situation where cluster-scoped resources being
+      restored already exist in the target cluster. This MUST be set to a
+      value other than CLUSTER_RESOURCE_CONFLICT_POLICY_UNSPECIFIED if
       cluster_resource_restore_scope is not empty.
-    NamespacedResourceRestoreModeValueValuesEnum: Defines the behavior for
-      handling the situation where sets of namespaced resources being restored
-      already exist in the target cluster. This MUST be set to a value other
-      than NAMESPACED_RESOURCE_RESTORE_MODE_UNSPECIFIED.
-    VolumeDataRestorePolicyValueValuesEnum: Specifies the mechanism to be used
-      to restore volume data. Default: VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED
-      (will be treated as NO_VOLUME_DATA_RESTORATION).
+    NamespacedResourceRestoreModeValueValuesEnum: Optional. Defines the
+      behavior for handling the situation where sets of namespaced resources
+      being restored already exist in the target cluster. This MUST be set to
+      a value other than NAMESPACED_RESOURCE_RESTORE_MODE_UNSPECIFIED.
+    VolumeDataRestorePolicyValueValuesEnum: Optional. Specifies the mechanism
+      to be used to restore volume data. Default:
+      VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED (will be treated as
+      NO_VOLUME_DATA_RESTORATION).
 
   Fields:
     allNamespaces: Restore all namespaced resources in the Backup if set to
       "True". Specifying this field to "False" is an error.
-    clusterResourceConflictPolicy: Defines the behavior for handling the
-      situation where cluster-scoped resources being restored already exist in
-      the target cluster. This MUST be set to a value other than
+    clusterResourceConflictPolicy: Optional. Defines the behavior for handling
+      the situation where cluster-scoped resources being restored already
+      exist in the target cluster. This MUST be set to a value other than
       CLUSTER_RESOURCE_CONFLICT_POLICY_UNSPECIFIED if
       cluster_resource_restore_scope is not empty.
-    clusterResourceRestoreScope: Identifies the cluster-scoped resources to
-      restore from the Backup. Not specifying it means NO cluster resource
-      will be restored.
+    clusterResourceRestoreScope: Optional. Identifies the cluster-scoped
+      resources to restore from the Backup. Not specifying it means NO cluster
+      resource will be restored.
     excludedNamespaces: A list of selected namespaces excluded from
       restoration. All namespaces except those in this list will be restored.
-    namespacedResourceRestoreMode: Defines the behavior for handling the
-      situation where sets of namespaced resources being restored already
+    namespacedResourceRestoreMode: Optional. Defines the behavior for handling
+      the situation where sets of namespaced resources being restored already
       exist in the target cluster. This MUST be set to a value other than
       NAMESPACED_RESOURCE_RESTORE_MODE_UNSPECIFIED.
     noNamespaces: Do not restore any namespaced resources if set to "True".
@@ -2306,25 +2335,26 @@ class RestoreConfig(_messages.Message):
     selectedNamespaces: A list of selected Namespaces to restore from the
       Backup. The listed Namespaces and all resources contained in them will
       be restored.
-    substitutionRules: A list of transformation rules to be applied against
-      Kubernetes resources as they are selected for restoration from a Backup.
-      Rules are executed in order defined - this order matters, as changes
-      made by a rule may impact the filtering logic of subsequent rules. An
-      empty list means no substitution will occur.
-    transformationRules: A list of transformation rules to be applied against
-      Kubernetes resources as they are selected for restoration from a Backup.
-      Rules are executed in order defined - this order matters, as changes
-      made by a rule may impact the filtering logic of subsequent rules. An
-      empty list means no transformation will occur.
-    volumeDataRestorePolicy: Specifies the mechanism to be used to restore
-      volume data. Default: VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED (will be
-      treated as NO_VOLUME_DATA_RESTORATION).
+    substitutionRules: Optional. A list of transformation rules to be applied
+      against Kubernetes resources as they are selected for restoration from a
+      Backup. Rules are executed in order defined - this order matters, as
+      changes made by a rule may impact the filtering logic of subsequent
+      rules. An empty list means no substitution will occur.
+    transformationRules: Optional. A list of transformation rules to be
+      applied against Kubernetes resources as they are selected for
+      restoration from a Backup. Rules are executed in order defined - this
+      order matters, as changes made by a rule may impact the filtering logic
+      of subsequent rules. An empty list means no transformation will occur.
+    volumeDataRestorePolicy: Optional. Specifies the mechanism to be used to
+      restore volume data. Default: VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED
+      (will be treated as NO_VOLUME_DATA_RESTORATION).
   """
 
   class ClusterResourceConflictPolicyValueValuesEnum(_messages.Enum):
-    r"""Defines the behavior for handling the situation where cluster-scoped
-    resources being restored already exist in the target cluster. This MUST be
-    set to a value other than CLUSTER_RESOURCE_CONFLICT_POLICY_UNSPECIFIED if
+    r"""Optional. Defines the behavior for handling the situation where
+    cluster-scoped resources being restored already exist in the target
+    cluster. This MUST be set to a value other than
+    CLUSTER_RESOURCE_CONFLICT_POLICY_UNSPECIFIED if
     cluster_resource_restore_scope is not empty.
 
     Values:
@@ -2342,9 +2372,9 @@ class RestoreConfig(_messages.Message):
     USE_BACKUP_VERSION = 2
 
   class NamespacedResourceRestoreModeValueValuesEnum(_messages.Enum):
-    r"""Defines the behavior for handling the situation where sets of
-    namespaced resources being restored already exist in the target cluster.
-    This MUST be set to a value other than
+    r"""Optional. Defines the behavior for handling the situation where sets
+    of namespaced resources being restored already exist in the target
+    cluster. This MUST be set to a value other than
     NAMESPACED_RESOURCE_RESTORE_MODE_UNSPECIFIED.
 
     Values:
@@ -2369,8 +2399,8 @@ class RestoreConfig(_messages.Message):
     FAIL_ON_CONFLICT = 2
 
   class VolumeDataRestorePolicyValueValuesEnum(_messages.Enum):
-    r"""Specifies the mechanism to be used to restore volume data. Default:
-    VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED (will be treated as
+    r"""Optional. Specifies the mechanism to be used to restore volume data.
+    Default: VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED (will be treated as
     NO_VOLUME_DATA_RESTORATION).
 
     Values:
@@ -2416,7 +2446,7 @@ class RestorePlan(_messages.Message):
       Create operation.
 
   Messages:
-    LabelsValue: A set of custom labels supplied by user.
+    LabelsValue: Optional. A set of custom labels supplied by user.
 
   Fields:
     backupPlan: Required. Immutable. A reference to the BackupPlan from which
@@ -2428,7 +2458,8 @@ class RestorePlan(_messages.Message):
       `projects/*/locations/*/clusters/*` - `projects/*/zones/*/clusters/*`
     createTime: Output only. The timestamp when this RestorePlan resource was
       created.
-    description: User specified descriptive string for this RestorePlan.
+    description: Optional. User specified descriptive string for this
+      RestorePlan.
     etag: Output only. `etag` is used for optimistic concurrency control as a
       way to help prevent simultaneous updates of a restore from overwriting
       each other. It is strongly suggested that systems make use of the `etag`
@@ -2437,7 +2468,7 @@ class RestorePlan(_messages.Message):
       `GetRestorePlan`, and systems are expected to put that etag in the
       request to `UpdateRestorePlan` or `DeleteRestorePlan` to ensure that
       their change will be applied to the same version of the resource.
-    labels: A set of custom labels supplied by user.
+    labels: Optional. A set of custom labels supplied by user.
     name: Output only. The full name of the RestorePlan resource. Format:
       `projects/*/locations/*/restorePlans/*`.
     restoreConfig: Required. Configuration of Restores created via this
@@ -2473,7 +2504,7 @@ class RestorePlan(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""A set of custom labels supplied by user.
+    r"""Optional. A set of custom labels supplied by user.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2513,26 +2544,27 @@ class RetentionPolicy(_messages.Message):
   r"""RetentionPolicy defines a Backup retention policy for a BackupPlan.
 
   Fields:
-    backupDeleteLockDays: Minimum age for Backups created via this BackupPlan
-      (in days). This field MUST be an integer value between 0-90 (inclusive).
-      A Backup created under this BackupPlan will NOT be deletable until it
-      reaches Backup's (create_time + backup_delete_lock_days). Updating this
-      field of a BackupPlan does NOT affect existing Backups under it. Backups
-      created AFTER a successful update will inherit the new value. Default: 0
-      (no delete blocking)
-    backupRetainDays: The default maximum age of a Backup created via this
-      BackupPlan. This field MUST be an integer value >= 0 and <= 365. If
-      specified, a Backup created under this BackupPlan will be automatically
-      deleted after its age reaches (create_time + backup_retain_days). If not
-      specified, Backups created under this BackupPlan will NOT be subject to
-      automatic deletion. Updating this field does NOT affect existing Backups
-      under it. Backups created AFTER a successful update will automatically
-      pick up the new value. NOTE: backup_retain_days must be >=
-      backup_delete_lock_days. If cron_schedule is defined, then this must be
-      <= 360 * the creation interval. Default: 0 (no automatic deletion)
-    locked: This flag denotes whether the retention policy of this BackupPlan
-      is locked. If set to True, no further update is allowed on this policy,
-      including the `locked` field itself. Default: False
+    backupDeleteLockDays: Optional. Minimum age for Backups created via this
+      BackupPlan (in days). This field MUST be an integer value between 0-90
+      (inclusive). A Backup created under this BackupPlan will NOT be
+      deletable until it reaches Backup's (create_time +
+      backup_delete_lock_days). Updating this field of a BackupPlan does NOT
+      affect existing Backups under it. Backups created AFTER a successful
+      update will inherit the new value. Default: 0 (no delete blocking)
+    backupRetainDays: Optional. The default maximum age of a Backup created
+      via this BackupPlan. This field MUST be an integer value >= 0 and <=
+      365. If specified, a Backup created under this BackupPlan will be
+      automatically deleted after its age reaches (create_time +
+      backup_retain_days). If not specified, Backups created under this
+      BackupPlan will NOT be subject to automatic deletion. Updating this
+      field does NOT affect existing Backups under it. Backups created AFTER a
+      successful update will automatically pick up the new value. NOTE:
+      backup_retain_days must be >= backup_delete_lock_days. If cron_schedule
+      is defined, then this must be <= 360 * the creation interval. Default: 0
+      (no automatic deletion)
+    locked: Optional. This flag denotes whether the retention policy of this
+      BackupPlan is locked. If set to True, no further update is allowed on
+      this policy, including the `locked` field itself. Default: False
   """
 
   backupDeleteLockDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2545,13 +2577,14 @@ class RpoConfig(_messages.Message):
   via this BackupPlan. Next id: 3
 
   Fields:
-    exclusionWindows: User specified time windows during which backup can NOT
-      happen for this BackupPlan - backups should start and finish outside of
-      any given exclusion window. Note: backup jobs will be scheduled to start
-      and finish outside the duration of the window as much as possible, but
-      running jobs will not get canceled when it runs into the window. We only
-      support single exclusion_window for a BackupPLan currently. All the time
-      and date values in exclusion_windows entry in the API are in UTC.
+    exclusionWindows: Optional. User specified time windows during which
+      backup can NOT happen for this BackupPlan - backups should start and
+      finish outside of any given exclusion window. Note: backup jobs will be
+      scheduled to start and finish outside the duration of the window as much
+      as possible, but running jobs will not get canceled when it runs into
+      the window. We only support single exclusion_window for a BackupPLan
+      currently. All the time and date values in exclusion_windows entry in
+      the API are in UTC.
     targetRpoMinutes: Required. Defines the target RPO for the BackupPlan in
       minutes, which means the target maximum data loss in time that is
       acceptable for this BackupPlan. This must be at least 1.
@@ -2566,21 +2599,21 @@ class Schedule(_messages.Message):
   this BackupPlan.
 
   Fields:
-    cronSchedule: A standard [cron](https://wikipedia.com/wiki/cron) string
-      that defines a repeating schedule for creating Backups via this
+    cronSchedule: Optional. A standard [cron](https://wikipedia.com/wiki/cron)
+      string that defines a repeating schedule for creating Backups via this
       BackupPlan. This is mutually exclusive with the rpo_config field since
       at most one schedule can be defined for a BackupPlan. If this is
       defined, then backup_retain_days must also be defined. Default (empty):
       no automatic backup creation will occur.
     nextScheduledBackupTime: Output only. Start time of next scheduled backup
       under this BackupPlan by either cron_schedule or rpo config.
-    paused: This flag denotes whether automatic Backup creation is paused for
-      this BackupPlan. Default: False
-    rpoConfig: Defines the RPO schedule configuration for this BackupPlan.
-      This is mutually exclusive with the cron_schedule field since at most
-      one schedule can be defined for a BackupPLan. If this is defined, then
-      backup_retain_days must also be defined. Default (empty): no automatic
-      backup creation will occur.
+    paused: Optional. This flag denotes whether automatic Backup creation is
+      paused for this BackupPlan. Default: False
+    rpoConfig: Optional. Defines the RPO schedule configuration for this
+      BackupPlan. This is mutually exclusive with the cron_schedule field
+      since at most one schedule can be defined for a BackupPLan. If this is
+      defined, then backup_retain_days must also be defined. Default (empty):
+      no automatic backup creation will occur.
   """
 
   cronSchedule = _messages.StringField(1)
@@ -2675,20 +2708,20 @@ class SubstitutionRule(_messages.Message):
   logic (which resources are subject to substitution) and substitution logic.
 
   Fields:
-    newValue: This is the new value to set for any fields that pass the
-      filtering and selection criteria. To remove a value from a Kubernetes
-      resource, either leave this field unspecified, or set it to the empty
-      string ("").
-    originalValuePattern: (Filtering parameter) This is a [regular expression]
-      (https://en.wikipedia.org/wiki/Regular_expression) that is compared
-      against the fields matched by the target_json_path expression (and must
-      also have passed the previous filters). Substitution will not be
-      performed against fields whose value does not match this expression. If
-      this field is NOT specified, then ALL fields matched by the
+    newValue: Optional. This is the new value to set for any fields that pass
+      the filtering and selection criteria. To remove a value from a
+      Kubernetes resource, either leave this field unspecified, or set it to
+      the empty string ("").
+    originalValuePattern: Optional. (Filtering parameter) This is a [regular
+      expression] (https://en.wikipedia.org/wiki/Regular_expression) that is
+      compared against the fields matched by the target_json_path expression
+      (and must also have passed the previous filters). Substitution will not
+      be performed against fields whose value does not match this expression.
+      If this field is NOT specified, then ALL fields matched by the
       target_json_path expression will undergo substitution. Note that an
       empty (e.g., "", rather than unspecified) value for this field will only
       match empty fields.
-    targetGroupKinds: (Filtering parameter) Any resource subject to
+    targetGroupKinds: Optional. (Filtering parameter) Any resource subject to
       substitution must belong to one of the listed "types". If this field is
       not provided, no type filtering will be performed (all resources of all
       types matching previous filtering parameters will be candidates for
@@ -2700,7 +2733,7 @@ class SubstitutionRule(_messages.Message):
       will not be candidates for substitution) as well as a field identifier
       (identifies exactly which fields out of the candidate resources will be
       modified).
-    targetNamespaces: (Filtering parameter) Any resource subject to
+    targetNamespaces: Optional. (Filtering parameter) Any resource subject to
       substitution must be contained within one of the listed Kubernetes
       Namespace in the Backup. If this field is not provided, no namespace
       filtering will be performed (all resources in all Namespaces, including
@@ -2767,17 +2800,18 @@ class TransformationRule(_messages.Message):
   logic (which resources are subject to transform) and transformation logic.
 
   Fields:
-    description: The description is a user specified string description of the
-      transformation rule.
+    description: Optional. The description is a user specified string
+      description of the transformation rule.
     fieldActions: Required. A list of transformation rule actions to take
       against candidate resources. Actions are executed in order defined -
       this order matters, as they could potentially interfere with each other
       and the first operation could affect the outcome of the second
       operation.
-    resourceFilter: This field is used to specify a set of fields that should
-      be used to determine which resources in backup should be acted upon by
-      the supplied transformation rule actions, and this will ensure that only
-      specific resources are affected by transformation rule actions.
+    resourceFilter: Optional. This field is used to specify a set of fields
+      that should be used to determine which resources in backup should be
+      acted upon by the supplied transformation rule actions, and this will
+      ensure that only specific resources are affected by transformation rule
+      actions.
   """
 
   description = _messages.StringField(1)
@@ -2793,13 +2827,13 @@ class TransformationRuleAction(_messages.Message):
     OpValueValuesEnum: Required. op specifies the operation to perform.
 
   Fields:
-    fromPath: A string containing a JSON Pointer value that references the
-      location in the target document to move the value from.
+    fromPath: Optional. A string containing a JSON Pointer value that
+      references the location in the target document to move the value from.
     op: Required. op specifies the operation to perform.
-    path: A string containing a JSON-Pointer value that references a location
-      within the target document where the operation is performed.
-    value: A string that specifies the desired value in string format to use
-      for transformation.
+    path: Optional. A string containing a JSON-Pointer value that references a
+      location within the target document where the operation is performed.
+    value: Optional. A string that specifies the desired value in string
+      format to use for transformation.
   """
 
   class OpValueValuesEnum(_messages.Enum):

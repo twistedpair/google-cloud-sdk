@@ -867,9 +867,12 @@ class Control(_messages.Message):
     environment: The service controller environment to use. If empty, no
       control plane feature (like quota and billing) will be enabled. The
       recommended value for most services is servicecontrol.googleapis.com
+    methodPolicies: Defines policies applying to the API methods of the
+      service.
   """
 
   environment = _messages.StringField(1)
+  methodPolicies = _messages.MessageField('MethodPolicy', 2, repeated=True)
 
 
 class CppSettings(_messages.Message):
@@ -1003,6 +1006,19 @@ class DnsZone(_messages.Message):
 
   dnsSuffix = _messages.StringField(1)
   name = _messages.StringField(2)
+
+
+class DnsZonePair(_messages.Message):
+  r"""* Represents a pair of private and peering DNS zone resources. *
+
+  Fields:
+    consumerPeeringZone: The DNS peering zone in the consumer project.
+    producerPrivateZone: The private DNS zone in the shared producer host
+      project.
+  """
+
+  consumerPeeringZone = _messages.MessageField('DnsZone', 1)
+  producerPrivateZone = _messages.MessageField('DnsZone', 2)
 
 
 class Documentation(_messages.Message):
@@ -1398,6 +1414,48 @@ class Field(_messages.Message):
   options = _messages.MessageField('Option', 8, repeated=True)
   packed = _messages.BooleanField(9)
   typeUrl = _messages.StringField(10)
+
+
+class FieldPolicy(_messages.Message):
+  r"""Google API Policy Annotation This message defines a simple API policy
+  annotation that can be used to annotate API request and response message
+  fields with applicable policies. One field may have multiple applicable
+  policies that must all be satisfied before a request can be processed. This
+  policy annotation is used to generate the overall policy that will be used
+  for automatic runtime policy enforcement and documentation generation.
+
+  Fields:
+    resourcePermission: Specifies the required permission(s) for the resource
+      referred to by the field. It requires the field contains a valid
+      resource reference, and the request must pass the permission checks to
+      proceed. For example, "resourcemanager.projects.get".
+    resourceType: Specifies the resource type for the resource referred to by
+      the field.
+    selector: Selects one or more request or response message fields to apply
+      this `FieldPolicy`. When a `FieldPolicy` is used in proto annotation,
+      the selector must be left as empty. The service config generator will
+      automatically fill the correct value. When a `FieldPolicy` is used in
+      service config, the selector must be a comma-separated string with valid
+      request or response field paths, such as "foo.bar" or "foo.bar,foo.baz".
+  """
+
+  resourcePermission = _messages.StringField(1)
+  resourceType = _messages.StringField(2)
+  selector = _messages.StringField(3)
+
+
+class GetDnsZoneResponse(_messages.Message):
+  r"""Represents managed DNS zones created in the shared Producer host and
+  consumer projects.
+
+  Fields:
+    consumerPeeringZone: The DNS peering zone created in the consumer project.
+    producerPrivateZone: The private DNS zone created in the shared producer
+      host project.
+  """
+
+  consumerPeeringZone = _messages.MessageField('DnsZone', 1)
+  producerPrivateZone = _messages.MessageField('DnsZone', 2)
 
 
 class GoSettings(_messages.Message):
@@ -1803,6 +1861,28 @@ class ListConnectionsResponse(_messages.Message):
   connections = _messages.MessageField('Connection', 1, repeated=True)
 
 
+class ListDnsRecordSetsResponse(_messages.Message):
+  r"""Represents all DNS RecordSets associated with the producer network
+
+  Fields:
+    dnsRecordSets: DNS record Set Resource
+  """
+
+  dnsRecordSets = _messages.MessageField('DnsRecordSet', 1, repeated=True)
+
+
+class ListDnsZonesResponse(_messages.Message):
+  r"""Represents all DNS zones in the shared producer host project and the
+  matching peering zones in the consumer project.
+
+  Fields:
+    dnsZonePairs: All pairs of private DNS zones in the shared producer host
+      project and the matching peering zones in the consumer project..
+  """
+
+  dnsZonePairs = _messages.MessageField('DnsZonePair', 1, repeated=True)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -1957,6 +2037,22 @@ class Method(_messages.Message):
   responseStreaming = _messages.BooleanField(5)
   responseTypeUrl = _messages.StringField(6)
   syntax = _messages.EnumField('SyntaxValueValuesEnum', 7)
+
+
+class MethodPolicy(_messages.Message):
+  r"""Defines policies applying to an RPC method.
+
+  Fields:
+    requestPolicies: Policies that are applicable to the request message.
+    selector: Selects a method to which these policies should be enforced, for
+      example, "google.pubsub.v1.Subscriber.CreateSubscription". Refer to
+      selector for syntax details. NOTE: This field must not be set in the
+      proto annotation. It will be automatically filled by the service config
+      compiler .
+  """
+
+  requestPolicies = _messages.MessageField('FieldPolicy', 1, repeated=True)
+  selector = _messages.StringField(2)
 
 
 class MethodSettings(_messages.Message):
@@ -2543,8 +2639,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -2566,7 +2662,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -2605,9 +2701,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -3479,6 +3575,48 @@ class ServicenetworkingServicesDnsRecordSetsAddRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class ServicenetworkingServicesDnsRecordSetsGetRequest(_messages.Message):
+  r"""A ServicenetworkingServicesDnsRecordSetsGetRequest object.
+
+  Fields:
+    consumerNetwork: Required. The consumer network containing the record set.
+      Must be in the form of projects/{project}/global/networks/{network}
+    domain: Required. The domain name of the zone containing the recordset.
+    parent: Required. Parent resource identifying the connection which owns
+      this collection of DNS zones in the format services/{service}.
+    type: Required. RecordSet Type eg. type='A'. See the list of [Supported
+      DNS Types](https://cloud.google.com/dns/records/json-record).
+    zone: Required. The name of the zone containing the record set.
+  """
+
+  consumerNetwork = _messages.StringField(1)
+  domain = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  type = _messages.StringField(4)
+  zone = _messages.StringField(5)
+
+
+class ServicenetworkingServicesDnsRecordSetsListRequest(_messages.Message):
+  r"""A ServicenetworkingServicesDnsRecordSetsListRequest object.
+
+  Fields:
+    consumerNetwork: Required. The network that the consumer is using to
+      connect with services. Must be in the form of
+      projects/{project}/global/networks/{network} {project} is the project
+      number, as in '12345' {network} is the network name.
+    parent: Required. The service that is managing peering connectivity for a
+      service producer's organization. For Google services that support this
+      functionality, this value is
+      `services/servicenetworking.googleapis.com`.
+    zone: Required. The name of the private DNS zone in the shared producer
+      host project from which the record set will be removed.
+  """
+
+  consumerNetwork = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3)
+
+
 class ServicenetworkingServicesDnsRecordSetsRemoveRequest(_messages.Message):
   r"""A ServicenetworkingServicesDnsRecordSetsRemoveRequest object.
 
@@ -3557,6 +3695,41 @@ class ServicenetworkingServicesEnableVpcServiceControlsRequest(_messages.Message
 
   enableVpcServiceControlsRequest = _messages.MessageField('EnableVpcServiceControlsRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class ServicenetworkingServicesProjectsGlobalNetworksDnsZonesGetRequest(_messages.Message):
+  r"""A ServicenetworkingServicesProjectsGlobalNetworksDnsZonesGetRequest
+  object.
+
+  Fields:
+    name: Required. The network that the consumer is using to connect with
+      services. Must be in the form of services/{service}/projects/{project}/g
+      lobal/networks/{network}/zones/{zoneName} Where {service} is the peering
+      service that is managing connectivity for the service producer's
+      organization. For Google services that support this {project} is the
+      project number, as in '12345' {network} is the network name. {zoneName}
+      is the DNS zone name
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ServicenetworkingServicesProjectsGlobalNetworksDnsZonesListRequest(_messages.Message):
+  r"""A ServicenetworkingServicesProjectsGlobalNetworksDnsZonesListRequest
+  object.
+
+  Fields:
+    parent: Required. Parent resource identifying the connection which owns
+      this collection of DNS zones in the format
+      services/{service}/projects/{project}/global/networks/{network} Service:
+      The service that is managing connectivity for the service producer's
+      organization. For Google services that support this functionality, this
+      value is `servicenetworking.googleapis.com`. Projects: the consumer
+      project containing the consumer network. Network: The consumer network
+      accessible from the tenant project.
+  """
+
+  parent = _messages.StringField(1, required=True)
 
 
 class ServicenetworkingServicesProjectsGlobalNetworksGetRequest(_messages.Message):

@@ -236,10 +236,10 @@ class AnthospolicycontrollerstatusPaProjectsMembershipsListRequest(_messages.Mes
       return fewer than this value. If unspecified or 0, defaults to 500
       results. The maximum value is 2000; values above 2000 will be coerced to
       2000.
-    pageToken: A page token, received from a previous ListMemberships call.
-      Provide this to retrieve the subsequent page. When paginating, all other
-      parameters provided to ListMemberships must match the call that provided
-      the page token.
+    pageToken: A page token, received from a previous ListMembershipsProducer
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to ListMembershipsProducer must match the call
+      that provided the page token.
     parent: Required. The project id for which to fetch memberships' policy
       controller status. Format: projects/{project_id}.
   """
@@ -502,6 +502,21 @@ class ListMembershipConstraintsResponse(_messages.Message):
   """
 
   membershipConstraints = _messages.MessageField('MembershipConstraint', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  totalSize = _messages.IntegerField(3)
+
+
+class ListMembershipsProducerResponse(_messages.Message):
+  r"""Response schema for ListMembershipsProducer.
+
+  Fields:
+    memberships: List of the memberships in a given fleet.
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    totalSize: The number of memberships in the response.
+  """
+
+  memberships = _messages.MessageField('Membership', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   totalSize = _messages.IntegerField(3)
 

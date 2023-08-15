@@ -36,7 +36,12 @@ class ClouderrorreportingProjectsEventsListRequest(_messages.Message):
       range.
 
   Fields:
-    groupId: Required. The group for which events shall be returned.
+    groupId: Required. The group for which events shall be returned. The
+      `group_id` is a unique identifier for a particular error group. The
+      identifier is derived from key parts of the error-log content and is
+      treated as Service Data. For information about how Service Data is
+      handled, see [Google Cloud Privacy
+      Notice](https://cloud.google.com/terms/cloud-privacy-notice).
     pageSize: Optional. The maximum number of results to return per response.
     pageToken: Optional. A `next_page_token` provided by a previous response.
     projectName: Required. The resource name of the Google Cloud Platform
@@ -122,7 +127,12 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
       Default is `ALIGNMENT_EQUAL_AT_END`.
     alignmentTime: Optional. Time where the timed counts shall be aligned if
       rounded alignment is chosen. Default is 00:00 UTC.
-    groupId: Optional. List all ErrorGroupStats with these IDs.
+    groupId: Optional. List all ErrorGroupStats with these IDs. The `group_id`
+      is a unique identifier for a particular error group. The identifier is
+      derived from key parts of the error-log content and is treated as
+      Service Data. For information about how Service Data is handled, see
+      [Google Cloud Privacy Notice] (https://cloud.google.com/terms/cloud-
+      privacy-notice).
     order: Optional. The sort order in which the results are returned. Default
       is `COUNT_DESC`.
     pageSize: Optional. The maximum number of results to return per response.
@@ -234,9 +244,14 @@ class ClouderrorreportingProjectsGroupsGetRequest(_messages.Message):
 
   Fields:
     groupName: Required. The group resource name. Written as
-      `projects/{projectID}/groups/{group_name}`. Call groupStats.list to
-      return a list of groups belonging to this project. Example:
-      `projects/my-project-123/groups/my-group`
+      `projects/{projectID}/groups/{group_id}`. Call groupStats.list to return
+      a list of groups belonging to this project. Example: `projects/my-
+      project-123/groups/my-group` In the group resource name, the `group_id`
+      is a unique identifier for a particular error group. The identifier is
+      derived from key parts of the error-log content and is treated as
+      Service Data. For information about how Service Data is handled, see
+      [Google Cloud Privacy Notice](https://cloud.google.com/terms/cloud-
+      privacy-notice).
   """
 
   groupName = _messages.StringField(1, required=True)
@@ -303,8 +318,14 @@ class ErrorGroup(_messages.Message):
     groupId: Group IDs are unique for a given project. If the same kind of
       error occurs in different service contexts, it will receive the same
       group ID.
-    name: The group resource name. Example: projects/my-
-      project-123/groups/CNSgkpnppqKCUw
+    name: The group resource name. Written as
+      `projects/{projectID}/groups/{group_id}`. Example: `projects/my-
+      project-123/groups/my-group` In the group resource name, the `group_id`
+      is a unique identifier for a particular error group. The identifier is
+      derived from key parts of the error-log content and is treated as
+      Service Data. For information about how Service Data is handled, see
+      [Google Cloud Privacy Notice](https://cloud.google.com/terms/cloud-
+      privacy-notice).
     resolutionStatus: Error group's resolution status. An unspecified
       resolution status will be interpreted as OPEN
     trackingIssues: Associated tracking issues.

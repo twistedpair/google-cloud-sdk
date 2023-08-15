@@ -46,7 +46,6 @@ class MonitoringV1(base_api.BaseApiClient):
     self.operations = self.OperationsService(self)
     self.projects_dashboards = self.ProjectsDashboardsService(self)
     self.projects_location_prometheus_api_v1_label = self.ProjectsLocationPrometheusApiV1LabelService(self)
-    self.projects_location_prometheus_api_v1_labels = self.ProjectsLocationPrometheusApiV1LabelsService(self)
     self.projects_location_prometheus_api_v1_metadata = self.ProjectsLocationPrometheusApiV1MetadataService(self)
     self.projects_location_prometheus_api_v1 = self.ProjectsLocationPrometheusApiV1Service(self)
     self.projects_location_prometheus_api = self.ProjectsLocationPrometheusApiService(self)
@@ -420,43 +419,6 @@ class MonitoringV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationPrometheusApiV1LabelsService(base_api.BaseApiService):
-    """Service class for the projects_location_prometheus_api_v1_labels resource."""
-
-    _NAME = 'projects_location_prometheus_api_v1_labels'
-
-    def __init__(self, client):
-      super(MonitoringV1.ProjectsLocationPrometheusApiV1LabelsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists labels for metrics.
-
-      Args:
-        request: (MonitoringProjectsLocationPrometheusApiV1LabelsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (HttpBody) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/location/{location}/prometheus/api/v1/labels',
-        http_method='GET',
-        method_id='monitoring.projects.location.prometheus.api.v1.labels.list',
-        ordered_params=['name', 'location'],
-        path_params=['location', 'name'],
-        query_params=['end', 'match', 'start'],
-        relative_path='v1/{+name}/location/{location}/prometheus/api/v1/labels',
-        request_field='',
-        request_type_name='MonitoringProjectsLocationPrometheusApiV1LabelsListRequest',
-        response_type_name='HttpBody',
-        supports_download=False,
-    )
-
   class ProjectsLocationPrometheusApiV1MetadataService(base_api.BaseApiService):
     """Service class for the projects_location_prometheus_api_v1_metadata resource."""
 
@@ -525,7 +487,7 @@ class MonitoringV1(base_api.BaseApiClient):
         path_params=['location', 'name'],
         query_params=[],
         relative_path='v1/{+name}/location/{location}/prometheus/api/v1/labels',
-        request_field='listLabelsRequest',
+        request_field='queryLabelsRequest',
         request_type_name='MonitoringProjectsLocationPrometheusApiV1LabelsRequest',
         response_type_name='HttpBody',
         supports_download=False,

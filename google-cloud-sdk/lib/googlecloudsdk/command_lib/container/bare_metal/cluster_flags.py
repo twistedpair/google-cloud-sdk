@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import textwrap
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope.concepts import concepts
@@ -1854,4 +1856,37 @@ def AddOperationTimeout(parser: parser_arguments.ArgumentInterceptor):
       '--timeout',
       type=int,
       help='Timeout (seconds) waiting for the operation to complete.',
+  )
+
+
+def AddUpgradePolicy(parser: parser_arguments.ArgumentInterceptor) -> None:
+  """Adds flags to update cluster upgrade policy.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  upgrade_policy_group = parser.add_group(
+      help='Upgrade policy for the cluster.',
+  )
+
+  upgrade_policy_group.add_argument(
+      '--upgrade-control-plane',
+      type=arg_parsers.ArgBoolean(),
+      help=textwrap.dedent("""
+      If not specified, worker node pools are upgraded with the control plane.
+
+      Examples:
+
+        To upgrade control plane only and keep node pools version unchanged,
+
+          ```shell
+          $ {command} --upgrade-control-plane=True
+          ```
+
+        To upgrade both control plane and node pools,
+
+          ```shell
+          $ {command} --upgrade-control-plane=False
+          ```
+""").strip(),
   )

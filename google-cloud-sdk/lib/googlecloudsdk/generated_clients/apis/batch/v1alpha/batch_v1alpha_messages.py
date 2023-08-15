@@ -374,13 +374,43 @@ class CancelOperationRequest(_messages.Message):
 
 
 class ComputeResource(_messages.Message):
-  r"""Compute resource requirements
+  r"""Compute resource requirements. ComputeResource defines the amount of
+  resources required for each task. Make sure your tasks have enough resources
+  to successfully run. If you also define the types of resources for a job to
+  use with the [InstancePolicyOrTemplate](https://cloud.google.com/batch/docs/
+  reference/rest/v1/projects.locations.jobs#instancepolicyortemplate) field,
+  make sure both fields are compatible with each other.
 
   Fields:
     bootDiskMib: Extra boot disk size in MiB for each task.
-    cpuMilli: The milliCPU count.
+    cpuMilli: The milliCPU count. `cpuMilli` defines the amount of CPU
+      resources per task in milliCPU units. For example, `1000` corresponds to
+      1 vCPU per task. If undefined, the default value is `2000`. If you also
+      define the VM's machine type using the `machineType` in [InstancePolicy]
+      (https://cloud.google.com/batch/docs/reference/rest/v1/projects.location
+      s.jobs#instancepolicy) field or inside the `instanceTemplate` in the [In
+      stancePolicyOrTemplate](https://cloud.google.com/batch/docs/reference/re
+      st/v1/projects.locations.jobs#instancepolicyortemplate) field, make sure
+      the CPU resources for both fields are compatible with each other and
+      with how many tasks you want to allow to run on the same VM at the same
+      time. For example, if you specify the `n2-standard-2` machine type,
+      which has 2 vCPUs each, you are recommended to set `cpuMilli` no more
+      than `2000`, or you are recommended to run two tasks on the same VM if
+      you set `cpuMilli` to `1000` or less.
     gpuCount: The GPU count. Not yet implemented.
-    memoryMib: Memory in MiB.
+    memoryMib: Memory in MiB. `memoryMib` defines the amount of memory per
+      task in MiB units. If undefined, the default value is `2000`. If you
+      also define the VM's machine type using the `machineType` in [InstancePo
+      licy](https://cloud.google.com/batch/docs/reference/rest/v1/projects.loc
+      ations.jobs#instancepolicy) field or inside the `instanceTemplate` in
+      the [InstancePolicyOrTemplate](https://cloud.google.com/batch/docs/refer
+      ence/rest/v1/projects.locations.jobs#instancepolicyortemplate) field,
+      make sure the memory resources for both fields are compatible with each
+      other and with how many tasks you want to allow to run on the same VM at
+      the same time. For example, if you specify the `n2-standard-2` machine
+      type, which has 8 GiB each, you are recommended to set `memoryMib` to no
+      more than `8192`, or you are recommended to run two tasks on the same VM
+      if you set `memoryMib` to `4096` or less.
   """
 
   bootDiskMib = _messages.IntegerField(1)
@@ -400,6 +430,11 @@ class Container(_messages.Message):
     commands: Overrides the `CMD` specified in the container. If there is an
       ENTRYPOINT (either in the container image or with the entrypoint field
       below) then commands are appended as arguments to the ENTRYPOINT.
+    enableImageStreaming: Optional. Not yet implemented. If set to true,
+      container will run with Image streaming. The container runtime will be
+      changed to containerd instead of docker. Currently, only imageUri,
+      commands, entrypoint and volumes are supported and any other fields will
+      be ignored.
     entrypoint: Overrides the `ENTRYPOINT` specified in the container.
     imageUri: The URI to pull the container image from.
     options: Arbitrary additional options to include in the "docker run"
@@ -417,12 +452,13 @@ class Container(_messages.Message):
 
   blockExternalNetwork = _messages.BooleanField(1)
   commands = _messages.StringField(2, repeated=True)
-  entrypoint = _messages.StringField(3)
-  imageUri = _messages.StringField(4)
-  options = _messages.StringField(5)
-  password = _messages.StringField(6)
-  username = _messages.StringField(7)
-  volumes = _messages.StringField(8, repeated=True)
+  enableImageStreaming = _messages.BooleanField(3)
+  entrypoint = _messages.StringField(4)
+  imageUri = _messages.StringField(5)
+  options = _messages.StringField(6)
+  password = _messages.StringField(7)
+  username = _messages.StringField(8)
+  volumes = _messages.StringField(9, repeated=True)
 
 
 class Disk(_messages.Message):
@@ -435,11 +471,12 @@ class Disk(_messages.Message):
     diskInterface: Local SSDs are available through both "SCSI" and "NVMe"
       interfaces. If not indicated, "NVMe" will be the default one for local
       ssds. We only support "SCSI" for persistent disks now.
-    image: Name of an image used as the data source. For example, the
-      following are all valid URLs: * Specify the image by its family name:
-      projects/project/global/images/family/image_family * Specify the image
-      version: projects/project/global/images/image_version You can also use
-      Batch customized image in short names. The following image values are
+    image: URL for a VM image to use as the data source for this disk. For
+      example, the following are all valid URLs: * Specify the image by its
+      family name: projects/{project}/global/images/family/{image_family} *
+      Specify the image version:
+      projects/{project}/global/images/{image_version} You can also use Batch
+      customized image in short names. The following image values are
       supported for a boot disk: * `batch-debian`: use Batch Debian images. *
       `batch-centos`: use Batch CentOS images. * `batch-cos`: use Batch
       Container-Optimized images. * `batch-hpc-centos`: use Batch HPC CentOS
@@ -574,7 +611,9 @@ class InstancePolicy(_messages.Message):
       InstancePolicy. Boot disk will be deleted when the VM is deleted. Batch
       API now only supports booting from image.
     disks: Non-boot disks to be attached for each VM created by this
-      InstancePolicy. New disks will be deleted when the VM is deleted.
+      InstancePolicy. New disks will be deleted when the VM is deleted. A non-
+      boot disk is a disk that can be of a device with a file system or a raw
+      storage drive that is not ready for data storage and accessing.
     machineType: The Compute Engine machine type.
     minCpuPlatform: The minimum CPU platform. See
       https://cloud.google.com/compute/docs/instances/specify-min-cpu-
@@ -614,7 +653,10 @@ class InstancePolicy(_messages.Message):
 
 
 class InstancePolicyOrTemplate(_messages.Message):
-  r"""Either an InstancePolicy or an instance template.
+  r"""InstancePolicyOrTemplate lets you define the type of resources to use
+  for this job either with an InstancePolicy or an instance template. If
+  undefined, Batch picks the type of VM to use and doesn't include optional VM
+  resources such as GPUs and extra disks.
 
   Fields:
     installGpuDrivers: Set this field true if users want Batch to help fetch
@@ -849,9 +891,9 @@ class JobNotification(_messages.Message):
     message: The attribute requirements of messages to be sent to this Pub/Sub
       topic. Without this field, no message will be sent.
     pubsubTopic: The Pub/Sub topic where notifications like the job state
-      changes will be published. This topic exist in the same project as the
-      job and billings will be charged to this project. If not specified, no
-      Pub/Sub messages will be sent. Topic format:
+      changes will be published. The topic must exist in the same project as
+      the job and billings will be charged to this project. If not specified,
+      no Pub/Sub messages will be sent. Topic format:
       `projects/{project}/topics/{topic}`.
   """
 
@@ -1178,8 +1220,12 @@ class LogsPolicy(_messages.Message):
 
 
 class Message(_messages.Message):
-  r"""Message details. Describe the attribute that a message should have.
-  Without specified message attributes, no message will be sent by default.
+  r"""Message details. Describe the conditions under which messages will be
+  sent. If no attribute is defined, no message will be sent by default. One
+  message should specify either the job or the task level attributes, but not
+  both. For example, job level: JOB_STATE_CHANGED and/or a specified
+  new_job_state; task level: TASK_STATE_CHANGED and/or a specified
+  new_task_state.
 
   Enums:
     NewJobStateValueValuesEnum: The new job state.
@@ -1273,9 +1319,9 @@ class NetworkInterface(_messages.Message):
   Fields:
     network: The URL of an existing network resource. You can specify the
       network as a full or partial URL. For example, the following are all
-      valid URLs: https://www.googleapis.com/compute/v1/projects/project/globa
-      l/networks/network projects/project/global/networks/network
-      global/networks/network
+      valid URLs: * https://www.googleapis.com/compute/v1/projects/{project}/g
+      lobal/networks/{network} * projects/{project}/global/networks/{network}
+      * global/networks/{network}
     noExternalIpAddress: Default is false (with an external IP address).
       Required if no external public IP address is attached to the VM. If no
       external public IP address, additional configuration is required to
@@ -1285,10 +1331,10 @@ class NetworkInterface(_messages.Message):
       information.
     subnetwork: The URL of an existing subnetwork resource in the network. You
       can specify the subnetwork as a full or partial URL. For example, the
-      following are all valid URLs: https://www.googleapis.com/compute/v1/proj
-      ects/project/regions/region/subnetworks/subnetwork
-      projects/project/regions/region/subnetworks/subnetwork
-      regions/region/subnetworks/subnetwork
+      following are all valid URLs: * https://www.googleapis.com/compute/v1/pr
+      ojects/{project}/regions/{region}/subnetworks/{subnetwork} *
+      projects/{project}/regions/{region}/subnetworks/{subnetwork} *
+      regions/{region}/subnetworks/{subnetwork}
   """
 
   network = _messages.StringField(1)
@@ -1316,8 +1362,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1339,7 +1385,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1378,9 +1424,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -1509,6 +1555,11 @@ class Runnable(_messages.Message):
       tools like SSH servers).
     barrier: Barrier runnable.
     container: Container runnable.
+    displayName: Optional. DisplayName is an optional field that can be
+      provided by the caller. If provided, it will be used in logs and other
+      outputs to identify the script, making it easier for users to understand
+      the logs. If not provided the index of the runnable will be used for
+      outputs.
     environment: Environment variables for this Runnable (overrides variables
       set for the whole Task or TaskGroup).
     ignoreExitStatus: Normally, a non-zero exit status causes the Task to
@@ -1546,11 +1597,12 @@ class Runnable(_messages.Message):
   background = _messages.BooleanField(2)
   barrier = _messages.MessageField('Barrier', 3)
   container = _messages.MessageField('Container', 4)
-  environment = _messages.MessageField('Environment', 5)
-  ignoreExitStatus = _messages.BooleanField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  script = _messages.MessageField('Script', 8)
-  timeout = _messages.StringField(9)
+  displayName = _messages.StringField(5)
+  environment = _messages.MessageField('Environment', 6)
+  ignoreExitStatus = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  script = _messages.MessageField('Script', 9)
+  timeout = _messages.StringField(10)
 
 
 class Script(_messages.Message):
@@ -1769,9 +1821,13 @@ class TaskExecution(_messages.Message):
   Fields:
     exitCode: When task is completed as the status of FAILED or SUCCEEDED,
       exit code is for one task execution result, default is 0 as success.
+    stderrSnippet: Optional. The tail end of any content written to standard
+      error by the task execution. This field will be populated only when the
+      execution failed.
   """
 
   exitCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  stderrSnippet = _messages.StringField(2)
 
 
 class TaskGroup(_messages.Message):

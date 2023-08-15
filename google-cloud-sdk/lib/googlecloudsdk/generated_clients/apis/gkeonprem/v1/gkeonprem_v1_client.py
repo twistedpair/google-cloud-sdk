@@ -1479,7 +1479,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.bareMetalStandaloneClusters.unenroll',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'etag', 'force', 'validateOnly'],
+        query_params=['allowMissing', 'etag', 'force', 'ignoreErrors', 'validateOnly'],
         relative_path='v1/{+name}:unenroll',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsBareMetalStandaloneClustersUnenrollRequest',

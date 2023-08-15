@@ -108,6 +108,14 @@ class DeployClient(object):
       for resource in targets:
         operation_dict[resource.name] = target_util.DeleteTarget(resource.name)
       self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+    custom_target_types = resource_dict[manifest_util.CUSTOM_TARGET_TYPE_KIND]
+    if custom_target_types:
+      operation_dict = {}
+      for resource in custom_target_types:
+        operation_dict[resource.name] = (
+            custom_target_type_util.DeleteCustomTargetType(resource.name)
+        )
+      self.operation_client.CheckOperationStatus(operation_dict, msg_template)
     # Then delete the child resources.
     automations = resource_dict[manifest_util.AUTOMATION_KIND]
     operation_dict = {}

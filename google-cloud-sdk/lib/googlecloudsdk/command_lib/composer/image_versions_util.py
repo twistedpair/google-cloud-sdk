@@ -177,15 +177,15 @@ def CompareVersions(v1, v2):
   return _CompareVersions(v1, v2)
 
 
-def IsVersionComposer25Compatible(image_version):
-  """Checks if given `version` is compatible with Composer 2.5 .
+def IsVersionComposer3Compatible(image_version):
+  """Checks if given `image_version` is compatible with Composer 3.
 
   Args:
     image_version: image version str that includes Composer version.
 
   Returns:
-    True if Composer version is compatible with Composer 2.5
-    >=2.5.x otherwise False
+    True if Composer version is greater than or equal to 3.0.0 or its prerelease
+    variant, otherwise False.
   """
 
   if image_version:
@@ -195,7 +195,7 @@ def IsVersionComposer25Compatible(image_version):
       if composer_version == 'latest':
         composer_version = COMPOSER_LATEST_VERSION_PLACEHOLDER
       return IsVersionInRange(
-          composer_version, flags.MIN_COMPOSER25_VERSION, None,
+          composer_version, flags.MIN_COMPOSER3_VERSION, None,
           True)
   return False
 

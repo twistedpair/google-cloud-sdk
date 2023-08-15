@@ -22,6 +22,7 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 
 ALPHA_API_VERSION = 'v1alpha2'
 BETA_API_VERSION = 'v1beta1'
@@ -57,16 +58,37 @@ class RegistrationsClient(object):
     self.messages = messages or GetMessagesModule(api_version, client)
     self._service = self.client.projects_locations_registrations
 
-  def Register(self,
-               parent_ref,
-               domain,
-               dns_settings,
-               contact_settings,
-               yearly_price,
-               labels=None,
-               hsts_notice_accepted=False,
-               public_privacy_accepted=False,
-               validate_only=False):
+  def PrintSQSPAck(self):
+    """Prints FYI acknowledgement about the Google Domains - Squarespace deal.
+    """
+    ack_message = (
+        'Google recently entered into an agreement for Squarespace, Inc.\n'
+        'to acquire all domain name registrations from Google Domains\n'
+        '(including all Cloud Domains), with the purchase subject to\n'
+        'regulatory approval and customary closing conditions. If the\n'
+        'transaction closes, '
+        'Squarespace will become your domain registrar and,\n'
+        'following a transition period, your domain specific information,\n'
+        'if applicable, will be transferred to Squarespace, at which point\n'
+        'Squarespace\'s Privacy Policy and Terms of Service will apply.\n'
+        'By continuing you acknowledge '
+        'that you have read and agree to the above.\n'
+    )
+
+    log.status.Print(ack_message)
+
+  def Register(
+      self,
+      parent_ref,
+      domain,
+      dns_settings,
+      contact_settings,
+      yearly_price,
+      labels=None,
+      hsts_notice_accepted=False,
+      public_privacy_accepted=False,
+      validate_only=False,
+  ):
     """Creates a Registration.
 
     Args:

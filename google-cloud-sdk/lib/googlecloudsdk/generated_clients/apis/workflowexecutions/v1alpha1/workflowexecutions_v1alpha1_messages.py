@@ -50,12 +50,17 @@ class Execution(_messages.Message):
       SUCCEEDED: The Workflow Execution has finished successfully.
       FAILED: The Workflow Execution failed with an error.
       CANCELLED: The Workflow Execution has been stopped intentionally.
+      UNAVAILABLE: Reserved for future use.
+      QUEUED: Request has been placed in the backlog for processing at a later
+        time.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     SUCCEEDED = 2
     FAILED = 3
     CANCELLED = 4
+    UNAVAILABLE = 5
+    QUEUED = 6
 
   argument = _messages.StringField(1)
   endTime = _messages.StringField(2)

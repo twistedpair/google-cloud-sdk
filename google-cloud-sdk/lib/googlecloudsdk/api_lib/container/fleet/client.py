@@ -935,13 +935,12 @@ class FleetClient(object):
         name=name)
     return self.client.projects_locations_memberships_bindings.Get(req)
 
-  def CreateMembershipBinding(self, name, scope, fleet, labels=None):
+  def CreateMembershipBinding(self, name, scope, labels=None):
     """Creates a Membership-Binding resource from the GKEHub API.
 
     Args:
       name: the full binding resource name.
       scope: the Scope to be associated with Binding.
-      fleet: the Fleet for which all related scopes are updated.
       labels: labels for the membership binding resource
 
     Returns:
@@ -955,7 +954,6 @@ class FleetClient(object):
     binding = self.messages.MembershipBinding(
         name=name,
         scope=scope,
-        fleet=fleet,
         labels=labels)
     resource = resources.REGISTRY.ParseRelativeName(
         name,
@@ -993,13 +991,12 @@ class FleetClient(object):
         field='membershipBindings',
         batch_size_attribute=None)
 
-  def UpdateMembershipBinding(self, name, scope, fleet, labels, mask):
+  def UpdateMembershipBinding(self, name, scope, labels, mask):
     """Updates a Membership-Binding resource.
 
     Args:
       name: the Binding name.
       scope: the Scope associated with binding.
-      fleet: the Fleet for which all related scopes are updated.
       labels: the labels for the Membership Binding resource.
       mask: a mask of the fields to update.
 
@@ -1013,7 +1010,6 @@ class FleetClient(object):
     binding = self.messages.MembershipBinding(
         name=name,
         scope=scope,
-        fleet=fleet,
         labels=labels,
     )
     req = self.messages.GkehubProjectsLocationsMembershipsBindingsPatchRequest(

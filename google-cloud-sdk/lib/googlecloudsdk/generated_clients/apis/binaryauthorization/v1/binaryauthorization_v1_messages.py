@@ -622,7 +622,7 @@ class Check(_messages.Message):
     simpleSigningAttestationCheck: Optional. Require a SimpleSigning-type
       attestation for every image in the deployment.
     slsaCheck: Optional. Require that an image was built by a trusted builder
-      (such as Google Cloud Build or Github), meets requirements for Supply
+      (such as Google Cloud Build or GitHub), meets requirements for Supply
       chain Levels for Software Artifacts (SLSA), and was built from a trusted
       source code repostitory.
     trustedDirectoryCheck: Optional. Require that an image lives in a trusted
@@ -969,7 +969,7 @@ class IamPolicy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -977,15 +977,15 @@ class IamPolicy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     bindings: Associates a list of `members`, or principals, with a `role`.
@@ -1958,11 +1958,11 @@ class VerificationRule(_messages.Message):
       can automatically fetch them based on the builder (group).
     trustedSourceRepoPatterns: List of trusted source code repository URL
       patterns. These patterns match the full repository URL without its
-      scheme (e.g. "https://"). For example, the pattern
-      "source.cloud.google.com/my-project/my-repo-name" matches the following
-      URLs: - "source.cloud.google.com/my-project/my-repo-name" -
-      "git+ssh://source.cloud.google.com/my-project/my-repo-name" -
-      "https://source.cloud.google.com/my-project/my-repo-name" A pattern
+      scheme (e.g. "https://"). The patterns must not include schemes. For
+      example, the pattern "source.cloud.google.com/my-project/my-repo-name"
+      matches the following URLs: - "source.cloud.google.com/my-project/my-
+      repo-name" - "git+ssh://source.cloud.google.com/my-project/my-repo-name"
+      - "https://source.cloud.google.com/my-project/my-repo-name" A pattern
       matches a URL either exactly or with * wildcards. * can be used in only
       two ways: 1. trailing * after hosturi/ to match varying endings; 2.
       trailing ** after hosturi/ to match "/" as well. * and ** can only be

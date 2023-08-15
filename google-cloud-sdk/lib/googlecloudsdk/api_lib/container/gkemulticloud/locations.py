@@ -30,20 +30,25 @@ class LocationsClient(client.ClientBase):
 
   def GetAwsServerConfig(self, location_ref):
     """Gets server config for Anthos on AWS."""
-    req = self._messages.GkemulticloudProjectsLocationsGetAwsServerConfigRequest(
-        name=location_ref.RelativeName() + '/awsServerConfig')
+    req = (
+        self._messages.GkemulticloudProjectsLocationsGetAwsServerConfigRequest(
+            name=location_ref.RelativeName() + '/awsServerConfig'
+        )
+    )
     return self._service.GetAwsServerConfig(req)
 
   def GetAzureServerConfig(self, location_ref):
     """Gets server config for Anthos on Azure."""
     req = self._messages.GkemulticloudProjectsLocationsGetAzureServerConfigRequest(
-        name=location_ref.RelativeName() + '/azureServerConfig')
+        name=location_ref.RelativeName() + '/azureServerConfig'
+    )
     return self._service.GetAzureServerConfig(req)
 
   def GetAttachedServerConfig(self, location_ref):
     """Gets server config for Anthos Attached Clusters."""
     req = self._messages.GkemulticloudProjectsLocationsGetAttachedServerConfigRequest(
-        name=location_ref.RelativeName() + '/attachedServerConfig')
+        name=location_ref.RelativeName() + '/attachedServerConfig'
+    )
     return self._service.GetAttachedServerConfig(req)
 
   def GenerateInstallManifest(self, cluster_ref, args):
@@ -51,16 +56,17 @@ class LocationsClient(client.ClientBase):
     req = self._messages.GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest(
         parent=cluster_ref.Parent().RelativeName(),
         attachedClusterId=cluster_ref.attachedClustersId,
-        platformVersion=attached_flags.GetPlatformVersion(args)
-        )
+        platformVersion=attached_flags.GetPlatformVersion(args),
+    )
     return self._service.GenerateAttachedClusterInstallManifest(req)
 
-  def GenerateInstallManifestForImport(self, location_ref, memberships_id,
-                                       args):
+  def GenerateInstallManifestForImport(
+      self, location_ref, memberships_id, args
+  ):
     """Generates an Attached cluster install manifest for import."""
     req = self._messages.GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest(
         parent=location_ref.RelativeName(),
         attachedClusterId=memberships_id,
-        platformVersion=attached_flags.GetPlatformVersion(args)
-        )
+        platformVersion=attached_flags.GetPlatformVersion(args),
+    )
     return self._service.GenerateAttachedClusterInstallManifest(req)

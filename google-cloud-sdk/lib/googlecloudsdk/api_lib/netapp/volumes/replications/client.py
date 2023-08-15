@@ -19,11 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.netapp.constants import OPERATIONS_COLLECTION
-from googlecloudsdk.api_lib.netapp.constants import REPLICATION_RESOURCE
-from googlecloudsdk.api_lib.netapp.util import GetClientInstance
-from googlecloudsdk.api_lib.netapp.util import GetMessagesModule
-from googlecloudsdk.api_lib.netapp.util import VERSION_MAP
+from googlecloudsdk.api_lib.netapp import constants
+from googlecloudsdk.api_lib.netapp import util as netapp_api_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
@@ -36,9 +33,13 @@ class ReplicationsClient(object):
   def __init__(self, release_track=base.ReleaseTrack.BETA):
     if release_track == base.ReleaseTrack.BETA:
       self._adapter = BetaReplicationsAdapter()
+    elif release_track == base.ReleaseTrack.GA:
+      self._adapter = ReplicationsAdapter()
     else:
       raise ValueError(
-          '[{}] is not a valid API version.'.format(VERSION_MAP[release_track])
+          '[{}] is not a valid API version.'.format(
+              netapp_api_util.VERSION_MAP[release_track]
+          )
       )
 
   @property
@@ -84,7 +85,7 @@ class ReplicationsClient(object):
     if async_:
       return create_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        create_op.name, collection=OPERATIONS_COLLECTION
+        create_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 
@@ -143,7 +144,7 @@ class ReplicationsClient(object):
     return list_pager.YieldFromList(
         self.client.projects_locations_volumes_replications,
         request,
-        field=REPLICATION_RESOURCE,
+        field=constants.REPLICATION_RESOURCE,
         limit=limit,
         batch_size_attribute='pageSize',
     )
@@ -164,7 +165,7 @@ class ReplicationsClient(object):
     if async_:
       return delete_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        delete_op.name, collection=OPERATIONS_COLLECTION
+        delete_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 
@@ -217,7 +218,7 @@ class ReplicationsClient(object):
     if async_:
       return update_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        update_op.name, collection=OPERATIONS_COLLECTION
+        update_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 
@@ -237,7 +238,7 @@ class ReplicationsClient(object):
     if async_:
       return resume_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        resume_op.name, collection=OPERATIONS_COLLECTION
+        resume_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 
@@ -258,7 +259,7 @@ class ReplicationsClient(object):
     if async_:
       return reverse_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        reverse_op.name, collection=OPERATIONS_COLLECTION
+        reverse_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 
@@ -278,18 +279,22 @@ class ReplicationsClient(object):
     if async_:
       return stop_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        stop_op.name, collection=OPERATIONS_COLLECTION
+        stop_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 
 
-class BetaReplicationsAdapter(object):
-  """Adapter for the Beta Cloud NetApp Files API Replication resource."""
+class ReplicationsAdapter(object):
+  """Adapter for the Cloud NetApp Files API Replication resource."""
 
   def __init__(self):
-    self.release_track = base.ReleaseTrack.BETA
-    self.client = GetClientInstance(release_track=self.release_track)
-    self.messages = GetMessagesModule(release_track=self.release_track)
+    self.release_track = base.ReleaseTrack.GA
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )
 
   def ParseDestinationVolumeParameters(
       self, replication, destination_volume_parameters
@@ -381,4 +386,18 @@ class BetaReplicationsAdapter(object):
     )
     return self.client.projects_locations_volumes_replications.Stop(
         stop_request
+    )
+
+
+class BetaReplicationsAdapter(ReplicationsAdapter):
+  """Adapter for the Beta Cloud NetApp Files API Replication resource."""
+
+  def __init__(self):
+    super(BetaReplicationsAdapter, self).__init__()
+    self.release_track = base.ReleaseTrack.BETA
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
     )

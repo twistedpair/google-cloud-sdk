@@ -1227,6 +1227,7 @@ class Cluster(_messages.Message):
       specified in the form:
       "projects/{project}/global/networks/{network_id}". This is required to
       create a cluster. It can be updated, but it cannot be removed.
+    networkConfig: A NetworkConfig attribute.
     primaryConfig: Output only. Cross Region replication config specific to
       PRIMARY cluster.
     reconciling: Output only. Reconciling
@@ -1379,13 +1380,14 @@ class Cluster(_messages.Message):
   migrationSource = _messages.MessageField('MigrationSource', 16)
   name = _messages.StringField(17)
   network = _messages.StringField(18)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 19)
-  reconciling = _messages.BooleanField(20)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 21)
-  sslConfig = _messages.MessageField('SslConfig', 22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  uid = _messages.StringField(24)
-  updateTime = _messages.StringField(25)
+  networkConfig = _messages.MessageField('NetworkConfig', 19)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 20)
+  reconciling = _messages.BooleanField(21)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 22)
+  sslConfig = _messages.MessageField('SslConfig', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
 
 
 class ContinuousBackupConfig(_messages.Message):
@@ -2111,6 +2113,30 @@ class MigrationSource(_messages.Message):
   sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 3)
 
 
+class NetworkConfig(_messages.Message):
+  r"""Metadata related to network configuration.
+
+  Fields:
+    allocatedIpRange: Optional. The name of the allocated IP range for the
+      private IP AlloyDB cluster. For example: "google-managed-services-
+      default". If set, the instance IPs for this cluster will be created in
+      the allocated range. The range name must comply with RFC 1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. Field name is intended to
+      be consistent with CloudSQL.
+    network: Required. The resource link for the VPC network in which cluster
+      resources are created and from which they are accessible via Private IP.
+      The network must belong to the same project as the cluster. It is
+      specified in the form:
+      "projects/{project_number}/global/networks/{network_id}". This is
+      required to create a cluster. It can be updated, but it cannot be
+      removed.
+  """
+
+  allocatedIpRange = _messages.StringField(1)
+  network = _messages.StringField(2)
+
+
 class Node(_messages.Message):
   r"""Details of a single node in the instance. Nodes in an AlloyDB instance
   are ephemereal, they can change during update, failover, autohealing and
@@ -2142,8 +2168,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -2165,7 +2191,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -2204,9 +2230,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -2854,14 +2880,14 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
 
     Values:
       INSTANCE_TYPE_UNSPECIFIED: <no description>
-      PRIMARY: A regular primary database instance
+      PRIMARY: A regular primary database instance.
       READ_REPLICA: An instance acting as a read-replica.
-      INSTANCE_TYPE_OTHER: For rest of the other category
+      OTHER: For rest of the other categories.
     """
     INSTANCE_TYPE_UNSPECIFIED = 0
     PRIMARY = 1
     READ_REPLICA = 2
-    INSTANCE_TYPE_OTHER = 3
+    OTHER = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
@@ -2964,8 +2990,8 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     type: Type of specific database product. It could be CloudSQL, AlloyDB
       etc..
     version: Version of the underlying database engine. Example values: For
-      MySQL, it could be "MySQL_8.0", "MySQL_5.7" etc.. For PostGres, it could
-      be "Postgres_14", "Postgres_15" etc..
+      MySQL, it could be "8.0", "5.7" etc.. For Postgres, it could be "14",
+      "15" etc..
   """
 
   class EngineValueValuesEnum(_messages.Enum):

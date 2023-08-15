@@ -413,6 +413,7 @@ class LogSink(proto.Message):
                 "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
                 "pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]"
                 "logging.googleapis.com/projects/[PROJECT_ID]"
+                "logging.googleapis.com/projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
 
             The sink's ``writer_identity``, set when the sink is
             created, must have permission to write to the destination or
@@ -671,7 +672,7 @@ class BigQueryOptions(proto.Message):
             based on UTC timezone.
         uses_timestamp_column_partitioning (bool):
             Output only. True if new timestamp column based partitioning
-            is in use, false if legacy ingestion-time partitioning is in
+            is in use, false if legacy ingress-time partitioning is in
             use.
 
             All new sinks will have this field set true and will use
@@ -1247,9 +1248,10 @@ class CreateSinkRequest(proto.Message):
 
             If this field is set to true, or if the sink is owned by a
             non-project resource such as an organization, then the value
-            of ``writer_identity`` will be a unique service account used
-            only for exports from the new sink. For more information,
-            see ``writer_identity`` in
+            of ``writer_identity`` will be a `service
+            agent <https://cloud.google.com/iam/docs/service-account-types#service-agents>`__
+            used by the sinks with the same parent. For more
+            information, see ``writer_identity`` in
             [LogSink][google.logging.v2.LogSink].
         custom_writer_identity (str):
             Optional. A service account provided by the caller that will
@@ -1312,8 +1314,9 @@ class UpdateSinkRequest(proto.Message):
                both true, then there is no change to the sink's
                ``writer_identity``.
             -  If the old value is false and the new value is true, then
-               ``writer_identity`` is changed to a unique service
-               account.
+               ``writer_identity`` is changed to a `service
+               agent <https://cloud.google.com/iam/docs/service-account-types#service-agents>`__
+               owned by Cloud Logging.
             -  It is an error if the old value is true and the new value
                is set to false or defaulted to false.
         custom_writer_identity (str):
@@ -1437,10 +1440,12 @@ class DeleteLinkRequest(proto.Message):
         name (str):
             Required. The full resource name of the link to delete.
 
-            "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
-            "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
-            "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
-            "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]".
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]".
     """
 
     name: str = proto.Field(
@@ -1456,10 +1461,12 @@ class ListLinksRequest(proto.Message):
         parent (str):
             Required. The parent resource whose links are to be listed:
 
-            "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/"
-            "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/"
-            "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/"
-            "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]".
         page_token (str):
             Optional. If present, then retrieve the next batch of
             results from the preceding call to this method.
@@ -1519,10 +1526,12 @@ class GetLinkRequest(proto.Message):
         name (str):
             Required. The resource name of the link:
 
-            "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
-            "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
-            "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
-            "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]".
     """
 
     name: str = proto.Field(
@@ -1938,7 +1947,7 @@ class CmekSettings(proto.Message):
 
             To enable CMEK for the Log Router, set this field to a valid
             ``kms_key_name`` for which the associated service account
-            has the required cloudkms.cryptoKeyEncrypterDecrypter roles
+            has the needed cloudkms.cryptoKeyEncrypterDecrypter roles
             assigned for the key.
 
             The Cloud KMS key used by the Log Router can be updated by
@@ -2162,17 +2171,25 @@ class Settings(proto.Message):
             Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
             for more information.
         storage_location (str):
-            Optional. The Cloud region that will be used for \_Default
-            and \_Required log buckets for newly created projects and
-            folders. For example ``europe-west1``. This setting does not
-            affect the location of custom log buckets.
+            Optional. The storage location that Cloud Logging will use
+            to create new resources when a location is needed but not
+            explicitly provided. The use cases includes:
+
+            -  The location of ``_Default`` and ``_Required`` log bucket
+               for newly created projects and folders.
+
+            Example value: ``europe-west1``.
+
+            Note: this setting does not affect the location of resources
+            where a location is explicitly provided when created, such
+            as custom log buckets.
         disable_default_sink (bool):
             Optional. If set to true, the \_Default sink in newly
             created projects and folders will created in a disabled
-            state. This can be used to automatically disable log
-            ingestion if there is already an aggregated sink configured
-            in the hierarchy. The \_Default sink can be re-enabled
-            manually if needed.
+            state. This can be used to automatically disable log storage
+            if there is already an aggregated sink configured in the
+            hierarchy. The \_Default sink can be re-enabled manually if
+            needed.
         logging_service_account_id (str):
             Output only. The service account for the given container.
             Sinks use this service account as their ``writer_identity``

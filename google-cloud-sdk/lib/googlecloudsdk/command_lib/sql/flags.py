@@ -333,8 +333,8 @@ def AddRetainedBackupsCount(parser):
   help_text = (
       'How many backups to keep. The valid range is between 1 and 365. '
       'Default value is 7 for Enterprise edition instances. For '
-      'Enterprise_Plus Postgres and MySQL instances, default values are 15 and '
-      '8 respectively. Applicable only if --no-backups is not specified.'
+      'Enterprise_Plus, default value is 15. Applicable only if --no-backups '
+      'is not specified.'
   )
   parser.add_argument(
       '--retained-backups-count',
@@ -352,8 +352,7 @@ def AddRetainedTransactionLogDays(parser):
       'If logs are stored on disk, storage size for transaction logs could '
       'increase when the number of days for log retention increases. '
       'For Enterprise, default and max retention values are 7 and 7 '
-      'respectively. For MySQL Enterprise_Plus, default and max retention '
-      'values are 7 and 7. For Postgres Enterprise_Plus, default and max '
+      'respectively. For Enterprise_Plus, default and max '
       'retention values are 14 and 35.'
   )
   parser.add_argument(

@@ -47,6 +47,10 @@ class DetachDiskError(exceptions.Error):
   """Error if the update request is invalid for detaching a disk."""
 
 
+class BootDiskConfigurationError(exceptions.Error):
+  """Error if the boot disk configuration is invalid."""
+
+
 def GetProject(release_track, ssh_helper):
   holder = base_classes.ComputeApiHolder(release_track)
   project_name = properties.VALUES.core.project.GetOrFail()
@@ -367,6 +371,66 @@ def CheckTPUVMNode(response, args):
   sys.exit(1)
 
 
+def ParseBootDiskConfigurations(api_version='v2'):
+  """Request hook for parsing boot disk configurations."""
+
+  def Process(unused_ref, args, request):
+    """Parses configurations for boot disk.
+
+    Parsing boot disk configuration if --boot-disk flag is set.
+
+    Args:
+      unused_ref: ref to the service.
+      args:  The args for this method.
+      request: The request to be made.
+
+    Returns:
+      Request with boot disk configuration fields populated.
+
+    Raises:
+      BootDiskConfigurationError: if confidential compute is enable
+        but kms-key is not provided.
+      BootDiskConfigurationError: if invalid argument name is provided.
+    """
+    if not args or not args.IsSpecified('boot_disk'):
+      return request
+
+    kms_key_arg_name = 'kms-key'
+    confidential_compute_arg_name = 'confidential-compute'
+    for arg_name in args.boot_disk.keys():
+      if arg_name not in [kms_key_arg_name, confidential_compute_arg_name]:
+        raise BootDiskConfigurationError(
+            '--boot-disk only supports arguments: %s and %s'
+            % (confidential_compute_arg_name, kms_key_arg_name)
+        )
+
+    tpu_messages = GetMessagesModule(version=api_version)
+    enable_confidential_compute = args.boot_disk.get(
+        confidential_compute_arg_name, 'False').lower() == 'true'
+    kms_key = (
+        args.boot_disk.get(kms_key_arg_name, None)
+        if enable_confidential_compute
+        else None
+    )
+
+    if enable_confidential_compute and kms_key is None:
+      raise BootDiskConfigurationError(
+          'argument --boot-disk: with confidential-compute=%s '
+          'requires kms-key; received: %s' % (
+              enable_confidential_compute, kms_key)
+      )
+    customer_encryption_key = tpu_messages.CustomerEncryptionKey(
+        kmsKeyName=kms_key
+    )
+    request.node.bootDiskConfig = tpu_messages.BootDiskConfig(
+        customerEncryptionKey=customer_encryption_key,
+        enableConfidentialCompute=enable_confidential_compute,
+    )
+    return request
+
+  return Process
+
+
 class TPUNode(object):
   """Helper to create and modify TPU nodes."""
 
@@ -470,3 +534,55 @@ class TPUNode(object):
         self.client.projects_locations_nodes,
         self.client.projects_locations_operations)
     return waiter.WaitFor(operation_poller, operation_ref, message)
+
+
+class SSHPreppedNode(object):
+  """Object that has all the data needed to successfully SSH into a node.
+
+  Attributes:
+    worker_ips: The IPs of the workers of the node.
+    ssh_helper: The ssh_helper used to SSH into the node.
+    id: The id of the node.
+    tpu_name: The unqualified TPU VM name.
+    instance_names: The name of the instances of the workers of the node.
+    project: The project associated with the node.
+    command_list: The list of the commands passed into ssh.
+    remainder: The remainder list of ssh_args used to pass into the SSH command.
+    host_key_suffixes: The host key suffixes associated with the node.
+    user: The user executing the SSH command.
+    release_track: The release track for the SSH protos (Alpha, Beta, etc.).
+    enable_batching: A bool indicating if the user enabled batching for the
+      node.
+  """
+
+  def __init__(self, tpu_name, user, release_track, enable_batching):
+    self.tpu_name = tpu_name
+    self.user = user
+    self.release_track = release_track
+    self.enable_batching = enable_batching
+
+    self.worker_ips = []
+    self.ssh_helper = None
+    self.id = None
+    self.instance_names = []
+    self.project = None
+    self.command_list = []
+    self.remainder = None
+    self.host_key_suffixes = []
+
+
+class SCPPreppedNode(SSHPreppedNode):
+  """Object that has all the data needed to successfully SCP into a node.
+
+  Attributes:
+    srcs: The sources for SCP.
+    dst: The destination for SCP.
+  """
+
+  def __init__(self, tpu_name, user, release_track, enable_batching, srcs, dst):
+    super(SCPPreppedNode, self).__init__(
+        tpu_name, user, release_track, enable_batching
+    )
+
+    self.srcs = srcs
+    self.dst = dst

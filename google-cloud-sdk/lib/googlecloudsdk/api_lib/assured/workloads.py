@@ -148,6 +148,26 @@ class WorkloadsClient(object):
     )
     return self.client.organizations_locations_workloads.Patch(update_req)
 
+  def EnableResourceMonitoring(self, name):
+    """Enable resource violation monitoring for a workload.
+
+    Args:
+      name: str, name of the Assured Workloads for which Resource Monitoring is
+        enabled, in the form:
+        organization/{ORG_ID}/locations/{LOCATION}/workloads/{WORKLOAD_ID}
+
+    Returns:
+      Empty response message.
+    """
+    enable_req = self.messages.AssuredworkloadsOrganizationsLocationsWorkloadsEnableResourceMonitoringRequest(
+        name=name
+    )
+    return (
+        self.client.organizations_locations_workloads.EnableResourceMonitoring(
+            enable_req
+        )
+    )
+
   def WaitForOperation(self, operation, progress_message):
     """Waits for the given google.longrunning.Operation to complete.
 

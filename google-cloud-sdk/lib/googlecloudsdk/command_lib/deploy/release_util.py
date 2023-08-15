@@ -313,7 +313,9 @@ def _SetSource(release_config,
     gcs_client.CreateBucketIfNotExists(
         gcs_source_staging_dir.bucket,
         location=location,
-        check_ownership=default_gcs_source)
+        check_ownership=default_gcs_source,
+        enable_uniform_level_access=True,
+    )
   except storage_api.BucketInWrongProjectError:
     # If we're using the default bucket but it already exists in a different
     # project, then it could belong to a malicious attacker (b/33046325).

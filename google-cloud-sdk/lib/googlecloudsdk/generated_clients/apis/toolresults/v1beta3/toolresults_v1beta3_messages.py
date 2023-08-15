@@ -185,6 +185,10 @@ class AppStartTime(_messages.Message):
   initialDisplayTime = _messages.MessageField('Duration', 2)
 
 
+class AssetIssue(_messages.Message):
+  r"""There was an issue with the assets in this test."""
+
+
 class AvailableDeepLinks(_messages.Message):
   r"""A suggestion to use deep links for a Robo run."""
 
@@ -540,7 +544,7 @@ class Execution(_messages.Message):
 
 
 class FailedToInstall(_messages.Message):
-  r"""Failed to install the APK."""
+  r"""Failed to install the App."""
 
 
 class FailureDetail(_messages.Message):
@@ -2230,6 +2234,7 @@ class TestIssue(_messages.Message):
       logcatCollectionError: Problems detected while collecting logcat
       detectedAppSplashScreen: Robo detected a splash screen provided by app
         (vs. Android OS splash screen).
+      assetIssue: There was an issue with the assets in this test.
     """
     unspecifiedType = 0
     fatalException = 1
@@ -2263,6 +2268,7 @@ class TestIssue(_messages.Message):
     deviceOutOfMemory = 29
     logcatCollectionError = 30
     detectedAppSplashScreen = 31
+    assetIssue = 32
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   errorMessage = _messages.StringField(2)

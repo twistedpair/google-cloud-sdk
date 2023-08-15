@@ -27,6 +27,7 @@ from googlecloudsdk.core import exceptions
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: "v1alpha1",
     base.ReleaseTrack.BETA: "v1beta1",
+    base.ReleaseTrack.GA: "v1",
 }
 
 

@@ -694,6 +694,7 @@ class CreateClusterOptions(object):
       workload_policies=None,
       enable_fqdn_network_policy=None,
       host_maintenance_interval=None,
+      in_transit_encryption=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -894,6 +895,7 @@ class CreateClusterOptions(object):
     self.workload_policies = workload_policies
     self.enable_fqdn_network_policy = enable_fqdn_network_policy
     self.host_maintenance_interval = host_maintenance_interval
+    self.in_transit_encryption = in_transit_encryption
 
 
 class UpdateClusterOptions(object):
@@ -1027,6 +1029,7 @@ class UpdateClusterOptions(object):
       remove_workload_policies=None,
       enable_fqdn_network_policy=None,
       host_maintenance_interval=None,
+      in_transit_encryption=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1157,6 +1160,7 @@ class UpdateClusterOptions(object):
     self.remove_workload_policies = remove_workload_policies
     self.enable_fqdn_network_policy = enable_fqdn_network_policy
     self.host_maintenance_interval = host_maintenance_interval
+    self.in_transit_encryption = in_transit_encryption
 
 
 class SetMasterAuthOptions(object):
@@ -1246,6 +1250,7 @@ class CreateNodePoolOptions(object):
                enable_surge_upgrade=None,
                node_pool_soak_duration=None,
                standard_rollout_policy=None,
+               autoscaled_rollout_policy=None,
                maintenance_interval=None,
                network_performance_config=None,
                enable_confidential_nodes=None,
@@ -1328,6 +1333,7 @@ class CreateNodePoolOptions(object):
     self.enable_surge_upgrade = enable_surge_upgrade
     self.node_pool_soak_duration = node_pool_soak_duration
     self.standard_rollout_policy = standard_rollout_policy
+    self.autoscaled_rollout_policy = autoscaled_rollout_policy
     self.maintenance_interval = maintenance_interval
     self.network_performance_config = network_performance_config
     self.enable_confidential_nodes = enable_confidential_nodes
@@ -1376,6 +1382,7 @@ class UpdateNodePoolOptions(object):
                enable_surge_upgrade=None,
                node_pool_soak_duration=None,
                standard_rollout_policy=None,
+               autoscaled_rollout_policy=None,
                network_performance_config=None,
                enable_confidential_nodes=None,
                enable_fast_socket=None,
@@ -1411,6 +1418,7 @@ class UpdateNodePoolOptions(object):
     self.enable_surge_upgrade = enable_surge_upgrade
     self.node_pool_soak_duration = node_pool_soak_duration
     self.standard_rollout_policy = standard_rollout_policy
+    self.autoscaled_rollout_policy = autoscaled_rollout_policy
     self.network_performance_config = network_performance_config
     self.enable_confidential_nodes = enable_confidential_nodes
     self.enable_fast_socket = enable_fast_socket
@@ -2196,6 +2204,15 @@ class APIAdapter(object):
             self.messages.NodeConfigDefaults())
       cluster.nodePoolDefaults.nodeConfigDefaults.hostMaintenancePolicy = (
           _GetHostMaintenancePolicy(options, self.messages))
+
+    if options.in_transit_encryption is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.inTransitEncryptionConfig = (
+          util.GetCreateInTransitEncryptionConfigMapper(
+              self.messages
+          ).GetEnumForChoice(options.in_transit_encryption)
+      )
 
     return cluster
 
@@ -3522,6 +3539,16 @@ class APIAdapter(object):
           desiredHostMaintenancePolicy=_GetHostMaintenancePolicy(
               options, self.messages)
       )
+
+    if options.in_transit_encryption is not None:
+      update = self.messages.ClusterUpdate(
+          desiredInTransitEncryptionConfig=util.GetUpdateInTransitEncryptionConfigMapper(
+              self.messages
+          ).GetEnumForChoice(
+              options.in_transit_encryption
+          )
+      )
+
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -4040,6 +4067,7 @@ class APIAdapter(object):
         or options.max_surge_upgrade is not None
         or options.max_unavailable_upgrade is not None
         or options.standard_rollout_policy is not None
+        or options.autoscaled_rollout_policy is not None
         or options.node_pool_soak_duration is not None
     ):
       pool.upgradeSettings = self.messages.UpgradeSettings()
@@ -4211,7 +4239,11 @@ class APIAdapter(object):
         standard_rollout_policy.batchSoakDuration = options.standard_rollout_policy[
             'batch-soak-duration']
       blue_green_settings.standardRolloutPolicy = standard_rollout_policy
-
+    # autoscaled rollout policy has no fields yet.
+    if options.autoscaled_rollout_policy:
+      blue_green_settings.autoscaledRolloutPolicy = (
+          self.messages.AutoscaledRolloutPolicy()
+      )
     return blue_green_settings
 
   def UpdateUpgradeSettings(self, node_pool_ref, options, pool=None):
@@ -4236,6 +4268,9 @@ class APIAdapter(object):
     if options.enable_blue_green_upgrade:
       upgrade_settings.strategy = self.messages.UpgradeSettings.StrategyValueValuesEnum.BLUE_GREEN
     if options.standard_rollout_policy is not None or options.node_pool_soak_duration is not None:
+      upgrade_settings.blueGreenSettings = self.UpdateBlueGreenSettings(
+          upgrade_settings, options)
+    if options.autoscaled_rollout_policy:
       upgrade_settings.blueGreenSettings = self.UpdateBlueGreenSettings(
           upgrade_settings, options)
     return upgrade_settings
@@ -4271,7 +4306,8 @@ class APIAdapter(object):
           options.max_surge_upgrade is not None or
           options.max_unavailable_upgrade is not None or
           options.standard_rollout_policy is not None or
-          options.node_pool_soak_duration is not None):
+          options.node_pool_soak_duration is not None
+          or options.autoscaled_rollout_policy):
       update_request.upgradeSettings = self.UpdateUpgradeSettings(
           node_pool_ref, options)
     elif options.system_config_from_file is not None:

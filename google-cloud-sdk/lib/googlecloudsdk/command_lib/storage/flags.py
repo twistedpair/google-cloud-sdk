@@ -24,6 +24,8 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
+
 
 REQUIRED_INVENTORY_REPORTS_METADATA_FIELDS = ('project', 'bucket', 'name')
 OPTIONAL_INVENTORY_REPORTS_METADATA_FIELDS = (
@@ -471,6 +473,22 @@ def add_soft_deleted_flag(parser):
           ' versioned, and other objects.'
       ),
   )
+
+
+def _get_storage_uri(resource):
+  storage_url = resource['storage_url']
+  if storage_url.startswith('gs://'):
+    uri = resources.REGISTRY.Parse(storage_url).SelfLink()
+    universe_domain_property = properties.VALUES.core.universe_domain
+    if universe_domain_property.IsExplicitlySet():
+      uri = uri.replace(universe_domain_property.default,
+                        universe_domain_property.Get())
+    return uri
+  return storage_url
+
+
+def add_uri_support_to_list_commands(parser):
+  parser.display_info.AddUriFunc(_get_storage_uri)
 
 
 def add_recovery_point_objective_flag(parser):

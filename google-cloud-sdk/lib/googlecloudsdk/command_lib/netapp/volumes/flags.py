@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.netapp import netapp_client
+from googlecloudsdk.api_lib.netapp import util as netapp_api_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.netapp import flags
 from googlecloudsdk.command_lib.netapp import util as netapp_util
@@ -415,7 +415,7 @@ def AddVolumeCreateArgs(parser, release_track):
   concept_parsers.ConceptParser([
       flags.GetVolumePresentationSpec('The Volume to create.')
   ]).AddToParser(parser)
-  messages = netapp_client.GetMessagesModule(release_track=release_track)
+  messages = netapp_api_util.GetMessagesModule(release_track=release_track)
   flags.AddResourceDescriptionArg(parser, 'Volume')
   flags.AddResourceCapacityArg(parser, 'Volume')
   AddVolumeAssociatedStoragePoolArg(parser)
@@ -451,7 +451,7 @@ def AddVolumeUpdateArgs(parser, release_track):
   concept_parsers.ConceptParser([
       flags.GetVolumePresentationSpec('The Volume to update.')
   ]).AddToParser(parser)
-  messages = netapp_client.GetMessagesModule(release_track=release_track)
+  messages = netapp_api_util.GetMessagesModule(release_track=release_track)
   flags.AddResourceDescriptionArg(parser, 'Volume')
   flags.AddResourceCapacityArg(parser, 'Volume', required=False)
   AddVolumeAssociatedStoragePoolArg(parser, required=False)

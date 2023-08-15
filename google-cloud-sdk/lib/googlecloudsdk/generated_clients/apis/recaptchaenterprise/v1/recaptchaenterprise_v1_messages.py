@@ -525,8 +525,9 @@ class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment(_messages.Messag
       of a card testing attack.
     stolenInstrumentVerdict: Assessment of this transaction for risk of a
       stolen instrument.
-    transactionRisk: Probability (0-1) of this transaction being fraudulent.
-      Summarizes the combined risk of attack vectors below.
+    transactionRisk: Probability of this transaction being fraudulent.
+      Summarizes the combined risk of attack vectors below. Values are from
+      0.0 (lowest) to 1.0 (highest).
   """
 
   behavioralTrustVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentBehavioralTrustVerdict', 1)
@@ -539,8 +540,9 @@ class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentBehavioralTrustVe
   r"""Information about behavioral trust of the transaction.
 
   Fields:
-    trust: Probability (0-1) of this transaction attempt being executed in a
-      behaviorally trustworthy way.
+    trust: Probability of this transaction attempt being executed in a
+      behaviorally trustworthy way. Values are from 0.0 (lowest) to 1.0
+      (highest).
   """
 
   trust = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -551,8 +553,8 @@ class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentCardTestingVerdic
   fraudulently obtained cards or brute forcing their details.
 
   Fields:
-    risk: Probability (0-1) of this transaction attempt being part of a card
-      testing attack.
+    risk: Probability of this transaction attempt being part of a card testing
+      attack. Values are from 0.0 (lowest) to 1.0 (highest).
   """
 
   risk = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -563,8 +565,8 @@ class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentStolenInstrumentV
   legitimate owner of the instrument being used for the purchase.
 
   Fields:
-    risk: Probability (0-1) of this transaction being executed with a stolen
-      instrument.
+    risk: Probability of this transaction being executed with a stolen
+      instrument. Values are from 0.0 (lowest) to 1.0 (highest).
   """
 
   risk = _messages.FloatField(1, variant=_messages.Variant.FLOAT)

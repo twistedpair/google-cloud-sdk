@@ -75,26 +75,27 @@ def CreateAcceleratorConfigMessage(args, messages):
     type_enum = arg_utils.ChoiceEnumMapper(
         arg_name='accelerator-type',
         message_enum=accelerator_config.TypeValueValuesEnum,
-        include_filter=lambda x: 'UNSPECIFIED' not in x).GetEnumForChoice(
-            arg_utils.EnumNameToChoice(args.accelerator_type))
+        include_filter=lambda x: 'UNSPECIFIED' not in x,
+    ).GetEnumForChoice(arg_utils.EnumNameToChoice(args.accelerator_type))
   return accelerator_config(
-      type=type_enum, coreCount=args.accelerator_core_count)
+      type=type_enum, coreCount=args.accelerator_core_count
+  )
 
 
 def CreateServiceAccountConfigMessage(args, messages):
-  if args.IsSpecified('service_account_email'):
-    return None
-  return messages.ServiceAccount(
-      email=args.service_account_email)
+  return messages.ServiceAccount(email=args.service_account_email)
 
 
 def CreateGPUDriverConfigMessage(args, messages):
-  if not (args.IsSpecified('custom_gpu_driver_path') or
-          args.IsSpecified('install_gpu_driver')):
+  if not (
+      args.IsSpecified('custom_gpu_driver_path')
+      or args.IsSpecified('install_gpu_driver')
+  ):
     return None
   return messages.GPUDriverConfig(
       customGpuDriverPath=args.custom_gpu_driver_path,
-      enableGpuDriver=args.install_gpu_driver)
+      enableGpuDriver=args.install_gpu_driver,
+  )
 
 
 def GetBootDisk(args, messages):
@@ -182,9 +183,9 @@ def CreateVmImageFromArgs(args, messages):
   if args.IsSpecified('vm_image_project'):
     vm_image = messages.VmImage(project=args.vm_image_project)
     if args.IsSpecified('vm_image_family'):
-      vm_image.imageFamily = args.vm_image_family
+      vm_image.family = args.vm_image_family
     else:
-      vm_image.imageName = args.vm_image_name
+      vm_image.name = args.vm_image_name
     return vm_image
   return None
 
@@ -213,7 +214,7 @@ def GetTagsFromArgs(args):
 
 def GetMetadataFromArgs(args, messages):
   if args.IsSpecified('metadata'):
-    metadata_message = messages.Instance.MetadataValue
+    metadata_message = messages.GceSetup.MetadataValue
     return metadata_message(additionalProperties=[
         metadata_message.AdditionalProperty(key=key, value=value)
         for key, value in args.metadata.items()
@@ -304,9 +305,9 @@ def CreateUpdateMask(args):
       ),
       'labels': 'labels',
       'metadata': 'gce_setup.metadata',
-      'machine_type': 'gce_setup.accelerator_configs.type',
+      'machine_type': 'gce_setup.machine_type',
   }
-  for key, value in field_mask_dict.items():
+  for key, value in sorted(field_mask_dict.items()):
     if args.IsSpecified(key):
       mask_array.append(value)
   return ','.join(map(str, mask_array))

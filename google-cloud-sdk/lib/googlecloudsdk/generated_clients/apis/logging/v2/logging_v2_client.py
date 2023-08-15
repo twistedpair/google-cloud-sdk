@@ -458,7 +458,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a view on a log bucket..
+      r"""Gets a view on a log bucket.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsViewsGetRequest) input message
@@ -801,6 +801,33 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def ApproveRedaction(self, request, global_params=None):
+      r"""Once the impact assessment completes, the redaction operation will move into WAIT_FOR_USER_APPROVAL stage wherein it's going to wait for the user to approve the redaction operation. Please note that the operation will be in progress at this point and if the user doesn't approve the redaction operation within the grace period, it will be auto-cancelled.The redaction operation can also be approved before operation moves into the WAIT_FOR_USER_APPROVAL stage. In that case redaction process will commence as soon as the impact assessment is complete. This is functionally similar to approving after the operation moves to WAIT_FOR_USER_APPROVAL stage but without any wait time to begin redaction.Once the user approves, the redaction operation will begin redacting the log entries.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsOperationsApproveRedactionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApproveRedactionOperationResponse) The response message.
+      """
+      config = self.GetMethodConfig('ApproveRedaction')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ApproveRedaction.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/operations/{operationsId}:approveRedaction',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.operations.approveRedaction',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:approveRedaction',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsOperationsApproveRedactionRequest',
+        response_type_name='ApproveRedactionOperationResponse',
+        supports_download=False,
+    )
+
     def Cancel(self, request, global_params=None):
       r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
 
@@ -1021,7 +1048,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
+      r"""Creates a sink that exports specified log entries to a destination. The export begins upon ingress, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingBillingAccountsSinksCreateRequest) input message
@@ -1413,7 +1440,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Tail(self, request, global_params=None):
-      r"""Streaming read of log entries as they are ingested. Until the stream is terminated, it will continue reading logs.
+      r"""Streaming read of log entries as they are received. Until the stream is terminated, it will continue reading logs.
 
       Args:
         request: (TailLogEntriesRequest) input message
@@ -1974,7 +2001,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a view on a log bucket..
+      r"""Gets a view on a log bucket.
 
       Args:
         request: (LoggingFoldersLocationsBucketsViewsGetRequest) input message
@@ -2317,6 +2344,33 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def ApproveRedaction(self, request, global_params=None):
+      r"""Once the impact assessment completes, the redaction operation will move into WAIT_FOR_USER_APPROVAL stage wherein it's going to wait for the user to approve the redaction operation. Please note that the operation will be in progress at this point and if the user doesn't approve the redaction operation within the grace period, it will be auto-cancelled.The redaction operation can also be approved before operation moves into the WAIT_FOR_USER_APPROVAL stage. In that case redaction process will commence as soon as the impact assessment is complete. This is functionally similar to approving after the operation moves to WAIT_FOR_USER_APPROVAL stage but without any wait time to begin redaction.Once the user approves, the redaction operation will begin redacting the log entries.
+
+      Args:
+        request: (LoggingFoldersLocationsOperationsApproveRedactionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApproveRedactionOperationResponse) The response message.
+      """
+      config = self.GetMethodConfig('ApproveRedaction')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ApproveRedaction.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/operations/{operationsId}:approveRedaction',
+        http_method='GET',
+        method_id='logging.folders.locations.operations.approveRedaction',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:approveRedaction',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsOperationsApproveRedactionRequest',
+        response_type_name='ApproveRedactionOperationResponse',
+        supports_download=False,
+    )
+
     def Cancel(self, request, global_params=None):
       r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
 
@@ -2537,7 +2591,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
+      r"""Creates a sink that exports specified log entries to a destination. The export begins upon ingress, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingFoldersSinksCreateRequest) input message
@@ -2972,7 +3026,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a view on a log bucket..
+      r"""Gets a view on a log bucket.
 
       Args:
         request: (LoggingLocationsBucketsViewsGetRequest) input message
@@ -3314,6 +3368,33 @@ class LoggingV2(base_api.BaseApiClient):
       super(LoggingV2.LocationsOperationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def ApproveRedaction(self, request, global_params=None):
+      r"""Once the impact assessment completes, the redaction operation will move into WAIT_FOR_USER_APPROVAL stage wherein it's going to wait for the user to approve the redaction operation. Please note that the operation will be in progress at this point and if the user doesn't approve the redaction operation within the grace period, it will be auto-cancelled.The redaction operation can also be approved before operation moves into the WAIT_FOR_USER_APPROVAL stage. In that case redaction process will commence as soon as the impact assessment is complete. This is functionally similar to approving after the operation moves to WAIT_FOR_USER_APPROVAL stage but without any wait time to begin redaction.Once the user approves, the redaction operation will begin redacting the log entries.
+
+      Args:
+        request: (LoggingLocationsOperationsApproveRedactionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApproveRedactionOperationResponse) The response message.
+      """
+      config = self.GetMethodConfig('ApproveRedaction')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ApproveRedaction.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/operations/{operationsId}:approveRedaction',
+        http_method='GET',
+        method_id='logging.locations.operations.approveRedaction',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:approveRedaction',
+        request_field='',
+        request_type_name='LoggingLocationsOperationsApproveRedactionRequest',
+        response_type_name='ApproveRedactionOperationResponse',
+        supports_download=False,
+    )
 
     def Cancel(self, request, global_params=None):
       r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
@@ -3925,7 +4006,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a view on a log bucket..
+      r"""Gets a view on a log bucket.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsViewsGetRequest) input message
@@ -4268,6 +4349,33 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def ApproveRedaction(self, request, global_params=None):
+      r"""Once the impact assessment completes, the redaction operation will move into WAIT_FOR_USER_APPROVAL stage wherein it's going to wait for the user to approve the redaction operation. Please note that the operation will be in progress at this point and if the user doesn't approve the redaction operation within the grace period, it will be auto-cancelled.The redaction operation can also be approved before operation moves into the WAIT_FOR_USER_APPROVAL stage. In that case redaction process will commence as soon as the impact assessment is complete. This is functionally similar to approving after the operation moves to WAIT_FOR_USER_APPROVAL stage but without any wait time to begin redaction.Once the user approves, the redaction operation will begin redacting the log entries.
+
+      Args:
+        request: (LoggingOrganizationsLocationsOperationsApproveRedactionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApproveRedactionOperationResponse) The response message.
+      """
+      config = self.GetMethodConfig('ApproveRedaction')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ApproveRedaction.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}:approveRedaction',
+        http_method='GET',
+        method_id='logging.organizations.locations.operations.approveRedaction',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:approveRedaction',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsOperationsApproveRedactionRequest',
+        response_type_name='ApproveRedactionOperationResponse',
+        supports_download=False,
+    )
+
     def Cancel(self, request, global_params=None):
       r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
 
@@ -4488,7 +4596,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
+      r"""Creates a sink that exports specified log entries to a destination. The export begins upon ingress, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingOrganizationsSinksCreateRequest) input message
@@ -5132,7 +5240,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a view on a log bucket..
+      r"""Gets a view on a log bucket.
 
       Args:
         request: (LoggingProjectsLocationsBucketsViewsGetRequest) input message
@@ -5474,6 +5582,33 @@ class LoggingV2(base_api.BaseApiClient):
       super(LoggingV2.ProjectsLocationsOperationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def ApproveRedaction(self, request, global_params=None):
+      r"""Once the impact assessment completes, the redaction operation will move into WAIT_FOR_USER_APPROVAL stage wherein it's going to wait for the user to approve the redaction operation. Please note that the operation will be in progress at this point and if the user doesn't approve the redaction operation within the grace period, it will be auto-cancelled.The redaction operation can also be approved before operation moves into the WAIT_FOR_USER_APPROVAL stage. In that case redaction process will commence as soon as the impact assessment is complete. This is functionally similar to approving after the operation moves to WAIT_FOR_USER_APPROVAL stage but without any wait time to begin redaction.Once the user approves, the redaction operation will begin redacting the log entries.
+
+      Args:
+        request: (LoggingProjectsLocationsOperationsApproveRedactionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApproveRedactionOperationResponse) The response message.
+      """
+      config = self.GetMethodConfig('ApproveRedaction')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ApproveRedaction.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:approveRedaction',
+        http_method='GET',
+        method_id='logging.projects.locations.operations.approveRedaction',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:approveRedaction',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsOperationsApproveRedactionRequest',
+        response_type_name='ApproveRedactionOperationResponse',
+        supports_download=False,
+    )
 
     def Cancel(self, request, global_params=None):
       r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
@@ -5840,7 +5975,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
+      r"""Creates a sink that exports specified log entries to a destination. The export begins upon ingress, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingProjectsSinksCreateRequest) input message
@@ -6112,7 +6247,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
+      r"""Creates a sink that exports specified log entries to a destination. The export begins upon ingress, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingSinksCreateRequest) input message

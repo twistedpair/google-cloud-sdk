@@ -214,7 +214,7 @@ class CloudbuildV2(base_api.BaseApiClient):
         method_id='cloudbuild.projects.locations.connections.repositories.fetchGitRefs',
         ordered_params=['repository'],
         path_params=['repository'],
-        query_params=['refType'],
+        query_params=['pageSize', 'pageToken', 'refType'],
         relative_path='v2/{+repository}:fetchGitRefs',
         request_field='',
         request_type_name='CloudbuildProjectsLocationsConnectionsRepositoriesFetchGitRefsRequest',

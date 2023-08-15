@@ -4912,6 +4912,7 @@ class GoogleCloudApigeeV1AddonsConfig(_messages.Message):
 
   Fields:
     advancedApiOpsConfig: Configuration for the Advanced API Ops add-on.
+    analyticsConfig: Configuration for the Analytics add-on.
     apiSecurityConfig: Configuration for the API Security add-on.
     connectorsPlatformConfig: Configuration for the Connectors Platform add-
       on.
@@ -4920,10 +4921,11 @@ class GoogleCloudApigeeV1AddonsConfig(_messages.Message):
   """
 
   advancedApiOpsConfig = _messages.MessageField('GoogleCloudApigeeV1AdvancedApiOpsConfig', 1)
-  apiSecurityConfig = _messages.MessageField('GoogleCloudApigeeV1ApiSecurityConfig', 2)
-  connectorsPlatformConfig = _messages.MessageField('GoogleCloudApigeeV1ConnectorsPlatformConfig', 3)
-  integrationConfig = _messages.MessageField('GoogleCloudApigeeV1IntegrationConfig', 4)
-  monetizationConfig = _messages.MessageField('GoogleCloudApigeeV1MonetizationConfig', 5)
+  analyticsConfig = _messages.MessageField('GoogleCloudApigeeV1AnalyticsConfig', 2)
+  apiSecurityConfig = _messages.MessageField('GoogleCloudApigeeV1ApiSecurityConfig', 3)
+  connectorsPlatformConfig = _messages.MessageField('GoogleCloudApigeeV1ConnectorsPlatformConfig', 4)
+  integrationConfig = _messages.MessageField('GoogleCloudApigeeV1IntegrationConfig', 5)
+  monetizationConfig = _messages.MessageField('GoogleCloudApigeeV1MonetizationConfig', 6)
 
 
 class GoogleCloudApigeeV1AdjustDeveloperBalanceRequest(_messages.Message):
@@ -5016,6 +5018,43 @@ class GoogleCloudApigeeV1AliasRevisionConfig(_messages.Message):
   location = _messages.StringField(1)
   name = _messages.StringField(2)
   type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class GoogleCloudApigeeV1AnalyticsConfig(_messages.Message):
+  r"""Configuration for the Analytics add-on.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the Analytics add-on.
+
+  Fields:
+    enabled: Whether the Analytics add-on is enabled.
+    expireTimeMillis: Output only. Time at which the Analytics add-on expires
+      in milliseconds since epoch. If unspecified, the add-on will never
+      expire.
+    state: Output only. The state of the Analytics add-on.
+    updateTime: Output only. The latest update time.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the Analytics add-on.
+
+    Values:
+      ADDON_STATE_UNSPECIFIED: Default value.
+      ENABLING: Add-on is in progress of enabling.
+      ENABLED: Add-on is fully enabled and ready to use.
+      DISABLING: Add-on is in progress of disabling.
+      DISABLED: Add-on is fully disabled.
+    """
+    ADDON_STATE_UNSPECIFIED = 0
+    ENABLING = 1
+    ENABLED = 2
+    DISABLING = 3
+    DISABLED = 4
+
+  enabled = _messages.BooleanField(1)
+  expireTimeMillis = _messages.IntegerField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  updateTime = _messages.StringField(4)
 
 
 class GoogleCloudApigeeV1ApiCategory(_messages.Message):
@@ -5123,11 +5162,12 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
       combination of graphQL name and operation type for a particular proxy
       request. If graphQL name is not set, this would imply quota will be
       applied on all graphQL requests matching the operation type.
-    grpcOperationGroup: Configuration used to group Apigee proxies with gRPC
-      services and method names. This grouping allows us to set quota for a
-      particular proxy with the gRPC service name and method. If a method name
-      is not set, this implies quota and authorization are applied to all gRPC
-      methods implemented by that proxy for that particular gRPC service.
+    grpcOperationGroup: Optional. Configuration used to group Apigee proxies
+      with gRPC services and method names. This grouping allows us to set
+      quota for a particular proxy with the gRPC service name and method. If a
+      method name is not set, this implies quota and authorization are applied
+      to all gRPC methods implemented by that proxy for that particular gRPC
+      service.
     lastModifiedAt: Response only. Modified time of this environment as
       milliseconds since epoch.
     name: Internal name of the API product. Characters you can use in the name
@@ -5334,6 +5374,8 @@ class GoogleCloudApigeeV1ApiProxyRevision(_messages.Message):
     displayName: Human-readable name of the API proxy.
     entityMetaDataAsProperties: Metadata describing the API proxy revision as
       a key-value map.
+    hasExtensiblePolicy: Output only. This field will be marked as true if
+      revision contains any policies marked as extensible.
     integrationEndpoints: List of IntegrationEndpoints in the '/integration-
       endpoints' directory of the API proxy. This is a 'manifest' setting
       designed to provide visibility into the contents of the API proxy.
@@ -5401,36 +5443,60 @@ class GoogleCloudApigeeV1ApiProxyRevision(_messages.Message):
   description = _messages.StringField(6)
   displayName = _messages.StringField(7)
   entityMetaDataAsProperties = _messages.MessageField('EntityMetaDataAsPropertiesValue', 8)
-  integrationEndpoints = _messages.StringField(9, repeated=True)
-  lastModifiedAt = _messages.IntegerField(10)
-  name = _messages.StringField(11)
-  policies = _messages.StringField(12, repeated=True)
-  proxies = _messages.StringField(13, repeated=True)
-  proxyEndpoints = _messages.StringField(14, repeated=True)
-  resourceFiles = _messages.MessageField('GoogleCloudApigeeV1ResourceFiles', 15)
-  resources = _messages.StringField(16, repeated=True)
-  revision = _messages.StringField(17)
-  sharedFlows = _messages.StringField(18, repeated=True)
-  spec = _messages.StringField(19)
-  targetEndpoints = _messages.StringField(20, repeated=True)
-  targetServers = _messages.StringField(21, repeated=True)
-  targets = _messages.StringField(22, repeated=True)
-  teams = _messages.StringField(23, repeated=True)
-  type = _messages.StringField(24)
+  hasExtensiblePolicy = _messages.BooleanField(9)
+  integrationEndpoints = _messages.StringField(10, repeated=True)
+  lastModifiedAt = _messages.IntegerField(11)
+  name = _messages.StringField(12)
+  policies = _messages.StringField(13, repeated=True)
+  proxies = _messages.StringField(14, repeated=True)
+  proxyEndpoints = _messages.StringField(15, repeated=True)
+  resourceFiles = _messages.MessageField('GoogleCloudApigeeV1ResourceFiles', 16)
+  resources = _messages.StringField(17, repeated=True)
+  revision = _messages.StringField(18)
+  sharedFlows = _messages.StringField(19, repeated=True)
+  spec = _messages.StringField(20)
+  targetEndpoints = _messages.StringField(21, repeated=True)
+  targetServers = _messages.StringField(22, repeated=True)
+  targets = _messages.StringField(23, repeated=True)
+  teams = _messages.StringField(24, repeated=True)
+  type = _messages.StringField(25)
 
 
 class GoogleCloudApigeeV1ApiSecurityConfig(_messages.Message):
   r"""Configurations of the API Security add-on.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the API Security add-on.
 
   Fields:
     enabled: Flag that specifies whether the API security add-on is enabled.
     expiresAt: Output only. Time at which the API Security add-on expires in
       in milliseconds since epoch. If unspecified, the add-on will never
       expire.
+    state: Output only. The state of the API Security add-on.
+    updateTime: Output only. The latest update time.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the API Security add-on.
+
+    Values:
+      ADDON_STATE_UNSPECIFIED: Default value.
+      ENABLING: Add-on is in progress of enabling.
+      ENABLED: Add-on is fully enabled and ready to use.
+      DISABLING: Add-on is in progress of disabling.
+      DISABLED: Add-on is fully disabled.
+    """
+    ADDON_STATE_UNSPECIFIED = 0
+    ENABLING = 1
+    ENABLED = 2
+    DISABLING = 3
+    DISABLED = 4
 
   enabled = _messages.BooleanField(1)
   expiresAt = _messages.IntegerField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  updateTime = _messages.StringField(4)
 
 
 class GoogleCloudApigeeV1ApiSecurityRuntimeConfig(_messages.Message):
@@ -6433,6 +6499,11 @@ class GoogleCloudApigeeV1Deployment(_messages.Message):
   r"""A GoogleCloudApigeeV1Deployment object.
 
   Enums:
+    ProxyDeploymentTypeValueValuesEnum: Output only. The type of the
+      deployment (standard or extensible) Deployed proxy revision will be
+      marked as extensible in following 2 cases. 1. The deployed proxy
+      revision uses extensible policies. 2. If a environment supports
+      flowhooks and flow hook is configured.
     StateValueValuesEnum: Current state of the deployment. **Note**: This
       field is displayed only when viewing deployment status.
 
@@ -6449,6 +6520,11 @@ class GoogleCloudApigeeV1Deployment(_messages.Message):
     pods: Status reported by runtime pods. **Note**: **This field is
       deprecated**. Runtime versions 1.3 and above report instance level
       status rather than pod status.
+    proxyDeploymentType: Output only. The type of the deployment (standard or
+      extensible) Deployed proxy revision will be marked as extensible in
+      following 2 cases. 1. The deployed proxy revision uses extensible
+      policies. 2. If a environment supports flowhooks and flow hook is
+      configured.
     revision: API proxy revision.
     routeConflicts: Conflicts in the desired state routing configuration. The
       presence of conflicts does not cause the state to be `ERROR`, but it
@@ -6462,6 +6538,24 @@ class GoogleCloudApigeeV1Deployment(_messages.Message):
     state: Current state of the deployment. **Note**: This field is displayed
       only when viewing deployment status.
   """
+
+  class ProxyDeploymentTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the deployment (standard or extensible)
+    Deployed proxy revision will be marked as extensible in following 2 cases.
+    1. The deployed proxy revision uses extensible policies. 2. If a
+    environment supports flowhooks and flow hook is configured.
+
+    Values:
+      PROXY_DEPLOYMENT_TYPE_UNSPECIFIED: Default value till public preview.
+        After public preview this value should not be returned.
+      STANDARD: Deployment will be of type Standard if only Standard proxies
+        are used
+      EXTENSIBLE: Proxy will be of type Extensible if deployments uses one or
+        more Extensible proxies
+    """
+    PROXY_DEPLOYMENT_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    EXTENSIBLE = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Current state of the deployment. **Note**: This field is displayed
@@ -6485,10 +6579,11 @@ class GoogleCloudApigeeV1Deployment(_messages.Message):
   errors = _messages.MessageField('GoogleRpcStatus', 4, repeated=True)
   instances = _messages.MessageField('GoogleCloudApigeeV1InstanceDeploymentStatus', 5, repeated=True)
   pods = _messages.MessageField('GoogleCloudApigeeV1PodStatus', 6, repeated=True)
-  revision = _messages.StringField(7)
-  routeConflicts = _messages.MessageField('GoogleCloudApigeeV1DeploymentChangeReportRoutingConflict', 8, repeated=True)
-  serviceAccount = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  proxyDeploymentType = _messages.EnumField('ProxyDeploymentTypeValueValuesEnum', 7)
+  revision = _messages.StringField(8)
+  routeConflicts = _messages.MessageField('GoogleCloudApigeeV1DeploymentChangeReportRoutingConflict', 9, repeated=True)
+  serviceAccount = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class GoogleCloudApigeeV1DeploymentChangeReport(_messages.Message):
@@ -7052,6 +7147,8 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
       resource files * Creating, updating, or deleting target servers
     StateValueValuesEnum: Output only. State of the environment. Values other
       than ACTIVE means the resource is not ready to use.
+    TypeValueValuesEnum: Optional. EnvironmentType selected for the
+      environment.
 
   Fields:
     apiProxyType: Optional. API Proxy type supported by the environment. The
@@ -7072,6 +7169,7 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
       runtime instances in this environment. Must be in the format of
       {scheme}://{hostname}:{port}. Note that scheme must be one of "http" or
       "https", and port must be supplied.
+    hasAttachedFlowHooks: A boolean attribute.
     lastModifiedAt: Output only. Last modification time of this environment as
       milliseconds since epoch.
     name: Required. Name of the environment. Values must match the regular
@@ -7081,6 +7179,7 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
       environment.
     state: Output only. State of the environment. Values other than ACTIVE
       means the resource is not ready to use.
+    type: Optional. EnvironmentType selected for the environment.
   """
 
   class ApiProxyTypeValueValuesEnum(_messages.Enum):
@@ -7144,17 +7243,40 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
     DELETING = 3
     UPDATING = 4
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. EnvironmentType selected for the environment.
+
+    Values:
+      ENVIRONMENT_TYPE_UNSPECIFIED: Environment type not specified.
+      BASE: Base environment has limited capacity and capabilities and are
+        usually used when you are getting started with Apigee or while
+        experimenting. Refer to Apigee's public documentation for more
+        details.
+      INTERMEDIATE: This is the default type and it supports API management
+        features and higher capacity than Base environment. Refer to Apigee's
+        public documentation for more details.
+      COMPREHENSIVE: Comprehensive environment supports advanced capabilites
+        and even higher capacity than Intermediate environment. Refer to
+        Apigee's public documentation for more details.
+    """
+    ENVIRONMENT_TYPE_UNSPECIFIED = 0
+    BASE = 1
+    INTERMEDIATE = 2
+    COMPREHENSIVE = 3
+
   apiProxyType = _messages.EnumField('ApiProxyTypeValueValuesEnum', 1)
   createdAt = _messages.IntegerField(2)
   deploymentType = _messages.EnumField('DeploymentTypeValueValuesEnum', 3)
   description = _messages.StringField(4)
   displayName = _messages.StringField(5)
   forwardProxyUri = _messages.StringField(6)
-  lastModifiedAt = _messages.IntegerField(7)
-  name = _messages.StringField(8)
-  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 9)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
+  hasAttachedFlowHooks = _messages.BooleanField(7)
+  lastModifiedAt = _messages.IntegerField(8)
+  name = _messages.StringField(9)
+  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 10)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
 
 
 class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
@@ -7165,6 +7287,7 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
       environment.
 
   Fields:
+    addonsConfig: The latest runtime configurations for add-ons.
     arcConfigLocation: The location for the config blob of API Runtime
       Control, aka Envoy Adapter, for op-based authentication as a URI, e.g. a
       Cloud Storage URI. This is only used by Envoy-based gateways.
@@ -7229,28 +7352,29 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  arcConfigLocation = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  dataCollectors = _messages.MessageField('GoogleCloudApigeeV1DataCollectorConfig', 3, repeated=True)
-  debugMask = _messages.MessageField('GoogleCloudApigeeV1DebugMask', 4)
-  deploymentGroups = _messages.MessageField('GoogleCloudApigeeV1DeploymentGroupConfig', 5, repeated=True)
-  deployments = _messages.MessageField('GoogleCloudApigeeV1DeploymentConfig', 6, repeated=True)
-  envScopedRevisionId = _messages.IntegerField(7)
-  featureFlags = _messages.MessageField('FeatureFlagsValue', 8)
-  flowhooks = _messages.MessageField('GoogleCloudApigeeV1FlowHookConfig', 9, repeated=True)
-  forwardProxyUri = _messages.StringField(10)
-  gatewayConfigLocation = _messages.StringField(11)
-  keystores = _messages.MessageField('GoogleCloudApigeeV1KeystoreConfig', 12, repeated=True)
-  name = _messages.StringField(13)
-  provider = _messages.StringField(14)
-  pubsubTopic = _messages.StringField(15)
-  resourceReferences = _messages.MessageField('GoogleCloudApigeeV1ReferenceConfig', 16, repeated=True)
-  resources = _messages.MessageField('GoogleCloudApigeeV1ResourceConfig', 17, repeated=True)
-  revisionId = _messages.IntegerField(18)
-  sequenceNumber = _messages.IntegerField(19)
-  targets = _messages.MessageField('GoogleCloudApigeeV1TargetServerConfig', 20, repeated=True)
-  traceConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceConfig', 21)
-  uid = _messages.StringField(22)
+  addonsConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeAddonsConfig', 1)
+  arcConfigLocation = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  dataCollectors = _messages.MessageField('GoogleCloudApigeeV1DataCollectorConfig', 4, repeated=True)
+  debugMask = _messages.MessageField('GoogleCloudApigeeV1DebugMask', 5)
+  deploymentGroups = _messages.MessageField('GoogleCloudApigeeV1DeploymentGroupConfig', 6, repeated=True)
+  deployments = _messages.MessageField('GoogleCloudApigeeV1DeploymentConfig', 7, repeated=True)
+  envScopedRevisionId = _messages.IntegerField(8)
+  featureFlags = _messages.MessageField('FeatureFlagsValue', 9)
+  flowhooks = _messages.MessageField('GoogleCloudApigeeV1FlowHookConfig', 10, repeated=True)
+  forwardProxyUri = _messages.StringField(11)
+  gatewayConfigLocation = _messages.StringField(12)
+  keystores = _messages.MessageField('GoogleCloudApigeeV1KeystoreConfig', 13, repeated=True)
+  name = _messages.StringField(14)
+  provider = _messages.StringField(15)
+  pubsubTopic = _messages.StringField(16)
+  resourceReferences = _messages.MessageField('GoogleCloudApigeeV1ReferenceConfig', 17, repeated=True)
+  resources = _messages.MessageField('GoogleCloudApigeeV1ResourceConfig', 18, repeated=True)
+  revisionId = _messages.IntegerField(19)
+  sequenceNumber = _messages.IntegerField(20)
+  targets = _messages.MessageField('GoogleCloudApigeeV1TargetServerConfig', 21, repeated=True)
+  traceConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceConfig', 22)
+  uid = _messages.StringField(23)
 
 
 class GoogleCloudApigeeV1EnvironmentGroup(_messages.Message):
@@ -10100,6 +10224,48 @@ class GoogleCloudApigeeV1RoutingRule(_messages.Message):
   updateTime = _messages.StringField(7)
 
 
+class GoogleCloudApigeeV1RuntimeAddonsConfig(_messages.Message):
+  r"""RuntimeAddonsConfig defines the runtime configurations for add-ons in an
+  environment.
+
+  Fields:
+    analyticsConfig: Runtime configuration for Analytics add-on.
+    apiSecurityConfig: Runtime configuration for API Security add-on.
+    name: Name of the addons config in the format:
+      `organizations/{org}/environments/{env}/addonsConfig`
+    revisionId: Revision number used by the runtime to detect config changes.
+    uid: UID is to detect if config is recreated after deletion. The add-on
+      config will only be deleted when the environment itself gets deleted,
+      thus it will always be the same as the UID of EnvironmentConfig.
+  """
+
+  analyticsConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeAnalyticsConfig', 1)
+  apiSecurityConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeApiSecurityConfig', 2)
+  name = _messages.StringField(3)
+  revisionId = _messages.StringField(4)
+  uid = _messages.StringField(5)
+
+
+class GoogleCloudApigeeV1RuntimeAnalyticsConfig(_messages.Message):
+  r"""Runtime configuration for the Analytics add-on.
+
+  Fields:
+    enabled: If the Analytics is enabled or not.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
+class GoogleCloudApigeeV1RuntimeApiSecurityConfig(_messages.Message):
+  r"""Runtime configuration for the API Security add-on.
+
+  Fields:
+    enabled: If the API Security is enabled or not.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class GoogleCloudApigeeV1RuntimeConfig(_messages.Message):
   r"""Runtime configuration for the organization. Response for
   GetRuntimeConfig.
@@ -10371,12 +10537,6 @@ class GoogleCloudApigeeV1SecurityAction(_messages.Message):
 
   Fields:
     allow: Allow a request through if it matches this SecurityAction.
-    apiProxies: Optional. If unset, this would apply to all proxies in the
-      environment. If set, this action is enforced only if at least one proxy
-      in the repeated list is deployed at the time of enforcement. If set,
-      several restrictions are enforced on SecurityActions. There can be at
-      most 100 enabled actions with proxies set in an env. Several other
-      restrictions apply on conditions and are detailed later.
     conditionConfig: Required. A valid SecurityAction must contain at least
       one condition.
     createTime: Output only. The create time for this SecurityAction.
@@ -10412,17 +10572,16 @@ class GoogleCloudApigeeV1SecurityAction(_messages.Message):
     DISABLED = 2
 
   allow = _messages.MessageField('GoogleCloudApigeeV1SecurityActionAllow', 1)
-  apiProxies = _messages.StringField(2, repeated=True)
-  conditionConfig = _messages.MessageField('GoogleCloudApigeeV1SecurityActionConditionConfig', 3)
-  createTime = _messages.StringField(4)
-  deny = _messages.MessageField('GoogleCloudApigeeV1SecurityActionDeny', 5)
-  description = _messages.StringField(6)
-  expireTime = _messages.StringField(7)
-  flag = _messages.MessageField('GoogleCloudApigeeV1SecurityActionFlag', 8)
-  name = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  ttl = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  conditionConfig = _messages.MessageField('GoogleCloudApigeeV1SecurityActionConditionConfig', 2)
+  createTime = _messages.StringField(3)
+  deny = _messages.MessageField('GoogleCloudApigeeV1SecurityActionDeny', 4)
+  description = _messages.StringField(5)
+  expireTime = _messages.StringField(6)
+  flag = _messages.MessageField('GoogleCloudApigeeV1SecurityActionFlag', 7)
+  name = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  ttl = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudApigeeV1SecurityActionAllow(_messages.Message):
@@ -11650,7 +11809,7 @@ class GoogleIamV1Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -11658,15 +11817,15 @@ class GoogleIamV1Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -11779,8 +11938,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -11802,7 +11961,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -11841,9 +12000,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is

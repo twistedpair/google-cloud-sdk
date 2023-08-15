@@ -206,15 +206,13 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest(_messages
     filter: Filter that you can use to limit the list request. A query string
       that can match a selected set of attributes with string values. For
       example, `display_name=abc`. Supported query attributes are *
-      `display_name` Service queries have the format: `services:"services/%s"`
-      where %s is the OnePlatformServiceId. If the query contains special
-      characters other than letters, underscore, or digits, the phrase must be
-      quoted with double quotes. For example, `display_name="foo:bar"`, where
-      the display name needs to be quoted because it contains special
-      character colon. Queries can be combined with `OR`, and `NOT` to form
-      more complex queries. You can also group them to force a desired
-      evaluation order. E.g. `services:"services/pumpkin" OR
-      services:"services/pumpkindb"`.
+      `display_name` If the query contains special characters other than
+      letters, underscore, or digits, the phrase must be quoted with double
+      quotes. For example, `display_name="foo:bar"`, where the display name
+      needs to be quoted because it contains special character colon. Queries
+      can be combined with `OR`, and `NOT` to form more complex queries. You
+      can also group them to force a desired evaluation order. For example,
+      `display_name=abc OR display_name=def`.
     pageSize: The maximum number of entries requested. The default page size
       is 25 and the maximum page size is 200.
     pageToken: The token for fetching the next page.
@@ -253,104 +251,6 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsGetRequest(
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsCreateRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsC
-  reateRequest object.
-
-  Fields:
-    googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation: A
-      GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation resource
-      to be passed as the request body.
-    parent: Required. The parent resource of this OrderAllocation. This field
-      is of the form 'billingAccounts/{billing-account-id}/orders/{order-id}'.
-  """
-
-  googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsDeleteRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsD
-  eleteRequest object.
-
-  Fields:
-    etag: The weak etag of the order allocation, which can be optionally set.
-    name: Required. The resource name of the OrderAllocation to delete.
-  """
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsGetRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsG
-  etRequest object.
-
-  Fields:
-    name: Required. The name of the OrderAllocation to retrieve. This field is
-      of the form `billingAccounts/{billing-account-id}/orders/{order-
-      id}/orderAllocations/{order-allocation-id}`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsListRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsL
-  istRequest object.
-
-  Fields:
-    pageSize: The maximum number of entries that are requested. The default
-      page size is 25 and the maximum page size is 200.
-    pageToken: The token for fetching the next page.
-    parent: Required. The parent resource to query for OrderAllocations. This
-      field is of the form `billingAccounts/{billing-account-
-      id}/orders/{order-id}`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsPatchRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsP
-  atchRequest object.
-
-  Fields:
-    googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation: A
-      GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation resource
-      to be passed as the request body.
-    name: The resource name of the allocation. This field is of the form: `bil
-      lingAccounts/{billing_account}/orders/{order}/orderAllocations/{order_al
-      location}`.
-    updateMask: Optional. The update mask that applies to the resource. See
-      the [FieldMask definition] (https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask) for more details.
-  """
-
-  googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
-class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsReplaceRequest(_messages.Message):
-  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsR
-  eplaceRequest object.
-
-  Fields:
-    googleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsReque
-      st: A GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocati
-      onsRequest resource to be passed as the request body.
-    parent: Required. The parent resource to replace OrderAllocations for.
-      This field is in this form: billingAccounts/{billing-account-
-      id}/orders/{order-id}.
-  """
-
-  googleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsRequest', 1)
-  parent = _messages.StringField(2, required=True)
 
 
 class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAttributionsListRequest(_messages.Message):
@@ -507,25 +407,23 @@ class CloudcommerceconsumerprocurementProjectsEntitlementsListRequest(_messages.
     filter: Filter that can be used to limit the list request. A query string
       that can match a selected set of attributes with string values.
       Supported query attributes are * `services.service_name` * `offer` *
-      `pending_change.new_offer` * `change_history.offer` *
-      `product_external_name` * `provider` Service queries have the format:
-      `services.service_name:"services/%s"` where %s is the
-      OnePlatformServiceId and all values are surrounded with quote literals.
-      Offer has the format: "billingAccounts/{billing-account-
+      `pending_change.new_offer` * `product_external_name` * `provider`
+      Service queries have the format: `services.service_name:"services/%s"`
+      where %s is the OnePlatformServiceId and all values are surrounded with
+      quote literals. Offer has the format: "billingAccounts/{billing-account-
       id}/offers/{offer-id}" for private offers or
       "services/{service}/standardOffers/{offer-id}" for standard offers.
       Related offer filters are formatted where %s is the above fully
       qualified Offer and all values are surrounded with quote literals. Ex.
-      `offer="%s"` `pending_change.new_offer="%s"` `change_history.offer:"%s"`
-      Product and provider queries have the format:
-      `product_external_name="pumpkin-saas"` `provider="pumpkindb"` If the
-      query contains special characters other than letters, underscore, or
-      digits, the phrase must be quoted with double quotes. For example,
-      `services.service_name:"services/%s"`, where the service query needs to
-      be quoted because it contains special character forward slash. Queries
-      can be combined with `OR`, and `NOT` to form more complex queries. You
-      can also group them to force a desired evaluation order. E.g.
-      `services.service_name:"services/pumpkin" OR
+      `offer="%s"` `pending_change.new_offer="%s"` Product and provider
+      queries have the format: `product_external_name="pumpkin-saas"`
+      `provider="pumpkindb"` If the query contains special characters other
+      than letters, underscore, or digits, the phrase must be quoted with
+      double quotes. For example, `services.service_name:"services/%s"`, where
+      the service query needs to be quoted because it contains special
+      character forward slash. Queries can be combined with `OR`, and `NOT` to
+      form more complex queries. You can also group them to force a desired
+      evaluation order. E.g. `services.service_name:"services/pumpkin" OR
       services.service_name:"services/pumpkindb"`.
     pageSize: The maximum number of entries requested. The default page size
       is 25 and the maximum page size is 200.
@@ -898,10 +796,12 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Consent(_messages.Message):
         not use.
       ACTIVE: Represent the approved state of the consent.
       REVOKED: Represent the revoked state of the consent.
+      ROLLEDBACK: Represent the rolled back state of the consent.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     REVOKED = 2
+    ROLLEDBACK = 3
 
   agreement = _messages.StringField(1)
   agreementDocument = _messages.StringField(2)
@@ -927,13 +827,6 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CreateFreeTrialMetadata(_mes
 
 
 
-class GoogleCloudCommerceConsumerProcurementV1alpha1CreateOrderAllocationMetadata(_messages.Message):
-  r"""Message stored in the metadata field of the Operation returned by
-  ConsumerProcurementService.CreateOrderAllocation.
-  """
-
-
-
 class GoogleCloudCommerceConsumerProcurementV1alpha1CustomPricing(_messages.Message):
   r"""Information about custom pricing on a resource.
 
@@ -951,13 +844,6 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1DeleteAccountMetadata(_messa
 
 
 
-class GoogleCloudCommerceConsumerProcurementV1alpha1DeleteOrderAllocationMetadata(_messages.Message):
-  r"""Message stored in the metadata field of the Operation returned by
-  ConsumerProcurementService.DeleteOrderAllocation.
-  """
-
-
-
 class GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement(_messages.Message):
   r"""Entitlement represents the ability to use a product or services
   associated with a purchase within a Project. When the customer creates an
@@ -965,7 +851,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement(_messages.Messag
   associated with the same billing account as the order, for all
   products/services procured in the order. Users can enable/disable
   Entitlements to allow/disallow using the product/service in a project. Next
-  Id: 23
+  Id: 24
 
   Enums:
     StateValueValuesEnum: Output only. The state of the entitlement.
@@ -990,7 +876,6 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement(_messages.Messag
       entitlement is created against.
     provider: Output only. Provider associated with this Entitlement. In the
       format of `providers/{provider_id}`.
-    services: Output only. Services associated with the entitlement.
     state: Output only. The state of the entitlement.
     stateReason: Output only. An explanation for the entitlement's state.
       Mainly used in the case of
@@ -1010,11 +895,20 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement(_messages.Messag
         The procured item is now usable.
       ENTITLEMENT_STATE_DISABLED: Indicates that the entitlement is disabled.
         The procured item is not usable.
+      ENTITLEMENT_STATE_EXHAUSTED: Indicates that no more procured products
+        can be added to the current project. This will be returned if there is
+        already a consumer entitlement with resources deployed in another
+        project and the product allows a single deployment only.
+      ENTITLEMENT_STATE_INELIGIBLE: Indicates that the entitlement is
+        ineligible for usage because the project is already enabled as a
+        consumer on another entitlement of the same product.
     """
     ENTITLEMENT_STATE_UNSPECIFIED = 0
     ENTITLEMENT_STATE_UNAVAILABLE = 1
     ENTITLEMENT_STATE_ENABLED = 2
     ENTITLEMENT_STATE_DISABLED = 3
+    ENTITLEMENT_STATE_EXHAUSTED = 4
+    ENTITLEMENT_STATE_INELIGIBLE = 5
 
   changeHistory = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange', 1, repeated=True)
   createTime = _messages.StringField(2)
@@ -1024,10 +918,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement(_messages.Messag
   pendingChange = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange', 6)
   productExternalName = _messages.StringField(7)
   provider = _messages.StringField(8)
-  services = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementService', 9, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateReason = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  stateReason = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange(_messages.Message):
@@ -1116,33 +1009,6 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementInfo(_messages.Me
 
   id = _messages.StringField(1)
   services = _messages.StringField(2, repeated=True)
-
-
-class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementService(_messages.Message):
-  r"""A service associated with the entitlement.
-
-  Enums:
-    ServiceStateValueValuesEnum: Current state of the service within project.
-
-  Fields:
-    serviceName: The name of the service.
-    serviceState: Current state of the service within project.
-  """
-
-  class ServiceStateValueValuesEnum(_messages.Enum):
-    r"""Current state of the service within project.
-
-    Values:
-      STATE_UNSPECIFIED: Sentinel value. Do not use.
-      ENABLED: Indicates service is enabled within project.
-      DISABLED: Indicates service is disabled within project.
-    """
-    STATE_UNSPECIFIED = 0
-    ENABLED = 1
-    DISABLED = 2
-
-  serviceName = _messages.StringField(1)
-  serviceState = _messages.EnumField('ServiceStateValueValuesEnum', 2)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1Event(_messages.Message):
@@ -1516,18 +1382,6 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ListFreeTrialsResponse(_mess
   nextPageToken = _messages.StringField(2)
 
 
-class GoogleCloudCommerceConsumerProcurementV1alpha1ListOrderAllocationsResponse(_messages.Message):
-  r"""Response message for ConsumerProcurementService.ListOrderAllocations.
-
-  Fields:
-    nextPageToken: The token for fetching the next page.
-    orderAllocations: The list of OrderAllocations in this response.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  orderAllocations = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation', 2, repeated=True)
-
-
 class GoogleCloudCommerceConsumerProcurementV1alpha1ListOrderAttributionsResponse(_messages.Message):
   r"""Response message for ConsumerProcurementService.ListOrderAttributions.
 
@@ -1799,8 +1653,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Order(_messages.Message):
       account to be present.
     cancelledLineItems: Output only. Line items that were cancelled.
     createTime: Output only. The creation timestamp.
-    displayName: Required. The user-specified name of the order. Must be
-      unique within a billing account.
+    displayName: Required. The user-specified name of the order.
     etag: The weak etag of the order.
     lineItems: Output only. The items being purchased.
     name: Output only. The resource name of the order. Has the form
@@ -1846,73 +1699,6 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Order(_messages.Message):
   updateTime = _messages.StringField(11)
 
 
-class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation(_messages.Message):
-  r"""OrderAllocation represents the allocation of resources within a specific
-  order to a set of targets (projects). Next Id: 9
-
-  Enums:
-    StateValueValuesEnum: Output only. The state of the allocation.
-
-  Fields:
-    allocationEntry: Required. The currently effective allocation entry.
-    createTime: Output only. The time when the resource was created.
-    displayName: Optional. The user-specified name of the allocation. Must be
-      unique within an Order if specified.
-    etag: The weak etag of the order allocation, which can be optionally set.
-    name: The resource name of the allocation. This field is of the form: `bil
-      lingAccounts/{billing_account}/orders/{order}/orderAllocations/{order_al
-      location}`.
-    pendingAllocationEntry: Output only. The upcoming allocation entry.
-    state: Output only. The state of the allocation.
-    updateTime: Output only. The time when the resource was last updated.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the allocation.
-
-    Values:
-      STATE_UNSPECIFIED: Sentinel value. Do not use.
-      STATE_PENDING_ACTIVATION: The allocation is pending activation.
-      STATE_ACTIVE: The allocation is active.
-      STATE_PENDING_DELETION: The allocation is pending deletion.
-      STATE_CANCELLED: The allocation is cancelled. This can be caused by
-        failure in creating the allocation or the associated Order being
-        cancelled.
-    """
-    STATE_UNSPECIFIED = 0
-    STATE_PENDING_ACTIVATION = 1
-    STATE_ACTIVE = 2
-    STATE_PENDING_DELETION = 3
-    STATE_CANCELLED = 4
-
-  allocationEntry = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry', 1)
-  createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  name = _messages.StringField(5)
-  pendingAllocationEntry = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
-
-
-class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry(_messages.Message):
-  r"""An allocation entry representing what resource is being allocated to
-  which targets.
-
-  Fields:
-    doubleResourceValue: Represents a double value.
-    int64ResourceValue: Represents an int64 value.
-    stringResourceValue: Represents a string value.
-    targets: Required. The targets of the allocation, only projects are
-      allowed at the moment.
-  """
-
-  doubleResourceValue = _messages.FloatField(1)
-  int64ResourceValue = _messages.IntegerField(2)
-  stringResourceValue = _messages.StringField(3)
-  targets = _messages.StringField(4, repeated=True)
-
-
 class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAttribution(_messages.Message):
   r"""Determines how credits generated by this Order are assigned to specific
   targets (e.g. projects).
@@ -1945,8 +1731,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAttributionAllotment(_m
     targets: Targets for this allotment. Both projects and folder names are
       supported. Targets should be associated with this billing account.
       Targets not associated with this billing account are ignored. Format:
-      project/{project_id} or project/{project_number} or
-      folders/{folder_name}.
+      projects/{project_number} or folders/{folder_name}
   """
 
   intAllotmentAmount = _messages.IntegerField(1)
@@ -2001,7 +1786,6 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.
     autoRenewalBehavior: Optional. Auto renewal behavior of the subscription
       associated with the order.
     displayName: Required. The user-specified name of the order being placed.
-      Must be unique within a billing account.
     lineItemInfo: Optional. Places order for offer. Required when an offer-
       based order is being placed.
     placeProductsOrderRequest: Optional. Places order for non-quote products.
@@ -2066,37 +1850,6 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest(_mess
   quoteExternalName = _messages.StringField(1)
 
 
-class GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsMetadata(_messages.Message):
-  r"""Message stored in the metadata field of the Operation returned by
-  ConsumerProcurementService.ReplaceOrderAllocations.
-  """
-
-
-
-class GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsRequest(_messages.Message):
-  r"""Request message for ConsumerProcurementService.ReplaceOrderAllocations.
-
-  Fields:
-    orderAllocations: Required. The replacement OrderAllocations. They will
-      replace all existing OrderAllocations belonging to the parent. The limit
-      on the number of OrderAllocations is 1000.
-  """
-
-  orderAllocations = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation', 1, repeated=True)
-
-
-class GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsResponse(_messages.Message):
-  r"""Message stored in the response field of the Operation returned by
-  ConsumerProcurementService.ReplaceOrderAllocations.
-
-  Fields:
-    orderAllocations: The entire list of OrderAllocations of the parent Order
-      after the replacement.
-  """
-
-  orderAllocations = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation', 1, repeated=True)
-
-
 class GoogleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest(_messages.Message):
   r"""Request message to revoke a consent."""
 
@@ -2127,13 +1880,6 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1TestConfig(_messages.Message
   isTesting = _messages.BooleanField(1)
 
 
-class GoogleCloudCommerceConsumerProcurementV1alpha1UpdateOrderAllocationMetadata(_messages.Message):
-  r"""Message stored in the metadata field of the Operation returned by
-  ConsumerProcurementService.UpdateOrderAllocation.
-  """
-
-
-
 class GoogleCloudCommerceConsumerProcurementV1alpha1UpdateOrderAttributionMetadata(_messages.Message):
   r"""Metadata for a long-running operation initiated by
   ConsumerProcurementService.UpdateOrderAttribution.
@@ -2162,23 +1908,9 @@ class GoogleCloudCommerceConsumerProcurementV1mainCreateFreeTrialMetadata(_messa
 
 
 
-class GoogleCloudCommerceConsumerProcurementV1mainCreateOrderAllocationMetadata(_messages.Message):
-  r"""Message stored in the metadata field of the Operation returned by
-  ConsumerProcurementService.CreateOrderAllocation.
-  """
-
-
-
 class GoogleCloudCommerceConsumerProcurementV1mainDeleteAccountMetadata(_messages.Message):
   r"""Message stored in the metadata field of the Operation returned by
   ConsumerProcurementService.DeleteAccount.
-  """
-
-
-
-class GoogleCloudCommerceConsumerProcurementV1mainDeleteOrderAllocationMetadata(_messages.Message):
-  r"""Message stored in the metadata field of the Operation returned by
-  ConsumerProcurementService.DeleteOrderAllocation.
   """
 
 
@@ -2190,102 +1922,9 @@ class GoogleCloudCommerceConsumerProcurementV1mainModifyOrderMetadata(_messages.
 
 
 
-class GoogleCloudCommerceConsumerProcurementV1mainOrderAllocation(_messages.Message):
-  r"""OrderAllocation represents the allocation of resources within a specific
-  order to a set of targets (projects). Next Id: 9
-
-  Enums:
-    StateValueValuesEnum: Output only. The state of the allocation.
-
-  Fields:
-    allocationEntry: Required. The currently effective allocation entry.
-    createTime: Output only. The time when the resource was created.
-    displayName: Optional. The user-specified name of the allocation. Must be
-      unique within an Order if specified.
-    etag: The weak etag of the order allocation, which can be optionally set.
-    name: The resource name of the allocation. This field is of the form: `bil
-      lingAccounts/{billing_account}/orders/{order}/orderAllocations/{order_al
-      location}`.
-    pendingAllocationEntry: Output only. The upcoming allocation entry.
-    state: Output only. The state of the allocation.
-    updateTime: Output only. The time when the resource was last updated.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the allocation.
-
-    Values:
-      STATE_UNSPECIFIED: Sentinel value. Do not use.
-      STATE_PENDING_ACTIVATION: The allocation is pending activation.
-      STATE_ACTIVE: The allocation is active.
-      STATE_PENDING_DELETION: The allocation is pending deletion.
-      STATE_CANCELLED: The allocation is cancelled. This can be caused by
-        failure in creating the allocation or the associated Order being
-        cancelled.
-    """
-    STATE_UNSPECIFIED = 0
-    STATE_PENDING_ACTIVATION = 1
-    STATE_ACTIVE = 2
-    STATE_PENDING_DELETION = 3
-    STATE_CANCELLED = 4
-
-  allocationEntry = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1mainOrderAllocationAllocationEntry', 1)
-  createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  name = _messages.StringField(5)
-  pendingAllocationEntry = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1mainOrderAllocationAllocationEntry', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
-
-
-class GoogleCloudCommerceConsumerProcurementV1mainOrderAllocationAllocationEntry(_messages.Message):
-  r"""An allocation entry representing what resource is being allocated to
-  which targets.
-
-  Fields:
-    doubleResourceValue: Represents a double value.
-    int64ResourceValue: Represents an int64 value.
-    stringResourceValue: Represents a string value.
-    targets: Required. The targets of the allocation, only projects are
-      allowed at the moment.
-  """
-
-  doubleResourceValue = _messages.FloatField(1)
-  int64ResourceValue = _messages.IntegerField(2)
-  stringResourceValue = _messages.StringField(3)
-  targets = _messages.StringField(4, repeated=True)
-
-
 class GoogleCloudCommerceConsumerProcurementV1mainPlaceOrderMetadata(_messages.Message):
   r"""Message stored in the metadata field of the Operation returned by
   ConsumerProcurementService.PlaceOrder.
-  """
-
-
-
-class GoogleCloudCommerceConsumerProcurementV1mainReplaceOrderAllocationsMetadata(_messages.Message):
-  r"""Message stored in the metadata field of the Operation returned by
-  ConsumerProcurementService.ReplaceOrderAllocations.
-  """
-
-
-
-class GoogleCloudCommerceConsumerProcurementV1mainReplaceOrderAllocationsResponse(_messages.Message):
-  r"""Message stored in the response field of the Operation returned by
-  ConsumerProcurementService.ReplaceOrderAllocations.
-
-  Fields:
-    orderAllocations: The entire list of OrderAllocations of the parent Order
-      after the replacement.
-  """
-
-  orderAllocations = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1mainOrderAllocation', 1, repeated=True)
-
-
-class GoogleCloudCommerceConsumerProcurementV1mainUpdateOrderAllocationMetadata(_messages.Message):
-  r"""Message stored in the metadata field of the Operation returned by
-  ConsumerProcurementService.UpdateOrderAllocation.
   """
 
 
@@ -2307,8 +1946,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -2330,7 +1969,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -2369,9 +2008,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is

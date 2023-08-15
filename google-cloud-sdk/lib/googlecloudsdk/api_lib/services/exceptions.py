@@ -106,6 +106,24 @@ class GenerateServiceIdentityPermissionDeniedException(Error):
   pass
 
 
+class GetConsumerPolicyPermissionDeniedException(Error):
+  """Permission denied exception for get consumer policy."""
+
+  pass
+
+
+class UpdateConsumerPolicyPermissionDeniedException(Error):
+  """Permission denied exception for update consumer policy."""
+
+  pass
+
+
+class GetReverseDependencyClosurePermissionDeniedException(Error):
+  """Permission denied exception for get reverse dependency closure."""
+
+  pass
+
+
 class OperationErrorException(Error):
   """Exception for operation error."""
   pass
@@ -119,3 +137,11 @@ class TimeoutError(Error):
 def ReraiseError(err, klass):
   """Transform and re-raise error helper."""
   core_exceptions.reraise(klass(api_lib_exceptions.HttpException(err)))
+
+
+class ConfigError(Error):
+  """Raised when unable to parse a config file."""
+
+  def __init__(self, message=None, **kwargs):
+    message = message or 'Config Error.'
+    super(ConfigError, self).__init__(message, **kwargs)

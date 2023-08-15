@@ -31,9 +31,10 @@ properties:
       internal HTTP(S) load balancers and Traffic Director and requires
       GENERATED_COOKIE or HTTP_COOKIE session affinity. If set to 0, the cookie
       is non-persistent and lasts only until the end of the browser session (or
-      equivalent). The maximum allowed value is one day (86,400). Not supported
-      when the backend service is referenced by a URL map that is bound to
-      target gRPC proxy that has validateForProxyless field set to true.
+      equivalent). The maximum allowed value is two weeks (1,209,600). Not
+      supported when the backend service is referenced by a URL map that is
+      bound to target gRPC proxy that has validateForProxyless field set to
+      true.
     type: integer
   backends:
     description: The list of backends that serve this BackendService.
@@ -48,6 +49,14 @@ properties:
   circuitBreakers:
     description: A CircuitBreakers attribute.
     $ref: CircuitBreakers.yaml
+  compressionMode:
+    description: |-
+      Compress text responses using Brotli or gzip compression, based on the
+      client's Accept-Encoding header.
+    type: string
+    enum:
+    - AUTOMATIC
+    - DISABLED
   connectionDraining:
     description: A ConnectionDraining attribute.
     $ref: ConnectionDraining.yaml
@@ -156,13 +165,18 @@ properties:
     - INVALID_LOAD_BALANCING_SCHEME
   localityLbPolicies:
     description: |-
-      A list of locality load balancing policies to be used in
-      order of preference. Either the policy or the customPolicy
-      field should be set. Overrides any value set in the
-      localityLbPolicy field. localityLbPolicies is only
-      supported when the BackendService is referenced by a URL
-      Map that is referenced by a target gRPC proxy that has the
-      validateForProxyless field set to true.
+      A list of locality load-balancing policies to be used in
+      order of preference. When you use localityLbPolicies, you
+      must set at least one value for either the
+      localityLbPolicies[].policy or the
+      localityLbPolicies[].customPolicy field.
+      localityLbPolicies overrides any value set in the
+      localityLbPolicy field. For an example of how to use this
+      field, see Define a list of preferred policies. Caution:
+      This field and its children are intended for use in a
+      service mesh that includes gRPC clients only. Envoy
+      proxies can't use backend services that have this
+      configuration.
     type: array
     items:
       $ref: BackendServiceLocalityLoadBalancingPolicyConfig.yaml
@@ -189,6 +203,7 @@ properties:
     - RANDOM
     - RING_HASH
     - ROUND_ROBIN
+    - WEIGHTED_MAGLEV
   logConfig:
     description: |-
       This field denotes the logging options for the load
@@ -236,14 +251,36 @@ properties:
     type: string
   outlierDetection:
     description: |-
-      Settings controlling the eviction of unhealthy hosts
-      from the load balancing pool for the backend service.
-      If not set, this feature is considered disabled. This
-      field is applicable to either: - A regional backend
-      service with the service_protocol set to HTTP, HTTPS,
-      or HTTP2, and load_balancing_scheme set to
-      INTERNAL_MANAGED. - A global backend service with the
-      load_balancing_scheme set to INTERNAL_SELF_MANAGED.
+      Settings controlling the ejection of unhealthy backend
+      endpoints from the load balancing pool of each
+      individual proxy instance that processes the traffic
+      for the given backend service. If not set, this
+      feature is considered disabled. Results of the outlier
+      detection algorithm (ejection of endpoints from the
+      load balancing pool and returning them back to the
+      pool) are executed independently by each proxy
+      instance of the load balancer. In most cases, more
+      than one proxy instance handles the traffic received
+      by a backend service. Thus, it is possible that an
+      unhealthy endpoint is detected and ejected by only
+      some of the proxies, and while this happens, other
+      proxies may continue to send requests to the same
+      unhealthy endpoint until they detect and eject the
+      unhealthy endpoint. Applicable backend endpoints can
+      be: - VM instances in an Instance Group - Endpoints in
+      a Zonal NEG (GCE_VM_IP, GCE_VM_IP_PORT) - Endpoints in
+      a Hybrid Connectivity NEG (NON_GCP_PRIVATE_IP_PORT) -
+      Serverless NEGs, that resolve to Cloud Run, App
+      Engine, or Cloud Functions Services - Private Service
+      Connect NEGs, that resolve to Google-managed regional
+      API endpoints or managed services published using
+      Private Service Connect Applicable backend service
+      types can be: - A global backend service with the
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED or
+      EXTERNAL_MANAGED. - A regional backend service with
+      the serviceProtocol set to HTTP, HTTPS, or HTTP2, and
+      loadBalancingScheme set to INTERNAL_MANAGED or
+      EXTERNAL_MANAGED. Not supported for Serverless NEGs.
       Not supported when the backend service is referenced
       by a URL map that is bound to target gRPC proxy that
       has validateForProxyless field set to true.
@@ -310,12 +347,21 @@ properties:
     description: |-
       [Output Only] Server-defined URL for the resource.
     type: string
+  serviceBindings:
+    description: |-
+      URLs of networkservices.ServiceBinding resources. Can
+      only be set if load balancing scheme is
+      INTERNAL_SELF_MANAGED. If set, lists of backends and
+      health checks must be both empty.
+    type: array
+    items:
+      type: string
   sessionAffinity:
     description: |-
-      Type of session affinity to use. The default is NONE.
-      Only NONE and HEADER_FIELD are supported when the
-      backend service is referenced by a URL map that is
-      bound to target gRPC proxy that has
+      Type of session affinity to use. The default is
+      NONE. Only NONE and HEADER_FIELD are supported
+      when the backend service is referenced by a URL
+      map that is bound to target gRPC proxy that has
       validateForProxyless field set to true. For more
       details, see: [Session
       Affinity](https://cloud.google.com/load-
@@ -335,15 +381,16 @@ properties:
     $ref: Subsetting.yaml
   timeoutSec:
     description: |-
-      The backend service timeout has a different meaning
-      depending on the type of load balancer. For more
-      information see, Backend service settings. The default
-      is 30 seconds. The full range of timeout values
-      allowed goes from 1 through 2,147,483,647 seconds.
-      This value can be overridden in the PathMatcher
-      configuration of the UrlMap that references this
-      backend service. Not supported when the backend
-      service is referenced by a URL map that is bound to
-      target gRPC proxy that has validateForProxyless field
-      set to true. Instead, use maxStreamDuration.
+      The backend service timeout has a different
+      meaning depending on the type of load balancer.
+      For more information see, Backend service
+      settings. The default is 30 seconds. The full
+      range of timeout values allowed goes from 1
+      through 2,147,483,647 seconds. This value can be
+      overridden in the PathMatcher configuration of the
+      UrlMap that references this backend service. Not
+      supported when the backend service is referenced
+      by a URL map that is bound to target gRPC proxy
+      that has validateForProxyless field set to true.
+      Instead, use maxStreamDuration.
     type: integer

@@ -18,7 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import copy
 import enum
+
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
@@ -31,13 +33,19 @@ from googlecloudsdk.core import transport
 from googlecloudsdk.core.credentials import transports
 
 _PROJECT_RESOURCE = 'projects/%s'
+_FOLDER_RESOURCE = 'folders/%s'
+_ORGANIZATION_RESOURCE = 'organizations/%s'
 _PROJECT_SERVICE_RESOURCE = 'projects/%s/services/%s'
 _FOLDER_SERVICE_RESOURCE = 'folders/%s/services/%s'
 _ORG_SERVICE_RESOURCE = 'organizations/%s/services/%s'
+_SERVICE_RESOURCE = 'services/%s'
+_REVERSE_CLOSURE = '/reverseClosure'
 _CONSUMER_SERVICE_RESOURCE = '%s/services/%s'
+_CONSUMER_POLICY_DEFAULT = '/consumerPolicies/default'
 _LIMIT_OVERRIDE_RESOURCE = '%s/consumerOverrides/%s'
 _VALID_CONSUMER_PREFIX = frozenset({'projects/', 'folders/', 'organizations/'})
 _V1_VERSION = 'v1'
+_V2_VERSION = 'v2'
 _V1BETA1_VERSION = 'v1beta1'
 _V1ALPHA_VERSION = 'v1alpha'
 _TOO_MANY_REQUESTS = 429
@@ -60,6 +68,245 @@ class ContainerType(enum.Enum):
 def GetProtectedServiceWarning(service_name):
   """Return the warning message associated with a protected service."""
   return _PROTECTED_SERVICES.get(service_name)
+
+
+def GetConsumerPolicy(policy_name):
+  """Make API call to get a consumer policy.
+
+  Args:
+    policy_name: The name of a consumer policy. Currently supported format
+      '{resource_type}/{resource_name}/consumerPolicies/default'. For example,
+      'projects/100/consumerPolicies/default'.
+
+  Raises:
+    exceptions.GetConsumerPolicyPermissionDeniedException: when getting a
+      consumer policy fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The consumer Policy
+  """
+  client = _GetClientInstance('v2')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageConsumerPoliciesGetRequest(name=policy_name)
+
+  try:
+    return client.consumerPolicies.Get(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.GetConsumerPolicyPermissionDeniedException
+    )
+
+
+def UpdateConsumerPolicy(consumerpolicy, name, force=False):
+  """Make API call to update a consumer policy.
+
+  Args:
+    consumerpolicy: The consumer policy to update.
+    name: The resource name of the policy. Currently supported format
+      '{resource_type}/{resource_name}/consumerPolicies/default. For example,
+      'projects/100/consumerPolicies/default'.
+    force: Disable service with usage within last 30 days or disable recently
+      enabled service.
+
+  Raises:
+    exceptions.UpdateConsumerPolicyPermissionDeniedException: when updating a
+      consumer policy fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Updated consumer policy
+  """
+  client = _GetClientInstance('v2')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageUpdateConsumerPolicyRequest(
+      consumerPolicy=consumerpolicy, name=name, force=force
+  )
+
+  try:
+    return client.v2.UpdateConsumerPolicy(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.UpdateConsumerPolicyPermissionDeniedException
+    )
+  except apitools_exceptions.HttpBadRequestError as e:
+    log.status.Print(
+        'Provide the --force flag if you wish to force disable services.'
+    )
+    exceptions.ReraiseError(e, exceptions.Error)
+
+
+def GetReverseClosure(resource, service):
+  """Make API call to get reverse dependency of a specific service.
+
+  Args:
+    resource: The target resource.
+    service: The identifier of the service to get reversed depenedency of.
+
+  Raises:
+    exceptions.GetReverseDependencyClosurePermissionDeniedException: when
+      getting a reverse dependency closure for resource and service fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Reverse dependency closure
+  """
+  client = _GetClientInstance('v2')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageServicesGetReverseClosureRequest(
+      name=resource + '/' + _SERVICE_RESOURCE % service + _REVERSE_CLOSURE
+  )
+
+  try:
+    return client.services.GetReverseClosure(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.GetReverseDependencyClosurePermissionDeniedException
+    )
+
+
+def RemoveEnableRule(
+    project, service, force=False, folder=None, organization=None
+):
+  """Make API call to disable a specific service.
+
+  Args:
+    project: The project for which to disable the service.
+    service: The identifier of the service to disable, for example
+      'serviceusage.googleapis.com'.
+    force: Disable service with usage within last 30 days or disable recently
+      enabled service or disable the service even if there are enabled services
+      which depend on it. This also disables the services which depend on the
+      service to be disabled.
+    folder: The folder for which to disable the service.
+    organization: The organization for which to disable the service.
+
+  Raises:
+    exceptions.EnableServicePermissionDeniedException: when disabling API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The result of the operation
+  """
+  client = _GetClientInstance('v2')
+  messages = client.MESSAGES_MODULE
+
+  # TODO(b/274633761): ADD --project,--folder, --orgnaization as mutually
+  # exclusive flags so only one resource is accepted.
+  resource_name = _PROJECT_RESOURCE % project
+
+  if folder:
+    resource_name = _FOLDER_RESOURCE % folder
+
+  if organization:
+    resource_name = _ORGANIZATION_RESOURCE % organization
+
+  policy_name = resource_name + _CONSUMER_POLICY_DEFAULT
+
+  try:
+    current_policy = GetConsumerPolicy(policy_name)
+
+    reverse_closure = GetReverseClosure(resource_name, service)
+
+    if not force:
+      enabled = set()
+
+      for enable_rule in current_policy.enableRules:
+        enabled.update(enable_rule.values)
+
+      enabled_dependents = set()
+
+      for value in reverse_closure.values:
+        if value in enabled:
+          enabled_dependents.add(value)
+
+      if enabled_dependents:
+        enabled_dependents = ','.join(enabled_dependents)
+        raise exceptions.ConfigError(
+            'The service '
+            + service
+            + ' is depended on by the following active service(s) '
+            + enabled_dependents
+            + ' . Provide the --force flag if you wish to force disable'
+            ' services.'
+        )
+
+    to_remove = {reverse_closure.service}
+    to_remove.update(reverse_closure.values)
+
+    updated_consumer_poicy = copy.deepcopy(current_policy)
+    updated_consumer_poicy.enableRules.clear()
+
+    for enable_rule in current_policy.enableRules:
+      rule = copy.deepcopy(enable_rule)
+      for value in enable_rule.values:
+        if value in to_remove:
+          rule.values.remove(value)
+      if rule.values:
+        updated_consumer_poicy.enableRules.append(rule)
+
+    return UpdateConsumerPolicy(
+        updated_consumer_poicy, policy_name, force=force
+    )
+
+  except (
+      exceptions.GetConsumerPolicyPermissionDeniedException,
+      exceptions.UpdateConsumerPolicyPermissionDeniedException,
+      exceptions.GetReverseDependencyClosurePermissionDeniedException,
+  ):
+    try:
+      value = _SERVICE_RESOURCE % service
+      # TODO(b/274633761) RemoveEnableRule will have force flag later.
+      # When force is not set gcloud command, the DependentValuesValueValuesEnum
+      # shoule be CHECK and force in RemoveEnableRule RPC should be false.
+      # When force is set as True, the DependentValuesValueValuesEnum shoule be
+      # REMOVE and force in RemoveEnableRule RPC should be true.
+      if force:
+        check = (
+            messages.RemoveEnableRulesRequest.DependentValuesValueValuesEnum.REMOVE
+        )
+      else:
+        check = (
+            messages.RemoveEnableRulesRequest.DependentValuesValueValuesEnum.CHECK
+        )
+      remove_enable_request = (
+          messages.ServiceusageConsumerPoliciesRemoveEnableRulesRequest(
+              parent=policy_name,
+              removeEnableRulesRequest=messages.RemoveEnableRulesRequest(
+                  values=[value],
+                  dependentValues=check,
+              ),
+          )
+      )
+      return client.consumerPolicies.RemoveEnableRules(
+          request=remove_enable_request
+      )
+    except (
+        apitools_exceptions.HttpForbiddenError,
+        apitools_exceptions.HttpNotFoundError,
+    ) as e:
+      exceptions.ReraiseError(
+          e, exceptions.EnableServicePermissionDeniedException
+      )
+    except apitools_exceptions.HttpBadRequestError as e:
+      log.status.Print(
+          'Provide the --force flag if you wish to force disable services.'
+      )
+      # TODO(b/274633761) Repharse error message to avoid showing internal
+      # flags in the error message.
+      exceptions.ReraiseError(e, exceptions.Error)
 
 
 def EnableApiCall(project, service):
@@ -264,6 +511,31 @@ def GetOperation(name):
     return client.operations.Get(request)
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(e, exceptions.OperationErrorException)
+
+
+def GetOperationV2(name):
+  """Make API call to get an operation.
+
+  Args:
+    name: The name of operation.
+
+  Raises:
+    exceptions.OperationErrorException: when the getting operation API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The result of the operation
+  """
+  client = _GetClientInstance('v2')
+  messages = client.MESSAGES_MODULE
+  request = messages.ServiceusageOperationsGetRequest(name=name)
+  try:
+    return client.operations.Get(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
     exceptions.ReraiseError(e, exceptions.OperationErrorException)
 
 

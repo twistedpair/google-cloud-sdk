@@ -43,6 +43,7 @@ class ServicenetworkingV1(base_api.BaseApiClient):
     self.services_connections = self.ServicesConnectionsService(self)
     self.services_dnsRecordSets = self.ServicesDnsRecordSetsService(self)
     self.services_dnsZones = self.ServicesDnsZonesService(self)
+    self.services_projects_global_networks_dnsZones = self.ServicesProjectsGlobalNetworksDnsZonesService(self)
     self.services_projects_global_networks_peeredDnsDomains = self.ServicesProjectsGlobalNetworksPeeredDnsDomainsService(self)
     self.services_projects_global_networks = self.ServicesProjectsGlobalNetworksService(self)
     self.services_projects_global = self.ServicesProjectsGlobalService(self)
@@ -323,6 +324,60 @@ class ServicenetworkingV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Producers can use this method to retrieve information about the DNS record set added to the private zone inside the shared tenant host project associated with a consumer network.
+
+      Args:
+        request: (ServicenetworkingServicesDnsRecordSetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsRecordSet) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/services/{servicesId}/dnsRecordSets:get',
+        http_method='GET',
+        method_id='servicenetworking.services.dnsRecordSets.get',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['consumerNetwork', 'domain', 'type', 'zone'],
+        relative_path='v1/{+parent}/dnsRecordSets:get',
+        request_field='',
+        request_type_name='ServicenetworkingServicesDnsRecordSetsGetRequest',
+        response_type_name='DnsRecordSet',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Producers can use this method to retrieve a list of available DNS RecordSets available inside the private zone on the tenant host project accessible from their network.
+
+      Args:
+        request: (ServicenetworkingServicesDnsRecordSetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDnsRecordSetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/services/{servicesId}/dnsRecordSets:list',
+        http_method='GET',
+        method_id='servicenetworking.services.dnsRecordSets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['consumerNetwork', 'zone'],
+        relative_path='v1/{+parent}/dnsRecordSets:list',
+        request_field='',
+        request_type_name='ServicenetworkingServicesDnsRecordSetsListRequest',
+        response_type_name='ListDnsRecordSetsResponse',
+        supports_download=False,
+    )
+
     def Remove(self, request, global_params=None):
       r"""Service producers can use this method to remove DNS record sets from private DNS zones in the shared producer host project.
 
@@ -438,6 +493,70 @@ class ServicenetworkingV1(base_api.BaseApiClient):
         request_field='removeDnsZoneRequest',
         request_type_name='ServicenetworkingServicesDnsZonesRemoveRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ServicesProjectsGlobalNetworksDnsZonesService(base_api.BaseApiService):
+    """Service class for the services_projects_global_networks_dnsZones resource."""
+
+    _NAME = 'services_projects_global_networks_dnsZones'
+
+    def __init__(self, client):
+      super(ServicenetworkingV1.ServicesProjectsGlobalNetworksDnsZonesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Service producers can use this method to retrieve a DNS zone in the shared producer host project and the matching peering zones in consumer project.
+
+      Args:
+        request: (ServicenetworkingServicesProjectsGlobalNetworksDnsZonesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetDnsZoneResponse) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/services/{servicesId}/projects/{projectsId}/global/networks/{networksId}/dnsZones/{dnsZonesId}',
+        http_method='GET',
+        method_id='servicenetworking.services.projects.global.networks.dnsZones.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ServicenetworkingServicesProjectsGlobalNetworksDnsZonesGetRequest',
+        response_type_name='GetDnsZoneResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""* Service producers can use this method to retrieve a list of available DNS zones in the shared producer host project and the matching peering zones in the consumer project. *.
+
+      Args:
+        request: (ServicenetworkingServicesProjectsGlobalNetworksDnsZonesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDnsZonesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/services/{servicesId}/projects/{projectsId}/global/networks/{networksId}/dnsZones:list',
+        http_method='GET',
+        method_id='servicenetworking.services.projects.global.networks.dnsZones.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/dnsZones:list',
+        request_field='',
+        request_type_name='ServicenetworkingServicesProjectsGlobalNetworksDnsZonesListRequest',
+        response_type_name='ListDnsZonesResponse',
         supports_download=False,
     )
 

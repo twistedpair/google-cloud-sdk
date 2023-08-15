@@ -78,7 +78,7 @@ def AddHttpKeepAliveTimeoutSec(parser):
       Represents the maximum amount of time that a TCP connection can be idle
       between the (downstream) client and the target HTTP proxy. If an HTTP
       keepalive  timeout is not specified, the default value is 610 seconds.
-      For global external Application load balancer, the minimum allowed
+      For global external Application Load Balancers, the minimum allowed
       value is 5 seconds and the maximum allowed value is 1200 seconds.
       """,
   )

@@ -6,6 +6,99 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 443.0.0 (2023-08-15)
+
+### AI
+
+* Added `--notification-channels` flag to `gcloud beta ai model-monitoring-jobs create|update` to allow sending alerts to notification channels.
+
+### AlloyDB
+
+* Added option for `--cpu-count=96` in `instances create` and `instances update` commands.
+* Added support for specifying `--database-version` in `clusters create` command in alpha and beta tracks.
+
+### Anthos Multi-Cloud
+
+*   Promoted `--spot-instance-types` flag of `gcloud container aws node-pools create` to GA.
+
+### Anthos On-Prem
+
+* Promoted `gcloud vmware admin-clusters unenroll` to beta.
+
+### Artifact Registry
+
+* Added `--remote-apt-repo` and `--remote-apt-repo-path` to `gcloud artifacts repositories create` to support Apt remote repos.
+* Added `--remote-yum-repo` and `--remote-yum-repo-path` to `gcloud artifacts repositories create` to support Yum remote repos.
+* Fixed issue where `gcloud artifacts versions delete --delete-tags` errors,
+  when the package name has slashes.
+* Updated to use the project from URI of `gcloud artifacts sbom export` for requests.
+* Include InTotoSlsaProvenanceV1 in the process of computing SLSA build level.
+
+### Cloud Bigtable
+
+* Promoted `gcloud bigtable backups copy` to beta and GA.
+
+### Cloud Build
+
+* Remove `gcloud builds triggers create gitlab-enterprise` command.
+
+### Cloud DNS
+
+* Added support to allow specifying Global internal Application load
+balancers as health checked targets for Routing Policies.
+
+### Cloud Dataflow
+
+* Promoted `gcloud dataflow jobs update-options` from beta to GA.
+
+### Cloud Deploy
+
+* Enable "Uniform Bucket Level Access" by default for the Cloud Storage buckets created in `gcloud deploy releases create`.
+
+### Cloud Domains
+
+* Added information about an agreement between Google and Squarespace, Inc. to Cloud Domains `gcloud domains registrations` command group.
+
+### Cloud On Demand Scanning
+
+*   Fixed issue with extracting packages from Go binaries with invalid
+    dependency versions.
+
+### Cloud Storage
+
+* Fixed `--uri` flag for `buckets list` and `objects list` commands.
+
+### Compute Engine
+
+* Promoted AWS Origin Authentication in BackendService compute API to v1.
+* Added `--managed-protection-tier` flag to `gcloud beta compute project-info update` command.
+
+### Kubernetes Engine
+
+* Added `--tpu-topology` flag to `gcloud container node-pools create` for creating TPU node pools with a TPU topology. For more information on TPU topologies, see <https://cloud.google.com/tpu/docs/types-topologies#tpu_topologies>.
+flag when create a cluster.
+* Added hugepage related options inside existing `--system-config-from-file`
+  flag for users to configure hugepages to clusters/nodepools.
+
+### Network Management
+
+* Updated `gcloud network-management connectivity-tests list` command to print
+ details about Google-managed endpoints, networks, and forwarding rules.
+* Updated help text for the `ipAddress` argument in
+ `gcloud network-management connectivity-tests` to keep it consistent with
+ the currently supported scenarios.
+
+### Workbench
+
+* Fixed issue with metadata flag for `gcloud workbench instances create`.
+* Fixed issue with service-account-email flag for `gcloud workbench instances create`.
+* Fixed issue with machine_type flag for `gcloud workbench instances update`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
 ## 442.0.0 (2023-08-08)
 
 ### Artifact Registry

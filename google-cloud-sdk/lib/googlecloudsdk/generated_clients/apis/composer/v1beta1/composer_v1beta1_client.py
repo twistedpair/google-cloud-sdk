@@ -57,7 +57,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists workloads in a Cloud Composer environment. Workload is a unit that runs a single Composer component. This method is supported for Cloud Composer environments in versions composer-2.50.*-airflow-2.*.* and newer.
+      r"""Lists workloads in a Cloud Composer environment. Workload is a unit that runs a single Composer component. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsWorkloadsListRequest) input message

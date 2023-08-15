@@ -32,13 +32,15 @@ class _ProjectNumberPropertyFallthrough(deps.PropertyFallthrough):
 
   def __init__(self):
     """See base class."""
-    super(_ProjectNumberPropertyFallthrough,
-          self).__init__(prop=properties.VALUES.core.project)
+    super(_ProjectNumberPropertyFallthrough, self).__init__(
+        prop=properties.VALUES.core.project
+    )
 
   def _Call(self, parsed_args):
     """See base class."""
     return _EnsureProjectNumber(
-        super(_ProjectNumberPropertyFallthrough, self)._Call(parsed_args))
+        super(_ProjectNumberPropertyFallthrough, self)._Call(parsed_args)
+    )
 
 
 class _ProjectNumberArgFallthrough(deps.ArgFallthrough):
@@ -51,27 +53,32 @@ class _ProjectNumberArgFallthrough(deps.ArgFallthrough):
   def _Call(self, parsed_args):
     """See base class."""
     return _EnsureProjectNumber(
-        super(_ProjectNumberArgFallthrough, self)._Call(parsed_args))
+        super(_ProjectNumberArgFallthrough, self)._Call(parsed_args)
+    )
 
 
 def GetOperationResource(op):
   return resources.REGISTRY.ParseRelativeName(
-      op.name, collection='gkemulticloud.projects.locations.operations')
+      op.name, collection='gkemulticloud.projects.locations.operations'
+  )
 
 
 def AzureClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='cluster', help_text='cluster of the {resource}.')
+      name='cluster', help_text='cluster of the {resource}.'
+  )
 
 
 def AzureNodePoolAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='nodepool', help_text='node pool of the {resource}.')
+      name='nodepool', help_text='node pool of the {resource}.'
+  )
 
 
 def AzureClientAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='client', help_text='Azure client of the {resource}.')
+      name='client', help_text='Azure client of the {resource}.'
+  )
 
 
 def LocationAttributeConfig():
@@ -81,7 +88,8 @@ def LocationAttributeConfig():
       help_text='Google Cloud location for the {resource}.',
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.container_azure.location)
-      ])
+      ],
+  )
 
 
 def ProjectAttributeConfig(use_project_number):
@@ -89,17 +97,21 @@ def ProjectAttributeConfig(use_project_number):
     return concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG
   return concepts.ResourceParameterAttributeConfig(
       name='project',
-      help_text='Project number of the Google Cloud Platform project for '
-      'the {resource}.',
+      help_text=(
+          'Project number of the Google Cloud Platform project for '
+          'the {resource}.'
+      ),
       fallthroughs=[
           _ProjectNumberArgFallthrough(),
-          _ProjectNumberPropertyFallthrough()
-      ])
+          _ProjectNumberPropertyFallthrough(),
+      ],
+  )
 
 
 def OperationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='operation', help_text='Operation for the {resource}.')
+      name='operation', help_text='Operation for the {resource}.'
+  )
 
 
 def GetLocationResourceSpec():
@@ -107,7 +119,8 @@ def GetLocationResourceSpec():
       'gkemulticloud.projects.locations',
       resource_name='location',
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def GetOperationResourceSpec():
@@ -116,7 +129,8 @@ def GetOperationResourceSpec():
       resource_name='operation',
       operationsId=OperationAttributeConfig(),
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def GetAzureClusterResourceSpec():
@@ -125,7 +139,8 @@ def GetAzureClusterResourceSpec():
       resource_name='cluster',
       azureClustersId=AzureClusterAttributeConfig(),
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def GetAzureNodePoolResourceSpec():
@@ -135,7 +150,8 @@ def GetAzureNodePoolResourceSpec():
       azureNodePoolsId=AzureNodePoolAttributeConfig(),
       azureClustersId=AzureClusterAttributeConfig(),
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def GetAzureClientResourceSpec(use_project_number=False):
@@ -155,7 +171,8 @@ def GetAzureClientResourceSpec(use_project_number=False):
       resource_name='client',
       azureClientsId=AzureClientAttributeConfig(),
       locationsId=LocationAttributeConfig(),
-      projectsId=ProjectAttributeConfig(use_project_number))
+      projectsId=ProjectAttributeConfig(use_project_number),
+  )
 
 
 def AddAzureClusterResourceArg(parser, verb, positional=True):
@@ -171,7 +188,8 @@ def AddAzureClusterResourceArg(parser, verb, positional=True):
       name,
       GetAzureClusterResourceSpec(),
       'cluster {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddAzureNodePoolResourceArg(parser, verb, positional=True):
@@ -187,7 +205,8 @@ def AddAzureNodePoolResourceArg(parser, verb, positional=True):
       name,
       GetAzureNodePoolResourceSpec(),
       'node pool {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddAzureClientResourceArg(parser, verb, positional=True):
@@ -203,7 +222,8 @@ def AddAzureClientResourceArg(parser, verb, positional=True):
       name,
       GetAzureClientResourceSpec(),
       'Azure client {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddLocationResourceArg(parser, verb):
@@ -217,7 +237,8 @@ def AddLocationResourceArg(parser, verb):
       '--location',
       GetLocationResourceSpec(),
       'Google Cloud location {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddOperationResourceArg(parser, verb):
@@ -231,11 +252,13 @@ def AddOperationResourceArg(parser, verb):
       'operation_id',
       GetOperationResourceSpec(),
       'operation {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
-def AddAzureClusterAndClientResourceArgs(parser, auth_config_group,
-                                         update=False):
+def AddAzureClusterAndClientResourceArgs(
+    parser, auth_config_group, update=False
+):
   """Adds resource arguments for both Azure cluster and client.
 
   This is used for the create and update command.
@@ -251,43 +274,52 @@ def AddAzureClusterAndClientResourceArgs(parser, auth_config_group,
               'cluster',
               GetAzureClusterResourceSpec(),
               'Azure cluster to {}.'.format('update' if update else 'create'),
-              required=True),
+              required=True,
+          ),
           presentation_specs.ResourcePresentationSpec(
               '--client',
               GetAzureClientResourceSpec(use_project_number=True),
               'Azure client to use for cluster {}.'.format(
-                  'update' if update else 'creation'),
+                  'update' if update else 'creation'
+              ),
               required=False,
               flag_name_overrides={'location': ''},
-              group=auth_config_group)
+              group=auth_config_group,
+          ),
       ],
-      command_level_fallthroughs={'--client.location': ['cluster.location']})
+      command_level_fallthroughs={'--client.location': ['cluster.location']},
+  )
   arg_parser.AddToParser(parser)
 
 
 def ParseAzureClientResourceArg(args):
   return resources.REGISTRY.ParseRelativeName(
       args.CONCEPTS.client.Parse().RelativeName(),
-      collection='gkemulticloud.projects.locations.azureClients')
+      collection='gkemulticloud.projects.locations.azureClients',
+  )
 
 
 def ParseAzureClusterResourceArg(args):
   return resources.REGISTRY.ParseRelativeName(
       args.CONCEPTS.cluster.Parse().RelativeName(),
-      collection='gkemulticloud.projects.locations.azureClusters')
+      collection='gkemulticloud.projects.locations.azureClusters',
+  )
 
 
 def ParseAzureNodePoolResourceArg(args):
   return resources.REGISTRY.ParseRelativeName(
       args.CONCEPTS.node_pool.Parse().RelativeName(),
-      collection='gkemulticloud.projects.locations.azureClusters.azureNodePools'
+      collection=(
+          'gkemulticloud.projects.locations.azureClusters.azureNodePools'
+      ),
   )
 
 
 def ParseOperationResourceArg(args):
   return resources.REGISTRY.ParseRelativeName(
       args.CONCEPTS.operation_id.Parse().RelativeName(),
-      collection='gkemulticloud.projects.locations.operations')
+      collection='gkemulticloud.projects.locations.operations',
+  )
 
 
 def _EnsureProjectNumber(p):

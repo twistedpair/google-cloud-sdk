@@ -109,10 +109,12 @@ class BackupContext(_messages.Message):
   Fields:
     backupId: The identifier of the backup.
     kind: This is always `sql#backupContext`.
+    name: The name of the backup. Format: projects/{project}/backups/{backup}
   """
 
   backupId = _messages.IntegerField(1)
   kind = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class BackupReencryptionConfig(_messages.Message):
@@ -405,6 +407,7 @@ class ConnectSettings(_messages.Message):
     dnsName: The dns name of the instance.
     ipAddresses: The assigned IP addresses for the instance.
     kind: This is always `sql#connectSettings`.
+    pscEnabled: Whether PSC connectivity is enabled for this instance.
     region: The cloud region for the instance. e.g. `us-central1`, `europe-
       west1`. The region cannot be changed after instance creation.
     serverCaCert: SSL configuration.
@@ -538,8 +541,9 @@ class ConnectSettings(_messages.Message):
   dnsName = _messages.StringField(3)
   ipAddresses = _messages.MessageField('IpMapping', 4, repeated=True)
   kind = _messages.StringField(5)
-  region = _messages.StringField(6)
-  serverCaCert = _messages.MessageField('SslCert', 7)
+  pscEnabled = _messages.BooleanField(6)
+  region = _messages.StringField(7)
+  serverCaCert = _messages.MessageField('SslCert', 8)
 
 
 class DataCacheConfig(_messages.Message):
@@ -2233,6 +2237,7 @@ class Operation(_messages.Message):
         for auto recovery.
       REENCRYPT: Re-encrypts CMEK instances with latest key version.
       SWITCHOVER: Switches over to replica instance from primary.
+      UPDATE_BACKUP: Update a backup.
     """
     SQL_OPERATION_TYPE_UNSPECIFIED = 0
     IMPORT = 1
@@ -2273,6 +2278,7 @@ class Operation(_messages.Message):
     AUTO_RESTART = 36
     REENCRYPT = 37
     SWITCHOVER = 38
+    UPDATE_BACKUP = 39
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of an operation.
@@ -3197,8 +3203,9 @@ class SqlInstancesDeleteRequest(_messages.Message):
 
   Fields:
     finalBackupDescription: The description of the final backup.
-    finalBackupRetentionDays: Retention period of the final backup. Default
-      value is 7 days.
+    finalBackupExpiryTime: Optional. Final Backup expiration time. Timestamp
+      in UTC of when this resource is considered expired.
+    finalBackupTtlDays: Optional. Retention period of the final backup.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance to be
       deleted.
@@ -3206,10 +3213,11 @@ class SqlInstancesDeleteRequest(_messages.Message):
   """
 
   finalBackupDescription = _messages.StringField(1)
-  finalBackupRetentionDays = _messages.IntegerField(2)
-  instance = _messages.StringField(3, required=True)
-  project = _messages.StringField(4, required=True)
-  skipFinalBackup = _messages.BooleanField(5)
+  finalBackupExpiryTime = _messages.StringField(2)
+  finalBackupTtlDays = _messages.IntegerField(3)
+  instance = _messages.StringField(4, required=True)
+  project = _messages.StringField(5, required=True)
+  skipFinalBackup = _messages.BooleanField(6)
 
 
 class SqlInstancesDemoteMasterRequest(_messages.Message):

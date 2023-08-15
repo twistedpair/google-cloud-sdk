@@ -464,6 +464,30 @@ class BiEngineStatistics(_messages.Message):
   biEngineReasons = _messages.MessageField('BiEngineReason', 3, repeated=True)
 
 
+class BigLakeConfiguration(_messages.Message):
+  r"""A BigLakeConfiguration object.
+
+  Fields:
+    connectionId: [Required] Required and immutable. Credential reference for
+      accessing external storage system. Normalized as
+      project_id.location_id.connection_id.
+    fileFormat: [Required] Required and immutable. Open source file format
+      that the table data is stored in. Currently only PARQUET is supported.
+    storageUri: [Required] Required and immutable. Fully qualified location
+      prefix of the external folder where data is stored. Normalized to
+      standard format: "gs:////". Starts with "gs://" rather than
+      "/bigstore/". Ends with "/". Does not contain "*". See also
+      BigLakeStorageMetadata on how it is used.
+    tableFormat: [Required] Required and immutable. Open source file format
+      that the table data is stored in. Currently only PARQUET is supported.
+  """
+
+  connectionId = _messages.StringField(1)
+  fileFormat = _messages.StringField(2)
+  storageUri = _messages.StringField(3)
+  tableFormat = _messages.StringField(4)
+
+
 class BigQueryModelTraining(_messages.Message):
   r"""A BigQueryModelTraining object.
 
@@ -958,22 +982,6 @@ class BigqueryRowAccessPoliciesListRequest(_messages.Message):
   pageToken = _messages.StringField(3)
   projectId = _messages.StringField(4, required=True)
   tableId = _messages.StringField(5, required=True)
-
-
-class BigqueryRowAccessPoliciesSetIamPolicyRequest(_messages.Message):
-  r"""A BigqueryRowAccessPoliciesSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class BigqueryRowAccessPoliciesTestIamPermissionsRequest(_messages.Message):
@@ -2801,19 +2809,19 @@ class IndexUnusedReason(_messages.Message):
   r"""A IndexUnusedReason object.
 
   Fields:
-    base_table: [Output-only] Specifies the base table involved in the reason
+    baseTable: [Output-only] Specifies the base table involved in the reason
       that no search index was used.
     code: [Output-only] Specifies the high-level reason for the scenario when
       no search index was used.
-    index_name: [Output-only] Specifies the name of the unused search index,
-      if available.
+    indexName: [Output-only] Specifies the name of the unused search index, if
+      available.
     message: [Output-only] Free form human-readable reason for the scenario
       when no search index was used.
   """
 
-  base_table = _messages.MessageField('TableReference', 1)
+  baseTable = _messages.MessageField('TableReference', 1)
   code = _messages.StringField(2, default='$(reason.code)')
-  index_name = _messages.StringField(3, default='$(reason.index_name)')
+  indexName = _messages.StringField(3, default='$(reason.index_name)')
   message = _messages.StringField(4, default='$(reason.message)')
 
 
@@ -3784,13 +3792,13 @@ class JobStatistics5(_messages.Message):
   r"""A JobStatistics5 object.
 
   Fields:
-    copied_logical_bytes: [Output-only] Number of logical bytes copied to the
+    copiedLogicalBytes: [Output-only] Number of logical bytes copied to the
       destination table.
-    copied_rows: [Output-only] Number of rows copied to the destination table.
+    copiedRows: [Output-only] Number of rows copied to the destination table.
   """
 
-  copied_logical_bytes = _messages.IntegerField(1)
-  copied_rows = _messages.IntegerField(2)
+  copiedLogicalBytes = _messages.IntegerField(1)
+  copiedRows = _messages.IntegerField(2)
 
 
 class JobStatus(_messages.Message):
@@ -3909,7 +3917,7 @@ class MaterializedViewDefinition(_messages.Message):
   r"""A MaterializedViewDefinition object.
 
   Fields:
-    allow_non_incremental_definition: [Optional] Allow non incremental
+    allowNonIncrementalDefinition: [Optional] Allow non incremental
       materialized view definition. The default value is "false".
     enableRefresh: [Optional] [TrustedTester] Enable automatic refresh of the
       materialized view when the base table is updated. The default value is
@@ -3924,7 +3932,7 @@ class MaterializedViewDefinition(_messages.Message):
       "1800000" (30 minutes).
   """
 
-  allow_non_incremental_definition = _messages.BooleanField(1)
+  allowNonIncrementalDefinition = _messages.BooleanField(1)
   enableRefresh = _messages.BooleanField(2)
   lastRefreshTime = _messages.IntegerField(3)
   maxStaleness = _messages.BytesField(4)
@@ -4016,6 +4024,10 @@ class Model(_messages.Message):
     remoteModelInfo: Output only. Remote model info
     trainingRuns: Information for all training runs in increasing order of
       start_time.
+    transformColumns: Output only. This field will be populated if a TRANSFORM
+      clause was used to train a model. TRANSFORM clause (if used) takes
+      feature_columns as input and outputs transform_columns.
+      transform_columns then are used to train the model.
   """
 
   class ModelTypeValueValuesEnum(_messages.Enum):
@@ -4121,6 +4133,7 @@ class Model(_messages.Message):
   optimalTrialIds = _messages.IntegerField(18, repeated=True)
   remoteModelInfo = _messages.MessageField('RemoteModelInfo', 19)
   trainingRuns = _messages.MessageField('TrainingRun', 20, repeated=True)
+  transformColumns = _messages.MessageField('TransformColumn', 21, repeated=True)
 
 
 class ModelDefinition(_messages.Message):
@@ -4217,7 +4230,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -4225,15 +4238,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -4818,6 +4831,7 @@ class RemoteModelInfo(_messages.Message):
     maxBatchingRows: Output only. Max number of rows in each batch sent to the
       remote service. If unset, the number of rows in each batch is set
       dynamically.
+    remoteModelVersion: Output only. The model version for LLM.
     remoteServiceType: Output only. The remote service type for remote model.
   """
 
@@ -4844,13 +4858,17 @@ class RemoteModelInfo(_messages.Message):
   connection = _messages.StringField(1)
   endpoint = _messages.StringField(2)
   maxBatchingRows = _messages.IntegerField(3)
-  remoteServiceType = _messages.EnumField('RemoteServiceTypeValueValuesEnum', 4)
+  remoteModelVersion = _messages.StringField(4)
+  remoteServiceType = _messages.EnumField('RemoteServiceTypeValueValuesEnum', 5)
 
 
 class Routine(_messages.Message):
   r"""A user-defined function or a stored procedure.
 
   Enums:
+    DataGovernanceTypeValueValuesEnum: Optional. Data governance specific
+      option, if the value is DATA_MASKING, the function will be validated as
+      masking functions.
     DeterminismLevelValueValuesEnum: Optional. The determinism level of the
       JavaScript UDF, if defined.
     LanguageValueValuesEnum: Optional. Defaults to "SQL" if
@@ -4861,6 +4879,9 @@ class Routine(_messages.Message):
     arguments: Optional.
     creationTime: Output only. The time when this routine was created, in
       milliseconds since the epoch.
+    dataGovernanceType: Optional. Data governance specific option, if the
+      value is DATA_MASKING, the function will be validated as masking
+      functions.
     definitionBody: Required. The body of the routine. For functions, this is
       the expression in the AS clause. If language=SQL, it is the substring
       inside (but excluding) the parentheses. For example, for the function
@@ -4914,6 +4935,17 @@ class Routine(_messages.Message):
       thus this field must be set to false explicitly.
   """
 
+  class DataGovernanceTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Data governance specific option, if the value is
+    DATA_MASKING, the function will be validated as masking functions.
+
+    Values:
+      DATA_GOVERNANCE_TYPE_UNSPECIFIED: Unspecified data governance type.
+      DATA_MASKING: The data governance type is data masking.
+    """
+    DATA_GOVERNANCE_TYPE_UNSPECIFIED = 0
+    DATA_MASKING = 1
+
   class DeterminismLevelValueValuesEnum(_messages.Enum):
     r"""Optional. The determinism level of the JavaScript UDF, if defined.
 
@@ -4966,20 +4998,21 @@ class Routine(_messages.Message):
 
   arguments = _messages.MessageField('Argument', 1, repeated=True)
   creationTime = _messages.IntegerField(2)
-  definitionBody = _messages.StringField(3)
-  description = _messages.StringField(4)
-  determinismLevel = _messages.EnumField('DeterminismLevelValueValuesEnum', 5)
-  etag = _messages.StringField(6)
-  importedLibraries = _messages.StringField(7, repeated=True)
-  language = _messages.EnumField('LanguageValueValuesEnum', 8)
-  lastModifiedTime = _messages.IntegerField(9)
-  remoteFunctionOptions = _messages.MessageField('RemoteFunctionOptions', 10)
-  returnTableType = _messages.MessageField('StandardSqlTableType', 11)
-  returnType = _messages.MessageField('StandardSqlDataType', 12)
-  routineReference = _messages.MessageField('RoutineReference', 13)
-  routineType = _messages.EnumField('RoutineTypeValueValuesEnum', 14)
-  sparkOptions = _messages.MessageField('SparkOptions', 15)
-  strictMode = _messages.BooleanField(16)
+  dataGovernanceType = _messages.EnumField('DataGovernanceTypeValueValuesEnum', 3)
+  definitionBody = _messages.StringField(4)
+  description = _messages.StringField(5)
+  determinismLevel = _messages.EnumField('DeterminismLevelValueValuesEnum', 6)
+  etag = _messages.StringField(7)
+  importedLibraries = _messages.StringField(8, repeated=True)
+  language = _messages.EnumField('LanguageValueValuesEnum', 9)
+  lastModifiedTime = _messages.IntegerField(10)
+  remoteFunctionOptions = _messages.MessageField('RemoteFunctionOptions', 11)
+  returnTableType = _messages.MessageField('StandardSqlTableType', 12)
+  returnType = _messages.MessageField('StandardSqlDataType', 13)
+  routineReference = _messages.MessageField('RoutineReference', 14)
+  routineType = _messages.EnumField('RoutineTypeValueValuesEnum', 15)
+  sparkOptions = _messages.MessageField('SparkOptions', 16)
+  strictMode = _messages.BooleanField(17)
 
 
 class RoutineReference(_messages.Message):
@@ -5109,13 +5142,13 @@ class SearchStatistics(_messages.Message):
   r"""A SearchStatistics object.
 
   Fields:
-    indexUnusedReason: When index_usage_mode is UNUSED or PARTIALLY_USED, this
-      field explains why index was not used in all or part of the search
+    indexUnusedReasons: When index_usage_mode is UNUSED or PARTIALLY_USED,
+      this field explains why index was not used in all or part of the search
       query. If index_usage_mode is FULLLY_USED, this field is not populated.
     indexUsageMode: Specifies index usage mode for the query.
   """
 
-  indexUnusedReason = _messages.MessageField('IndexUnusedReason', 1, repeated=True)
+  indexUnusedReasons = _messages.MessageField('IndexUnusedReason', 1, repeated=True)
   indexUsageMode = _messages.StringField(2)
 
 
@@ -5266,12 +5299,11 @@ class SparkStatistics(_messages.Message):
 
   Fields:
     endpoints: [Output-only] Endpoints generated for the Spark job.
-    logging_info: [Output-only] Logging info is used to generate a link to
+    loggingInfo: [Output-only] Logging info is used to generate a link to
       Cloud Logging.
-    spark_job_id: [Output-only] Spark job id if a Spark job is created
+    sparkJobId: [Output-only] Spark job id if a Spark job is created
       successfully.
-    spark_job_location: [Output-only] Location where the Spark job is
-      executed.
+    sparkJobLocation: [Output-only] Location where the Spark job is executed.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -5299,9 +5331,9 @@ class SparkStatistics(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   endpoints = _messages.MessageField('EndpointsValue', 1)
-  logging_info = _messages.MessageField('SparkLoggingInfo', 2)
-  spark_job_id = _messages.StringField(3)
-  spark_job_location = _messages.StringField(4)
+  loggingInfo = _messages.MessageField('SparkLoggingInfo', 2)
+  sparkJobId = _messages.StringField(3)
+  sparkJobLocation = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -5358,6 +5390,8 @@ class StandardSqlDataType(_messages.Message):
   Fields:
     arrayElementType: The type of the array's elements, if type_kind =
       "ARRAY".
+    rangeElementType: The type of the range's elements, if type_kind =
+      "RANGE".
     structType: The fields of this struct, in order, if type_kind = "STRUCT".
     typeKind: Required. The top level type of this field. Can be any GoogleSQL
       data type (e.g., "INT64", "DATE", "ARRAY").
@@ -5389,6 +5423,8 @@ class StandardSqlDataType(_messages.Message):
       ARRAY: Encoded as a list with types matching Type.array_type.
       STRUCT: Encoded as a list with fields of type Type.struct_type[i]. List
         is used because a JSON object cannot have duplicate field names.
+      RANGE: Encoded as a pair with types matching range_element_type. Pairs
+        must begin with "[", end with ")", and be separated by ", ".
     """
     TYPE_KIND_UNSPECIFIED = 0
     INT64 = 1
@@ -5407,10 +5443,12 @@ class StandardSqlDataType(_messages.Message):
     JSON = 14
     ARRAY = 15
     STRUCT = 16
+    RANGE = 17
 
   arrayElementType = _messages.MessageField('StandardSqlDataType', 1)
-  structType = _messages.MessageField('StandardSqlStructType', 2)
-  typeKind = _messages.EnumField('TypeKindValueValuesEnum', 3)
+  rangeElementType = _messages.MessageField('StandardSqlDataType', 2)
+  structType = _messages.MessageField('StandardSqlStructType', 3)
+  typeKind = _messages.EnumField('TypeKindValueValuesEnum', 4)
 
 
 class StandardSqlField(_messages.Message):
@@ -5487,6 +5525,8 @@ class Table(_messages.Message):
       and each label in the list must have a different key.
 
   Fields:
+    biglakeConfiguration: [Optional] Specifies the configuration of a BigLake
+      managed table.
     cloneDefinition: [Output-only] Clone definition.
     clustering: [Beta] Clustering specification for the table. Must be
       specified with partitioning, data in the table will be first partitioned
@@ -5620,48 +5660,49 @@ class Table(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  cloneDefinition = _messages.MessageField('CloneDefinition', 1)
-  clustering = _messages.MessageField('Clustering', 2)
-  creationTime = _messages.IntegerField(3)
-  defaultCollation = _messages.StringField(4)
-  defaultRoundingMode = _messages.StringField(5)
-  description = _messages.StringField(6)
-  encryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 7)
-  etag = _messages.StringField(8)
-  expirationTime = _messages.IntegerField(9)
-  externalDataConfiguration = _messages.MessageField('ExternalDataConfiguration', 10)
-  friendlyName = _messages.StringField(11)
-  id = _messages.StringField(12)
-  kind = _messages.StringField(13, default='bigquery#table')
-  labels = _messages.MessageField('LabelsValue', 14)
-  lastModifiedTime = _messages.IntegerField(15, variant=_messages.Variant.UINT64)
-  location = _messages.StringField(16)
-  materializedView = _messages.MessageField('MaterializedViewDefinition', 17)
-  maxStaleness = _messages.BytesField(18)
-  model = _messages.MessageField('ModelDefinition', 19)
-  numActiveLogicalBytes = _messages.IntegerField(20)
-  numActivePhysicalBytes = _messages.IntegerField(21)
-  numBytes = _messages.IntegerField(22)
-  numLongTermBytes = _messages.IntegerField(23)
-  numLongTermLogicalBytes = _messages.IntegerField(24)
-  numLongTermPhysicalBytes = _messages.IntegerField(25)
-  numPartitions = _messages.IntegerField(26)
-  numPhysicalBytes = _messages.IntegerField(27)
-  numRows = _messages.IntegerField(28, variant=_messages.Variant.UINT64)
-  numTimeTravelPhysicalBytes = _messages.IntegerField(29)
-  numTotalLogicalBytes = _messages.IntegerField(30)
-  numTotalPhysicalBytes = _messages.IntegerField(31)
-  rangePartitioning = _messages.MessageField('RangePartitioning', 32)
-  requirePartitionFilter = _messages.BooleanField(33, default=False)
-  schema = _messages.MessageField('TableSchema', 34)
-  selfLink = _messages.StringField(35)
-  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 36)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 37)
-  tableConstraints = _messages.MessageField('TableConstraints', 38)
-  tableReference = _messages.MessageField('TableReference', 39)
-  timePartitioning = _messages.MessageField('TimePartitioning', 40)
-  type = _messages.StringField(41)
-  view = _messages.MessageField('ViewDefinition', 42)
+  biglakeConfiguration = _messages.MessageField('BigLakeConfiguration', 1)
+  cloneDefinition = _messages.MessageField('CloneDefinition', 2)
+  clustering = _messages.MessageField('Clustering', 3)
+  creationTime = _messages.IntegerField(4)
+  defaultCollation = _messages.StringField(5)
+  defaultRoundingMode = _messages.StringField(6)
+  description = _messages.StringField(7)
+  encryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 8)
+  etag = _messages.StringField(9)
+  expirationTime = _messages.IntegerField(10)
+  externalDataConfiguration = _messages.MessageField('ExternalDataConfiguration', 11)
+  friendlyName = _messages.StringField(12)
+  id = _messages.StringField(13)
+  kind = _messages.StringField(14, default='bigquery#table')
+  labels = _messages.MessageField('LabelsValue', 15)
+  lastModifiedTime = _messages.IntegerField(16, variant=_messages.Variant.UINT64)
+  location = _messages.StringField(17)
+  materializedView = _messages.MessageField('MaterializedViewDefinition', 18)
+  maxStaleness = _messages.BytesField(19)
+  model = _messages.MessageField('ModelDefinition', 20)
+  numActiveLogicalBytes = _messages.IntegerField(21)
+  numActivePhysicalBytes = _messages.IntegerField(22)
+  numBytes = _messages.IntegerField(23)
+  numLongTermBytes = _messages.IntegerField(24)
+  numLongTermLogicalBytes = _messages.IntegerField(25)
+  numLongTermPhysicalBytes = _messages.IntegerField(26)
+  numPartitions = _messages.IntegerField(27)
+  numPhysicalBytes = _messages.IntegerField(28)
+  numRows = _messages.IntegerField(29, variant=_messages.Variant.UINT64)
+  numTimeTravelPhysicalBytes = _messages.IntegerField(30)
+  numTotalLogicalBytes = _messages.IntegerField(31)
+  numTotalPhysicalBytes = _messages.IntegerField(32)
+  rangePartitioning = _messages.MessageField('RangePartitioning', 33)
+  requirePartitionFilter = _messages.BooleanField(34, default=False)
+  schema = _messages.MessageField('TableSchema', 35)
+  selfLink = _messages.StringField(36)
+  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 37)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 38)
+  tableConstraints = _messages.MessageField('TableConstraints', 39)
+  tableReference = _messages.MessageField('TableReference', 40)
+  timePartitioning = _messages.MessageField('TimePartitioning', 41)
+  type = _messages.StringField(42)
+  view = _messages.MessageField('ViewDefinition', 43)
 
 
 class TableCell(_messages.Message):
@@ -6125,6 +6166,8 @@ class TrainingOptions(_messages.Message):
 
   Enums:
     BoosterTypeValueValuesEnum: Booster type for boosted tree models.
+    CategoryEncodingMethodValueValuesEnum: Categorical feature encoding
+      method.
     ColorSpaceValueValuesEnum: Enums for color space, used for processing
       images in Object Table. See more details at
       https://www.tensorflow.org/io/tutorials/colorspace.
@@ -6139,6 +6182,7 @@ class TrainingOptions(_messages.Message):
     HolidayRegionValueValuesEnum: The geographical region based on which the
       holidays are considered in time series modeling. If a valid value is
       specified, then holiday effects modeling is enabled.
+    HolidayRegionsValueListEntryValuesEnum:
     HparamTuningObjectivesValueListEntryValuesEnum:
     KmeansInitializationMethodValueValuesEnum: The method used to initialize
       the centroids for kmeans algorithm.
@@ -6173,6 +6217,7 @@ class TrainingOptions(_messages.Message):
     budgetHours: Budget in hours for AutoML training.
     calculatePValues: Whether or not p-value test should be computed for this
       model. Only available for linear and logistic regression models.
+    categoryEncodingMethod: Categorical feature encoding method.
     cleanSpikesAndDips: If true, clean spikes and dips in the input time
       series.
     colorSpace: Enums for color space, used for processing images in Object
@@ -6217,6 +6262,8 @@ class TrainingOptions(_messages.Message):
     holidayRegion: The geographical region based on which the holidays are
       considered in time series modeling. If a valid value is specified, then
       holiday effects modeling is enabled.
+    holidayRegions: A list of geographical regions that are used for time
+      series modeling.
     horizon: The number of periods ahead that need to be forecasted.
     hparamTuningObjectives: The target evaluation metrics to optimize the
       hyperparameters for.
@@ -6248,16 +6295,24 @@ class TrainingOptions(_messages.Message):
     maxIterations: The maximum number of iterations in training. Used only for
       iterative training algorithms.
     maxParallelTrials: Maximum number of trials to run in parallel.
-    maxTimeSeriesLength: Get truncated length by last n points in time series.
-      Use separately from time_series_length_fraction and
-      min_time_series_length.
+    maxTimeSeriesLength: The maximum number of time points in a time series
+      that can be used in modeling the trend component of the time series.
+      Don't use this option with the `timeSeriesLengthFraction` or
+      `minTimeSeriesLength` options.
     maxTreeDepth: Maximum depth of a tree for boosted tree models.
     minRelativeProgress: When early_stop is true, stops training when accuracy
       improvement is less than 'min_relative_progress'. Used only for
       iterative training algorithms.
     minSplitLoss: Minimum split loss for boosted tree models.
-    minTimeSeriesLength: Set fast trend ARIMA_PLUS model minimum training
-      length. Use in pair with time_series_length_fraction.
+    minTimeSeriesLength: The minimum number of time points in a time series
+      that are used in modeling the trend component of the time series. If you
+      use this option you must also set the `timeSeriesLengthFraction` option.
+      This training option ensures that enough time points are available when
+      you use `timeSeriesLengthFraction` in trend modeling. This is
+      particularly important when forecasting multiple time series in a single
+      query using `timeSeriesIdColumn`. If the total number of time points is
+      less than the `minTimeSeriesLength` value, then the query uses all
+      available time points.
     minTreeChildWeight: Minimum sum of instance weight needed in a child for
       boosted tree models.
     modelRegistry: The model registry.
@@ -6295,12 +6350,21 @@ class TrainingOptions(_messages.Message):
       model training.
     timeSeriesIdColumns: The time series id columns that were used during
       ARIMA model training.
-    timeSeriesLengthFraction: Get truncated length by fraction in time series.
+    timeSeriesLengthFraction: The fraction of the interpolated length of the
+      time series that's used to model the time series trend component. All of
+      the time points of the time series are used to model the non-trend
+      component. This training option accelerates modeling training without
+      sacrificing much forecasting accuracy. You can use this option with
+      `minTimeSeriesLength` but not with `maxTimeSeriesLength`.
     timeSeriesTimestampColumn: Column to be designated as time series
       timestamp for ARIMA model.
     treeMethod: Tree construction algorithm for boosted tree models.
-    trendSmoothingWindowSize: The smoothing window size for the trend
-      component of the time series.
+    trendSmoothingWindowSize: Smoothing window size for the trend component.
+      When a positive value is specified, a center moving average smoothing is
+      applied on the history trend. When the smoothing window is out of the
+      boundary at the beginning or the end of the trend, the first element or
+      the last element is padded to fill the smoothing window before the
+      average is applied.
     userColumn: User column specified for matrix factorization models.
     vertexAiModelVersionAliases: The version aliases to apply in Vertex AI
       model registry. Always overwrite if the version aliases exists in a
@@ -6323,6 +6387,20 @@ class TrainingOptions(_messages.Message):
     BOOSTER_TYPE_UNSPECIFIED = 0
     GBTREE = 1
     DART = 2
+
+  class CategoryEncodingMethodValueValuesEnum(_messages.Enum):
+    r"""Categorical feature encoding method.
+
+    Values:
+      ENCODING_METHOD_UNSPECIFIED: Unspecified encoding method.
+      ONE_HOT_ENCODING: Applies one-hot encoding.
+      LABEL_ENCODING: Applies label encoding.
+      DUMMY_ENCODING: Applies dummy encoding.
+    """
+    ENCODING_METHOD_UNSPECIFIED = 0
+    ONE_HOT_ENCODING = 1
+    LABEL_ENCODING = 2
+    DUMMY_ENCODING = 3
 
   class ColorSpaceValueValuesEnum(_messages.Enum):
     r"""Enums for color space, used for processing images in Object Table. See
@@ -6428,6 +6506,151 @@ class TrainingOptions(_messages.Message):
     r"""The geographical region based on which the holidays are considered in
     time series modeling. If a valid value is specified, then holiday effects
     modeling is enabled.
+
+    Values:
+      HOLIDAY_REGION_UNSPECIFIED: Holiday region unspecified.
+      GLOBAL: Global.
+      NA: North America.
+      JAPAC: Japan and Asia Pacific: Korea, Greater China, India, Australia,
+        and New Zealand.
+      EMEA: Europe, the Middle East and Africa.
+      LAC: Latin America and the Caribbean.
+      AE: United Arab Emirates
+      AR: Argentina
+      AT: Austria
+      AU: Australia
+      BE: Belgium
+      BR: Brazil
+      CA: Canada
+      CH: Switzerland
+      CL: Chile
+      CN: China
+      CO: Colombia
+      CS: Czechoslovakia
+      CZ: Czech Republic
+      DE: Germany
+      DK: Denmark
+      DZ: Algeria
+      EC: Ecuador
+      EE: Estonia
+      EG: Egypt
+      ES: Spain
+      FI: Finland
+      FR: France
+      GB: Great Britain (United Kingdom)
+      GR: Greece
+      HK: Hong Kong
+      HU: Hungary
+      ID: Indonesia
+      IE: Ireland
+      IL: Israel
+      IN: India
+      IR: Iran
+      IT: Italy
+      JP: Japan
+      KR: Korea (South)
+      LV: Latvia
+      MA: Morocco
+      MX: Mexico
+      MY: Malaysia
+      NG: Nigeria
+      NL: Netherlands
+      NO: Norway
+      NZ: New Zealand
+      PE: Peru
+      PH: Philippines
+      PK: Pakistan
+      PL: Poland
+      PT: Portugal
+      RO: Romania
+      RS: Serbia
+      RU: Russian Federation
+      SA: Saudi Arabia
+      SE: Sweden
+      SG: Singapore
+      SI: Slovenia
+      SK: Slovakia
+      TH: Thailand
+      TR: Turkey
+      TW: Taiwan
+      UA: Ukraine
+      US: United States
+      VE: Venezuela
+      VN: Viet Nam
+      ZA: South Africa
+    """
+    HOLIDAY_REGION_UNSPECIFIED = 0
+    GLOBAL = 1
+    NA = 2
+    JAPAC = 3
+    EMEA = 4
+    LAC = 5
+    AE = 6
+    AR = 7
+    AT = 8
+    AU = 9
+    BE = 10
+    BR = 11
+    CA = 12
+    CH = 13
+    CL = 14
+    CN = 15
+    CO = 16
+    CS = 17
+    CZ = 18
+    DE = 19
+    DK = 20
+    DZ = 21
+    EC = 22
+    EE = 23
+    EG = 24
+    ES = 25
+    FI = 26
+    FR = 27
+    GB = 28
+    GR = 29
+    HK = 30
+    HU = 31
+    ID = 32
+    IE = 33
+    IL = 34
+    IN = 35
+    IR = 36
+    IT = 37
+    JP = 38
+    KR = 39
+    LV = 40
+    MA = 41
+    MX = 42
+    MY = 43
+    NG = 44
+    NL = 45
+    NO = 46
+    NZ = 47
+    PE = 48
+    PH = 49
+    PK = 50
+    PL = 51
+    PT = 52
+    RO = 53
+    RS = 54
+    RU = 55
+    SA = 56
+    SE = 57
+    SG = 58
+    SI = 59
+    SK = 60
+    TH = 61
+    TR = 62
+    TW = 63
+    UA = 64
+    US = 65
+    VE = 66
+    VN = 67
+    ZA = 68
+
+  class HolidayRegionsValueListEntryValuesEnum(_messages.Enum):
+    r"""HolidayRegionsValueListEntryValuesEnum enum type.
 
     Values:
       HOLIDAY_REGION_UNSPECIFIED: Holiday region unspecified.
@@ -6758,79 +6981,81 @@ class TrainingOptions(_messages.Message):
   boosterType = _messages.EnumField('BoosterTypeValueValuesEnum', 9)
   budgetHours = _messages.FloatField(10)
   calculatePValues = _messages.BooleanField(11)
-  cleanSpikesAndDips = _messages.BooleanField(12)
-  colorSpace = _messages.EnumField('ColorSpaceValueValuesEnum', 13)
-  colsampleBylevel = _messages.FloatField(14)
-  colsampleBynode = _messages.FloatField(15)
-  colsampleBytree = _messages.FloatField(16)
-  dartNormalizeType = _messages.EnumField('DartNormalizeTypeValueValuesEnum', 17)
-  dataFrequency = _messages.EnumField('DataFrequencyValueValuesEnum', 18)
-  dataSplitColumn = _messages.StringField(19)
-  dataSplitEvalFraction = _messages.FloatField(20)
-  dataSplitMethod = _messages.EnumField('DataSplitMethodValueValuesEnum', 21)
-  decomposeTimeSeries = _messages.BooleanField(22)
-  distanceType = _messages.EnumField('DistanceTypeValueValuesEnum', 23)
-  dropout = _messages.FloatField(24)
-  earlyStop = _messages.BooleanField(25)
-  enableGlobalExplain = _messages.BooleanField(26)
-  feedbackType = _messages.EnumField('FeedbackTypeValueValuesEnum', 27)
-  fitIntercept = _messages.BooleanField(28)
-  hiddenUnits = _messages.IntegerField(29, repeated=True)
-  holidayRegion = _messages.EnumField('HolidayRegionValueValuesEnum', 30)
-  horizon = _messages.IntegerField(31)
-  hparamTuningObjectives = _messages.EnumField('HparamTuningObjectivesValueListEntryValuesEnum', 32, repeated=True)
-  includeDrift = _messages.BooleanField(33)
-  initialLearnRate = _messages.FloatField(34)
-  inputLabelColumns = _messages.StringField(35, repeated=True)
-  instanceWeightColumn = _messages.StringField(36)
-  integratedGradientsNumSteps = _messages.IntegerField(37)
-  itemColumn = _messages.StringField(38)
-  kmeansInitializationColumn = _messages.StringField(39)
-  kmeansInitializationMethod = _messages.EnumField('KmeansInitializationMethodValueValuesEnum', 40)
-  l1RegActivation = _messages.FloatField(41)
-  l1Regularization = _messages.FloatField(42)
-  l2Regularization = _messages.FloatField(43)
-  labelClassWeights = _messages.MessageField('LabelClassWeightsValue', 44)
-  learnRate = _messages.FloatField(45)
-  learnRateStrategy = _messages.EnumField('LearnRateStrategyValueValuesEnum', 46)
-  lossType = _messages.EnumField('LossTypeValueValuesEnum', 47)
-  maxIterations = _messages.IntegerField(48)
-  maxParallelTrials = _messages.IntegerField(49)
-  maxTimeSeriesLength = _messages.IntegerField(50)
-  maxTreeDepth = _messages.IntegerField(51)
-  minRelativeProgress = _messages.FloatField(52)
-  minSplitLoss = _messages.FloatField(53)
-  minTimeSeriesLength = _messages.IntegerField(54)
-  minTreeChildWeight = _messages.IntegerField(55)
-  modelRegistry = _messages.EnumField('ModelRegistryValueValuesEnum', 56)
-  modelUri = _messages.StringField(57)
-  nonSeasonalOrder = _messages.MessageField('ArimaOrder', 58)
-  numClusters = _messages.IntegerField(59)
-  numFactors = _messages.IntegerField(60)
-  numParallelTree = _messages.IntegerField(61)
-  numPrincipalComponents = _messages.IntegerField(62)
-  numTrials = _messages.IntegerField(63)
-  optimizationStrategy = _messages.EnumField('OptimizationStrategyValueValuesEnum', 64)
-  optimizer = _messages.StringField(65)
-  pcaExplainedVarianceRatio = _messages.FloatField(66)
-  pcaSolver = _messages.EnumField('PcaSolverValueValuesEnum', 67)
-  sampledShapleyNumPaths = _messages.IntegerField(68)
-  scaleFeatures = _messages.BooleanField(69)
-  standardizeFeatures = _messages.BooleanField(70)
-  subsample = _messages.FloatField(71)
-  tfVersion = _messages.StringField(72)
-  timeSeriesDataColumn = _messages.StringField(73)
-  timeSeriesIdColumn = _messages.StringField(74)
-  timeSeriesIdColumns = _messages.StringField(75, repeated=True)
-  timeSeriesLengthFraction = _messages.FloatField(76)
-  timeSeriesTimestampColumn = _messages.StringField(77)
-  treeMethod = _messages.EnumField('TreeMethodValueValuesEnum', 78)
-  trendSmoothingWindowSize = _messages.IntegerField(79)
-  userColumn = _messages.StringField(80)
-  vertexAiModelVersionAliases = _messages.StringField(81, repeated=True)
-  walsAlpha = _messages.FloatField(82)
-  warmStart = _messages.BooleanField(83)
-  xgboostVersion = _messages.StringField(84)
+  categoryEncodingMethod = _messages.EnumField('CategoryEncodingMethodValueValuesEnum', 12)
+  cleanSpikesAndDips = _messages.BooleanField(13)
+  colorSpace = _messages.EnumField('ColorSpaceValueValuesEnum', 14)
+  colsampleBylevel = _messages.FloatField(15)
+  colsampleBynode = _messages.FloatField(16)
+  colsampleBytree = _messages.FloatField(17)
+  dartNormalizeType = _messages.EnumField('DartNormalizeTypeValueValuesEnum', 18)
+  dataFrequency = _messages.EnumField('DataFrequencyValueValuesEnum', 19)
+  dataSplitColumn = _messages.StringField(20)
+  dataSplitEvalFraction = _messages.FloatField(21)
+  dataSplitMethod = _messages.EnumField('DataSplitMethodValueValuesEnum', 22)
+  decomposeTimeSeries = _messages.BooleanField(23)
+  distanceType = _messages.EnumField('DistanceTypeValueValuesEnum', 24)
+  dropout = _messages.FloatField(25)
+  earlyStop = _messages.BooleanField(26)
+  enableGlobalExplain = _messages.BooleanField(27)
+  feedbackType = _messages.EnumField('FeedbackTypeValueValuesEnum', 28)
+  fitIntercept = _messages.BooleanField(29)
+  hiddenUnits = _messages.IntegerField(30, repeated=True)
+  holidayRegion = _messages.EnumField('HolidayRegionValueValuesEnum', 31)
+  holidayRegions = _messages.EnumField('HolidayRegionsValueListEntryValuesEnum', 32, repeated=True)
+  horizon = _messages.IntegerField(33)
+  hparamTuningObjectives = _messages.EnumField('HparamTuningObjectivesValueListEntryValuesEnum', 34, repeated=True)
+  includeDrift = _messages.BooleanField(35)
+  initialLearnRate = _messages.FloatField(36)
+  inputLabelColumns = _messages.StringField(37, repeated=True)
+  instanceWeightColumn = _messages.StringField(38)
+  integratedGradientsNumSteps = _messages.IntegerField(39)
+  itemColumn = _messages.StringField(40)
+  kmeansInitializationColumn = _messages.StringField(41)
+  kmeansInitializationMethod = _messages.EnumField('KmeansInitializationMethodValueValuesEnum', 42)
+  l1RegActivation = _messages.FloatField(43)
+  l1Regularization = _messages.FloatField(44)
+  l2Regularization = _messages.FloatField(45)
+  labelClassWeights = _messages.MessageField('LabelClassWeightsValue', 46)
+  learnRate = _messages.FloatField(47)
+  learnRateStrategy = _messages.EnumField('LearnRateStrategyValueValuesEnum', 48)
+  lossType = _messages.EnumField('LossTypeValueValuesEnum', 49)
+  maxIterations = _messages.IntegerField(50)
+  maxParallelTrials = _messages.IntegerField(51)
+  maxTimeSeriesLength = _messages.IntegerField(52)
+  maxTreeDepth = _messages.IntegerField(53)
+  minRelativeProgress = _messages.FloatField(54)
+  minSplitLoss = _messages.FloatField(55)
+  minTimeSeriesLength = _messages.IntegerField(56)
+  minTreeChildWeight = _messages.IntegerField(57)
+  modelRegistry = _messages.EnumField('ModelRegistryValueValuesEnum', 58)
+  modelUri = _messages.StringField(59)
+  nonSeasonalOrder = _messages.MessageField('ArimaOrder', 60)
+  numClusters = _messages.IntegerField(61)
+  numFactors = _messages.IntegerField(62)
+  numParallelTree = _messages.IntegerField(63)
+  numPrincipalComponents = _messages.IntegerField(64)
+  numTrials = _messages.IntegerField(65)
+  optimizationStrategy = _messages.EnumField('OptimizationStrategyValueValuesEnum', 66)
+  optimizer = _messages.StringField(67)
+  pcaExplainedVarianceRatio = _messages.FloatField(68)
+  pcaSolver = _messages.EnumField('PcaSolverValueValuesEnum', 69)
+  sampledShapleyNumPaths = _messages.IntegerField(70)
+  scaleFeatures = _messages.BooleanField(71)
+  standardizeFeatures = _messages.BooleanField(72)
+  subsample = _messages.FloatField(73)
+  tfVersion = _messages.StringField(74)
+  timeSeriesDataColumn = _messages.StringField(75)
+  timeSeriesIdColumn = _messages.StringField(76)
+  timeSeriesIdColumns = _messages.StringField(77, repeated=True)
+  timeSeriesLengthFraction = _messages.FloatField(78)
+  timeSeriesTimestampColumn = _messages.StringField(79)
+  treeMethod = _messages.EnumField('TreeMethodValueValuesEnum', 80)
+  trendSmoothingWindowSize = _messages.IntegerField(81)
+  userColumn = _messages.StringField(82)
+  vertexAiModelVersionAliases = _messages.StringField(83, repeated=True)
+  walsAlpha = _messages.FloatField(84)
+  warmStart = _messages.BooleanField(85)
+  xgboostVersion = _messages.StringField(86)
 
 
 class TrainingRun(_messages.Message):
@@ -6882,6 +7107,21 @@ class TransactionInfo(_messages.Message):
   """
 
   transactionId = _messages.StringField(1)
+
+
+class TransformColumn(_messages.Message):
+  r"""Information about a single transform column.
+
+  Fields:
+    name: Output only. Name of the column.
+    transformSql: Output only. The SQL expression used in the column
+      transform.
+    type: Output only. Data type of the column after the transform.
+  """
+
+  name = _messages.StringField(1)
+  transformSql = _messages.StringField(2)
+  type = _messages.MessageField('StandardSqlDataType', 3)
 
 
 class UserDefinedFunctionResource(_messages.Message):

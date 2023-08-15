@@ -231,10 +231,10 @@ class BareMetalAdminControlPlaneConfig(_messages.Message):
       documentation below to know the exact format:
       https://kubernetes.io/docs/reference/command-line-tools-reference/kube-
       apiserver/
-    controlPlaneNodePoolConfig: Configures the node pool running the control
-      plane. If specified the corresponding NodePool will be created for the
-      cluster's control plane. The NodePool will have the same name and
-      namespace as the cluster.
+    controlPlaneNodePoolConfig: Required. Configures the node pool running the
+      control plane. If specified the corresponding NodePool will be created
+      for the cluster's control plane. The NodePool will have the same name
+      and namespace as the cluster.
   """
 
   apiServerArgs = _messages.MessageField('BareMetalAdminApiServerArgument', 1, repeated=True)
@@ -248,8 +248,8 @@ class BareMetalAdminControlPlaneNodePoolConfig(_messages.Message):
   the future.
 
   Fields:
-    nodePoolConfig: The generic configuration for a node pool running the
-      control plane.
+    nodePoolConfig: Required. The generic configuration for a node pool
+      running the control plane.
   """
 
   nodePoolConfig = _messages.MessageField('BareMetalNodePoolConfig', 1)
@@ -727,6 +727,8 @@ class BareMetalClusterUpgradePolicy(_messages.Message):
     PolicyValueValuesEnum: Specifies which upgrade policy to use.
 
   Fields:
+    controlPlaneOnly: Controls whether upgrade applies to only the control
+      plane.
     policy: Specifies which upgrade policy to use.
   """
 
@@ -742,7 +744,8 @@ class BareMetalClusterUpgradePolicy(_messages.Message):
     SERIAL = 1
     CONCURRENT = 2
 
-  policy = _messages.EnumField('PolicyValueValuesEnum', 1)
+  controlPlaneOnly = _messages.BooleanField(1)
+  policy = _messages.EnumField('PolicyValueValuesEnum', 2)
 
 
 class BareMetalControlPlaneConfig(_messages.Message):
@@ -1629,6 +1632,8 @@ class BareMetalStandaloneClusterUpgradePolicy(_messages.Message):
     PolicyValueValuesEnum: Specifies which upgrade policy to use.
 
   Fields:
+    controlPlaneOnly: Controls whether upgrade applies to only the control
+      plane.
     policy: Specifies which upgrade policy to use.
   """
 
@@ -1644,7 +1649,8 @@ class BareMetalStandaloneClusterUpgradePolicy(_messages.Message):
     SERIAL = 1
     CONCURRENT = 2
 
-  policy = _messages.EnumField('PolicyValueValuesEnum', 1)
+  controlPlaneOnly = _messages.BooleanField(1)
+  policy = _messages.EnumField('PolicyValueValuesEnum', 2)
 
 
 class BareMetalStandaloneControlPlaneConfig(_messages.Message):
@@ -3867,6 +3873,14 @@ class GkeonpremProjectsLocationsBareMetalStandaloneClustersUnenrollRequest(_mess
       will be blocked and an ABORTED error will be returned.
     force: This is required if the cluster has any associated node pools. When
       set, any child node pools will also be unenrolled.
+    ignoreErrors: Optional. If set to true, the unenrollment of a bare metal
+      standalone cluster resource will succeed even if errors occur during
+      unenrollment. This parameter can be used when you want to unenroll
+      standalone cluster resource and the on-prem standalone cluster is
+      disconnected / unreachable. WARNING: Using this parameter when your
+      standalone cluster still exists may result in a deleted GCP standalone
+      cluster but existing resourcelink in on-prem standalone cluster and
+      membership.
     name: Required. Name of the bare metal standalone cluster to be
       unenrolled. Format: "projects/{project}/locations/{location}/bareMetalSt
       andaloneClusters/{cluster}"
@@ -3876,8 +3890,9 @@ class GkeonpremProjectsLocationsBareMetalStandaloneClustersUnenrollRequest(_mess
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
   force = _messages.BooleanField(3)
-  name = _messages.StringField(4, required=True)
-  validateOnly = _messages.BooleanField(5)
+  ignoreErrors = _messages.BooleanField(4)
+  name = _messages.StringField(5, required=True)
+  validateOnly = _messages.BooleanField(6)
 
 
 class GkeonpremProjectsLocationsGetRequest(_messages.Message):
@@ -5190,8 +5205,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -5213,7 +5228,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -5252,9 +5267,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -5423,7 +5438,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -5431,15 +5446,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     bindings: Associates a list of `members`, or principals, with a `role`.

@@ -285,6 +285,33 @@ class GkebackupV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetBackupIndexDownloadUrl(self, request, global_params=None):
+      r"""Retrieve the link to the backupIndex.
+
+      Args:
+        request: (GkebackupProjectsLocationsBackupPlansBackupsGetBackupIndexDownloadUrlRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetBackupIndexDownloadUrlResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetBackupIndexDownloadUrl')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetBackupIndexDownloadUrl.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}:getBackupIndexDownloadUrl',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.backupPlans.backups.getBackupIndexDownloadUrl',
+        ordered_params=['backup'],
+        path_params=['backup'],
+        query_params=[],
+        relative_path='v1/{+backup}:getBackupIndexDownloadUrl',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsBackupPlansBackupsGetBackupIndexDownloadUrlRequest',
+        response_type_name='GetBackupIndexDownloadUrlResponse',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 

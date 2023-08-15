@@ -81,6 +81,8 @@ class AbortInfo(_messages.Message):
         (several PSC endpoints satisfy test input).
       SOURCE_PSC_CLOUD_SQL_UNSUPPORTED: Aborted because tests with a PSC-based
         Cloud SQL instance as a source are not supported.
+      SOURCE_FORWARDING_RULE_UNSUPPORTED: Aborted because tests with a
+        forwarding rule as a source are not supported.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -103,6 +105,7 @@ class AbortInfo(_messages.Message):
     RESOURCE_CONFIG_NOT_FOUND = 18
     GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 19
     SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 20
+    SOURCE_FORWARDING_RULE_UNSUPPORTED = 21
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   projectsMissingPermission = _messages.StringField(2, repeated=True)
@@ -878,6 +881,7 @@ class ForwardInfo(_messages.Message):
         route imported from a peering VPC.
       CLOUD_SQL_INSTANCE: Forwarded to a Cloud SQL instance.
       ANOTHER_PROJECT: Forwarded to a VPC network in another project.
+      NCC_HUB: Forwarded to an NCC Hub.
     """
     TARGET_UNSPECIFIED = 0
     PEERING_VPC = 1
@@ -887,6 +891,7 @@ class ForwardInfo(_messages.Message):
     IMPORTED_CUSTOM_ROUTE_NEXT_HOP = 5
     CLOUD_SQL_INSTANCE = 6
     ANOTHER_PROJECT = 7
+    NCC_HUB = 8
 
   resourceUri = _messages.StringField(1)
   target = _messages.EnumField('TargetValueValuesEnum', 2)
@@ -1494,8 +1499,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1517,7 +1522,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1556,9 +1561,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -1629,7 +1634,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -1637,15 +1642,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -1755,26 +1760,30 @@ class RouteInfo(_messages.Message):
 
   Enums:
     NextHopTypeValueValuesEnum: Type of next hop.
+    RouteScopeValueValuesEnum: Indicates where route is applicable.
     RouteTypeValueValuesEnum: Type of route.
 
   Fields:
     destIpRange: Destination IP range of the route.
     destPortRanges: Destination port ranges of the route. Policy based routes
       only.
-    displayName: Name of a Compute Engine route.
+    displayName: Name of a route.
     instanceTags: Instance tags of the route.
-    networkUri: URI of a Compute Engine network.
+    nccHubUri: URI of a NCC Hub. NCC_HUB routes only.
+    nccSpokeUri: URI of a NCC Spoke. NCC_HUB routes only.
+    networkUri: URI of a Compute Engine network. NETWORK routes only.
     nextHop: Next hop of the route.
     nextHopType: Type of next hop.
     priority: Priority of the route.
     protocols: Protocols of the route. Policy based routes only.
+    routeScope: Indicates where route is applicable.
     routeType: Type of route.
     srcIpRange: Source IP address range of the route. Policy based routes
       only.
     srcPortRanges: Source port ranges of the route. Policy based routes only.
-    uri: URI of a Compute Engine route. Dynamic route from cloud router does
-      not have a URI. Advertised route from Google Cloud VPC to on-premises
-      network also does not have a URI.
+    uri: URI of a route. Dynamic, peering static and peering dynamic routes do
+      not have an URI. Advertised route from Google Cloud VPC to on-premises
+      network also does not have an URI.
   """
 
   class NextHopTypeValueValuesEnum(_messages.Enum):
@@ -1801,6 +1810,7 @@ class RouteInfo(_messages.Message):
       NEXT_HOP_ROUTER_APPLIANCE: Next hop is a [router appliance
         instance](https://cloud.google.com/network-connectivity/docs/network-
         connectivity-center/concepts/ra-overview).
+      NEXT_HOP_NCC_HUB: Next hop is an NCC hub.
     """
     NEXT_HOP_TYPE_UNSPECIFIED = 0
     NEXT_HOP_IP = 1
@@ -1814,6 +1824,19 @@ class RouteInfo(_messages.Message):
     NEXT_HOP_BLACKHOLE = 9
     NEXT_HOP_ILB = 10
     NEXT_HOP_ROUTER_APPLIANCE = 11
+    NEXT_HOP_NCC_HUB = 12
+
+  class RouteScopeValueValuesEnum(_messages.Enum):
+    r"""Indicates where route is applicable.
+
+    Values:
+      ROUTE_SCOPE_UNSPECIFIED: Unspecified scope. Default value.
+      NETWORK: Route is applicable to packets in Network.
+      NCC_HUB: Route is applicable to packets using NCC Hub's routing table.
+    """
+    ROUTE_SCOPE_UNSPECIFIED = 0
+    NETWORK = 1
+    NCC_HUB = 2
 
   class RouteTypeValueValuesEnum(_messages.Enum):
     r"""Type of route.
@@ -1842,15 +1865,18 @@ class RouteInfo(_messages.Message):
   destPortRanges = _messages.StringField(2, repeated=True)
   displayName = _messages.StringField(3)
   instanceTags = _messages.StringField(4, repeated=True)
-  networkUri = _messages.StringField(5)
-  nextHop = _messages.StringField(6)
-  nextHopType = _messages.EnumField('NextHopTypeValueValuesEnum', 7)
-  priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  protocols = _messages.StringField(9, repeated=True)
-  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 10)
-  srcIpRange = _messages.StringField(11)
-  srcPortRanges = _messages.StringField(12, repeated=True)
-  uri = _messages.StringField(13)
+  nccHubUri = _messages.StringField(5)
+  nccSpokeUri = _messages.StringField(6)
+  networkUri = _messages.StringField(7)
+  nextHop = _messages.StringField(8)
+  nextHopType = _messages.EnumField('NextHopTypeValueValuesEnum', 9)
+  priority = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  protocols = _messages.StringField(11, repeated=True)
+  routeScope = _messages.EnumField('RouteScopeValueValuesEnum', 12)
+  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 13)
+  srcIpRange = _messages.StringField(14)
+  srcPortRanges = _messages.StringField(15, repeated=True)
+  uri = _messages.StringField(16)
 
 
 class SetIamPolicyRequest(_messages.Message):

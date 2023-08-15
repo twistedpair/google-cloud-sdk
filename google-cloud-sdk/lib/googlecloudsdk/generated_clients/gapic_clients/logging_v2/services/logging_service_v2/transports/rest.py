@@ -192,7 +192,7 @@ class LoggingServiceV2RestStub:
 class LoggingServiceV2RestTransport(LoggingServiceV2Transport):
     """REST backend transport for LoggingServiceV2.
 
-    Service for ingesting and querying logs.
+    Service for storing and querying logs.
 
     This class defines the same methods as the primary client, so the
     primary client can load the underlying transport implementation

@@ -34,6 +34,18 @@ POSSIBLE_JUSTIFICATION_FLAGS = [
     'inline_mitigations_already_exist',
 ]
 
+POSSIBLE_PRODUCT_STATUS = ['known_affected',
+                           'known_not_affected',
+                           'fixed',
+                           'under_investigation']
+
+POSSIBLE_REMEDIATION_CATEGORIES = [
+    'mitigation',
+    'no_fix_planned',
+    'none_available',
+    'vendor_fix',
+    'workaround']
+
 
 def ParseVexFile(filename, uri):
   """Reads a vex file and extracts notes.
@@ -151,20 +163,56 @@ def _Validate(vex):
         'at least one vulnerability is expected in csaf document'
     )
   for vuln in vulnerabilities:
-    cve_name = vuln.get('cve')
-    if cve_name is None:
+    _ValidateVulnerability(vuln)
+
+
+def _ValidateVulnerability(vuln):
+  """Validates vulnerability is structured correctly.
+
+  Args:
+    vuln: a vulnerability from vex document
+
+  Raises:
+    ar_exceptions.InvalidInputValueError if user input is invalid.
+  """
+  cve_name = vuln.get('cve')
+  if cve_name is None:
+    raise ar_exceptions.InvalidInputValueError(
+        'cve is required in all vulnerabilities in csaf document'
+    )
+  product_status = vuln.get('product_status')
+  if product_status is None:
+    raise ar_exceptions.InvalidInputValueError(
+        'product_status is required in all vulnerabilities in csaf document'
+    )
+  if len(product_status) < 1:
+    raise ar_exceptions.InvalidInputValueError(
+        'at least one status is expected in each vulnerability'
+    )
+  for status in product_status:
+    if status not in POSSIBLE_PRODUCT_STATUS:
       raise ar_exceptions.InvalidInputValueError(
-          'cve is required in all vulnerabilities in csaf document'
+          'Invalid product status passed in {}.  Product status should be one'
+          ' of {}'.format(status, POSSIBLE_PRODUCT_STATUS)
       )
-    product_status = vuln.get('product_status')
-    if product_status is None:
-      raise ar_exceptions.InvalidInputValueError(
-          'product_status is required in all vulnerabilities in csaf document'
-      )
-    if len(product_status) < 1:
-      raise ar_exceptions.InvalidInputValueError(
-          'at least one status is expected in each vulnerability'
-      )
+  flags = vuln.get('flags')
+  if flags is not None:
+    for flag in flags:
+      label = flag.get('label')
+      if label not in POSSIBLE_JUSTIFICATION_FLAGS:
+        raise ar_exceptions.InvalidInputValueError(
+            'Invalid flag label passed in {}.  Label should be one of {}'
+            .format(label, POSSIBLE_JUSTIFICATION_FLAGS)
+        )
+  remediations = vuln.get('remediations')
+  if remediations is not None:
+    for remediation in remediations:
+      category = remediation.get('category')
+      if category not in POSSIBLE_REMEDIATION_CATEGORIES:
+        raise ar_exceptions.InvalidInputValueError(
+            'Invalid remediation category passed in {}.  Label should be one'
+            ' of {}'.format(category, POSSIBLE_REMEDIATION_CATEGORIES)
+        )
 
 
 def _MakeNote(vuln, status, product, publisher, document, msgs):
@@ -278,8 +326,6 @@ def _GetJustifications(vuln, product, msgs):
     return msgs.Justification()
   for flag in flags:
     label = flag.get('label')
-    if label not in POSSIBLE_JUSTIFICATION_FLAGS:
-      continue
     for product_id in flag.get('product_ids'):
       if product_id == product.id:
         justification_type_as_string = label

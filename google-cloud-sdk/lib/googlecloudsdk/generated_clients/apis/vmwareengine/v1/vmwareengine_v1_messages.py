@@ -282,10 +282,6 @@ class DnsForwarding(_messages.Message):
   server mappings, and is attached to the private cloud for custom domain
   resolution.
 
-  Enums:
-    StateValueValuesEnum: Output only. The state of the DNS forwarding
-      configuration.
-
   Fields:
     createTime: Output only. Creation time of this resource.
     etag: Checksum that may be sent on update requests to ensure that the
@@ -298,29 +294,14 @@ class DnsForwarding(_messages.Message):
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/dnsForwarding`
-    state: Output only. The state of the DNS forwarding configuration.
     updateTime: Output only. Last update time of this resource.
   """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the DNS forwarding configuration.
-
-    Values:
-      STATE_UNSPECIFIED: The default value. This value should never be used.
-      ACTIVE: DNS forwarding configuration is operational.
-      MIGRATION_REQUIRED: DNS forwarding operations disabled. Project
-        migration required.
-    """
-    STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    MIGRATION_REQUIRED = 2
 
   createTime = _messages.StringField(1)
   etag = _messages.StringField(2)
   forwardingRules = _messages.MessageField('ForwardingRule', 3, repeated=True)
   name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
+  updateTime = _messages.StringField(5)
 
 
 class Empty(_messages.Message):
@@ -1809,8 +1790,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1832,7 +1813,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1871,9 +1852,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -2021,7 +2002,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -2029,15 +2010,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -2337,6 +2318,59 @@ class PrivateConnection(_messages.Message):
   vmwareEngineNetworkCanonical = _messages.StringField(13)
 
 
+class ProjectState(_messages.Message):
+  r"""Describes a Project State. This contains migration state as well as
+  network type of the project
+
+  Enums:
+    MigrationStateValueValuesEnum: Output only. The migration state of the
+      alias.
+    NetworkTypeValueValuesEnum: Output only. The network type of the alias.
+
+  Fields:
+    migrationState: Output only. The migration state of the alias.
+    name: Output only. Name of the resource which represents the Project state
+      of a given project
+    networkType: Output only. The network type of the alias.
+  """
+
+  class MigrationStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The migration state of the alias.
+
+    Values:
+      MIGRATION_STATE_UNSPECIFIED: Default migration state. This value should
+        never be used.
+      PENDING: Indicates migration is yet to be performed.
+      COMPLETED: Indicates migration is successfully completed.
+      IN_PROGRESS: Indicates migration in progress.
+      NOT_REQUIRED: This value indicates there was no migration state for the
+        alias defined in the system. This would be the case for the aliases
+        that are new i.e., do not have resource at the time of cutover.
+    """
+    MIGRATION_STATE_UNSPECIFIED = 0
+    PENDING = 1
+    COMPLETED = 2
+    IN_PROGRESS = 3
+    NOT_REQUIRED = 4
+
+  class NetworkTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The network type of the alias.
+
+    Values:
+      NETWORK_TYPE_UNSPECIFIED: Default network type. This value should never
+        be used.
+      LEGACY: Indicates project is using legacy resources.
+      STANDARD: Indicates project is using standard resources.
+    """
+    NETWORK_TYPE_UNSPECIFIED = 0
+    LEGACY = 1
+    STANDARD = 2
+
+  migrationState = _messages.EnumField('MigrationStateValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 3)
+
+
 class RepairManagementDnsZoneBindingRequest(_messages.Message):
   r"""Request message for VmwareEngine.RepairManagementDnsZoneBindings
 
@@ -2629,6 +2663,7 @@ class Subnet(_messages.Message):
     state: Output only. The state of the resource.
     type: Output only. The type of the subnet. For example "management" or
       "userDefined".
+    vlanId: Output only. VLAN ID of the VLAN on which the subnet is configured
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -2658,6 +2693,7 @@ class Subnet(_messages.Message):
   name = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
   type = _messages.StringField(5)
+  vlanId = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -2796,6 +2832,17 @@ class VmwareEngineNetwork(_messages.Message):
   uid = _messages.StringField(7)
   updateTime = _messages.StringField(8)
   vpcNetworks = _messages.MessageField('VpcNetwork', 9, repeated=True)
+
+
+class VmwareengineProjectsLocationsGetProjectStateRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsGetProjectStateRequest object.
+
+  Fields:
+    name: Required. The name of the project state resource to retrieve. For
+      example: `projects/{project}/location/{location}/projectState`
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class VmwareengineProjectsLocationsGetRequest(_messages.Message):

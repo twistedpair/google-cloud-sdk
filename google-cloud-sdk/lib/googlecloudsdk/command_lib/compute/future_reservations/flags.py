@@ -91,7 +91,7 @@ def GetAutoDeleteAutoCreatedReservationsFlag(required=False):
   """
   return base.Argument(
       '--auto-delete-auto-created-reservations',
-      action='store_true',
+      action=arg_parsers.StoreTrueFalseAction,
       help=help_text,
       required=required,
   )

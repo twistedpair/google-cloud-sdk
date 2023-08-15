@@ -27,17 +27,20 @@ from googlecloudsdk.core import resources
 
 def GetOperationResource(op):
   return resources.REGISTRY.ParseRelativeName(
-      op.name, collection='gkemulticloud.projects.locations.operations')
+      op.name, collection='gkemulticloud.projects.locations.operations'
+  )
 
 
 def AwsClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='cluster', help_text='cluster of the {resource}.')
+      name='cluster', help_text='cluster of the {resource}.'
+  )
 
 
 def AwsNodePoolAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='node_pool', help_text='node pool of the {resource}.')
+      name='node_pool', help_text='node pool of the {resource}.'
+  )
 
 
 def LocationAttributeConfig():
@@ -47,12 +50,14 @@ def LocationAttributeConfig():
       help_text='Google Cloud location for the {resource}.',
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.container_aws.location)
-      ])
+      ],
+  )
 
 
 def OperationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='operation', help_text='Operation for the {resource}.')
+      name='operation', help_text='Operation for the {resource}.'
+  )
 
 
 def GetAwsClusterResourceSpec():
@@ -61,7 +66,8 @@ def GetAwsClusterResourceSpec():
       resource_name='cluster',
       awsClustersId=AwsClusterAttributeConfig(),
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def GetOperationResourceSpec():
@@ -69,7 +75,8 @@ def GetOperationResourceSpec():
       'gkemulticloud.projects.locations.operations',
       resource_name='operation',
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def GetAwsNodePoolResourceSpec():
@@ -79,7 +86,8 @@ def GetAwsNodePoolResourceSpec():
       awsNodePoolsId=AwsNodePoolAttributeConfig(),
       awsClustersId=AwsClusterAttributeConfig(),
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def GetLocationResourceSpec():
@@ -87,7 +95,8 @@ def GetLocationResourceSpec():
       'gkemulticloud.projects.locations',
       resource_name='location',
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def AddAwsClusterResourceArg(parser, verb, positional=True):
@@ -103,7 +112,8 @@ def AddAwsClusterResourceArg(parser, verb, positional=True):
       name,
       GetAwsClusterResourceSpec(),
       'cluster {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddAwsNodePoolResourceArg(parser, verb, positional=True):
@@ -119,7 +129,8 @@ def AddAwsNodePoolResourceArg(parser, verb, positional=True):
       name,
       GetAwsNodePoolResourceSpec(),
       'node pool {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddLocationResourceArg(parser, verb):
@@ -133,7 +144,8 @@ def AddLocationResourceArg(parser, verb):
       '--location',
       GetLocationResourceSpec(),
       'Google Cloud location {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddOperationResourceArg(parser, verb):
@@ -147,22 +159,26 @@ def AddOperationResourceArg(parser, verb):
       'operation_id',
       GetOperationResourceSpec(),
       'operation {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def ParseAwsClusterResourceArg(args):
   return resources.REGISTRY.ParseRelativeName(
       args.CONCEPTS.cluster.Parse().RelativeName(),
-      collection='gkemulticloud.projects.locations.awsClusters')
+      collection='gkemulticloud.projects.locations.awsClusters',
+  )
 
 
 def ParseAwsNodePoolResourceArg(args):
   return resources.REGISTRY.ParseRelativeName(
       args.CONCEPTS.node_pool.Parse().RelativeName(),
-      collection='gkemulticloud.projects.locations.awsClusters.awsNodePools')
+      collection='gkemulticloud.projects.locations.awsClusters.awsNodePools',
+  )
 
 
 def ParseOperationResourceArg(args):
   return resources.REGISTRY.ParseRelativeName(
       args.CONCEPTS.operation_id.Parse().RelativeName(),
-      collection='gkemulticloud.projects.locations.operations')
+      collection='gkemulticloud.projects.locations.operations',
+  )

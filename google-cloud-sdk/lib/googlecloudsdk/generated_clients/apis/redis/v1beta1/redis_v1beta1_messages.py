@@ -56,8 +56,6 @@ class Cluster(_messages.Message):
     discoveryEndpoints: Output only. Endpoints created on each given network,
       for Redis clients to connect to the cluster. Currently only one
       discovery endpoint is supported.
-    displayName: Optional. An arbitrary and optional user-provided name for
-      the cluster.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
@@ -121,15 +119,14 @@ class Cluster(_messages.Message):
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
   discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 3, repeated=True)
-  displayName = _messages.StringField(4)
-  name = _messages.StringField(5)
-  pscConfigs = _messages.MessageField('PscConfig', 6, repeated=True)
-  replicaCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 11)
-  uid = _messages.StringField(12)
+  name = _messages.StringField(4)
+  pscConfigs = _messages.MessageField('PscConfig', 5, repeated=True)
+  replicaCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 10)
+  uid = _messages.StringField(11)
 
 
 class DiscoveryEndpoint(_messages.Message):
@@ -893,8 +890,8 @@ class Operation(_messages.Message):
       have successfully been cancelled have Operation.error value with a
       google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
       `apiVersion`: API version used to start the operation. }
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -920,7 +917,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -964,9 +961,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -1249,8 +1246,7 @@ class RedisProjectsLocationsClustersPatchRequest(_messages.Message):
     requestId: Idempotent request UUID.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
-      only include these fields from Cluster: * `display_name` * `size_gb` *
-      `replica_count`
+      only include these fields from Cluster: * `size_gb` * `replica_count`
   """
 
   cluster = _messages.MessageField('Cluster', 1)

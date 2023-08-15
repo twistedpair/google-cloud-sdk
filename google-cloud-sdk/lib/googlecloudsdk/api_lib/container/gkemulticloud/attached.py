@@ -31,6 +31,7 @@ class _AttachedClientBase(client.ClientBase):
     cluster_type = self._messages.GoogleCloudGkemulticloudV1AttachedCluster
     kwargs = {
         'annotations': self._Annotations(args, cluster_type),
+        'binaryAuthorization': self._BinaryAuthorization(args),
         'platformVersion': attached_flags.GetPlatformVersion(args),
         'fleet': self._Fleet(args),
         'name': cluster_ref.attachedClustersId,
@@ -41,8 +42,11 @@ class _AttachedClientBase(client.ClientBase):
         'loggingConfig': flags.GetLogging(args, True),
         'monitoringConfig': flags.GetMonitoringConfig(args),
     }
-    return self._messages.GoogleCloudGkemulticloudV1AttachedCluster(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AttachedCluster(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _OidcConfig(self, args):
     kwargs = {
@@ -51,8 +55,11 @@ class _AttachedClientBase(client.ClientBase):
     oidc = attached_flags.GetOidcJwks(args)
     if oidc:
       kwargs['jwks'] = oidc.encode(encoding='utf-8')
-    return self._messages.GoogleCloudGkemulticloudV1AttachedOidcConfig(
-        **kwargs) if any(kwargs.values()) else None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AttachedOidcConfig(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
 
   def _Authorization(self, args):
     admin_users = attached_flags.GetAdminUsers(args)
@@ -61,11 +68,18 @@ class _AttachedClientBase(client.ClientBase):
     kwargs = {
         'adminUsers': [
             self._messages.GoogleCloudGkemulticloudV1AttachedClusterUser(
-                username=u) for u in admin_users
+                username=u
+            )
+            for u in admin_users
         ]
     }
-    return self._messages.GoogleCloudGkemulticloudV1AttachedClustersAuthorization(
-        **kwargs) if any(kwargs.values()) else None
+    if not any(kwargs.values()):
+      return None
+    return (
+        self._messages.GoogleCloudGkemulticloudV1AttachedClustersAuthorization(
+            **kwargs
+        )
+    )
 
 
 class ClustersClient(_AttachedClientBase):
@@ -81,31 +95,36 @@ class ClustersClient(_AttachedClientBase):
     req = self._messages.GkemulticloudProjectsLocationsAttachedClustersCreateRequest(
         parent=cluster_ref.Parent().RelativeName(),
         googleCloudGkemulticloudV1AttachedCluster=self._Cluster(
-            cluster_ref, args),
+            cluster_ref, args
+        ),
         attachedClusterId=cluster_ref.attachedClustersId,
-        validateOnly=flags.GetValidateOnly(args))
+        validateOnly=flags.GetValidateOnly(args),
+    )
     return self._service.Create(req)
 
   def Update(self, cluster_ref, args):
     """Updates an Attached cluster."""
     req = self._messages.GkemulticloudProjectsLocationsAttachedClustersPatchRequest(
         googleCloudGkemulticloudV1AttachedCluster=self._Cluster(
-            cluster_ref, args),
+            cluster_ref, args
+        ),
         name=cluster_ref.RelativeName(),
         updateMask=update_mask.GetUpdateMask(
-            args, update_mask.ATTACHED_CLUSTER_ARGS_TO_UPDATE_MASKS),
-        validateOnly=flags.GetValidateOnly(args))
+            args, update_mask.ATTACHED_CLUSTER_ARGS_TO_UPDATE_MASKS
+        ),
+        validateOnly=flags.GetValidateOnly(args),
+    )
     return self._service.Patch(req)
 
   def Import(self, location_ref, fleet_membership_ref, args):
     """Imports an Attached cluster fleet membership."""
     req = self._messages.GkemulticloudProjectsLocationsAttachedClustersImportRequest(
         parent=location_ref.RelativeName(),
-        googleCloudGkemulticloudV1ImportAttachedClusterRequest=
-        self._messages.GoogleCloudGkemulticloudV1ImportAttachedClusterRequest(
+        googleCloudGkemulticloudV1ImportAttachedClusterRequest=self._messages.GoogleCloudGkemulticloudV1ImportAttachedClusterRequest(
             fleetMembership=fleet_membership_ref.RelativeName(),
             platformVersion=attached_flags.GetPlatformVersion(args),
             distribution=attached_flags.GetDistribution(args),
-            validateOnly=flags.GetValidateOnly(args))
-        )
+            validateOnly=flags.GetValidateOnly(args),
+        ),
+    )
     return self._service.Import(req)

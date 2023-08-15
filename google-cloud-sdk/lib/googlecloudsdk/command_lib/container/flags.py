@@ -1772,7 +1772,7 @@ def AddTPUTopologyFlag(parser, hidden=False):
     hidden: Indicates that the flags are hidden.
   """
   help_text = textwrap.dedent("""\
-    This indicates the desired physical topology for the PodSlice.
+    The desired physical topology for the PodSlice.
 
     $ {command} node-pool-1 --cluster=example-cluster --tpu-topology
       """)
@@ -4489,6 +4489,26 @@ The duration between batches is specified by batch-soak-duration.
   )
 
 
+def AddAutoscaleRolloutPolicyFlag(parser, for_node_pool=True, hidden=True):
+  """Adds --autoscaled-rollout-policy flag to the parser."""
+
+  autoscaled_rollout_policy_help = """\
+Autoscaled rollout policy options for blue-green upgrade.
+"""
+  if for_node_pool:
+    autoscaled_rollout_policy_help += """\
+  $ {command} node-pool-1 --cluster=example-cluster\
+  --autoscaled-rollout-policy
+"""
+
+  parser.add_argument(
+      '--autoscaled-rollout-policy',
+      help=autoscaled_rollout_policy_help,
+      hidden=hidden,
+      action='store_true',
+  )
+
+
 def AddLinuxSysctlFlags(parser, for_node_pool=False):
   """Adds Linux sysctl flag to the given parser."""
   if for_node_pool:
@@ -4685,6 +4705,9 @@ Examples:
       sysctl:
         net.core.somaxconn: '2048'
         net.ipv4.tcp_rmem: '4096 87380 6291456'
+    hugepageConfig:
+      hugepage_size2m: '1024'
+      hugepage_size1g: '2'
 
 List of supported kubelet configs in 'kubeletConfig'.
 
@@ -4708,6 +4731,19 @@ net.core.somaxconn                         | Must be [128, 2147483647]
 net.ipv4.tcp_rmem                          | Any positive integer tuple
 net.ipv4.tcp_wmem                          | Any positive integer tuple
 net.ipv4.tcp_tw_reuse                      | Must be {0, 1}
+
+List of supported hugepage size in 'hugepageConfig'.
+
+KEY             | VALUE
+----------------| ---------------------------------------------
+hugepage_size2m | Number of 2M huge pages, any positive integer
+hugepage_size1g | Number of 1G huge pages, any positive integer
+
+Allocated hugepage size should not exceed 60% of available memory on the node. For example, c2d-highcpu-4 has 8GB memory, total
+allocated hugepage of 2m and 1g should not exceed 8GB * 0.6 = 4.8GB.
+
+1G hugepages are only available in following machine familes:
+c3, m2, c2d, c3d, h3, m3, a2, a3, g2.
 
 Note, updating the system configuration of an existing node pool requires recreation of the nodes which which might cause a disruption.
 """,
@@ -5604,7 +5640,7 @@ def AddClusterNetworkPerformanceConfigFlags(parser, hidden=False):
 
       See https://cloud.google.com/compute/docs/networking/configure-vm-with-high-bandwidth-configuration for more information.
 
-      """.format(tier_values=','.join(['DEFAULT', 'TIER_1']))
+      """.format(tier_values=','.join(['TIER_UNSPECIFIED', 'TIER_1']))
 
   spec = {'total-egress-bandwidth-tier': str}
 
@@ -5760,6 +5796,24 @@ def AddEnableFqdnNetworkPolicyFlag(parser):
       default=None,
       help=help_text,
       hidden=False,
+  )
+
+
+def AddInTransitEncryptionFlag(parser):
+  """adds --in-transit-encryption flag to the given parser.
+
+  Args:
+    parser: A given parser.
+  """
+  help_text = """\
+  Enable Dataplane V2 in-transit encryption. Dataplane v2 in-transit encryption is disabled by default.
+  """
+  parser.add_argument(
+      '--in-transit-encryption',
+      choices=['inter-node-transparent', 'none'],
+      default=None,
+      help=help_text,
+      hidden=True,
   )
 
 

@@ -138,10 +138,20 @@ def _ValidateResourcePoolSpecsFromConfig(resource_pools, version):
           '--config',
           'Field [machineType] required in but not provided in config.')
 
-    if not spec.replicaCount:
+    if (not spec.replicaCount) and (not spec.autoscalingSpec):
       raise exceptions.InvalidArgumentException(
           '--config',
           'Field [replicaCount] required in but not provided in config.')
+
+    if (spec.autoscalingSpec) and (not spec.autoscalingSpec.minReplicaCount):
+      raise exceptions.InvalidArgumentException(
+          '--config',
+          'Field [minReplicaCount] required when using autoscaling')
+
+    if (spec.autoscalingSpec) and (not spec.autoscalingSpec.maxReplicaCount):
+      raise exceptions.InvalidArgumentException(
+          '--config',
+          'Field [maxReplicaCount] required when using autoscaling')
 
     if (spec.machineSpec.acceleratorCount and
         not spec.machineSpec.acceleratorType):

@@ -256,31 +256,31 @@ def ConstructPatch(is_composer_v1,
     support_web_server_plugins: bool or None, whether to enable/disable the
       support for web server plugins
     dag_processor_cpu: float or None, CPU allocated to Airflow dag processor.
-      Can be specified only in Composer 2.5.
+      Can be specified only in Composer 3.
     dag_processor_count: int or None, number of Airflow dag processors. Can be
-      specified only in Composer 2.5.
+      specified only in Composer 3.
     dag_processor_memory_gb: float or None, memory allocated to Airflow dag
-      processor. Can be specified only in Composer 2.5.
+      processor. Can be specified only in Composer 3.
     dag_processor_storage_gb: float or None, storage allocated to Airflow dag
-      processor. Can be specified only in Composer 2.5.
+      processor. Can be specified only in Composer 3.
     disable_vpc_connectivity: bool or None, defines whether to disable
       connectivity with a user's VPC network.
-      Can be specified only in Composer 2.5.
+      Can be specified only in Composer 3.
     network: str or None, the Compute Engine network to which to connect the
       environment specified as relative resource name.
-      Can be specified only in Composer 2.5.
+      Can be specified only in Composer 3.
     subnetwork: str or None, the Compute Engine subnetwork to which to connect
       the environment specified as relative resource name.
-      Can be specified only in Composer 2.5.
+      Can be specified only in Composer 3.
     network_attachment: str or None, the Compute Engine network attachment that
       is used as PSC Network entry point.
     workload_updated: bool or None, verify if workload config has been updated
     enable_private_environment: bool or None, defines whether the internet
       access is disabled from Composer components.
-      Can be specified only in Composer 2.5.
+      Can be specified only in Composer 3.
     disable_private_environment: bool or None, defines whether the internet
       access is enabled from Composer components.
-      Can be specified only in Composer 2.5.
+      Can be specified only in Composer 3.
     enable_high_resilience: bool or None, defines whether high resilience
       should be enabled for given environment.
       Can be specified only in Composer 2.
@@ -434,7 +434,7 @@ def _ConstructPrivateEnvironmentPatch(
   Args:
     enable_private_environment: bool or None, defines whether the internet
       access is disabled from Composer components. Can be specified only in
-      Composer 2.5.
+      Composer 3.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
       which Composer client library will be used.
 
@@ -466,16 +466,15 @@ def _ConstructVpcConnectivityPatch(
 ):
   """Constructs an environment patch for vpc connectivity.
 
+  Used only in Composer 3.
+
   Args:
     disable_vpc_connectivity: bool or None, defines whether to disable
       connectivity with a user's VPC network.
-      Can be specified only in Composer 2.5.
     network: str or None, the Compute Engine network to which to connect the
       environment specified as relative resource name.
-      Can be specified only in Composer 2.5.
     subnetwork: str or None, the Compute Engine subnetwork to which to connect
       the environment specified as relative resource name.
-      Can be specified only in Composer 2.5.
     network_attachment: str or None, the Compute Engine network attachment that
       is used as PSC Network entry point.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
@@ -908,13 +907,13 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
     triggerer_count: int or None, number of triggerers in the Environment. Can
       be specified only in Airflow 2.2.x and greater
     dag_processor_cpu: float or None, CPU allocated to Airflow dag processor.
-      Can be specified only in Composer 2.5.
+      Can be specified only in Composer 3.
     dag_processor_count: int or None, number of Airflow dag processors. Can be
-      specified only in Composer 2.5.
+      specified only in Composer 3.
     dag_processor_memory_gb: float or None, memory allocated to Airflow dag
-      processor. Can be specified only in Composer 2.5.
+      processor. Can be specified only in Composer 3.
     dag_processor_storage_gb: float or None, storage allocated to Airflow dag
-      processor. Can be specified only in Composer 2.5.
+      processor. Can be specified only in Composer 3.
 
   Returns:
     (str, Environment), the field mask and environment to use for update.

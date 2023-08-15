@@ -25,6 +25,12 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  awsV4Authentication:
+    description: |-
+      The configuration needed to generate a signature for access to private
+      storage buckets that support AWS's Signature Version 4 for authentication.
+      Allowed only for INTERNET_IP_PORT and INTERNET_FQDN_PORT NEG backends.
+    $ref: AWSV4Signature.yaml
   clientTlsPolicy:
     description: |-
       A URL referring to a networksecurity.ClientTlsPolicy resource that
@@ -46,8 +52,7 @@ properties:
       Infrastructure which provisions server identities. Only applies to a
       global BackendService with loadBalancingScheme set to
       INTERNAL_SELF_MANAGED. Only applies when BackendService has an attached
-      clientTlsPolicy with clientCertificate (mTLS mode). Note: This field
-      currently has no impact.
+      clientTlsPolicy with clientCertificate (mTLS mode).
     type: array
     items:
       type: string

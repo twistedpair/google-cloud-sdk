@@ -24,124 +24,86 @@ ATTACHED_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'platform_version': 'platform_version',
     'admin_users': 'authorization.admin_users',
     'logging': 'logging_config.component_config.enable_components',
-    'enable_managed_prometheus':
-        'monitoring_config.managed_prometheus_config.enabled',
-    'disable_managed_prometheus':
-        'monitoring_config.managed_prometheus_config.enabled',
+    'enable_managed_prometheus': (
+        'monitoring_config.managed_prometheus_config.enabled'
+    ),
+    'disable_managed_prometheus': (
+        'monitoring_config.managed_prometheus_config.enabled'
+    ),
+    'binauthz_evaluation_mode': 'binary_authorization.evaluation_mode',
 }
 
 AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
-    'cluster_version':
-        'control_plane.version',
-    'instance_type':
-        'control_plane.instance_type',
-    'config_encryption_kms_key_arn':
-        'control_plane.config_encryption.kms_key_arn',
-    'clear_security_group_ids':
-        'control_plane.security_group_ids',
-    'security_group_ids':
-        'control_plane.security_group_ids',
-    'per_node_pool_sg_rules_disabled':
-        'networking.per_node_pool_sg_rules_disabled',
-    'root_volume_size':
-        'control_plane.root_volume.size_gib',
-    'root_volume_type':
-        'control_plane.root_volume.volume_type',
-    'root_volume_iops':
-        'control_plane.root_volume.iops',
-    'root_volume_throughput':
-        'control_plane.root_volume.throughput',
-    'root_volume_kms_key_arn':
-        'control_plane.root_volume.kms_key_arn',
-    'role_arn':
-        'control_plane.aws_services_authentication.role_arn',
-    'role_session_name':
-        'control_plane.aws_services_authentication.role_session_name',
-    'admin_users':
-        'authorization.admin_users',
-    'clear_proxy_config':
-        'control_plane.proxy_config',
-    'proxy_secret_arn':
-        'control_plane.proxy_config.secret_arn',
-    'proxy_secret_version_id':
-        'control_plane.proxy_config.secret_version',
-    'ssh_ec2_key_pair':
-        'control_plane.ssh_config.ec2_key_pair',
-    'clear_ssh_ec2_key_pair':
-        'control_plane.ssh_config.ec2_key_pair',
-    'iam_instance_profile':
-        'control_plane.iam_instance_profile',
-    'logging':
-        'logging_config.component_config.enable_components',
-    'enable_managed_prometheus':
-        'monitoring_config.managed_prometheus_config.enabled',
-    'disable_managed_prometheus':
-        'monitoring_config.managed_prometheus_config.enabled',
-    'description':
-        'description',
-    'clear_description':
-        'description',
-    'annotations':
-        'annotations',
-    'clear_annotations':
-        'annotations',
-    'tags':
-        'control_plane.tags',
-    'clear_tags':
-        'control_plane.tags'
+    'cluster_version': 'control_plane.version',
+    'instance_type': 'control_plane.instance_type',
+    'config_encryption_kms_key_arn': (
+        'control_plane.config_encryption.kms_key_arn'
+    ),
+    'clear_security_group_ids': 'control_plane.security_group_ids',
+    'security_group_ids': 'control_plane.security_group_ids',
+    'per_node_pool_sg_rules_disabled': (
+        'networking.per_node_pool_sg_rules_disabled'
+    ),
+    'root_volume_size': 'control_plane.root_volume.size_gib',
+    'root_volume_type': 'control_plane.root_volume.volume_type',
+    'root_volume_iops': 'control_plane.root_volume.iops',
+    'root_volume_throughput': 'control_plane.root_volume.throughput',
+    'root_volume_kms_key_arn': 'control_plane.root_volume.kms_key_arn',
+    'role_arn': 'control_plane.aws_services_authentication.role_arn',
+    'role_session_name': (
+        'control_plane.aws_services_authentication.role_session_name'
+    ),
+    'admin_users': 'authorization.admin_users',
+    'clear_proxy_config': 'control_plane.proxy_config',
+    'proxy_secret_arn': 'control_plane.proxy_config.secret_arn',
+    'proxy_secret_version_id': 'control_plane.proxy_config.secret_version',
+    'ssh_ec2_key_pair': 'control_plane.ssh_config.ec2_key_pair',
+    'clear_ssh_ec2_key_pair': 'control_plane.ssh_config.ec2_key_pair',
+    'iam_instance_profile': 'control_plane.iam_instance_profile',
+    'logging': 'logging_config.component_config.enable_components',
+    'enable_managed_prometheus': (
+        'monitoring_config.managed_prometheus_config.enabled'
+    ),
+    'disable_managed_prometheus': (
+        'monitoring_config.managed_prometheus_config.enabled'
+    ),
+    'description': 'description',
+    'clear_description': 'description',
+    'annotations': 'annotations',
+    'clear_annotations': 'annotations',
+    'tags': 'control_plane.tags',
+    'clear_tags': 'control_plane.tags',
+    'binauthz_evaluation_mode': 'binary_authorization.evaluation_mode',
 }
 
 AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
-    'node_version':
-        'version',
-    'min_nodes':
-        'autoscaling.minNodeCount',
-    'max_nodes':
-        'autoscaling.maxNodeCount',
-    'clear_security_group_ids':
-        'config.security_group_ids',
-    'security_group_ids':
-        'config.security_group_ids',
-    'config_encryption_kms_key_arn':
-        'config.config_encryption.kms_key_arn',
-    'root_volume_size':
-        'config.root_volume.size_gib',
-    'root_volume_type':
-        'config.root_volume.volume_type',
-    'root_volume_iops':
-        'config.root_volume.iops',
-    'root_volume_throughput':
-        'config.root_volume.throughput',
-    'root_volume_kms_key_arn':
-        'config.root_volume.kms_key_arn',
-    'clear_proxy_config':
-        'config.proxy_config',
-    'proxy_secret_arn':
-        'config.proxy_config.secret_arn',
-    'proxy_secret_version_id':
-        'config.proxy_config.secret_version',
-    'ssh_ec2_key_pair':
-        'config.ssh_config.ec2_key_pair',
-    'clear_ssh_ec2_key_pair':
-        'config.ssh_config.ec2_key_pair',
-    'iam_instance_profile':
-        'config.iam_instance_profile',
-    'annotations':
-        'annotations',
-    'clear_annotations':
-        'annotations',
-    'tags':
-        'config.tags',
-    'clear_tags':
-        'config.tags',
-    'autoscaling_metrics_granularity':
-        'config.autoscaling_metrics_collection.granularity',
-    'autoscaling_metrics':
-        'config.autoscaling_metrics_collection.metrics',
-    'clear_autoscaling_metrics':
-        'config.autoscaling_metrics_collection',
-    'enable_autorepair':
-        'management.auto_repair'
+    'node_version': 'version',
+    'min_nodes': 'autoscaling.minNodeCount',
+    'max_nodes': 'autoscaling.maxNodeCount',
+    'clear_security_group_ids': 'config.security_group_ids',
+    'security_group_ids': 'config.security_group_ids',
+    'config_encryption_kms_key_arn': 'config.config_encryption.kms_key_arn',
+    'root_volume_size': 'config.root_volume.size_gib',
+    'root_volume_type': 'config.root_volume.volume_type',
+    'root_volume_iops': 'config.root_volume.iops',
+    'root_volume_throughput': 'config.root_volume.throughput',
+    'root_volume_kms_key_arn': 'config.root_volume.kms_key_arn',
+    'clear_proxy_config': 'config.proxy_config',
+    'proxy_secret_arn': 'config.proxy_config.secret_arn',
+    'proxy_secret_version_id': 'config.proxy_config.secret_version',
+    'ssh_ec2_key_pair': 'config.ssh_config.ec2_key_pair',
+    'clear_ssh_ec2_key_pair': 'config.ssh_config.ec2_key_pair',
+    'iam_instance_profile': 'config.iam_instance_profile',
+    'annotations': 'annotations',
+    'clear_annotations': 'annotations',
+    'tags': 'config.tags',
+    'clear_tags': 'config.tags',
+    'autoscaling_metrics_granularity': (
+        'config.autoscaling_metrics_collection.granularity'
+    ),
+    'autoscaling_metrics': 'config.autoscaling_metrics_collection.metrics',
+    'clear_autoscaling_metrics': 'config.autoscaling_metrics_collection',
+    'enable_autorepair': 'management.auto_repair',
 }
 
 AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
@@ -152,16 +114,18 @@ AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'admin_users': 'authorization.admin_users',
     'ssh_public_key': 'control_plane.ssh_config.authorized_key',
     'logging': 'logging_config.component_config.enable_components',
-    'enable_managed_prometheus':
-        'monitoring_config.managed_prometheus_config.enabled',
-    'disable_managed_prometheus':
-        'monitoring_config.managed_prometheus_config.enabled',
+    'enable_managed_prometheus': (
+        'monitoring_config.managed_prometheus_config.enabled'
+    ),
+    'disable_managed_prometheus': (
+        'monitoring_config.managed_prometheus_config.enabled'
+    ),
     'description': 'description',
     'clear_description': 'description',
     'annotations': 'annotations',
     'clear_annotations': 'annotations',
     'azure_tenant_id': 'azure_services_authentication.tenant_id',
-    'azure_application_id': 'azure_services_authentication.application_id'
+    'azure_application_id': 'azure_services_authentication.application_id',
 }
 
 AZURE_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
@@ -171,7 +135,7 @@ AZURE_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
     'ssh_public_key': 'config.ssh_config.authorized_key',
     'annotations': 'annotations',
     'clear_annotations': 'annotations',
-    'enable_autorepair': 'management.auto_repair'
+    'enable_autorepair': 'management.auto_repair',
 }
 
 

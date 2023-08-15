@@ -28,11 +28,15 @@ class Aggregation(_messages.Message):
       COUNT_UP_TO(3) AS count_up_to_3, COUNT(*) AS property_2 OVER ( ... );
       ``` Requires: * Must be unique across all aggregation aliases. * Conform
       to entity property name limitations.
+    avg: Average aggregator.
     count: Count aggregator.
+    sum: Sum aggregator.
   """
 
   alias = _messages.StringField(1)
-  count = _messages.MessageField('Count', 2)
+  avg = _messages.MessageField('Avg', 2)
+  count = _messages.MessageField('Count', 3)
+  sum = _messages.MessageField('Sum', 4)
 
 
 class AggregationQuery(_messages.Message):
@@ -180,6 +184,20 @@ class ArrayValue(_messages.Message):
   """
 
   values = _messages.MessageField('Value', 1, repeated=True)
+
+
+class Avg(_messages.Message):
+  r"""Average of the values of the requested property. * Only numeric values
+  will be aggregated. All non-numeric values including `NULL` are skipped. *
+  If the aggregated values contain `NaN`, returns `NaN`. Infinity math follows
+  IEEE-754 standards. * If the aggregated value set is empty, returns `NULL`.
+  * Always returns the result as a double.
+
+  Fields:
+    property: The property to aggregate on.
+  """
+
+  property = _messages.MessageField('PropertyReference', 1)
 
 
 class BeginTransactionRequest(_messages.Message):
@@ -1482,8 +1500,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1505,7 +1523,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1544,9 +1562,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -2088,8 +2106,10 @@ class ReadOnly(_messages.Message):
   r"""Options specific to read-only transactions.
 
   Fields:
-    readTime: Reads entities at the given time. This may not be older than 60
-      seconds.
+    readTime: Reads entities at the given time. This must be a microsecond
+      precision timestamp within the past one hour, or if Point-in-Time
+      Recovery is enabled, can additionally be a whole minute timestamp within
+      the past 7 days.
   """
 
   readTime = _messages.StringField(1)
@@ -2108,9 +2128,11 @@ class ReadOptions(_messages.Message):
       response as either LookupResponse.transaction or
       RunQueryResponse.transaction.
     readConsistency: The non-transactional read consistency to use.
-    readTime: Reads entities as they were at the given time. This may not be
-      older than 270 seconds. This value is only supported for Cloud Firestore
-      in Datastore mode.
+    readTime: Reads entities as they were at the given time. This value is
+      only supported for Cloud Firestore in Datastore mode. This must be a
+      microsecond precision timestamp within the past one hour, or if Point-
+      in-Time Recovery is enabled, can additionally be a whole minute
+      timestamp within the past 7 days.
     transaction: The identifier of the transaction in which to read. A
       transaction identifier is returned by a call to
       Datastore.BeginTransaction.
@@ -2373,6 +2395,28 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class Sum(_messages.Message):
+  r"""Sum of the values of the requested property. * Only numeric values will
+  be aggregated. All non-numeric values including `NULL` are skipped. * If the
+  aggregated values contain `NaN`, returns `NaN`. Infinity math follows
+  IEEE-754 standards. * If the aggregated value set is empty, returns 0. *
+  Returns a 64-bit integer if all aggregated numbers are integers and the sum
+  result does not overflow. Otherwise, the result is returned as a double.
+  Note that even if all the aggregated values are integers, the result is
+  returned as a double if it cannot fit within a 64-bit signed integer. When
+  this occurs, the returned value will lose precision. * When underflow
+  occurs, floating-point aggregation is non-deterministic. This means that
+  running the same query repeatedly without any changes to the underlying
+  values could produce slightly different results each time. In those cases,
+  values should be stored as integers over floating-point numbers.
+
+  Fields:
+    property: The property to aggregate on.
+  """
+
+  property = _messages.MessageField('PropertyReference', 1)
 
 
 class TransactionOptions(_messages.Message):

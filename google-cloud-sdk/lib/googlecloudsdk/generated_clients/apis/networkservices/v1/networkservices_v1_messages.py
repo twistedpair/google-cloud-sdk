@@ -1437,7 +1437,7 @@ class GrpcRouteDestination(_messages.Message):
       traffic. Must refer to either a BackendService or
       ServiceDirectoryService.
     weight: Optional. Specifies the proportion of requests forwarded to the
-      backend referenced by the serviceName field. This is computed as:
+      backend referenced by the serviceName field. This is computed as: -
       weight/Sum(weights in this destination list). For non-zero values, there
       may be some epsilon from the exact proportion defined here depending on
       the precision an implementation supports. If only one serviceName is
@@ -1899,7 +1899,7 @@ class HttpRouteDestination(_messages.Message):
   Fields:
     serviceName: The URL of a BackendService to route traffic to.
     weight: Specifies the proportion of requests forwarded to the backend
-      referenced by the serviceName field. This is computed as:
+      referenced by the serviceName field. This is computed as: -
       weight/Sum(weights in this destination list). For non-zero values, there
       may be some epsilon from the exact proportion defined here depending on
       the precision an implementation supports. If only one serviceName is
@@ -2219,14 +2219,20 @@ class HttpRouteRouteAction(_messages.Message):
       fault_injection_policy
     redirect: If set, the request is directed as configured by this field.
     requestHeaderModifier: The specification for modifying the headers of a
-      matching request prior to delivery of the request to the destination.
+      matching request prior to delivery of the request to the destination. If
+      HeaderModifiers are set on both the Destination and the RouteAction,
+      they will be merged. Conflicts between the two will not be resolved on
+      the configuration.
     requestMirrorPolicy: Specifies the policy on how requests intended for the
       routes destination are shadowed to a separate mirrored destination.
       Proxy will not wait for the shadow destination to respond before
       returning the response. Prior to sending traffic to the shadow service,
       the host/authority header is suffixed with -shadow.
     responseHeaderModifier: The specification for modifying the headers of a
-      response prior to sending the response back to the client.
+      response prior to sending the response back to the client. If
+      HeaderModifiers are set on both the Destination and the RouteAction,
+      they will be merged. Conflicts between the two will not be resolved on
+      the configuration.
     retryPolicy: Specifies the retry policy associated with this route.
     timeout: Specifies the timeout for selected route. Timeout is computed
       from the time the request has been fully processed (i.e. end of stream)
@@ -2614,14 +2620,14 @@ class ListTlsRoutesResponse(_messages.Message):
 
 
 class ListWasmActionsResponse(_messages.Message):
-  r"""Response returned by the ListWasmActions method.
+  r"""Response returned by the `ListWasmActions` method.
 
   Fields:
     nextPageToken: If there might be more results than those appearing in this
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
-    wasmActions: List of WasmAction resources.
+    wasmActions: List of `WasmAction` resources.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2629,14 +2635,14 @@ class ListWasmActionsResponse(_messages.Message):
 
 
 class ListWasmPluginVersionsResponse(_messages.Message):
-  r"""Response returned by the ListWasmPluginVersions method.
+  r"""Response returned by the `ListWasmPluginVersions` method.
 
   Fields:
     nextPageToken: If there might be more results than those appearing in this
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
-    wasmPluginVersions: List of WasmPluginVersion resources.
+    wasmPluginVersions: List of `WasmPluginVersion` resources.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2644,14 +2650,14 @@ class ListWasmPluginVersionsResponse(_messages.Message):
 
 
 class ListWasmPluginsResponse(_messages.Message):
-  r"""Response returned by the ListWasmPlugins method.
+  r"""Response returned by the `ListWasmPlugins` method.
 
   Fields:
     nextPageToken: If there might be more results than those appearing in this
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
-    wasmPlugins: List of WasmPlugin resources.
+    wasmPlugins: List of `WasmPlugin` resources.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2956,6 +2962,7 @@ class MulticastDomainActivation(_messages.Message):
     LabelsValue: Labels as key value pairs
 
   Fields:
+    adminNetwork: Output only. [Output only] URL of the admin network.
     createTime: Output only. [Output only] Create time stamp
     domain: Reference to the domain that is being activated.
     labels: Labels as key value pairs
@@ -2987,11 +2994,12 @@ class MulticastDomainActivation(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  domain = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  adminNetwork = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  domain = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class MulticastGroup(_messages.Message):
@@ -3006,6 +3014,7 @@ class MulticastGroup(_messages.Message):
       the group.
     groupDefinition: Optional. Reference to the global group definition for
       the group.
+    ipCidrRange: Output only. [Output only] Multicast group IP range.
     labels: Labels as key value pairs
     name: name of resource
     updateTime: Output only. [Output only] Update time stamp
@@ -3038,9 +3047,10 @@ class MulticastGroup(_messages.Message):
   createTime = _messages.StringField(1)
   domainActivation = _messages.StringField(2)
   groupDefinition = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  ipCidrRange = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class MulticastGroupDefinition(_messages.Message):
@@ -4864,7 +4874,6 @@ class NetworkservicesProjectsLocationsTcpRoutesCreateRequest(_messages.Message):
       format `projects/*/locations/global`.
     tcpRoute: A TcpRoute resource to be passed as the request body.
     tcpRouteId: Required. Short name of the TcpRoute resource to be created.
-      E.g. TODO(Add an example).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -4938,7 +4947,6 @@ class NetworkservicesProjectsLocationsTlsRoutesCreateRequest(_messages.Message):
       format `projects/*/locations/global`.
     tlsRoute: A TlsRoute resource to be passed as the request body.
     tlsRouteId: Required. Short name of the TlsRoute resource to be created.
-      E.g. TODO(Add an example).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -5008,11 +5016,11 @@ class NetworkservicesProjectsLocationsWasmActionsCreateRequest(_messages.Message
   r"""A NetworkservicesProjectsLocationsWasmActionsCreateRequest object.
 
   Fields:
-    parent: Required. The parent resource of the WasmAction. Must be in the
-      format `projects/*/locations/global`.
+    parent: Required. The parent resource of the `WasmAction` resource. Must
+      be in the format `projects/{project}/locations/global`.
     wasmAction: A WasmAction resource to be passed as the request body.
-    wasmActionId: Required. User-provided ID of the WasmAction resource to be
-      created.
+    wasmActionId: Required. User-provided ID of the `WasmAction` resource to
+      be created.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -5024,8 +5032,9 @@ class NetworkservicesProjectsLocationsWasmActionsDeleteRequest(_messages.Message
   r"""A NetworkservicesProjectsLocationsWasmActionsDeleteRequest object.
 
   Fields:
-    name: Required. A name of the WasmAction to delete. Must be in the format
-      `projects/*/locations/global/wasmActions/*`.
+    name: Required. A name of the `WasmAction` resource to delete. Must be in
+      the format
+      `projects/{project}/locations/global/wasmActions/{wasm_action}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5035,8 +5044,8 @@ class NetworkservicesProjectsLocationsWasmActionsGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsWasmActionsGetRequest object.
 
   Fields:
-    name: Required. A name of the WasmAction to get. Must be in the format
-      `projects/*/locations/global/wasmActions/*`.
+    name: Required. A name of the `WasmAction` resource to get. Must be in the
+      format `projects/{project}/locations/global/wasmActions/{wasm_action}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5046,14 +5055,15 @@ class NetworkservicesProjectsLocationsWasmActionsListRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsWasmActionsListRequest object.
 
   Fields:
-    pageSize: Maximum number of WasmAction to return per call. If unspecified,
-      at most 50 WasmActions will be returned. The maximum value is 1000;
-      values above 1000 will be coerced to 1000.
-    pageToken: The value returned by the last `ListWasmActionsResponse`
+    pageSize: Maximum number of `WasmAction` resources to return per call. If
+      not specified, at most 50 `WasmAction`s are returned. The maximum value
+      is 1000; values above 1000 are coerced to 1000.
+    pageToken: The value returned by the last `ListWasmActionsResponse` call.
       Indicates that this is a continuation of a prior `ListWasmActions` call,
-      and that the system should return the next page of data.
-    parent: Required. The project and location from which the WasmActions
-      should be listed, specified in the format `projects/*/locations/global`.
+      and that the next page of data is to be returned.
+    parent: Required. The project and location from which the `WasmAction`
+      resources are listed, specified in the following format:
+      `projects/{project}/locations/global`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5065,11 +5075,11 @@ class NetworkservicesProjectsLocationsWasmPluginsCreateRequest(_messages.Message
   r"""A NetworkservicesProjectsLocationsWasmPluginsCreateRequest object.
 
   Fields:
-    parent: Required. The parent resource of the WasmPlugin. Must be in the
-      format `projects/*/locations/global`.
+    parent: Required. The parent resource of the `WasmPlugin` resource. Must
+      be in the format `projects/{project}/locations/global`.
     wasmPlugin: A WasmPlugin resource to be passed as the request body.
-    wasmPluginId: Required. User-provided ID of the WasmPlugin resource to be
-      created.
+    wasmPluginId: Required. User-provided ID of the `WasmPlugin` resource to
+      be created.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -5081,11 +5091,12 @@ class NetworkservicesProjectsLocationsWasmPluginsDeleteRequest(_messages.Message
   r"""A NetworkservicesProjectsLocationsWasmPluginsDeleteRequest object.
 
   Fields:
-    force: If set to true, any WasmPluginVersions of this WasmPlugin will also
-      be deleted. (Otherwise, the request will only work if the plugin has no
-      versions.) https://google.aip.dev/135#cascading-delete
-    name: Required. A name of the WasmPlugin to delete. Must be in the format
-      `projects/*/locations/global/wasmPlugins/*`.
+    force: If set to `true`, any versions of this `WasmPlugin` resource are
+      also deleted. Otherwise, the request works only when the plugin has no
+      versions.
+    name: Required. A name of the `WasmPlugin` resource to delete. Must be in
+      the format
+      `projects/{project}/locations/global/wasmPlugins/{wasm_plugin}`.
   """
 
   force = _messages.BooleanField(1)
@@ -5096,8 +5107,8 @@ class NetworkservicesProjectsLocationsWasmPluginsGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsWasmPluginsGetRequest object.
 
   Fields:
-    name: Required. A name of the WasmPlugin to get. Must be in the format
-      `projects/*/locations/global/wasmPlugins/*`.
+    name: Required. A name of the `WasmPlugin` resource to get. Must be in the
+      format `projects/{project}/locations/global/wasmPlugins/{wasm_plugin}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5107,14 +5118,15 @@ class NetworkservicesProjectsLocationsWasmPluginsListRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsWasmPluginsListRequest object.
 
   Fields:
-    pageSize: Maximum number of WasmPlugins to return per call. If
-      unspecified, at most 50 WasmPlugins will be returned. The maximum value
-      is 1000; values above 1000 will be coerced to 1000.
-    pageToken: The value returned by the last `ListWasmPluginsResponse`
+    pageSize: Maximum number of `WasmPlugin` resources to return per call. If
+      not specified, at most 50 `WasmPlugin`s are returned. The maximum value
+      is 1000; values above 1000 are coerced to 1000.
+    pageToken: The value returned by the last `ListWasmPluginsResponse` call.
       Indicates that this is a continuation of a prior `ListWasmPlugins` call,
-      and that the system should return the next page of data.
-    parent: Required. The project and location from which the WasmPlugins
-      should be listed, specified in the format `projects/*/locations/global`.
+      and that the next page of data is to be returned.
+    parent: Required. The project and location from which the `WasmPlugin`
+      resources are listed, specified in the following format:
+      `projects/{project}/locations/global`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5126,13 +5138,13 @@ class NetworkservicesProjectsLocationsWasmPluginsPatchRequest(_messages.Message)
   r"""A NetworkservicesProjectsLocationsWasmPluginsPatchRequest object.
 
   Fields:
-    name: Required. Name of the WasmPlugins resource. It matches pattern
+    name: Required. Name of the `WasmPlugin` resource in the following format:
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}`.
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the WasmPlugin resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+    updateMask: Optional. Used to specify the fields to be overwritten in the
+      `WasmPlugin` resource by the update. The fields specified in the
+      update_mask are relative to the resource, not the full request. A field
+      is overwritten if it is in the mask. If you don't specify a mask, then
+      all fields are overwritten.
     wasmPlugin: A WasmPlugin resource to be passed as the request body.
   """
 
@@ -5146,12 +5158,13 @@ class NetworkservicesProjectsLocationsWasmPluginsVersionsCreateRequest(_messages
   object.
 
   Fields:
-    parent: Required. The parent resource of the WasmPluginVersion. Must be in
-      the format `projects/*/locations/global/wasmPlugins/*`.
+    parent: Required. The parent resource of the `WasmPluginVersion` resource.
+      Must be in the format
+      `projects/{project}/locations/global/wasmPlugins/{wasm_plugin}`.
     wasmPluginVersion: A WasmPluginVersion resource to be passed as the
       request body.
-    wasmPluginVersionId: Optional. User-provided ID of the WasmPluginVersion
-      resource to be created. If empty, the system will generate one.
+    wasmPluginVersionId: Required. User-provided ID of the `WasmPluginVersion`
+      resource to be created.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -5164,8 +5177,9 @@ class NetworkservicesProjectsLocationsWasmPluginsVersionsDeleteRequest(_messages
   object.
 
   Fields:
-    name: Required. A name of the WasmPluginVersion to delete. Must be in the
-      format `projects/*/locations/global/wasmPlugins/*/versions/*`.
+    name: Required. A name of the `WasmPluginVersion` resource to delete. Must
+      be in the format `projects/{project}/locations/global/wasmPlugins/{wasm_
+      plugin}/versions/{wasm_plugin_version}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5175,8 +5189,9 @@ class NetworkservicesProjectsLocationsWasmPluginsVersionsGetRequest(_messages.Me
   r"""A NetworkservicesProjectsLocationsWasmPluginsVersionsGetRequest object.
 
   Fields:
-    name: Required. A name of the WasmPluginVersion to get. Must be in the
-      format `projects/*/locations/global/wasmPlugins/*/versions/*`.
+    name: Required. A name of the `WasmPluginVersion` resource to get. Must be
+      in the format `projects/{project}/locations/global/wasmPlugins/{wasm_plu
+      gin}/versions/{wasm_plugin_version}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5186,16 +5201,16 @@ class NetworkservicesProjectsLocationsWasmPluginsVersionsListRequest(_messages.M
   r"""A NetworkservicesProjectsLocationsWasmPluginsVersionsListRequest object.
 
   Fields:
-    pageSize: Maximum number of WasmPluginVersions to return per call. If
-      unspecified, at most 50 WasmPluginVersions will be returned. The maximum
-      value is 1000; values above 1000 will be coerced to 1000.
+    pageSize: Maximum number of `WasmPluginVersion` resources to return per
+      call. If not specified, at most 50 `WasmPluginVersion`s are returned.
+      The maximum value is 1000; values above 1000 are coerced to 1000.
     pageToken: The value returned by the last `ListWasmPluginVersionsResponse`
-      Indicates that this is a continuation of a prior
-      `ListWasmPluginVersions` call, and that the system should return the
-      next page of data.
-    parent: Required. The WasmPlugin whose WasmPluginVersions should be
-      listed, specified in the format
-      `projects/*/locations/global/wasmPlugins/*`.
+      call. Indicates that this is a continuation of a prior
+      `ListWasmPluginVersions` call, and that the next page of data is to be
+      returned.
+    parent: Required. The `WasmPlugin` resource whose `WasmPluginVersion`s are
+      listed, specified in the following format:
+      `projects/{project}/locations/global/wasmPlugins/{wasm_plugin}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5213,8 +5228,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -5236,7 +5251,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -5275,9 +5290,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -5461,7 +5476,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -5469,15 +5484,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -5955,7 +5970,7 @@ class TcpRouteRouteDestination(_messages.Message):
   Fields:
     serviceName: Required. The URL of a BackendService to route traffic to.
     weight: Optional. Specifies the proportion of requests forwarded to the
-      backend referenced by the serviceName field. This is computed as:
+      backend referenced by the serviceName field. This is computed as: -
       weight/Sum(weights in this destination list). For non-zero values, there
       may be some epsilon from the exact proportion defined here depending on
       the precision an implementation supports. If only one serviceName is
@@ -6125,7 +6140,7 @@ class TlsRouteRouteDestination(_messages.Message):
   Fields:
     serviceName: Required. The URL of a BackendService to route traffic to.
     weight: Optional. Specifies the proportion of requests forwareded to the
-      backend referenced by the service_name field. This is computed as:
+      backend referenced by the service_name field. This is computed as: -
       weight/Sum(weights in destinations) Weights in all destinations does not
       need to sum up to 100.
   """
@@ -6280,34 +6295,34 @@ class UrlRewrite(_messages.Message):
 
 
 class WasmAction(_messages.Message):
-  r"""WasmAction is a resource representing a connection between a WasmPlugin
-  and a WasmPlugin consumer (for example an EdgeCacheService resource). Once
-  created, a WasmAction cannot change its reference to a WasmPlugin.
+  r"""`WasmAction` is a resource representing a connection between a
+  `WasmPlugin` resource and an `EdgeCacheService` resource. After a
+  `WasmAction` resource is created, you can't change its reference to a
+  `WasmPlugin` resource.
 
   Enums:
     SupportedEventsValueListEntryValuesEnum:
 
   Messages:
-    LabelsValue: Optional. Set of label tags associated with the WasmAction
+    LabelsValue: Optional. Set of label tags associated with the `WasmAction`
       resource.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
-    labels: Optional. Set of label tags associated with the WasmAction
+    labels: Optional. Set of label tags associated with the `WasmAction`
       resource.
-    name: Required. Name of the WasmAction resource. It matches pattern
+    name: Required. Name of the `WasmAction` resource in the following format:
       `projects/{project}/locations/{location}/wasmActions/{wasm_action}`.
     supportedEvents: Optional. Determines which of portion of the request /
-      response will be processed by the plugin. Each value will translate to a
-      separate plugin invocation and will be billed separately. For example
-      processing request headers involves invoking the
-      proxy_on_http_request_headers callback. If empty, both request headers
-      and response headers will be processed.
+      response is processed by the plugin. Each value translates to a separate
+      plugin invocation. For example, processing request headers involves
+      invoking the `ON_HTTP_HEADERS` callback. If empty, both request headers
+      and response headers are processed.
     updateTime: Output only. The timestamp when the resource was updated.
-    wasmPlugin: Required. The relative resource name of the WasmPlugin
-      resource to execute in format:
-      projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}.
+    wasmPlugin: Required. The relative resource name of the `WasmPlugin`
+      resource to execute in the following format:
+      `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}`.
   """
 
   class SupportedEventsValueListEntryValuesEnum(_messages.Enum):
@@ -6315,10 +6330,10 @@ class WasmAction(_messages.Message):
 
     Values:
       EVENT_TYPE_UNSPECIFIED: Unspecified value. Do not use.
-      REQUEST_HEADERS: If included in 'supported_events', the HTTP request
-        headers will be processed.
-      RESPONSE_HEADERS: If included in 'supported_events', the HTTP response
-        headers will be processed.
+      REQUEST_HEADERS: If included in `supported_events`, the HTTP request
+        headers are processed.
+      RESPONSE_HEADERS: If included in `supported_events`, the HTTP response
+        headers are processed.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     REQUEST_HEADERS = 1
@@ -6326,7 +6341,7 @@ class WasmAction(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the WasmAction resource.
+    r"""Optional. Set of label tags associated with the `WasmAction` resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -6358,35 +6373,39 @@ class WasmAction(_messages.Message):
 
 
 class WasmPlugin(_messages.Message):
-  r"""WasmPlugin is a resource representing a service executing a customer-
+  r"""`WasmPlugin` is a resource representing a service executing a customer-
   provided Wasm module.
 
   Messages:
-    LabelsValue: Optional. Set of label tags associated with the WasmPlugin
-      resource.
+    LabelsValue: Optional. Set of labels associated with the `WasmPlugin`
+      resource. The format must comply with [the following
+      requirements](/compute/docs/labeling-resources#requirements).
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
-    labels: Optional. Set of label tags associated with the WasmPlugin
-      resource.
+    labels: Optional. Set of labels associated with the `WasmPlugin` resource.
+      The format must comply with [the following
+      requirements](/compute/docs/labeling-resources#requirements).
     logConfig: Optional. Specifies the logging options for the activity
-      performed by this WasmPlugin. If logging is enabled, logs will be
+      performed by this `WasmPlugin`. If logging is enabled, plugin logs are
       exported to Cloud Logging. Note that the settings relate to the logs
-      generated by using logging statements in your Wasm code. The http
+      generated by using logging statements in your Wasm code. The HTTP
       request logs are additionally configured in the Media CDN service that
-      uses this WasmPlugin on the request path.
-    mainVersionId: Optional. The ID of the WasmPluginVersion that is the
-      currently serving one. The version referred to must be a child of this
-      WasmPlugin.
-    name: Required. Name of the WasmPlugins resource. It matches pattern
+      uses this `WasmPlugin` on the request path.
+    mainVersionId: Optional. The ID of the `WasmPluginVersion` resource that
+      is the currently serving one. The version referred to must be a child of
+      this `WasmPlugin` resource.
+    name: Required. Name of the `WasmPlugin` resource in the following format:
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}`.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the WasmPlugin resource.
+    r"""Optional. Set of labels associated with the `WasmPlugin` resource. The
+    format must comply with [the following
+    requirements](/compute/docs/labeling-resources#requirements).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -6419,49 +6438,51 @@ class WasmPlugin(_messages.Message):
 
 class WasmPluginLogConfig(_messages.Message):
   r"""Specifies the logging options for the activity performed by this
-  WasmPlugin. If logging is enabled, logs will be exported to Cloud Logging.
+  `WasmPlugin`. If logging is enabled, plugin logs are exported to Cloud
+  Logging.
 
   Enums:
     MinLogLevelValueValuesEnum: Non-empty default. Specificies the lowest
-      level of the logs which should be exported to Cloud Logging. This
+      level of the plugin logs that are exported to Cloud Logging. This
       setting relates to the logs generated by using logging statements in
-      your Wasm code. This field is can only be set if logging is enabled for
-      the WasmPlugin. If the field is not provided when logging is enabled it
-      is set to INFO by default.
+      your Wasm code. This field is can be set only if logging is enabled for
+      the `WasmPlugin` resource. If the field is not provided when logging is
+      enabled, it is set to `INFO` by default.
 
   Fields:
     enable: Optional. Specifies whether to enable logging for activity by this
-      WasmPlugin. Defaults to false.
-    minLogLevel: Non-empty default. Specificies the lowest level of the logs
-      which should be exported to Cloud Logging. This setting relates to the
+      `WasmPlugin`. Defaults to `false`.
+    minLogLevel: Non-empty default. Specificies the lowest level of the plugin
+      logs that are exported to Cloud Logging. This setting relates to the
       logs generated by using logging statements in your Wasm code. This field
-      is can only be set if logging is enabled for the WasmPlugin. If the
-      field is not provided when logging is enabled it is set to INFO by
-      default.
+      is can be set only if logging is enabled for the `WasmPlugin` resource.
+      If the field is not provided when logging is enabled, it is set to
+      `INFO` by default.
     sampleRate: Non-empty default. Configures the sampling rate of activity
-      logs, where 1.0 means all logged activity is reported and 0.0 means no
-      activity is reported. The default value is 1.0, and the value of the
-      field must be in [0, 1]. The setting relates to logs generated in your
-      Wasm code. Note that for the logs generated on the http request/response
-      path the sample rate is multiplied by the sample rate configured in the
-      Media CDN service using this Wasm plugin. For example: - 0.5 of http
-      requests is logged because of the setting on Media CDN service - among
-      those requests 0.5 of logs is exported due to the setting on Wasm plugin
-      - effectively 0.25 of logs on http request/response paths is exported
-      This field can only be specified if logging is enabled for this
-      WasmPlugin. If the field is not provided when logging is enabled it is
-      set to 1 by default.
+      logs, where `1.0` means all logged activity is reported and `0.0` means
+      no activity is reported. The default value is `1.0`, and the value of
+      the field must be between `0` and `1` (inclusive). The setting relates
+      to logs generated in your Wasm code. Note that for the logs generated on
+      the HTTP processing path, the sample rate is multiplied by the sample
+      rate configured in the Media CDN service using this Wasm plugin. For
+      example: - 0.5 of HTTP requests are logged because of the setting on the
+      Media CDN service - Among those requests, 0.5 of logs are exported due
+      to the setting on the Wasm plugin - In effect, 0.25 of logs on HTTP
+      processing path are exported This field can only be specified if logging
+      is enabled for this `WasmPlugin`. If the field is not provided when
+      logging is enabled it is set to `1` by default.
   """
 
   class MinLogLevelValueValuesEnum(_messages.Enum):
-    r"""Non-empty default. Specificies the lowest level of the logs which
-    should be exported to Cloud Logging. This setting relates to the logs
+    r"""Non-empty default. Specificies the lowest level of the plugin logs
+    that are exported to Cloud Logging. This setting relates to the logs
     generated by using logging statements in your Wasm code. This field is can
-    only be set if logging is enabled for the WasmPlugin. If the field is not
-    provided when logging is enabled it is set to INFO by default.
+    be set only if logging is enabled for the `WasmPlugin` resource. If the
+    field is not provided when logging is enabled, it is set to `INFO` by
+    default.
 
     Values:
-      LOG_LEVEL_UNSPECIFIED: Default value. Should not be used.
+      LOG_LEVEL_UNSPECIFIED: Unspecified value.
       TRACE: Report logs with TRACE level and above.
       DEBUG: Report logs with DEBUG level and above.
       INFO: Report logs with INFO level and above.
@@ -6483,50 +6504,52 @@ class WasmPluginLogConfig(_messages.Message):
 
 
 class WasmPluginVersion(_messages.Message):
-  r"""A single immutable version of a WasmPlugin (code + runtime config).
+  r"""A single immutable version of a `WasmPlugin`. Defines the Wasm module
+  used and optionally its runtime config.
 
   Messages:
-    LabelsValue: Optional. Set of label tags associated with the
-      WasmPluginVersion resource.
+    LabelsValue: Optional. Set of labels associated with the
+      `WasmPluginVersion` resource.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
     imageDigest: Output only. The resolved digest for the image specified in
-      "image". The digest is resolved during the creation of
-      WasmPluginVersion. This field holds the digest value regardless of
-      whether a tag or digest was originally specified in the "image" field.
+      `image`. The digest is resolved during the creation of
+      `WasmPluginVersion` resource. This field holds the digest value
+      regardless of whether a tag or digest was originally specified in the
+      `image` field.
     imageUri: Optional. URI of the container image containing the Wasm plugin,
-      stored in the Artifact Registry. When a new WasmPluginVersion is
-      created, the digest of the container image is saved in the
-      `image_digest` field. When downloading an image, the digest value will
-      be used instead of an image tag.
-    labels: Optional. Set of label tags associated with the WasmPluginVersion
+      stored in the Artifact Registry. When a new `WasmPluginVersion` resource
+      is created, the digest of the container image is saved in the
+      `image_digest` field. When downloading an image, the digest value is
+      used instead of an image tag.
+    labels: Optional. Set of labels associated with the `WasmPluginVersion`
       resource.
-    name: Optional. Name of the WasmPluginVersion resource. System-generated
-      if unspecified by the user. It matches pattern
+    name: Optional. Name of the `WasmPluginVersion` resource in the following
+      format:
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}/
-      versions/{wasm_plugin_version}'.
+      versions/{wasm_plugin_version}`.
     pluginConfigData: Configuration for the Wasm plugin. The configuration is
-      provided to the Proxy-Wasm plugin at runtime via the proxy_on_configure
-      Proxy-Wasm ABI. When a new WasmPluginVersion is created, the digest of
-      the contents is saved in the "plugin_config_digest" field.
+      provided to the Wasm plugin at runtime through the `ON_CONFIGURE`
+      callback. When a new `WasmPluginVersion` resource is created, the digest
+      of the contents is saved in the `plugin_config_digest` field.
     pluginConfigDigest: Output only. This field holds the digest (usually
       checksum) value for the plugin configuration. The value is calculated
-      based on the contents of the "plugin_config_data" or the container image
-      defined by the "plugin_config_uri" field.
-    pluginConfigUri: URI of the WasmPlugin configuration stored in the
-      Artifact Registry. The configuration is provided to the Proxy-Wasm
-      plugin at runtime via the proxy_on_configure Proxy-Wasm ABI. The
-      container image must contain only a single file with the exact name
-      "plugin.config". When a new WasmPluginVersion is created, the digest of
-      the container image is saved in the "plugin_config_digest" field.
+      based on the contents of the `plugin_config_data` or the container image
+      defined by the `plugin_config_uri` field.
+    pluginConfigUri: URI of the Wasm plugin configuration stored in the
+      Artifact Registry. The configuration is provided to the plugin at
+      runtime through the `ON_CONFIGURE` callback. The container image must
+      contain only a single file with the name `plugin.config`. When a new
+      `WasmPluginVersion` resource is created, the digest of the container
+      image is saved in the `plugin_config_digest` field.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the WasmPluginVersion
+    r"""Optional. Set of labels associated with the `WasmPluginVersion`
     resource.
 
     Messages:

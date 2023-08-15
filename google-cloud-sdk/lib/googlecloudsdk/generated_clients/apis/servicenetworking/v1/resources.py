@@ -34,6 +34,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  SERVICES_DNSRECORDSETS = (
+      'services.dnsRecordSets',
+      '{+parent}/dnsRecordSets:get',
+      {
+          '':
+              'services/{servicesId}/dnsRecordSets:get',
+      },
+      ['parent'],
+      True
+  )
   SERVICES_PROJECTS = (
       'services.projects',
       'services/{servicesId}',
@@ -55,6 +65,17 @@ class Collections(enum.Enum):
           '':
               'services/{servicesId}/projects/{projectsId}/global/networks/'
               '{networksId}',
+      },
+      ['name'],
+      True
+  )
+  SERVICES_PROJECTS_GLOBAL_NETWORKS_DNSZONES = (
+      'services.projects.global.networks.dnsZones',
+      '{+name}',
+      {
+          '':
+              'services/{servicesId}/projects/{projectsId}/global/networks/'
+              '{networksId}/dnsZones/{dnsZonesId}',
       },
       ['name'],
       True

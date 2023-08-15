@@ -37,6 +37,8 @@ class VolumesClient(object):
       self._adapter = AlphaVolumesAdapter()
     elif self.release_track == base.ReleaseTrack.BETA:
       self._adapter = BetaVolumesAdapter()
+    elif self.release_track == base.ReleaseTrack.GA:
+      self._adapter = VolumesAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
           util.VERSION_MAP[release_track]))
@@ -232,11 +234,11 @@ class VolumesClient(object):
     return self.WaitForOperation(operation_ref)
 
 
-class BetaVolumesAdapter(object):
-  """Adapter for the Beta Cloud NetApp Files API Volume resource."""
+class VolumesAdapter(object):
+  """Adapter for the Cloud NetApp Files API Volume resource."""
 
   def __init__(self):
-    self.release_track = base.ReleaseTrack.BETA
+    self.release_track = base.ReleaseTrack.GA
     self.client = util.GetClientInstance(release_track=self.release_track)
     self.messages = util.GetMessagesModule(release_track=self.release_track)
 
@@ -475,11 +477,21 @@ class BetaVolumesAdapter(object):
     return volume_config
 
 
+class BetaVolumesAdapter(VolumesAdapter):
+  """Adapter for the Beta Cloud NetApp Files API Volume resource."""
+
+  def __init__(self):
+    super(BetaVolumesAdapter, self).__init__()
+    self.release_track = base.ReleaseTrack.BETA
+    self.client = util.GetClientInstance(release_track=self.release_track)
+    self.messages = util.GetMessagesModule(release_track=self.release_track)
+
+
 class AlphaVolumesAdapter(BetaVolumesAdapter):
   """Adapter for the Alpha Cloud NetApp Files API Volume resource."""
 
   def __init__(self):
-    super(BetaVolumesAdapter, self).__init__()
+    super(AlphaVolumesAdapter, self).__init__()
     self.release_track = base.ReleaseTrack.ALPHA
     self.client = util.GetClientInstance(release_track=self.release_track)
     self.messages = util.GetMessagesModule(release_track=self.release_track)

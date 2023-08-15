@@ -3078,7 +3078,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new WasmAction in a given project and location.
+      r"""Creates a new `WasmAction` resource in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsWasmActionsCreateRequest) input message
@@ -3105,7 +3105,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single WasmAction.
+      r"""Deletes the specified `WasmAction` resource.
 
       Args:
         request: (NetworkservicesProjectsLocationsWasmActionsDeleteRequest) input message
@@ -3132,7 +3132,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single WasmAction.
+      r"""Gets details of the specified `WasmAction` resource.
 
       Args:
         request: (NetworkservicesProjectsLocationsWasmActionsGetRequest) input message
@@ -3159,7 +3159,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists WasmActions in a given project and location.
+      r"""Lists `WasmAction` resources in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsWasmActionsListRequest) input message
@@ -3196,7 +3196,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new WasmPluginVersion in a given project and location.
+      r"""Creates a new `WasmPluginVersion` resource in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsWasmPluginsVersionsCreateRequest) input message
@@ -3223,7 +3223,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single WasmPluginVersion.
+      r"""Deletes the specified `WasmPluginVersion` resource.
 
       Args:
         request: (NetworkservicesProjectsLocationsWasmPluginsVersionsDeleteRequest) input message
@@ -3250,7 +3250,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single WasmPluginVersion.
+      r"""Gets details of the specified `WasmPluginVersion` resource.
 
       Args:
         request: (NetworkservicesProjectsLocationsWasmPluginsVersionsGetRequest) input message
@@ -3277,7 +3277,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists WasmPluginVersions in a given project and location.
+      r"""Lists `WasmPluginVersion` resources in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsWasmPluginsVersionsListRequest) input message
@@ -3314,7 +3314,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new WasmPlugin in a given project and location.
+      r"""Creates a new `WasmPlugin` resource in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsWasmPluginsCreateRequest) input message
@@ -3341,7 +3341,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single WasmPlugin.
+      r"""Deletes the specified `WasmPlugin` resource.
 
       Args:
         request: (NetworkservicesProjectsLocationsWasmPluginsDeleteRequest) input message
@@ -3368,7 +3368,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single WasmPlugin.
+      r"""Gets details of the specified `WasmPlugin` resource.
 
       Args:
         request: (NetworkservicesProjectsLocationsWasmPluginsGetRequest) input message
@@ -3395,7 +3395,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists WasmPlugins in a given project and location.
+      r"""Lists `WasmPlugin` resources in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsWasmPluginsListRequest) input message
@@ -3422,7 +3422,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single WasmPlugin.
+      r"""Updates the parameters of the specified `WasmPlugin` resource.
 
       Args:
         request: (NetworkservicesProjectsLocationsWasmPluginsPatchRequest) input message

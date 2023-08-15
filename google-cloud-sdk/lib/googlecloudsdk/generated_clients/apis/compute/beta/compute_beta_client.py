@@ -50,6 +50,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.firewallPolicies = self.FirewallPoliciesService(self)
     self.firewalls = self.FirewallsService(self)
     self.forwardingRules = self.ForwardingRulesService(self)
+    self.futureReservations = self.FutureReservationsService(self)
     self.globalAddresses = self.GlobalAddressesService(self)
     self.globalForwardingRules = self.GlobalForwardingRulesService(self)
     self.globalNetworkEndpointGroups = self.GlobalNetworkEndpointGroupsService(self)
@@ -64,6 +65,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.instanceGroupManagerResizeRequests = self.InstanceGroupManagerResizeRequestsService(self)
     self.instanceGroupManagers = self.InstanceGroupManagersService(self)
     self.instanceGroups = self.InstanceGroupsService(self)
+    self.instanceSettings = self.InstanceSettingsService(self)
     self.instanceTemplates = self.InstanceTemplatesService(self)
     self.instances = self.InstancesService(self)
     self.instantSnapshots = self.InstantSnapshotsService(self)
@@ -3030,6 +3032,198 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class FutureReservationsService(base_api.BaseApiService):
+    """Service class for the futureReservations resource."""
+
+    _NAME = 'futureReservations'
+
+    def __init__(self, client):
+      super(ComputeBeta.FutureReservationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of future reservations.
+
+      Args:
+        request: (ComputeFutureReservationsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FutureReservationsAggregatedListResponse) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.futureReservations.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/aggregated/futureReservations',
+        request_field='',
+        request_type_name='ComputeFutureReservationsAggregatedListRequest',
+        response_type_name='FutureReservationsAggregatedListResponse',
+        supports_download=False,
+    )
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancel the specified future reservation.
+
+      Args:
+        request: (ComputeFutureReservationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.futureReservations.cancel',
+        ordered_params=['project', 'zone', 'futureReservation'],
+        path_params=['futureReservation', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/futureReservations/{futureReservation}/cancel',
+        request_field='',
+        request_type_name='ComputeFutureReservationsCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified future reservation.
+
+      Args:
+        request: (ComputeFutureReservationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.futureReservations.delete',
+        ordered_params=['project', 'zone', 'futureReservation'],
+        path_params=['futureReservation', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/futureReservations/{futureReservation}',
+        request_field='',
+        request_type_name='ComputeFutureReservationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves information about the specified future reservation.
+
+      Args:
+        request: (ComputeFutureReservationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FutureReservation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.futureReservations.get',
+        ordered_params=['project', 'zone', 'futureReservation'],
+        path_params=['futureReservation', 'project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/futureReservations/{futureReservation}',
+        request_field='',
+        request_type_name='ComputeFutureReservationsGetRequest',
+        response_type_name='FutureReservation',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new Future Reservation.
+
+      Args:
+        request: (ComputeFutureReservationsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.futureReservations.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/futureReservations',
+        request_field='futureReservation',
+        request_type_name='ComputeFutureReservationsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""A list of all the future reservations that have been configured for the specified project in specified zone.
+
+      Args:
+        request: (ComputeFutureReservationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FutureReservationsListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.futureReservations.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/futureReservations',
+        request_field='',
+        request_type_name='ComputeFutureReservationsListRequest',
+        response_type_name='FutureReservationsListResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates the specified future reservation.
+
+      Args:
+        request: (ComputeFutureReservationsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.futureReservations.update',
+        ordered_params=['project', 'zone', 'futureReservation'],
+        path_params=['futureReservation', 'project', 'zone'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/zones/{zone}/futureReservations/{futureReservation}',
+        request_field='futureReservationResource',
+        request_type_name='ComputeFutureReservationsUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class GlobalAddressesService(base_api.BaseApiService):
     """Service class for the globalAddresses resource."""
 
@@ -5949,6 +6143,68 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeInstanceGroupsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class InstanceSettingsService(base_api.BaseApiService):
+    """Service class for the instanceSettings resource."""
+
+    _NAME = 'instanceSettings'
+
+    def __init__(self, client):
+      super(ComputeBeta.InstanceSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get Instance settings.
+
+      Args:
+        request: (ComputeInstanceSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceSettings) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instanceSettings.get',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instanceSettings',
+        request_field='',
+        request_type_name='ComputeInstanceSettingsGetRequest',
+        response_type_name='InstanceSettings',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patch Instance settings.
+
+      Args:
+        request: (ComputeInstanceSettingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.instanceSettings.patch',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/zones/{zone}/instanceSettings',
+        request_field='instanceSettings',
+        request_type_name='ComputeInstanceSettingsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

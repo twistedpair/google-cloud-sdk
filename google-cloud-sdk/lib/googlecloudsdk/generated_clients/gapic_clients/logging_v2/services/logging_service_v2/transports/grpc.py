@@ -32,7 +32,7 @@ from .base import LoggingServiceV2Transport, DEFAULT_CLIENT_INFO
 class LoggingServiceV2GrpcTransport(LoggingServiceV2Transport):
     """gRPC backend transport for LoggingServiceV2.
 
-    Service for ingesting and querying logs.
+    Service for storing and querying logs.
 
     This class defines the same methods as the primary client, so the
     primary client can load the underlying transport implementation
@@ -379,7 +379,7 @@ class LoggingServiceV2GrpcTransport(LoggingServiceV2Transport):
             logging.TailLogEntriesResponse]:
         r"""Return a callable for the tail log entries method over gRPC.
 
-        Streaming read of log entries as they are ingested.
+        Streaming read of log entries as they are received.
         Until the stream is terminated, it will continue reading
         logs.
 

@@ -32,35 +32,53 @@ def _ToCamelCase(name):
   return ''.join(x.title() for x in parts)
 
 
+def _ToSnakeCaseUpper(name):
+  """Converts hyphen-case name to SNAKE_CASE."""
+  parts = name.split('-')
+  return '_'.join(parts).upper()
+
+
+def _ToHyphenCase(name):
+  """Converts SNAKE_CASE to hyphen-case."""
+  parts = name.split('_')
+  return '-'.join(parts).lower()
+
+
 def _InvalidValueError(value, flag, detail):
   return arg_parsers.ArgumentTypeError(
-      'Invalid value [{}] for argument {}. {}'.format(value, flag, detail))
+      'Invalid value [{}] for argument {}. {}'.format(value, flag, detail)
+  )
 
 
 _TAINT_EFFECT_ENUM_MAPPER = arg_utils.ChoiceEnumMapper(
     '--node-taints',
-    api_util.GetMessagesModule().GoogleCloudGkemulticloudV1NodeTaint
-    .EffectValueValuesEnum,
-    include_filter=lambda effect: 'UNSPECIFIED' not in effect)
+    api_util.GetMessagesModule().GoogleCloudGkemulticloudV1NodeTaint.EffectValueValuesEnum,
+    include_filter=lambda effect: 'UNSPECIFIED' not in effect,
+)
 
 _TAINT_FORMAT_HELP = 'Node taint is of format key=value:effect.'
 
-_TAINT_EFFECT_HELP = 'Effect must be one of: {}.'.format(', '.join(
-    [_ToCamelCase(e) for e in _TAINT_EFFECT_ENUM_MAPPER.choices]))
+_TAINT_EFFECT_HELP = 'Effect must be one of: {}.'.format(
+    ', '.join([_ToCamelCase(e) for e in _TAINT_EFFECT_ENUM_MAPPER.choices])
+)
 
 _REPLICAPLACEMENT_FORMAT_HELP = (
-    'Replica placement is of format subnetid:zone, for example subnetid12345:1')
+    'Replica placement is of format subnetid:zone, for example subnetid12345:1'
+)
 
 _LOGGING_CHOICES = [constants.SYSTEM, constants.WORKLOAD]
 
 _ALLOW_DISABLE_LOGGING_CHOICES = [
-    constants.NONE, constants.SYSTEM, constants.WORKLOAD]
+    constants.NONE,
+    constants.SYSTEM,
+    constants.WORKLOAD,
+]
 
-
-def AddRegion(parser):
-  """Add the --location flag."""
-  parser.add_argument(
-      '--location', help='Anthos GKE Multi-cloud location.', required=True)
+_BINAUTHZ_EVAL_MODE_ENUM_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--binauthz-evaluation-mode',
+    api_util.GetMessagesModule().GoogleCloudGkemulticloudV1BinaryAuthorization.EvaluationModeValueValuesEnum,
+    include_filter=lambda mode: 'UNSPECIFIED' not in mode,
+)
 
 
 def AddPodAddressCidrBlocks(parser):
@@ -68,8 +86,11 @@ def AddPodAddressCidrBlocks(parser):
   parser.add_argument(
       '--pod-address-cidr-blocks',
       required=True,
-      help=('IP address range for the pods in this cluster in CIDR '
-            'notation (e.g. 10.0.0.0/8).'))
+      help=(
+          'IP address range for the pods in this cluster in CIDR '
+          'notation (e.g. 10.0.0.0/8).'
+      ),
+  )
 
 
 def GetPodAddressCidrBlocks(args):
@@ -83,8 +104,11 @@ def AddServiceAddressCidrBlocks(parser):
   parser.add_argument(
       '--service-address-cidr-blocks',
       required=True,
-      help=('IP address range for the services IPs in CIDR notation '
-            '(e.g. 10.0.0.0/8).'))
+      help=(
+          'IP address range for the services IPs in CIDR notation '
+          '(e.g. 10.0.0.0/8).'
+      ),
+  )
 
 
 def GetServiceAddressCidrBlocks(args):
@@ -98,7 +122,8 @@ def AddSubnetID(parser, help_text, required=True):
   parser.add_argument(
       '--subnet-id',
       required=required,
-      help='Subnet ID of an existing VNET to use for {}.'.format(help_text))
+      help='Subnet ID of an existing VNET to use for {}.'.format(help_text),
+  )
 
 
 def GetSubnetID(args):
@@ -113,7 +138,8 @@ def AddOutputFile(parser, help_action):
     help_action: str, describes the action of what will be stored.
   """
   parser.add_argument(
-      '--output-file', help='Path to the output file {}.'.format(help_action))
+      '--output-file', help='Path to the output file {}.'.format(help_action)
+  )
 
 
 def AddValidateOnly(parser, help_action):
@@ -126,8 +152,10 @@ def AddValidateOnly(parser, help_action):
   parser.add_argument(
       '--validate-only',
       action='store_true',
-      help='Validate the {}, but don\'t actually perform it.'.format(
-          help_action))
+      help="Validate the {}, but don't actually perform it.".format(
+          help_action
+      ),
+  )
 
 
 def GetValidateOnly(args):
@@ -144,8 +172,9 @@ Enable node autorepair feature for a node pool. Use --no-enable-autorepair to di
     help_text += """
 Node autorepair is disabled by default.
 """
-  parser.add_argument('--enable-autorepair', action='store_true', default=None,
-                      help=help_text)
+  parser.add_argument(
+      '--enable-autorepair', action='store_true', default=None, help=help_text
+  )
 
 
 def GetAutoRepair(args):
@@ -156,7 +185,8 @@ def AddClusterVersion(parser, required=True):
   parser.add_argument(
       '--cluster-version',
       required=required,
-      help='Kubernetes version to use for the cluster.')
+      help='Kubernetes version to use for the cluster.',
+  )
 
 
 def GetClusterVersion(args):
@@ -165,9 +195,8 @@ def GetClusterVersion(args):
 
 def AddDescription(parser, required=False):
   parser.add_argument(
-      '--description',
-      required=required,
-      help='Description for the cluster.')
+      '--description', required=required, help='Description for the cluster.'
+  )
 
 
 def GetDescription(args):
@@ -184,7 +213,8 @@ def AddClearDescription(parser):
       '--clear-description',
       action='store_true',
       default=None,
-      help='Clear the description for the cluster.')
+      help='Clear the description for the cluster.',
+  )
 
 
 def AddDescriptionForUpdate(parser):
@@ -203,7 +233,8 @@ def AddAnnotations(parser, noun='cluster'):
       '--annotations',
       type=arg_parsers.ArgDict(min_length=1),
       metavar='ANNOTATION',
-      help='Annotations for the {}.'.format(noun))
+      help='Annotations for the {}.'.format(noun),
+  )
 
 
 def AddClearAnnotations(parser, noun):
@@ -217,7 +248,8 @@ def AddClearAnnotations(parser, noun):
       '--clear-annotations',
       action='store_true',
       default=None,
-      help='Clear the annotations for the {}.'.format(noun))
+      help='Clear the annotations for the {}.'.format(noun),
+  )
 
 
 def GetAnnotations(args):
@@ -240,7 +272,8 @@ def AddNodeVersion(parser, required=True):
   parser.add_argument(
       '--node-version',
       required=required,
-      help='Kubernetes version to use for the node pool.')
+      help='Kubernetes version to use for the node pool.',
+  )
 
 
 def GetNodeVersion(args):
@@ -260,12 +293,14 @@ def AddAutoscaling(parser, required=True):
       '--min-nodes',
       required=required,
       type=int,
-      help='Minimum number of nodes in the node pool.')
+      help='Minimum number of nodes in the node pool.',
+  )
   group.add_argument(
       '--max-nodes',
       required=required,
       type=int,
-      help='Maximum number of nodes in the node pool.')
+      help='Maximum number of nodes in the node pool.',
+  )
 
 
 def GetAutoscalingParams(args):
@@ -301,7 +336,8 @@ def GetMaxPodsPerNode(args):
 def AddAzureAvailabilityZone(parser):
   parser.add_argument(
       '--azure-availability-zone',
-      help='Azure availability zone where the node pool will be created.')
+      help='Azure availability zone where the node pool will be created.',
+  )
 
 
 def GetAzureAvailabilityZone(args):
@@ -310,7 +346,8 @@ def GetAzureAvailabilityZone(args):
 
 def AddVMSize(parser):
   parser.add_argument(
-      '--vm-size', help='Azure Virtual Machine Size (e.g. Standard_DS1_v).')
+      '--vm-size', help='Azure Virtual Machine Size (e.g. Standard_DS1_v).'
+  )
 
 
 def GetVMSize(args):
@@ -321,7 +358,8 @@ def AddSSHPublicKey(parser, required=True):
   parser.add_argument(
       '--ssh-public-key',
       required=required,
-      help='SSH public key to use for authentication.')
+      help='SSH public key to use for authentication.',
+  )
 
 
 def GetSSHPublicKey(args):
@@ -333,12 +371,14 @@ def AddRootVolumeSize(parser):
       '--root-volume-size',
       type=arg_parsers.BinarySize(
           suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB'],
-          default_unit='Gi'),
-      help="""
-        Size of the root volume. The value must be a whole number
-        followed by a size unit of ``GB'' for gigabyte, or ``TB'' for
-        terabyte. If no size unit is specified, GB is assumed.
-        """)
+          default_unit='Gi',
+      ),
+      help=(
+          'Size of the root volume. The value must be a whole number followed'
+          ' by a size unit of `GB` for gigabyte, or `TB` for terabyte. If no'
+          ' size unit is specified, GB is assumed.'
+      ),
+  )
 
 
 def GetRootVolumeSize(args):
@@ -355,12 +395,14 @@ def AddMainVolumeSize(parser):
       '--main-volume-size',
       type=arg_parsers.BinarySize(
           suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB'],
-          default_unit='Gi'),
-      help="""
-        Size of the main volume. The value must be a whole number
-        followed by a size unit of ``GB'' for gigabyte, or ``TB'' for
-        terabyte. If no size unit is specified, GB is assumed.
-        """)
+          default_unit='Gi',
+      ),
+      help=(
+          'Size of the main volume. The value must be a whole number followed'
+          ' by a size unit of `GB` for gigabyte, or `TB` for terabyte. If no'
+          ' size unit is specified, GB is assumed.'
+      ),
+  )
 
 
 def GetMainVolumeSize(args):
@@ -377,14 +419,14 @@ def AddTags(parser, noun):
   Applies the given tags (comma separated) on the {0}. Example:
 
     $ {{command}} EXAMPLE_{1} --tags=tag1=one,tag2=two
-  """.format(noun,
-             noun.replace(' ', '_').upper())
+  """.format(noun, noun.replace(' ', '_').upper())
 
   parser.add_argument(
       '--tags',
       type=arg_parsers.ArgDict(min_length=1),
       metavar='TAG',
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddClearTags(parser, noun):
@@ -399,7 +441,8 @@ def AddClearTags(parser, noun):
       '--clear-tags',
       action='store_true',
       default=None,
-      help='Clear any tags associated with the {}\'s nodes. '.format(noun))
+      help="Clear any tags associated with the {}'s nodes. ".format(noun),
+  )
 
 
 def AddTagsForUpdate(parser, noun):
@@ -418,13 +461,6 @@ def GetTags(args):
   return getattr(args, 'tags', None) or {}
 
 
-def AddCluster(parser, help_action):
-  parser.add_argument(
-      '--cluster',
-      required=True,
-      help='Name of the cluster to {} node pools with.'.format(help_action))
-
-
 def AddDatabaseEncryption(parser):
   """Adds database encryption flags.
 
@@ -433,8 +469,11 @@ def AddDatabaseEncryption(parser):
   """
   parser.add_argument(
       '--database-encryption-key-id',
-      help=('URL the of the Azure Key Vault key (with its version) '
-            'to use to encrypt / decrypt cluster secrets.'))
+      help=(
+          'URL the of the Azure Key Vault key (with its version) '
+          'to use to encrypt / decrypt cluster secrets.'
+      ),
+  )
 
 
 def GetDatabaseEncryptionKeyId(args):
@@ -449,12 +488,18 @@ def AddConfigEncryption(parser):
   """
   parser.add_argument(
       '--config-encryption-key-id',
-      help=('URL the of the Azure Key Vault key (with its version) '
-            'to use to encrypt / decrypt config data.'))
+      help=(
+          'URL the of the Azure Key Vault key (with its version) '
+          'to use to encrypt / decrypt config data.'
+      ),
+  )
   parser.add_argument(
       '--config-encryption-public-key',
-      help=('RSA key of the Azure Key Vault public key to use for encrypting '
-            'config data.'))
+      help=(
+          'RSA key of the Azure Key Vault public key to use for encrypting '
+          'config data.'
+      ),
+  )
 
 
 def GetConfigEncryptionKeyId(args):
@@ -470,7 +515,8 @@ def AddNodeLabels(parser):
       '--node-labels',
       type=arg_parsers.ArgDict(min_length=1),
       metavar='NODE_LABEL',
-      help='Labels assigned to nodes of the node pool.')
+      help='Labels assigned to nodes of the node pool.',
+  )
 
 
 def GetNodeLabels(args):
@@ -525,8 +571,12 @@ def AddNodeTaints(parser):
       '--node-taints',
       type=arg_parsers.ArgDict(min_length=1, value_type=_ValidateNodeTaint),
       metavar='NODE_TAINT',
-      help=('Taints assigned to nodes of the node pool. '
-            '{} {}'.format(_TAINT_FORMAT_HELP, _TAINT_EFFECT_HELP)))
+      help=(
+          'Taints assigned to nodes of the node pool. {} {}'.format(
+              _TAINT_FORMAT_HELP, _TAINT_EFFECT_HELP
+          )
+      ),
+  )
 
 
 def GetNodeTaints(args):
@@ -552,7 +602,8 @@ def GetNodeTaints(args):
       effect = taint_effect_map[effect]
       effect = _TAINT_EFFECT_ENUM_MAPPER.GetEnumForChoice(effect)
       taint = api_util.GetMessagesModule().GoogleCloudGkemulticloudV1NodeTaint(
-          key=k, value=value, effect=effect)
+          key=k, value=value, effect=effect
+      )
       taints.append(taint)
   return taints
 
@@ -573,12 +624,15 @@ def _ReplicaPlacementStrToObject(replicaplacement):
   """
   strs = replicaplacement.split(':')
   if len(strs) != 2:
-    raise _InvalidValueError(replicaplacement, '--replica-placements',
-                             _REPLICAPLACEMENT_FORMAT_HELP)
+    raise _InvalidValueError(
+        replicaplacement, '--replica-placements', _REPLICAPLACEMENT_FORMAT_HELP
+    )
   subnetid, zone = strs[0], strs[1]
-  return api_util.GetMessagesModule(
-  ).GoogleCloudGkemulticloudV1ReplicaPlacement(
-      azureAvailabilityZone=zone, subnetId=subnetid)
+  return (
+      api_util.GetMessagesModule().GoogleCloudGkemulticloudV1ReplicaPlacement(
+          azureAvailabilityZone=zone, subnetId=subnetid
+      )
+  )
 
 
 def AddReplicaPlacements(parser):
@@ -586,8 +640,12 @@ def AddReplicaPlacements(parser):
       '--replica-placements',
       type=arg_parsers.ArgList(element_type=_ReplicaPlacementStrToObject),
       metavar='REPLICA_PLACEMENT',
-      help=('Placement info for the control plane replicas. '
-            '{}'.format(_REPLICAPLACEMENT_FORMAT_HELP)))
+      help=(
+          'Placement info for the control plane replicas. {}'.format(
+              _REPLICAPLACEMENT_FORMAT_HELP
+          )
+      ),
+  )
 
 
 def GetReplicaPlacements(args):
@@ -599,7 +657,8 @@ def AddAuthProviderCmdPath(parser):
   parser.add_argument(
       '--auth-provider-cmd-path',
       hidden=True,
-      help='Path to the executable for the auth provider field in kubeconfig.')
+      help='Path to the executable for the auth provider field in kubeconfig.',
+  )
 
 
 def AddProxyConfig(parser):
@@ -613,11 +672,13 @@ def AddProxyConfig(parser):
   group.add_argument(
       '--proxy-resource-group-id',
       required=True,
-      help=('The ARM ID the of the resource group containing proxy keyvault.'))
+      help='The ARM ID the of the resource group containing proxy keyvault.',
+  )
   group.add_argument(
       '--proxy-secret-id',
       required=True,
-      help=('The URL the of the proxy setting secret with its version.'))
+      help='The URL the of the proxy setting secret with its version.',
+  )
 
 
 def GetProxyResourceGroupId(args):
@@ -633,9 +694,13 @@ def AddFleetProject(parser):
       '--fleet-project',
       type=arg_parsers.CustomFunctionValidator(
           project_util.ValidateProjectIdentifier,
-          '--fleet-project must be a valid project ID or project number.'),
+          '--fleet-project must be a valid project ID or project number.',
+      ),
       required=True,
-      help='ID or number of the Fleet host project where the cluster is registered.'
+      help=(
+          'ID or number of the Fleet host project where the cluster is'
+          ' registered.'
+      ),
   )
 
 
@@ -665,7 +730,8 @@ def AddPrivateEndpoint(parser):
       '--private-endpoint',
       default=False,
       action='store_true',
-      help='If set, use private VPC for authentication.')
+      help='If set, use private VPC for authentication.',
+  )
 
 
 def AddExecCredential(parser):
@@ -673,7 +739,8 @@ def AddExecCredential(parser):
       '--exec-credential',
       default=False,
       action='store_true',
-      help='If set, format access token as a Kubernetes execCredential object.')
+      help='If set, format access token as a Kubernetes execCredential object.',
+  )
 
 
 def AddAdminUsers(parser, create=True):
@@ -684,7 +751,8 @@ def AddAdminUsers(parser, create=True):
       '--admin-users',
       type=arg_parsers.ArgList(min_length=1),
       metavar='USER',
-      help=help_txt)
+      help=help_txt,
+  )
 
 
 def GetAdminUsers(args):
@@ -719,7 +787,8 @@ Examples:
       '--logging',
       type=arg_parsers.ArgList(min_length=1, choices=logging_choices),
       metavar='COMPONENT',
-      help=help_text)
+      help=help_text,
+  )
 
 
 def GetLogging(args, allow_disabled=False):
@@ -734,17 +803,19 @@ def GetLogging(args, allow_disabled=False):
 
   Raises:
     ArgumentError: If the value of the --logging flag is invalid.
-
   """
   logging = getattr(args, 'logging', None)
   if not logging:
     return None
 
-  if (constants.NONE in logging and
-      (constants.SYSTEM in logging or constants.WORKLOAD in logging)):
+  if constants.NONE in logging and (
+      constants.SYSTEM in logging or constants.WORKLOAD in logging
+  ):
     raise _InvalidValueError(
-        ','.join(logging), '--logging',
-        'Invalid logging config. NONE is not supported with SYSTEM or WORKLOAD.'
+        ','.join(logging),
+        '--logging',
+        'Invalid logging config. NONE is not supported with SYSTEM or'
+        ' WORKLOAD.',
     )
 
   messages = api_util.GetMessagesModule()
@@ -754,22 +825,28 @@ def GetLogging(args, allow_disabled=False):
   if constants.NONE in logging:
     if allow_disabled:
       return messages.GoogleCloudGkemulticloudV1LoggingConfig(
-          componentConfig=config)
+          componentConfig=config
+      )
     else:
       raise _InvalidValueError(
-          ','.join(logging), '--logging',
-          'Invalid logging config. NONE is not supported.')
+          ','.join(logging),
+          '--logging',
+          'Invalid logging config. NONE is not supported.',
+      )
 
   if constants.SYSTEM not in logging:
     raise _InvalidValueError(
-        ','.join(logging), '--logging',
-        'Must include SYSTEM logging if any logging is enabled.')
+        ','.join(logging),
+        '--logging',
+        'Must include SYSTEM logging if any logging is enabled.',
+    )
   if constants.SYSTEM in logging:
     config.enableComponents.append(enum.SYSTEM_COMPONENTS)
   if constants.WORKLOAD in logging:
     config.enableComponents.append(enum.WORKLOADS)
   return messages.GoogleCloudGkemulticloudV1LoggingConfig(
-      componentConfig=config)
+      componentConfig=config
+  )
 
 
 def AddImageType(parser):
@@ -793,8 +870,11 @@ def AddAzureRegion(parser):
   parser.add_argument(
       '--azure-region',
       required=True,
-      help=('Azure location to deploy the cluster. '
-            'Refer to your Azure subscription for available locations.'))
+      help=(
+          'Azure location to deploy the cluster. '
+          'Refer to your Azure subscription for available locations.'
+      ),
+  )
 
 
 def GetAzureRegion(args):
@@ -805,8 +885,8 @@ def AddResourceGroupId(parser):
   parser.add_argument(
       '--resource-group-id',
       required=True,
-      help=('ID of the Azure Resource Group '
-            'to associate the cluster with.'))
+      help='ID of the Azure Resource Group to associate the cluster with.',
+  )
 
 
 def GetResourceGroupId(args):
@@ -817,8 +897,8 @@ def AddVnetId(parser):
   parser.add_argument(
       '--vnet-id',
       required=True,
-      help=('ID of the Azure Virtual Network '
-            'to associate with the cluster.'))
+      help='ID of the Azure Virtual Network to associate with the cluster.',
+  )
 
 
 def GetVnetId(args):
@@ -828,9 +908,12 @@ def GetVnetId(args):
 def AddServiceLoadBalancerSubnetId(parser):
   parser.add_argument(
       '--service-load-balancer-subnet-id',
-      help=('ARM ID of the subnet where Kubernetes private service type '
-            'load balancers are deployed, when the Service lacks a subnet '
-            'annotation.'))
+      help=(
+          'ARM ID of the subnet where Kubernetes private service type '
+          'load balancers are deployed, when the Service lacks a subnet '
+          'annotation.'
+      ),
+  )
 
 
 def GetServiceLoadBalancerSubnetId(args):
@@ -840,9 +923,12 @@ def GetServiceLoadBalancerSubnetId(args):
 def AddEndpointSubnetId(parser):
   parser.add_argument(
       '--endpoint-subnet-id',
-      help=('ARM ID of the subnet where the control plane load balancer '
-            'is deployed. When unspecified, it defaults to the control '
-            'plane subnet ID.'))
+      help=(
+          'ARM ID of the subnet where the control plane load balancer '
+          'is deployed. When unspecified, it defaults to the control '
+          'plane subnet ID.'
+      ),
+  )
 
 
 def GetEndpointSubnetId(args):
@@ -850,15 +936,18 @@ def GetEndpointSubnetId(args):
 
 
 def AddAzureServicesAuthentication(auth_config_group, create=True):
+  """Adds --azure-tenant-id and --azure-application-id flags."""
   group = auth_config_group.add_argument_group('Azure services authentication')
   group.add_argument(
       '--azure-tenant-id',
       required=create,
-      help=('ID of the Azure Tenant to manage Azure resources.'))
+      help='ID of the Azure Tenant to manage Azure resources.',
+  )
   group.add_argument(
       '--azure-application-id',
       required=create,
-      help=('ID of the Azure Application to manage Azure resources.'))
+      help='ID of the Azure Application to manage Azure resources.',
+  )
   if not create:
     AddClearClient(group)
 
@@ -873,9 +962,12 @@ def AddClearClient(parser):
       '--clear-client',
       action='store_true',
       default=None,
-      help='Clear the Azure client. This flag is required when updating to use '
-           'Azure workload identity federation from Azure client to manage '
-           ' Azure resources.')
+      help=(
+          'Clear the Azure client. This flag is required when updating to use '
+          'Azure workload identity federation from Azure client to manage '
+          ' Azure resources.'
+      ),
+  )
 
 
 def GetAzureTenantID(args):
@@ -887,26 +979,28 @@ def GetAzureApplicationID(args):
 
 
 def AddMonitoringConfig(parser, for_create=False):
-  """Adds --enable-managed-prometheus and --disable-managed-prometheus flags to parser.
-  """
+  """Adds --enable-managed-prometheus and --disable-managed-prometheus flags to parser."""
   if for_create:
     parser.add_argument(
         '--enable-managed-prometheus',
         action='store_true',
         default=None,
-        help=('Enable managed collection for Managed Service for Prometheus.'))
+        help='Enable managed collection for Managed Service for Prometheus.',
+    )
   else:
     group = parser.add_group('Monitoring Config', mutex=True)
     group.add_argument(
         '--disable-managed-prometheus',
         action='store_true',
         default=None,
-        help=('Disable managed collection for Managed Service for Prometheus.'))
+        help='Disable managed collection for Managed Service for Prometheus.',
+    )
     group.add_argument(
         '--enable-managed-prometheus',
         action='store_true',
         default=None,
-        help=('Enable managed collection for Managed Service for Prometheus.'))
+        help='Enable managed collection for Managed Service for Prometheus.',
+    )
 
 
 def GetMonitoringConfig(args):
@@ -918,7 +1012,6 @@ def GetMonitoringConfig(args):
   Returns:
     The monitoring config object as GoogleCloudGkemulticloudV1MonitoringConfig.
     None if enable_managed_prometheus is None.
-
   """
   enabled_prometheus = getattr(args, 'enable_managed_prometheus', None)
   disabled_prometheus = getattr(args, 'disable_managed_prometheus', None)
@@ -932,18 +1025,38 @@ def GetMonitoringConfig(args):
   else:
     return None
   return messages.GoogleCloudGkemulticloudV1MonitoringConfig(
-      managedPrometheusConfig=config)
+      managedPrometheusConfig=config
+  )
 
 
 def AddAllowMissing(parser):
   help_txt = """Allow idempotent deletion of cluster.
   The request will still succeed in case the cluster does not exist.
   """
-  parser.add_argument(
-      '--allow-missing',
-      action='store_true',
-      help=help_txt)
+  parser.add_argument('--allow-missing', action='store_true', help=help_txt)
 
 
 def GetAllowMissing(args):
   return getattr(args, 'allow_missing', None)
+
+
+def AddBinauthzEvaluationMode(parser):
+  """Adds --binauthz-evaluation-mode flag to parser."""
+  parser.add_argument(
+      '--binauthz-evaluation-mode',
+      choices=[
+          _ToSnakeCaseUpper(c) for c in _BINAUTHZ_EVAL_MODE_ENUM_MAPPER.choices
+      ],
+      default=None,
+      hidden=True,
+      help='Set Binary Authorization evaluation mode for this cluster.',
+  )
+
+
+def GetBinauthzEvaluationMode(args):
+  evaluation_mode = getattr(args, 'binauthz_evaluation_mode', None)
+  if evaluation_mode is None:
+    return None
+  return _BINAUTHZ_EVAL_MODE_ENUM_MAPPER.GetEnumForChoice(
+      _ToHyphenCase(evaluation_mode)
+  )

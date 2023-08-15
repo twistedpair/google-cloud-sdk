@@ -496,6 +496,39 @@ class AppengineAppsRepairRequest(_messages.Message):
   repairApplicationRequest = _messages.MessageField('RepairApplicationRequest', 2)
 
 
+class AppengineAppsRuntimesListRequest(_messages.Message):
+  r"""A AppengineAppsRuntimesListRequest object.
+
+  Enums:
+    EnvironmentValueValuesEnum: Optional. The environment of the Application.
+
+  Fields:
+    environment: Optional. The environment of the Application.
+    pageSize: Optional. Maximum results to return per page.
+    pageToken: Optional. Continuation token for fetching the next page of
+      results.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
+  """
+
+  class EnvironmentValueValuesEnum(_messages.Enum):
+    r"""Optional. The environment of the Application.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Default value.
+      STANDARD: App Engine Standard.
+      FLEXIBLE: App Engine Flexible
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    STANDARD = 1
+    FLEXIBLE = 2
+
+  environment = _messages.EnumField('EnvironmentValueValuesEnum', 1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class AppengineAppsServicesDeleteRequest(_messages.Message):
   r"""A AppengineAppsServicesDeleteRequest object.
 
@@ -1733,6 +1766,18 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListRuntimesResponse(_messages.Message):
+  r"""Response message for Applications.ListRuntimes.
+
+  Fields:
+    nextPageToken: Continuation token for fetching the next page of results.
+    runtimes: The runtimes available to the requested application.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  runtimes = _messages.MessageField('Runtime', 2, repeated=True)
+
+
 class ListServicesResponse(_messages.Message):
   r"""Response message for Services.ListServices.
 
@@ -2068,9 +2113,9 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as Delete, the
-      response is google.protobuf.Empty. If the original method is standard
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as Delete, the response
+      is google.protobuf.Empty. If the original method is standard
       Get/Create/Update, the response should be the resource. For other
       methods, the response should have the type XxxResponse, where Xxx is the
       original method name. For example, if the original method name is
@@ -2090,7 +2135,7 @@ class Operation(_messages.Message):
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the name should be a resource name ending with operations/{unique_id}.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as Delete, the response
       is google.protobuf.Empty. If the original method is standard
       Get/Create/Update, the response should be the resource. For other
@@ -2129,9 +2174,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as Delete, the response
-    is google.protobuf.Empty. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as Delete, the response is
+    google.protobuf.Empty. If the original method is standard
     Get/Create/Update, the response should be the resource. For other methods,
     the response should have the type XxxResponse, where Xxx is the original
     method name. For example, if the original method name is TakeSnapshot(),
@@ -2648,6 +2693,59 @@ class Resources(_messages.Message):
   kmsKeyReference = _messages.StringField(3)
   memoryGb = _messages.FloatField(4)
   volumes = _messages.MessageField('Volume', 5, repeated=True)
+
+
+class Runtime(_messages.Message):
+  r"""Runtime versions for App Engine.
+
+  Enums:
+    EnvironmentValueValuesEnum: The environment of the runtime.
+    StageValueValuesEnum: The stage of life this runtime is in, e.g., BETA,
+      GA, etc.
+
+  Fields:
+    environment: The environment of the runtime.
+    name: The name of the runtime, e.g., 'go113', 'nodejs12', etc.
+    stage: The stage of life this runtime is in, e.g., BETA, GA, etc.
+    warnings: Warning messages, e.g., a deprecation warning.
+  """
+
+  class EnvironmentValueValuesEnum(_messages.Enum):
+    r"""The environment of the runtime.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Default value.
+      STANDARD: App Engine Standard.
+      FLEXIBLE: App Engine Flexible
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    STANDARD = 1
+    FLEXIBLE = 2
+
+  class StageValueValuesEnum(_messages.Enum):
+    r"""The stage of life this runtime is in, e.g., BETA, GA, etc.
+
+    Values:
+      RUNTIME_STAGE_UNSPECIFIED: Not specified.
+      DEVELOPMENT: The runtime is in development.
+      ALPHA: The runtime is in the Alpha stage.
+      BETA: The runtime is in the Beta stage.
+      GA: The runtime is generally available.
+      DEPRECATED: The runtime is deprecated.
+      DECOMMISSIONED: The runtime is no longer supported.
+    """
+    RUNTIME_STAGE_UNSPECIFIED = 0
+    DEVELOPMENT = 1
+    ALPHA = 2
+    BETA = 3
+    GA = 4
+    DEPRECATED = 5
+    DECOMMISSIONED = 6
+
+  environment = _messages.EnumField('EnvironmentValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  stage = _messages.EnumField('StageValueValuesEnum', 3)
+  warnings = _messages.StringField(4, repeated=True)
 
 
 class ScriptHandler(_messages.Message):

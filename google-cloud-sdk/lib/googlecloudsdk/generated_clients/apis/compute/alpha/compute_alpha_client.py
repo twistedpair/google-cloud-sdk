@@ -10558,6 +10558,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PatchAssociation(self, request, global_params=None):
+      r"""Updates an association for the specified network firewall policy.
+
+      Args:
+        request: (ComputeNetworkFirewallPoliciesPatchAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.networkFirewallPolicies.patchAssociation',
+        ordered_params=['project', 'firewallPolicy'],
+        path_params=['firewallPolicy', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/firewallPolicies/{firewallPolicy}/patchAssociation',
+        request_field='firewallPolicyAssociation',
+        request_type_name='ComputeNetworkFirewallPoliciesPatchAssociationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def PatchRule(self, request, global_params=None):
       r"""Patches a rule of the specified priority.
 
@@ -12708,6 +12734,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetManagedProtectionTier(self, request, global_params=None):
+      r"""Sets the Cloud Armor Managed Protection (CAMP) tier of the project. To set PLUS or above the billing account of the project must be subscribed to Managed Protection Plus. See Subscribing to Managed Protection Plus for more information.
+
+      Args:
+        request: (ComputeProjectsSetManagedProtectionTierRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetManagedProtectionTier')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetManagedProtectionTier.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.projects.setManagedProtectionTier',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/setManagedProtectionTier',
+        request_field='projectsSetManagedProtectionTierRequest',
+        request_type_name='ComputeProjectsSetManagedProtectionTierRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetUsageExportBucket(self, request, global_params=None):
       r"""Enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
 
@@ -13499,6 +13551,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRegionBackendServicesListRequest',
         response_type_name='BackendServiceList',
+        supports_download=False,
+    )
+
+    def ListUsable(self, request, global_params=None):
+      r"""Retrieves an aggregated list of all usable backend services in the specified project in the given region.
+
+      Args:
+        request: (ComputeRegionBackendServicesListUsableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceListUsable) The response message.
+      """
+      config = self.GetMethodConfig('ListUsable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListUsable.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionBackendServices.listUsable',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/backendServices/listUsable',
+        request_field='',
+        request_type_name='ComputeRegionBackendServicesListUsableRequest',
+        response_type_name='BackendServiceListUsable',
         supports_download=False,
     )
 
@@ -17199,7 +17277,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+      r"""Patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 
       Args:
         request: (ComputeRegionSecurityPoliciesPatchRequest) input message
@@ -19669,7 +19747,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+      r"""Patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 
       Args:
         request: (ComputeSecurityPoliciesPatchRequest) input message
@@ -19695,7 +19773,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def PatchRule(self, request, global_params=None):
-      r"""Patches a rule at the specified priority.
+      r"""Patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.
 
       Args:
         request: (ComputeSecurityPoliciesPatchRuleRequest) input message

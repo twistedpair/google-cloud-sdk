@@ -20,12 +20,15 @@ from __future__ import unicode_literals
 
 import argparse
 
+from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope import parser_arguments
+from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.container.fleet import resources
+from googlecloudsdk.command_lib.container.fleet.policycontroller import constants
 from googlecloudsdk.command_lib.container.fleet.policycontroller import exceptions
 
 
-class Flags:
+class PocoFlags:
   """Handle common flags for Poco Commands.
 
   Use this class to keep command flags that touch similar configuration options
@@ -37,6 +40,12 @@ class Flags:
       parser: parser_arguments.ArgumentInterceptor,
       command: str,
   ):
+    """Constructor.
+
+    Args:
+      parser: The argparse parser to add flags to.
+      command: The command using this flag utility. i.e. 'enable'.
+    """
     self._parser = parser
     self._display_name = command
 
@@ -48,7 +57,7 @@ class Flags:
   def display_name(self):
     return self._display_name
 
-  def AddAuditInterval(self):
+  def add_audit_interval(self):
     """Adds handling for audit interval configuration changes."""
     self.parser.add_argument(
         '--audit-interval',
@@ -57,7 +66,7 @@ class Flags:
         default=60,
     )
 
-  def AddConstraintViolationLimit(self):
+  def add_constraint_violation_limit(self):
     """Adds handling for constraint violation limit configuration changes."""
     self.parser.add_argument(
         '--constraint-violation-limit',
@@ -69,7 +78,7 @@ class Flags:
         default=20,
     )
 
-  def AddExemptableNamespaces(self):
+  def add_exemptable_namespaces(self):
     """Adds handling for configuring exemptable namespaces."""
     group = self.parser.add_argument_group(
         'Exemptable Namespace flags.', mutex=True
@@ -87,11 +96,12 @@ class Flags:
         action='store_true',
         help=(
             'Removes any namespace exemptions, enabling Policy Controller on'
-            ' all namespaces.'
+            ' all namespaces. Setting this flag will overwrite'
+            ' currently exempted namespaces, not append.'
         ),
     )
 
-  def AddLogDeniesEnabled(self):
+  def add_log_denies_enabled(self):
     """Adds handling for log denies enablement."""
     self.parser.add_argument(
         '--log-denies',
@@ -102,7 +112,7 @@ class Flags:
         ),
     )
 
-  def AddMemberships(self):
+  def add_memberships(self):
     """Adds handling for single, multiple or all memberships."""
     group = self.parser.add_argument_group('Membership flags.', mutex=True)
     resources.AddMembershipResourceArg(
@@ -126,7 +136,7 @@ class Flags:
         default=False,
     )
 
-  def AddMonitoring(self):
+  def add_monitoring(self):
     """Adds handling for monitoring configuration changes."""
     group = self.parser.add_argument_group('Monitoring flags.', mutex=True)
     group.add_argument(
@@ -134,8 +144,9 @@ class Flags:
         type=str,
         help=(
             'Monitoring backend options Policy Controller should export metrics'
-            ' to, separated by commas if multiple are supplied. Options:'
-            ' prometheus, cloudmonitoring'
+            ' to, separated by commas if multiple are supplied.  Setting this'
+            ' flag will overwrite currently enabled backends, not append.'
+            ' Options: {}'.format(', '.join(constants.MONITORING_BACKENDS))
         ),
     )
     group.add_argument(
@@ -147,7 +158,7 @@ class Flags:
         ),
     )
 
-  def AddMutationEnabled(self):
+  def add_mutation(self):
     """Adds handling for mutation enablement."""
     self.parser.add_argument(
         '--mutation',
@@ -158,7 +169,7 @@ class Flags:
         ),
     )
 
-  def AddReferentialRulesEnabled(self):
+  def add_referential_rules(self):
     """Adds handling for referential rules enablement."""
     self.parser.add_argument(
         '--referential-rules',
@@ -169,7 +180,7 @@ class Flags:
         ),
     )
 
-  def AddTemplateLibraryInstall(self):
+  def add_template_library(self):
     """Adds handling for installing the template library."""
     self.parser.add_argument(
         '--template-library',
@@ -180,7 +191,7 @@ class Flags:
         ),
     )
 
-  def AddVersion(self):
+  def add_version(self):
     """Adds handling for version flag."""
     self.parser.add_argument(
         '--version',
@@ -190,6 +201,131 @@ class Flags:
             ' version.'
         ),
     )
+
+
+class PocoFlagParser:
+  """Takes PocoFlag arguments and uses them to modify membership specs."""
+
+  def __init__(self, args: parser_extensions.Namespace, msgs):
+    self.args = args
+    self.messages = msgs
+
+  def update_audit_interval(
+      self, hub_cfg: messages.Message
+  ) -> messages.Message:
+    if self.args.audit_interval:
+      hub_cfg.auditIntervalSeconds = self.args.audit_interval
+    return hub_cfg
+
+  def update_constraint_violation_limit(
+      self, hub_cfg: messages.Message
+  ) -> messages.Message:
+    if self.args.constraint_violation_limit:
+      hub_cfg.constraintViolationLimit = self.args.constraint_violation_limit
+    return hub_cfg
+
+  def update_exemptable_namespaces(
+      self, hub_cfg: messages.Message
+  ) -> messages.Message:
+    if self.args.clear_exemptable_namespaces:
+      namespaces = []
+      hub_cfg.exemptableNamespaces = namespaces
+    if self.args.exemptable_namespaces:
+      namespaces = self.args.exemptable_namespaces.split(',')
+      hub_cfg.exemptableNamespaces = namespaces
+    return hub_cfg
+
+  def update_log_denies(self, hub_cfg: messages.Message) -> messages.Message:
+    if self.args.log_denies is not None:
+      hub_cfg.logDeniesEnabled = self.args.log_denies
+    return hub_cfg
+
+  def update_mutation(self, hub_cfg: messages.Message) -> messages.Message:
+    if self.args.mutation is not None:
+      hub_cfg.mutationEnabled = self.args.mutation
+    return hub_cfg
+
+  def update_referential_rules(
+      self, hub_cfg: messages.Message
+  ) -> messages.Message:
+    if self.args.referential_rules is not None:
+      hub_cfg.referentialRulesEnabled = self.args.referential_rules
+    return hub_cfg
+
+  @property
+  def monitoring_backend_cfg(self) -> messages.Message:
+    return self.messages.PolicyControllerMonitoringConfig
+
+  @property
+  def monitoring_backend_enum(self) -> messages.Message:
+    return self.monitoring_backend_cfg.BackendsValueListEntryValuesEnum
+
+  def _get_monitoring_enum(self, backend) -> messages.Message:
+    internal_name = constants.MONITORING_BACKENDS.get(backend)
+    if internal_name is None or not hasattr(
+        self.monitoring_backend_enum,
+        constants.MONITORING_BACKENDS[backend],
+    ):
+      raise exceptions.InvalidMonitoringBackendError(
+          'No such monitoring backend: {}'.format(backend)
+      )
+    else:
+      return getattr(
+          self.monitoring_backend_enum,
+          constants.MONITORING_BACKENDS[backend],
+      )
+
+  def update_monitoring(self, hub_cfg: messages.Message) -> messages.Message:
+    """Sets or removes monitoring backends based on args."""
+    if self.args.no_monitoring:
+      config = self.messages.PolicyControllerMonitoringConfig(backends=[])
+      hub_cfg.monitoring = config
+
+    if self.args.monitoring:
+      backends = [
+          self._get_monitoring_enum(backend)
+          for backend in self.args.monitoring.split(',')
+      ]
+      config = self.messages.PolicyControllerMonitoringConfig(backends=backends)
+      hub_cfg.monitoring = config
+
+    return hub_cfg
+
+  @property
+  def template_lib_cfg(self) -> messages.Message:
+    return self.messages.PolicyControllerTemplateLibraryConfig
+
+  @property
+  def template_lib_enum(self) -> messages.Message:
+    return self.template_lib_cfg.InstallationValueValuesEnum
+
+  def _get_policy_content(self, poco_cfg: messages.Message) -> messages.Message:
+    """Get or create new PolicyControllerPolicyContentSpec."""
+    if poco_cfg.policyContent is None:
+      return self.messages.PolicyControllerPolicyContentSpec()
+    return poco_cfg.policyContent
+
+  def update_template_library(
+      self, poco_cfg: messages.Message
+  ) -> messages.Message:
+    """Updates the template library/content installation."""
+    if self.args.template_library is not None:
+      policy_content = self._get_policy_content(poco_cfg)
+      if self.args.template_library:
+        cfg = self.template_lib_cfg(installation=self.template_lib_enum.ALL)
+      else:
+        cfg = self.template_lib_cfg(
+            installation=self.template_lib_enum.NOT_INSTALLED
+        )
+      policy_content.templateLibrary = cfg
+      poco_cfg.policyContent = policy_content
+
+    return poco_cfg
+
+  def update_version(self, poco: messages.Message) -> messages.Message:
+    if self.args.version:
+      poco.version = self.args.version
+    return poco
 
 
 class EnableDisableAction(argparse.Action):

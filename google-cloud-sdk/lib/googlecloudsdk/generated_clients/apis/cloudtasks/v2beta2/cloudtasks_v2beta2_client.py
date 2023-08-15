@@ -784,13 +784,12 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     UpdateCmekConfig.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2beta2/projects/{projectsId}/locations/{locationsId}/cmekConfig',
         http_method='PATCH',
         method_id='cloudtasks.projects.locations.updateCmekConfig',
-        ordered_params=['name'],
-        path_params=['name'],
+        ordered_params=['projectsId', 'locationsId'],
+        path_params=['locationsId', 'projectsId'],
         query_params=['updateMask'],
-        relative_path='v2beta2/{+name}',
+        relative_path='v2beta2/projects/{projectsId}/locations/{locationsId}/cmekConfig',
         request_field='cmekConfig',
         request_type_name='CloudtasksProjectsLocationsUpdateCmekConfigRequest',
         response_type_name='CmekConfig',

@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Optional
+
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
@@ -1030,6 +1032,19 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return None
 
+  def _upgrade_policy(
+      self, args: parser_extensions.Namespace
+  ) -> Optional[messages.BareMetalClusterUpgradePolicy]:
+    """Constructs proto message BareMetalClusterUpgradePolicy."""
+    kwargs = {
+        'controlPlaneOnly': getattr(args, 'upgrade_control_plane', None),
+    }
+
+    if any(kwargs.values()):
+      return messages.BareMetalClusterUpgradePolicy(**kwargs)
+
+    return None
+
   def _bare_metal_user_cluster(self, args: parser_extensions.Namespace):
     """Constructs proto message Bare Metal Cluster."""
     kwargs = {
@@ -1049,6 +1064,7 @@ class _BareMetalClusterClient(client.ClientBase):
         'securityConfig': self._security_config(args),
         'nodeAccessConfig': self._node_access_config(args),
         'binaryAuthorization': self._binary_authorization(args),
+        'upgradePolicy': self._upgrade_policy(args),
     }
 
     if any(kwargs.values()):

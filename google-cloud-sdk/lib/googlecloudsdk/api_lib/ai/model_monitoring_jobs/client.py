@@ -335,12 +335,25 @@ class ModelMonitoringJobsClient(object):
     job_spec.labels = self._ParseCreateLabels(args)
 
     enable_anomaly_cloud_logging = False if args.anomaly_cloud_logging is None else args.anomaly_cloud_logging
-    job_spec.modelMonitoringAlertConfig = api_util.GetMessage(
-        'ModelMonitoringAlertConfig', self._version)(
-            enableLogging=enable_anomaly_cloud_logging,
-            emailAlertConfig=api_util.GetMessage(
-                'ModelMonitoringAlertConfigEmailAlertConfig',
-                self._version)(userEmails=args.emails))
+
+    if (
+        self._version == constants.ALPHA_VERSION
+        or self._version == constants.BETA_VERSION
+    ):
+      job_spec.modelMonitoringAlertConfig = api_util.GetMessage(
+          'ModelMonitoringAlertConfig', self._version)(
+              enableLogging=enable_anomaly_cloud_logging,
+              emailAlertConfig=api_util.GetMessage(
+                  'ModelMonitoringAlertConfigEmailAlertConfig',
+                  self._version)(userEmails=args.emails),
+              notificationChannels=args.notification_channels)
+    else:
+      job_spec.modelMonitoringAlertConfig = api_util.GetMessage(
+          'ModelMonitoringAlertConfig', self._version)(
+              enableLogging=enable_anomaly_cloud_logging,
+              emailAlertConfig=api_util.GetMessage(
+                  'ModelMonitoringAlertConfigEmailAlertConfig',
+                  self._version)(userEmails=args.emails))
 
     job_spec.loggingSamplingStrategy = api_util.GetMessage(
         'SamplingStrategy', self._version)(
@@ -420,18 +433,43 @@ class ModelMonitoringJobsClient(object):
       update_mask.append('display_name')
 
     if args.emails:
-      model_monitoring_job_to_update.modelMonitoringAlertConfig = api_util.GetMessage(
-          'ModelMonitoringAlertConfig', self._version)(
+      model_monitoring_job_to_update.modelMonitoringAlertConfig = (
+          api_util.GetMessage('ModelMonitoringAlertConfig', self._version)(
               emailAlertConfig=api_util.GetMessage(
-                  'ModelMonitoringAlertConfigEmailAlertConfig', self._version)(
-                      userEmails=args.emails))
+                  'ModelMonitoringAlertConfigEmailAlertConfig', self._version
+              )(userEmails=args.emails)
+          )
+      )
       update_mask.append('model_monitoring_alert_config.email_alert_config')
 
     if args.anomaly_cloud_logging is not None:
-      model_monitoring_job_to_update.modelMonitoringAlertConfig = api_util.GetMessage(
-          'ModelMonitoringAlertConfig', self._version)(
-              enableLogging=args.anomaly_cloud_logging)
+      if args.emails:
+        model_monitoring_job_to_update.modelMonitoringAlertConfig.enableLogging = (
+            args.anomaly_cloud_logging
+        )
+      else:
+        model_monitoring_job_to_update.modelMonitoringAlertConfig = (
+            api_util.GetMessage('ModelMonitoringAlertConfig', self._version)(
+                enableLogging=args.anomaly_cloud_logging
+            )
+        )
       update_mask.append('model_monitoring_alert_config.enable_logging')
+
+    if (
+        self._version == constants.ALPHA_VERSION
+        or self._version == constants.BETA_VERSION
+    ) and args.notification_channels:
+      if args.emails or args.anomaly_cloud_logging is not None:
+        model_monitoring_job_to_update.modelMonitoringAlertConfig.notificationChannels = (
+            args.notification_channels
+        )
+      else:
+        model_monitoring_job_to_update.modelMonitoringAlertConfig = (
+            api_util.GetMessage('ModelMonitoringAlertConfig', self._version)(
+                notificationChannels=args.notification_channels
+            )
+        )
+      update_mask.append('model_monitoring_alert_config.notification_channels')
 
     # sampling rate
     if args.prediction_sampling_rate:

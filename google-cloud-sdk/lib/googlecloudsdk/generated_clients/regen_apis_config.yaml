@@ -235,9 +235,6 @@ apis:
       discovery_doc: blockchainnodeengine_v1.json
       default: true
   config:
-    v1alpha1:
-      discovery_doc: config_v1alpha1.json
-      default: false
     v1alpha2:
       discovery_doc: config_v1alpha2.json
       default: true
@@ -1609,9 +1606,6 @@ canonical_surfaces:
   binaryauthorization:
     name: binaryauthorization
     command: container binauthz
-  blueprints:
-    name: config
-    command: blueprints
   categorymanager:
     name: categorymanager
     hidden: true

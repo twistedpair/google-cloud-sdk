@@ -18,7 +18,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
-from googlecloudsdk.command_lib.projects import util
 from googlecloudsdk.core import exceptions
 
 
@@ -60,61 +59,9 @@ def set_poco_hub_config_parameters_from_args(args, messages):
     poco_hub_config: Policy Controller Hub Config object with parameters filled
     out
   """
-  validate_args(args)
   poco_hub_config = messages.PolicyControllerHubConfig()
   merge_args_with_poco_hub_config(args, poco_hub_config, messages)
   return poco_hub_config
-
-
-# TODO(b/291816961) Validate should ultimately be removed. Hacks here to handle
-# different arg namespaces are only temporary until all commands can be brought
-# into line.
-def validate_args(args):
-  """Validates the passed in arguments to make sure no incompatible arguments are used together.
-
-  Args:
-    args: object containing arguments passed as flags with the command
-  """
-  if args.monitoring is not None and args.no_monitoring:
-    raise exceptions.Error(
-        'Both monitoring and no-monitoring cannot be used in the same command'
-    )
-
-  if (
-      args.exemptable_namespaces is not None
-      and args.clear_exemptable_namespaces
-  ):
-    raise exceptions.Error(
-        'Both exemptable-namespaces and no-exemptable-namespaces '
-        + 'cannot be used in the same command'
-    )
-
-
-def convert_membership_from_project_id_to_number(membership_path):
-  """Converts the passed in membership path with project IDs to membership path with project numbers.
-
-  Args:
-    membership_path: membership path string in the form of
-      projects/{project_id}/locations/{location}/memberships/{membership_id}
-
-  Returns:
-    membership_path: membership path string in the form of
-      projects/{project_number}/locations/{location}/memberships/{membership_id}
-  """
-  splits = membership_path.split('/')
-  if (
-      len(splits) != 6
-      or splits[0] != 'projects'
-      or splits[2] != 'locations'
-      or splits[4] != 'memberships'
-  ):
-    raise exceptions.Error(
-        '{} is not a valid membership path'.format(membership_path)
-    )
-  project_number = util.GetProjectNumber(splits[1])
-  return 'projects/{}/locations/{}/memberships/{}'.format(
-      project_number, splits[3], splits[5]
-  )
 
 
 # TODO(b/291816961) Validate should ultimately be removed. Hacks here to handle
@@ -165,16 +112,6 @@ def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
 
   if hasattr(args, 'no_monitoring') and args.no_monitoring:
     poco_hub_config.monitoring = build_poco_monitoring_config([], messages)
-
-  if hasattr(args, 'suspend') and args.suspend is not None:
-    if args.suspend:
-      poco_hub_config.installSpec = (
-          messages.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_SUSPENDED
-      )
-    else:
-      poco_hub_config.installSpec = (
-          messages.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_ENABLED
-      )
 
 
 def set_template_library_config(enabled, poco_hub_config, messages):

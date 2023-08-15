@@ -105,7 +105,8 @@ class Assessment(_messages.Message):
 
   Fields:
     cve: Holds the MITRE standard Common Vulnerabilities and Exposures (CVE)
-      tracking number for the vulnerability.
+      tracking number for the vulnerability. Deprecated: Use vulnerability_id
+      instead to denote CVEs.
     impacts: Contains information about the impact of this vulnerability, this
       will change with time.
     justification: Justification provides the justification when the state of
@@ -119,6 +120,8 @@ class Assessment(_messages.Message):
       vulnerability.
     shortDescription: A one sentence description of this Vex.
     state: Provides the state of this Vulnerability assessment.
+    vulnerabilityId: The vulnerability identifier for this Assessment. Will
+      hold one of common identifiers e.g. CVE, GHSA etc.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -148,6 +151,7 @@ class Assessment(_messages.Message):
   remediations = _messages.MessageField('Remediation', 6, repeated=True)
   shortDescription = _messages.StringField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
+  vulnerabilityId = _messages.StringField(9)
 
 
 class Attestation(_messages.Message):
@@ -550,7 +554,7 @@ class BuildSignature(_messages.Message):
 
 
 class BuildStep(_messages.Message):
-  r"""A step in the build pipeline. Next ID: 20
+  r"""A step in the build pipeline. Next ID: 21
 
   Enums:
     StatusValueValuesEnum: Output only. Status of the build step. At this
@@ -571,6 +575,9 @@ class BuildStep(_messages.Message):
       entrypoint, the `args` are used as arguments to that entrypoint. If the
       image does not define an entrypoint, the first element in args is used
       as the entrypoint, and the remainder will be used as arguments.
+    automapSubstitutions: Option to include built-in and custom substitutions
+      as env variables for this build step. This option will override the
+      global option in BuildOption.
     dir: Working directory to use when running this step's container. If this
       value is a relative path, it is relative to the build's working
       directory. If this value is absolute, it may be outside the build's
@@ -661,20 +668,21 @@ class BuildStep(_messages.Message):
   allowExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
   allowFailure = _messages.BooleanField(2)
   args = _messages.StringField(3, repeated=True)
-  dir = _messages.StringField(4)
-  entrypoint = _messages.StringField(5)
-  env = _messages.StringField(6, repeated=True)
-  exitCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  id = _messages.StringField(8)
-  name = _messages.StringField(9)
-  pullTiming = _messages.MessageField('TimeSpan', 10)
-  script = _messages.StringField(11)
-  secretEnv = _messages.StringField(12, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  timeout = _messages.StringField(14)
-  timing = _messages.MessageField('TimeSpan', 15)
-  volumes = _messages.MessageField('Volume', 16, repeated=True)
-  waitFor = _messages.StringField(17, repeated=True)
+  automapSubstitutions = _messages.BooleanField(4)
+  dir = _messages.StringField(5)
+  entrypoint = _messages.StringField(6)
+  env = _messages.StringField(7, repeated=True)
+  exitCode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  id = _messages.StringField(9)
+  name = _messages.StringField(10)
+  pullTiming = _messages.MessageField('TimeSpan', 11)
+  script = _messages.StringField(12)
+  secretEnv = _messages.StringField(13, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  timeout = _messages.StringField(15)
+  timing = _messages.MessageField('TimeSpan', 16)
+  volumes = _messages.MessageField('Volume', 17, repeated=True)
+  waitFor = _messages.StringField(18, repeated=True)
 
 
 class ByProducts(_messages.Message):
@@ -1567,6 +1575,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
       configuration file.
 
   Fields:
+    automapSubstitutions: Option to include built-in and custom substitutions
+      as env variables for all build steps.
     defaultLogsBucketBehavior: Optional. Option to specify how default logs
       buckets are setup.
     diskSizeGb: Requested disk size for the VM that runs the build. Note that
@@ -1621,7 +1631,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
       DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED: Unspecified.
       REGIONAL_USER_OWNED_BUCKET: Bucket is located in user-owned project in
         the same region as the build. The builder service account must have
-        access to create and write to GCS buckets in the build project.
+        access to create and write to Cloud Storage buckets in the build
+        project.
     """
     DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED = 0
     REGIONAL_USER_OWNED_BUCKET = 1
@@ -1718,20 +1729,21 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
     MUST_MATCH = 0
     ALLOW_LOOSE = 1
 
-  defaultLogsBucketBehavior = _messages.EnumField('DefaultLogsBucketBehaviorValueValuesEnum', 1)
-  diskSizeGb = _messages.IntegerField(2)
-  dynamicSubstitutions = _messages.BooleanField(3)
-  env = _messages.StringField(4, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 5)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 6)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 7)
-  pool = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption', 8)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 9)
-  secretEnv = _messages.StringField(10, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 11, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 12)
-  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 13, repeated=True)
-  workerPool = _messages.StringField(14)
+  automapSubstitutions = _messages.BooleanField(1)
+  defaultLogsBucketBehavior = _messages.EnumField('DefaultLogsBucketBehaviorValueValuesEnum', 2)
+  diskSizeGb = _messages.IntegerField(3)
+  dynamicSubstitutions = _messages.BooleanField(4)
+  env = _messages.StringField(5, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 6)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 7)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 8)
+  pool = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption', 9)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 10)
+  secretEnv = _messages.StringField(11, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 12, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 13)
+  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 14, repeated=True)
+  workerPool = _messages.StringField(15)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption(_messages.Message):
@@ -1772,6 +1784,9 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
       entrypoint, the `args` are used as arguments to that entrypoint. If the
       image does not define an entrypoint, the first element in args is used
       as the entrypoint, and the remainder will be used as arguments.
+    automapSubstitutions: Option to include built-in and custom substitutions
+      as env variables for this build step. This option will override the
+      global option in BuildOption.
     dir: Working directory to use when running this step's container. If this
       value is a relative path, it is relative to the build's working
       directory. If this value is absolute, it may be outside the build's
@@ -1860,20 +1875,21 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
   allowExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
   allowFailure = _messages.BooleanField(2)
   args = _messages.StringField(3, repeated=True)
-  dir = _messages.StringField(4)
-  entrypoint = _messages.StringField(5)
-  env = _messages.StringField(6, repeated=True)
-  exitCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  id = _messages.StringField(8)
-  name = _messages.StringField(9)
-  pullTiming = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 10)
-  script = _messages.StringField(11)
-  secretEnv = _messages.StringField(12, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  timeout = _messages.StringField(14)
-  timing = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 15)
-  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 16, repeated=True)
-  waitFor = _messages.StringField(17, repeated=True)
+  automapSubstitutions = _messages.BooleanField(4)
+  dir = _messages.StringField(5)
+  entrypoint = _messages.StringField(6)
+  env = _messages.StringField(7, repeated=True)
+  exitCode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  id = _messages.StringField(9)
+  name = _messages.StringField(10)
+  pullTiming = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 11)
+  script = _messages.StringField(12)
+  secretEnv = _messages.StringField(13, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  timeout = _messages.StringField(15)
+  timing = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 16)
+  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 17, repeated=True)
+  waitFor = _messages.StringField(18, repeated=True)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildWarning(_messages.Message):
@@ -4695,7 +4711,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -4703,15 +4719,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     bindings: Associates a list of `members`, or principals, with a `role`.
@@ -5891,7 +5907,8 @@ class VexAssessment(_messages.Message):
 
   Fields:
     cve: Holds the MITRE standard Common Vulnerabilities and Exposures (CVE)
-      tracking number for the vulnerability.
+      tracking number for the vulnerability. Deprecated: Use vulnerability_id
+      instead to denote CVEs.
     impacts: Contains information about the impact of this vulnerability, this
       will change with time.
     justification: Justification provides the justification when the state of
@@ -5904,6 +5921,8 @@ class VexAssessment(_messages.Message):
     remediations: Specifies details on how to handle (and presumably, fix) a
       vulnerability.
     state: Provides the state of this Vulnerability assessment.
+    vulnerabilityId: The vulnerability identifier for this Assessment. Will
+      hold one of common identifiers e.g. CVE, GHSA etc.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -5932,6 +5951,7 @@ class VexAssessment(_messages.Message):
   relatedUris = _messages.MessageField('RelatedUrl', 5, repeated=True)
   remediations = _messages.MessageField('Remediation', 6, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 7)
+  vulnerabilityId = _messages.StringField(8)
 
 
 class Volume(_messages.Message):

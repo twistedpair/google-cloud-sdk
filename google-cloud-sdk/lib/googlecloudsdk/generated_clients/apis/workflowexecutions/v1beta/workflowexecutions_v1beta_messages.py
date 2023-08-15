@@ -87,12 +87,17 @@ class Execution(_messages.Message):
       SUCCEEDED: The execution finished successfully.
       FAILED: The execution failed with an error.
       CANCELLED: The execution was stopped intentionally.
+      UNAVAILABLE: Reserved for future use.
+      QUEUED: Request has been placed in the backlog for processing at a later
+        time.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     SUCCEEDED = 2
     FAILED = 3
     CANCELLED = 4
+    UNAVAILABLE = 5
+    QUEUED = 6
 
   argument = _messages.StringField(1)
   callLogLevel = _messages.EnumField('CallLogLevelValueValuesEnum', 2)

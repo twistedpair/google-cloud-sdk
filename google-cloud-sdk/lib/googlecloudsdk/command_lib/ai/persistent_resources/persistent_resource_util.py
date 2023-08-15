@@ -45,7 +45,19 @@ def _ConstructSingleResourcePoolSpec(aiplatform_client,
         accelerator_type, machine_spec_msg.AcceleratorTypeValueValuesEnum)
     machine_spec.acceleratorCount = int(spec.get('accelerator-count', 1))
   resource_pool.machineSpec = machine_spec
-  resource_pool.replicaCount = int(spec.get('replica-count', 1))
+
+  replica_count = spec.get('replica-count')
+  if replica_count:
+    resource_pool.replicaCount = int(replica_count)
+  min_replica_count = spec.get('min-replica-count')
+  max_replica_count = spec.get('max-replica-count')
+  if min_replica_count or max_replica_count:
+    autoscaling_spec = (
+        aiplatform_client.GetMessage('ResourcePoolAutoscalingSpec')())
+    autoscaling_spec.minReplicaCount = int(min_replica_count)
+    autoscaling_spec.maxReplicaCount = int(max_replica_count)
+    resource_pool.autoscalingSpec = autoscaling_spec
+
   disk_type = spec.get('disk-type')
   disk_size = spec.get('disk-size')
   if disk_type:

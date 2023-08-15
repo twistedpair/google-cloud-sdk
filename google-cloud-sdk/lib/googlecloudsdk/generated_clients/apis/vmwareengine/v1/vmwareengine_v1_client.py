@@ -1543,7 +1543,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Modifies a `IdentitySource` resource.
+      r"""Modifies an `IdentitySource` resource. Only the following fields can be updated: `base_users_dn`, `base_groups_dn`, `domain_user`, `domain_password` and `ssl_certificates`. Only fields specified in `update_mask` are applied. When updating identity source with LDAPS protocol, update mask must include `ssl_certificates`. When updating identity source with LDAP protocol, update mask must not include `ssl_certificates`. When updating `domain_user`, `domain_password` must be updated as well, and the other way around.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesPatchRequest) input message
@@ -2753,6 +2753,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='VmwareengineProjectsLocationsGetRequest',
         response_type_name='Location',
+        supports_download=False,
+    )
+
+    def GetProjectState(self, request, global_params=None):
+      r"""Gets state of a single `Project`.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGetProjectStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProjectState) The response message.
+      """
+      config = self.GetMethodConfig('GetProjectState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetProjectState.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/projectState',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.getProjectState',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsGetProjectStateRequest',
+        response_type_name='ProjectState',
         supports_download=False,
     )
 

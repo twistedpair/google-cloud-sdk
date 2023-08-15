@@ -28,7 +28,7 @@ def Lake(lake_id):
   Returns:
     A lake object.
   """
-  return {"lake_id": lake_id}
+  return {"lake_id": lake_id} if lake_id else None
 
 
 def LakeInfo(lake_id):
@@ -40,4 +40,4 @@ def LakeInfo(lake_id):
   Returns:
     A lake_info object.
   """
-  return {"lake": {"lake_id": lake_id}}
+  return {"lake": {"lake_id": lake_id}} if lake_id else None

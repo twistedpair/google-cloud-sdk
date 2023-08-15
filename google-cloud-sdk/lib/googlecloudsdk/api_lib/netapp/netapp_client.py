@@ -19,9 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.netapp.util import GetClientInstance
-from googlecloudsdk.api_lib.netapp.util import GetMessagesModule
-from googlecloudsdk.api_lib.netapp.util import VERSION_MAP
+from googlecloudsdk.api_lib.netapp import util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 
@@ -42,9 +40,11 @@ class NetAppClient(object):
       self._adapter = AlphaNetappAdapter()
     elif release_track == base.ReleaseTrack.BETA:
       self._adapter = BetaNetappAdapter()
+    elif release_track == base.ReleaseTrack.GA:
+      self._adapter = NetappAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
-          VERSION_MAP[release_track]))
+          util.VERSION_MAP[release_track]))
 
   @property
   def client(self):
@@ -132,13 +132,31 @@ class NetAppClient(object):
         batch_size_attribute='pageSize')
 
 
-class BetaNetappAdapter(object):
+class NetappAdapter(object):
+  """Adapter for the Cloud NetApp Files v1 API."""
+
+  def __init__(self):
+    self.release_track = base.ReleaseTrack.GA
+    self.client = util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = util.GetMessagesModule(
+        release_track=self.release_track
+    )
+
+
+class BetaNetappAdapter(NetappAdapter):
   """Adapter for the Beta Cloud NetApp Files API."""
 
   def __init__(self):
+    super(BetaNetappAdapter, self).__init__()
     self.release_track = base.ReleaseTrack.BETA
-    self.client = GetClientInstance(release_track=self.release_track)
-    self.messages = GetMessagesModule(release_track=self.release_track)
+    self.client = util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = util.GetMessagesModule(
+        release_track=self.release_track
+    )
 
 
 class AlphaNetappAdapter(BetaNetappAdapter):
@@ -147,6 +165,9 @@ class AlphaNetappAdapter(BetaNetappAdapter):
   def __init__(self):
     super(AlphaNetappAdapter, self).__init__()
     self.release_track = base.ReleaseTrack.ALPHA
-    self.client = GetClientInstance(release_track=self.release_track)
-    self.messages = GetMessagesModule(release_track=self.release_track)
-
+    self.client = util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = util.GetMessagesModule(
+        release_track=self.release_track
+    )

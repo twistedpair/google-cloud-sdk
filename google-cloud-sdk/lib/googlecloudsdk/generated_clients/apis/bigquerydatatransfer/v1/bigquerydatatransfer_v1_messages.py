@@ -984,6 +984,7 @@ class DataSourceParameter(_messages.Message):
       BOOLEAN: Boolean parameter.
       RECORD: Deprecated. This field has no effect.
       PLUS_PAGE: Page ID for a Google+ Page.
+      LIST: List of strings parameter.
     """
     TYPE_UNSPECIFIED = 0
     STRING = 1
@@ -992,6 +993,7 @@ class DataSourceParameter(_messages.Message):
     BOOLEAN = 4
     RECORD = 5
     PLUS_PAGE = 6
+    LIST = 7
 
   allowedValues = _messages.StringField(1, repeated=True)
   deprecated = _messages.BooleanField(2)
@@ -1030,6 +1032,16 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class EncryptionConfiguration(_messages.Message):
+  r"""Represents the encryption configuration for a transfer.
+
+  Fields:
+    kmsKeyName: The name of the KMS key used for encrypting BigQuery data.
+  """
+
+  kmsKeyName = _messages.StringField(1)
 
 
 class EnrollDataSourcesRequest(_messages.Message):
@@ -1312,10 +1324,14 @@ class StartManualTransferRunsRequest(_messages.Message):
   r"""A request to start manual transfer runs.
 
   Fields:
-    requestedRunTime: Specific run_time for a transfer run to be started. The
-      requested_run_time must not be in the future.
-    requestedTimeRange: Time range for the transfer runs that should be
-      started.
+    requestedRunTime: A run_time timestamp for historical data files or
+      reports that are scheduled to be transferred by the scheduled transfer
+      run. requested_run_time must be a past time and cannot include future
+      time values.
+    requestedTimeRange: A time_range start and end timestamp for historical
+      data files or reports that are scheduled to be transferred by the
+      scheduled transfer run. requested_time_range must be a past time and
+      cannot include future time values.
   """
 
   requestedRunTime = _messages.StringField(1)
@@ -1439,6 +1455,12 @@ class TransferConfig(_messages.Message):
     emailPreferences: Email notifications will be sent according to these
       preferences to the email address of the user who owns this transfer
       config.
+    encryptionConfiguration: The encryption configuration part. Currently, it
+      is only used for the optional KMS key name. The BigQuery service account
+      of your project must be granted permissions to use the key. Read methods
+      will return the key name applied in effect. Write methods will apply the
+      key if it is present, or otherwise try to apply project default keys if
+      it is absent.
     name: The resource name of the transfer config. Transfer config names have
       the form
       `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
@@ -1529,16 +1551,17 @@ class TransferConfig(_messages.Message):
   disabled = _messages.BooleanField(5)
   displayName = _messages.StringField(6)
   emailPreferences = _messages.MessageField('EmailPreferences', 7)
-  name = _messages.StringField(8)
-  nextRunTime = _messages.StringField(9)
-  notificationPubsubTopic = _messages.StringField(10)
-  ownerInfo = _messages.MessageField('UserInfo', 11)
-  params = _messages.MessageField('ParamsValue', 12)
-  schedule = _messages.StringField(13)
-  scheduleOptions = _messages.MessageField('ScheduleOptions', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  updateTime = _messages.StringField(16)
-  userId = _messages.IntegerField(17)
+  encryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 8)
+  name = _messages.StringField(9)
+  nextRunTime = _messages.StringField(10)
+  notificationPubsubTopic = _messages.StringField(11)
+  ownerInfo = _messages.MessageField('UserInfo', 12)
+  params = _messages.MessageField('ParamsValue', 13)
+  schedule = _messages.StringField(14)
+  scheduleOptions = _messages.MessageField('ScheduleOptions', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  updateTime = _messages.StringField(17)
+  userId = _messages.IntegerField(18)
 
 
 class TransferMessage(_messages.Message):

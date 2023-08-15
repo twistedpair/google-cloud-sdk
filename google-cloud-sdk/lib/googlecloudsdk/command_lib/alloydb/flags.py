@@ -330,7 +330,7 @@ def AddCPUCount(parser, required=True):
       '--cpu-count',
       required=required,
       type=int,
-      choices=[2, 4, 8, 16, 32, 64],
+      choices=[2, 4, 8, 16, 32, 64, 96],
       help=(
           'Whole number value indicating how many vCPUs the machine should '
           'contain. Each vCPU count corresponds to a N2 high-mem machine: '
@@ -895,4 +895,24 @@ def AddRequireConnectors(parser):
           'Enable or disable enforcing connectors only (ex: AuthProxy)'
           'connections to the database.'
       ),
+  )
+
+
+def AddDatabaseVersion(parser, alloydb_messages):
+  """Adds Database Version flag.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    alloydb_messages: Message module.
+  """
+  parser.add_argument(
+      '--database-version',
+      required=False,
+      type=alloydb_messages.Cluster.DatabaseVersionValueValuesEnum,
+      choices=[
+          # Don't allow UNSPECIFIED, POSTGRES_13 database versions
+          alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_14,
+          alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_15,
+      ],
+      help='Database version of the cluster.'
   )

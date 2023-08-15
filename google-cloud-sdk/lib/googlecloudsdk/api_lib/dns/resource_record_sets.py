@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from dns import rdatatype
 from googlecloudsdk.api_lib.dns import import_util
 from googlecloudsdk.api_lib.dns import record_types
@@ -93,29 +95,36 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
   config = None
   if len(forwarding_rule.split('@')) == 2:
     name, scope = forwarding_rule.split('@')
-    load_balancer_target.region = scope
-    config = compute_client.forwardingRules.Get(
-        compute_messages.ComputeForwardingRulesGetRequest(
-            project=project, forwardingRule=name, region=scope))
+    if scope == 'global':
+      config = compute_client.globalForwardingRules.Get(
+          compute_messages.ComputeGlobalForwardingRulesGetRequest(
+              project=project, forwardingRule=name
+          )
+      )
+    else:
+      load_balancer_target.region = scope
+      config = compute_client.forwardingRules.Get(
+          compute_messages.ComputeForwardingRulesGetRequest(
+              project=project, forwardingRule=name, region=scope
+          )
+      )
     if config is None:
       raise ForwardingRuleNotFound(
           "Either the forwarding rule doesn't exist, or multiple forwarding "
-          'rules present with the same name - across different regions.'
+          'rules are present with the same name - across different regions.'
       )
   else:
     try:
-      resource = resources.REGISTRY.Parse(
-          forwarding_rule, collection='compute.forwardingRules'
-      ).AsDict()
-      load_balancer_target.region = resource['region']
-      load_balancer_target.project = resource['project']
-      config = compute_client.forwardingRules.Get(
-          compute_messages.ComputeForwardingRulesGetRequest(
-              project=resource['project'],
-              region=resource['region'],
-              forwardingRule=resource['forwardingRule'],
-          )
+      config = GetLoadBalancerConfigFromUrl(
+          compute_client, compute_messages, forwarding_rule
       )
+      project_match = re.match(r'.*/projects/([^/]+)/.*', config.selfLink)
+      load_balancer_target.project = project_match.group(1)
+      if config.region:
+        # region returned in the response is the url of the form:
+        # https://www.googleapis.com/compute/v1/projects/project/regions/region
+        region_match = re.match(r'.*/regions/(.*)$', config.region)
+        load_balancer_target.region = region_match.group(1)
     except resources.RequiredFieldOmittedException:
       # This means the forwarding rule was specified as just a name.
       regions = [
@@ -130,6 +139,13 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
                     filter=('name = %s' % forwarding_rule),
                     project=project,
                     region=region)).items)
+      configs.extend(
+          compute_client.globalForwardingRules.List(
+              compute_messages.ComputeGlobalForwardingRulesListRequest(
+                  filter='name = %s' % forwarding_rule, project=project
+              )
+          ).items
+      )
       if not configs:
         raise ForwardingRuleNotFound('The forwarding rule %s was not found.' %
                                      forwarding_rule)
@@ -140,11 +156,11 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
             'the rule in the format: forwardingrulename@region.'
         )
       config = configs[0]
-      region_url_split = config.region.split('/')
-      # region returned in the response is the url of the form:
-      # https://www.googleapis.com/compute/v1/projects/project/regions/region
-      load_balancer_target.region = region_url_split[
-          region_url_split.index('regions') + 1]
+      if config.region:
+        # region returned in the response is the url of the form:
+        # https://www.googleapis.com/compute/v1/projects/project/regions/region
+        region_match = re.match(r'.*/regions/(.*)$', config.region)
+        load_balancer_target.region = region_match.group(1)
   # L4 ILBs will have a backend service and load_balancing_scheme=INTERNAL.
   if (
       config.loadBalancingScheme
@@ -172,14 +188,13 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
           'regionalL7ilb'
       )
     else:
-      # Global L7 is not supported yet.
-      raise UnsupportedLoadBalancingScheme(
-          'Only Regional L4 and Regional L7 forwarding rules are supported at'
-          ' this time.'
+      load_balancer_target.loadBalancerType = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.LoadBalancerTypeValueValuesEnum(
+          'globalL7ilb'
       )
   else:
     raise UnsupportedLoadBalancingScheme(
-        'Only Regional L4 and Regional L7 forwarding rules are supported at'
+        'Only Regional internal passthrough Network load balancers and'
+        ' Regional/Global internal Application load balancers are supported at'
         ' this time.'
     )
   load_balancer_target.ipAddress = config.IPAddress
@@ -199,6 +214,47 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
   else:
     load_balancer_target.port = config.ports[0]
   return load_balancer_target
+
+
+def GetLoadBalancerConfigFromUrl(
+    compute_client, compute_messages, forwarding_rule
+):
+  """Attempts to fetch the configuration for the given forwarding rule.
+
+  If forwarding_rule is not the self_link for a forwarding rule,
+  resources.RequiredFieldOmittedException will be thrown, which must be handled
+  by the caller.
+
+  Args:
+    compute_client: The configured GCE client for this invocation
+    compute_messages: The configured GCE API protobufs for this invocation
+    forwarding_rule: The (presumed) selfLink for a GCE forwarding rule
+
+  Returns:
+    ForwardingRule, the forwarding rule configuration specified by
+    forwarding_rule
+  """
+  try:
+    resource = resources.REGISTRY.Parse(
+        forwarding_rule, collection='compute.forwardingRules'
+    ).AsDict()
+    return compute_client.forwardingRules.Get(
+        compute_messages.ComputeForwardingRulesGetRequest(
+            project=resource['project'],
+            region=resource['region'],
+            forwardingRule=resource['forwardingRule'],
+        )
+    )
+  except resources.WrongResourceCollectionException:
+    resource = resources.REGISTRY.Parse(
+        forwarding_rule, collection='compute.globalForwardingRules'
+    ).AsDict()
+    return compute_client.globalForwardingRules.Get(
+        compute_messages.ComputeGlobalForwardingRulesGetRequest(
+            project=resource['project'],
+            forwardingRule=resource['forwardingRule'],
+        )
+    )
 
 
 def CreateRecordSetFromArgs(args,

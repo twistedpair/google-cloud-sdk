@@ -28,7 +28,7 @@ def Args():
   """Adds the remote-<facade>-repo flags."""
   # We need to do this because these flags need to be able to accept either a
   # PublicRepository enum or a string registry URI.
-  hide_custom_remotes, hide_os_package_flags = True, True
+  hide_custom_remotes = True
   return [
       base.Argument(
           "--remote-mvn-repo",
@@ -49,7 +49,6 @@ def Args():
       base.Argument(
           "--remote-apt-repo",
           help=_OsPackageRemoteRepoHelpText("Apt", hide_custom_remotes),
-          hidden=hide_os_package_flags,
       ),
       base.Argument(
           "--remote-yum-repo",
@@ -57,7 +56,6 @@ def Args():
               "Yum",
               hide_custom_remotes,
           ),
-          hidden=hide_os_package_flags,
       ),
   ]
 

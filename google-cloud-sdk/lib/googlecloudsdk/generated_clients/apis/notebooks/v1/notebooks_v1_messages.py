@@ -39,6 +39,7 @@ class AcceleratorConfig(_messages.Message):
       NVIDIA_TESLA_P4: Accelerator type is Nvidia Tesla P4.
       NVIDIA_TESLA_T4: Accelerator type is Nvidia Tesla T4.
       NVIDIA_TESLA_A100: Accelerator type is Nvidia Tesla A100.
+      NVIDIA_L4: Accelerator type is Nvidia Tesla L4.
       NVIDIA_TESLA_T4_VWS: Accelerator type is NVIDIA Tesla T4 Virtual
         Workstations.
       NVIDIA_TESLA_P100_VWS: Accelerator type is NVIDIA Tesla P100 Virtual
@@ -55,11 +56,12 @@ class AcceleratorConfig(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
-    NVIDIA_TESLA_T4_VWS = 7
-    NVIDIA_TESLA_P100_VWS = 8
-    NVIDIA_TESLA_P4_VWS = 9
-    TPU_V2 = 10
-    TPU_V3 = 11
+    NVIDIA_L4 = 7
+    NVIDIA_TESLA_T4_VWS = 8
+    NVIDIA_TESLA_P100_VWS = 9
+    NVIDIA_TESLA_P4_VWS = 10
+    TPU_V2 = 11
+    TPU_V3 = 12
 
   coreCount = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -168,9 +170,12 @@ class DiagnoseInstanceRequest(_messages.Message):
   Fields:
     diagnosticConfig: Required. Defines flags that are used to run the
       diagnostic tool
+    timeoutMinutes: Optional. Maxmium amount of time in minutes before the
+      operation times out.
   """
 
   diagnosticConfig = _messages.MessageField('DiagnosticConfig', 1)
+  timeoutMinutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class DiagnoseRuntimeRequest(_messages.Message):
@@ -179,9 +184,12 @@ class DiagnoseRuntimeRequest(_messages.Message):
   Fields:
     diagnosticConfig: Required. Defines flags that are used to run the
       diagnostic tool
+    timeoutMinutes: Optional. Maxmium amount of time in minutes before the
+      operation times out.
   """
 
   diagnosticConfig = _messages.MessageField('DiagnosticConfig', 1)
+  timeoutMinutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class DiagnosticConfig(_messages.Message):
@@ -736,7 +744,7 @@ class GuestOsFeature(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""The definition of a notebook instance.
+  r"""The definition of a notebook instance. Next tag: 43
 
   Enums:
     BootDiskTypeValueValuesEnum: Input only. The type of the boot disk
@@ -787,6 +795,8 @@ class Instance(_messages.Message):
     installGpuDriver: Whether the end user authorizes Google Cloud to install
       GPU driver on this instance. If this field is empty or set to false, the
       GPU driver won't be installed. Only applicable to instances with GPUs.
+    instanceMigrationEligibility: Output only. Checks how feasible a migration
+      from UmN to WbI is.
     instanceOwners: Input only. The owner of this instance after creation.
       Format: `alias@example.com` Currently supports one owner only. If not
       specified, all of the service account users of your VM instance's
@@ -817,8 +827,6 @@ class Instance(_messages.Message):
     postStartupScript: Path to a Bash script that automatically runs after a
       notebook instance fully boots up. The path must be a URL or Cloud
       Storage path (`gs://path-to-file/file-name`).
-    preMigrationCheck: Output only. Check how possible a migration from UmN to
-      WbI is.
     proxyUri: Output only. The proxy endpoint that is used to access the
       Jupyter notebook.
     reservationAffinity: Optional. The optional reservation affinity. Setting
@@ -1006,20 +1014,20 @@ class Instance(_messages.Message):
   diskEncryption = _messages.EnumField('DiskEncryptionValueValuesEnum', 11)
   disks = _messages.MessageField('Disk', 12, repeated=True)
   installGpuDriver = _messages.BooleanField(13)
-  instanceOwners = _messages.StringField(14, repeated=True)
-  kmsKey = _messages.StringField(15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  machineType = _messages.StringField(17)
-  metadata = _messages.MessageField('MetadataValue', 18)
-  migrated = _messages.BooleanField(19)
-  name = _messages.StringField(20)
-  network = _messages.StringField(21)
-  nicType = _messages.EnumField('NicTypeValueValuesEnum', 22)
-  noProxyAccess = _messages.BooleanField(23)
-  noPublicIp = _messages.BooleanField(24)
-  noRemoveDataDisk = _messages.BooleanField(25)
-  postStartupScript = _messages.StringField(26)
-  preMigrationCheck = _messages.MessageField('PreMigrationCheck', 27)
+  instanceMigrationEligibility = _messages.MessageField('InstanceMigrationEligibility', 14)
+  instanceOwners = _messages.StringField(15, repeated=True)
+  kmsKey = _messages.StringField(16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  machineType = _messages.StringField(18)
+  metadata = _messages.MessageField('MetadataValue', 19)
+  migrated = _messages.BooleanField(20)
+  name = _messages.StringField(21)
+  network = _messages.StringField(22)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 23)
+  noProxyAccess = _messages.BooleanField(24)
+  noPublicIp = _messages.BooleanField(25)
+  noRemoveDataDisk = _messages.BooleanField(26)
+  postStartupScript = _messages.StringField(27)
   proxyUri = _messages.StringField(28)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 29)
   serviceAccount = _messages.StringField(30)
@@ -1045,6 +1053,65 @@ class InstanceConfig(_messages.Message):
 
   enableHealthMonitoring = _messages.BooleanField(1)
   notebookUpgradeSchedule = _messages.StringField(2)
+
+
+class InstanceMigrationEligibility(_messages.Message):
+  r"""InstanceMigrationEligibility represents the feasibility information of a
+  migration from UmN to WbI. Next tag: 3
+
+  Enums:
+    ErrorsValueListEntryValuesEnum:
+    WarningsValueListEntryValuesEnum:
+
+  Fields:
+    errors: Output only. Certain configurations make the UmN ineligible for an
+      automatic migration. A manual migration is required.
+    warnings: Output only. Certain configurations will be defaulted during the
+      migration.
+  """
+
+  class ErrorsValueListEntryValuesEnum(_messages.Enum):
+    r"""ErrorsValueListEntryValuesEnum enum type.
+
+    Values:
+      ERROR_UNSPECIFIED: Default type.
+      DATAPROC_HUB: The UmN uses Dataproc Hub and cannot be migrated.
+    """
+    ERROR_UNSPECIFIED = 0
+    DATAPROC_HUB = 1
+
+  class WarningsValueListEntryValuesEnum(_messages.Enum):
+    r"""WarningsValueListEntryValuesEnum enum type.
+
+    Values:
+      WARNING_UNSPECIFIED: Default type.
+      UNSUPPORTED_MACHINE_TYPE: The UmN uses an machine type that's
+        unsupported in WbI. It will be migrated with the default machine type
+        n2-standard-4. Users can change the machine type after the migration.
+      UNSUPPORTED_ACCELERATOR_TYPE: The UmN uses an accelerator type that's
+        unsupported in WbI. It will be migrated without an accelerator. User
+        can attach an accelerator after the migration.
+      UNSUPPORTED_OS: The UmN uses an operating system that's unsupported in
+        WbI (e.g. Debian 10, Ubuntu). It will be replaced with Debian 11 in
+        WbI.
+      NO_REMOVE_DATA_DISK: This UmN is configured with no_remove_data_disk,
+        which is no longer available in WbI.
+      GCS_BACKUP: This UmN is configured with the Cloud Storage backup
+        feature, which is no longer available in WbI.
+      POST_STARTUP_SCRIPT: This UmN is configured with a post startup script.
+        Please optionally provide the `post_startup_script_option` for the
+        migration.
+    """
+    WARNING_UNSPECIFIED = 0
+    UNSUPPORTED_MACHINE_TYPE = 1
+    UNSUPPORTED_ACCELERATOR_TYPE = 2
+    UNSUPPORTED_OS = 3
+    NO_REMOVE_DATA_DISK = 4
+    GCS_BACKUP = 5
+    POST_STARTUP_SCRIPT = 6
+
+  errors = _messages.EnumField('ErrorsValueListEntryValuesEnum', 1, repeated=True)
+  warnings = _messages.EnumField('WarningsValueListEntryValuesEnum', 2, repeated=True)
 
 
 class IsInstanceUpgradeableResponse(_messages.Message):
@@ -2317,8 +2384,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -2340,7 +2407,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -2379,9 +2446,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -2455,7 +2522,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -2463,15 +2530,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     bindings: Associates a list of `members`, or principals, with a `role`.
@@ -2516,37 +2583,6 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-
-
-class PreMigrationCheck(_messages.Message):
-  r"""PreMigrationCheck checks how feasible a migration from UmN is.
-
-  Enums:
-    ResultValueValuesEnum: Result returns the result of the check.
-
-  Fields:
-    message: Message provides a summary or workaround.
-    result: Result returns the result of the check.
-  """
-
-  class ResultValueValuesEnum(_messages.Enum):
-    r"""Result returns the result of the check.
-
-    Values:
-      RESULT_UNSPECIFIED: Default type.
-      IDENTICAL: UmN can be migrated to WbI as is minus non-relevant parts.
-      PARTIAL: Part of the UmN won't be ported. The migration might default
-        some values.
-      NOT_RECOMMENDED: UmN has too many unsupported options for a migration to
-        WbI.
-    """
-    RESULT_UNSPECIFIED = 0
-    IDENTICAL = 1
-    PARTIAL = 2
-    NOT_RECOMMENDED = 3
-
-  message = _messages.StringField(1)
-  result = _messages.EnumField('ResultValueValuesEnum', 2)
 
 
 class RefreshRuntimeTokenInternalRequest(_messages.Message):
@@ -2749,6 +2785,8 @@ class Runtime(_messages.Message):
       migrated to a Workbench Instance
     name: Output only. The resource name of the runtime. Format:
       `projects/{project}/locations/{location}/runtimes/{runtimeId}`
+    runtimeMigrationEligibility: Output only. Checks how feasible a migration
+      from GmN to WbI is.
     softwareConfig: The config settings for software inside the runtime.
     state: Output only. Runtime state.
     updateTime: Output only. Runtime update time.
@@ -2839,10 +2877,11 @@ class Runtime(_messages.Message):
   metrics = _messages.MessageField('RuntimeMetrics', 5)
   migrated = _messages.BooleanField(6)
   name = _messages.StringField(7)
-  softwareConfig = _messages.MessageField('RuntimeSoftwareConfig', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
-  virtualMachine = _messages.MessageField('VirtualMachine', 11)
+  runtimeMigrationEligibility = _messages.MessageField('RuntimeMigrationEligibility', 8)
+  softwareConfig = _messages.MessageField('RuntimeSoftwareConfig', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
+  virtualMachine = _messages.MessageField('VirtualMachine', 12)
 
 
 class RuntimeAcceleratorConfig(_messages.Message):
@@ -2989,6 +3028,65 @@ class RuntimeMetrics(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   systemMetrics = _messages.MessageField('SystemMetricsValue', 1)
+
+
+class RuntimeMigrationEligibility(_messages.Message):
+  r"""RuntimeMigrationEligibility represents the feasibility information of a
+  migration from GmN to WbI. Next tag: 3
+
+  Enums:
+    ErrorsValueListEntryValuesEnum:
+    WarningsValueListEntryValuesEnum:
+
+  Fields:
+    errors: Output only. Certain configurations make the GmN ineligible for an
+      automatic migration. A manual migration is required.
+    warnings: Output only. Certain configurations will be defaulted during the
+      migration.
+  """
+
+  class ErrorsValueListEntryValuesEnum(_messages.Enum):
+    r"""ErrorsValueListEntryValuesEnum enum type.
+
+    Values:
+      ERROR_UNSPECIFIED: Default type.
+      CUSTOM_CONTAINER: The GmN is configured with custom container(s) and
+        cannot be migrated.
+    """
+    ERROR_UNSPECIFIED = 0
+    CUSTOM_CONTAINER = 1
+
+  class WarningsValueListEntryValuesEnum(_messages.Enum):
+    r"""WarningsValueListEntryValuesEnum enum type.
+
+    Values:
+      WARNING_UNSPECIFIED: Default type.
+      UNSUPPORTED_ACCELERATOR_TYPE: The GmN uses an accelerator type that's
+        unsupported in WbI. It will be migrated without an accelerator. Users
+        can attach an accelerator after the migration.
+      UNSUPPORTED_OS: The GmN uses an operating system that's unsupported in
+        WbI (e.g. Debian 10). It will be replaced with Debian 11 in WbI.
+      RESERVED_IP_RANGE: This GmN is configured with reserved IP range, which
+        is no longer applicable in WbI.
+      GOOGLE_MANAGED_NETWORK: This GmN is configured with a Google managed
+        network. Please provide the `network` and `subnet` options for the
+        migration.
+      POST_STARTUP_SCRIPT: This GmN is configured with a post startup script.
+        Please optionally provide the `post_startup_script_option` for the
+        migration.
+      SINGLE_USER: This GmN is configured with single user mode. Please
+        optionally provide the `service_account` option for the migration.
+    """
+    WARNING_UNSPECIFIED = 0
+    UNSUPPORTED_ACCELERATOR_TYPE = 1
+    UNSUPPORTED_OS = 2
+    RESERVED_IP_RANGE = 3
+    GOOGLE_MANAGED_NETWORK = 4
+    POST_STARTUP_SCRIPT = 5
+    SINGLE_USER = 6
+
+  errors = _messages.EnumField('ErrorsValueListEntryValuesEnum', 1, repeated=True)
+  warnings = _messages.EnumField('WarningsValueListEntryValuesEnum', 2, repeated=True)
 
 
 class RuntimeShieldedInstanceConfig(_messages.Message):
@@ -3235,6 +3333,7 @@ class SetInstanceAcceleratorRequest(_messages.Message):
       NVIDIA_TESLA_P4: Accelerator type is Nvidia Tesla P4.
       NVIDIA_TESLA_T4: Accelerator type is Nvidia Tesla T4.
       NVIDIA_TESLA_A100: Accelerator type is Nvidia Tesla A100.
+      NVIDIA_L4: Accelerator type is Nvidia Tesla L4.
       NVIDIA_TESLA_T4_VWS: Accelerator type is NVIDIA Tesla T4 Virtual
         Workstations.
       NVIDIA_TESLA_P100_VWS: Accelerator type is NVIDIA Tesla P100 Virtual
@@ -3251,11 +3350,12 @@ class SetInstanceAcceleratorRequest(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
-    NVIDIA_TESLA_T4_VWS = 7
-    NVIDIA_TESLA_P100_VWS = 8
-    NVIDIA_TESLA_P4_VWS = 9
-    TPU_V2 = 10
-    TPU_V3 = 11
+    NVIDIA_L4 = 7
+    NVIDIA_TESLA_T4_VWS = 8
+    NVIDIA_TESLA_P100_VWS = 9
+    NVIDIA_TESLA_P4_VWS = 10
+    TPU_V2 = 11
+    TPU_V3 = 12
 
   coreCount = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

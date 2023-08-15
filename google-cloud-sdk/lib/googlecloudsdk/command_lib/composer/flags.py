@@ -37,7 +37,7 @@ import six
 
 MIN_TRIGGERER_AIRFLOW_VERSION = '2.2.5'
 MIN_TRIGGERER_COMPOSER_VERSION = '2.0.31'
-MIN_COMPOSER25_VERSION = '2.5.0'
+MIN_COMPOSER3_VERSION = '3.0.0'
 MIN_SCHEDULED_SNAPSHOTS_COMPOSER_VERSION = '2.0.32'
 MIN_COMPOSER_RUN_AIRFLOW_CLI_VERSION = '2.4.0'
 
@@ -61,11 +61,11 @@ _INVALID_OPTION_FOR_V1_ERROR_MSG = """\
 Cannot specify {opt} with Composer 1.X.
 """
 
-COMPOSER25_IS_REQUIRED_MSG = """\
+COMPOSER3_IS_REQUIRED_MSG = """\
 Cannot specify {opt}. Composer version {composer_version} or greater is required.
 """
 
-COMPOSER25_IS_NOT_SUPPORTED_MSG = """\
+COMPOSER3_IS_NOT_SUPPORTED_MSG = """\
 Cannot specify {opt} with Composer version {composer_version} or greater.
 """
 
@@ -328,7 +328,7 @@ TRIGGERER_PARAMETERS_FLAG_GROUP_DESCRIPTION = (
 
 DAG_PROCESSOR_PARAMETERS_FLAG_GROUP_DESCRIPTION = (
     'Group of arguments for setting dag processor settings in Composer {} '
-    'or greater.'.format(MIN_COMPOSER25_VERSION)
+    'or greater.'.format(MIN_COMPOSER3_VERSION)
 )
 
 TRIGGERER_ENABLED_GROUP_DESCRIPTION = (
@@ -469,7 +469,7 @@ NETWORK_ATTACHMENT = base.Argument(
     help="""\
     Cloud Composer Network Attachment, which provides connectivity with a user's VPC network,
     supported in Composer {} environments or greater.
-    """.format(MIN_COMPOSER25_VERSION),
+    """.format(MIN_COMPOSER3_VERSION),
 )
 
 SERVICES_SECONDARY_RANGE_NAME_FLAG = base.Argument(
@@ -556,7 +556,7 @@ SUPPORT_WEB_SERVER_PLUGINS = base.Argument(
     help="""\
     Enable the support for web server plugins, supported in Composer {}
     or greater.
-    """.format(MIN_COMPOSER25_VERSION),
+    """.format(MIN_COMPOSER3_VERSION),
 )
 
 CLOUD_SQL_MACHINE_TYPE = base.Argument(
@@ -594,7 +594,7 @@ DAG_PROCESSOR_CPU = base.Argument(
     help="""\
     CPU allocated to Airflow dag processor, supported in Composer {}
     environments or greater.
-    """.format(MIN_COMPOSER25_VERSION),
+    """.format(MIN_COMPOSER3_VERSION),
 )
 
 TRIGGERER_CPU = base.Argument(
@@ -651,7 +651,7 @@ DAG_PROCESSOR_MEMORY = base.Argument(
     help="""\
     Memory allocated to Airflow dag processor, ex. 1GB, 3GB, 2. If units are not provided,
     defaults to GB, supported in Composer {} environments or greater.
-    """.format(MIN_COMPOSER25_VERSION)
+    """.format(MIN_COMPOSER3_VERSION)
 )
 
 TRIGGERER_MEMORY = base.Argument(
@@ -713,7 +713,7 @@ SCHEDULER_STORAGE = base.Argument(
 DAG_PROCESSOR_STORAGE = base.Argument(
     '--dag-processor-storage',
     type=arg_parsers.BinarySize(
-        lower_bound='1GB',
+        lower_bound='0',
         upper_bound='100GB',
         suggested_binary_size_scales=['MB', 'GB'],
         default_unit='G',
@@ -723,13 +723,13 @@ DAG_PROCESSOR_STORAGE = base.Argument(
     help="""\
     Storage allocated to Airflow dag processor, ex. 600MB, 3GB, 2. If units are not provided,
     defaults to GB, supported in Composer {} environments or greater.
-    """.format(MIN_COMPOSER25_VERSION),
+    """.format(MIN_COMPOSER3_VERSION),
 )
 
 WORKER_STORAGE = base.Argument(
     '--worker-storage',
     type=arg_parsers.BinarySize(
-        lower_bound='5MB',
+        lower_bound='0',
         upper_bound='10GB',
         suggested_binary_size_scales=['MB', 'GB'],
         default_unit='G'),
@@ -743,7 +743,7 @@ WORKER_STORAGE = base.Argument(
 WEB_SERVER_STORAGE = base.Argument(
     '--web-server-storage',
     type=arg_parsers.BinarySize(
-        lower_bound='5MB',
+        lower_bound='0',
         upper_bound='10GB',
         suggested_binary_size_scales=['MB', 'GB'],
         default_unit='G'),
@@ -787,7 +787,7 @@ DAG_PROCESSOR_COUNT = base.Argument(
     default=None,
     help="""\
     Number of dag processors, supported in Composer {} environments or greater.
-    """.format(MIN_COMPOSER25_VERSION),
+    """.format(MIN_COMPOSER3_VERSION),
 )
 
 TRIGGERER_COUNT = base.Argument(
@@ -830,10 +830,10 @@ DISABLE_VPC_CONNECTIVITY = base.Argument(
     help="""\
     Disable connectivity with a user's VPC network,
     supported in Composer {} environments or greater.
-    """.format(MIN_COMPOSER25_VERSION),
+    """.format(MIN_COMPOSER3_VERSION),
 )
 
-# Composer 25 only for update
+# Composer 3 only for update
 ENABLE_PRIVATE_ENVIRONMENT_UPDATE_FLAG = base.Argument(
     '--enable-private-environment',
     default=None,
@@ -842,10 +842,10 @@ ENABLE_PRIVATE_ENVIRONMENT_UPDATE_FLAG = base.Argument(
     help="""\
     Disable internet connection from any Composer component,
     supported in Composer {} environments or greater.
-    """.format(MIN_COMPOSER25_VERSION),
+    """.format(MIN_COMPOSER3_VERSION),
 )
 
-# Composer 25 only for update
+# Composer 3 only for update
 DISABLE_PRIVATE_ENVIRONMENT_UPDATE_FLAG = base.Argument(
     '--disable-private-environment',
     default=None,
@@ -854,7 +854,7 @@ DISABLE_PRIVATE_ENVIRONMENT_UPDATE_FLAG = base.Argument(
     help="""\
     Enable internet connection from any Composer component,
     supported in Composer {} environments or greater.
-    """.format(MIN_COMPOSER25_VERSION),
+    """.format(MIN_COMPOSER3_VERSION),
 )
 
 ENABLE_TRIGGERER = base.Argument(
@@ -1217,7 +1217,7 @@ COMPOSER_INTERNAL_IPV4_CIDR_FLAG = base.Argument(
     The IP range in CIDR notation to use internally by Cloud Composer.
     This should have a netmask length of 20.
     Can be specified for Composer {} or greater.
-    """.format(MIN_COMPOSER25_VERSION))
+    """.format(MIN_COMPOSER3_VERSION))
 
 # TODO(b/245909413): Update Composer version in requirements
 ENABLE_SCHEDULED_SNAPSHOT_CREATION = base.Argument(
@@ -1776,8 +1776,8 @@ def AddCloudDataLineageIntegrationUpdateFlagsToGroup(update_type_group):
       update_enable_disable_group)
 
 
-def AddComposer25FlagsToGroup(update_type_group):
-  """Adds Composer 2.5 flags to an update group.
+def AddComposer3FlagsToGroup(update_type_group):
+  """Adds Composer 3 flags to an update group.
 
   Args:
     update_type_group: argument group, the group to which flags should be added.
