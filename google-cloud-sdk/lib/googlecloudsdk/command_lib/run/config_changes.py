@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import abc
 import collections
 import copy
+import itertools
 import json
 
 from googlecloudsdk.api_lib.run import container_resource
@@ -60,6 +61,32 @@ class ConfigChanger(six.with_metaclass(abc.ABCMeta, object)):
       A k8s_object that reflects applying the requested update.
       May be resource after a mutation or a different object.
     """
+    return resource
+
+
+class ContainerConfigChanger(ConfigChanger):
+  """An abstract class representing container configuration changes."""
+
+  def __init__(self, container_name=None):
+    self._container_name = container_name
+    super(ContainerConfigChanger, self).__init__(adjusts_template=True)
+
+  @abc.abstractmethod
+  def AdjustContainer(self, container, messages_mod):
+    """Adjust the given Container.
+
+    Args:
+      container: the container to adjust.
+      messages_mod: messages module.
+    """
+
+  def Adjust(self, resource):
+    if self._container_name:
+      container = resource.template.containers[self._container_name]
+    else:
+      container = resource.template.container
+
+    self.AdjustContainer(container, resource.MessagesModule())
     return resource
 
 
@@ -359,18 +386,15 @@ class ClearVpcConnectorChange(ConfigChanger):
     return resource
 
 
-class ImageChange(ConfigChanger):
+class ImageChange(ContainerConfigChanger):
   """A Cloud Run container deployment."""
 
-  deployment_type = 'container'
-
-  def __init__(self, image):
-    super(ImageChange, self).__init__(adjusts_template=True)
+  def __init__(self, image, **kwargs):
+    super(ImageChange, self).__init__(**kwargs)
     self.image = image
 
-  def Adjust(self, resource):
-    resource.image = self.image
-    return resource
+  def AdjustContainer(self, container, messages_mod):
+    container.image = self.image
 
 
 def _PruneMapping(mapping, keys_to_remove, clear_others):
@@ -382,7 +406,9 @@ def _PruneMapping(mapping, keys_to_remove, clear_others):
         del mapping[var_or_path]
 
 
-def _PruneManagedVolumeMapping(volumes, volume_mounts, removes, clear_others):
+def _PruneManagedVolumeMapping(
+    resource, volumes, volume_mounts, removes, clear_others, external_mounts
+):
   """Remove the specified volume mappings from the config."""
   if clear_others:
     volume_mounts.clear()
@@ -390,15 +416,25 @@ def _PruneManagedVolumeMapping(volumes, volume_mounts, removes, clear_others):
     for remove in removes:
       mount, path = remove.rsplit('/', 1)
       if mount in volume_mounts:
+        volume_name = volume_mounts[mount]
+        if volume_name in external_mounts:
+          volume_name = _CopyToNewVolume(
+              resource,
+              volume_name,
+              mount,
+              copy.deepcopy(volumes[volume_name]),
+              volumes,
+              volume_mounts,
+          )
         new_paths = []
-        for key_to_path in volumes[volume_mounts[mount]].items:
+        for key_to_path in volumes[volume_name].items:
           if path != key_to_path.path:
             new_paths.append(key_to_path)
         if not new_paths:
           # there are no more versions in the volume
           del volume_mounts[mount]
         else:
-          volumes[volume_mounts[mount]].items = new_paths
+          volumes[volume_name].items = new_paths
 
 
 def _CopyToNewVolume(
@@ -425,30 +461,32 @@ def _CopyToNewVolume(
   return new_volume_name
 
 
-class EnvVarLiteralChanges(ConfigChanger):
+class EnvVarLiteralChanges(ContainerConfigChanger):
   """Represents the user intent to modify environment variables string literals."""
 
-  def __init__(self, updates, removes, clear_others):
+  def __init__(self, updates, removes, clear_others, **kwargs):
     """Initialize a new EnvVarLiteralChanges object.
 
     Args:
       updates: {str, str}, Update env var names and values.
       removes: [str], List of env vars to remove.
       clear_others: bool, If true, clear all non-updated env vars.
+      **kwargs: ContainerConfigChanger args.
     """
-    super(EnvVarLiteralChanges, self).__init__(adjusts_template=True)
+    super(EnvVarLiteralChanges, self).__init__(**kwargs)
     self._updates = updates
     self._removes = removes
     self._clear_others = clear_others
 
-  def Adjust(self, resource):
+  def AdjustContainer(self, container, messages_mod):
     """Mutates the given config's env vars to match the desired changes.
 
     Args:
-      resource: k8s_object to adjust
+      container: container to adjust
+      messages_mod: messages module
 
     Returns:
-      The adjusted resource
+      The adjusted container
 
     Raises:
       ConfigurationError if there's an attempt to replace the source of an
@@ -457,11 +495,11 @@ class EnvVarLiteralChanges(ConfigChanger):
         source).
     """
     _PruneMapping(
-        resource.template.env_vars.literals, self._removes, self._clear_others
+        container.env_vars.literals, self._removes, self._clear_others
     )
 
     try:
-      resource.template.env_vars.literals.update(self._updates)
+      container.env_vars.literals.update(self._updates)
     except KeyError as e:
       raise exceptions.ConfigurationError(
           'Cannot update environment variable [{}] to string literal '
@@ -469,19 +507,19 @@ class EnvVarLiteralChanges(ConfigChanger):
               e.args[0]
           )
       )
-    return resource
 
 
 class SecretEnvVarChanges(ConfigChanger):
   """Represents the user intent to modify environment variable secrets."""
 
-  def __init__(self, updates, removes, clear_others):
+  def __init__(self, updates, removes, clear_others, container_name=None):
     """Initialize a new SecretEnvVarChanges object.
 
     Args:
       updates: {str: ReachableSecret}, Update env var names and values.
       removes: [str], List of env vars to remove.
       clear_others: bool, If true, clear all non-updated env vars.
+      container_name: str, Name of the container to update.
 
     Raises:
       ConfigurationError if a key hasn't been provided for a source.
@@ -490,6 +528,7 @@ class SecretEnvVarChanges(ConfigChanger):
     self._updates = updates
     self._removes = removes
     self._clear_others = clear_others
+    self._container_name = container_name
 
   def Adjust(self, resource):
     """Mutates the given config's env vars to match the desired changes.
@@ -506,7 +545,12 @@ class SecretEnvVarChanges(ConfigChanger):
         (e.g. env var's secret source can't be replaced with a config map
         source).
     """
-    env_vars = resource.template.env_vars.secrets
+    if self._container_name:
+      env_vars = resource.template.containers[
+          self._container_name
+      ].env_vars.secrets
+    else:
+      env_vars = resource.template.env_vars.secrets
     _PruneMapping(env_vars, self._removes, self._clear_others)
 
     for name, reachable_secret in self._updates.items():
@@ -594,21 +638,20 @@ class ConfigMapEnvVarChanges(ConfigChanger):
     )
 
 
-class ResourceChanges(ConfigChanger):
+class ResourceChanges(ContainerConfigChanger):
   """Represents the user intent to update resource limits."""
 
-  def __init__(self, memory=None, cpu=None):
-    super(ResourceChanges, self).__init__(adjusts_template=True)
+  def __init__(self, memory=None, cpu=None, **kwargs):
+    super(ResourceChanges, self).__init__(**kwargs)
     self._memory = memory
     self._cpu = cpu
 
-  def Adjust(self, resource):
+  def AdjustContainer(self, container, messages_mod):
     """Mutates the given config's resource limits to match what's desired."""
     if self._memory is not None:
-      resource.template.resource_limits['memory'] = self._memory
+      container.resource_limits['memory'] = self._memory
     if self._cpu is not None:
-      resource.template.resource_limits['cpu'] = self._cpu
-    return resource
+      container.resource_limits['cpu'] = self._cpu
 
 
 class CloudSQLChanges(ConfigChanger):
@@ -777,22 +820,22 @@ def _UniqueVolumeName(source_name, existing_volumes):
   return volume_name
 
 
-def _PruneVolumes(volume_mounts, volumes):
+def _PruneVolumes(mounted_volumes, volumes):
   """Delete all volumes no longer being mounted.
 
   Args:
-    volume_mounts: resource.template.volume_mounts
+    mounted_volumes: set of volumes mounted in any container
     volumes: resource.template.volumes
   """
   for volume in list(volumes):
-    if volume not in volume_mounts.values():
+    if volume not in mounted_volumes:
       del volumes[volume]
 
 
 class SecretVolumeChanges(ConfigChanger):
   """Represents the user intent to change volumes with secret source types."""
 
-  def __init__(self, updates, removes, clear_others):
+  def __init__(self, updates, removes, clear_others, container_name=None):
     """Initialize a new SecretVolumeChanges object.
 
     Args:
@@ -800,13 +843,17 @@ class SecretVolumeChanges(ConfigChanger):
       removes: [str], List of mount paths to remove.
       clear_others: bool, If true, clear all non-updated volumes and mounts of
         the given [volume_type].
+      container_name: str, Name of the container to update.
     """
     super(SecretVolumeChanges, self).__init__(adjusts_template=True)
     self._updates = updates
     self._removes = removes
     self._clear_others = clear_others
+    self._container_name = container_name
 
-  def _UpdateManagedVolumes(self, resource, volume_mounts, volumes):
+  def _UpdateManagedVolumes(
+      self, resource, volume_mounts, volumes, external_mounts
+  ):
     """Update volumes for Cloud Run. Ensure only one secret per directory."""
     new_volumes = {}
     volumes_to_mounts = collections.defaultdict(list)
@@ -834,7 +881,10 @@ class SecretVolumeChanges(ConfigChanger):
     for mount_point, volume_source in new_volumes.items():
       if mount_point in volume_mounts:
         volume_name = volume_mounts[mount_point]
-        if len(volumes_to_mounts[volume_name]) > 1:
+        if (
+            len(volumes_to_mounts[volume_name]) > 1
+            or volume_name in external_mounts
+        ):
           # the volume is used by more than one path, let's separate it into a
           # separate volume
           volumes_to_mounts[volume_name].remove(mount_point)
@@ -895,18 +945,36 @@ class SecretVolumeChanges(ConfigChanger):
         the new volume (e.g. mount that points to a volume with a secret source
         can't be replaced with a volume that has a config map source).
     """
-    volume_mounts = resource.template.volume_mounts.secrets
+    if self._container_name:
+      container = resource.template.containers[self._container_name]
+    else:
+      container = resource.template.container
+    volume_mounts = container.volume_mounts.secrets
     volumes = resource.template.volumes.secrets
+    external_mounts = frozenset(
+        itertools.chain.from_iterable(
+            external_container.volume_mounts.secrets.values()
+            for name, external_container in resource.template.containers.items()
+            if name != container.name
+        )
+    )
 
     if platforms.IsManaged():
       _PruneManagedVolumeMapping(
-          volumes, volume_mounts, self._removes, self._clear_others
+          resource,
+          volumes,
+          volume_mounts,
+          self._removes,
+          self._clear_others,
+          external_mounts,
       )
     else:
       removes = self._removes
       _PruneMapping(volume_mounts, removes, self._clear_others)
     if platforms.IsManaged():
-      self._UpdateManagedVolumes(resource, volume_mounts, volumes)
+      self._UpdateManagedVolumes(
+          resource, volume_mounts, volumes, external_mounts
+      )
     else:
       for file_path, reachable_secret in self._updates.items():
         volume_name = _UniqueVolumeName(
@@ -925,7 +993,8 @@ class SecretVolumeChanges(ConfigChanger):
           )
         volumes[volume_name] = reachable_secret.AsSecretVolumeSource(resource)
 
-    _PruneVolumes(volume_mounts, volumes)
+    _PruneVolumes(external_mounts.union(volume_mounts.values()), volumes)
+
     secrets_mapping.PruneAnnotation(resource)
     return resource
 
@@ -991,7 +1060,13 @@ class ConfigMapVolumeChanges(ConfigChanger):
           resource.MessagesModule(), source_name, source_key
       )
 
-    _PruneVolumes(volume_mounts, volumes)
+    mounted_volumes = frozenset(
+        itertools.chain.from_iterable(
+            container.volume_mounts.config_maps.values()
+            for container in resource.template.containers.values()
+        )
+    )
+    _PruneVolumes(mounted_volumes, volumes)
 
     return resource
 
@@ -1077,38 +1152,36 @@ class TagOnDeployChange(ConfigChanger):
     return resource
 
 
-class ContainerCommandChange(ConfigChanger):
+class ContainerCommandChange(ContainerConfigChanger):
   """Represents the user intent to change the 'command' for the container."""
 
-  def __init__(self, command):
-    super(ContainerCommandChange, self).__init__(adjusts_template=True)
+  def __init__(self, command, **kwargs):
+    super(ContainerCommandChange, self).__init__(**kwargs)
     self._commands = command
 
-  def Adjust(self, resource):
-    resource.template.container.command = self._commands
-    return resource
+  def AdjustContainer(self, container, messages_mod):
+    container.command = self._commands
 
 
-class ContainerArgsChange(ConfigChanger):
+class ContainerArgsChange(ContainerConfigChanger):
   """Represents the user intent to change the 'args' for the container."""
 
-  def __init__(self, args):
-    super(ContainerArgsChange, self).__init__(adjusts_template=True)
+  def __init__(self, args, **kwargs):
+    super(ContainerArgsChange, self).__init__(**kwargs)
     self._args = args
 
-  def Adjust(self, resource):
-    resource.template.container.args = self._args
-    return resource
+  def AdjustContainer(self, container, messages_mod):
+    container.args = self._args
 
 
 _HTTP2_NAME = 'h2c'
 _DEFAULT_PORT = 8080
 
 
-class ContainerPortChange(ConfigChanger):
+class ContainerPortChange(ContainerConfigChanger):
   """Represents the user intent to change the port name and/or number."""
 
-  def __init__(self, port=None, use_http2=None):
+  def __init__(self, port=None, use_http2=None, **kwargs):
     """Initialize a ContainerPortChange.
 
     Args:
@@ -1116,17 +1189,16 @@ class ContainerPortChange(ConfigChanger):
         containerPort field, or None to not modify the port number.
       use_http2: bool, True to set the port name for http/2, False to unset it,
         or None to not modify the port name.
+      **kwargs: ContainerConfigChanger args.
     """
-    super(ContainerPortChange, self).__init__(adjusts_template=True)
+    super(ContainerPortChange, self).__init__(**kwargs)
     self._port = port
     self._http2 = use_http2
 
-  def Adjust(self, resource):
+  def AdjustContainer(self, container, messages_mod):
     """Modify an existing ContainerPort or create a new one."""
     port_msg = (
-        resource.template.container.ports[0]
-        if resource.template.container.ports
-        else resource.MessagesModule().ContainerPort()
+        container.ports[0] if container.ports else messages_mod.ContainerPort()
     )
     old_port = port_msg.containerPort or 8080  # default port
     # Set port to given value or clear field
@@ -1145,19 +1217,17 @@ class ContainerPortChange(ConfigChanger):
 
     # Use the ContainerPort iff it's not empty
     if port_msg.containerPort:
-      resource.template.container.ports = [port_msg]
+      container.ports = [port_msg]
     else:
-      resource.template.container.reset('ports')
+      container.reset('ports')
 
     # we also need to reset tcp startup probe port if it exists
-    container = resource.template.container
     if container.startupProbe and container.startupProbe.tcpSocket:
       if container.startupProbe.tcpSocket.port == old_port:
         if port_msg.containerPort:
           container.startupProbe.tcpSocket.port = port_msg.containerPort
         else:
           container.startupProbe.tcpSocket.reset('port')
-    return resource
 
 
 class SpecChange(ConfigChanger):

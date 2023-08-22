@@ -102,6 +102,7 @@ reserved:
 
 metadata:
   arg_name: metadata
+  metavar: KEY=VALUE
   type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
   required: false
   help_text: |
@@ -110,6 +111,7 @@ metadata:
 
 metadata_from_file:
   arg_name: metadata-from-file
+  metavar: KEY=VALUE
   type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
   required: false
   help_text: |

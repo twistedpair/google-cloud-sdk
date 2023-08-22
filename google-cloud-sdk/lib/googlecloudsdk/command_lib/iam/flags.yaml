@@ -180,6 +180,7 @@ workload_identity_pool_provider:
     BETA:
       api_field: googleIamV1betaWorkloadIdentityPoolProvider.attributeMapping
     arg_name: attribute-mapping
+    metavar: KEY=VALUE
     type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
     help_text: |-
       Maps attributes from authentication credentials issued by an external
@@ -495,6 +496,7 @@ workforce_pool_provider:
   attribute_mapping:
     api_field: workforcePoolProvider.attributeMapping
     arg_name: attribute-mapping
+    metavar: KEY=VALUE
     type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
     help_text: |-
       Maps claims from the authentication credentials issued by the Identity Provider into Google

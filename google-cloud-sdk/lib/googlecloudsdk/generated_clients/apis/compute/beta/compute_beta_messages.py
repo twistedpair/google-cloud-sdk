@@ -3377,7 +3377,7 @@ class AutoscalingPolicyScalingSchedule(_messages.Message):
       additional time to become serving.
     timeZone: The time zone to use when interpreting the schedule. The value
       of this field must be a time zone name from the tz database:
-      http://en.wikipedia.org/wiki/Tz_database. This field is assigned a
+      https://en.wikipedia.org/wiki/Tz_database. This field is assigned a
       default value of "UTC" if left empty.
   """
 
@@ -10269,6 +10269,7 @@ class ComputeFutureReservationsUpdateRequest(_messages.Message):
       to RFC1035.
     futureReservationResource: A FutureReservation resource to be passed as
       the request body.
+    paths: A string attribute.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -10287,10 +10288,11 @@ class ComputeFutureReservationsUpdateRequest(_messages.Message):
 
   futureReservation = _messages.StringField(1, required=True)
   futureReservationResource = _messages.MessageField('FutureReservation', 2)
-  project = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  updateMask = _messages.StringField(5)
-  zone = _messages.StringField(6, required=True)
+  paths = _messages.StringField(3, repeated=True)
+  project = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+  updateMask = _messages.StringField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeGlobalAddressesDeleteRequest(_messages.Message):
@@ -33134,7 +33136,7 @@ class Disk(_messages.Message):
       or sourceDisk parameter, or specify it alone to create an empty
       persistent disk. If you specify this field along with a source, the
       value of sizeGb must not be less than the size of the source. Acceptable
-      values are 1 to 65536, inclusive.
+      values are greater than 0.
     sourceConsistencyGroupPolicy: [Output Only] URL of the
       DiskConsistencyGroupPolicy for a secondary disk that was created using a
       consistency group.
@@ -53210,10 +53212,8 @@ class NetworkEndpoint(_messages.Message):
 class NetworkEndpointGroup(_messages.Message):
   r"""Represents a collection of network endpoints. A network endpoint group
   (NEG) defines how a set of endpoints should be reached, whether they are
-  reachable, and where they are located. For more information about using
-  NEGs, see Setting up external HTTP(S) Load Balancing with internet NEGs,
-  Setting up zonal NEGs, or Setting up external HTTP(S) Load Balancing with
-  serverless NEGs.
+  reachable, and where they are located. For more information about using NEGs
+  for different use cases, see Network endpoint groups overview.
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
@@ -64973,9 +64973,11 @@ class Router(_messages.Message):
       with encrypted VLAN attachments (interconnectAttachments).
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    interfaces: Router interfaces. Each interface requires either one linked
-      resource, (for example, linkedVpnTunnel), or IP address and IP address
-      range (for example, ipRange), or both.
+    interfaces: Router interfaces. To create a BGP peer that uses a router
+      interface, the interface must have one of the following fields
+      specified: - linkedVpnTunnel - linkedInterconnectAttachment - subnetwork
+      You can create a router interface without any of these fields specified.
+      However, you cannot create a BGP peer that uses that interface.
     kind: [Output Only] Type of resource. Always compute#router for routers.
     md5AuthenticationKeys: Keys used for MD5 authentication.
     name: Name of the resource. Provided by the client when the resource is
@@ -65524,11 +65526,10 @@ class RouterInterface(_messages.Message):
     linkedInterconnectAttachment: URI of the linked Interconnect attachment.
       It must be in the same region as the router. Each interface can have one
       linked resource, which can be a VPN tunnel, an Interconnect attachment,
-      or a virtual machine instance.
+      or a subnetwork.
     linkedVpnTunnel: URI of the linked VPN tunnel, which must be in the same
       region as the router. Each interface can have one linked resource, which
-      can be a VPN tunnel, an Interconnect attachment, or a virtual machine
-      instance.
+      can be a VPN tunnel, an Interconnect attachment, or a subnetwork.
     managementType: [Output Only] The resource that configures and manages
       this interface. - MANAGED_BY_USER is the default value and can be
       managed directly by users. - MANAGED_BY_ATTACHMENT is an interface that

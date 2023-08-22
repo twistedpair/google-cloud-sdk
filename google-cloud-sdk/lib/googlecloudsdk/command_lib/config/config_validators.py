@@ -65,6 +65,22 @@ def WarnIfSettingNonExistentRegionZone(value, zonal=True):
   return False
 
 
+def WarnIfSettingApiEndpointOverrideOutsideOfConfigUniverse(value, prop):
+  """Warn if setting 'api_endpoint_overrides/<api>' outside universe_domain."""
+  universe_domain = properties.VALUES.core.universe_domain.Get()
+  if universe_domain not in value:
+    endpoint_override_domain_mismatch_msg = (
+        'The value set for [{0}] was found to be'
+        ' associated with a universe domain outside of the current config'
+        ' universe [{1}].'
+    )
+    log.warning(
+        endpoint_override_domain_mismatch_msg.format(prop, universe_domain)
+    )
+    return True
+  return False
+
+
 def WarnIfSettingProjectWithNoAccess(scope, project):
   """Warn if setting 'core/project' config to inaccessible project."""
 

@@ -157,21 +157,33 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
     if field not in ['apiVersion', 'kind', 'metadata', 'deliveryPipeline']:
       value = manifest.get(field)
       if field == 'executionConfigs':
-        SetExecutionConfig(messages, resource, value)
+        SetExecutionConfig(messages, resource, resource_ref, value)
         continue
       if field == 'deployParameters' and kind == TARGET_KIND_V1BETA1:
-        SetDeployParametersForTarget(messages, resource, value)
+        SetDeployParametersForTarget(messages, resource, resource_ref, value)
         continue
       if field == 'serialPipeline' and kind == DELIVERY_PIPELINE_KIND_V1BETA1:
         serial_pipeline = manifest.get('serialPipeline')
+        _EnsureIsType(
+            serial_pipeline,
+            dict,
+            'failed to parse pipeline {}, serialPipeline is defined incorrectly'
+            .format(resource_ref.Name()),
+        )
         stages = serial_pipeline.get('stages')
+        _EnsureIsType(
+            stages,
+            list,
+            'failed to parse pipeline {}, stages are defined incorrectly'
+            .format(resource_ref.Name()),
+        )
         for stage in stages:
-          SetDeployParametersForPipelineStage(messages, stage)
+          SetDeployParametersForPipelineStage(messages, resource_ref, stage)
       if field == SELECTOR_FIELD and kind == AUTOMATION_KIND:
-        SetAutomationSelector(messages, resource, value)
+        SetAutomationSelector(messages, resource, resource_ref, value)
         continue
       if field == RULES_FIELD and kind == AUTOMATION_KIND:
-        SetAutomationRules(messages, resource, value)
+        SetAutomationRules(messages, resource, resource_ref, value)
         continue
       setattr(resource, field, value)
 
@@ -286,12 +298,13 @@ def ProtoToManifest(resource, resource_ref, kind):
   return manifest
 
 
-def SetExecutionConfig(messages, target, execution_configs):
+def SetExecutionConfig(messages, target, target_ref, execution_configs):
   """Sets the executionConfigs field of cloud deploy resource message.
 
   Args:
     messages: module containing the definitions of messages for Cloud Deploy.
     target:  googlecloudsdk.generated_clients.apis.clouddeploy.Target message.
+    target_ref: protorpc.messages.Message, target resource object.
     execution_configs:
       [googlecloudsdk.generated_clients.apis.clouddeploy.ExecutionConfig], list
       of ExecutionConfig messages.
@@ -299,6 +312,12 @@ def SetExecutionConfig(messages, target, execution_configs):
   Raises:
     arg_parsers.ArgumentTypeError: if usage is not a valid enum.
   """
+  _EnsureIsType(
+      execution_configs,
+      list,
+      'failed to parse target {}, executionConfigs are defined incorrectly'
+      .format(target_ref.Name()),
+  )
   for config in execution_configs:
     execution_config_message = messages.ExecutionConfig()
     for field in config:
@@ -317,19 +336,25 @@ def SetExecutionConfig(messages, target, execution_configs):
     target.executionConfigs.append(execution_config_message)
 
 
-def SetDeployParametersForPipelineStage(messages, stage):
+def SetDeployParametersForPipelineStage(messages, pipeline_ref, stage):
   """Sets the deployParameter field of cloud deploy delivery pipeline stage message.
 
   Args:
    messages: module containing the definitions of messages for Cloud Deploy.
-   stage:
-    dict[str,str], cloud deploy stage yaml definition.
+   pipeline_ref: protorpc.messages.Message, delivery pipeline resource object.
+   stage: dict[str,str], cloud deploy stage yaml definition.
   """
 
   deploy_parameters = stage.get('deployParameters')
   if deploy_parameters is None:
     return
 
+  _EnsureIsType(
+      deploy_parameters,
+      list,
+      'failed to parse stages of pipeline {}, deployParameters are defined'
+      ' incorrectly'.format(pipeline_ref.Name()),
+  )
   dps_message = getattr(messages, 'DeployParameters')
   dps_values = []
 
@@ -339,12 +364,16 @@ def SetDeployParametersForPipelineStage(messages, stage):
     if values:
       values_message = dps_message.ValuesValue
       values_dict = values_message()
-
+      _EnsureIsType(
+          values,
+          dict,
+          'failed to parse stages of pipeline {}, deployParameter values are'
+          'defined incorrectly'.format(pipeline_ref.Name()),
+      )
       for key, value in values.items():
         values_dict.additionalProperties.append(
-            values_message.AdditionalProperty(
-                key=key,
-                value=value))
+            values_message.AdditionalProperty(key=key, value=value)
+        )
       dps_value.values = values_dict
 
     match_target_labels = dp.get('matchTargetLabels')
@@ -364,42 +393,57 @@ def SetDeployParametersForPipelineStage(messages, stage):
   stage['deployParameters'] = dps_values
 
 
-def SetDeployParametersForTarget(messages, target, deploy_parameters=None):
+def SetDeployParametersForTarget(
+    messages, target, target_ref, deploy_parameters
+):
   """Sets the deployParameters field of cloud deploy target message.
 
   Args:
    messages: module containing the definitions of messages for Cloud Deploy.
    target: googlecloudsdk.generated_clients.apis.clouddeploy.Target message.
-   deploy_parameters:
-    dict[str,str], a dict of deploy parameters (key,value) pairs.
+   target_ref: protorpc.messages.Message, target resource object.
+   deploy_parameters: dict[str,str], a dict of deploy parameters (key,value)
+     pairs.
   """
 
-  if deploy_parameters is None:
-    return
+  _EnsureIsType(
+      deploy_parameters,
+      dict,
+      'failed to parse target {}, deployParameters are defined incorrectly'
+      .format(target_ref.Name()),
+  )
 
-  dps_message = getattr(messages,
-                        deploy_util.ResourceType.TARGET.value
-                        ).DeployParametersValue
+  dps_message = getattr(
+      messages, deploy_util.ResourceType.TARGET.value
+  ).DeployParametersValue
   dps_value = dps_message()
   for key, value in deploy_parameters.items():
     dps_value.additionalProperties.append(
-        dps_message.AdditionalProperty(
-            key=key,
-            value=value))
+        dps_message.AdditionalProperty(key=key, value=value)
+    )
   target.deployParameters = dps_value
 
 
-def SetAutomationSelector(messages, automation, selectors):
+def SetAutomationSelector(messages, automation, automation_ref, selectors):
   """Sets the selectors field of cloud deploy automation resource message.
 
   Args:
     messages: module containing the definitions of messages for Cloud Deploy.
     automation:  googlecloudsdk.generated_clients.apis.clouddeploy.Automation
       message.
+    automation_ref: protorpc.messages.Message, automation resource object.
     selectors:
       [googlecloudsdk.generated_clients.apis.clouddeploy.TargetAttributes], list
       of TargetAttributes messages.
   """
+
+  _EnsureIsType(
+      selectors,
+      list,
+      'failed to parse automation {}, selectors are defined incorrectly'
+      .format(automation_ref.Name()),
+  )
+
   automation.selector = messages.AutomationResourceSelector()
   for selector in selectors:
     target_attribute = messages.TargetAttribute()
@@ -419,16 +463,24 @@ def SetAutomationSelector(messages, automation, selectors):
     automation.selector.targets.append(target_attribute)
 
 
-def SetAutomationRules(messages, automation, rules):
+def SetAutomationRules(messages, automation, automation_ref, rules):
   """Sets the rules field of cloud deploy automation resource message.
 
   Args:
     messages: module containing the definitions of messages for Cloud Deploy.
     automation:  googlecloudsdk.generated_clients.apis.clouddeploy.Automation
       message.
+    automation_ref: protorpc.messages.Message, automation resource object.
     rules: [automation rule message], list of messages that are usd to create
       googlecloudsdk.generated_clients.apis.clouddeploy.AutomationRule messages.
   """
+  _EnsureIsType(
+      rules,
+      list,
+      'failed to parse automation {}, rules are defined incorrectly'
+      .format(automation_ref.Name()),
+  )
+
   for rule in rules:
     automation_rule = messages.AutomationRule()
     if rule.get(PROMOTE_RELEASE_FIELD):
@@ -521,3 +573,8 @@ def _WaitSecToMin(wait):
   # convert the minute to second
   mins = int(seconds) // 60
   return '%sm' % mins
+
+
+def _EnsureIsType(value, t, msg):
+  if not isinstance(value, t):
+    raise exceptions.CloudDeployConfigError(msg)

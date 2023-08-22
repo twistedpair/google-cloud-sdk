@@ -76,6 +76,22 @@ class AdminClustersClient(client.ClientBase):
       self, args: parser_extensions.Namespace
   ) -> Generator[messages.VmwareAdminCluster, None, None]:
     """Lists Admin Clusters in the GKE On-Prem VMware API."""
+    # Workaround for P4SA: Call query version config first, ignore the result.
+    # Context: b/296435390#comment2
+    project = (
+        args.project if args.project else properties.VALUES.core.project.Get()
+    )
+    # Hard code location to `us-west1`, because it cannot handle `--location=-`.
+    parent = 'projects/{project}/locations/{location}'.format(
+        project=project, location='us-west1'
+    )
+    dummy_request = messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest(
+        parent=parent,
+    )
+    _ = self._client.projects_locations_vmwareClusters.QueryVersionConfig(
+        dummy_request
+    )
+
     if (
         'location' not in args.GetSpecifiedArgsDict()
         and not properties.VALUES.container_vmware.location.Get()

@@ -1,7 +1,7 @@
 schema:
   arg_name: schema
   api_field: googleCloudDatacatalogV1beta1Entry.schema.columns
-  metavar: "[COLUMN_NAME=COLUMN_TYPE,...]"
+  metavar: COLUMN_NAME=COLUMN_TYPE
   type:
     arg_dict:
       flatten: true

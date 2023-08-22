@@ -124,6 +124,7 @@ def AddArguments(parser):
       help="""\
         Enable injection of user credentials for authentication.
         """,
+      hidden=True
   )
 
   _AddDependency(parser)

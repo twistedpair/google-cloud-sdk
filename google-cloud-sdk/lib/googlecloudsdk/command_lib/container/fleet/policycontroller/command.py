@@ -37,11 +37,15 @@ class PocoCommand:
     """Fetches the current specs from the server."""
     return self.hubclient.ToPyDict(self.GetFeature().membershipSpecs)
 
-  def path_specs(self, args: parser_extensions.Namespace) -> SpecMapping:
+  def path_specs(
+      self, args: parser_extensions.Namespace, ignore_missing: bool = False
+  ) -> SpecMapping:
     """Retrieves memberships specied by the command that exist in the Feature.
 
     Args:
       args: The argparse object passed to the command.
+      ignore_missing: Use this to return a mapping that includes an 'empty' spec
+        for each specified path if it doesn't already exist.
 
     Returns:
       A dict mapping a path to the membership spec.
@@ -67,14 +71,18 @@ class PocoCommand:
     }
 
     # Ensure that we find all the memberships we are looking for.
-    missing = [
-        exceptions.InvalidPocoMembershipError(
-            'Policy Controller is not enabled for membership {}'.format(path)
-        )
-        for path in memberships_paths if path not in specs
-    ]
-    if missing:
-      raise exceptions.InvalidPocoMembershipError(missing)
+    missing = (path for path in memberships_paths if path not in specs)
+    if ignore_missing:
+      for path in missing:
+        specs.update((path, self.messages.MembershipFeatureSpec()))
+    else:
+      msg = 'Policy Controller is not enabled for membership {}'
+      missing_memberships = [
+          exceptions.InvalidPocoMembershipError(msg.format(path))
+          for path in memberships_paths if path not in specs
+      ]
+      if missing_memberships:
+        raise exceptions.InvalidPocoMembershipError(missing_memberships)
 
     # Drop the short path info and send back the specs, if they were all found.
     return {path: spec for (path, spec) in specs.values()}
@@ -89,9 +97,14 @@ class PocoCommand:
     Returns:
       None
     """
-    self.Update(
-        ['membership_specs'],
-        self.messages.Feature(
-            membershipSpecs=self.hubclient.ToMembershipSpecs(specs)
-        ),
+    feature = self.messages.Feature(
+        membershipSpecs=self.hubclient.ToMembershipSpecs(specs)
     )
+    try:
+      return self.Update(['membership_specs'], feature)
+    except exceptions.Error as e:
+      fne = self.FeatureNotEnabledError()
+      if str(e) == str(fne):
+        return self.Enable(feature)
+      else:
+        raise e

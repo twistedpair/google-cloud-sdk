@@ -235,6 +235,7 @@ description:
 
 labels:
   arg_name: labels
+  metavar: KEY=VALUE
   type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
   required: false
   help_text: |

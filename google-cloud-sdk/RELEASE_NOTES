@@ -6,6 +6,104 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 444.0.0 (2023-08-22)
+
+### AI
+
+* Added `gcloud beta ai persistent-resources` command group which supports creating and managing persistent resources for running custom training jobs.
+
+### AlloyDB
+
+* Added flag `--availability-type` to specify availability-type for an instance
+to the following commands:
+   * `gcloud alloydb instances create`
+   * `gcloud alloydb instances update`
+   * `gcloud alloydb instances create-secondary`
+
+* Added the following flags of `gcloud alloydb instances create` and
+  `gcloud alloydb instances update` to alpha, beta and GA:
+   * `--ssl-mode`
+   * `--require-connectors`
+
+* Added flag `--allocated-ip-range-name` to specify the allocated IP range for
+a cluster to the following commands:
+   * `gcloud alloydb clusters create`
+   * `gcloud alloydb clusters restore`
+   * `gcloud alloydb clusters create-secondary`
+
+### Anthos Multi-Cloud
+
+*   Added `--node-labels` flag to `gcloud container aws node-pools update` to
+    update the labels assigned to node pool nodes.
+*   Added `--clear-node-labels` flag to `gcloud container aws node-pools update`
+    to clear the labels assigned to node pool nodes.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.17 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.17>.
+
+### BigQuery
+
+* Added `--quota_project_id` flag to force the quota project of a request.
+
+### Cloud Billing
+
+*   Promoted `gcloud billing accounts` and `gcloud billing projects` to GA.
+
+### Cloud Dataplex
+
+* Promoted `resource-read-access-mode` flag in `assets` command group to GA.
+* Added `export-results-table` flag in `datascans create data-profile` command.
+
+### Cloud Dataproc
+
+* Added `--min-num-workers` flags to `gcloud dataproc clusters create`.
+* Added `gcloud beta dataproc sessions` to create and manage Dataproc interactive sessions.
+* Added `gcloud beta dataproc session-templates` to create and manage Dataproc session templates.
+
+### Cloud NetApp
+
+* Added `gcloud netapp operations` and `gcloud netapp locations` command group.
+
+### Cloud Run
+
+* Added `gcloud beta run jobs executions cancel` to allow cancelling a running
+  Cloud Run job execution.
+
+### Compute Engine
+
+* Promoted support for Standby Policy for `gcloud compute instance-groups managed create` in Alpha.
+* Promoted support for Standby Policy for `gcloud compute instance-groups managed update` in Alpha.
+* Promoted `compute routers get-nat-ip-info` to GA.
+* Promoted `gcloud compute future-reservations` command group to beta.
+
+### Connectors
+
+* Added `gcloud connectors` command group. Commands in this group provide ways to interact with Integration Connectors resources.
+
+### Dataproc Metastore
+
+*   Promoted `gcloud metastore operations cancel` to GA.
+
+### GKE Hub
+
+* Promoted GkeHub tenancy commands to GA.
+  * Promoted `gcloud container fleet` methods to GA.
+  * Promoted `gcloud container fleet memberships bindings` to GA.
+  * Promoted `gcloud container fleet scopes` to GA.
+  * Promoted `gcloud container fleet scopes namespaces` to GA.
+  * Promoted `gcloud container fleet scopes rbacrolebindings` to GA.
+
+### Network Connectivity
+
+* Updated `gcloud network-connectivity internal-ranges` to support `overlap-existing-subnet-range` enum value for `--overlaps` flag during create and update.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
 ## 443.0.0 (2023-08-15)
 
 ### AI

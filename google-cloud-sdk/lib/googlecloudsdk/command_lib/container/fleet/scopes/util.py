@@ -69,20 +69,19 @@ def HandleNamespaceLabelsUpdateRequest(ref, args):
   current_scope = fleetclient.GetScope(ref.RelativeName())
 
   # update GCP labels for namespace resource
-  new_labels = None
-  if labels_diff.MayHaveUpdates():
+  new_labels = labels_diff.Apply(
+      fleetclient.messages.Scope.LabelsValue, current_scope.labels
+  ).GetOrNone()
+  if new_labels:
     mask.append('labels')
-    new_labels = labels_diff.Apply(
-        fleetclient.messages.Scope.LabelsValue, current_scope.labels
-    ).GetOrNone()
 
-  new_namespace_labels = None
-  if namespace_labels_diff.MayHaveUpdates():
+  # add cluster namespace level labels to resource
+  new_namespace_labels = namespace_labels_diff.Apply(
+      fleetclient.messages.Scope.NamespaceLabelsValue,
+      current_scope.namespaceLabels,
+  ).GetOrNone()
+  if new_namespace_labels:
     mask.append('namespace_labels')
-    new_namespace_labels = namespace_labels_diff.Apply(
-        fleetclient.messages.Scope.NamespaceLabelsValue,
-        current_scope.namespaceLabels,
-    ).GetOrNone()
 
   # if there are no fields to update, don't make update api call
   if not mask:

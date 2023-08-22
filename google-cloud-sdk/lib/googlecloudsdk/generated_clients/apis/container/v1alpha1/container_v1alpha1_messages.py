@@ -1302,6 +1302,9 @@ class ClusterUpdate(_messages.Message):
     desiredNodePoolAutoConfigNetworkTags: The desired network tags that apply
       to all auto-provisioned node pools in autopilot clusters and node auto-
       provisioning enabled clusters.
+    desiredNodePoolAutoConfigResourceManagerTags: The desired resource manager
+      tags that apply to all auto-provisioned node pools in autopilot clusters
+      and node auto-provisioning enabled clusters.
     desiredNodePoolAutoscaling: Autoscaler configuration for the node pool
       specified in desired_node_pool_id. If there is only one pool in the
       cluster and desired_node_pool_id is not provided then the change applies
@@ -1484,37 +1487,38 @@ class ClusterUpdate(_messages.Message):
   desiredNetworkPerformanceConfig = _messages.MessageField('ClusterNetworkPerformanceConfig', 47)
   desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 48)
   desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 49)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 50)
-  desiredNodePoolId = _messages.StringField(51)
-  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 52)
-  desiredNodeVersion = _messages.StringField(53)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 54)
-  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 55)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 56)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 57)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 58)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 59)
-  desiredProtectConfig = _messages.MessageField('ProtectConfig', 60)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 61)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 62)
-  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 63)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 64)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 65)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 66)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 67)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 68)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 69)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 70)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 71)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 72)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 73)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 74)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 75)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 76)
-  etag = _messages.StringField(77)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 78)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 79)
-  securityProfile = _messages.MessageField('SecurityProfile', 80)
+  desiredNodePoolAutoConfigResourceManagerTags = _messages.MessageField('ResourceManagerTags', 50)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 51)
+  desiredNodePoolId = _messages.StringField(52)
+  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 53)
+  desiredNodeVersion = _messages.StringField(54)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 55)
+  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 56)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 57)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 58)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 59)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 60)
+  desiredProtectConfig = _messages.MessageField('ProtectConfig', 61)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 62)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 63)
+  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 64)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 65)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 66)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 67)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 68)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 69)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 70)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 71)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 72)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 73)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 74)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 75)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 76)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 77)
+  etag = _messages.StringField(78)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 79)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 80)
+  securityProfile = _messages.MessageField('SecurityProfile', 81)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2264,15 +2268,16 @@ class DNSConfig(_messages.Message):
       access to cluster DNS records.
 
   Fields:
+    additiveVpcScopeDnsDomain: Optional. The domain used in Additive VPC
+      scope.
     clusterDns: cluster_dns indicates which in-cluster DNS provider should be
       used.
     clusterDnsDomain: cluster_dns_domain is the suffix used for all cluster
       service records.
     clusterDnsScope: cluster_dns_scope indicates the scope of access to
       cluster DNS records.
-    vpcScopeV2DnsDomain: Optional. The domain used in VPC scope V2.
-    vpcScopeV2Enabled: Optional. Indicates the enablement of VPC scope V2.
-      Which can be enabled alongside Cluster scope.
+    enableAdditiveVpcScope: Optional. Indicates the enablement of Additive VPC
+      scope. Which can be enabled alongside Cluster scope.
   """
 
   class ClusterDnsScopeValueValuesEnum(_messages.Enum):
@@ -2303,11 +2308,11 @@ class DNSConfig(_messages.Message):
     CLOUD_DNS = 2
     KUBE_DNS = 3
 
-  clusterDns = _messages.EnumField('ClusterDnsValueValuesEnum', 1)
-  clusterDnsDomain = _messages.StringField(2)
-  clusterDnsScope = _messages.EnumField('ClusterDnsScopeValueValuesEnum', 3)
-  vpcScopeV2DnsDomain = _messages.StringField(4)
-  vpcScopeV2Enabled = _messages.BooleanField(5)
+  additiveVpcScopeDnsDomain = _messages.StringField(1)
+  clusterDns = _messages.EnumField('ClusterDnsValueValuesEnum', 2)
+  clusterDnsDomain = _messages.StringField(3)
+  clusterDnsScope = _messages.EnumField('ClusterDnsScopeValueValuesEnum', 4)
+  enableAdditiveVpcScope = _messages.BooleanField(5)
 
 
 class DNSEndpointConfig(_messages.Message):
@@ -4192,6 +4197,8 @@ class NodeConfig(_messages.Message):
       zonal-resources) to this node pool.
     resourceLabels: The resource labels for the node pool to use to annotate
       any related Google Compute Engine resources.
+    resourceManagerTags: A map of resource manager tag keys and values to be
+      attached to the nodes.
     sandboxConfig: Sandbox configuration for this node.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs. Specify the email address of the Service Account;
@@ -4338,16 +4345,17 @@ class NodeConfig(_messages.Message):
   preemptible = _messages.BooleanField(27)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 28)
   resourceLabels = _messages.MessageField('ResourceLabelsValue', 29)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 30)
-  serviceAccount = _messages.StringField(31)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 32)
-  soleTenantConfig = _messages.MessageField('SoleTenantConfig', 33)
-  spot = _messages.BooleanField(34)
-  stableFleetConfig = _messages.MessageField('StableFleetConfig', 35)
-  tags = _messages.StringField(36, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 37, repeated=True)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 38)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 39)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 30)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 31)
+  serviceAccount = _messages.StringField(32)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 33)
+  soleTenantConfig = _messages.MessageField('SoleTenantConfig', 34)
+  spot = _messages.BooleanField(35)
+  stableFleetConfig = _messages.MessageField('StableFleetConfig', 36)
+  tags = _messages.StringField(37, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 38, repeated=True)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 39)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 40)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -4680,9 +4688,13 @@ class NodePoolAutoConfig(_messages.Message):
       to identify valid sources or targets for network firewalls and are
       specified by the client during cluster creation. Each tag within the
       list must comply with RFC1035.
+    resourceManagerTags: Resource manager tag keys and values to be attached
+      to the nodes for managing Compute Engine firewalls using Network
+      Firewall Policies.
   """
 
   networkTags = _messages.MessageField('NetworkTags', 1)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 2)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -5451,6 +5463,57 @@ class ResourceLimit(_messages.Message):
   maximum = _messages.IntegerField(1)
   minimum = _messages.IntegerField(2)
   resourceType = _messages.StringField(3)
+
+
+class ResourceManagerTags(_messages.Message):
+  r"""A map of resource manager tag keys and values to be attached to the
+  nodes for managing Compute Engine firewalls using Network Firewall Policies.
+  Tags must be according to specifications in
+  https://cloud.google.com/vpc/docs/tags-firewalls-overview#specifications. A
+  maximum of 5 tag key-value pairs can be specified. Existing tags will be
+  replaced with new values.
+
+  Messages:
+    TagsValue: Tags must be in one of the following formats ([KEY]=[VALUE]) 1.
+      `tagKeys/{tag_key_id}=tagValues/{tag_value_id}` 2.
+      `{org_id}/{tag_key_name}={tag_value_name}` 3.
+      `{project_id}/{tag_key_name}={tag_value_name}`
+
+  Fields:
+    tags: Tags must be in one of the following formats ([KEY]=[VALUE]) 1.
+      `tagKeys/{tag_key_id}=tagValues/{tag_value_id}` 2.
+      `{org_id}/{tag_key_name}={tag_value_name}` 3.
+      `{project_id}/{tag_key_name}={tag_value_name}`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Tags must be in one of the following formats ([KEY]=[VALUE]) 1.
+    `tagKeys/{tag_key_id}=tagValues/{tag_value_id}` 2.
+    `{org_id}/{tag_key_name}={tag_value_name}` 3.
+    `{project_id}/{tag_key_name}={tag_value_name}`
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  tags = _messages.MessageField('TagsValue', 1)
 
 
 class ResourceUsageExportConfig(_messages.Message):
@@ -6660,6 +6723,10 @@ class UpdateNodePoolRequest(_messages.Message):
       name field.
     resourceLabels: The resource labels for the node pool to use to annotate
       any related Google Compute Engine resources.
+    resourceManagerTags: Desired resource manager tag keys and values to be
+      attached to the nodes for managing Compute Engine firewalls using
+      Network Firewall Policies. Existing tags will be replaced with new
+      values.
     tags: The desired network tags to be applied to all nodes in the node
       pool. If this field is not present, the tags will not be changed.
       Otherwise, the existing network tags will be *replaced* with the
@@ -6706,13 +6773,14 @@ class UpdateNodePoolRequest(_messages.Message):
   nodeVersion = _messages.StringField(22)
   projectId = _messages.StringField(23)
   resourceLabels = _messages.MessageField('ResourceLabels', 24)
-  tags = _messages.MessageField('NetworkTags', 25)
-  taints = _messages.MessageField('NodeTaints', 26)
-  updatedNodePool = _messages.MessageField('NodePool', 27)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 28)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 29)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 30)
-  zone = _messages.StringField(31)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 25)
+  tags = _messages.MessageField('NetworkTags', 26)
+  taints = _messages.MessageField('NodeTaints', 27)
+  updatedNodePool = _messages.MessageField('NodePool', 28)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 29)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 30)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 31)
+  zone = _messages.StringField(32)
 
 
 class UpgradeSettings(_messages.Message):

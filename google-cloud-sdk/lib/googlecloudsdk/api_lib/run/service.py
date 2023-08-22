@@ -44,21 +44,6 @@ class Service(k8s_object.KubernetesObject):
   API_CATEGORY = 'serving.knative.dev'
   KIND = 'Service'
 
-  @classmethod
-  def New(cls, client, namespace):
-    """Produces a new Service object.
-
-    Args:
-      client: The Cloud Run API client.
-      namespace: str, The serving namespace.
-
-    Returns:
-      A new Service object to be deployed.
-    """
-    ret = super(Service, cls).New(client, namespace)
-    ret.template.spec.containers = [client.MESSAGES_MODULE.Container()]
-    return ret
-
   @property
   def template(self):
     ret = revision.Revision.Template(self.spec.template, self.MessagesModule())

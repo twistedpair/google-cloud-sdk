@@ -23,10 +23,14 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute.instances import flags as instance_flags
 
 
-def GetDescriptionFlag():
+def GetDescriptionFlag(is_fr=False):
+  help_text = """\
+  An optional description of the {} to create.
+  """.format('future reservation' if is_fr else 'reservation')
+
   return base.Argument(
       '--description',
-      help='An optional description of the reservation to create.')
+      help=help_text)
 
 
 def GetRequireSpecificAllocation():

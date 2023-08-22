@@ -25,7 +25,7 @@ from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
-
+from googlecloudsdk.core import properties
 from six.moves.urllib import parse
 
 # Upper bound on batch size
@@ -43,6 +43,22 @@ def _GetBatchUrl(endpoint_url, api_version):
   return parse.urljoin(
       '{0}://{1}'.format(parsed_endpoint.scheme, parsed_endpoint.netloc),
       'batch/compute/' + api_version)
+
+
+def _ForceBatchRequest():
+  """Check if compute/force_batch_request property is set."""
+  return properties.VALUES.compute.force_batch_request.GetBool()
+
+
+def _IsSelectedRequest(request):
+  """Check if the request matches instances.SimulateMaintenanceEvent."""
+  service, method, _ = request
+  if (
+      type(service) is type(service.client.instances)
+      and method == 'SimulateMaintenanceEvent'
+  ):
+    return True
+  return False
 
 
 class ClientAdapter(object):
@@ -141,8 +157,10 @@ class ClientAdapter(object):
           errors, error_message='Could not fetch resource:')
     return objects
 
-  def BatchRequests(self, requests, errors_to_collect=None):
-    """Issues batch request for given set of requests.
+  def AsyncRequests(self, requests, errors_to_collect=None):
+    """Issues async request for given set of requests.
+
+    Return immediately without waiting for the operation in progress to complete
 
     Args:
       requests: list(tuple(service, method, payload)), where service is
@@ -156,23 +174,49 @@ class ClientAdapter(object):
       list of responses, matching list of requests. Some responses can be
         errors.
     """
-    batch_request = batch.BatchApiRequest(batch_url=self._batch_url)
-    for service, method, request in requests:
-      batch_request.Add(service, method, request)
-
-    payloads = batch_request.Execute(
-        self._client.http, max_batch_size=_BATCH_SIZE_LIMIT)
-
-    responses = []
-    errors = errors_to_collect if errors_to_collect is not None else []
-
-    for payload in payloads:
-      if payload.is_error:
-        if isinstance(payload.exception, apitools_exceptions.HttpError):
-          errors.append(api_exceptions.HttpException(payload.exception))
+    if (
+        not _ForceBatchRequest()
+        and len(requests) == 1
+        and _IsSelectedRequest(requests[0])
+    ):
+      responses = []
+      errors = errors_to_collect if errors_to_collect is not None else []
+      service, method, request_body = requests[0]
+      num_retries = service.client.num_retries
+      # stop the default retry behavior of http_wrapper.MakeRequest
+      service.client.num_retries = 0
+      try:
+        response = getattr(service, method)(request=request_body)
+        responses.append(response)
+      except apitools_exceptions.HttpError as exception:
+        errors.append(api_exceptions.HttpException(exception))
+        responses.append(None)
+      except apitools_exceptions.Error as exception:
+        if hasattr(exception, 'message'):
+          errors.append(Error(exception.message))
         else:
-          errors.append(Error(payload.exception.message))
+          errors.append((Error(exception)))
+        responses.append(None)
+      service.client.num_retries = num_retries
+      return responses
+    else:
+      batch_request = batch.BatchApiRequest(batch_url=self._batch_url)
+      for service, method, request in requests:
+        batch_request.Add(service, method, request)
 
-      responses.append(payload.response)
+      payloads = batch_request.Execute(
+          self._client.http, max_batch_size=_BATCH_SIZE_LIMIT
+      )
 
+      responses = []
+      errors = errors_to_collect if errors_to_collect is not None else []
+
+      for payload in payloads:
+        if payload.is_error:
+          if isinstance(payload.exception, apitools_exceptions.HttpError):
+            errors.append(api_exceptions.HttpException(payload.exception))
+          else:
+            errors.append(Error(payload.exception.message))
+
+        responses.append(payload.response)
     return responses

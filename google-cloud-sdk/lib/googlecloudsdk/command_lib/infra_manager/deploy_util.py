@@ -80,7 +80,9 @@ def _UploadSourceDirToGCS(gcs_client, source, gcs_source_staging, ignore_file):
     gcs_client.CopyFileToGCS(full_local_path, target_obj_ref)
 
 
-def _UploadSourceToGCS(source, stage_bucket, ignore_file):
+def _UploadSourceToGCS(
+    source, stage_bucket, deployment_short_name, location, ignore_file
+):
   """Uploads local content to GCS.
 
   This will ensure that the source and destination exist before triggering the
@@ -90,8 +92,10 @@ def _UploadSourceToGCS(source, stage_bucket, ignore_file):
     source: string, a local path.
     stage_bucket: optional string. When not provided, the default staging bucket
       will be used (see GetDefaultStagingBucket). This string is of the format
-      "gs://bucket-name/". A "source" object will be created under this bucket,
-      and any uploaded artifacts will be stored there.
+      "gs://bucket-name/". An "im_source_staging" object will be created under
+      this bucket, and any uploaded artifacts will be stored there.
+    deployment_short_name: short name of the deployment.
+    location: location of the deployment.
     ignore_file: string, a path to a gcloudignore file.
 
   Returns:
@@ -103,18 +107,21 @@ def _UploadSourceToGCS(source, stage_bucket, ignore_file):
   """
   gcs_client = storage_api.StorageClient()
 
-  # The object name to use for our GCS storage.
-  gcs_object_name = 'source'
+  # The object name to use for our GCS storage. This is supposed to be
+  # identifiable as infra-manager generated, which will assist with cleanup.
+  gcs_object_name = 'im_source_staging'
 
   if stage_bucket is None:
     used_default_bucket_name = True
     gcs_source_bucket_name = staging_bucket_util.GetDefaultStagingBucket()
-    gcs_source_staging_dir = 'gs://{0}/{1}'.format(
-        gcs_source_bucket_name, gcs_object_name
+    gcs_source_staging_dir = 'gs://{0}/{1}/{2}/{3}'.format(
+        gcs_source_bucket_name, gcs_object_name, location, deployment_short_name
     )
   else:
     used_default_bucket_name = False
-    gcs_source_staging_dir = stage_bucket + gcs_object_name
+    gcs_source_staging_dir = '{0}{1}/{2}/{3}'.format(
+        stage_bucket, gcs_object_name, location, deployment_short_name
+    )
 
   # By calling REGISTRY.Parse on "gs://my-bucket/foo", the result's "bucket"
   # property will be "my-bucket" and the "object" property will be "foo".
@@ -180,6 +187,8 @@ def UpdateDeploymentDeleteRequestWithForce(unused_ref, unused_args, request):
 
 def _CreateTFBlueprint(
     messages,
+    deployment_short_name,
+    location,
     local_source,
     stage_bucket,
     ignore_file,
@@ -192,8 +201,10 @@ def _CreateTFBlueprint(
   """Returns the TerraformBlueprint message.
 
   Args:
-    messages: ModuleType, the messages module that lets us form blueprints API
+    messages: ModuleType, the messages module that lets us form Config API
       messages based on our protos.
+    deployment_short_name: short name of the deployment.
+    location: location of the deployment.
     local_source: Local storage path where config files are stored.
     stage_bucket: optional string. Destination for storing local config files
       specified by local source flag. e.g. "gs://bucket-name/".
@@ -217,7 +228,9 @@ def _CreateTFBlueprint(
   if gcs_source is not None:
     terraform_blueprint.gcsSource = gcs_source
   elif local_source is not None:
-    upload_bucket = _UploadSourceToGCS(local_source, stage_bucket, ignore_file)
+    upload_bucket = _UploadSourceToGCS(
+        local_source, stage_bucket, deployment_short_name, location, ignore_file
+    )
     terraform_blueprint.gcsSource = upload_bucket
   else:
     terraform_blueprint.gitSource = messages.GitSource(
@@ -346,8 +359,18 @@ def Apply(
       additionalProperties=additional_properties
   )
 
+  deployment_ref = resources.REGISTRY.Parse(
+      deployment_full_name, collection='config.projects.locations.deployments'
+  )
+  # Get just the ID from the fully qualified name.
+  deployment_id = deployment_ref.Name()
+
+  location = deployment_ref.Parent().Name()
+
   tf_blueprint = _CreateTFBlueprint(
       messages,
+      deployment_id,
+      location,
       local_source,
       stage_bucket,
       ignore_file,
@@ -368,7 +391,7 @@ def Apply(
   )
 
   if artifacts_gcs_bucket is not None:
-    deployment.artifactGcsBucket = artifacts_gcs_bucket
+    deployment.artifactsGcsBucket = artifacts_gcs_bucket
 
   # Check if a deployment with the given name already exists. If it does, we'll
   # update that deployment. If not, we'll create it.
@@ -379,12 +402,6 @@ def Apply(
 
   is_creating_deployment = existing_deployment is None
   op = None
-
-  deployment_ref = resources.REGISTRY.Parse(
-      deployment_full_name, collection='config.projects.locations.deployments'
-  )
-  # Get just the ID from the fully qualified name.
-  deployment_id = deployment_ref.Name()
 
   if is_creating_deployment:
     op = _CreateDeploymentOp(deployment, deployment_full_name)

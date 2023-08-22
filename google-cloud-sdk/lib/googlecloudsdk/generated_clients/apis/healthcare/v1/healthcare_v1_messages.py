@@ -40,13 +40,29 @@ class AnalyzeEntitiesRequest(_messages.Message):
   r"""The request to analyze healthcare entities in a document.
 
   Enums:
+    AlternativeOutputFormatValueValuesEnum: Optional. Alternative output
+      format to be generated based on the results of analysis.
     LicensedVocabulariesValueListEntryValuesEnum:
 
   Fields:
+    alternativeOutputFormat: Optional. Alternative output format to be
+      generated based on the results of analysis.
     documentContent: document_content is a document to be annotated.
     licensedVocabularies: A list of licensed vocabularies to use in the
       request, in addition to the default unlicensed vocabularies.
   """
+
+  class AlternativeOutputFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. Alternative output format to be generated based on the
+    results of analysis.
+
+    Values:
+      ALTERNATIVE_OUTPUT_FORMAT_UNSPECIFIED: No alternative output format is
+        specified.
+      FHIR_BUNDLE: FHIR bundle output.
+    """
+    ALTERNATIVE_OUTPUT_FORMAT_UNSPECIFIED = 0
+    FHIR_BUNDLE = 1
 
   class LicensedVocabulariesValueListEntryValuesEnum(_messages.Enum):
     r"""LicensedVocabulariesValueListEntryValuesEnum enum type.
@@ -60,8 +76,9 @@ class AnalyzeEntitiesRequest(_messages.Message):
     ICD10CM = 1
     SNOMEDCT_US = 2
 
-  documentContent = _messages.StringField(1)
-  licensedVocabularies = _messages.EnumField('LicensedVocabulariesValueListEntryValuesEnum', 2, repeated=True)
+  alternativeOutputFormat = _messages.EnumField('AlternativeOutputFormatValueValuesEnum', 1)
+  documentContent = _messages.StringField(2)
+  licensedVocabularies = _messages.EnumField('LicensedVocabulariesValueListEntryValuesEnum', 3, repeated=True)
 
 
 class AnalyzeEntitiesResponse(_messages.Message):
@@ -73,13 +90,17 @@ class AnalyzeEntitiesResponse(_messages.Message):
       mention content.
     entityMentions: The `entity_mentions` field contains all the annotated
       medical entities that were mentioned in the provided document.
+    fhirBundle: The FHIR bundle ([`R4`](http://hl7.org/fhir/R4/bundle.html))
+      that includes all the entities, the entity mentions, and the
+      relationships in JSON format.
     relationships: relationships contains all the binary relationships that
       were identified between entity mentions within the provided document.
   """
 
   entities = _messages.MessageField('Entity', 1, repeated=True)
   entityMentions = _messages.MessageField('EntityMention', 2, repeated=True)
-  relationships = _messages.MessageField('EntityMentionRelationship', 3, repeated=True)
+  fhirBundle = _messages.StringField(3)
+  relationships = _messages.MessageField('EntityMentionRelationship', 4, repeated=True)
 
 
 class ArchiveUserDataMappingRequest(_messages.Message):
@@ -3543,6 +3564,65 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirCapabilitiesRequest(_mess
   name = _messages.StringField(1, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteRequest
+  object.
+
+  Fields:
+    parent: The name of the FHIR store this resource belongs to.
+    type: The FHIR resource type to delete, such as Patient or Observation.
+      For a complete list, see the FHIR Resource Index ([DSTU2](https://hl7.or
+      g/implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  type = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalPatchRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalPatchRequest
+  object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: The name of the FHIR store this resource belongs to.
+    type: The FHIR resource type to update, such as Patient or Observation.
+      For a complete list, see the FHIR Resource Index ([DSTU2](https://hl7.or
+      g/implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  parent = _messages.StringField(2, required=True)
+  type = _messages.StringField(3, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalUpdateRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalUpdateRequest
+  object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: The name of the FHIR store this resource belongs to.
+    type: The FHIR resource type to update, such as Patient or Observation.
+      For a complete list, see the FHIR Resource Index ([DSTU2](https://hl7.or
+      g/implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      Must match the resource type in the provided content.
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  parent = _messages.StringField(2, required=True)
+  type = _messages.StringField(3, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateRequest object.
 
@@ -5383,8 +5463,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -5406,7 +5486,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -5445,9 +5525,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -5596,7 +5676,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -5604,15 +5684,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.

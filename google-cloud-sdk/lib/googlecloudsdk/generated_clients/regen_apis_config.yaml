@@ -927,6 +927,10 @@ apis:
     v1:
       discovery_doc: managedidentities_v1.json
       default: true
+  managedkafka:
+    v1alpha:
+      discovery_doc: managedkafka_v1alpha.json
+      default: true
   logging:
     v2:
       discovery_doc: logging_v2.json
@@ -1226,6 +1230,10 @@ apis:
         organizations.securityHealthAnalyticsSettings.customModules:
           path: organizations/{organizationsId}/securityHealthAnalyticsSettings/customModules/{customModulesId}
       default: true
+  securityposture:
+    v1alpha:
+      discovery_doc: securityposture_v1alpha.json
+      default: true
   serviceconsumermanagement:
     v1beta1:
       discovery_doc: serviceconsumermanagement_v1beta1.json
@@ -1316,6 +1324,9 @@ apis:
   storagetransfer:
     v1:
       discovery_doc: storagetransfer_v1.json
+  connectors:
+    v1:
+      discovery_doc: connectors_v1.json
   testing:
     v1:
       discovery_doc: testing_v1.json
@@ -1804,6 +1815,9 @@ canonical_surfaces:
   managedidentities:
     name: managedidentities
     command: active-directory
+  managedkafka:
+    name: managedkafka
+    command: managed-kafka
   manager:
     name: manager
     hidden: true
@@ -1878,6 +1892,9 @@ canonical_surfaces:
   privateca:
     name: privateca
     command: privateca
+  connectors:
+    name: connectors
+    command: connectors
   publicca:
     name: publicca
     command: publicca
@@ -1929,6 +1946,9 @@ canonical_surfaces:
   securedlandingzone:
     name: securedlandingzone
     command: scc slz-overwatch
+    hidden: true
+  securityposture:
+    name: securityposture
     hidden: true
   securesourcemanager:
     name: securesourcemanager

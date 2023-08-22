@@ -102,6 +102,11 @@ def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
     cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
         alloydb_messages, args)
 
+  if args.allocated_ip_range_name:
+    cluster.networkConfig = alloydb_messages.NetworkConfig(
+        network=args.network, allocatedIpRange=args.allocated_ip_range_name
+    )
+
   return cluster
 
 
@@ -114,14 +119,7 @@ def _ConstructClusterForCreateRequestBeta(alloydb_messages, args):
 
 def _ConstructClusterForCreateRequestAlpha(alloydb_messages, args):
   """Returns the cluster for alpha create request based on args."""
-  cluster = _ConstructClusterForCreateRequestBeta(alloydb_messages, args)
-
-  if args.allocated_ip_range_name:
-    cluster.networkConfig = alloydb_messages.NetworkConfig(
-        network=args.network, allocatedIpRange=args.allocated_ip_range_name
-    )
-
-  return cluster
+  return _ConstructClusterForCreateRequestBeta(alloydb_messages, args)
 
 
 def ConstructCreateRequestFromArgsGA(alloydb_messages, location_ref, args):
@@ -177,6 +175,12 @@ def _ConstructClusterResourceForRestoreRequest(alloydb_messages, args):
     encryption_config = alloydb_messages.EncryptionConfig()
     encryption_config.kmsKeyName = kms_key
     cluster_resource.encryptionConfig = encryption_config
+
+  if args.allocated_ip_range_name:
+    cluster_resource.networkConfig = alloydb_messages.NetworkConfig(
+        allocatedIpRange=args.allocated_ip_range_name
+    )
+
   return cluster_resource
 
 

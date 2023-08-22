@@ -108,3 +108,19 @@ class JobsClient(object):
     )
 
     return self._jobs_client.Create(create_req)
+
+  def Delete(self, job):
+    """Delete a Job in the Project/location.
+
+    Args:
+      job: str, the name for the job being deleted
+
+    Returns:
+      Empty Response Message.
+    """
+    delete_req = (
+        self.messages.FaultinjectiontestingProjectsLocationsJobsDeleteRequest(
+            name=job
+        )
+    )
+    return self._jobs_client.Delete(delete_req)

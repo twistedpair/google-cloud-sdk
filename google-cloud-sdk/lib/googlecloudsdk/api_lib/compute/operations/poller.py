@@ -190,8 +190,7 @@ class BatchPoller(waiter.OperationPoller):
       requests.append((service, 'Wait', request_type(**operation_ref.AsDict())))
 
     errors_to_collect = []
-    responses = self._compute_adapter.BatchRequests(
-        requests, errors_to_collect)
+    responses = self._compute_adapter.AsyncRequests(requests, errors_to_collect)
     for response, operation_ref in zip(responses, not_done):
       operation_batch.SetResponse(operation_ref, response)
       if response is not None and response.error:
@@ -219,7 +218,7 @@ class BatchPoller(waiter.OperationPoller):
           request_type(**target_ref.AsDict())))
 
     errors_to_collect = []
-    responses = self._compute_adapter.BatchRequests(requests, errors_to_collect)
+    responses = self._compute_adapter.AsyncRequests(requests, errors_to_collect)
     if errors_to_collect:
       raise core_exceptions.MultiError(errors_to_collect)
     return responses

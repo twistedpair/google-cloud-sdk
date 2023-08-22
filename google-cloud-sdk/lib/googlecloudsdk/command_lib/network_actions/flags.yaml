@@ -19,6 +19,7 @@ wasmPluginVersion:
       A human-readable description of the resource.
   labels:
     arg_name: labels
+    metavar: KEY=VALUE
     api_field: wasmPluginVersion.labels
     type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
     help_text: |

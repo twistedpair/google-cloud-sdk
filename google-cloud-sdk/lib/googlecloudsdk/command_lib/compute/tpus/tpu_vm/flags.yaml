@@ -140,6 +140,7 @@ service_account_scopes:
 labels:
   api_field: node.labels
   arg_name: labels
+  metavar: KEY=VALUE
   type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
   required: false
   help_text: |
@@ -312,6 +313,7 @@ boot_disk:
   api_field: node.bootDiskConfig
   arg_name: boot-disk
   required: false
+  metavar: KEY=VALUE
   type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
   help_text: |
     Specifies if the boot disk should be created in confidential-compute mode.

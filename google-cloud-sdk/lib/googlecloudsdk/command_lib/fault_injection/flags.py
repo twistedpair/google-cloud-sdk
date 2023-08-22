@@ -328,3 +328,7 @@ def AddCreateJobFlags(parser):
       help='Dry run mode.',
 
   )
+
+
+def AddDeleteJobFlags(parser):
+  GetJobResourceArg().AddToParser(parser)

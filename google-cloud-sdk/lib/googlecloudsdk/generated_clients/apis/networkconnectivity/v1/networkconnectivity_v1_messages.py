@@ -699,9 +699,7 @@ class GoogleRpcStatus(_messages.Message):
 
 
 class Group(_messages.Message):
-  r"""A group is a set of spokes to which you can apply policies. Each group
-  of spokes has its own route table. For each group, you can also set
-  different rules for whether spokes can be automatically attached to the hub.
+  r"""A group represents a subset of spokes attached to a hub.
 
   Enums:
     StateValueValuesEnum: Output only. The current lifecycle state of this
@@ -809,11 +807,11 @@ class Hub(_messages.Message):
   be associated with any VPC network in your project.
 
   Enums:
-    PolicyModeValueValuesEnum: The policy mode of this hub. This field can be
-      either PRESET or CUSTOM. If unspecified, the policy_mode defaults to
-      PRESET.
-    PresetTopologyValueValuesEnum: The topology implemented in this hub.
-      Currently, this field is only used when policy_mode = PRESET. The
+    PolicyModeValueValuesEnum: Optional. The policy mode of this hub. This
+      field can be either PRESET or CUSTOM. If unspecified, the policy_mode
+      defaults to PRESET.
+    PresetTopologyValueValuesEnum: Optional. The topology implemented in this
+      hub. Currently, this field is only used when policy_mode = PRESET. The
       available preset topologies are MESH and STAR. If preset_topology is
       unspecified and policy_mode = PRESET, the preset_topology defaults to
       MESH. When policy_mode = CUSTOM, the preset_topology is set to
@@ -836,10 +834,11 @@ class Hub(_messages.Message):
     name: Immutable. The name of the hub. Hub names must be unique. They use
       the following form:
       `projects/{project_number}/locations/global/hubs/{hub_id}`
-    policyMode: The policy mode of this hub. This field can be either PRESET
-      or CUSTOM. If unspecified, the policy_mode defaults to PRESET.
-    presetTopology: The topology implemented in this hub. Currently, this
-      field is only used when policy_mode = PRESET. The available preset
+    policyMode: Optional. The policy mode of this hub. This field can be
+      either PRESET or CUSTOM. If unspecified, the policy_mode defaults to
+      PRESET.
+    presetTopology: Optional. The topology implemented in this hub. Currently,
+      this field is only used when policy_mode = PRESET. The available preset
       topologies are MESH and STAR. If preset_topology is unspecified and
       policy_mode = PRESET, the preset_topology defaults to MESH. When
       policy_mode = CUSTOM, the preset_topology is set to
@@ -864,8 +863,8 @@ class Hub(_messages.Message):
   """
 
   class PolicyModeValueValuesEnum(_messages.Enum):
-    r"""The policy mode of this hub. This field can be either PRESET or
-    CUSTOM. If unspecified, the policy_mode defaults to PRESET.
+    r"""Optional. The policy mode of this hub. This field can be either PRESET
+    or CUSTOM. If unspecified, the policy_mode defaults to PRESET.
 
     Values:
       POLICY_MODE_UNSPECIFIED: Policy mode is unspecified. It defaults to
@@ -878,11 +877,11 @@ class Hub(_messages.Message):
     CUSTOM = 2
 
   class PresetTopologyValueValuesEnum(_messages.Enum):
-    r"""The topology implemented in this hub. Currently, this field is only
-    used when policy_mode = PRESET. The available preset topologies are MESH
-    and STAR. If preset_topology is unspecified and policy_mode = PRESET, the
-    preset_topology defaults to MESH. When policy_mode = CUSTOM, the
-    preset_topology is set to PRESET_TOPOLOGY_UNSPECIFIED.
+    r"""Optional. The topology implemented in this hub. Currently, this field
+    is only used when policy_mode = PRESET. The available preset topologies
+    are MESH and STAR. If preset_topology is unspecified and policy_mode =
+    PRESET, the preset_topology defaults to MESH. When policy_mode = CUSTOM,
+    the preset_topology is set to PRESET_TOPOLOGY_UNSPECIFIED.
 
     Values:
       PRESET_TOPOLOGY_UNSPECIFIED: Preset topology is unspecified. When
@@ -891,9 +890,9 @@ class Hub(_messages.Message):
         when policy_mode is `custom`.
       MESH: Mesh topology is implemented. Group `default` is automatically
         created. All spokes in the hub are added to group `default`.
-      STAR: Star topology is implemented. Two groups, `central` and `edge`,
-        are automatically created along with hub creation. Spokes have to join
-        one of the groups during creation.
+      STAR: Star topology is implemented. Two groups, `center` and `edge`, are
+        automatically created along with hub creation. Spokes have to join one
+        of the groups during creation.
     """
     PRESET_TOPOLOGY_UNSPECIFIED = 0
     PRESET_TOPOLOGY_DISALLOWED = 1
@@ -3352,6 +3351,10 @@ class PolicyBasedRoute(_messages.Message):
   IP, but also source IP, protocol and more. A PBR always take precedence when
   it conflicts with other types of routes. Next id: 22
 
+  Enums:
+    NextHopOtherRoutesValueValuesEnum: Optional. Other routes that will be
+      referenced to determine the next hop of the packet.
+
   Messages:
     LabelsValue: User-defined labels.
 
@@ -3373,6 +3376,8 @@ class PolicyBasedRoute(_messages.Message):
     nextHopIlbIp: Optional. The IP of a global access enabled L4 ILB that
       should be the next hop to handle matching packets. For this version,
       only next_hop_ilb_ip is supported.
+    nextHopOtherRoutes: Optional. Other routes that will be referenced to
+      determine the next hop of the packet.
     priority: Optional. The priority of this policy based route. Priority is
       used to break ties in cases where there are more than one matching
       policy based routes found. In cases where multiple policy based routes
@@ -3387,6 +3392,20 @@ class PolicyBasedRoute(_messages.Message):
     warnings: Output only. If potential misconfigurations are detected for
       this route, this field will be populated with warning messages.
   """
+
+  class NextHopOtherRoutesValueValuesEnum(_messages.Enum):
+    r"""Optional. Other routes that will be referenced to determine the next
+    hop of the packet.
+
+    Values:
+      OTHER_ROUTES_UNSPECIFIED: Default value.
+      DEFAULT_ROUTING: Use the routes from the default routing tables (system-
+        generated routes, custom routes, peering route) to determine the next
+        hop. This will effectively exclude matching packets being applied on
+        other PBRs with a lower priority.
+    """
+    OTHER_ROUTES_UNSPECIFIED = 0
+    DEFAULT_ROUTING = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3421,11 +3440,12 @@ class PolicyBasedRoute(_messages.Message):
   name = _messages.StringField(7)
   network = _messages.StringField(8)
   nextHopIlbIp = _messages.StringField(9)
-  priority = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
-  virtualMachine = _messages.MessageField('VirtualMachine', 13)
-  warnings = _messages.MessageField('Warnings', 14, repeated=True)
+  nextHopOtherRoutes = _messages.EnumField('NextHopOtherRoutesValueValuesEnum', 10)
+  priority = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+  virtualMachine = _messages.MessageField('VirtualMachine', 14)
+  warnings = _messages.MessageField('Warnings', 15, repeated=True)
 
 
 class ProducerPscConfig(_messages.Message):
@@ -3526,6 +3546,8 @@ class RejectHubSpokeRequest(_messages.Message):
   r"""The request for HubService.RejectHubSpoke.
 
   Fields:
+    details: Optional. Additional information provided by the hub
+      administrator.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server
@@ -3541,8 +3563,9 @@ class RejectHubSpokeRequest(_messages.Message):
     spokeUri: Required. The URI of the spoke to reject from the hub.
   """
 
-  requestId = _messages.StringField(1)
-  spokeUri = _messages.StringField(2)
+  details = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  spokeUri = _messages.StringField(3)
 
 
 class RejectSpokeRequest(_messages.Message):
@@ -4152,7 +4175,7 @@ class Spoke(_messages.Message):
   Fields:
     createTime: Output only. The time the spoke was created.
     description: An optional description of the spoke.
-    group: The name of the group that this spoke is associated with.
+    group: Optional. The name of the group that this spoke is associated with.
     hub: Immutable. The name of the hub that this spoke is attached to.
     labels: Optional labels in key:value format. For more information about
       labels, see [Requirements for labels](https://cloud.google.com/resource-

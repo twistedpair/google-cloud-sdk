@@ -34,7 +34,6 @@ from __future__ import unicode_literals
 
 import re
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
@@ -42,24 +41,20 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
-def AddAvailabilityType(parser, release_track):
+def AddAvailabilityType(parser):
   """Adds an '--availability-type' flag to the parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
-    release_track: Release track of the API.
   """
   choices_arg = {
-      'REGIONAL': 'Provides high availability and is recommended for '
-                  'production instances; instance automatically fails over '
+      'REGIONAL': 'Provide high availability instances. Recommended for '
+                  'production instances; instances automatically fail over '
                   'to another zone within your selected region.',
-      }
-  if release_track == base.ReleaseTrack.ALPHA:
-    choices_arg['ZONAL'] = (
-        'Provides zonal availability instances and is not '
-        'recommended for production instances; instance '
-        'does not automatically fail over to another zone.'
-    )
+      'ZONAL': 'Provide zonal availability instances. Not '
+               'recommended for production instances; instance '
+               'does not automatically fail over to another zone.'
+  }
 
   parser.add_argument(
       '--availability-type',
@@ -249,8 +244,8 @@ def AddAllocatedIPRangeName(parser):
       required=False,
       type=str,
       help=(
-          'The name of the allocated IP range for the private IP AlloyDB '
-          'cluster. For example: "google-managed-services-default". If set, '
+          'Name of the allocated IP range for the private IP AlloyDB '
+          'cluster, for example: "google-managed-services-default". If set, '
           'the instance IPs for this cluster will be created in the '
           'allocated range. The range name must comply with RFC 1035. '
           'Specifically, the name must be 1-63 characters long and match the '
@@ -853,31 +848,49 @@ def AddUpdateMode(parser):
   )
 
 
-def AddSSLMode(parser):
+def AddSSLMode(parser, update=False):
   """Adds SSL Mode flag.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
+    update: If True, does not set the default SSL mode.
   """
-  parser.add_argument(
-      '--ssl-mode',
-      required=False,
-      hidden=True,
-      type=str,
-      # TODO(b/283520844): Set default to be ENCRYPTED_ONLY once we unhide this.
-      choices={
-          'ENCRYPTED_ONLY': (
-              'SSL connections are required. CA verification is not enforced.'
-          ),
-          'ALLOW_UNENCRYPTED_AND_ENCRYPTED': (
-              'SSL connections are optional. CA verification is not enforced.'
-          ),
-      },
-      help=(
-          'Specify the SSL mode to use when the instance connects to the '
-          'database.'
-      ),
+  ssl_mode_help = (
+      'Specify the SSL mode to use when the instance connects to the '
+      'database.'
   )
+  if update:
+    parser.add_argument(
+        '--ssl-mode',
+        required=False,
+        type=str,
+        choices={
+            'ENCRYPTED_ONLY': (
+                'SSL connections are required. CA verification is not enforced.'
+            ),
+            'ALLOW_UNENCRYPTED_AND_ENCRYPTED': (
+                'SSL connections are optional. CA verification is not enforced.'
+            ),
+        },
+        help=ssl_mode_help
+    )
+  else:
+    ssl_mode_help += ' Default SSL mode is ENCRYPTED_ONLY.'
+    parser.add_argument(
+        '--ssl-mode',
+        required=False,
+        type=str,
+        choices={
+            'ENCRYPTED_ONLY': (
+                'SSL connections are required. CA verification is not enforced.'
+            ),
+            'ALLOW_UNENCRYPTED_AND_ENCRYPTED': (
+                'SSL connections are optional. CA verification is not enforced.'
+            ),
+        },
+        default='ENCRYPTED_ONLY',
+        help=ssl_mode_help
+    )
 
 
 def AddRequireConnectors(parser):
@@ -889,7 +902,6 @@ def AddRequireConnectors(parser):
   parser.add_argument(
       '--require-connectors',
       required=False,
-      hidden=True,
       action=arg_parsers.StoreTrueFalseAction,
       help=(
           'Enable or disable enforcing connectors only (ex: AuthProxy)'

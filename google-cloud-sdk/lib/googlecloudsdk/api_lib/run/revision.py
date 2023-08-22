@@ -38,24 +38,9 @@ class Revision(container_resource.ContainerResource):
   KIND = 'Revision'
   READY_CONDITION = 'Ready'
   _ACTIVE_CONDITION = 'Active'
-  TERMINAL_CONDITIONS = {
+  TERMINAL_CONDITIONS = frozenset([
       READY_CONDITION,
-  }
-
-  @classmethod
-  def New(cls, client, namespace):
-    """Produces a new Revision object.
-
-    Args:
-      client: The Cloud Run API client.
-      namespace: str, The serving namespace.
-
-    Returns:
-      A new Revision object to be deployed.
-    """
-    ret = super(Revision, cls).New(client, namespace)
-    ret.spec.containers = [client.MESSAGES_MODULE.Container()]
-    return ret
+  ])
 
   @property
   def gcs_location(self):

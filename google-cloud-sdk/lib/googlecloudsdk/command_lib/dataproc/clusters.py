@@ -122,10 +122,9 @@ def ArgsForClusterRef(
   worker_group.add_argument(
       '--min-num-workers',
       type=int,
-      hidden=True,
       help=(
-          'The minimum number of worker nodes required to create the cluster. '
-          'if it is not met, cluster creation will be failed.'
+          'The minimum number of workers nodes to provision for cluster'
+          ' create operations to succeed.'
       ),
   )
   worker_group.add_argument(

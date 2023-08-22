@@ -230,7 +230,7 @@ def GetReplicationResourceSpec():
   return concepts.ResourceSpec(
       constants.REPLICATIONS_COLLECTION,
       resource_name='replication',
-      api_version='v1beta1',
+      api_version=constants.BETA_API_VERSION,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=location_attribute_config,
       volumesId=volume_attribute_config,
@@ -250,16 +250,17 @@ def GetKmsConfigResourceSpec():
   return concepts.ResourceSpec(
       constants.KMSCONFIGS_COLLECTION,
       resource_name='kms_config',
+      api_version=constants.BETA_API_VERSION,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
-      kmsConfigsId=GetKmsConfigAttributeConfig(),
-      api_version='v1beta1')
+      kmsConfigsId=GetKmsConfigAttributeConfig())
 
 
 def GetBackupVaultResourceSpec(positional=True):
   return concepts.ResourceSpec(
       constants.BACKUPVAULTS_COLLECTION,
       resource_name='backup_vault',
+      api_version=constants.BETA_API_VERSION,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
       backupVaultsId=GetBackupVaultAttributeConfig(positional=positional),
@@ -273,6 +274,7 @@ def GetBackupResourceSpec():
   return concepts.ResourceSpec(
       constants.BACKUPS_COLLECTION,
       resource_name='backup',
+      api_version=constants.BETA_API_VERSION,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
       backupVaultsId=backup_vault_attribute_config,
@@ -284,6 +286,7 @@ def GetBackupPolicyResourceSpec():
   return concepts.ResourceSpec(
       constants.BACKUPPOLICIES_COLLECTION,
       resource_name='backup_policy',
+      api_version=constants.BETA_API_VERSION,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
       backupPoliciesId=GetBackupPolicyAttributeConfig())

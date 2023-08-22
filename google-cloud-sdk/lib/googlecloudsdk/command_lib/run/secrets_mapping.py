@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import enum
+import itertools
 import re
 import uuid
 
@@ -50,7 +51,8 @@ class SpecialConnector(enum.Enum):
 
 def _GetSecretsAnnotation(resource):
   return resource.template.annotations.get(
-      container_resource.SECRETS_ANNOTATION, '')
+      container_resource.SECRETS_ANNOTATION, ''
+  )
 
 
 def _SetSecretsAnnotation(resource, value):
@@ -86,32 +88,40 @@ def ParseAnnotation(formatted_annotation, force_managed=False):
       raise ValueError('Invalid secret path %r in annotation' % remote_path)
     # TODO(b/183051152) This could fail to parse existing annotations.
     reachable_secrets[local_alias] = ReachableSecret(
-        remote_path, SpecialConnector.PATH_OR_ENV, force_managed=force_managed)
+        remote_path, SpecialConnector.PATH_OR_ENV, force_managed=force_managed
+    )
   return reachable_secrets
 
 
 def _FormatAnnotation(reachable_secrets):
   return ','.join(
       '%s:%s' % (alias, reachable_secret.FormatAnnotationItem())
-      for alias, reachable_secret in sorted(reachable_secrets.items()))
+      for alias, reachable_secret in sorted(reachable_secrets.items())
+  )
 
 
 def _InUse(resource):
-  """All the secret names (local names & remote aliases) in use.
+  """Set of all secret names (local names & remote aliases) in use.
 
   Args:
-    resource: Revision
+    resource: ContainerResource
 
   Returns:
     List of local names and remote aliases.
   """
-  return ([
-      source.secretName
-      for source in resource.template.volumes.secrets.values()
-  ] + [
-      source.secretKeyRef.name
-      for source in resource.template.env_vars.secrets.values()
-  ])
+  env_vars = itertools.chain.from_iterable(
+      container.env_vars.secrets.values()
+      for container in resource.template.containers.values()
+  )
+  return frozenset(
+      itertools.chain(
+          (
+              source.secretName
+              for source in resource.template.volumes.secrets.values()
+          ),
+          (source.secretKeyRef.name for source in env_vars),
+      )
+  )
 
 
 def PruneAnnotation(resource):
@@ -146,18 +156,29 @@ class ReachableSecret(object):
   _SECRET_NAME_PARTIAL = r'(?P<secret>[a-zA-Z0-9-_]{1,255})'
   _REMOTE_SECRET_VERSION_SHORT = r':(?P<version_short>.+)'
   _REMOTE_SECRET_VERSION_LONG = r'/versions/(?P<version_long>.+)'
-  _REMOTE_SECRET_VERSION = (r'(?:' + _REMOTE_SECRET_VERSION_SHORT + r'|' +
-                            _REMOTE_SECRET_VERSION_LONG + r')?')
+  _REMOTE_SECRET_VERSION = (
+      r'(?:'
+      + _REMOTE_SECRET_VERSION_SHORT
+      + r'|'
+      + _REMOTE_SECRET_VERSION_LONG
+      + r')?'
+  )
 
   # The user syntax for referring to a secret in another project.
-  _REMOTE_SECRET_FLAG_VALUE = (r'^projects/' + _PROJECT_NUMBER_PARTIAL +
-                               r'/secrets/' + _SECRET_NAME_PARTIAL +
-                               _REMOTE_SECRET_VERSION + r'$')
+  _REMOTE_SECRET_FLAG_VALUE = (
+      r'^projects/'
+      + _PROJECT_NUMBER_PARTIAL
+      + r'/secrets/'
+      + _SECRET_NAME_PARTIAL
+      + _REMOTE_SECRET_VERSION
+      + r'$'
+  )
 
   @staticmethod
   def IsRemotePath(secret_name):
     return bool(
-        re.search(ReachableSecret._REMOTE_SECRET_FLAG_VALUE, secret_name))
+        re.search(ReachableSecret._REMOTE_SECRET_FLAG_VALUE, secret_name)
+    )
 
   def __init__(self, flag_value, connector_name, force_managed=False):
     """Parse flag value to make a ReachableSecret.
@@ -204,7 +225,7 @@ class ReachableSecret(object):
     self.remote_project_number = None
     parts = flag_value.split(':')
     if len(parts) == 1:
-      self.secret_name, = parts
+      (self.secret_name,) = parts
       self.secret_version = self._OmittedSecretKeyDefault(connector_name)
     elif len(parts) == 2:
       self.secret_name, self.secret_version = parts
@@ -217,22 +238,29 @@ class ReachableSecret(object):
     version_display = self.secret_version
     if self.secret_version == SpecialVersion.MOUNT_ALL:
       version_display = version_display.name
-    project_display = ('project=%s ' % self.remote_project_number
-                       if self.remote_project_number is not None else '')
+    project_display = (
+        'project=%s ' % self.remote_project_number
+        if self.remote_project_number is not None
+        else ''
+    )
 
-    return ('<ReachableSecret '
-            '{project_display}'
-            'name={secret_name} '
-            'version={version_display}>'.format(
-                project_display=project_display,
-                secret_name=self.secret_name,
-                version_display=version_display,
-            ))
+    return (
+        '<ReachableSecret '
+        '{project_display}'
+        'name={secret_name} '
+        'version={version_display}>'.format(
+            project_display=project_display,
+            secret_name=self.secret_name,
+            version_display=version_display,
+        )
+    )
 
   def __eq__(self, other):
-    return (self.remote_project_number == other.remote_project_number and
-            self.secret_name == other.secret_name and
-            self.secret_version == other.secret_version)
+    return (
+        self.remote_project_number == other.remote_project_number
+        and self.secret_name == other.secret_name
+        and self.secret_version == other.secret_version
+    )
 
   def __ne__(self, other):
     return not self == other
@@ -253,34 +281,41 @@ class ReachableSecret(object):
       # Service returns an error for this, but we can make a better one.
       raise exceptions.ConfigurationError(
           'No secret version specified for {name}. '
-          'Use {name}:latest to reference the latest version.'.format(
-              name=name))
+          'Use {name}:latest to reference the latest version.'.format(name=name)
+      )
     else:  # for GKE+K8S
       if self._connector is SpecialConnector.PATH_OR_ENV:
-        raise TypeError("Can't determine default key for secret named %r." %
-                        name)
+        raise TypeError(
+            "Can't determine default key for secret named %r." % name
+        )
 
       if not self._connector.startswith('/'):
         raise exceptions.ConfigurationError(
-            'Missing required item key for the secret at [{}].'.format(name))
+            'Missing required item key for the secret at [{}].'.format(name)
+        )
       else:  # for a mount point
         return SpecialVersion.MOUNT_ALL
 
   def _AssertValidLocalSecretName(self, name):
     if not re.search(r'^' + self._SECRET_NAME_PARTIAL + r'$', name):
-      raise exceptions.ConfigurationError('%r is not a valid secret name.' %
-                                          name)
+      raise exceptions.ConfigurationError(
+          '%r is not a valid secret name.' % name
+      )
 
   def _PathTail(self):
     """Last path component of self._connector."""
     if self._connector is SpecialConnector.PATH_OR_ENV:
       raise TypeError(
-          "Can't make SecretVolumeSource message for secret %r of unknown usage."
-          % self.secret_name)
+          "Can't make SecretVolumeSource message for secret %r of unknown"
+          ' usage.'
+          % self.secret_name
+      )
     if not self._connector.startswith('/'):
       raise TypeError(
-          "Can't make SecretVolumeSource message for secret connected to env var %r."
-          % self._connector)
+          "Can't make SecretVolumeSource message for secret connected to env"
+          ' var %r.'
+          % self._connector
+      )
     return self._connector.rsplit('/', 1)[-1]
 
   def _IsRemote(self):
@@ -330,7 +365,8 @@ class ReachableSecret(object):
       raise TypeError('Only remote paths go in annotations')
     return 'projects/{remote_project_number}/secrets/{secret_name}'.format(
         remote_project_number=self.remote_project_number,
-        secret_name=self.secret_name)
+        secret_name=self.secret_name,
+    )
 
   def AsSecretVolumeSource(self, resource):
     """Build message for adding to resource.template.volumes.secrets.
@@ -354,17 +390,20 @@ class ReachableSecret(object):
   def _AsSecretVolumeSource_ManagedMode(self, resource):
     messages = resource.MessagesModule()
     out = messages.SecretVolumeSource(
-        secretName=self._GetOrCreateAlias(resource))
+        secretName=self._GetOrCreateAlias(resource)
+    )
     self.AppendToSecretVolumeSource(resource, out)
     return out
 
   def _AsSecretVolumeSource_NonManagedMode(self, resource):
     messages = resource.MessagesModule()
     out = messages.SecretVolumeSource(
-        secretName=self._GetOrCreateAlias(resource))
+        secretName=self._GetOrCreateAlias(resource)
+    )
     if self.secret_version != SpecialVersion.MOUNT_ALL:
       out.items.append(
-          messages.KeyToPath(key=self.secret_version, path=self.secret_version))
+          messages.KeyToPath(key=self.secret_version, path=self.secret_version)
+      )
     return out
 
   def AsEnvVarSource(self, resource):
@@ -378,5 +417,6 @@ class ReachableSecret(object):
     """
     messages = resource.MessagesModule()
     selector = messages.SecretKeySelector(
-        name=self._GetOrCreateAlias(resource), key=self.secret_version)
+        name=self._GetOrCreateAlias(resource), key=self.secret_version
+    )
     return messages.EnvVarSource(secretKeyRef=selector)

@@ -7,4 +7,4 @@ account:
     help: |
       The billing account ID. Billing account IDs are of the form
       *0X0X0X-0X0X0X-0X0X0X*. To see available IDs, run
-      $ gcloud beta billing accounts list.
+      $ gcloud billing accounts list.

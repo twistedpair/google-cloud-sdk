@@ -63,12 +63,6 @@ def ConstructCreateRequestFromArgsAlphaBeta(
   """
   instance_resource = _ConstructInstanceFromArgs(client, alloydb_messages, args)
 
-  instance_resource.clientConnectionConfig = _ClientConnectionConfig(
-      alloydb_messages,
-      args.ssl_mode,
-      args.require_connectors,
-  )
-
   return (
       alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreateRequest(
           instance=instance_resource,
@@ -92,7 +86,7 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
   instance_resource = alloydb_messages.Instance()
 
   # set availability-type if provided
-  instance_resource.availabilityType = _ParseAvailabilityType(
+  instance_resource.availabilityType = ParseAvailabilityType(
       alloydb_messages, args.availability_type)
   instance_resource.machineConfig = alloydb_messages.MachineConfig(
       cpuCount=args.cpu_count)
@@ -125,6 +119,12 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
       insights_config_query_plans_per_minute=args.insights_config_query_plans_per_minute,
       insights_config_record_application_tags=args.insights_config_record_application_tags,
       insights_config_record_client_address=args.insights_config_record_client_address,
+  )
+
+  instance_resource.clientConnectionConfig = _ClientConnectionConfig(
+      alloydb_messages,
+      args.ssl_mode,
+      args.require_connectors,
   )
 
   return instance_resource
@@ -186,7 +186,7 @@ def ConstructInstanceAndUpdatePathsFromArgs(
 
   instance_resource.name = instance_ref.RelativeName()
 
-  availability_type = _ParseAvailabilityType(
+  availability_type = ParseAvailabilityType(
       alloydb_messages, args.availability_type)
   if availability_type:
     instance_resource.availabilityType = availability_type
@@ -226,6 +226,18 @@ def ConstructInstanceAndUpdatePathsFromArgs(
       args.insights_config_record_application_tags,
       args.insights_config_record_client_address,
   )
+
+  # Check if require_connectors is set to True/False, then update
+  if args.require_connectors is not None:
+    require_connectors_path = 'clientConnectionConfig.requireConnectors'
+    paths.append(require_connectors_path)
+  if args.ssl_mode:
+    ssl_mode_path = 'clientConnectionConfig.sslConfig.sslMode'
+    paths.append(ssl_mode_path)
+  if args.require_connectors is not None or args.ssl_mode:
+    instance_resource.clientConnectionConfig = _ClientConnectionConfig(
+        alloydb_messages, args.ssl_mode, args.require_connectors
+    )
 
   return instance_resource, paths
 
@@ -316,7 +328,7 @@ def _ClientConnectionConfig(
   return client_connection_config
 
 
-def _ParseAvailabilityType(alloydb_messages, availability_type):
+def ParseAvailabilityType(alloydb_messages, availability_type):
   if availability_type:
     return alloydb_messages.Instance.AvailabilityTypeValueValuesEnum.lookup_by_name(
         availability_type.upper())
@@ -382,16 +394,5 @@ def ConstructInstanceAndUpdatePathsFromArgsAlphaBeta(
         mode=_ParseUpdateMode(alloydb_messages, args.update_mode))
     update_mode_path = 'updatePolicy.mode'
     paths.append(update_mode_path)
-  # Check if require_connectors is set to True/False, then update
-  if args.require_connectors is not None:
-    require_connectors_path = 'clientConnectionConfig.requireConnectors'
-    paths.append(require_connectors_path)
-  if args.ssl_mode:
-    ssl_mode_path = 'clientConnectionConfig.sslConfig.sslMode'
-    paths.append(ssl_mode_path)
-  if args.require_connectors is not None or args.ssl_mode:
-    instance_resource.clientConnectionConfig = _ClientConnectionConfig(
-        alloydb_messages, args.ssl_mode, args.require_connectors
-    )
 
   return instance_resource, paths

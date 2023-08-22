@@ -29,7 +29,7 @@ class BillingAccountsCompleter(completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(BillingAccountsCompleter, self).__init__(
         collection='cloudbilling.billingAccounts',
-        list_command='beta billing accounts list --uri',
+        list_command='billing accounts list --uri',
         **kwargs)
 
 
@@ -38,7 +38,7 @@ def GetOldAccountIdArgument(positional=True):
   help_ = (
       'Specify a billing account ID. Billing account '
       'IDs are of the form `0X0X0X-0X0X0X-0X0X0X`. To see available IDs, run '
-      '`$ gcloud alpha billing accounts list`.'
+      '`$ gcloud billing accounts list`.'
   )
   if positional:
     # For a positional arg, the action always runs; we want to only show a
@@ -74,7 +74,7 @@ def GetAccountIdArgument(positional=True, required=False):
   help_ = (
       'Specify a billing account ID. Billing account IDs are of the form '
       '`0X0X0X-0X0X0X-0X0X0X`. To see available IDs, run '
-      '`$ gcloud alpha billing accounts list`.')
+      '`$ gcloud billing accounts list`.')
   if positional:
     return base.Argument(
         'account_id',

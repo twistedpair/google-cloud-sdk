@@ -1030,6 +1030,7 @@ class UpdateClusterOptions(object):
       enable_fqdn_network_policy=None,
       host_maintenance_interval=None,
       in_transit_encryption=None,
+      enable_multi_networking=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1161,6 +1162,7 @@ class UpdateClusterOptions(object):
     self.enable_fqdn_network_policy = enable_fqdn_network_policy
     self.host_maintenance_interval = host_maintenance_interval
     self.in_transit_encryption = in_transit_encryption
+    self.enable_multi_networking = enable_multi_networking
 
 
 class SetMasterAuthOptions(object):
@@ -3548,6 +3550,10 @@ class APIAdapter(object):
               options.in_transit_encryption
           )
       )
+
+    if options.enable_multi_networking is not None:
+      update = self.messages.ClusterUpdate(
+          desiredEnableMultiNetworking=options.enable_multi_networking)
 
     return update
 

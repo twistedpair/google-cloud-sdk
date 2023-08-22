@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 API_NAME = 'netapp'
 ALPHA_API_VERSION = 'v1alpha1'
+BETA_API_VERSION = 'v1beta1'
 
 BACKUPPOLICIES_COLLECTION = 'netapp.projects.locations.backupPolicies'
 BACKUPVAULTS_COLLECTION = 'netapp.projects.locations.backupVaults'

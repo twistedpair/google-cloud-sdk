@@ -179,7 +179,7 @@ class FleetFlagParser:
   ):
     self.args = args
     self.release_track = release_track
-    self.messages = util.FleetMessageModule(self.release_track)
+    self.messages = util.GetMessagesModule(release_track)
 
   def IsEmpty(self, message: messages.Message) -> bool:
     """Determines if a message is empty.
@@ -206,7 +206,8 @@ class FleetFlagParser:
     fleet = self.messages.Fleet()
     fleet.name = util.FleetResourceName(self.Project())
     fleet.displayName = self._DisplayName()
-    fleet.defaultClusterConfig = self._DefaultClusterConfig()
+    if self.release_track == base.ReleaseTrack.ALPHA:
+      fleet.defaultClusterConfig = self._DefaultClusterConfig()
     return fleet
 
   def _DisplayName(self) -> str:

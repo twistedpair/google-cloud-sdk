@@ -32,6 +32,27 @@ class ClusterUpgradeFlags:
   def parser(self):  # pylint: disable=invalid-name
     return self._parser
 
+  def AddShowLinkedClusterUpgrade(self):
+    """Adds the --show-linked-cluster-upgrade flag."""
+    self.parser.add_argument(
+        '--show-linked-cluster-upgrade',
+        action='store_true',
+        default=None,
+        help="""\
+        Shows the cluster upgrade feature information for the current fleet as
+        well as information for all other fleets linked in the same rollout
+        sequence (provided that the caller has permission to view the upstream
+        and downstream fleets). This displays cluster upgrade information for
+        fleets in the current fleet's rollout sequence in order of furthest
+        upstream to downstream.
+
+        To view the cluster upgrade feature information for the rollout
+        sequence containing the current fleet, run:
+
+          $ {command} --show-linked-cluster-upgrade
+        """,
+    )
+
   def AddDefaultUpgradeSoakingFlag(self):
     """Adds the --default-upgrade-soaking flag."""
     self.parser.add_argument(
@@ -53,10 +74,13 @@ class ClusterUpgradeFlags:
         """,
     )
 
-  def AddUpgradeSoakingOverrideFlags(self):
-    group = self.parser.add_mutually_exclusive_group()
-    self._AddRemoveUpgradeSoakingOverridesFlag(group)
-    self._AddUpgradeSoakingOverrideFlags(group)
+  def AddUpgradeSoakingOverrideFlags(self, with_destructive=False):
+    if with_destructive:
+      group = self.parser.add_mutually_exclusive_group()
+      self._AddRemoveUpgradeSoakingOverridesFlag(group)
+      self._AddUpgradeSoakingOverrideFlags(group)
+    else:
+      self._AddUpgradeSoakingOverrideFlags(self.parser)
 
   def _AddRemoveUpgradeSoakingOverridesFlag(
       self, group: parser_arguments.ArgumentInterceptor
@@ -149,11 +173,14 @@ class ClusterUpgradeFlags:
         """,
     )
 
-  def AddUpstreamFleetFlags(self):
+  def AddUpstreamFleetFlags(self, with_destructive=False):
     """Adds upstream fleet flags."""
-    group = self.parser.add_mutually_exclusive_group()
-    self._AddUpstreamFleetFlag(group)
-    self._AddResetUpstreamFleetFlag(group)
+    if with_destructive:
+      group = self.parser.add_mutually_exclusive_group()
+      self._AddUpstreamFleetFlag(group)
+      self._AddResetUpstreamFleetFlag(group)
+    else:
+      self._AddUpstreamFleetFlag(self.parser)
 
   def _AddUpstreamFleetFlag(self, group: parser_arguments.ArgumentInterceptor):
     """Adds the --upstream-fleet flag.

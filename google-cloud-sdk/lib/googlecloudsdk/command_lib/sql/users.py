@@ -110,6 +110,9 @@ def CreatePasswordPolicyFromArgs(sql_messages,
   if not should_generate_policy:
     return None
 
+  if password_policy is None:
+    password_policy = sql_messages.UserPasswordValidationPolicy()
+
   # Directly return empty policy to clear the existing password policy.
   if clear_password_policy:
     return sql_messages.UserPasswordValidationPolicy()

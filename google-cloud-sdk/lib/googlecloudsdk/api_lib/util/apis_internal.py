@@ -246,7 +246,7 @@ def _GetGapicClientInstance(api_name,
     if address_override_func:
       address = address_override_func(address)
 
-    if api_name == 'compute':
+    if api_name == 'compute' or endpoint_override is not None:
       return address
 
     return _UniversifyAddress(address)
@@ -359,7 +359,7 @@ def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
   else:
     address = client_base_url
 
-  if api_name == 'compute':
+  if api_name == 'compute' or endpoint_override is not None:
     return address
 
   return _UniversifyAddress(address)

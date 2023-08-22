@@ -27,8 +27,9 @@ from googlecloudsdk.command_lib.compute.reservations import flags as reservation
 def GetNamePrefixFlag():
   """Gets the --name-prefix flag."""
   help_text = """\
-  User provided name prefix for system generated reservations when capacity is
-  delivered at start time.
+  A name prefix for the auto-created reservations when capacity is
+  delivered at the start time. Each auto-created reservation name
+  starts with the name prefix.
   """
   return base.Argument('--name-prefix', help=help_text)
 
@@ -143,7 +144,7 @@ def GetSharedSettingFlag(custom_name=None):
   """Gets the --share-setting flag."""
   help_text = """\
   Specify if this future reservation is shared, and if so, the type of sharing.
-  If you omit this flag, this value is local (not shared) by default.
+  If you omit this flag, this value is local by default.
   """
   return base.Argument(
       custom_name if custom_name else '--share-setting',
@@ -155,9 +156,9 @@ def GetSharedSettingFlag(custom_name=None):
 def GetShareWithFlag(custom_name=None):
   """Gets the --share-with flag."""
   help_text = """\
-  If this future reservation is shared (--share-setting is not local), provide
-  a list of all of the specific projects that this future reservation is shared
-  with. List must contain project IDs or project numbers.
+  If this future reservation is shared, provide a comma-separated list
+  of projects that this future reservation is shared with.
+  The list must contain project IDs or project numbers.
   """
   return base.Argument(
       custom_name if custom_name else '--share-with',
@@ -233,12 +234,12 @@ def AddCreateFlags(
   """Adds all flags needed for the create command."""
   GetNamePrefixFlag().AddToParser(parser)
   GetTotalCountFlag().AddToParser(parser)
-  reservation_flags.GetDescriptionFlag().AddToParser(parser)
+  reservation_flags.GetDescriptionFlag(is_fr=True).AddToParser(parser)
   if support_planning_status:
     GetPlanningStatusFlag().AddToParser(parser)
 
   specific_sku_properties_group = base.ArgumentGroup(
-      'Manage the instance properties for the Specific SKU reservation. You'
+      'Manage the instance properties for the auto-created reservations. You'
       ' must either provide a source instance template or define the instance'
       ' properties.',
       required=True,
@@ -310,7 +311,7 @@ def AddUpdateFlags(
   name_prefix_group.AddToParser(parser)
 
   GetTotalCountFlag(required=False).AddToParser(parser)
-  reservation_flags.GetDescriptionFlag().AddToParser(parser)
+  reservation_flags.GetDescriptionFlag(is_fr=True).AddToParser(parser)
 
   if support_planning_status:
     GetPlanningStatusFlag().AddToParser(parser)

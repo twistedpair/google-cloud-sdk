@@ -59,7 +59,7 @@ class PacketMirroring(object):
       return self._compute_client.MakeRequests(requests)
 
     errors_to_collect = []
-    result = self._compute_client.BatchRequests(requests, errors_to_collect)[0]
+    result = self._compute_client.AsyncRequests(requests, errors_to_collect)[0]
 
     if errors_to_collect:
       raise exceptions.MultiError(errors_to_collect)

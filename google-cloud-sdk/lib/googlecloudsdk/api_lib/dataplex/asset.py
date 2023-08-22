@@ -73,26 +73,6 @@ def GenerateAssetForCreateRequest(args):
       name=args.resource_name,
       type=resource_spec_field.TypeValueValuesEnum(args.resource_type),
   )
-  request = module.GoogleCloudDataplexV1Asset(
-      description=args.description,
-      displayName=args.display_name,
-      labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1Asset, args),
-      resourceSpec=resource_spec,
-  )
-  discovery = GenerateDiscoverySpec(args)
-  if discovery != module.GoogleCloudDataplexV1AssetDiscoverySpec():
-    setattr(request, 'discoverySpec', discovery)
-  return request
-
-
-def GenerateAssetForCreateRequestAlpha(args):
-  """Create Asset for Message Create Requests."""
-  module = dataplex_api.GetMessageModule()
-  resource_spec_field = module.GoogleCloudDataplexV1AssetResourceSpec
-  resource_spec = module.GoogleCloudDataplexV1AssetResourceSpec(
-      name=args.resource_name,
-      type=resource_spec_field.TypeValueValuesEnum(args.resource_type),
-  )
   if args.IsSpecified('resource_read_access_mode'):
     resource_spec.readAccessMode = (
         resource_spec_field.ReadAccessModeValueValuesEnum(
@@ -110,17 +90,11 @@ def GenerateAssetForCreateRequestAlpha(args):
   return request
 
 
+def GenerateAssetForCreateRequestAlpha(args):
+  return GenerateAssetForCreateRequest(args)
+
+
 def GenerateAssetForUpdateRequest(args):
-  """Create Asset for Message Update Requests."""
-  module = dataplex_api.GetMessageModule()
-  return module.GoogleCloudDataplexV1Asset(
-      description=args.description,
-      displayName=args.display_name,
-      labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1Asset, args),
-      discoverySpec=GenerateDiscoverySpec(args))
-
-
-def GenerateAssetForUpdateRequestAlpha(args):
   """Create Asset for Message Update Requests."""
   module = dataplex_api.GetMessageModule()
   asset = module.GoogleCloudDataplexV1Asset(
@@ -142,6 +116,10 @@ def GenerateAssetForUpdateRequestAlpha(args):
         ),
     )
   return asset
+
+
+def GenerateAssetForUpdateRequestAlpha(args):
+  return GenerateAssetForUpdateRequest(args)
 
 
 def GenerateDiscoverySpec(args):
@@ -185,10 +163,7 @@ def GenerateJsonOptions(args):
 
 
 def GenerateUpdateMaskAlpha(args):
-  update_mask = GenerateUpdateMask(args)
-  if args.IsSpecified('resource_read_access_mode'):
-    update_mask.append('resourceSpec.readAccessMode')
-  return update_mask
+  return GenerateUpdateMask(args)
 
 
 def GenerateUpdateMask(args):
@@ -220,6 +195,8 @@ def GenerateUpdateMask(args):
     update_mask.append('discoverySpec.jsonOptions.encoding')
   if args.IsSpecified('json_disable_type_inference'):
     update_mask.append('discoverySpec.jsonOptions.disableTypeInference')
+  if args.IsSpecified('resource_read_access_mode'):
+    update_mask.append('resourceSpec.readAccessMode')
   return update_mask
 
 

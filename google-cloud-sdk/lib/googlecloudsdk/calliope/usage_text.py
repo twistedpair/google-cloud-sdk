@@ -30,6 +30,7 @@ import sys
 import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import arg_parsers_usage_text
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import parser_arguments
 import six
@@ -156,8 +157,8 @@ def _GetFlagMetavar(flag, metavar=None, name=None, markdown=False):
   if metavar is None:
     metavar = flag.metavar or flag.dest.upper()
   separator = '=' if name and name.startswith('--') else ' '
-  if isinstance(flag.type, arg_parsers.ArgList):
-    metavar = flag.type.GetUsageMsg(bool(flag.metavar), metavar)
+  if isinstance(flag.type, arg_parsers_usage_text.ArgTypeUsage):
+    metavar = flag.type.GetUsageMetavar(bool(flag.metavar), metavar) or metavar
   if metavar == ' ':
     return ''
   if markdown:

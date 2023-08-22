@@ -43,21 +43,6 @@ class Execution(k8s_object.KubernetesObject):
   READY_CONDITION = COMPLETED_CONDITION
   TERMINAL_CONDITIONS = frozenset({STARTED_CONDITION, READY_CONDITION})
 
-  @classmethod
-  def New(cls, client, namespace):
-    """Produces a new Job object.
-
-    Args:
-      client: The Cloud Run API client.
-      namespace: str, The serving namespace.
-
-    Returns:
-      A new Execution object.
-    """
-    ret = super(Execution, cls).New(client, namespace)
-    ret.spec.template.spec.containers = [client.MESSAGES_MODULE.Container()]
-    return ret
-
   class TaskTemplateSpec(container_resource.ContainerResource):
     """Wrapper class for Execution subfield TaskTemplateSpec."""
 

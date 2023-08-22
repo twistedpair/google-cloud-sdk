@@ -75,7 +75,7 @@ def get_order_resource_spec(resource_name='order'):
       disable_auto_completers=False)
 
 
-def add_region_flag(parser, verb):
+def _add_region_flag(parser, verb):
   """Add region flag for appliances/orders.
 
   Normally we'd rely on the argument output by region_attribute_config() but
@@ -85,11 +85,13 @@ def add_region_flag(parser, verb):
     parser (arg_parse.Parser): The parser for the command.
     verb (str): The verb to describe the resource, such as 'to update'.
   """
+  # TODO(b/296116715) Use an enum for the verb.
   parser.add_argument(
       '--region',
       choices=regions.CLOUD_REGIONS,
       type=str.lower,
-      help='The location affiliated with the appliance order {}.'.format(verb))
+      help='The location affiliated with the appliance order to {}.'.format(
+          verb))
 
 
 def add_appliance_resource_arg(parser, verb):
@@ -104,11 +106,11 @@ def add_appliance_resource_arg(parser, verb):
   concept_parsers.ConceptParser.ForResource(
       'appliance',
       get_appliance_resource_spec(),
-      'The appliance {}.'.format(verb),
+      'The appliance to {}.'.format(verb),
       flag_name_overrides={'region': ''},
       prefixes=True,
       required=True).AddToParser(parser)
-  add_region_flag(parser, verb)
+  _add_region_flag(parser, verb)
 
 
 def add_order_resource_arg(parser, verb):
@@ -118,16 +120,17 @@ def add_order_resource_arg(parser, verb):
 
   Args:
     parser (arg_parse.Parser): The parser for the command.
-    verb (str): The verb to describe the resource, such as 'to update'.
+    verb (str): The verb to describe the resource, such as 'update'.
   """
+  # TODO(b/296116715) Use an enum for the verb.
   concept_parsers.ConceptParser.ForResource(
       'order',
       get_order_resource_spec(),
-      'The order {}.'.format(verb),
+      'The order to {}.'.format(verb),
       flag_name_overrides={'region': ''},
       prefixes=True,
       required=True).AddToParser(parser)
-  add_region_flag(parser, verb)
+  _add_region_flag(parser, verb)
 
 
 def add_clone_resource_arg(parser):
@@ -168,9 +171,9 @@ def add_list_resource_args(parser, listing_orders=True):
     listing_orders (bool): Toggles the help text phrasing to match either orders
       or appliances being the resource being listed.
   """
-  verb = 'to list'
-  primary_help = 'The {} {}.'
-  secondary_help = 'The {} associated with the {} {}.'
+  verb = 'list'
+  primary_help = 'The {} to {}.'
+  secondary_help = 'The {} associated with the {} to {}.'
   if listing_orders:
     orders_help = primary_help.format('orders', verb)
     appliances_help = secondary_help.format('appliances', 'orders', verb)
@@ -198,7 +201,7 @@ def add_list_resource_args(parser, listing_orders=True):
   ]
 
   concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
-  add_region_flag(parser, verb)
+  _add_region_flag(parser, verb)
 
 
 def _get_filter_clause_from_resources(filter_key, resource_refs):

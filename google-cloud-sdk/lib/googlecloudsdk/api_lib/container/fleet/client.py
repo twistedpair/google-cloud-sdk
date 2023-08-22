@@ -354,10 +354,7 @@ class FleetClient(object):
 
     Returns:
       A longrunning operation for updating the namespace.
-
-    Raises:
     """
-    # Namespace containing fields with updated value(s)
     scope = self.messages.Scope(
         name=scope_path,
         labels=labels,
@@ -838,7 +835,18 @@ class FleetClient(object):
         rbacrolebindingId=resource.Name(),
         parent=resource.Parent().RelativeName(),
     )
-    return self.client.projects_locations_scopes_rbacrolebindings.Create(req)
+    op = self.client.projects_locations_scopes_rbacrolebindings.Create(req)
+    op_resource = resources.REGISTRY.ParseRelativeName(
+        op.name, collection='gkehub.projects.locations.operations'
+    )
+    return waiter.WaitFor(
+        waiter.CloudOperationPoller(
+            self.client.projects_locations_scopes_rbacrolebindings,
+            self.client.projects_locations_operations,
+        ),
+        op_resource,
+        'Waiting for rbacrolebinding to be created',
+    )
 
   def DeleteScopeRBACRoleBinding(self, name):
     """Deletes an ScopeRBACRoleBinding resource from the fleet.
@@ -855,7 +863,17 @@ class FleetClient(object):
     req = self.messages.GkehubProjectsLocationsScopesRbacrolebindingsDeleteRequest(
         name=name
     )
-    return self.client.projects_locations_scopes_rbacrolebindings.Delete(req)
+    op = self.client.projects_locations_scopes_rbacrolebindings.Delete(req)
+    op_resource = resources.REGISTRY.ParseRelativeName(
+        op.name, collection='gkehub.projects.locations.operations'
+    )
+    return waiter.WaitFor(
+        waiter.CloudOperationPollerNoResources(
+            self.client.projects_locations_operations,
+        ),
+        op_resource,
+        'Waiting for rbacrolebinding to be deleted',
+    )
 
   def UpdateScopeRBACRoleBinding(self, name, user, group, role, labels, mask):
     """Updates an ScopeRBACRoleBinding resource in the fleet.
@@ -891,7 +909,18 @@ class FleetClient(object):
             rBACRoleBinding=rolebinding, name=rolebinding.name, updateMask=mask
         )
     )
-    return self.client.projects_locations_scopes_rbacrolebindings.Patch(req)
+    op = self.client.projects_locations_scopes_rbacrolebindings.Patch(req)
+    op_resource = resources.REGISTRY.ParseRelativeName(
+        op.name, collection='gkehub.projects.locations.operations'
+    )
+    return waiter.WaitFor(
+        waiter.CloudOperationPoller(
+            self.client.projects_locations_scopes_rbacrolebindings,
+            self.client.projects_locations_operations,
+        ),
+        op_resource,
+        'Waiting for rbacrolebinding to be updated',
+    )
 
   def ListScopeRBACRoleBindings(self, project, scope):
     """Lists rolebindings in a scope.
@@ -964,8 +993,18 @@ class FleetClient(object):
         membershipBindingId=resource.Name(),
         parent=resource.Parent().RelativeName(),
     )
-    return self.client.projects_locations_memberships_bindings.Create(
-        req)
+    op = self.client.projects_locations_memberships_bindings.Create(req)
+    op_resource = resources.REGISTRY.ParseRelativeName(
+        op.name, collection='gkehub.projects.locations.operations'
+    )
+    return waiter.WaitFor(
+        waiter.CloudOperationPoller(
+            self.client.projects_locations_memberships_bindings,
+            self.client.projects_locations_operations,
+        ),
+        op_resource,
+        'Waiting for membership binding to be created',
+    )
 
   def ListMembershipBindings(self, project, membership, location='global'):
     """Lists Bindings in a Membership.
@@ -1016,7 +1055,18 @@ class FleetClient(object):
         membershipBinding=binding,
         name=binding.name,
         updateMask=mask)
-    return self.client.projects_locations_memberships_bindings.Patch(req)
+    op = self.client.projects_locations_memberships_bindings.Patch(req)
+    op_resource = resources.REGISTRY.ParseRelativeName(
+        op.name, collection='gkehub.projects.locations.operations'
+    )
+    return waiter.WaitFor(
+        waiter.CloudOperationPoller(
+            self.client.projects_locations_memberships_bindings,
+            self.client.projects_locations_operations,
+        ),
+        op_resource,
+        'Waiting for membership binding to be updated',
+    )
 
   def DeleteMembershipBinding(self, name):
     """Deletes a Membership-Binding resource.
@@ -1032,8 +1082,17 @@ class FleetClient(object):
     """
     req = self.messages.GkehubProjectsLocationsMembershipsBindingsDeleteRequest(
         name=name)
-    return self.client.projects_locations_memberships_bindings.Delete(
-        req)
+    op = self.client.projects_locations_memberships_bindings.Delete(req)
+    op_resource = resources.REGISTRY.ParseRelativeName(
+        op.name, collection='gkehub.projects.locations.operations'
+    )
+    return waiter.WaitFor(
+        waiter.CloudOperationPollerNoResources(
+            self.client.projects_locations_operations,
+        ),
+        op_resource,
+        'Waiting for membership binding to be deleted',
+    )
 
   def GetMembershipRbacRoleBinding(self, name):
     """Gets a Membership RBAC RoleBinding resource from the GKEHub API.
@@ -1139,7 +1198,7 @@ class OperationClient:
   """Client for the GKE Hub API long-running operations."""
 
   def __init__(self, release_track: base.ReleaseTrack):
-    self.messages = util.FleetMessageModule(release_track)
+    self.messages = util.GetMessagesModule(release_track)
     self.client = util.GetClientInstance(release_track=release_track)
     self.service = self.client.projects_locations_operations
 

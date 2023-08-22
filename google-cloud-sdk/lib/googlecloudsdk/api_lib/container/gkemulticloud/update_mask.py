@@ -104,6 +104,8 @@ AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
     'autoscaling_metrics': 'config.autoscaling_metrics_collection.metrics',
     'clear_autoscaling_metrics': 'config.autoscaling_metrics_collection',
     'enable_autorepair': 'management.auto_repair',
+    'node_labels': 'config.labels',
+    'clear_node_labels': 'config.labels',
 }
 
 AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {

@@ -81,6 +81,7 @@ source:
 
 source_properties:
   arg_name: source-properties
+  metavar: KEY=VALUE
   api_field: finding.sourceProperties
   is_positional: false
   required: false

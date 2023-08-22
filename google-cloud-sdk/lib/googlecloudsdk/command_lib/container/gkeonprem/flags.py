@@ -93,5 +93,4 @@ def AddBinauthzEvaluationMode(parser):
       choices=['DISABLED', 'PROJECT_SINGLETON_POLICY_ENFORCE'],
       default=None,
       help='Set Binary Authorization evaluation mode for this cluster.',
-      hidden=True,
   )

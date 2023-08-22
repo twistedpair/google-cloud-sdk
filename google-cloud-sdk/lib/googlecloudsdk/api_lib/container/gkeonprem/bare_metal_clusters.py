@@ -1082,6 +1082,20 @@ class ClustersClient(_BareMetalClusterClient):
 
   def List(self, args: parser_extensions.Namespace):
     """Lists Clusters in the GKE On-Prem Bare Metal API."""
+    # Workaround for P4SA: Call query version config first, ignore the result.
+    # Context: b/296435390#comment2
+    project = (
+        args.project if args.project else properties.VALUES.core.project.Get()
+    )
+    # Hard code location to `us-west1`, because it cannot handle `--location=-`.
+    parent = 'projects/{project}/locations/{location}'.format(
+        project=project, location='us-west1'
+    )
+    dummy_request = messages.GkeonpremProjectsLocationsBareMetalClustersQueryVersionConfigRequest(
+        parent=parent,
+    )
+    _ = self._service.QueryVersionConfig(dummy_request)
+
     # If location is not specified, and container_bare_metal/location is not set
     # list clusters of all locations within a project.
     if (

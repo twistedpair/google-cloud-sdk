@@ -33,20 +33,44 @@ https://cloud.google.com/resource-manager/docs/creating-managing-projects#shutti
 """
 
 _PROJECT_RISK_MESSAGE = (
-    "WARNING: The risk of losing data or interrupting service "
-    "when deleting this project is high"
+    "WARNING: If you shut down this project you risk losing data or"
+    " interrupting your services"
 )
 
-_PROJECT_REASONS_PREFIX = " because in the past 30 days"
+_PROJECT_REASONS_PREFIX = ". In the last 30 days we observed this project had"
+
+_PROJECT_ADVICE = (
+    "We recommend verifying this is the correct project to shut down.\n"
+)
+
+_SA_WARNING_MESSAGE = (
+    "Deleting this service account (SA) will delete "
+    "all associated key IDs, and will prevent the account from authenticating"
+    " to any Google Cloud service API.\n\n"
+    "You cannot restore or roll back this change easily. We highly recommend"
+    " disabling the account first, testing for any unexpected impact, and only"
+    " then deleting.\n"
+)
 
 _SA_RISK_MESSAGE = (
-    "WARNING: Deleting this service account is highly likely to cause"
-    " interruptions, because in the last 90 days it had significant usage"
+    "WARNING: If you delete this SA you risk interrupting your service, as we"
+    " observed it was substantially used in the last 90 days"
+)
+
+_SA_ADVICE = "We recommend verifying this is the correct account to delete.\n"
+
+_POLICY_BINDING_DELETE_WARNING_MESSAGE = (
+    "You are about to delete the role [{}].\n"
 )
 
 _POLICY_BINDING_DELETE_RISK_MESSAGE = (
-    "WARNING: Removing this role is likely to cause interruptions, because it"
-    " was used in the last 90 days"
+    "WARNING: If you remove the role [{}], there is a high risk that you might"
+    " cause interruptions because it was used in the last 90 days"
+)
+
+_POLICY_BINDING_DELETE_ADVICE = (
+    "We recommend you verify the details and replace them with less privileged"
+    " roles, if necessary.\n"
 )
 
 _PROJECT_INSIGHT_TYPE = "google.resourcemanager.project.ChangeRiskInsight"
@@ -104,9 +128,9 @@ def _GetInsightLink(gcloud_insight):
   Returns:
     A string message with a link to the associated recommendation.
   """
-  return (
-      "Before proceeding, view the risk assessment at {0}/view-link/{1}"
-  ).format(_RECOMMENDATIONS_HOME_URL, gcloud_insight.name)
+  return ("View the full risk assessment at: {0}/view-link/{1}").format(
+      _RECOMMENDATIONS_HOME_URL, gcloud_insight.name
+  )
 
 
 def _GetResourceRiskReasons(gcloud_insight):
@@ -117,14 +141,28 @@ def _GetResourceRiskReasons(gcloud_insight):
 
   Returns:
     A list of strings. If no reasons could be found, then returns empty list.
+    The number of reasons is limited by _MAX_NUMBER_OF_REASONS, and the last
+    reason indicates how many more reasons there are if applicable.
   """
   reasons = []
+  num_reasons = 0
+  last_reason = ""
   for additional_property in gcloud_insight.content.additionalProperties:
     if additional_property.key == "importance":
       for p in additional_property.value.object_value.properties:
         if p.key == "detailedReasons":
           for reason in p.value.array_value.entries:
-            reasons.append(reason.string_value)
+            num_reasons += 1
+            if num_reasons < _MAX_NUMBER_OF_REASONS:
+              reasons.append(reason.string_value)
+            elif num_reasons == _MAX_NUMBER_OF_REASONS:
+              last_reason = reason.string_value
+  if num_reasons > _MAX_NUMBER_OF_REASONS:
+    last_reason = "{} other importance indicators.".format(
+        num_reasons - _MAX_NUMBER_OF_REASONS + 1
+    )
+  if num_reasons >= _MAX_NUMBER_OF_REASONS:
+    reasons.append(last_reason)
   return reasons
 
 
@@ -140,9 +178,11 @@ def _GetDeletionRiskMessage(gcloud_insight, risk_message, reasons_prefix=""):
     Formatted string risk message with reasons if any. The reasons are
     extracted from the gcloud_insight object.
   """
-  reasons = _GetResourceRiskReasons(gcloud_insight)[:_MAX_NUMBER_OF_REASONS]
+  reasons = _GetResourceRiskReasons(gcloud_insight)
   if not reasons:
     return risk_message + ".\n"
+  if len(reasons) == 1:
+    return "{0}{1} {2}\n".format(risk_message, reasons_prefix, reasons[0])
   message = "{0}{1}:\n".format(risk_message, reasons_prefix)
   message += "".join("  - {0}\n".format(reason) for reason in reasons)
   return message
@@ -196,15 +236,16 @@ def GetProjectDeletionRisk(release_track, project_id):
       release_track, project_id, _PROJECT_INSIGHT_TYPE
   )
   if risk_insight:
-    return "{0}\n{1}\n{2}".format(
+    return "\n".join([
         _PROJECT_WARNING_MESSAGE,
         _GetDeletionRiskMessage(
             gcloud_insight=risk_insight,
             risk_message=_PROJECT_RISK_MESSAGE,
             reasons_prefix=_PROJECT_REASONS_PREFIX,
         ),
+        _PROJECT_ADVICE,
         _GetInsightLink(risk_insight),
-    )
+    ])
   # If there are no risks to deleting a project,
   # return a standard warning message.
   return _PROJECT_WARNING_MESSAGE
@@ -231,11 +272,15 @@ def GetServiceAccountDeletionRisk(release_track, project_id, service_account):
       release_track, project_id, _SA_INSIGHT_TYPE, request_filter=target_filter
   )
   if risk_insight:
-    return "{0}\n{1}".format(
+    return "\n".join([
+        _SA_WARNING_MESSAGE,
         _GetDeletionRiskMessage(risk_insight, _SA_RISK_MESSAGE),
+        _SA_ADVICE,
         _GetInsightLink(risk_insight),
-    )
-  return None
+    ])
+  # If there are no risks to deleting a service account,
+  # return a standard warning message.
+  return _SA_WARNING_MESSAGE
 
 
 def GetIamPolicyBindingDeletionRisk(
@@ -265,10 +310,15 @@ def GetIamPolicyBindingDeletionRisk(
       matcher=policy_matcher,
   )
   if risk_insight:
-    return "{0}\n{1}".format(
+    return "\n".join([
+        _POLICY_BINDING_DELETE_WARNING_MESSAGE.format(member_role),
         _GetDeletionRiskMessage(
-            risk_insight, _POLICY_BINDING_DELETE_RISK_MESSAGE
+            risk_insight,
+            _POLICY_BINDING_DELETE_RISK_MESSAGE.format(member_role),
         ),
+        _POLICY_BINDING_DELETE_ADVICE,
         _GetInsightLink(risk_insight),
-    )
-  return None
+    ])
+  # If there are no risks to deleting the IAM policy binding,
+  # return a standard warning message.
+  return _POLICY_BINDING_DELETE_WARNING_MESSAGE.format(member_role)

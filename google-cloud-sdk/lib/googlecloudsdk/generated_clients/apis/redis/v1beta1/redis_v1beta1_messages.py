@@ -62,11 +62,15 @@ class Cluster(_messages.Message):
     pscConfigs: Required. Each PscConfig configures the consumer network where
       IPs will be designated to the cluster for client access through Private
       Service Connect Automation. Currently, only one PscConfig is supported.
+    pscConnections: Output only. PSC connections for discovery of the cluster
+      topology and accessing the cluster.
     replicaCount: Optional. The number of replica nodes per shard.
     shardCount: Required. Number of shards for the Redis cluster.
     sizeGb: Output only. Redis memory size in GB for the entire cluster.
     state: Output only. The current state of this cluster. Can be CREATING,
       READY, UPDATING, DELETING and SUSPENDED
+    stateInfo: Output only. Additional information about the current state of
+      the cluster.
     transitEncryptionMode: Optional. The in-transit encryption for the Redis
       cluster. If not provided, encryption is disabled for the cluster.
     uid: Output only. System assigned, unique identifier for the cluster.
@@ -121,12 +125,14 @@ class Cluster(_messages.Message):
   discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 3, repeated=True)
   name = _messages.StringField(4)
   pscConfigs = _messages.MessageField('PscConfig', 5, repeated=True)
-  replicaCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 10)
-  uid = _messages.StringField(11)
+  pscConnections = _messages.MessageField('PscConnection', 6, repeated=True)
+  replicaCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  stateInfo = _messages.MessageField('StateInfo', 11)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 12)
+  uid = _messages.StringField(13)
 
 
 class DiscoveryEndpoint(_messages.Message):
@@ -137,13 +143,10 @@ class DiscoveryEndpoint(_messages.Message):
       clients to connect to the service. The address could be either IP or
       hostname.
     port: Output only. The port number of the exposed Redis endpoint.
-    pscConfig: Output only. Customer configuration for where the endpoint is
-      created and accessed from.
   """
 
   address = _messages.StringField(1)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pscConfig = _messages.MessageField('PscConfig', 3)
 
 
 class Empty(_messages.Message):
@@ -1113,12 +1116,33 @@ class PscConfig(_messages.Message):
   r"""A PscConfig object.
 
   Fields:
-    network: Required. The consumer network where the IP address of the
-      discovery endpoint will be reserved, in the form of
-      projects/{network_host_project}/global/networks/{network_id}.
+    network: Required. The network where the IP address of the discovery
+      endpoint will be reserved, in the form of
+      projects/{network_project}/global/networks/{network_id}.
   """
 
   network = _messages.StringField(1)
+
+
+class PscConnection(_messages.Message):
+  r"""Details of consumer resources in a PSC connection.
+
+  Fields:
+    address: Output only. The IP allocated on the consumer network for the PSC
+      forwarding rule.
+    forwardingRule: Output only. The URI of the consumer side forwarding rule.
+      Example: projects/{projectNumOrId}/regions/us-
+      east1/forwardingRules/{resourceId}.
+    network: The consumer network where the IP address resides, in the form of
+      projects/{project_id}/global/networks/{network_id}.
+    pscConnectionId: Output only. The PSC connection id of the forwarding rule
+      connected to the service attachment.
+  """
+
+  address = _messages.StringField(1)
+  forwardingRule = _messages.StringField(2)
+  network = _messages.StringField(3)
+  pscConnectionId = _messages.StringField(4)
 
 
 class ReconciliationOperationMetadata(_messages.Message):
@@ -1606,6 +1630,17 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StateInfo(_messages.Message):
+  r"""Represents additional information about the state of the cluster.
+
+  Fields:
+    updateInfo: Describes ongoing update on the cluster when cluster state is
+      UPDATING.
+  """
+
+  updateInfo = _messages.MessageField('UpdateInfo', 1)
+
+
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -1698,6 +1733,18 @@ class TlsCertificate(_messages.Message):
   expireTime = _messages.StringField(3)
   serialNumber = _messages.StringField(4)
   sha1Fingerprint = _messages.StringField(5)
+
+
+class UpdateInfo(_messages.Message):
+  r"""Represents information about an updating cluster.
+
+  Fields:
+    targetReplicaCount: Target number of replica nodes per shard.
+    targetShardCount: Target number of shards for redis cluster
+  """
+
+  targetReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  targetShardCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class UpgradeInstanceRequest(_messages.Message):

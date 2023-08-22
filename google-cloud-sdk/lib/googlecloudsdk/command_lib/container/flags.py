@@ -1377,14 +1377,14 @@ def AddMonitoringFlag(parser):
   help_text = """\
 Set the components that have monitoring enabled. Valid component values are:
 `SYSTEM`, `WORKLOAD` (Deprecated), `NONE`, `API_SERVER`, `CONTROLLER_MANAGER`,
-`SCHEDULER`
+`SCHEDULER`, `DAEMONSET`, `DEPLOYMENT`, `HPA`, `POD`, `STATEFULSET`, `STORAGE`
 
 For more information, see
 https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-metrics
 
 Examples:
 
-  $ {command} --monitoring=SYSTEM,API_SERVER
+  $ {command} --monitoring=SYSTEM,API_SERVER,POD
   $ {command} --monitoring=NONE
 """
   parser.add_argument(
@@ -5612,7 +5612,7 @@ def AddBestEffortProvisionFlags(parser, hidden=False):
   )
 
 
-def AddEnableMultiNetworkingFlag(parser):
+def AddEnableMultiNetworkingFlag(parser, hidden=False):
   """Adds a --enable-multi-networking flag to the given parser."""
   help_text = """\
 Enables multi-networking on the cluster.
@@ -5623,6 +5623,7 @@ Multi-networking is disabled by default.
       action='store_true',
       default=None,
       help=help_text,
+      hidden=hidden,
   )
 
 

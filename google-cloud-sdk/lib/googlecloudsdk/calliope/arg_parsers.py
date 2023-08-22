@@ -59,6 +59,7 @@ import re
 
 from dateutil import tz
 
+from googlecloudsdk.calliope import arg_parsers_usage_text as usage_text
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
@@ -998,7 +999,7 @@ class ArgBoolean(ArgType):
             arg_value, ', '.join(self._truthy_strings + self._falsey_strings)))
 
 
-class ArgList(ArgType):
+class ArgList(usage_text.ArgTypeUsage, ArgType):
   """Interpret an argument value as a list.
 
   Intended to be used as the type= for a flag argument. Splits the string on
@@ -1101,7 +1102,7 @@ class ArgList(ArgType):
 
   _MAX_METAVAR_LENGTH = 30  # arbitrary, but this is pretty long
 
-  def GetUsageMsg(self, is_custom_metavar, metavar):
+  def GetUsageMetavar(self, is_custom_metavar, metavar):
     """Get a specially-formatted metavar for the ArgList to use in help.
 
     An example is worth 1,000 words:
@@ -1120,13 +1121,13 @@ class ArgList(ArgType):
     'REALLY_VERY_QUITE_LONG_METAVAR,[...]'
 
     Args:
-      is_custom_metavar: unused in GetUsageMsg
+      is_custom_metavar: unused in GetUsageMetavar
       metavar: string, the base metavar to turn into an ArgList metavar
 
     Returns:
       string, the ArgList usage metavar
     """
-    del is_custom_metavar  # Unused in GetUsageMsg
+    del is_custom_metavar  # Unused in GetUsageMetavar
 
     delim_char = self.custom_delim_char or self.DEFAULT_DELIM_CHAR
     required = delim_char.join([metavar] * self.min_length)
@@ -1158,6 +1159,12 @@ class ArgList(ArgType):
       return '{}{}[...]'.format(metavar, delim_char)
     else:
       return '{0}{1}...{1}[...]'.format(metavar, delim_char)
+
+  def GetUsageHelpText(self):
+    return None
+
+  def GetUsageExample(self):
+    return None
 
 
 class ArgDict(ArgList):
@@ -1296,11 +1303,11 @@ class ArgDict(ArgList):
 
     return arg_dict
 
-  def GetUsageMsg(self, is_custom_metavar, metavar):
+  def GetUsageMetavar(self, is_custom_metavar, metavar):
     # If we're not using a spec to limit the key values or if metavar
     # has been overridden, then use the normal ArgList formatting
     if not self.spec or is_custom_metavar:
-      return super(ArgDict, self).GetUsageMsg(is_custom_metavar, metavar)
+      return super(ArgDict, self).GetUsageMetavar(is_custom_metavar, metavar)
 
     msg_list = []
     spec_list = sorted(six.iteritems(self.spec))
@@ -1321,6 +1328,12 @@ class ArgDict(ArgList):
 
     msg = '[' + '],['.join(msg_list) + ']'
     return msg
+
+  def GetUsageHelpText(self):
+    return None
+
+  def GetUsageExample(self):
+    return None
 
 
 # NOTE: ArgObject is still being implemented. Not available for public use yet
@@ -1526,6 +1539,19 @@ class ArgObject(ArgDict):
       value = [value]
 
     return value
+
+  def GetUsageMetavar(self, is_custom_metavar, metavar):
+    if self._keyed_values:
+      return super(ArgObject, self).GetUsageMetavar(is_custom_metavar, metavar)
+    return metavar
+
+  def GetUsageExample(self):
+    # TODO(b/294248333): Implement UsageExample for ArgObject
+    return None
+
+  def GetUsageHelpText(self):
+    # TODO(b/294248333): Implement minimal help text required for ArgObject
+    return None
 
 
 class UpdateAction(argparse.Action):

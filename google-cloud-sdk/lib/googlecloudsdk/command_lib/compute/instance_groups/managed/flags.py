@@ -549,3 +549,31 @@ def AddMigDefaultActionOnVmFailure(parser):
       type=arg_utils.EnumNameToChoice,
       choices=choices,
       help=help_text)
+
+
+def AddStandbyPolicyFlags(parser):
+  """Add flags required for setting standby policy."""
+  standby_pool_mode_choices = {
+      'MANUAL': 'MIG does not automatically stop/start or suspend/resume VMs.',
+      'SCALE_OUT_POOL': (
+          'MIG automatically resumes and starts VMs when it scales out, and'
+          ' replenishes the standby pool afterwards.'
+      ),
+  }
+  parser.add_argument(
+      '--standby-pool-mode',
+      type=str,
+      choices=standby_pool_mode_choices,
+      help=(
+          'Defines behaviour of using instances from standby pool to resize'
+          ' MIG.'
+      ),
+  )
+  parser.add_argument(
+      '--standby-pool-initial-delay',
+      type=int,
+      help=(
+          'Specifies the initialization delay for stopping/suspending'
+          ' instances.'
+      ),
+  )

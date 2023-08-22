@@ -32,21 +32,6 @@ class Job(k8s_object.KubernetesObject):
   API_CATEGORY = 'run.googleapis.com'
   KIND = 'Job'
 
-  @classmethod
-  def New(cls, client, namespace):
-    """Produces a new Job object.
-
-    Args:
-      client: The Cloud Run API client.
-      namespace: str, The serving namespace.
-
-    Returns:
-      A new Job object.
-    """
-    ret = super(Job, cls).New(client, namespace)
-    ret.template.spec.containers = [client.MESSAGES_MODULE.Container()]
-    return ret
-
   @property
   def execution_template(self):
     return execution.Execution.Template(self.spec.template,

@@ -3216,7 +3216,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.futureReservations.update',
         ordered_params=['project', 'zone', 'futureReservation'],
         path_params=['futureReservation', 'project', 'zone'],
-        query_params=['requestId', 'updateMask'],
+        query_params=['paths', 'requestId', 'updateMask'],
         relative_path='projects/{project}/zones/{zone}/futureReservations/{futureReservation}',
         request_field='futureReservationResource',
         request_type_name='ComputeFutureReservationsUpdateRequest',

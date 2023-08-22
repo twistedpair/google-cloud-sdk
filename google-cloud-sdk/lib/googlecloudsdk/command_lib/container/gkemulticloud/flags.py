@@ -511,16 +511,34 @@ def GetConfigEncryptionPublicKey(args):
 
 
 def AddNodeLabels(parser):
+  """Adds the --node-labels flag."""
   parser.add_argument(
       '--node-labels',
       type=arg_parsers.ArgDict(min_length=1),
       metavar='NODE_LABEL',
-      help='Labels assigned to nodes of the node pool.',
+      help="Labels assigned to the node pool's nodes.",
   )
 
 
 def GetNodeLabels(args):
   return getattr(args, 'node_labels', None) or {}
+
+
+def AddClearNodeLabels(parser):
+  """Adds the --clear-node-labels flag."""
+  parser.add_argument(
+      '--clear-node-labels',
+      action='store_true',
+      default=None,
+      help="Clear the labels assigned to the node pool's nodes.",
+  )
+
+
+def AddNodeLabelsForUpdate(parser):
+  """Adds node labels related flags for update."""
+  group = parser.add_group('Node labels', mutex=True)
+  AddNodeLabels(group)
+  AddClearNodeLabels(group)
 
 
 def _ValidateNodeTaintFormat(taint):

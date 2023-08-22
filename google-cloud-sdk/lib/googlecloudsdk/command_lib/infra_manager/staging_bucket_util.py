@@ -36,4 +36,4 @@ def GetDefaultStagingBucket():
       .replace('google', 'elgoog')
   )
 
-  return safe_project + '_blueprints'
+  return safe_project + '_infra_manager_staging'

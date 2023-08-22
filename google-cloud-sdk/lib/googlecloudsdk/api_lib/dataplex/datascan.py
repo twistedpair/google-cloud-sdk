@@ -99,6 +99,14 @@ def GenerateDataProfileSpec(args):
         samplingPercent=sampling_percent,
         rowFilter=row_filter,
     )
+    if hasattr(args, 'export_results_table') and args.IsSpecified(
+        'export_results_table'
+    ):
+      dataprofilespec.postScanActions = module.GoogleCloudDataplexV1DataProfileSpecPostScanActions(
+          bigqueryExport=module.GoogleCloudDataplexV1DataProfileSpecPostScanActionsBigQueryExport(
+              resultsTable=args.export_results_table
+          )
+      )
   return dataprofilespec
 
 

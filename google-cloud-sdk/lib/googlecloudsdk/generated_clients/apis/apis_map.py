@@ -1255,6 +1255,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'connectors': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.connectors.v1',
+                    client_classpath='connectors_v1_client.ConnectorsV1',
+                    base_url='https://connectors.googleapis.com/',
+                    messages_modulepath='connectors_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'container': {
         'v1':
             APIDef(
@@ -2303,6 +2315,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'managedkafka': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.managedkafka.v1alpha',
+                    client_classpath='managedkafka_v1alpha_client.ManagedkafkaV1alpha',
+                    base_url='https://managedkafka.googleapis.com/',
+                    messages_modulepath='managedkafka_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'marketplacesolutions': {
         'v1alpha1':
             APIDef(
@@ -3182,6 +3206,18 @@ MAP = {
                     base_url='https://securitycenter.googleapis.com/',
                     messages_modulepath='securitycenter_v1beta2_messages'),
                 default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'securityposture': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.securityposture.v1alpha',
+                    client_classpath='securityposture_v1alpha_client.SecuritypostureV1alpha',
+                    base_url='',
+                    messages_modulepath='securityposture_v1alpha_messages'),
+                default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

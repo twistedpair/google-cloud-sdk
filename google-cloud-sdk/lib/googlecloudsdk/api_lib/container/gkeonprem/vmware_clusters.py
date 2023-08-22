@@ -43,6 +43,19 @@ class ClustersClient(client.ClientBase):
       self, args: parser_extensions.Namespace
   ) -> Generator[messages.VmwareCluster, None, None]:
     """Lists Clusters in the GKE On-Prem VMware API."""
+    # Workaround for P4SA: Call query version config first, ignore the result.
+    project = (
+        args.project if args.project else properties.VALUES.core.project.Get()
+    )
+    # Hard code location to `us-west1`, because it cannot handle `--location=-`.
+    parent = 'projects/{project}/locations/{location}'.format(
+        project=project, location='us-west1'
+    )
+    dummy_request = messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest(
+        parent=parent,
+    )
+    _ = self._service.QueryVersionConfig(dummy_request)
+
     # If location is not specified, and container_vmware/location is not set,
     # list clusters of all locations within a project.
     if (

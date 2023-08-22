@@ -19,8 +19,10 @@ class AppProfile(_messages.Message):
   traffic from a particular end user application.
 
   Enums:
-    PriorityValueValuesEnum: The priority of requests sent using this app
-      profile.
+    PriorityValueValuesEnum: This field has been deprecated in favor of
+      `standard_isolation.priority`. If you set this field,
+      `standard_isolation.priority` will be set instead. The priority of
+      requests sent using this app profile.
 
   Fields:
     description: Long form description of the use case for this AppProfile.
@@ -34,12 +36,20 @@ class AppProfile(_messages.Message):
     multiClusterRoutingUseAny: Use a multi-cluster routing policy.
     name: The unique name of the app profile. Values are of the form
       `projects/{project}/instances/{instance}/appProfiles/_a-zA-Z0-9*`.
-    priority: The priority of requests sent using this app profile.
+    priority: This field has been deprecated in favor of
+      `standard_isolation.priority`. If you set this field,
+      `standard_isolation.priority` will be set instead. The priority of
+      requests sent using this app profile.
     singleClusterRouting: Use a single-cluster routing policy.
+    standardIsolation: The standard options used for isolating this app
+      profile's traffic from other use cases.
   """
 
   class PriorityValueValuesEnum(_messages.Enum):
-    r"""The priority of requests sent using this app profile.
+    r"""This field has been deprecated in favor of
+    `standard_isolation.priority`. If you set this field,
+    `standard_isolation.priority` will be set instead. The priority of
+    requests sent using this app profile.
 
     Values:
       PRIORITY_UNSPECIFIED: Default value. Mapped to PRIORITY_HIGH (the legacy
@@ -59,6 +69,7 @@ class AppProfile(_messages.Message):
   name = _messages.StringField(4)
   priority = _messages.EnumField('PriorityValueValuesEnum', 5)
   singleClusterRouting = _messages.MessageField('SingleClusterRouting', 6)
+  standardIsolation = _messages.MessageField('StandardIsolation', 7)
 
 
 class AuditConfig(_messages.Message):
@@ -2858,6 +2869,36 @@ class Split(_messages.Message):
   """
 
   key = _messages.BytesField(1)
+
+
+class StandardIsolation(_messages.Message):
+  r"""Standard options for isolating this app profile's traffic from other use
+  cases.
+
+  Enums:
+    PriorityValueValuesEnum: The priority of requests sent using this app
+      profile.
+
+  Fields:
+    priority: The priority of requests sent using this app profile.
+  """
+
+  class PriorityValueValuesEnum(_messages.Enum):
+    r"""The priority of requests sent using this app profile.
+
+    Values:
+      PRIORITY_UNSPECIFIED: Default value. Mapped to PRIORITY_HIGH (the legacy
+        behavior) on creation.
+      PRIORITY_LOW: <no description>
+      PRIORITY_MEDIUM: <no description>
+      PRIORITY_HIGH: <no description>
+    """
+    PRIORITY_UNSPECIFIED = 0
+    PRIORITY_LOW = 1
+    PRIORITY_MEDIUM = 2
+    PRIORITY_HIGH = 3
+
+  priority = _messages.EnumField('PriorityValueValuesEnum', 1)
 
 
 class StandardQueryParameters(_messages.Message):
