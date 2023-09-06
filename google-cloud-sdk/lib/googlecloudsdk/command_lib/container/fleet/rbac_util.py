@@ -32,7 +32,7 @@ from googlecloudsdk.core import log
 CLUSTER_ROLE = 'clusterrole'
 NAMESPACE_ROLE = 'role'
 ANTHOS_SUPPORT_USER = 'service-{project_number}@gcp-sa-{instance_name}anthossupport.iam.gserviceaccount.com'
-PRINCIPAL_FORMAT = [
+PRINCIPAL_USER_FORMAT = [
     'principal:',
     '',
     'iam.googleapis.com',
@@ -40,11 +40,24 @@ PRINCIPAL_FORMAT = [
     'workforcePools',
     'subject',
 ]
+PRINCIPAL_GROUP_FORMAT = [
+    'principal:',
+    '',
+    'iam.googleapis.com',
+    'locations',
+    'workforcePools',
+    'group',
+]
 UNWANTED_CHARS = [' ', '/', '%']
-INVALID_ARGS_MESSAGE = (
-    'Please specify the --users in correct format:'
+INVALID_ARGS_USER_MESSAGE = (
+    'Please specify the --users in the correct format:'
     '"foo@example.com" or "principal://iam.googleapis.com/locations/global/'
     'workforcePools/pool/subject/user".'
+)
+INVALID_ARGS_GROUP_MESSAGE = (
+    'Please specify the --groups in the correct format:'
+    '"group@example.com" or "principal://iam.googleapis.com/locations/global/'
+    'workforcePools/pool/group/group1".'
 )
 IMPERSONATE_POLICY_FORMAT = """\
 apiVersion: rbac.authorization.k8s.io/v1
@@ -254,59 +267,72 @@ def ValidateRole(role):
     if len(role.split('/')) != 2:
       raise InvalidArgsError(
           'Cluster role is not specified in correct format. Please specify the '
-          'cluster role as: clusterrole/cluser-permission')
+          'cluster role as: clusterrole/cluster-permission.'
+      )
   elif namespace_pattern.match(role.lower()):
     log.status.Print('Specified Namespace Role is:', role)
     if len(role.split('/')) != 3:
       raise InvalidArgsError(
           'Namespace role is not specified in correct format. Please specify '
-          'the namespace role as: role/namespace/namespace-permission')
+          'the namespace role as: role/namespace/namespace-permission'
+      )
   else:
     raise InvalidArgsError(
-        'The required role is not a cluster role or a namespace role.')
+        'The required role is not a cluster role or a namespace role.'
+    )
 
 
-def FormatUserForResourceNaming(user):
+def FormatIdentityForResourceNaming(identity, is_user):
   """Format user by removing disallowed characters for k8s resource naming."""
-  # Check if the user is a third-party user.
-  parts = user.split('/')
+  # Check if the identity is a user or group.
+  if is_user:
+    desired_format = PRINCIPAL_USER_FORMAT
+    error_message = INVALID_ARGS_USER_MESSAGE
+  else:
+    desired_format = PRINCIPAL_GROUP_FORMAT
+    error_message = INVALID_ARGS_GROUP_MESSAGE
+  parts = identity.split('/')
   if len(parts) >= 9:
     # Check the fields shared by all third-party principals.
     common_parts = parts[:4] + parts[5:8:2]
-    if common_parts == PRINCIPAL_FORMAT:
-      workforce_pool = user.split('/workforcePools/')[1].split('/')[0]
-      principal = user.split('/subject/')[1]
+    if common_parts == desired_format:
+      workforce_pool = identity.split('/workforcePools/')[1].split('/')[0]
+      principal = identity.split('/{}/'.format(desired_format[-1]))[1]
       # Include workforce pool and remove unwanted characters from the
       # principal name.
-      user = workforce_pool + '_' + principal
+      resource_name = workforce_pool + '_' + principal
     else:
-      raise InvalidArgsError(INVALID_ARGS_MESSAGE)
+      raise InvalidArgsError(error_message)
   else:
-    if '@' not in user:
-      raise InvalidArgsError(INVALID_ARGS_MESSAGE)
+    if '@' not in identity:
+      raise InvalidArgsError(error_message)
     else:
-      user = user.split('@')[0]
+      resource_name = identity.split('@')[0]
   # Get rid of spaces to make RBAC policy management easier (not using
   # quotes around the name) and '/' and '%' due to naming restrictions.
   for ch in UNWANTED_CHARS:
-    user = user.replace(ch, '')
+    resource_name = resource_name.replace(ch, '')
 
-  return user
+  return resource_name
 
 
 def ValidateArgs(args):
   """Validate Args in correct format."""
   # Validate the confliction between '--anthos-support' and '--role'.
-  if not args.revoke and ((args.anthos_support and args.role) or
-                          (not args.anthos_support and not args.role)):
+  if not args.revoke and (
+      (args.anthos_support and args.role)
+      or (not args.anthos_support and not args.role)
+  ):
     raise InvalidArgsError(
-        'Please specify either --role or --anthos-support in the flags.')
+        'Please specify either --role or --anthos-support in the flags.'
+    )
   if args.role:
     ValidateRole(args.role)
-  # Validate the confliction between '--anthos-support' and '--users'.
-  if not args.users and not args.anthos_support:
+  # Validate either users/anthos-support or groups is set.
+  if not args.users and not args.groups and not args.anthos_support:
     raise InvalidArgsError(
-        'Please specify the either --users or --anthos-support the flags.')
+        'Please specify --groups: (--anthos-support --users) in flags.'
+    )
   # Validate required flags when apply RBAC policy to cluster.
   if args.apply:
     if not args.membership:
@@ -318,7 +344,8 @@ def ValidateArgs(args):
   if args.revoke and args.apply:
     # Validate confliction between --apply and --revoke.
     raise InvalidArgsError(
-        'Please specify either --apply or --revoke in flags.')
+        'Please specify either --apply or --revoke in flags.'
+    )
   if args.revoke:
     # Validate required flags when revoke RBAC policy for specified user from
     # from cluster.
@@ -333,17 +360,21 @@ def ValidateArgs(args):
 def GetAnthosSupportUser(project_id):
   """Get P4SA account name for Anthos Support when user not specified."""
   project_number = projects_api.Get(
-      projects_util.ParseProject(project_id)).projectNumber
+      projects_util.ParseProject(project_id)
+  ).projectNumber
   hub_endpoint_override = hub_util.APIEndpoint()
   if hub_endpoint_override == hub_util.PROD_API:
     return ANTHOS_SUPPORT_USER.format(
-        project_number=project_number, instance_name='')
+        project_number=project_number, instance_name=''
+    )
   elif hub_endpoint_override == hub_util.STAGING_API:
     return ANTHOS_SUPPORT_USER.format(
-        project_number=project_number, instance_name='staging-')
+        project_number=project_number, instance_name='staging-'
+    )
   elif hub_endpoint_override == hub_util.AUTOPUSH_API:
     return ANTHOS_SUPPORT_USER.format(
-        project_number=project_number, instance_name='autopush-')
+        project_number=project_number, instance_name='autopush-'
+    )
   else:
     raise memberships_errors.UnknownApiEndpointOverrideError('gkehub')
 
@@ -358,20 +389,34 @@ def GenerateRBAC(args, project_id):
   namespace = ''
   metadata_name = ''
   users_list = list()
+  groups_list = list()
 
   if args.anthos_support:
-    rbac_policy_format = IMPERSONATE_POLICY_FORMAT + PERMISSION_POLICY_ANTHOS_SUPPORT_FORMAT
+    rbac_policy_format = (
+        IMPERSONATE_POLICY_FORMAT + PERMISSION_POLICY_ANTHOS_SUPPORT_FORMAT
+    )
   elif cluster_pattern.match(args.role.lower()):
-    rbac_policy_format = IMPERSONATE_POLICY_FORMAT + PERMISSION_POLICY_CLUSTER_FORMAT
     role_permission = args.role.split('/')[1]
+    if args.users:
+      rbac_policy_format = (
+          IMPERSONATE_POLICY_FORMAT + PERMISSION_POLICY_CLUSTER_FORMAT
+      )
+    elif args.groups:
+      rbac_policy_format = PERMISSION_POLICY_CLUSTER_FORMAT
   elif namespace_pattern.match(args.role.lower()):
-    rbac_policy_format = IMPERSONATE_POLICY_FORMAT + PERMISSION_POLICY_NAMESPACE_FORMAT
     namespace = args.role.split('/')[1]
     role_permission = args.role.split('/')[2]
+    if args.users:
+      rbac_policy_format = (
+          IMPERSONATE_POLICY_FORMAT + PERMISSION_POLICY_NAMESPACE_FORMAT
+      )
+    elif args.groups:
+      rbac_policy_format = PERMISSION_POLICY_NAMESPACE_FORMAT
   else:
     raise InvalidArgsError(
         'Invalid flags, please specify either the --role or --anthos-support in'
-        'your flags.')
+        'your flags.'
+    )
 
   if args.users:
     users_list = args.users.split(',')
@@ -385,12 +430,14 @@ def GenerateRBAC(args, project_id):
       metadata_name = (
           project_id
           + '_'
-          + FormatUserForResourceNaming(user)
+          + FormatIdentityForResourceNaming(user, True)
           + '_'
           + args.membership
       )
     else:
-      metadata_name = project_id + '_' + FormatUserForResourceNaming(user)
+      metadata_name = (
+          project_id + '_' + FormatIdentityForResourceNaming(user, True)
+      )
 
     # Assign value to the RBAC file templates.
     single_generated_rbac = rbac_policy_format.format(
@@ -398,8 +445,36 @@ def GenerateRBAC(args, project_id):
         namespace=namespace,
         user_account=impersonate_users,
         users=permission_users,
-        permission=role_permission)
+        permission=role_permission,
+    )
     generated_rbac[user] = single_generated_rbac
+
+  if args.groups:
+    groups_list = args.groups.split(',')
+  for group in groups_list:
+    permission_users = os.linesep + '- kind: Group'
+    permission_users += os.linesep + '  name: {group}'.format(group=group)
+    if args.membership:
+      metadata_name = (
+          project_id
+          + '_'
+          + FormatIdentityForResourceNaming(group, False)
+          + '_'
+          + args.membership
+      )
+    else:
+      metadata_name = (
+          project_id + '_' + FormatIdentityForResourceNaming(group, False)
+      )
+
+    # Assign value to the RBAC file templates.
+    single_generated_rbac = rbac_policy_format.format(
+        metadata_name=metadata_name,
+        namespace=namespace,
+        users=permission_users,
+        permission=role_permission,
+    )
+    generated_rbac[group] = single_generated_rbac
 
   return generated_rbac
 

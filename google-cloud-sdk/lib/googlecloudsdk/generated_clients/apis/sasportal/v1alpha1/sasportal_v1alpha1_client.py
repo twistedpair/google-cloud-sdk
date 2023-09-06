@@ -1135,6 +1135,32 @@ class SasportalV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetupSasAnalytics(self, request, global_params=None):
+      r"""Setups the a GCP Project to receive SAS Analytics messages via GCP Pub/Sub with a subscription to BigQuery. All the Pub/Sub topics and BigQuery tables are created automatically as part of this service.
+
+      Args:
+        request: (SasPortalSetupSasAnalyticsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SasPortalOperation) The response message.
+      """
+      config = self.GetMethodConfig('SetupSasAnalytics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetupSasAnalytics.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sasportal.customers.setupSasAnalytics',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1alpha1/customers:setupSasAnalytics',
+        request_field='<request>',
+        request_type_name='SasPortalSetupSasAnalyticsRequest',
+        response_type_name='SasPortalOperation',
+        supports_download=False,
+    )
+
   class DeploymentsDevicesService(base_api.BaseApiService):
     """Service class for the deployments_devices resource."""
 

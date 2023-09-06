@@ -154,8 +154,8 @@ class BackupVaultsClient(object):
     """Updates a Backup Vault.
 
     Args:
-      backupvault_ref: The reference to the kms config.
-      backup_vault: KMS Config message, the updated kms config.
+      backupvault_ref: The reference to the backup vault.
+      backup_vault: Backup Vault message, the updated backup vault.
       update_mask: A comma-separated list of updated fields.
       async_: If False, wait for the operation to complete.
 
@@ -173,12 +173,11 @@ class BackupVaultsClient(object):
     return self.WaitForOperation(operation_ref)
 
   def ParseUpdatedBackupVault(
-      self, kms_config, crypto_key_name, description=None, labels=None
+      self, backup_vault, description=None, labels=None
   ):
     """Parses updates into an kms config."""
-    return self._adapter.ParseUpdatedKmsConfig(
-        kms_config=kms_config,
-        crypto_key_name=crypto_key_name,
+    return self._adapter.ParseUpdatedBackupVault(
+        backup_vault=backup_vault,
         description=description,
         labels=labels,
     )
@@ -186,6 +185,7 @@ class BackupVaultsClient(object):
 
 class BetaBackupVaultsAdapter(object):
   """Adapter for the Beta Cloud NetApp Files API for Backup Vaults."""
+
   def __init__(self):
     self.release_track = base.ReleaseTrack.BETA
     self.client = netapp_util.GetClientInstance(

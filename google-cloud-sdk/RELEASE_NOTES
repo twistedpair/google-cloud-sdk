@@ -6,6 +6,142 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 445.0.0 (2023-09-06)
+
+### Breaking Changes
+
+*   **(GKE Hub)** Removed `--security-posture` and `--workload-vulnerability-scanning` flags of `gcloud container fleet` and `gcloud beta container fleet`.
+  * `--security-posture` and `--workload-vulnerability-scanning` flags are not supported yet.
+*   **(GKE Hub)** Updated `anthos-support` and `users` flags to be mutually exclusive in adding groups support to `gcloud container fleet memberships generate-gateway-rbac` command.
+
+
+### Google Cloud CLI
+
+*   Fixed issue where the `gcloud` CLI would crash on unknown platforms.
+*   Added a warning that `--update-adc` is now deprecated for 1st-party user credentials and replaced by `gcloud auth application-default login`.
+
+### Anthos Multi-Cloud
+
+*   Promoted `--enable-autorepair` and `--no-enable-autorepair` of `gcloud container aws node-pools create` to GA.
+*   Promoted `--enable-autorepair` and `--no-enable-autorepair` of `gcloud container aws node-pools update` to GA.
+*   Promoted `--enable-autorepair` and `--no-enable-autorepair` of `gcloud container azure node-pools create` to GA.
+*   Promoted `--enable-autorepair` and `--no-enable-autorepair` of `gcloud container azure node-pools update` to GA.
+*   Added `--admin-groups` flag to `gcloud container aws clusters create` for setting groups as admins.
+*   Added `--admin-groups` flag to `gcloud container aws clusters update` for setting groups as admins.
+*   Added `--admin-groups` flag to `gcloud container azure clusters create` for setting groups as admins.
+*   Added `--admin-groups` flag to `gcloud container azure clusters update` for setting groups as admins.
+*   Added `--admin-groups` flag to `gcloud container attached clusters create` for setting groups as admins.
+*   Added `--admin-groups` flag to `gcloud container attached clusters register` for setting groups as admins.
+*   Added `--admin-groups` flag to `gcloud container attached clusters update` for setting groups as admins.
+*   Added `--proxy-secret-name` and `--proxy-secret-namespace` flags to `gcloud container attached
+    clusters` to configure an HTTP/HTTPS proxy for outbound traffic.
+*   Added `--binauthz-evaluation-mode` flag to `gcloud container aws clusters create` to configure Binary Authorization evaluation mode.
+*   Added `--binauthz-evaluation-mode` flag to `gcloud container aws clusters update` to configure Binary Authorization evaluation mode.
+*   Added `--binauthz-evaluation-mode` flag to `gcloud container attached clusters register` to configure Binary Authorization evaluation mode.
+*   Added `--binauthz-evaluation-mode` flag to `gcloud container attached clusters update` to configure Binary Authorization evaluation mode.
+*   Added `--clear-admin-groups` and `--clear-admin-users` flags to `gcloud container attached clusters update` to clear admin users and groups from the cluster.
+
+### Cloud Billing
+
+*   Fixed issue where `gcloud billing budgets create` command crashed when run with `--filter-labels` flag. This issue can be tracked at
+    <https://issuetracker.google.com/issues/197773823>.
+
+### Cloud Build
+
+* Modified `gcloud builds submit` to support submitting a build with 2nd-gen repository resource.
+* Added `--dir` and `--revision` flag in `gcloud builds submit` command.
+
+### Cloud Deploy
+
+* Added support to fail fast when using an unsupported Skaffold version in the `create release` command.
+* Added a new command `deploy get-config` which gets the config for the specified region and project.
+
+### Cloud Firestore
+
+* Added Firestore backups feature support to Alpha.
+
+### Cloud NetApp
+
+* Added `--restricted-actions` flag to `gcloud netapp volumes` and `gcloud beta netapp volumes` during create and update.
+
+### Cloud Run
+
+* Added `--dry_run` flag to `gcloud beta run services replace`, which will
+  validate the YAML service specification without applying it.
+* Modified the output format of `gcloud run services describe` and `gcloud run revisions describe` to support multiple containers.
+
+### Cloud SQL
+
+* Promoted `--password-policy-disallow-compromised-credentials` flag for `gcloud sql instances create` and
+  `gcloud sql instances patch` to GA.
+
+### Cloud TPU
+
+* Fixed issue where `gcloud compute tpus tpu-vm ssh` is unable to login when
+  project-level `enable-oslogin:TRUE` is configured and instance-level
+  `enable-oslogin` is unset.
+
+### Compute Engine
+
+* Promoted the flag of `--instance-template-region` to GA in `gcloud compute instance-templates create`.
+* Promoted the flag of `--region` to GA in:
+  * `gcloud compute instance-templates list`
+  * `gcloud compute instance-templates delete`
+  * `gcloud compute instance-templates describe`.
+
+### Distributed Cloud Edge
+
+* Added `--version` and `--release-channel` flags to `gcloud edge-cloud container clusters create` command to allow specifying the cluster version and release channel.
+
+### GKE Hub
+
+* Updated `gcloud container fleet memberships generate-gateway-rbac` to include handling for first-party groups (email) and third-party groups of the format `principalSet://iam.googleapis.com/locations/global/workforcePools/example-pool/group/third party group`.
+
+### Kpt
+
+*  Updated kpt to v1.0.0-beta.43 release.  Refer to [release notes](https://github.com/GoogleContainerTools/kpt/releases/tag/v1.0.0-beta.43) for more details.
+
+### Kubernetes Engine
+
+* Deprecate `--enable-workload-config-audit`, `--enable-workload-vulnerability-scanning`, and `enable-security-posture` flags in `gcloud container clusters {create, create-auto, update}`. The replacements for these are:
+  * `--enable-workload-config-audit` -> `--security-posture=standard`
+  * `--enable-security-posture` -> `--security-posture=standard`
+  * `--enable-workload-vulnerability-scanning` -> `--workload-vulnerability-scanning=standard`
+* Added `enterprise` value to the available modes for `--workload-vulnerability-scanning` flag in the alpha and beta tracks.
+* Updated default kubectl from 1.27.4 to 1.27.5.
+* Additional kubectl versions:
+  * kubectl.1.23 (1.23.17)
+  * kubectl.1.24 (1.24.17)
+  * kubectl.1.25 (1.25.13)
+  * kubectl.1.26 (1.26.8)
+  * kubectl.1.27 (1.27.5)
+  * kubectl.1.28 (1.28.1)
+
+### Network Connectivity
+
+*   Added `gcloud network-connectivity hubs groups` command group.
+*   Added `gcloud network-connectivity service-connection-policies update` command.
+
+### Notebooks
+
+* Added `--timeout-minutes` to the following commands to allow specifying
+custom timeout for the diagnose operation.
+  * `gcloud notebooks instances diagnose`
+  * `gcloud notebooks runtimes diagnose`
+
+### Policy Troubleshooter
+
+* Promoted `gcloud policy-intelligence troubleshoot-policy iam` to GA.
+
+### Workbench
+
+* Fixed workbench instances diagnose flags.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+
 ## 444.0.0 (2023-08-22)
 
 ### AI

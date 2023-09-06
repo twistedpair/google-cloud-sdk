@@ -1035,6 +1035,8 @@ class Templates:
           arg_machine_type=None,
           arg_disk_size=None,
           arg_worker_pool=None,
+          arg_dir=None,
+          arg_revision=None,
           arg_git_source_dir=None,
           arg_git_source_revision=None,
           buildpack=None,

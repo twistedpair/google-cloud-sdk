@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import re
+import types
+from typing import Optional, Tuple, FrozenSet
 
 from apitools.base.py import base_api
 from apitools.base.py import exceptions as apitools_exceptions
@@ -28,6 +30,7 @@ from googlecloudsdk.api_lib.functions import secrets as secrets_util
 from googlecloudsdk.api_lib.functions.v1 import util as api_util_v1
 from googlecloudsdk.api_lib.functions.v2 import client as client_v2
 from googlecloudsdk.api_lib.functions.v2 import exceptions
+from googlecloudsdk.api_lib.functions.v2 import types as api_types
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import base as calliope_base
@@ -159,8 +162,7 @@ _CPU_VALUE_PATTERN = r"""
 """
 
 
-def _GetSourceGCS(messages, source):
-  # type: (_, str) -> messages.Source
+def _GetSourceGCS(messages: types.ModuleType, source: str) -> api_types.Source:
   """Constructs a `Source` message from a Cloud Storage object.
 
   Args:
@@ -181,8 +183,7 @@ def _GetSourceGCS(messages, source):
   )
 
 
-def _GetSourceCSR(messages, source):
-  # type: (_, str) -> messages.Source
+def _GetSourceCSR(messages: types.ModuleType, source: str) -> api_types.Source:
   """Constructs a `Source` message from a Cloud Source Repository reference.
 
   Args:
@@ -220,13 +221,12 @@ def _GetSourceCSR(messages, source):
 
 
 def _GetSourceLocal(
-    args,
-    client,
-    function_ref,
-    source,
-    kms_key=None,
-):
-  # type: (parser_extensions.Namespace, base_api.BaseApiClient, resources.Resource, str, str | None) -> Source  # pylint: disable=line-too-long
+    args: parser_extensions.Namespace,
+    client: base_api.BaseApiClient,
+    function_ref: resources.Resource,
+    source: str,
+    kms_key: Optional[str] = None,
+) -> api_types.Source:
   """Constructs a `Source` message from a local file system path.
 
   Args:
@@ -275,12 +275,11 @@ def _GetSourceLocal(
 
 
 def _GetSource(
-    args,
-    client,
-    function_ref,
-    existing_function,
-):
-  # type: (parser_extensions.Namespace, base_api.BaseApiClient, resources.Resource, Function) -> tuple[Source | None, frozenset[str]]  # pylint: disable=line-too-long
+    args: parser_extensions.Namespace,
+    client: base_api.BaseApiClient,
+    function_ref: resources.Resource,
+    existing_function: Optional[api_types.Function],
+) -> Tuple[Optional[api_types.Source], FrozenSet[str]]:
   """Parses the source bucket and object from the --source flag.
 
   Args:
@@ -322,8 +321,11 @@ def _GetSource(
     ), frozenset(['build_config.source'])
 
 
-def _GetServiceConfig(args, messages, existing_function):
-  # type: (parser_extensions.Namespace, _, messages.Function) -> tuple[messages.ServiceConfig, frozenset[str]]  # pylint: disable=line-too-long
+def _GetServiceConfig(
+    args: parser_extensions.Namespace,
+    messages: types.ModuleType,
+    existing_function: Optional[api_types.Function],
+) -> Tuple[api_types.ServiceConfig, FrozenSet[str]]:
   """Constructs a ServiceConfig message from the command-line arguments.
 
   Args:
@@ -458,8 +460,7 @@ def _GetServiceConfig(args, messages, existing_function):
   )
 
 
-def _ParseMemoryStrToK8sMemory(memory):
-  # type: (str) -> str | None
+def _ParseMemoryStrToK8sMemory(memory: str) -> Optional[str]:
   """Parses user provided memory to kubernetes expected format.
 
   Ensure --gen2 continues to parse Gen1 --memory passed in arguments. Defaults
@@ -509,8 +510,7 @@ def _ParseMemoryStrToK8sMemory(memory):
   return parsed_memory
 
 
-def _ValidateK8sCpuStr(cpu):
-  # type: (str) -> str | None
+def _ValidateK8sCpuStr(cpu: str) -> Optional[str]:
   """Validates user provided cpu to kubernetes expected format.
 
   k8s format:
@@ -551,8 +551,11 @@ def _ValidateK8sCpuStr(cpu):
   return parsed_memory
 
 
-def _GetEventTrigger(args, messages, existing_function):
-  # type: (parser_extensions.Namespace, _, messages.Function) -> tuple[messages.EventTrigger, frozenset[str]]  # pylint: disable=line-too-long
+def _GetEventTrigger(
+    args: parser_extensions.Namespace,
+    messages: types.ModuleType,
+    existing_function: Optional[api_types.Function],
+) -> Tuple[Optional[api_types.EventTrigger], FrozenSet[str]]:
   """Constructs an EventTrigger message from the command-line arguments.
 
   Args:
@@ -611,8 +614,9 @@ def _GetEventTrigger(args, messages, existing_function):
   return event_trigger, updated_fields_set
 
 
-def _GetEventTriggerForEventType(args, messages):
-  # type: (parser_extensions.Namespace, _) -> messages.EventTrigger
+def _GetEventTriggerForEventType(
+    args: parser_extensions.Namespace, messages: types.ModuleType
+) -> api_types.EventTrigger:
   """Constructs an EventTrigger message from the command-line arguments.
 
   Args:
@@ -662,8 +666,9 @@ def _GetEventTriggerForEventType(args, messages):
     )
 
 
-def _GetEventTriggerForOther(args, messages):
-  # type: (parser_extensions.Namespace, _) -> messages.EventTrigger
+def _GetEventTriggerForOther(
+    args: parser_extensions.Namespace, messages: types.ModuleType
+) -> api_types.EventTrigger:
   """Constructs an EventTrigger when using `--trigger-[bucket|topic|filters]`.
 
   Args:
@@ -717,8 +722,11 @@ def _GetEventTriggerForOther(args, messages):
   )
 
 
-def _GetRetry(args, messages, event_trigger):
-  # type: (parser_extensions.Namespace, _, messages.EventTrigger) -> tuple[messages.EventTrigger.RetryPolicyValueValuesEnum, frozenset[str]]  # pylint: disable=line-too-long
+def _GetRetry(
+    args: parser_extensions.Namespace,
+    messages: types.ModuleType,
+    event_trigger: Optional[api_types.EventTrigger],
+) -> Tuple[api_types.RetryPolicy, FrozenSet[str]]:
   """Constructs an RetryPolicy enum from --(no-)retry flag.
 
   Args:
@@ -746,26 +754,26 @@ def _GetRetry(args, messages, event_trigger):
     ), frozenset(['eventTrigger.retryPolicy'])
 
 
-def _BuildFullPubsubTopic(pubsub_topic):
-  # type: (str) -> str
+def _BuildFullPubsubTopic(pubsub_topic: str) -> str:
   return 'projects/{}/topics/{}'.format(api_util.GetProject(), pubsub_topic)
 
 
-def _GetBuildConfig(args, client, function_ref, existing_function):
-  # type: (parser_extensions.Namespace, client_v2.FunctionsClient, resources.Resource, Function) -> tuple[BuildConfig, frozenset[str]]  # pylint: disable=line-too-long
+def _GetBuildConfig(
+    args: parser_extensions.Namespace,
+    client: client_v2.FunctionsClient,
+    function_ref: resources.Resource,
+    existing_function: Optional[api_types.Function],
+) -> Tuple[api_types.BuildConfig, FrozenSet[str]]:
   """Constructs a BuildConfig message from the command-line arguments.
 
   Args:
     args: arguments that this command was invoked with.
     client: The GCFv2 API client.
     function_ref: The GCFv2 functions resource reference.
-    existing_function: `cloudfunctions_v2_messages.Function | None`,
-      pre-existing function.
+    existing_function: The pre-existing function.
 
   Returns:
-    A tuple `(build_config, updated_fields_set)` where:
-    - `build_config` is the resulting `cloudfunctions_v2_messages.BuildConfig`,
-    - `updated_fields_set` is the set of update mask fields.
+    The resulting build config and the set of update mask fields.
   """
   function_source, source_updated_fields = _GetSource(
       args,
@@ -830,13 +838,15 @@ def _GetBuildConfig(args, client, function_ref, existing_function):
   )
 
 
-def _GetActiveKmsKey(args, existing_function):
-  # type: (parser_extensions.Namespace, Function) -> str | None
+def _GetActiveKmsKey(
+    args: parser_extensions.Namespace,
+    existing_function: Optional[api_types.Function],
+) -> Optional[str]:
   """Retrives KMS key applicable to the deployment request.
 
   Args:
     args: arguments that this command was invoked with.
-    existing_function: cloudfunctions_v2_messages.Function | None.
+    existing_function: the pre-existing function.
 
   Returns:
     Either newly passed or pre-existing KMS key.
@@ -848,8 +858,9 @@ def _GetActiveKmsKey(args, existing_function):
   return None if not existing_function else existing_function.kmsKeyName
 
 
-def _GetIngressSettings(args, messages):
-  # type: (parser_extensions.Namespace) -> tuple[messages.ServiceConfig.IngressSettingsValueValuesEnum, frozenset[str]]  # pylint: disable=line-too-long
+def _GetIngressSettings(
+    args: parser_extensions.Namespace, messages: types.ModuleType
+) -> Tuple[Optional[api_types.IngressSettings], FrozenSet[str]]:
   """Constructs ingress setting enum from command-line arguments.
 
   Args:
@@ -872,8 +883,15 @@ def _GetIngressSettings(args, messages):
     return None, frozenset()
 
 
-def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
-  # type: (parser_extensions.Namespace, _, messages.Function) -> tuple[str, messages.ServiceConfig.VpcConnectorEgressSettingsValueValuesEnum, frozenset[str]]  # pylint: disable=line-too-long
+def _GetVpcAndVpcEgressSettings(
+    args: parser_extensions.Namespace,
+    messages: types.ModuleType,
+    existing_function,
+) -> Tuple[
+    Optional[str],
+    Optional[api_types.VpcConnectorEgressSettings],
+    FrozenSet[str],
+]:
   """Constructs vpc connector and egress settings from command-line arguments.
 
   Args:
@@ -928,16 +946,18 @@ def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
   return vpc_connector, egress_settings, frozenset(update_fields_set)
 
 
-def _ValidateV1OnlyFlags(args):
-  # type: (parser_extensions.Namespace) -> None
+def _ValidateV1OnlyFlags(args: parser_extensions.Namespace) -> None:
   """Ensures that only the arguments supported in V2 are passing through."""
   for flag_variable, flag_name in _V1_ONLY_FLAGS:
     if args.IsKnownAndSpecified(flag_variable):
       raise exceptions.FunctionsError(_V1_ONLY_FLAG_ERROR % flag_name)
 
 
-def _GetLabels(args, messages, existing_function):
-  # type: (parser_extensions.Namespace, _, messages.Function | None) -> tuple[messages.Function.LabelsValue, frozenset[str]]  # pylint: disable=line-too-long
+def _GetLabels(
+    args: parser_extensions.Namespace,
+    messages: types.ModuleType,
+    existing_function: Optional[api_types.Function],
+) -> Tuple[Optional[api_types.LabelsValue], FrozenSet[str]]:
   """Constructs labels from command-line arguments.
 
   Args:
@@ -967,8 +987,12 @@ def _GetLabels(args, messages, existing_function):
     return None, frozenset()
 
 
-def _SetCmekFields(args, function, existing_function, function_ref):
-  # type: (parser_extensions.Namespace, Function, Function | None, resources.Resource) -> frozenset[str]  # pylint: disable=line-too-long
+def _SetCmekFields(
+    args: parser_extensions.Namespace,
+    function: api_types.Function,
+    existing_function: Optional[api_types.Function],
+    function_ref: resources.Resource,
+) -> FrozenSet[str]:
   """Sets CMEK-related fields on the function.
 
   Args:
@@ -1000,8 +1024,12 @@ def _SetCmekFields(args, function, existing_function, function_ref):
   return updated_fields
 
 
-def _SetDockerRepositoryConfig(args, function, existing_function, function_ref):
-  # type: (parser_extensions.Namespace, Function, Function | None, resources.Resource) -> frozenset[str]  # pylint: disable=line-too-long
+def _SetDockerRepositoryConfig(
+    args: parser_extensions.Namespace,
+    function: api_types.Function,
+    existing_function: Optional[api_types.Function],
+    function_ref: resources.Resource,
+) -> FrozenSet[str]:
   """Sets user-provided docker repository field on the function.
 
   Args:
@@ -1053,8 +1081,7 @@ def _SetDockerRepositoryConfig(args, function, existing_function, function_ref):
   return updated_fields
 
 
-def _PromptToAllowUnauthenticatedInvocations(name):
-  # type: (str) -> bool
+def _PromptToAllowUnauthenticatedInvocations(name: str) -> bool:
   """Prompts the user to allow unauthenticated invocations for the given function."""
   return console_io.PromptContinue(
       prompt_string=(
@@ -1064,8 +1091,11 @@ def _PromptToAllowUnauthenticatedInvocations(name):
   )
 
 
-def _CreateAndWait(gcf_client, function_ref, function):
-  # type: (client_v2.FunctionsClient, resources.Resource, Function) -> None  # pylint: disable=line-too-long
+def _CreateAndWait(
+    gcf_client: client_v2.FunctionsClient,
+    function_ref: resources.Resource,
+    function: api_types.Function,
+) -> None:
   """Create a function.
 
   This does not include setting the invoker permissions.
@@ -1095,8 +1125,12 @@ def _CreateAndWait(gcf_client, function_ref, function):
   )
 
 
-def _UpdateAndWait(gcf_client, function_ref, function, updated_fields_set):
-  # type: (client_v2.FunctionsClient, resources.Resource, Function, frozenset[str]) -> None  # pylint: disable=line-too-long
+def _UpdateAndWait(
+    gcf_client: client_v2.FunctionsClient,
+    function_ref: resources.Resource,
+    function: api_types.Function,
+    updated_fields_set: FrozenSet[str],
+) -> None:
   """Update a function.
 
   This does not include setting the invoker permissions.
@@ -1131,8 +1165,9 @@ def _UpdateAndWait(gcf_client, function_ref, function, updated_fields_set):
     log.status.Print('Nothing to update.')
 
 
-def Run(args, release_track):
-  # type: (parser_extensions.Namespace, calliope_base.ReleaseTrack) -> cloudfunctions_v2_messages.Function  # pylint: disable=line-too-long
+def Run(
+    args: parser_extensions.Namespace, release_track: calliope_base.ReleaseTrack
+) -> api_types.Function:
   """Runs a function deployment with the given args."""
   client = client_v2.FunctionsClient(release_track=release_track)
   messages = client.messages

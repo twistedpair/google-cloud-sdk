@@ -22,12 +22,12 @@ from __future__ import unicode_literals
 import abc
 import enum
 import os
+import re
 import stat
 
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
-
 import six
 from six.moves import urllib
 
@@ -51,6 +51,11 @@ VALID_HTTP_SCHEMES = frozenset([ProviderPrefix.HTTP, ProviderPrefix.HTTPS])
 VALID_SCHEMES = frozenset([scheme.value for scheme in ProviderPrefix])
 CLOUD_URL_DELIMITER = '/'
 AZURE_DOMAIN = 'blob.core.windows.net'
+
+# Matches versioned object strings of the form 'gs://bucket/obj#1234'
+GS_GENERATION_REGEX = re.compile(r'(?P<object>.+)#(?P<generation>[0-9]+)$')
+# Matches versioned object strings of the form 's3://bucket/obj#NULL'
+S3_VERSION_REGEX = re.compile(r'(?P<object>.+)#(?P<version_id>.+)$')
 
 
 def is_named_pipe(path):
@@ -337,7 +342,9 @@ class CloudUrl(StorageUrl):
         CLOUD_URL_DELIMITER)
 
     # b/c/d#num => b/c/d, num
-    object_name, _, generation = object_name.partition('#')
+    object_name, generation = get_generation_number_from_object_name(
+        scheme, object_name
+    )
 
     return cls(scheme, bucket_name, object_name, generation)
 
@@ -420,7 +427,7 @@ class AzureUrl(CloudUrl):
 
   @classmethod
   def from_url_string(cls, url_string):
-    """Parse the url string and return the storage URL object.
+    """Parses the url string and return the storage URL object.
 
     Args:
       url_string (str): Azure storage URL of the form:
@@ -611,3 +618,34 @@ def add_gcs_scheme_if_missing(url_string):
   if SCHEME_DELIMITER in url_string:
     return url_string
   return ProviderPrefix.GCS.value + SCHEME_DELIMITER + url_string
+
+
+def get_generation_number_from_object_name(scheme, object_name):
+  """Parses object_name into generation number and object name without trailing # symbol.
+
+  Aplicable for gs:// and s3:// style objects, if the object_name does not
+  contain a
+  generation number, it will return the object_name as is.
+
+  Args:
+    scheme (str): Scheme of URL such as gs and s3.
+    object_name (str): Name of a Cloud storage object in the form of object_name
+      or object_name#generation_number.
+
+  Returns:
+    Object name and generation number if available.
+  """
+  if scheme == ProviderPrefix.GCS:
+    pattern_to_match = GS_GENERATION_REGEX
+    group_name = 'generation'
+  elif scheme == ProviderPrefix.S3:
+    pattern_to_match = S3_VERSION_REGEX
+    group_name = 'version_id'
+  else:
+    return object_name, None
+
+  generation_match = pattern_to_match.match(object_name)
+  if generation_match is not None:
+    return generation_match.group('object'), generation_match.group(group_name)
+
+  return object_name, None

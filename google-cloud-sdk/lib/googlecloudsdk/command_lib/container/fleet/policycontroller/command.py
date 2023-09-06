@@ -25,6 +25,8 @@ from googlecloudsdk.api_lib.container.fleet import util as fleet_util
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.container.fleet.features import base
 from googlecloudsdk.command_lib.container.fleet.policycontroller import exceptions
+from googlecloudsdk.core import exceptions as gcloud_exceptions
+import six
 
 # Type alias for a mapping of membership paths to corresponding specs.
 SpecMapping = Dict[str, messages.Message]
@@ -40,7 +42,7 @@ class PocoCommand:
   def path_specs(
       self, args: parser_extensions.Namespace, ignore_missing: bool = False
   ) -> SpecMapping:
-    """Retrieves memberships specied by the command that exist in the Feature.
+    """Retrieves memberships specified by the command that exist in the Feature.
 
     Args:
       args: The argparse object passed to the command.
@@ -59,7 +61,7 @@ class PocoCommand:
     memberships_paths = {
         fleet_util.MembershipPartialName(path)
         for path in base.ParseMembershipsPlural(
-            args, search=True, prompt=True, prompt_cancel=False, autoselect=True
+            args, prompt=True, prompt_cancel=False, autoselect=True
         )
     }
 
@@ -74,7 +76,7 @@ class PocoCommand:
     missing = (path for path in memberships_paths if path not in specs)
     if ignore_missing:
       for path in missing:
-        specs.update((path, self.messages.MembershipFeatureSpec()))
+        specs.update(path, self.messages.MembershipFeatureSpec())
     else:
       msg = 'Policy Controller is not enabled for membership {}'
       missing_memberships = [
@@ -90,6 +92,9 @@ class PocoCommand:
   def update_specs(self, specs: SpecMapping) -> None:
     """Merges spec changes and sends and update to the API.
 
+    Specs refer to PolicyControllerMembershipSpec objects defined here:
+    third_party/py/googlecloudsdk/generated_clients/apis/gkehub/v1alpha/gkehub_v1alpha_messages.py
+
     Args:
       specs: Specs with updates. These are merged with the existing spec (new
         values overriding) and the merged result is sent to the Update api.
@@ -102,9 +107,9 @@ class PocoCommand:
     )
     try:
       return self.Update(['membership_specs'], feature)
-    except exceptions.Error as e:
+    except gcloud_exceptions.Error as e:
       fne = self.FeatureNotEnabledError()
-      if str(e) == str(fne):
+      if six.text_type(e) == six.text_type(fne):
         return self.Enable(feature)
       else:
         raise e

@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import argparse
 import enum
 import os
 import re
@@ -36,6 +37,8 @@ from googlecloudsdk.api_lib.services import exceptions as services_exceptions
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import parser_arguments
+from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.functions.v2.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
@@ -118,6 +121,17 @@ class Product(enum.Enum):
 def AddImageArg(parser, required=True, image='gcr.io/cloudrun/hello:latest'):
   """Add an image resource arg."""
   parser.add_argument(
+      '--image',
+      required=required,
+      help='Name of the container image to deploy (e.g. `{image}`).'.format(
+          image=image
+      ),
+  )
+
+
+def ImageArg(required=True, image='gcr.io/cloudrun/hello:latest'):
+  """Image resource arg."""
+  return base.Argument(
       '--image',
       required=required,
       help='Name of the container image to deploy (e.g. `{image}`).'.format(
@@ -554,6 +568,72 @@ def AddCloudSQLFlags(parser):
   )
 
 
+def MapFlagsNoFile(
+    flag_name,
+    group_help='',
+    long_name=None,
+    key_type=None,
+    value_type=None,
+    key_metavar='KEY',
+    value_metavar='VALUE',
+):
+  """Create an argument group like map_util.AddUpdateMapFlags but without the file one.
+
+  Args:
+    flag_name: The name for the property to be used in flag names
+    group_help: Help text for the group of flags
+    long_name: The name for the property to be used in help text
+    key_type: A function to apply to map keys.
+    value_type: A function to apply to map values.
+    key_metavar: Metavariable to list for the key.
+    value_metavar: Metavariable to list for the value.
+
+  Returns:
+    A mutually exclusive group for the map flags.
+  """
+  if not long_name:
+    long_name = flag_name
+
+  group = base.ArgumentGroup(mutex=True, help=group_help)
+  update_remove_group = base.ArgumentGroup(
+      help=(
+          'Only --update-{0} and --remove-{0} can be used together. If both '
+          'are specified, --remove-{0} will be applied first.'
+      ).format(flag_name)
+  )
+  update_remove_group.AddArgument(
+      map_util.MapUpdateFlag(
+          flag_name,
+          long_name,
+          key_type=key_type,
+          value_type=value_type,
+          key_metavar=key_metavar,
+          value_metavar=value_metavar,
+      )
+  )
+  update_remove_group.AddArgument(
+      map_util.MapRemoveFlag(
+          flag_name,
+          long_name,
+          key_type=key_type,
+          key_metavar=key_metavar,
+      )
+  )
+  group.AddArgument(update_remove_group)
+  group.AddArgument(map_util.MapClearFlag(flag_name, long_name))
+  group.AddArgument(
+      map_util.MapSetFlag(
+          flag_name,
+          long_name,
+          key_type=key_type,
+          value_type=value_type,
+          key_metavar=key_metavar,
+          value_metavar=value_metavar,
+      )
+  )
+  return group
+
+
 def AddMapFlagsNoFile(
     parser,
     flag_name,
@@ -579,43 +659,15 @@ def AddMapFlagsNoFile(
   Returns:
     A mutually exclusive group for the map flags.
   """
-  if not long_name:
-    long_name = flag_name
-
-  group = parser.add_mutually_exclusive_group(group_help)
-  update_remove_group = group.add_argument_group(
-      help=(
-          'Only --update-{0} and --remove-{0} can be used together. If both '
-          'are specified, --remove-{0} will be applied first.'
-      ).format(flag_name)
-  )
-  map_util.AddMapUpdateFlag(
-      update_remove_group,
+  return MapFlagsNoFile(
       flag_name,
+      group_help,
       long_name,
-      key_type=key_type,
-      value_type=value_type,
+      key_type,
+      value_type,
       key_metavar=key_metavar,
       value_metavar=value_metavar,
-  )
-  map_util.AddMapRemoveFlag(
-      update_remove_group,
-      flag_name,
-      long_name,
-      key_type=key_type,
-      key_metavar=key_metavar,
-  )
-  map_util.AddMapClearFlag(group, flag_name, long_name)
-  map_util.AddMapSetFlag(
-      group,
-      flag_name,
-      long_name,
-      key_type=key_type,
-      value_type=value_type,
-      key_metavar=key_metavar,
-      value_metavar=value_metavar,
-  )
-  return group
+  ).AddToParser(parser)
 
 
 def AddSetEnvVarsFlag(parser):
@@ -632,23 +684,23 @@ def AddSetEnvVarsFlag(parser):
   )
 
 
-def AddMutexEnvVarsFlags(parser):
-  """Add flags for setting, updating and deleting env vars."""
-  group = AddMapFlagsNoFile(
-      parser,
+def MutexEnvVarsFlags():
+  """Return argument group for setting, updating and deleting env vars."""
+  group = MapFlagsNoFile(
       'env-vars',
       long_name='environment variables',
       key_type=env_vars_util.EnvVarKeyType,
       value_type=env_vars_util.EnvVarValueType,
   )
-  group.add_argument(
-      '--env-vars-file',
-      metavar='FILE_PATH',
-      type=map_util.ArgDictFile(
-          key_type=env_vars_util.EnvVarKeyType,
-          value_type=env_vars_util.EnvVarValueType,
-      ),
-      help="""Path to a local YAML file with definitions for all environment
+  group.AddArgument(
+      base.Argument(
+          '--env-vars-file',
+          metavar='FILE_PATH',
+          type=map_util.ArgDictFile(
+              key_type=env_vars_util.EnvVarKeyType,
+              value_type=env_vars_util.EnvVarValueType,
+          ),
+          help="""Path to a local YAML file with definitions for all environment
             variables. All existing environment variables will be removed before
             the new environment variables are added. Example YAML content:
 
@@ -657,7 +709,14 @@ def AddMutexEnvVarsFlags(parser):
               KEY_2: "value 2"
               ```
             """,
+      )
   )
+  return group
+
+
+def AddMutexEnvVarsFlags(parser):
+  """Add flags for setting, updating and deleting env vars."""
+  return MutexEnvVarsFlags().AddToParser(parser)
 
 
 def AddMutexEnvVarsFlagsForCreate(parser):
@@ -703,12 +762,16 @@ def AddOverrideEnvVarsFlag(parser):
   )
 
 
+def MemoryFlag():
+  return base.Argument('--memory', help='Set a memory limit. Ex: 1024Mi, 4Gi.')
+
+
 def AddMemoryFlag(parser):
-  parser.add_argument('--memory', help='Set a memory limit. Ex: 1024Mi, 4Gi.')
+  MemoryFlag().AddToParser(parser)
 
 
-def AddCpuFlag(parser, managed_only=False):
-  """Add the --cpu flag."""
+def CpuFlag(managed_only=False):
+  """Create the --cpu flag."""
   help_msg = (
       'Set a CPU limit in Kubernetes cpu units.\n\n'
       'Cloud Run (fully managed) supports values 1, 2 and 4.'
@@ -720,7 +783,12 @@ def AddCpuFlag(parser, managed_only=False):
         '\n\nCloud Run for Anthos and Knative-compatible Kubernetes '
         'clusters support fractional values.  Examples .5, 500m, 2'
     )
-  parser.add_argument('--cpu', help=help_msg)
+  return base.Argument('--cpu', help=help_msg)
+
+
+def AddCpuFlag(parser, managed_only=False):
+  """Add the --cpu flag."""
+  CpuFlag(managed_only=managed_only).AddToParser(parser)
 
 
 def _ConcurrencyValue(value):
@@ -887,8 +955,8 @@ def AddEgressSettingsFlag(parser):
   )
 
 
-def AddSetSecretsFlag(parser):
-  parser.add_argument(
+def SetSecretsFlag():
+  return base.Argument(
       '--set-secrets',
       metavar='KEY=SECRET_NAME:SECRET_VERSION',
       action=arg_parsers.UpdateAction,
@@ -904,10 +972,13 @@ def AddSetSecretsFlag(parser):
   )
 
 
-def AddSecretsFlags(parser):
-  """Adds flags for creating, updating, and deleting secrets."""
-  AddMapFlagsNoFile(
-      parser,
+def AddSetSecretsFlag(parser):
+  SetSecretsFlag().AddToParser(parser)
+
+
+def SecretsFlags():
+  """Creates flags for creating, updating, and deleting secrets."""
+  return MapFlagsNoFile(
       group_help=(
           'Specify secrets to mount or provide as environment '
           "variables. Keys starting with a forward slash '/' are mount "
@@ -923,6 +994,11 @@ def AddSecretsFlags(parser):
       ),
       flag_name='secrets',
   )
+
+
+def AddSecretsFlags(parser):
+  """Adds flags for creating, updating, and deleting secrets."""
+  SecretsFlags().AddToParser(parser)
 
 
 def AddConfigMapsFlags(parser):
@@ -1058,9 +1134,9 @@ def AddMaxInstancesFlag(parser):
   )
 
 
-def AddCommandFlag(parser):
-  """Add flags for specifying container's startup command."""
-  parser.add_argument(
+def CommandFlag():
+  """Create a flag for specifying container's startup command."""
+  return base.Argument(
       '--command',
       metavar='COMMAND',
       type=arg_parsers.ArgList(),
@@ -1073,8 +1149,13 @@ def AddCommandFlag(parser):
   )
 
 
-def AddArgsFlag(parser, for_execution_overrides=False):
-  """Add flags for specifying container's startup args."""
+def AddCommandFlag(parser):
+  """Add flags for specifying container's startup command."""
+  CommandFlag().AddToParser(parser)
+
+
+def ArgsFlag(for_execution_overrides=False):
+  """Creates a flag for specifying container's startup args."""
   help_text = (
       'Comma-separated arguments passed to the command run by the container'
       ' image.'
@@ -1091,13 +1172,18 @@ def AddArgsFlag(parser, for_execution_overrides=False):
         ' no arguments are passed. To reset this field to its default, pass'
         ' an empty string.'
     )
-  parser.add_argument(
+  return base.Argument(
       '--args',
       metavar='ARG',
       type=arg_parsers.ArgList(),
       action=arg_parsers.UpdateAction,
       help=help_text,
   )
+
+
+def AddArgsFlag(parser, for_execution_overrides=False):
+  """Add flags for specifying container's startup args."""
+  ArgsFlag(for_execution_overrides=for_execution_overrides).AddToParser(parser)
 
 
 def AddClientNameAndVersionFlags(parser):
@@ -1191,6 +1277,18 @@ previous container port, this will also update the probe port.
 """
 
 
+def PortArg(help_text=_DEFAULT_PORT_HELP):
+  """Port argument for overriding $PORT."""
+  return base.Argument(
+      '--port',
+      type=arg_parsers.CustomFunctionValidator(
+          _PortValue,
+          'must be an integer between 1 and 65535, inclusive, or "default".',
+      ),
+      help=help_text,
+  )
+
+
 def AddPortFlag(parser, help_text=_DEFAULT_PORT_HELP):
   """Add port flag to override $PORT."""
   parser.add_argument(
@@ -1203,13 +1301,18 @@ def AddPortFlag(parser, help_text=_DEFAULT_PORT_HELP):
   )
 
 
-def AddHttp2Flag(parser):
-  """Add http/2 flag to set the port name."""
-  parser.add_argument(
+def Http2Flag():
+  """Create http/2 flag to set the port name."""
+  return base.Argument(
       '--use-http2',
       action=arg_parsers.StoreTrueFalseAction,
       help='Whether to use HTTP/2 for connections to the service.',
   )
+
+
+def AddHttp2Flag(parser):
+  """Add http/2 flag to set the port name."""
+  Http2Flag().AddToParser(parser)
 
 
 def AddParallelismFlag(parser):
@@ -1585,7 +1688,7 @@ def HasContainerOverrides(args):
   return _HasChanges(args, overrides_flags)
 
 
-def _GetEnvChanges(args):
+def _GetEnvChanges(args, **kwargs):
   """Return config_changes.EnvVarLiteralChanges for given args."""
   return config_changes.EnvVarLiteralChanges(
       updates=_StripKeys(
@@ -1598,6 +1701,7 @@ def _GetEnvChanges(args):
       clear_others=bool(
           args.set_env_vars or args.env_vars_file or args.clear_env_vars
       ),
+      **kwargs,
   )
 
 
@@ -1675,7 +1779,7 @@ def _ValidatedMountPoint(key):
   )
 
 
-def _GetSecretsChanges(args):
+def _GetSecretsChanges(args, container_name=None):
   """Return secret env var and volume changes for given args."""
   volume_kwargs = {}
   env_kwargs = {}
@@ -1704,9 +1808,17 @@ def _GetSecretsChanges(args):
 
   secret_changes = []
   if any(env_kwargs.values()):
-    secret_changes.append(config_changes.SecretEnvVarChanges(**env_kwargs))
+    secret_changes.append(
+        config_changes.SecretEnvVarChanges(
+            container_name=container_name, **env_kwargs
+        )
+    )
   if any(volume_kwargs.values()):
-    secret_changes.append(config_changes.SecretVolumeChanges(**volume_kwargs))
+    secret_changes.append(
+        config_changes.SecretVolumeChanges(
+            container_name=container_name, **volume_kwargs
+        )
+    )
   return secret_changes
 
 
@@ -2031,6 +2143,63 @@ def _GetConfigurationChanges(args):
     changes.append(config_changes.ClearNetworkInterfacesChange())
   if _HasCustomAudiencesChanges(args):
     changes.append(config_changes.CustomAudiencesChanges(args))
+
+  if FlagIsExplicitlySet(args, 'containers'):
+    for container_name, container_args in args.containers.items():
+      changes.extend(
+          _GetContainerConfigurationChanges(
+              container_args, container_name=container_name
+          )
+      )
+
+  return changes
+
+
+def _GetContainerConfigurationChanges(container_args, container_name=None):
+  """Returns per-container configuration changes."""
+  changes = []
+  # FlagIsExplicitlySet can't be used here because args.image is also set from
+  # code in deploy.py.
+  if hasattr(container_args, 'image') and container_args.image is not None:
+    changes.append(
+        config_changes.ImageChange(
+            container_args.image, container_name=container_name
+        )
+    )
+  if _HasEnvChanges(container_args):
+    changes.append(
+        _GetEnvChanges(container_args, container_name=container_name)
+    )
+  if container_args.IsSpecified('cpu'):
+    changes.append(
+        config_changes.ResourceChanges(
+            cpu=container_args.cpu, container_name=container_name
+        )
+    )
+  if container_args.IsSpecified('memory'):
+    changes.append(
+        config_changes.ResourceChanges(
+            memory=container_args.memory, container_name=container_name
+        )
+    )
+  if container_args.IsSpecified('command'):
+    # Allow passing an empty string here to reset the field
+    changes.append(
+        config_changes.ContainerCommandChange(
+            container_args.command, container_name=container_name
+        )
+    )
+  if container_args.IsSpecified('args'):
+    # Allow passing an empty string here to reset the field
+    changes.append(
+        config_changes.ContainerArgsChange(
+            container_args.args, container_name=container_name
+        )
+    )
+  if _HasSecretsChanges(container_args):
+    changes.extend(
+        _GetSecretsChanges(container_args, container_name=container_name)
+    )
   return changes
 
 
@@ -2095,6 +2264,31 @@ def GetServiceConfigurationChanges(args):
     changes.append(config_changes.RuntimeChange(runtime=args.runtime))
 
   _PrependClientNameAndVersionChange(args, changes)
+
+  if FlagIsExplicitlySet(args, 'containers'):
+    for container_name, container_args in args.containers.items():
+      changes.extend(
+          _GetServiceContainerChanges(container_args, container_name)
+      )
+
+  return changes
+
+
+def _GetServiceContainerChanges(container_args, container_name=None):
+  """Returns per-container Service changes."""
+  changes = []
+  if container_args.IsSpecified('port'):
+    changes.append(
+        config_changes.ContainerPortChange(
+            container_name=container_name, port=container_args.port
+        )
+    )
+  if container_args.IsSpecified('use_http2'):
+    changes.append(
+        config_changes.ContainerPortChange(
+            use_http2=container_args.use_http2, container_name=container_name
+        )
+    )
   return changes
 
 
@@ -3106,12 +3300,8 @@ def AddExecuteNowFlag(parser):
   )
 
 
-def AddSourceAndImageFlags(parser, image='gcr.io/cloudrun/hello:latest'):
-  """Add deploy source flags, an image or a source for build."""
-  group = parser.add_mutually_exclusive_group()
-
-  AddImageArg(group, required=False, image=image)
-  group.add_argument(
+def SourceArg():
+  return base.Argument(
       '--source',
       help=(
           'The location of the source to build. If a Dockerfile is present in'
@@ -3132,11 +3322,86 @@ def AddSourceAndImageFlags(parser, image='gcr.io/cloudrun/hello:latest'):
   )
 
 
-def PromptForDefaultSource():
+def AddSourceAndImageFlags(parser, image='gcr.io/cloudrun/hello:latest'):
+  """Add deploy source flags, an image or a source for build."""
+  SourceAndImageFlags(image=image).AddToParser(parser)
+
+
+def SourceAndImageFlags(image='gcr.io/cloudrun/hello:latest'):
+  group = base.ArgumentGroup(mutex=True)
+  group.AddArgument(ImageArg(required=False, image=image))
+  group.AddArgument(SourceArg())
+  return group
+
+
+def ContainerFlag(container_parser):
+  """Create the --container flag for specifying containers.
+
+  Args:
+    container_parser: Function for creating per-container subparsers.
+
+  Returns:
+    An argument defining the --container flag.
+  """
+  help_text = """
+      Specifies a container by name. The following container flags apply to the specified container.
+      """
+  return base.Argument(
+      '--container',
+      metavar='CONTAINER',
+      dest='containers',
+      type=arg_parsers.RegexpValidator(
+          '[a-z0-9]([a-z0-9-\\.]{0,61}[a-z0-9])?',
+          'must conform to RFC 1123: only lowercase, digits, hyphens, and'
+          ' periods are allowed, must begin and end with letter or digit, and'
+          ' less than 64 characters.',
+      ),
+      action=ContainersAction,
+      container_parser=container_parser,
+      help=help_text,
+  )
+
+
+def ContainerFlags(command, container_arg_group):
+  """Create the --container flag with the specified per-container args."""
+
+  def _CreateContainerParser():
+    container_parser = parser_arguments.ArgumentInterceptor(
+        parser=parser_extensions.ArgumentParser(calliope_command=command)
+    )
+    ContainerFlag(_CreateContainerParser).AddToParser(container_parser)
+    container_arg_group.AddToParser(container_parser)
+    return container_parser.parser
+
+  help_text = """
+    Container Flags
+
+    If the --container flag is not specified, container flags apply to the
+    primary container.
+
+    Multiple containers can specified using --container=<NAME> followed by the
+    container flags applying to that container. For example the following
+    command creates two containers, one using IMAGE-A and one using IMAGE-B:
+
+    $ {command} --container=A --image=IMAGE-A --container=B --image=IMAGE-B
+  """
+  # Create mutually exclusive group in top-level parser to prevent top-level
+  # container flags from being used with the --container flag.
+  containers_mutex_group = base.ArgumentGroup(
+      mutex=True, help=help_text, disable_default_heading=True
+  )
+  containers_mutex_group.AddArgument(container_arg_group)
+  containers_mutex_group.AddArgument(ContainerFlag(_CreateContainerParser))
+  return containers_mutex_group
+
+
+def PromptForDefaultSource(container_name=None):
   """Prompt for source code location when image flag is not set.
 
   Returns:
     The source code location
+  Args:
+    container_name: The name of the container to prompt for.
   """
   if console_io.CanPrompt():
     pretty_print.Info(
@@ -3145,9 +3410,13 @@ def PromptForDefaultSource():
         'for more details.'
     )
     cwd = files.GetCWD()
-    source = console_io.PromptWithDefault(
-        message='Source code location', default=cwd
-    )
+    if container_name:
+      message = 'Source code location for {container}'.format(
+          container=container_name
+      )
+    else:
+      message = 'Source code location'
+    source = console_io.PromptWithDefault(message=message, default=cwd)
 
     log.status.Print(
         'Next time, use `gcloud run deploy --source .` '
@@ -3167,3 +3436,45 @@ def AddDryRunFlag(parser):
           ' will not be applied.'
       ),
   )
+
+
+class ContainersAction(argparse.Action):
+  """Action which groups flag values per-container.
+
+  Attributes:
+    container_parser: Function which creates per-container subparsers.
+    container_arg_type: Type of the container arg value.
+  """
+
+  # pylint: disable=redefined-builtin
+  def __init__(self, container_parser, type=None, **kwargs):
+    if not callable(type):
+      raise argparse.ArgumentError(self, '%r is not callable' % type)
+    self.container_parser = container_parser
+    self.container_arg_type = type
+    super(ContainersAction, self).__init__(
+        nargs=argparse.PARSER, default={}, **kwargs
+    )
+
+  def __call__(self, parser, namespace, values, option_string):
+    container_name = values[0]
+    if self.container_arg_type:
+      container_name = self.container_arg_type(container_name)
+    args = values[1:]
+    containers = getattr(namespace, self.dest)
+    if container_name in containers:
+      # Use the existing container namespace if it exists.
+      container = containers[container_name]
+      parser = container._GetParser()
+    else:
+      # Create a new namespace to hold args for the container.
+      container = parser_extensions.Namespace()
+      containers[container_name] = container
+      parser = self.container_parser()
+      # Forward containers to the new namespace so that the parser can call into
+      # other container parsers.
+      setattr(container, self.dest, containers)
+
+    container = parser.parse_args(args, container)
+    # Cleanup forwarded containers in the container namespace.
+    delattr(container, self.dest)

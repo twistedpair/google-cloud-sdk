@@ -22,6 +22,7 @@ import os
 import random
 import string
 import time
+from typing import Dict, Optional
 
 from apitools.base.py import exceptions as http_exceptions
 from apitools.base.py import http_wrapper
@@ -42,15 +43,13 @@ from six.moves import http_client
 from six.moves import range
 
 
-def _GcloudIgnoreCreationPredicate(directory):
-  # type: (str) -> bool
+def _GcloudIgnoreCreationPredicate(directory: str) -> bool:
   return gcloudignore.AnyFileOrDirExists(
       directory, gcloudignore.GIT_FILES + ['node_modules']
   )
 
 
-def _GetChooser(path, ignore_file):
-  # type: (str, str) -> gcloudignore.FileChooser
+def _GetChooser(path: str, ignore_file: str) -> gcloudignore.FileChooser:
   default_ignore_file = gcloudignore.DEFAULT_IGNORE_FILE + '\nnode_modules\n'
 
   return gcloudignore.GetFileChooserForDir(
@@ -61,8 +60,7 @@ def _GetChooser(path, ignore_file):
   )
 
 
-def _ValidateDirectoryExistsOrRaise(directory):
-  # type: (str) -> None
+def _ValidateDirectoryExistsOrRaise(directory: str) -> None:
   """Validates that the given directory exists.
 
   Args:
@@ -81,8 +79,9 @@ def _ValidateDirectoryExistsOrRaise(directory):
     )
 
 
-def _ValidateUnpackedSourceSize(path, ignore_file=None):
-  # type: (str, str) -> None
+def _ValidateUnpackedSourceSize(
+    path: str, ignore_file: Optional[str] = None
+) -> None:
   """Validate size of unpacked source files."""
   chooser = _GetChooser(path, ignore_file)
   predicate = chooser.IsIncluded
@@ -104,9 +103,11 @@ def _ValidateUnpackedSourceSize(path, ignore_file=None):
 
 
 def CreateSourcesZipFile(
-    zip_dir, source_path, ignore_file=None, enforce_size_limit=False
-):
-  # type: (str, str, str | None, int) -> str
+    zip_dir: str,
+    source_path: str,
+    ignore_file: Optional[str] = None,
+    enforce_size_limit=False,
+) -> str:
   """Prepare zip file with source of the function to upload.
 
   Args:
@@ -145,16 +146,16 @@ def CreateSourcesZipFile(
   return zip_file_name
 
 
-def _GenerateRemoteZipFileName(function_ref):
-  # type: (resources.Resource) -> str
+def _GenerateRemoteZipFileName(function_ref: resources.Resource) -> str:
   region = function_ref.locationsId
   name = function_ref.functionsId
   suffix = ''.join(random.choice(string.ascii_lowercase) for _ in range(12))
   return '{0}-{1}-{2}.zip'.format(region, name, suffix)
 
 
-def UploadToStageBucket(source_zip, function_ref, stage_bucket):
-  # type: (str, resources.Resource, str) -> storage_util.ObjectReference
+def UploadToStageBucket(
+    source_zip: str, function_ref: resources.Resource, stage_bucket: str
+) -> storage_util.ObjectReference:
   """Uploads the given source ZIP file to the provided staging bucket.
 
   Args:
@@ -179,27 +180,17 @@ def UploadToStageBucket(source_zip, function_ref, stage_bucket):
   return dest_object
 
 
-def _UploadFileToGeneratedUrlCheckResponse(base_check_response, response):
+def _UploadFileToGeneratedUrlCheckResponse(
+    response: http_wrapper.Response,
+) -> http_wrapper.CheckResponse:
   if response.status_code == http_client.FORBIDDEN:
     raise http_exceptions.HttpForbiddenError.FromResponse(response)
-  return base_check_response(response)
+  return http_wrapper.CheckResponse(response)
 
 
-def _UploadFileToGeneratedUrlRetryFunc(base_retry_func, retry_args):
-  if isinstance(retry_args.exc, http_exceptions.HttpForbiddenError):
-    log.debug('Caught delayed permission propagation error, retrying')
-    http_wrapper.RebuildHttpConnections(retry_args.http)
-    time.sleep(
-        http_util.CalculateWaitForRetry(
-            retry_args.num_retries, max_wait=retry_args.max_retry_wait
-        )
-    )
-  else:
-    base_retry_func(retry_args)
-
-
-def UploadToGeneratedUrl(source_zip, url, extra_headers=None):
-  # type: (str, str, dict[str, str] | None) -> None
+def UploadToGeneratedUrl(
+    source_zip: str, url: str, extra_headers: Optional[Dict[str, str]] = None
+) -> None:
   """Upload the given source ZIP file to provided generated URL.
 
   Args:
@@ -209,6 +200,19 @@ def UploadToGeneratedUrl(source_zip, url, extra_headers=None):
   """
   extra_headers = extra_headers or {}
   upload = transfer.Upload.FromFile(source_zip, mime_type='application/zip')
+
+  def _UploadRetryFunc(retry_args: http_wrapper.ExceptionRetryArgs) -> None:
+    if isinstance(retry_args.exc, http_exceptions.HttpForbiddenError):
+      log.debug('Caught delayed permission propagation error, retrying')
+      http_wrapper.RebuildHttpConnections(retry_args.http)
+      time.sleep(
+          http_util.CalculateWaitForRetry(
+              retry_args.num_retries, max_wait=retry_args.max_retry_wait
+          )
+      )
+    else:
+      upload.retry_func(retry_args)
+
   try:
     upload_request = http_wrapper.Request(
         url,
@@ -219,12 +223,8 @@ def UploadToGeneratedUrl(source_zip, url, extra_headers=None):
     response = http_wrapper.MakeRequest(
         transports.GetApitoolsTransport(),
         upload_request,
-        retry_func=lambda ra: _UploadFileToGeneratedUrlRetryFunc(  # pylint: disable=g-long-lambda
-            upload.retry_func, ra
-        ),
-        check_response_func=lambda r: _UploadFileToGeneratedUrlCheckResponse(  # pylint: disable=g-long-lambda
-            http_wrapper.CheckResponse, r
-        ),
+        retry_func=_UploadRetryFunc,
+        check_response_func=_UploadFileToGeneratedUrlCheckResponse,
         retries=upload.num_retries,
     )
   finally:

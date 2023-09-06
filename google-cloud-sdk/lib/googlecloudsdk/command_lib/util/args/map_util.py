@@ -19,58 +19,111 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import yaml
 
 
-def AddMapUpdateFlag(group,
-                     flag_name,
-                     long_name,
-                     key_type,
-                     value_type,
-                     key_metavar='KEY',
-                     value_metavar='VALUE'):
-  group.add_argument(
+def MapUpdateFlag(
+    flag_name,
+    long_name,
+    key_type,
+    value_type,
+    key_metavar='KEY',
+    value_metavar='VALUE',
+):
+  return base.Argument(
       '--update-{}'.format(flag_name),
       metavar='{}={}'.format(key_metavar, value_metavar),
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgDict(key_type=key_type, value_type=value_type),
-      help='List of key-value pairs to set as {}.'.format(long_name)
+      help='List of key-value pairs to set as {}.'.format(long_name),
   )
 
 
-def AddMapRemoveFlag(group, flag_name, long_name, key_type, key_metavar='KEY'):
-  group.add_argument(
+def AddMapUpdateFlag(
+    group,
+    flag_name,
+    long_name,
+    key_type,
+    value_type,
+    key_metavar='KEY',
+    value_metavar='VALUE',
+):
+  return MapUpdateFlag(
+      flag_name,
+      long_name,
+      key_type,
+      value_type,
+      key_metavar=key_metavar,
+      value_metavar=value_metavar,
+  ).AddToParser(group)
+
+
+def MapRemoveFlag(flag_name, long_name, key_type, key_metavar='KEY'):
+  return base.Argument(
       '--remove-{}'.format(flag_name),
       metavar=key_metavar,
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgList(element_type=key_type),
-      help='List of {} to be removed.'.format(long_name)
+      help='List of {} to be removed.'.format(long_name),
+  )
+
+
+def AddMapRemoveFlag(group, flag_name, long_name, key_type, key_metavar='KEY'):
+  return MapRemoveFlag(
+      flag_name, long_name, key_type, key_metavar=key_metavar
+  ).AddToParser(group)
+
+
+def MapClearFlag(flag_name, long_name):
+  return base.Argument(
+      '--clear-{}'.format(flag_name),
+      action='store_true',
+      help='Remove all {}.'.format(long_name),
   )
 
 
 def AddMapClearFlag(group, flag_name, long_name):
-  group.add_argument(
-      '--clear-{}'.format(flag_name),
-      action='store_true',
-      help='Remove all {}.'.format(long_name)
-  )
+  return MapClearFlag(flag_name, long_name).AddToParser(group)
 
 
-def AddMapSetFlag(group,
-                  flag_name,
-                  long_name,
-                  key_type,
-                  value_type,
-                  key_metavar='KEY',
-                  value_metavar='VALUE'):
-  group.add_argument(
+def MapSetFlag(
+    flag_name,
+    long_name,
+    key_type,
+    value_type,
+    key_metavar='KEY',
+    value_metavar='VALUE',
+):
+  return base.Argument(
       '--set-{}'.format(flag_name),
       metavar='{}={}'.format(key_metavar, value_metavar),
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgDict(key_type=key_type, value_type=value_type),
-      help=('List of key-value pairs to set as {0}. All existing {0} will be '
-            'removed first.').format(long_name)
+      help=(
+          'List of key-value pairs to set as {0}. All existing {0} will be '
+          'removed first.'
+      ).format(long_name),
   )
+
+
+def AddMapSetFlag(
+    group,
+    flag_name,
+    long_name,
+    key_type,
+    value_type,
+    key_metavar='KEY',
+    value_metavar='VALUE',
+):
+  return MapSetFlag(
+      flag_name,
+      long_name,
+      key_type,
+      value_type,
+      key_metavar=key_metavar,
+      value_metavar=value_metavar,
+  ).AddToParser(group)
 
 
 class ArgDictFile(object):
@@ -92,7 +145,9 @@ class ArgDictFile(object):
     if not yaml.dict_like(map_file_dict):
       raise arg_parsers.ArgumentTypeError(
           'Invalid YAML/JSON data in [{}], expected map-like data.'.format(
-              file_path))
+              file_path
+          )
+      )
     for key, value in map_file_dict.items():
       if self.key_type:
         try:
@@ -104,7 +159,8 @@ class ArgDictFile(object):
           value = self.value_type(value)
         except ValueError:
           raise arg_parsers.ArgumentTypeError(
-              'Invalid value [{0}]'.format(value))
+              'Invalid value [{0}]'.format(value)
+          )
       map_dict[key] = value
     return map_dict
 
@@ -114,14 +170,16 @@ def AddMapSetFileFlag(group, flag_name, long_name, key_type, value_type):
       '--{}-file'.format(flag_name),
       metavar='FILE_PATH',
       type=ArgDictFile(key_type=key_type, value_type=value_type),
-      help=('Path to a local YAML file with definitions for all {0}. All '
-            'existing {0} will be removed before the new {0} are added.'
-           ).format(long_name)
+      help=(
+          'Path to a local YAML file with definitions for all {0}. All '
+          'existing {0} will be removed before the new {0} are added.'
+      ).format(long_name),
   )
 
 
-def AddUpdateMapFlags(parser, flag_name, long_name=None, key_type=None,
-                      value_type=None):
+def AddUpdateMapFlags(
+    parser, flag_name, long_name=None, key_type=None, value_type=None
+):
   """Add flags for updating values of a map-of-atomic-values property.
 
   Args:
@@ -136,17 +194,26 @@ def AddUpdateMapFlags(parser, flag_name, long_name=None, key_type=None,
 
   group = parser.add_mutually_exclusive_group()
   update_remove_group = group.add_argument_group(
-      help=('Only --update-{0} and --remove-{0} can be used together.  If both '
-            'are specified, --remove-{0} will be applied first.'
-           ).format(flag_name))
-  AddMapUpdateFlag(update_remove_group, flag_name, long_name, key_type=key_type,
-                   value_type=value_type)
+      help=(
+          'Only --update-{0} and --remove-{0} can be used together.  If both '
+          'are specified, --remove-{0} will be applied first.'
+      ).format(flag_name)
+  )
+  AddMapUpdateFlag(
+      update_remove_group,
+      flag_name,
+      long_name,
+      key_type=key_type,
+      value_type=value_type,
+  )
   AddMapRemoveFlag(update_remove_group, flag_name, long_name, key_type=key_type)
   AddMapClearFlag(group, flag_name, long_name)
-  AddMapSetFlag(group, flag_name, long_name, key_type=key_type,
-                value_type=value_type)
-  AddMapSetFileFlag(group, flag_name, long_name, key_type=key_type,
-                    value_type=value_type)
+  AddMapSetFlag(
+      group, flag_name, long_name, key_type=key_type, value_type=value_type
+  )
+  AddMapSetFileFlag(
+      group, flag_name, long_name, key_type=key_type, value_type=value_type
+  )
 
 
 def GetMapFlagsFromArgs(flag_name, args):
@@ -155,6 +222,7 @@ def GetMapFlagsFromArgs(flag_name, args):
   Args:
     flag_name: The base name of the flags
     args: The argparse namespace
+
   Returns:
     A dict of the flag values
   """
@@ -164,13 +232,18 @@ def GetMapFlagsFromArgs(flag_name, args):
       'update_flag_value': specified_args.get('--update-{}'.format(flag_name)),
       'clear_flag_value': specified_args.get('--clear-{}'.format(flag_name)),
       'remove_flag_value': specified_args.get('--remove-{}'.format(flag_name)),
-      'file_flag_value':
-          specified_args.get('--{}-file'.format(flag_name)),
+      'file_flag_value': specified_args.get('--{}-file'.format(flag_name)),
   }
 
 
-def ApplyMapFlags(old_map, set_flag_value, update_flag_value, clear_flag_value,
-                  remove_flag_value, file_flag_value):
+def ApplyMapFlags(
+    old_map,
+    set_flag_value,
+    update_flag_value,
+    clear_flag_value,
+    remove_flag_value,
+    file_flag_value,
+):
   """Determine the new map property from an existing map and parsed arguments.
 
   Args:
@@ -180,6 +253,7 @@ def ApplyMapFlags(old_map, set_flag_value, update_flag_value, clear_flag_value,
     clear_flag_value: The value from the --clear-* flag
     remove_flag_value: The value from the --remove-* flag
     file_flag_value: The value from the --*-file flag
+
   Returns:
     A new map with the changes applied.
   """
@@ -193,9 +267,7 @@ def ApplyMapFlags(old_map, set_flag_value, update_flag_value, clear_flag_value,
   if update_flag_value or remove_flag_value:
     old_map = old_map or {}
     remove_flag_value = remove_flag_value or []
-    new_map = {
-        k: v for k, v in old_map.items() if k not in remove_flag_value
-    }
+    new_map = {k: v for k, v in old_map.items() if k not in remove_flag_value}
     new_map.update(update_flag_value or {})
     return new_map
   return old_map

@@ -50,35 +50,33 @@ def parse_config(loaded_config, msg):
   # Don't accept configs containing more auth providers than MAX_AUTH_PROVIDERS
   auth_providers_count = len(auth_providers)
   if auth_providers_count > MAX_AUTH_PROVIDERS:
-    err_msg = ('The provided configuration contains {} identity providers. '
-               'The maximum number that can be provided is {}.').format(
-                   auth_providers_count, MAX_AUTH_PROVIDERS)
+    err_msg = (
+        'The provided configuration contains {} identity providers. '
+        'The maximum number that can be provided is {}.'
+    ).format(auth_providers_count, MAX_AUTH_PROVIDERS)
     raise exceptions.Error(err_msg)
 
   # Create empty MemberConfig and populate it with Auth_Provider configurations.
   member_config = msg.IdentityServiceMembershipSpec()
   # The config must contain at least one auth method
   found_auth_method = False
+  providers = {
+      'oidc': provision_oidc_config,
+      'google': provision_google_config,
+      'azureAD': provision_azuread_config,
+      'saml': provision_saml_config,
+  }
   for auth_provider in auth_providers:
-    # Provision OIDC proto from OIDC ClientConfig dictionary.
-    if 'oidc' in auth_provider:
-      auth_method = provision_oidc_config(auth_provider, msg)
-      member_config.authMethods.append(auth_method)
-      found_auth_method = True
-    # Provision Google proto from Google ClientConfig dictionary.
-    elif 'google' in auth_provider:
-      auth_method = provision_google_config(auth_provider, msg)
-      member_config.authMethods.append(auth_method)
-      found_auth_method = True
-    # Provision AzureAD proto from AzureAD ClientConfig dictionary.
-    elif 'azureAD' in auth_provider:
-      auth_method = provision_azuread_config(auth_provider, msg)
-      member_config.authMethods.append(auth_method)
-      found_auth_method = True
-    # Unsupported configuration found.
-    else:
-      status_msg = ('Authentication method [{}] is not supported, '
-                    'skipping to the next.').format(auth_provider['name'])
+    for provider_name in providers:
+      if provider_name in auth_provider:
+        found_auth_method = True
+        auth_method = providers[provider_name](auth_provider, msg)
+        member_config.authMethods.append(auth_method)
+        break
+    if not found_auth_method:
+      status_msg = (
+          'Authentication method [{}] is not supported, skipping to the next.'
+      ).format(auth_provider['name'])
       log.status.Print(status_msg)
   if not found_auth_method:
     raise exceptions.Error(
@@ -117,13 +115,15 @@ def provision_oidc_config(auth_method, msg):
   # Required Fields.
   if 'issuerURI' not in oidc_config or 'clientID' not in oidc_config:
     raise exceptions.Error(
-        'input config file OIDC Config must contain issuerURI and clientID.')
+        'input config file OIDC Config must contain issuerURI and clientID.'
+    )
   auth_method_proto.oidcConfig = msg.IdentityServiceOidcConfig()
   auth_method_proto.oidcConfig.issuerUri = oidc_config['issuerURI']
   auth_method_proto.oidcConfig.clientId = oidc_config['clientID']
 
-  validate_issuer_uri(auth_method_proto.oidcConfig.issuerUri,
-                      auth_method['name'])
+  validate_issuer_uri(
+      auth_method_proto.oidcConfig.issuerUri, auth_method['name']
+  )
 
   # Optional Auth Method Fields.
   if 'proxy' in auth_method:
@@ -132,10 +132,12 @@ def provision_oidc_config(auth_method, msg):
   # Optional OIDC Config Fields.
   if 'certificateAuthorityData' in oidc_config:
     auth_method_proto.oidcConfig.certificateAuthorityData = oidc_config[
-        'certificateAuthorityData']
+        'certificateAuthorityData'
+    ]
   if 'deployCloudConsoleProxy' in oidc_config:
     auth_method_proto.oidcConfig.deployCloudConsoleProxy = oidc_config[
-        'deployCloudConsoleProxy']
+        'deployCloudConsoleProxy'
+    ]
   if 'extraParams' in oidc_config:
     auth_method_proto.oidcConfig.extraParams = oidc_config['extraParams']
   if 'groupPrefix' in oidc_config:
@@ -144,15 +146,19 @@ def provision_oidc_config(auth_method, msg):
     auth_method_proto.oidcConfig.groupsClaim = oidc_config['groupsClaim']
 
   # If groupClaim is empty, then groupPrefix should be empty
-  if (not auth_method_proto.oidcConfig.groupsClaim and
-      auth_method_proto.oidcConfig.groupPrefix):
+  if (
+      not auth_method_proto.oidcConfig.groupsClaim
+      and auth_method_proto.oidcConfig.groupPrefix
+  ):
     raise exceptions.Error(
-        'groupPrefix should be empty for method [{}] because groupsClaim is empty.'
-        .format(auth_method['name']))
+        'groupPrefix should be empty for method [{}] because groupsClaim is'
+        ' empty.'.format(auth_method['name'])
+    )
 
   if 'kubectlRedirectURI' in oidc_config:
     auth_method_proto.oidcConfig.kubectlRedirectUri = oidc_config[
-        'kubectlRedirectURI']
+        'kubectlRedirectURI'
+    ]
   if 'scopes' in oidc_config:
     auth_method_proto.oidcConfig.scopes = oidc_config['scopes']
   if 'userClaim' in oidc_config:
@@ -163,7 +169,75 @@ def provision_oidc_config(auth_method, msg):
     auth_method_proto.oidcConfig.clientSecret = oidc_config['clientSecret']
   if 'enableAccessToken' in oidc_config:
     auth_method_proto.oidcConfig.enableAccessToken = oidc_config[
-        'enableAccessToken']
+        'enableAccessToken'
+    ]
+  return auth_method_proto
+
+
+def provision_saml_config(auth_method, msg):
+  """Provision FeatureSpec SamlConfig from the parsed configuration file.
+
+  Args:
+    auth_method: YamlConfigFile, The data loaded from the yaml file given by the
+      user. YamlConfigFile is from
+      googlecloudsdk.command_lib.anthos.common.file_parsers.
+    msg: The gkehub messages package.
+
+  Returns:
+    member_config: A MemberConfig configuration containing a single Google
+    auth method for the IdentityServiceFeatureSpec.
+  """
+  auth_method_proto = msg.IdentityServiceAuthMethod()
+  auth_method_proto.name = auth_method['name']
+  auth_method_proto.proxy = auth_method['proxy']
+  saml_config = auth_method['saml']
+
+  auth_method_proto.samlConfig = msg.IdentityServiceSamlConfig()
+
+  # Required SAML Config Fields.
+  required_fields = [
+      'idpEntityID',
+      'idpSingleSignOnURI',
+      'idpCertificateDataList',
+  ]
+
+  unset_required_fields = [
+      field_name
+      for field_name in required_fields
+      if field_name not in saml_config
+  ]
+  if unset_required_fields:
+    raise exceptions.Error(
+        'The following fields are not set for the authentication method {} : {}'
+        .format(auth_method['name'], ', '.join(unset_required_fields))
+    )
+
+  # Set the proto object values.
+  auth_method_proto.samlConfig.identityProviderId = saml_config['idpEntityID']
+  auth_method_proto.samlConfig.identityProviderSsoUri = saml_config[
+      'idpSingleSignOnURI'
+  ]
+  auth_method_proto.samlConfig.identityProviderCertificates = saml_config[
+      'idpCertificateDataList'
+  ]
+  auth_method_proto.samlConfig.userAttribute = saml_config['userAttribute']
+  auth_method_proto.samlConfig.groupsAttribute = saml_config['groupsAttribute']
+  auth_method_proto.samlConfig.userPrefix = saml_config['userPrefix']
+  auth_method_proto.samlConfig.groupPrefix = saml_config['groupPrefix']
+
+  auth_method_proto.samlConfig.attributeMapping = (
+      msg.IdentityServiceSamlConfig.AttributeMappingValue()
+  )
+  for attribute_key, attribute_value in saml_config['attributeMapping'].items():
+    attribute_map_item = (
+        msg.IdentityServiceSamlConfig.AttributeMappingValue.AdditionalProperty()
+    )
+    attribute_map_item.key = attribute_key
+    attribute_map_item.value = attribute_value
+    auth_method_proto.samlConfig.attributeMapping.additionalProperties.append(
+        attribute_map_item
+    )
+
   return auth_method_proto
 
 
@@ -222,22 +296,27 @@ def provision_azuread_config(auth_method, msg):
   azuread_config = auth_method['azureAD']
 
   # Required AzureAD Config fields.
-  if ('clientID' not in azuread_config or
-      'kubectlRedirectURI' not in azuread_config or
-      'tenant' not in azuread_config):
-    err_msg = ('Authentication method [{}] must contain '
-               'clientID, kubectlRedirectURI, and tenant.').format(
-                   auth_method['name'])
+  if (
+      'clientID' not in azuread_config
+      or 'kubectlRedirectURI' not in azuread_config
+      or 'tenant' not in azuread_config
+  ):
+    err_msg = (
+        'Authentication method [{}] must contain '
+        'clientID, kubectlRedirectURI, and tenant.'
+    ).format(auth_method['name'])
     raise exceptions.Error(err_msg)
   auth_method_proto.azureadConfig.clientId = azuread_config['clientID']
   auth_method_proto.azureadConfig.kubectlRedirectUri = azuread_config[
-      'kubectlRedirectURI']
+      'kubectlRedirectURI'
+  ]
   auth_method_proto.azureadConfig.tenant = azuread_config['tenant']
 
   # Optional AzureAD Config fields.
   if 'clientSecret' in azuread_config:
     auth_method_proto.azureadConfig.clientSecret = azuread_config[
-        'clientSecret']
+        'clientSecret'
+    ]
   if 'userClaim' in azuread_config:
     auth_method_proto.azureadConfig.userClaim = azuread_config['userClaim']
   return auth_method_proto
@@ -254,8 +333,11 @@ def validate_issuer_uri(issuer_uri, auth_method_name):
   if url.scheme != 'https':
     raise exceptions.Error(
         'issuerURI is invalid for method [{}]. Scheme is not https.'.format(
-            auth_method_name))
+            auth_method_name
+        )
+    )
   if url.path is not None and '.well-known/openid-configuration' in url.path:
     raise exceptions.Error(
-        'issuerURI is invalid for method [{}]. issuerURI should not contain [{}].'
-        .format(auth_method_name, '.well-known/openid-configuration'))
+        'issuerURI is invalid for method [{}]. issuerURI should not contain'
+        ' [{}].'.format(auth_method_name, '.well-known/openid-configuration')
+    )

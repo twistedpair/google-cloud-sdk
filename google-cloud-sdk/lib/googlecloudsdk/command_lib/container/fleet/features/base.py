@@ -330,21 +330,21 @@ def ParseMembershipsPlural(args,
   if args.IsKnownAndSpecified('memberships'):
     if resources.MembershipLocationSpecified(args):
       memberships += resources.PluralMembershipsResourceNames(args)
+      if search:
+        for membership in memberships:
+          if not api_util.GetMembership(membership):
+            raise exceptions.Error(
+                'Membership {} does not exist in the fleet.'.format(membership))
+
+      if not allow_cross_project and len(
+          resources.GetMembershipProjects(memberships)) > 1:
+        raise CrossProjectError(resources.GetMembershipProjects(memberships))
+
     else:
       memberships += resources.SearchMembershipResourcesPlural(
           args, filter_cluster_missing=True)
 
   if memberships:
-    if search:
-      all_memberships, unreachable = api_util.ListMembershipsFull(
-          filter_cluster_missing=True)
-      for membership in memberships:
-        if membership not in all_memberships:
-          raise exceptions.Error(
-              'Membership {} does not exist in the fleet.'.format(membership))
-    if not allow_cross_project and len(
-        resources.GetMembershipProjects(memberships)) > 1:
-      raise CrossProjectError(resources.GetMembershipProjects(memberships))
     return memberships
 
   # If nothing is provided

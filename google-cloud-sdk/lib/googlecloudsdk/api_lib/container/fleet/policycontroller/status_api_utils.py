@@ -22,7 +22,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.container.fleet import api_util as fleet_api_util
-from googlecloudsdk.command_lib.container.fleet.policycontroller import utils
+from googlecloudsdk.command_lib.container.fleet.policycontroller import constants
 from googlecloudsdk.core import exceptions
 import six
 
@@ -74,7 +74,7 @@ def GetMembershipConstraint(client, messages, constraint_name, project_id,
       'template':
           response.constraintRef.constraintTemplateName,
       'enforcementAction':
-          utils.get_enforcement_action_label(
+          constants.get_enforcement_action_label(
               six.text_type(response.spec.enforcementAction)),
       'membership': membership,
       'violationCount':

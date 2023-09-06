@@ -269,19 +269,6 @@ class InvalidLabelInput(exceptions.Error):
   pass
 
 
-def CreateParseLabels(ref, args, req):
-  """Adds labels to a Create request."""
-  del ref
-  if args.IsSpecified('filter_labels'):
-    messages = GetMessagesModule(args)
-    additional_property = CreateLabels(args, messages)
-    GetVersionedCreateBillingBudget(
-        args,
-        req).budgetFilter.labels.additionalProperties = messages.LabelsValue(
-            additionalProperties=[additional_property])
-  return req
-
-
 def UpdateParseLabels(ref, args, req):
   """Adds labels to an Update request."""
   del ref

@@ -24,7 +24,6 @@ from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.command_lib.run.printers import container_and_volume_printer_util as container_util
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
 from googlecloudsdk.core.resource import custom_printer_base as cp
-import six
 
 REVISION_PRINTER_FORMAT = 'revision'
 CPU_ALWAYS_ALLOCATED_MESSAGE = 'CPU is always allocated'
@@ -105,37 +104,32 @@ class RevisionPrinter(cp.CustomPrinterBase):
     return record.annotations.get(revision.SESSION_AFFINITY_ANNOTATION, '')
 
   @staticmethod
-  def TransformSpec(record):
-    limits = container_util.GetLimits(record)
-    return cp.Labeled([
-        ('Image', record.image),
-        ('Command', ' '.join(record.container.command)),
-        ('Args', ' '.join(record.container.args)),
-        (
-            'Port',
-            ' '.join(
-                six.text_type(p.containerPort) for p in record.container.ports
+  def TransformSpec(record: revision.Revision) -> cp.Lines:
+    return cp.Lines([
+        container_util.GetContainers(record),
+        cp.Labeled([
+            ('Service account', record.spec.serviceAccountName),
+            ('Concurrency', record.concurrency),
+            ('Min Instances', RevisionPrinter.GetMinInstances(record)),
+            ('Max Instances', RevisionPrinter.GetMaxInstances(record)),
+            (
+                'SQL connections',
+                k8s_util.GetCloudSqlInstances(record.annotations),
             ),
-        ),
-        ('Memory', limits['memory']),
-        ('CPU', limits['cpu']),
-        ('Service account', record.spec.serviceAccountName),
-        ('Env vars', container_util.GetUserEnvironmentVariables(record)),
-        ('Secrets', container_util.GetSecrets(record)),
-        ('Config Maps', container_util.GetConfigMaps(record)),
-        ('Concurrency', record.concurrency),
-        ('Min Instances', RevisionPrinter.GetMinInstances(record)),
-        ('Max Instances', RevisionPrinter.GetMaxInstances(record)),
-        ('SQL connections', k8s_util.GetCloudSqlInstances(record.annotations)),
-        ('Timeout', RevisionPrinter.GetTimeout(record)),
-        ('VPC access', k8s_util.GetVpcNetwork(record.annotations)),
-        ('CMEK', RevisionPrinter.GetCMEK(record)),
-        ('HTTP/2 Enabled', RevisionPrinter.GetHttp2Enabled(record)),
-        ('CPU Allocation', RevisionPrinter.GetCpuAllocation(record)),
-        ('Execution Environment', RevisionPrinter.GetExecutionEnv(record)),
-        ('Session Affinity', RevisionPrinter.GetSessionAffinity(record)),
-        ('Startup Probe', k8s_util.GetStartupProbe(record)),
-        ('Liveness Probe', k8s_util.GetLivenessProbe(record)),
+            ('Timeout', RevisionPrinter.GetTimeout(record)),
+            ('VPC access', k8s_util.GetVpcNetwork(record.annotations)),
+            ('CMEK', RevisionPrinter.GetCMEK(record)),
+            ('HTTP/2 Enabled', RevisionPrinter.GetHttp2Enabled(record)),
+            ('CPU Allocation', RevisionPrinter.GetCpuAllocation(record)),
+            (
+                'Execution Environment',
+                RevisionPrinter.GetExecutionEnv(record),
+            ),
+            (
+                'Session Affinity',
+                RevisionPrinter.GetSessionAffinity(record),
+            ),
+        ]),
     ])
 
   @staticmethod

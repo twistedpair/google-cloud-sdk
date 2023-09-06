@@ -116,11 +116,21 @@ def GetDistribution(args):
   return getattr(args, 'distribution', None)
 
 
+def AddAdminUsersForUpdate(parser):
+  """Adds admin user configuration flags for update.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+
+  group = parser.add_group('Admin users', mutex=True)
+  AddAdminUsers(group)
+  AddClearAdminUsers(group)
+
+
 def AddAdminUsers(parser):
   help_txt = """
 Users that can perform operations as a cluster administrator.
-
-There is no way to completely remove admin users after setting.
 """
 
   parser.add_argument(
@@ -129,6 +139,21 @@ There is no way to completely remove admin users after setting.
       metavar='USER',
       required=False,
       help=help_txt,
+  )
+
+
+def AddClearAdminUsers(parser):
+  """Adds flag for clearing admin users.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+
+  parser.add_argument(
+      '--clear-admin-users',
+      action='store_true',
+      default=None,
+      help='Clear the admin users associated with the cluster',
   )
 
 
@@ -178,3 +203,47 @@ def AddIgnoreErrors(parser):
 
 def GetIgnoreErrors(args):
   return getattr(args, 'ignore_errors', None)
+
+
+def AddProxySecretName(parser, required=False):
+  help_txt = """
+Name of the Kubernetes secret that contains the HTTP/HTTPS
+proxy configuration.
+"""
+  parser.add_argument(
+      '--proxy-secret-name',
+      required=required,
+      help=help_txt,
+  )
+
+
+def GetProxySecretName(args):
+  return getattr(args, 'proxy_secret_name', None)
+
+
+def AddProxySecretNamespace(parser, required=False):
+  help_txt = """
+Namespace of the Kubernetes secret that contains the HTTP/HTTPS
+proxy configuration.
+"""
+  parser.add_argument(
+      '--proxy-secret-namespace',
+      required=required,
+      help=help_txt,
+  )
+
+
+def GetProxySecretNamespace(args):
+  return getattr(args, 'proxy_secret_namespace', None)
+
+
+def AddProxyConfig(parser):
+  """Adds Proxy Config flags.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+
+  group = parser.add_group('Proxy config', required=False)
+  AddProxySecretName(group, required=True)
+  AddProxySecretNamespace(group, required=True)

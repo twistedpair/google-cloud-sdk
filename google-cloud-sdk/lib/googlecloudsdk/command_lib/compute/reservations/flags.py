@@ -261,7 +261,6 @@ def GetSourceInstanceTemplateFlag(custom_name=None):
 def AddCreateFlags(parser,
                    support_fleet=False,
                    support_share_setting=False,
-                   support_instance_template=False,
                    support_ssd_count=False,
                    support_auto_delete=False):
   """Adds all flags needed for the create command."""
@@ -282,8 +281,7 @@ def AddCreateFlags(parser,
       'Manage the instance properties for the SpecificSKU reservation.',
       required=True,
       mutex=True)
-  if support_instance_template:
-    specific_sku_properties_group.AddArgument(GetSourceInstanceTemplateFlag())
+  specific_sku_properties_group.AddArgument(GetSourceInstanceTemplateFlag())
 
   # create the instance properties group for the SpecificSkuReservation
   instance_properties_group = base.ArgumentGroup(

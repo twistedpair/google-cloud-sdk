@@ -57,6 +57,27 @@ def AddHubFlag(parser):
       help='Hub that the spoke will attach to. The hub must already exist.')
 
 
+def AddSpokeFlag(parser, help_text):
+  """Adds the --spoke flag to the given parser."""
+  parser.add_argument(
+      '--spoke',
+      required=True,
+      help=help_text)
+
+
+def AddGroupFlag(parser):
+  """Adds the --group argument to the given parser."""
+  # TODO(b/233653552) Parse this with a resouce argument.
+  parser.add_argument(
+      '--group',
+      required=False,
+      hidden=True,
+      help=(
+          'Group that the spoke will be part of. The group must already exist.'
+      ),
+  )
+
+
 def AddVPCNetworkFlag(parser):
   """Adds the --vpc-network argument to the given parser."""
   # TODO(b/233653552) Parse this with a resource argument.
@@ -163,6 +184,30 @@ def AddHubResourceArg(parser, desc):
   concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddGroupResourceArg(parser, desc):
+  """Add a resource argument for a group.
+
+  Args:
+    parser: the parser for the command.
+    desc: the string to describe the resource, such as 'to create'.
+  """
+  group_concept_spec = concepts.ResourceSpec(
+      'networkconnectivity.projects.locations.global.hubs.groups',
+      resource_name='group',
+      api_version='v1',
+      groupsId=GroupAttributeConfig(),
+      hubsId=HubAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='group',
+      concept_spec=group_concept_spec,
+      required=True,
+      group_help='Name of the group {}.'.format(desc))
+  concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
 def SpokeAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='spoke', help_text='The spoke Id.')
@@ -171,6 +216,12 @@ def SpokeAttributeConfig():
 def HubAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='hub', help_text='The hub Id.'
+  )
+
+
+def GroupAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='group', help_text='The group Id.'
   )
 
 

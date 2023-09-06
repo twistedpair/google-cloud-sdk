@@ -28,6 +28,7 @@ from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core import properties
 
 _SERVICES_LEGACY_LIST_COMMAND = ('services list --format=disable '
                                  '--flatten=serviceName')
@@ -166,6 +167,14 @@ def add_key_undelete_args(parser):
   _key_string_flag(undelete_set_group)
 
 
+def add_resource_args(parser):
+  """Adds resource args for command."""
+  resource_group = parser.add_mutually_exclusive_group(required=False)
+  _project_id_flag(resource_group)
+  _folder_id_flag(resource_group)
+  _orgnaization_id_flag(resource_group)
+
+
 def add_key_update_args(parser):
   """Adds args for api-keys update command."""
   update_set_restriction_group = parser.add_mutually_exclusive_group(
@@ -295,3 +304,44 @@ def _key_string_flag(parser):
   base.Argument('--key-string', help='Key String of the key.').AddToParser(
       parser
   )
+
+
+def _project_id_flag(parser):
+  base.Argument(
+      '--project',
+      metavar='PROJECT_ID',
+      help="""\
+The Google Cloud project ID to use for this invocation. If
+omitted, then the current project is assumed; the current project can
+be listed using `gcloud config list --format='text(core.project)'`
+and can be set using `gcloud config set project PROJECTID`.
+
+`--project` and its fallback `{core_project}` property play two roles
+in the invocation. It specifies the project of the resource to
+operate on. It also specifies the project for API enablement check,
+quota, and billing. To specify a different project for quota and
+billing, use `--billing-project` or `{billing_project}` property.
+    """.format(
+          core_project=properties.VALUES.core.project,
+          billing_project=properties.VALUES.billing.quota_project,
+      ),
+  ).AddToParser(parser)
+
+
+def _folder_id_flag(parser):
+  base.Argument(
+      '--folder',
+      metavar='FOLDER_ID',
+      help='The Google Cloud Platform folder ID to use for this invocation.',
+  ).AddToParser(parser)
+
+
+def _orgnaization_id_flag(parser):
+  base.Argument(
+      '--organization',
+      metavar='ORGANIZATION_ID',
+      help=(
+          'The Google Cloud Platform organization ID to use for this'
+          ' invocation.'
+      ),
+  ).AddToParser(parser)

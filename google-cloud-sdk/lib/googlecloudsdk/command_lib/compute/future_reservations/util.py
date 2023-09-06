@@ -35,9 +35,17 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
       accelerators, getattr(args, 'location_hint', None),
       getattr(args, 'maintenance_freeze_duration', None),
       getattr(args, 'maintenance_interval', None))
+  source_instance_template_ref = (
+      reservation_util.ResolveSourceInstanceTemplate(args, resources)
+      if getattr(args, 'source_instance_template', None)
+      else None
+  )
   sku_properties = MakeSpecificSKUPropertiesMessage(
-      messages, resources, allocated_instance_properties, args.total_count,
-      getattr(args, 'source_instance_template', None))
+      messages,
+      allocated_instance_properties,
+      args.total_count,
+      source_instance_template_ref,
+  )
   time_window = MakeTimeWindowMessage(messages, args.start_time,
                                       getattr(args, 'end_time', None),
                                       getattr(args, 'duration', None))
@@ -103,17 +111,17 @@ def MakeAllocatedInstanceProperties(messages,
   return instance_properties
 
 
-def MakeSpecificSKUPropertiesMessage(messages,
-                                     resources,
-                                     instance_properties,
-                                     total_count,
-                                     source_instance_template=None):
+def MakeSpecificSKUPropertiesMessage(
+    messages,
+    instance_properties,
+    total_count,
+    source_instance_template_ref=None,
+):
   """Constructs a specific sku properties message object."""
   properties = None
   source_instance_template_url = None
-  if source_instance_template:
-    source_instance_template_url = reservation_util.MakeInstanceTemplateUrl(
-        source_instance_template, resources)
+  if source_instance_template_ref:
+    source_instance_template_url = source_instance_template_ref.SelfLink()
   else:
     properties = instance_properties
   return messages.FutureReservationSpecificSKUProperties(

@@ -158,6 +158,32 @@ class AutoscalingPolicy(_messages.Message):
   workerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 6)
 
 
+class AutotuningConfig(_messages.Message):
+  r"""Autotuning configuration of the workload.
+
+  Enums:
+    ScenariosValueListEntryValuesEnum:
+
+  Fields:
+    cohort: Required. Autotuning cohort identifier. Identifies families of the
+      workloads having the same shape, e.g. daily ETL jobs.
+    scenarios: Required. Scenarios for which tunings are applied.
+  """
+
+  class ScenariosValueListEntryValuesEnum(_messages.Enum):
+    r"""ScenariosValueListEntryValuesEnum enum type.
+
+    Values:
+      SCENARIO_UNSPECIFIED: Default value.
+      OOM: Out-of-memory errors remediation.
+    """
+    SCENARIO_UNSPECIFIED = 0
+    OOM = 1
+
+  cohort = _messages.StringField(1)
+  scenarios = _messages.EnumField('ScenariosValueListEntryValuesEnum', 2, repeated=True)
+
+
 class AuxiliaryNodeGroup(_messages.Message):
   r"""Node group identification and configuration information.
 
@@ -2841,7 +2867,7 @@ class ExecutionConfig(_messages.Message):
       session to terminate. This field cannot be set on a batch workload.
       Minimum value is 10 minutes; maximum value is 14 days (see JSON
       representation of Duration (https://developers.google.com/protocol-
-      buffers/docs/proto3#json)). Defaults to 4 hours if not set. If both ttl
+      buffers/docs/proto3#json)). Defaults to 1 hour if not set. If both ttl
       and idle_ttl are specified for an interactive session, the conditions
       are treated as OR conditions: the workload will be terminated when it
       has been idle for idle_ttl or when ttl has been exceeded, whichever
@@ -3660,12 +3686,15 @@ class InstanceFlexibilityPolicy(_messages.Message):
   Fields:
     instanceSelectionList: Optional. List of instance selection options that
       the group will use when creating new VMs.
+    instanceSelectionResults: Output only. A list of instance selection
+      results in the group.
     provisioningModelMix: Optional. Defines how the Group selects the
       provisioning model to ensure required reliability.
   """
 
   instanceSelectionList = _messages.MessageField('InstanceSelection', 1, repeated=True)
-  provisioningModelMix = _messages.MessageField('ProvisioningModelMix', 2)
+  instanceSelectionResults = _messages.MessageField('InstanceSelectionResult', 2, repeated=True)
+  provisioningModelMix = _messages.MessageField('ProvisioningModelMix', 3)
 
 
 class InstanceGroupAutoscalingPolicyConfig(_messages.Message):
@@ -3854,6 +3883,19 @@ class InstanceSelection(_messages.Message):
 
   machineTypes = _messages.StringField(1, repeated=True)
   rank = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class InstanceSelectionResult(_messages.Message):
+  r"""Defines a mapping from machine types to the number of VMs that are
+  created with each machine type.
+
+  Fields:
+    machineType: Output only. Full machine-type names, e.g. "n1-standard-16".
+    vmCount: Output only. Number of VM provisioned with the machine_type.
+  """
+
+  machineType = _messages.StringField(1)
+  vmCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class InstantiateWorkflowTemplateRequest(_messages.Message):
@@ -5883,6 +5925,7 @@ class RuntimeConfig(_messages.Message):
       are used to configure workload execution.
 
   Fields:
+    autotuningConfig: Optional. Autotuning configuration of the workload.
     containerImage: Optional. Optional custom container image for the job
       runtime environment. If not specified, a default container image will be
       used.
@@ -5917,10 +5960,11 @@ class RuntimeConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  containerImage = _messages.StringField(1)
-  properties = _messages.MessageField('PropertiesValue', 2)
-  repositoryConfig = _messages.MessageField('RepositoryConfig', 3)
-  version = _messages.StringField(4)
+  autotuningConfig = _messages.MessageField('AutotuningConfig', 1)
+  containerImage = _messages.StringField(2)
+  properties = _messages.MessageField('PropertiesValue', 3)
+  repositoryConfig = _messages.MessageField('RepositoryConfig', 4)
+  version = _messages.StringField(5)
 
 
 class RuntimeInfo(_messages.Message):

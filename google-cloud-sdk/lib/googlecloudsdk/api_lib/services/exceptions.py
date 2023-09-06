@@ -124,6 +124,18 @@ class GetReverseDependencyClosurePermissionDeniedException(Error):
   pass
 
 
+class ListFlattenedMembersPermissionDeniedException(Error):
+  """Permission denied exception for list flattened members."""
+
+  pass
+
+
+class ListGroupMembersPermissionDeniedException(Error):
+  """Permission denied exception for list group members."""
+
+  pass
+
+
 class OperationErrorException(Error):
   """Exception for operation error."""
   pass

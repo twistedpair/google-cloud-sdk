@@ -931,6 +931,17 @@ DISABLE_CLOUD_DATA_LINEAGE_INTEGRATION_FLAG = base.Argument(
     Disable Cloud Data Lineage integration.
     """)
 
+STORAGE_BUCKET_FLAG = base.Argument(
+    '--storage-bucket',
+    type=str,
+    hidden=True,
+    action=V2ExclusiveStoreAction,
+    help="""\
+    Name of an exisiting Cloud Storage bucket to be used by the environment.
+    Supported only for Composer 2.4.X and above.
+    """,
+)
+
 
 def _IsValidIpv4CidrBlock(ipv4_cidr_block):
   """Validates that IPV4 CIDR block arg has valid format.

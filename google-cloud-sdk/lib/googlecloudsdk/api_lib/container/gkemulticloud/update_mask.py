@@ -23,6 +23,9 @@ ATTACHED_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'annotations': 'annotations',
     'platform_version': 'platform_version',
     'admin_users': 'authorization.admin_users',
+    'admin_groups': 'authorization.admin_groups',
+    'clear_admin_users': 'authorization.admin_users',
+    'clear_admin_groups': 'authorization.admin_groups',
     'logging': 'logging_config.component_config.enable_components',
     'enable_managed_prometheus': (
         'monitoring_config.managed_prometheus_config.enabled'
@@ -31,6 +34,8 @@ ATTACHED_CLUSTER_ARGS_TO_UPDATE_MASKS = {
         'monitoring_config.managed_prometheus_config.enabled'
     ),
     'binauthz_evaluation_mode': 'binary_authorization.evaluation_mode',
+    'proxy_secret_name': 'proxy_config.kubernetes_secret.name',
+    'proxy_secret_namespace': 'proxy_config.kubernetes_secret.namespace',
 }
 
 AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
@@ -54,6 +59,7 @@ AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
         'control_plane.aws_services_authentication.role_session_name'
     ),
     'admin_users': 'authorization.admin_users',
+    'admin_groups': 'authorization.admin_groups',
     'clear_proxy_config': 'control_plane.proxy_config',
     'proxy_secret_arn': 'control_plane.proxy_config.secret_arn',
     'proxy_secret_version_id': 'control_plane.proxy_config.secret_version',
@@ -114,6 +120,7 @@ AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'cluster_version': 'control_plane.version',
     'vm_size': 'control_plane.vm_size',
     'admin_users': 'authorization.admin_users',
+    'admin_groups': 'authorization.admin_groups',
     'ssh_public_key': 'control_plane.ssh_config.authorized_key',
     'logging': 'logging_config.component_config.enable_components',
     'enable_managed_prometheus': (

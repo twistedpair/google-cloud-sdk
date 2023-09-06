@@ -62,11 +62,19 @@ class BillingbudgetsBillingAccountsBudgetsListRequest(_messages.Message):
       call, and that the system should return the next page of data.
     parent: Required. Name of billing account to list budgets under. Values
       are of the form `billingAccounts/{billingAccountId}`.
+    scope: Optional. Set the scope of the budgets to be returned, in the
+      format of the resource name. The scope of a budget is the cost that it
+      tracks, such as costs for a single project, or the costs for all
+      projects in a folder. Only project scope (in the format of
+      "projects/project-id" or "projects/123") is supported in this field.
+      When this field is set to a project's resource name, the budgets
+      returned are tracking the costs for that project.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  scope = _messages.StringField(4)
 
 
 class BillingbudgetsBillingAccountsBudgetsPatchRequest(_messages.Message):
@@ -343,6 +351,11 @@ class GoogleCloudBillingBudgetsV1NotificationsRule(_messages.Message):
       notifications sent when a threshold is exceeded. Default notifications
       are sent to those with Billing Account Administrator and Billing Account
       User IAM roles for the target account.
+    enableProjectLevelRecipients: Optional. When set to true, and when the
+      budget has a single project configured, notifications will be sent to
+      project level recipients of that project. This field will be ignored if
+      the budget has multiple or no project configured. Currently, project
+      level recipients are the users with `Owner` role on a cloud project.
     monitoringNotificationChannels: Optional. Email targets to send
       notifications to when a threshold is exceeded. This is in addition to
       the `DefaultIamRecipients` who receive alert emails based on their
@@ -392,9 +405,10 @@ class GoogleCloudBillingBudgetsV1NotificationsRule(_messages.Message):
   """
 
   disableDefaultIamRecipients = _messages.BooleanField(1)
-  monitoringNotificationChannels = _messages.StringField(2, repeated=True)
-  pubsubTopic = _messages.StringField(3)
-  schemaVersion = _messages.StringField(4)
+  enableProjectLevelRecipients = _messages.BooleanField(2)
+  monitoringNotificationChannels = _messages.StringField(3, repeated=True)
+  pubsubTopic = _messages.StringField(4)
+  schemaVersion = _messages.StringField(5)
 
 
 class GoogleCloudBillingBudgetsV1ThresholdRule(_messages.Message):

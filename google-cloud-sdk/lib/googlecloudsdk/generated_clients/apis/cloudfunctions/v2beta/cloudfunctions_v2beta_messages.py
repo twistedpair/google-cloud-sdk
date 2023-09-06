@@ -189,6 +189,8 @@ class BuildConfig(_messages.Message):
       complete list of possible choices, see the [`gcloud` command reference](
       https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--
       runtime).
+    serviceAccount: [Preview] Service account to be used for building the
+      container
     source: The location of the function source code.
     sourceProvenance: Output only. A permanent fixed identifier for source.
     sourceToken: An identifier for Firebase function sources. Disclaimer: This
@@ -259,10 +261,11 @@ class BuildConfig(_messages.Message):
   entryPoint = _messages.StringField(4)
   environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 5)
   runtime = _messages.StringField(6)
-  source = _messages.MessageField('Source', 7)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 8)
-  sourceToken = _messages.StringField(9)
-  workerPool = _messages.StringField(10)
+  serviceAccount = _messages.StringField(7)
+  source = _messages.MessageField('Source', 8)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 9)
+  sourceToken = _messages.StringField(10)
+  workerPool = _messages.StringField(11)
 
 
 class CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest(_messages.Message):

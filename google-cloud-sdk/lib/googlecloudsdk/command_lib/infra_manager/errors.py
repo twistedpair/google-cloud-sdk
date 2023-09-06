@@ -31,3 +31,9 @@ class NotSupportedError(exceptions.Error):
   """Error indicating that feature is not supported."""
 
   pass
+
+
+class OperationFailedError(exceptions.Error):
+  """Error indicating that operation has failed."""
+
+  pass

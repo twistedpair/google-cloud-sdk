@@ -93,6 +93,16 @@ def AddForceArg(parser):
       help=(help_text))
 
 
+def AddClearNfsExportOptionsArg(parser):
+  help_text = """Clears the NfsExportOptions. Must specify `--file-share`
+  flag if --clear-nfs-export-options is specified."""
+  parser.add_argument(
+      '--clear-nfs-export-options',
+      action='store_true',
+      required=False,
+      help=help_text)
+
+
 def GetTierType(instance_tier):
   tier_type = dict(FILE_TIER_TO_TYPE)
   return tier_type.get(instance_tier, 'BASIC')
@@ -220,21 +230,18 @@ def GetProtocolArg(messages):
   Returns:
     The chosen protocol arg.
   """
-  protocol_arg = (
-      arg_utils.ChoiceEnumMapper(
-          '--protocol',
-          messages.Instance.ProtocolValueValuesEnum,
-          help_str='The service protocol for the Cloud Filestore instance.',
-          custom_mappings={
-              'NFS_V3':
-                  ('nfs-v3',
-                   'NFSv3 protocol.'),
-              'NFS_V4_1':
-                  ('nfs-v4-1',
-                   'NFSv4.1 protocol.'),
-          },
-          default='NFS_V3'))
+  protocol_arg = arg_utils.ChoiceEnumMapper(
+      '--protocol',
+      messages.Instance.ProtocolValueValuesEnum,
+      help_str='The service protocol for the Cloud Filestore instance.',
+      custom_mappings={
+          'NFS_V3': ('nfs-v3', 'NFSv3 protocol.'),
+          'NFS_V4_1': ('nfs-v4-1', 'NFSv4.1 protocol.'),
+      },
+      default='NFS_V3',
+  )
   return protocol_arg
+
 
 def AddManagedActiveDirectoryArg(parser):
   """Adds a --managed-ad flag to the parser.
@@ -320,6 +327,7 @@ def AddFileShareArg(parser,
                     api_version,
                     include_snapshot_flags=False,
                     include_backup_flags=False,
+                    clear_nfs_export_options_required=False,
                     required=True):
   """Adds a --file-share flag to the given parser.
 
@@ -328,6 +336,8 @@ def AddFileShareArg(parser,
     api_version: filestore_client api version.
     include_snapshot_flags: bool, whether to include --source-snapshot flags.
     include_backup_flags: bool, whether to include --source-backup flags.
+    clear_nfs_export_options_required: bool, whether to include
+      --clear-nfs-export-options flags.
     required: bool, passthrough to parser.add_argument.
   """
   alpha_beta_help_text = """
@@ -347,8 +357,8 @@ unit is specified, GB is assumed. Acceptable instance capacities for each tier a
 *name*::: The desired logical name of the volume.
 
 *nfs-export-options*::: The NfsExportOptions for the Cloud Filestore instance file share.
-Configuring NfsExportOptions is optional.
-Use the `--flags-file` flag to specify the path to a JSON or YAML configuration file that contains the required NfsExportOptions flags.
+Configuring NfsExportOptions is optional and can only be set using flags-file. Use the `--flags-file`
+flag to specify the path to a JSON or YAML configuration file that contains the required NfsExportOptions flags.
 
 *ip-ranges*::: A list of IPv4 addresses or CIDR ranges that are allowed to mount the file share.
 IPv4 addresses format: {octet 1}.{octet 2}.{octet 3}.{octet 4}.
@@ -404,8 +414,8 @@ unit is specified, GB is assumed. Acceptable instance capacities for each tier a
 *name*::: The desired logical name of the volume.
 
 *nfs-export-options*::: The NfsExportOptions for the Cloud Filestore instance file share.
-Configuring NfsExportOptions is optional.
-Use the `--flags-file` flag to specify the path to a JSON or YAML configuration file that contains the required NfsExportOptions flags.
+Configuring NfsExportOptions is optional and can only be set using flags-file. Use the `--flags-file`
+flag to specify the path to a JSON or YAML configuration file that contains the required NfsExportOptions flags.
 
 *ip-ranges*::: A list of IPv4 addresses or CIDR ranges that are allowed to mount the file share.
 IPv4 addresses format: {octet 1}.{octet 2}.{octet 3}.{octet 4}.
@@ -464,20 +474,36 @@ instance-zone will be used.
     spec['source-snapshot-region'] = str
 
   file_share_help = file_share_help[api_version]
-  parser.add_argument(
-      '--file-share',
-      type=arg_parsers.ArgDict(spec=spec, required_keys=['name', 'capacity']),
-      required=required,
-      help=file_share_help +
-      (source_snapshot_help if include_snapshot_flags else '') +
-      (source_backup_help if include_backup_flags else ''))
+  if clear_nfs_export_options_required:
+    required = True
+    file_share_arg_group = parser.add_argument_group(
+        help='Parameters for file-share.'
+    )
+    AddClearNfsExportOptionsArg(file_share_arg_group)
+    file_share_arg_group.add_argument(
+        '--file-share',
+        type=arg_parsers.ArgDict(spec=spec, required_keys=['name', 'capacity']),
+        required=required,
+        help=file_share_help
+        + (source_snapshot_help if include_snapshot_flags else '')
+        + (source_backup_help if include_backup_flags else ''),
+    )
+  else:
+    parser.add_argument(
+        '--file-share',
+        type=arg_parsers.ArgDict(spec=spec, required_keys=['name', 'capacity']),
+        required=required,
+        help=file_share_help
+        + (source_snapshot_help if include_snapshot_flags else '')
+        + (source_backup_help if include_backup_flags else ''),
+    )
 
 
 def AddInstanceCreateArgs(parser, api_version):
   """Add args for creating an instance."""
-  concept_parsers.ConceptParser([
-      flags.GetInstancePresentationSpec('The instance to create.')
-  ]).AddToParser(parser)
+  concept_parsers.ConceptParser(
+      [flags.GetInstancePresentationSpec('The instance to create.')]
+  ).AddToParser(parser)
   AddDescriptionArg(parser)
   AddLocationArg(parser)
   AddRegionArg(parser)
@@ -515,4 +541,5 @@ def AddInstanceUpdateArgs(parser, api_version):
       api_version,
       include_snapshot_flags=(
           api_version == filestore_client.ALPHA_API_VERSION),
+      clear_nfs_export_options_required=True,
       required=False)

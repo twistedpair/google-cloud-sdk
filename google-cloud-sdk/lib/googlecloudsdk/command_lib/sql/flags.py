@@ -1495,7 +1495,10 @@ def AddPasswordPolicyDisallowCompromisedCredentials(
   parser.add_argument(
       '--password-policy-disallow-compromised-credentials',
       required=False,
-      help='Disallow credentials that have been compromised by a data breach.',
+      help=(
+          'Prohibits the use of credentials that have been compromised by a'
+          ' data breach.'
+      ),
       **kwargs
   )
 

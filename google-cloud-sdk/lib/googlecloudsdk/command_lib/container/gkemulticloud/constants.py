@@ -71,7 +71,7 @@ AWS_NODEPOOLS_FORMAT = """\
   table(
     name.basename(),
     version:label=NODE_VERSION,
-    config.instanceType,
+    config.instanceType.yesno(no='Spot Instances'),
     autoscaling.minNodeCount.yesno(no='0'):label=MIN_NODES,
     autoscaling.maxNodeCount:label=MAX_NODES,
     state)"""

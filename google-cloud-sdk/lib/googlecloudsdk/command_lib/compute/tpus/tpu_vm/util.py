@@ -407,11 +407,7 @@ def ParseBootDiskConfigurations(api_version='v2'):
     tpu_messages = GetMessagesModule(version=api_version)
     enable_confidential_compute = args.boot_disk.get(
         confidential_compute_arg_name, 'False').lower() == 'true'
-    kms_key = (
-        args.boot_disk.get(kms_key_arg_name, None)
-        if enable_confidential_compute
-        else None
-    )
+    kms_key = args.boot_disk.get(kms_key_arg_name, None)
 
     if enable_confidential_compute and kms_key is None:
       raise BootDiskConfigurationError(

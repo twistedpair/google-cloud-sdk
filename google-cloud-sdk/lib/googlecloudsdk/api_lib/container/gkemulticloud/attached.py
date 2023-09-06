@@ -41,6 +41,7 @@ class _AttachedClientBase(client.ClientBase):
         'authorization': self._Authorization(args),
         'loggingConfig': flags.GetLogging(args, True),
         'monitoringConfig': flags.GetMonitoringConfig(args),
+        'proxyConfig': self._ProxyConfig(args),
     }
     return (
         self._messages.GoogleCloudGkemulticloudV1AttachedCluster(**kwargs)
@@ -61,18 +62,42 @@ class _AttachedClientBase(client.ClientBase):
         else None
     )
 
+  def _ProxyConfig(self, args):
+    secret_name = attached_flags.GetProxySecretName(args)
+    secret_namespace = attached_flags.GetProxySecretNamespace(args)
+    if secret_name or secret_namespace:
+      kwargs = {
+          'kubernetesSecret':
+          self._messages.GoogleCloudGkemulticloudV1KubernetesSecret(
+              name=secret_name,
+              namespace=secret_namespace,
+          )
+      }
+      return (
+          self._messages.GoogleCloudGkemulticloudV1AttachedProxyConfig(
+              **kwargs
+              )
+      )
+    return None
+
   def _Authorization(self, args):
     admin_users = attached_flags.GetAdminUsers(args)
-    if not admin_users:
+    admin_groups = flags.GetAdminGroups(args)
+    if not admin_users and not admin_groups:
       return None
-    kwargs = {
-        'adminUsers': [
-            self._messages.GoogleCloudGkemulticloudV1AttachedClusterUser(
-                username=u
-            )
-            for u in admin_users
-        ]
-    }
+    kwargs = {}
+    if admin_users:
+      kwargs['adminUsers'] = [
+          self._messages.GoogleCloudGkemulticloudV1AttachedClusterUser(
+              username=u
+          )
+          for u in admin_users
+      ]
+    if admin_groups:
+      kwargs['adminGroups'] = [
+          self._messages.GoogleCloudGkemulticloudV1AttachedClusterGroup(group=g)
+          for g in admin_groups
+      ]
     if not any(kwargs.values()):
       return None
     return (

@@ -201,10 +201,9 @@ class BmsClient(object):
         batch_size=page_size,
         field='locations')
 
-  def ListInstances(self, location_resource, limit=None, page_size=None):
-    location = location_resource.RelativeName()
+  def ListInstances(self, parent, limit=None, page_size=None):
     request = self.messages.BaremetalsolutionProjectsLocationsInstancesListRequest(
-        parent=location)
+        parent=parent)
     return list_pager.YieldFromList(
         self.instances_service,
         request,
@@ -212,14 +211,6 @@ class BmsClient(object):
         batch_size_attribute='pageSize',
         batch_size=page_size,
         field='instances')
-
-  def AggregateListInstances(self, project_resource, limit=None):
-    return self.AggregateYieldFromList(
-        self.instances_service,
-        project_resource,
-        self.messages.BaremetalsolutionProjectsLocationsInstancesListRequest,
-        'instances',
-        limit=limit)
 
   def UpdateInstance(self, instance_resource, labels, os_image,
                      enable_hyperthreading):
@@ -338,12 +329,11 @@ class BmsClient(object):
     return self.snapshot_schedule_policies_service.Delete(request)
 
   def ListVolumes(self,
-                  location_resource,
+                  parent,
                   limit=None,
                   page_size=None):
-    location = location_resource.RelativeName()
     request = self.messages.BaremetalsolutionProjectsLocationsVolumesListRequest(
-        parent=location)
+        parent=parent)
     return list_pager.YieldFromList(
         self.volumes_service,
         request,
@@ -400,23 +390,14 @@ class BmsClient(object):
     )
     return self.volumes_service.Rename(request)
 
-  def AggregateListVolumes(self, project_resource, limit=None):
-    return self.AggregateYieldFromList(
-        self.volumes_service,
-        project_resource,
-        self.messages.BaremetalsolutionProjectsLocationsVolumesListRequest,
-        'volumes',
-        limit=limit)
-
   def ListNetworks(self,
-                   location_resource,
+                   parent,
                    limit=None,
                    page_size=None):
-    location = location_resource.RelativeName()
     request = (
         self.messages
         .BaremetalsolutionProjectsLocationsNetworksListRequest(
-            parent=location))
+            parent=parent))
     return list_pager.YieldFromList(
         self.networks_service,
         request,
@@ -441,14 +422,6 @@ class BmsClient(object):
         batch_size_attribute='pageSize',
         batch_size=page_size,
         field='osImages')
-
-  def AggregateListNetworks(self, project_resource, limit=None):
-    return self.AggregateYieldFromList(
-        self.networks_service,
-        project_resource,
-        self.messages.BaremetalsolutionProjectsLocationsNetworksListRequest,
-        'networks',
-        limit=limit)
 
   def GetNetwork(self, resource):
     request = self.messages.BaremetalsolutionProjectsLocationsNetworksGetRequest(
@@ -573,23 +546,14 @@ class BmsClient(object):
         name=resource.RelativeName())
     return self.nfs_shares_service.Get(request)
 
-  def AggregateListNfsShares(self, project_resource, limit=None):
-    return self.AggregateYieldFromList(
-        self.nfs_shares_service,
-        project_resource,
-        self.messages.BaremetalsolutionProjectsLocationsNfsSharesListRequest,
-        'nfsShares',
-        limit=limit)
-
   def ListNfsShares(self,
-                    location_resource,
+                    parent,
                     limit=None,
                     page_size=None):
-    location = location_resource.RelativeName()
     request = (
         self.messages
         .BaremetalsolutionProjectsLocationsNfsSharesListRequest(
-            parent=location))
+            parent=parent))
     return list_pager.YieldFromList(
         self.nfs_shares_service,
         request,

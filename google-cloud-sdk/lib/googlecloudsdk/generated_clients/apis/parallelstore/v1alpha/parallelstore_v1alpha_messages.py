@@ -53,7 +53,8 @@ class Instance(_messages.Message):
       "_" in a future release.
 
   Fields:
-    accessPoints: Output only. List of access_points
+    accessPoints: Output only. List of access_points. Contains a list of IPv4
+      addresses used for client side configuration.
     capacityGib: Required. Immutable. Storage capacity of Parallelstore
       instance in Gibibytes (GiB).
     createTime: Output only. The time when the instance was created.
@@ -81,7 +82,13 @@ class Instance(_messages.Message):
       "_" in a future release.
     name: Output only. The resource name of the instance, in the format
       `projects/{project}/locations/{location}/instances/{instance_id}`
-    networkConfig: Optional. VPC network to which the instance is connected.
+    network: Optional. Immutable. The name of the Google Compute Engine [VPC
+      network](https://cloud.google.com/vpc/docs/vpc) to which the instance is
+      connected.
+    reservedIpRange: Optional. Immutable. Contains the id of allocated IP
+      address range associated with the private service access connection for
+      example, "test-default" associated with IP range 10.0.0.0/29. If no
+      range id is provided all ranges will be considered.
     state: Output only. The instance state.
     updateTime: Output only. The time when the instance was updated.
   """
@@ -147,16 +154,17 @@ class Instance(_messages.Message):
   description = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  networkConfig = _messages.MessageField('NetworkConfig', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  network = _messages.StringField(8)
+  reservedIpRange = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class ListInstancesResponse(_messages.Message):
   r"""Message for response to listing Instances
 
   Fields:
-    instances: The list of Instance
+    instances: The list of Parallelstore Instances
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -271,22 +279,6 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
-
-
-class NetworkConfig(_messages.Message):
-  r"""Network configuration for the instance.
-
-  Fields:
-    networkName: Optional. Immutable. The name of the Google Compute Engine
-      [VPC network](https://cloud.google.com/vpc/docs/vpc) to which the
-      instance is connected.
-    reservedIpRange: Optional. Immutable. Optional, the name of an allocated
-      IP address range associated with private service access. If no range
-      name is provided all ranges will be considered.
-  """
-
-  networkName = _messages.StringField(1)
-  reservedIpRange = _messages.StringField(2)
 
 
 class Operation(_messages.Message):
@@ -439,8 +431,8 @@ class ParallelstoreProjectsLocationsInstancesCreateRequest(_messages.Message):
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    instanceId: Required. The unique Parallelstore instance identifier in the
-      customer project with the following restrictions: * Must contain only
+    instanceId: Required. The logical name of the Parallelstore instance in
+      the user project with the following restrictions: * Must contain only
       lowercase letters, numbers, and hyphens. * Must start with a letter. *
       Must be between 1-63 characters. * Must end with a number or a letter. *
       Must be unique within the customer project / location

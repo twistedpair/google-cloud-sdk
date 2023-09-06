@@ -115,26 +115,6 @@ class ContainerResource(k8s_object.KubernetesObject):
     """
     return VolumesAsDictionaryWrapper(self.spec.volumes, self._messages.Volume)
 
-  @property
-  def volume_mounts(self):
-    """Returns a mutable, dict-like object to manage volume mounts.
-
-    The returned object can be used like a dictionary, and any modifications to
-    the returned object (i.e. setting and deleting keys) modify the underlying
-    nested volume mounts. There are additional properties on the object
-    (e.g. `.secrets` that can be used to access a mutable dict-like object for
-    a volume mounts that mount volumes of a given type.
-    """
-    return self.container.volume_mounts
-
-  def MountedVolumeJoin(self, subgroup=None):
-    vols = self.volumes
-    mounts = self.volume_mounts
-    if subgroup:
-      vols = getattr(vols, subgroup)
-      mounts = getattr(mounts, subgroup)
-    return {path: vols.get(vol) for path, vol in mounts.items()}
-
 
 class Container(object):
   """Wraps a container message with dict-like wrappers for env_vars, volume_mounts, and resource_limits.
@@ -202,6 +182,14 @@ class Container(object):
 
   def __setattr__(self, name, value):
     setattr(self._m, name, value)
+
+  def MountedVolumeJoin(self, subgroup=None):
+    vols = self._volumes
+    mounts = self.volume_mounts
+    if subgroup:
+      vols = getattr(vols, subgroup)
+      mounts = getattr(mounts, subgroup)
+    return {path: vols.get(vol) for path, vol in mounts.items()}
 
 
 class ContainerSequenceWrapper(collections_abc.MutableSequence):

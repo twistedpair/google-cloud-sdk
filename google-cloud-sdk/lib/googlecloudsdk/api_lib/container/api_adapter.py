@@ -263,7 +263,7 @@ Invalid mode '{mode}' for '--security-posture' (must be one of 'disabled', 'stan
 """
 
 WORKLOAD_VULNERABILITY_SCANNING_MODE_NOT_SUPPORTED = """\
-Invalid mode '{mode}' for '--workload-vulnerability-scanning' (must be one of 'disabled', 'standard').
+Invalid mode '{mode}' for '--workload-vulnerability-scanning' (must be one of 'disabled', 'standard', 'enterprise').
 """
 
 HOST_MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED = """\
@@ -652,6 +652,9 @@ class CreateClusterOptions(object):
       cluster_dns=None,
       cluster_dns_scope=None,
       cluster_dns_domain=None,
+      enable_additive_vpc_scope=None,
+      additive_vpc_scope_dns_domain=None,
+      disable_additive_vpc_scope=None,
       kubernetes_objects_changes_target=None,
       kubernetes_objects_snapshots_target=None,
       enable_gcfs=None,
@@ -695,6 +698,8 @@ class CreateClusterOptions(object):
       enable_fqdn_network_policy=None,
       host_maintenance_interval=None,
       in_transit_encryption=None,
+      containerd_config_from_file=None,
+      resource_manager_tags=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -849,6 +854,9 @@ class CreateClusterOptions(object):
     self.cluster_dns = cluster_dns
     self.cluster_dns_scope = cluster_dns_scope
     self.cluster_dns_domain = cluster_dns_domain
+    self.enable_additive_vpc_scope = enable_additive_vpc_scope
+    self.additive_vpc_scope_dns_domain = additive_vpc_scope_dns_domain
+    self.disable_additive_vpc_scope = disable_additive_vpc_scope
     self.kubernetes_objects_changes_target = kubernetes_objects_changes_target
     self.kubernetes_objects_snapshots_target = kubernetes_objects_snapshots_target
     self.enable_gcfs = enable_gcfs
@@ -896,6 +904,8 @@ class CreateClusterOptions(object):
     self.enable_fqdn_network_policy = enable_fqdn_network_policy
     self.host_maintenance_interval = host_maintenance_interval
     self.in_transit_encryption = in_transit_encryption
+    self.containerd_config_from_file = containerd_config_from_file
+    self.resource_manager_tags = resource_manager_tags
 
 
 class UpdateClusterOptions(object):
@@ -923,6 +933,9 @@ class UpdateClusterOptions(object):
       cluster_dns=None,
       cluster_dns_scope=None,
       cluster_dns_domain=None,
+      enable_additive_vpc_scope=None,
+      disable_additive_vpc_scope=None,
+      additive_vpc_scope_dns_domain=None,
       enable_autoscaling=None,
       min_nodes=None,
       max_nodes=None,
@@ -1031,6 +1044,7 @@ class UpdateClusterOptions(object):
       host_maintenance_interval=None,
       in_transit_encryption=None,
       enable_multi_networking=None,
+      containerd_config_from_file=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1052,6 +1066,9 @@ class UpdateClusterOptions(object):
     self.cluster_dns = cluster_dns
     self.cluster_dns_scope = cluster_dns_scope
     self.cluster_dns_domain = cluster_dns_domain
+    self.enable_additive_vpc_scope = enable_additive_vpc_scope
+    self.disable_additive_vpc_scope = disable_additive_vpc_scope
+    self.additive_vpc_scope_dns_domain = additive_vpc_scope_dns_domain
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
@@ -1163,6 +1180,7 @@ class UpdateClusterOptions(object):
     self.host_maintenance_interval = host_maintenance_interval
     self.in_transit_encryption = in_transit_encryption
     self.enable_multi_networking = enable_multi_networking
+    self.containerd_config_from_file = containerd_config_from_file
 
 
 class SetMasterAuthOptions(object):
@@ -1268,7 +1286,9 @@ class CreateNodePoolOptions(object):
                performance_monitoring_unit=None,
                sole_tenant_node_affinity_file=None,
                host_maintenance_interval=None,
-               enable_insecure_kubelet_readonly_port=None):
+               enable_insecure_kubelet_readonly_port=None,
+               resource_manager_tags=None,
+               containerd_config_from_file=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1351,6 +1371,8 @@ class CreateNodePoolOptions(object):
     self.host_maintenance_interval = host_maintenance_interval
     self.enable_insecure_kubelet_readonly_port = (
         enable_insecure_kubelet_readonly_port)
+    self.resource_manager_tags = resource_manager_tags
+    self.containerd_config_from_file = containerd_config_from_file
 
 
 class UpdateNodePoolOptions(object):
@@ -1391,7 +1413,9 @@ class UpdateNodePoolOptions(object):
                logging_variant=None,
                accelerators=None,
                windows_os_version=None,
-               enable_insecure_kubelet_readonly_port=None):
+               enable_insecure_kubelet_readonly_port=None,
+               resource_manager_tags=None,
+               containerd_config_from_file=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1428,6 +1452,8 @@ class UpdateNodePoolOptions(object):
     self.windows_os_version = windows_os_version
     self.enable_insecure_kubelet_readonly_port = (
         enable_insecure_kubelet_readonly_port)
+    self.resource_manager_tags = resource_manager_tags
+    self.containerd_config_from_file = containerd_config_from_file
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -1461,7 +1487,9 @@ class UpdateNodePoolOptions(object):
             self.enable_fast_socket is not None or
             self.logging_variant is not None or
             self.windows_os_version is not None or
-            self.accelerators is not None)
+            self.accelerators is not None or
+            self.resource_manager_tags is not None or
+            self.containerd_config_from_file is not None)
 
 
 class APIAdapter(object):
@@ -1990,6 +2018,20 @@ class APIAdapter(object):
       cluster.nodePoolDefaults.nodeConfigDefaults.gcfsConfig = (
           self.messages.GcfsConfig(enabled=options.enable_gcfs))
 
+    if options.containerd_config_from_file is not None:
+      if cluster.nodePoolDefaults is None:
+        cluster.nodePoolDefaults = self.messages.NodePoolDefaults()
+      if cluster.nodePoolDefaults.nodeConfigDefaults is None:
+        cluster.nodePoolDefaults.nodeConfigDefaults = (
+            self.messages.NodeConfigDefaults())
+      cluster.nodePoolDefaults.nodeConfigDefaults.containerdConfig = (
+          self.messages.ContainerdConfig())
+      util.LoadContainerdConfigFromYAML(
+          cluster.nodePoolDefaults.nodeConfigDefaults.containerdConfig,
+          options.containerd_config_from_file,
+          self.messages,
+      )
+
     if options.autoprovisioning_network_tags:
       if cluster.nodePoolAutoConfig is None:
         cluster.nodePoolAutoConfig = self.messages.NodePoolAutoConfig()
@@ -2166,6 +2208,10 @@ class APIAdapter(object):
         cluster.securityPostureConfig.vulnerabilityMode = (
             self.messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum.VULNERABILITY_DISABLED
         )
+      elif options.workload_vulnerability_scanning.lower() == 'enterprise':
+        cluster.securityPostureConfig.vulnerabilityMode = (
+            self.messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum.VULNERABILITY_ENTERPRISE
+        )
       else:
         raise util.Error(
             WORKLOAD_VULNERABILITY_SCANNING_MODE_NOT_SUPPORTED.format(
@@ -2266,6 +2312,9 @@ class APIAdapter(object):
     _AddLabelsToNodeConfig(node_config, options)
     _AddMetadataToNodeConfig(node_config, options)
     self._AddNodeTaintsToNodeConfig(node_config, options)
+
+    if options.resource_manager_tags is not None:
+      node_config.resourceManagerTags = self._ResourceManagerTags(options)
 
     if options.preemptible:
       node_config.preemptible = options.preemptible
@@ -2663,7 +2712,7 @@ class APIAdapter(object):
       cluster.masterAuthorizedNetworksConfig.gcpPublicCidrsAccessEnabled = (
           options.enable_google_cloud_access)
 
-  def ParseClusterDNSOptions(self, options):
+  def ParseClusterDNSOptions(self, options, is_update=False):
     """Parses the options for ClusterDNS."""
     if options.cluster_dns is None:
       if options.cluster_dns_scope:
@@ -2674,16 +2723,28 @@ class APIAdapter(object):
         raise util.Error(
             PREREQUISITE_OPTION_ERROR_MSG.format(
                 prerequisite='cluster-dns', opt='cluster-dns-domain'))
+
+    # Check if the request has no flags related to DNS.
+    if (
+        options.cluster_dns is None
+        and options.cluster_dns_scope is None
+        and options.cluster_dns_domain is None
+        and options.enable_additive_vpc_scope is None
+        and (not is_update or options.disable_additive_vpc_scope is None)
+        and options.additive_vpc_scope_dns_domain is None
+    ):
       return
 
     dns_config = self.messages.DNSConfig()
-    provider_enum = self.messages.DNSConfig.ClusterDnsValueValuesEnum
-    if options.cluster_dns.lower() == 'clouddns':
-      dns_config.clusterDns = provider_enum.CLOUD_DNS
-    elif options.cluster_dns.lower() == 'kubedns':
-      dns_config.clusterDns = provider_enum.KUBE_DNS
-    else:  # 'default' or not specified
-      dns_config.clusterDns = provider_enum.PLATFORM_DEFAULT
+
+    if options.cluster_dns is not None:
+      provider_enum = self.messages.DNSConfig.ClusterDnsValueValuesEnum
+      if options.cluster_dns.lower() == 'clouddns':
+        dns_config.clusterDns = provider_enum.CLOUD_DNS
+      elif options.cluster_dns.lower() == 'kubedns':
+        dns_config.clusterDns = provider_enum.KUBE_DNS
+      else:  # 'default' or not specified
+        dns_config.clusterDns = provider_enum.PLATFORM_DEFAULT
 
     if options.cluster_dns_scope is not None:
       scope_enum = self.messages.DNSConfig.ClusterDnsScopeValueValuesEnum
@@ -2694,6 +2755,36 @@ class APIAdapter(object):
 
     if options.cluster_dns_domain is not None:
       dns_config.clusterDnsDomain = options.cluster_dns_domain
+
+    if options.enable_additive_vpc_scope is not None:
+      # Domain must be specified when enabling additive VPC.
+      if not options.additive_vpc_scope_dns_domain:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                opt='enable-additive-vpc-scope',
+                prerequisite='additive-vpc-scope-dns-domain',
+            )
+        )
+      dns_config.enableAdditiveVpcScope = options.enable_additive_vpc_scope
+
+    if options.additive_vpc_scope_dns_domain is not None:
+      # During create only, additive VPC must be enabled when specifying
+      # its domain.
+      if not is_update and not options.enable_additive_vpc_scope:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                opt='additive-vpc-scope-dns-domain',
+                prerequisite='enable-additive-vpc-scope %s',
+            )
+        )
+      dns_config.additiveVpcScopeDnsDomain = (
+          options.additive_vpc_scope_dns_domain
+      )
+
+    if is_update and options.disable_additive_vpc_scope:
+      dns_config.enableAdditiveVpcScope = False
+      dns_config.additiveVpcScopeDnsDomain = ''
+
     return dns_config
 
   def ParseGatewayOptions(self, options):
@@ -3304,7 +3395,7 @@ class APIAdapter(object):
               self.messages, hidden=False).GetEnumForChoice(
                   options.private_ipv6_google_access_type))
 
-    dns_config = self.ParseClusterDNSOptions(options)
+    dns_config = self.ParseClusterDNSOptions(options, is_update=True)
     if dns_config is not None:
       update = self.messages.ClusterUpdate(desiredDnsConfig=dns_config)
 
@@ -3490,6 +3581,10 @@ class APIAdapter(object):
         security_posture_config.vulnerabilityMode = (
             self.messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum.VULNERABILITY_DISABLED
         )
+      elif options.workload_vulnerability_scanning.lower() == 'enterprise':
+        security_posture_config.vulnerabilityMode = (
+            self.messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum.VULNERABILITY_ENTERPRISE
+        )
       else:
         raise util.Error(
             WORKLOAD_VULNERABILITY_SCANNING_MODE_NOT_SUPPORTED.format(
@@ -3554,6 +3649,15 @@ class APIAdapter(object):
     if options.enable_multi_networking is not None:
       update = self.messages.ClusterUpdate(
           desiredEnableMultiNetworking=options.enable_multi_networking)
+
+    if options.containerd_config_from_file is not None:
+      update = self.messages.ClusterUpdate(
+          desiredContainerdConfig=self.messages.ContainerdConfig())
+      util.LoadContainerdConfigFromYAML(
+          update.desiredContainerdConfig,
+          options.containerd_config_from_file,
+          self.messages,
+      )
 
     return update
 
@@ -3762,6 +3866,16 @@ class APIAdapter(object):
           self.messages.NodeTaint(key=key, value=value, effect=effect))
 
     node_config.taints = taints
+
+  def _ResourceManagerTags(self, options):
+    if options.resource_manager_tags is None:
+      return
+    tags = self.messages.ResourceManagerTags.TagsValue()
+    props = []
+    for key, value in six.iteritems(options.resource_manager_tags):
+      props.append(tags.AdditionalProperty(key=key, value=value))
+    tags.additionalProperties = props
+    return self.messages.ResourceManagerTags(tags=tags)
 
   def _AddWorkloadMetadataToNodeConfig(self, node_config, options, messages):
     """Adds WorkLoadMetadata to NodeConfig."""
@@ -3975,6 +4089,9 @@ class APIAdapter(object):
     _AddNodeLabelsToNodeConfig(node_config, options)
     self._AddNodeTaintsToNodeConfig(node_config, options)
 
+    if options.resource_manager_tags is not None:
+      node_config.resourceManagerTags = self._ResourceManagerTags(options)
+
     if options.preemptible:
       node_config.preemptible = options.preemptible
 
@@ -4023,6 +4140,14 @@ class APIAdapter(object):
     if options.host_maintenance_interval:
       node_config.hostMaintenancePolicy = _GetHostMaintenancePolicy(
           options, self.messages)
+
+    if options.containerd_config_from_file is not None:
+      node_config.containerdConfig = self.messages.ContainerdConfig()
+      util.LoadContainerdConfigFromYAML(
+          node_config.containerdConfig,
+          options.containerd_config_from_file,
+          self.messages,
+      )
 
     self._AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
@@ -4326,6 +4451,12 @@ class APIAdapter(object):
             options.enable_insecure_kubelet_readonly_port)
       update_request.linuxNodeConfig = node_config.linuxNodeConfig
       update_request.kubeletConfig = node_config.kubeletConfig
+    elif options.containerd_config_from_file is not None:
+      containerd_config = self.messages.ContainerdConfig()
+      util.LoadContainerdConfigFromYAML(containerd_config,
+                                        options.containerd_config_from_file,
+                                        self.messages)
+      update_request.containerdConfig = containerd_config
     elif options.labels is not None:
       resource_labels = self.messages.ResourceLabels()
       labels = resource_labels.LabelsValue()
@@ -4412,6 +4543,8 @@ class APIAdapter(object):
       else:
         windows_node_config.osVersion = self.messages.WindowsNodeConfig.OsVersionValueValuesEnum.OS_VERSION_LTSC2019
       update_request.windowsNodeConfig = windows_node_config
+    elif options.resource_manager_tags is not None:
+      update_request.resourceManagerTags = self._ResourceManagerTags(options)
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):
@@ -4959,7 +5092,6 @@ class APIAdapter(object):
     if existing_binauthz_config is not None:
       binary_authorization = self.messages.BinaryAuthorization(
           evaluationMode=existing_binauthz_config.evaluationMode,
-          policy=existing_binauthz_config.policy,
           policyBindings=existing_binauthz_config.policyBindings,
       )
     else:
@@ -4991,14 +5123,12 @@ class APIAdapter(object):
         if not BinauthzEvaluationModeRequiresPolicy(
             self.messages, binary_authorization.evaluationMode
         ):
-          binary_authorization.policy = None
           binary_authorization.policyBindings = []
       if binauthz_policy_bindings is not None:
         if len(binauthz_policy_bindings) > 1:
           raise util.Error(
               'Flag --binauthz-policy-bindings can only be specified once.'
           )
-        binary_authorization.policy = None
         binary_authorization.policyBindings = [
             self.messages.PolicyBinding(
                 name=binauthz_policy_bindings[0]['name']

@@ -1039,7 +1039,7 @@ class ConfigMapVolumeChanges(ConfigChanger):
         the new volume (e.g. mount that points to a volume with a secret source
         can't be replaced with a volume that has a config map source).
     """
-    volume_mounts = resource.template.volume_mounts.config_maps
+    volume_mounts = resource.template.container.volume_mounts.config_maps
     volumes = resource.template.volumes.config_maps
 
     _PruneMapping(volume_mounts, self._removes, self._clear_others)

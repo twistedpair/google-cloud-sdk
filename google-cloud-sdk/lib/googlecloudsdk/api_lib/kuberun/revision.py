@@ -46,7 +46,7 @@ class Revision(kubernetesobject.KubernetesObject):
 
   @property
   def resource_limits(self):
-    return self.container.resources.get('limits', {})
+    return self.container.resource_limits
 
   @property
   def creation_timestamp(self):
@@ -67,6 +67,10 @@ class Revision(kubernetesobject.KubernetesObject):
   @property
   def container(self):
     return Container(self.spec.container)
+
+  @property
+  def containers(self):
+    return [Container(c) for c in self.spec.containers]
 
   @property
   def image(self):
@@ -107,7 +111,8 @@ class Revision(kubernetesobject.KubernetesObject):
     if '@' not in self.image:
       return self.image
     user_image = (
-        self.annotations.get(USER_IMAGE_ANNOTATION) or service_user_image)
+        self.annotations.get(USER_IMAGE_ANNOTATION) or service_user_image
+    )
     if not user_image:
       return self.image
     # The image should  be in the format base@sha256:hashhashhash
@@ -129,13 +134,16 @@ class Revision(kubernetesobject.KubernetesObject):
   @property
   def volume_mounts(self):
     if self.container:
-      return VolumeMounts(self.volumes, self.container.volume_mounts)
+      return self.VolumeMountsFor(self.container)
     else:
       return []
 
-  def MountedVolumeJoin(self, subgroup=None):
+  def VolumeMountsFor(self, container):
+    return VolumeMounts(self.volumes, container.volume_mounts)
+
+  def MountedVolumeJoin(self, container, subgroup=None):
+    mounts = self.VolumeMountsFor(container)
     vols = self.volumes
-    mounts = self.volume_mounts
     if subgroup:
       vols = getattr(vols, subgroup)
       mounts = getattr(mounts, subgroup)
@@ -159,7 +167,11 @@ class Spec(structuredout.MapObject):
 
   @property
   def container(self):
-    return self._props['containers'][0]
+    return self.containers[0]
+
+  @property
+  def containers(self):
+    return self._props['containers']
 
   @property
   def concurrency(self):
@@ -183,6 +195,10 @@ class Spec(structuredout.MapObject):
 
 class Container(structuredout.MapObject):
   """Wraps a container resource."""
+
+  @property
+  def name(self):
+    return self._props.get('name')
 
   @property
   def command(self):
@@ -212,11 +228,15 @@ class Container(structuredout.MapObject):
     return self._props.get('resources')
 
   @property
+  def resource_limits(self):
+    return self.resources.get('limits', {})
+
+  @property
   def env(self):
     return EnvVars(self._props.get('env', dict()))
 
 
-class EnvVars():
+class EnvVars:
   """Represents the list of env vars/secrets/config maps.
 
   Provides properties to access the various type of env vars.
@@ -297,7 +317,7 @@ class ContainerPort(structuredout.MapObject):
     return self._props.get('containerPort')
 
 
-class Volumes():
+class Volumes:
   """Represents the volumes in a revision.spec."""
 
   def __init__(self, volumes):
@@ -320,7 +340,7 @@ class Volumes():
     }
 
 
-class VolumeMounts():
+class VolumeMounts:
   """Represents the volume mounts in a revision.spec.container."""
 
   def __init__(self, volumes, volume_mounts):

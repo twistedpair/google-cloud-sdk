@@ -135,6 +135,7 @@ BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
     'enable_serialize_image_pulls': (
         'node_pool_config.kubelet_config.serialize_image_pulls_disabled'
     ),
+    'version': 'bare_metal_version',
 }
 
 BARE_METAL_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS = {

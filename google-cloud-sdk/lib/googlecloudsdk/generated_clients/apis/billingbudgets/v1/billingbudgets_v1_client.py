@@ -152,7 +152,7 @@ class BillingbudgetsV1(base_api.BaseApiClient):
         method_id='billingbudgets.billingAccounts.budgets.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken', 'scope'],
         relative_path='v1/{+parent}/budgets',
         request_field='',
         request_type_name='BillingbudgetsBillingAccountsBudgetsListRequest',

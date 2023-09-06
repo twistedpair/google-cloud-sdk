@@ -233,6 +233,24 @@ class Backup(_messages.Message):
   volumeUsageBytes = _messages.IntegerField(9)
 
 
+class BackupConfig(_messages.Message):
+  r"""BackupConfig contains backup related config on a volume.
+
+  Fields:
+    backupPolicies: Optional. When specified, schedule backups will be created
+      based on the policy configuration.
+    backupVault: Optional. Name of backup vault. Format:
+      projects/{project_id}/locations/{location}/backupVaults/{backup_vault_id
+      }
+    scheduledBackupEnabled: Optional. When set to true, scheduled backup is
+      enabled on the volume.
+  """
+
+  backupPolicies = _messages.StringField(1, repeated=True)
+  backupVault = _messages.StringField(2)
+  scheduledBackupEnabled = _messages.BooleanField(3)
+
+
 class BackupPolicy(_messages.Message):
   r"""Backup Policy.
 
@@ -621,7 +639,7 @@ class ListBackupsResponse(_messages.Message):
 
 
 class ListKmsConfigsResponse(_messages.Message):
-  r"""A ListKmsConfigsResponse object.
+  r"""ListKmsConfigsResponse is the response to a ListKmsConfigsRequest.
 
   Fields:
     kmsConfigs: The list of KmsConfigs
@@ -693,7 +711,7 @@ class ListSnapshotsResponse(_messages.Message):
 
 
 class ListStoragePoolsResponse(_messages.Message):
-  r"""A ListStoragePoolsResponse object.
+  r"""ListStoragePoolsResponse is the response to a ListStoragePoolsRequest.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
@@ -1740,8 +1758,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1763,7 +1781,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1802,9 +1820,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -2011,11 +2029,14 @@ class RestoreParameters(_messages.Message):
   r"""The RestoreParameters if volume is created from a snapshot or backup.
 
   Fields:
+    sourceBackup: Full name of the backup resource. Format: projects/{project}
+      /locations/{location}/backupVaults/{backup_vault_id}/backups/{backup_id}
     sourceSnapshot: Full name of the snapshot resource. Format: projects/{proj
       ect}/locations/{location}/volumes/{volume}/snapshots/{snapshot}
   """
 
-  sourceSnapshot = _messages.StringField(1)
+  sourceBackup = _messages.StringField(1)
+  sourceSnapshot = _messages.StringField(2)
 
 
 class ResumeReplicationRequest(_messages.Message):
@@ -2105,7 +2126,7 @@ class SimpleExportPolicyRule(_messages.Message):
 
 
 class Snapshot(_messages.Message):
-  r"""A Snapshot object.
+  r"""Snapshot is a point-in-time version of a Volume's content.
 
   Enums:
     StateValueValuesEnum: Output only. The snapshot state.
@@ -2512,6 +2533,7 @@ class Volume(_messages.Message):
     EncryptionTypeValueValuesEnum: Output only. Specified the current volume
       encryption key source.
     ProtocolsValueListEntryValuesEnum:
+    RestrictedActionsValueListEntryValuesEnum:
     SecurityStyleValueValuesEnum: Optional. Security Style of the Volume
     ServiceLevelValueValuesEnum: Output only. Service level of the volume
     SmbSettingsValueListEntryValuesEnum:
@@ -2523,6 +2545,7 @@ class Volume(_messages.Message):
   Fields:
     activeDirectory: Output only. Specifies the ActiveDirectory name of a SMB
       volume.
+    backupConfig: BackupConfig of the volume.
     capacityGib: Required. Capacity in GIB of the volume
     createTime: Output only. Create time of the volume
     description: Optional. Description of the volume
@@ -2548,6 +2571,8 @@ class Volume(_messages.Message):
       This is optional. If not provided, any available range will be chosen.
     restoreParameters: Optional. Specifies the source of the volume to be
       created from.
+    restrictedActions: Optional. List of actions that are restricted on this
+      volume.
     securityStyle: Optional. Security Style of the Volume
     serviceLevel: Output only. Service level of the volume
     shareName: Required. Share name of the volume
@@ -2594,6 +2619,16 @@ class Volume(_messages.Message):
     NFSV3 = 1
     NFSV4 = 2
     SMB = 3
+
+  class RestrictedActionsValueListEntryValuesEnum(_messages.Enum):
+    r"""RestrictedActionsValueListEntryValuesEnum enum type.
+
+    Values:
+      RESTRICTED_ACTION_UNSPECIFIED: Unspecified restricted action
+      DELETE: Prevent volume from being deleted when mounted.
+    """
+    RESTRICTED_ACTION_UNSPECIFIED = 0
+    DELETE = 1
 
   class SecurityStyleValueValuesEnum(_messages.Enum):
     r"""Optional. Security Style of the Volume
@@ -2695,34 +2730,36 @@ class Volume(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   activeDirectory = _messages.StringField(1)
-  capacityGib = _messages.IntegerField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 5)
-  exportPolicy = _messages.MessageField('ExportPolicy', 6)
-  hasReplication = _messages.BooleanField(7)
-  kerberosEnabled = _messages.BooleanField(8)
-  kmsConfig = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  ldapEnabled = _messages.BooleanField(11)
-  mountOptions = _messages.MessageField('MountOption', 12, repeated=True)
-  name = _messages.StringField(13)
-  network = _messages.StringField(14)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 15, repeated=True)
-  psaRange = _messages.StringField(16)
-  restoreParameters = _messages.MessageField('RestoreParameters', 17)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 18)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 19)
-  shareName = _messages.StringField(20)
-  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 21, repeated=True)
-  snapReserve = _messages.FloatField(22)
-  snapshotDirectory = _messages.BooleanField(23)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  stateDetails = _messages.StringField(26)
-  storagePool = _messages.StringField(27)
-  unixPermissions = _messages.StringField(28)
-  usedGib = _messages.IntegerField(29)
+  backupConfig = _messages.MessageField('BackupConfig', 2)
+  capacityGib = _messages.IntegerField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 6)
+  exportPolicy = _messages.MessageField('ExportPolicy', 7)
+  hasReplication = _messages.BooleanField(8)
+  kerberosEnabled = _messages.BooleanField(9)
+  kmsConfig = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  ldapEnabled = _messages.BooleanField(12)
+  mountOptions = _messages.MessageField('MountOption', 13, repeated=True)
+  name = _messages.StringField(14)
+  network = _messages.StringField(15)
+  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 16, repeated=True)
+  psaRange = _messages.StringField(17)
+  restoreParameters = _messages.MessageField('RestoreParameters', 18)
+  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 19, repeated=True)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 20)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 21)
+  shareName = _messages.StringField(22)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 23, repeated=True)
+  snapReserve = _messages.FloatField(24)
+  snapshotDirectory = _messages.BooleanField(25)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  stateDetails = _messages.StringField(28)
+  storagePool = _messages.StringField(29)
+  unixPermissions = _messages.StringField(30)
+  usedGib = _messages.IntegerField(31)
 
 
 class WeeklySchedule(_messages.Message):

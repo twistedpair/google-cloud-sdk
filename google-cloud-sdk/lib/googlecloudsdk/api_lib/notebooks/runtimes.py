@@ -179,10 +179,15 @@ def CreateRuntimeDiagnoseRequest(args, messages):
   if args.IsSpecified('enable-packet-capture'):
     diagnostic_config.packetCaptureFlagEnabled = True
   if args.IsSpecified('enable-copy-home-files'):
-    diagnostic_config. copyHomeFilesFlagEnabled = True
+    diagnostic_config.copyHomeFilesFlagEnabled = True
+
+  timeout_minutes = None
+  if args.IsSpecified('timeout_minutes'):
+    timeout_minutes = int(args.timeout_minutes)
+
   return messages.NotebooksProjectsLocationsRuntimesDiagnoseRequest(
       name=runtime, diagnoseRuntimeRequest=messages.DiagnoseRuntimeRequest(
-          diagnosticConfig=diagnostic_config))
+          diagnosticConfig=diagnostic_config, timeoutMinutes=timeout_minutes))
 
 
 def GetRuntimeURI(resource):

@@ -146,6 +146,7 @@ def Argument(d):
   group.is_global = False
   group.is_hidden = False
   group.sort_args = True
+  group.disable_default_heading = False
   return group
 
 

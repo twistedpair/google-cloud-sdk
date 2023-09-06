@@ -121,6 +121,7 @@ class VolumesClient(object):
                         security_style=None,
                         enable_kerberos=None,
                         snapshot=None,
+                        restricted_actions=None,
                         labels=None):
 
     """Parses the command line arguments for Create Volume into a config."""
@@ -140,6 +141,7 @@ class VolumesClient(object):
         security_style=security_style,
         enable_kerberos=enable_kerberos,
         snapshot=snapshot,
+        restricted_actions=restricted_actions,
         labels=labels,
     )
 
@@ -193,7 +195,8 @@ class VolumesClient(object):
                                snapshot_directory=None,
                                security_style=None,
                                enable_kerberos=None,
-                               snapshot=None):
+                               snapshot=None,
+                               restricted_actions=None):
     """Parses updates into a volume config."""
     return self._adapter.ParseUpdatedVolumeConfig(
         volume_config,
@@ -211,7 +214,8 @@ class VolumesClient(object):
         snapshot_directory=snapshot_directory,
         security_style=security_style,
         enable_kerberos=enable_kerberos,
-        snapshot=snapshot)
+        snapshot=snapshot,
+        restricted_actions=restricted_actions)
 
   def UpdateVolume(self, volume_ref, volume_config, update_mask, async_):
     """Updates a Cloud NetApp Volume.
@@ -370,6 +374,7 @@ class VolumesAdapter(object):
       security_style=None,
       enable_kerberos=None,
       snapshot=None,
+      restricted_actions=None,
       labels=None,
   ):
     """Parses the command line arguments for Create Volume into a config.
@@ -390,6 +395,7 @@ class VolumesAdapter(object):
       security_style: the security style of the Volume
       enable_kerberos: Bool on whether to use kerberos for Volume
       snapshot: the snapshot name to create Volume from
+      restricted_actions: the actions to be restricted on a Volume
       labels: the parsed labels value.
 
     Returns:
@@ -417,6 +423,7 @@ class VolumesAdapter(object):
         if snapshot
         else None
     )
+    volume.restrictedActions = restricted_actions
     return volume
 
   def ParseUpdatedVolumeConfig(
@@ -438,6 +445,7 @@ class VolumesAdapter(object):
       enable_kerberos=None,
       active_directory=None,
       snapshot=None,
+      restricted_actions=None,
   ):
     """Parse update information into an updated Volume message."""
     if description is not None:
@@ -474,6 +482,8 @@ class VolumesAdapter(object):
       volume_config.restoreParameters = self.messages.RestoreParameters(
           sourceSnapshot=snapshot
       )
+    if restricted_actions is not None:
+      volume_config.restrictedActions = restricted_actions
     return volume_config
 
 

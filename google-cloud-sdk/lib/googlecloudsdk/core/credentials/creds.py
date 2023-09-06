@@ -53,6 +53,7 @@ ADC_QUOTA_PROJECT_FIELD_NAME = 'quota_project_id'
 
 _REVOKE_URI = 'https://accounts.google.com/o/oauth2/revoke'
 
+# LINT.IfChange(gcloud_credential_type_names)
 UNKNOWN_CREDS_NAME = 'unknown'
 USER_ACCOUNT_CREDS_NAME = 'authorized_user'
 SERVICE_ACCOUNT_CREDS_NAME = 'service_account'
@@ -63,6 +64,7 @@ IMPERSONATED_ACCOUNT_CREDS_NAME = 'impersonated_account'
 EXTERNAL_ACCOUNT_CREDS_NAME = 'external_account'
 EXTERNAL_ACCOUNT_USER_CREDS_NAME = 'external_account_user'
 EXTERNAL_ACCOUNT_AUTHORIZED_USER_CREDS_NAME = 'external_account_authorized_user'
+# LINT.ThenChange(../../../../../cloud/helix/clients/cli/google_auth_credential_loader.py:gcloud_credential_type_names)
 
 
 class Error(exceptions.Error):
@@ -171,6 +173,7 @@ def GetEffectiveTokenUri(cred_json, key='token_uri'):
   return properties.VALUES.auth.DEFAULT_TOKEN_HOST
 
 
+# LINT.IfChange(gcloud_use_self_signed_jwt)
 def UseSelfSignedJwt(creds):
   """Check if self signed jwt should be used.
 
@@ -195,12 +198,15 @@ def UseSelfSignedJwt(creds):
   if not properties.IsDefaultUniverse():
     return True
   return False
+# LINT.ThenChange(../../../../../cloud/helix/clients/cli/google_auth_credential_loader.py:gcloud_use_self_signed_jwt)
 
 
+# LINT.IfChange(gcloud_enable_self_signed_jwt_if_applicable)
 def EnableSelfSignedJwtIfApplicable(creds):
   if UseSelfSignedJwt(creds):
     creds._always_use_jwt_access = True  # pylint: disable=protected-access
     creds._create_self_signed_jwt(None)  # pylint: disable=protected-access
+# LINT.ThenChange(../../../../../cloud/helix/clients/cli/google_auth_credential_loader.py:gcloud_enable_self_signed_jwt_if_applicable)
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -773,6 +779,7 @@ class CredentialType(enum.Enum):
 class CredentialTypeGoogleAuth(enum.Enum):
   """Enum of google-auth credential types managed by gcloud."""
 
+  # LINT.IfChange(gcloud_credential_types)
   UNKNOWN = (0, UNKNOWN_CREDS_NAME, False, False)
   USER_ACCOUNT = (1, USER_ACCOUNT_CREDS_NAME, True, True)
   SERVICE_ACCOUNT = (2, SERVICE_ACCOUNT_CREDS_NAME, True, False)
@@ -793,6 +800,7 @@ class CredentialTypeGoogleAuth(enum.Enum):
   # with these credentials.
   EXTERNAL_ACCOUNT_AUTHORIZED_USER = (
       9, EXTERNAL_ACCOUNT_AUTHORIZED_USER_CREDS_NAME, True, True)
+  # LINT.ThenChange(../../../../../cloud/helix/clients/cli/google_auth_credential_loader.py:gcloud_credential_types)
 
   def __init__(self, type_id, key, is_serializable, is_user):
     """Builds a credentials type instance given the credentials information.
@@ -899,6 +907,7 @@ def ToJson(credentials):
                     indent=2, separators=(',', ': '))
 
 
+# LINT.IfChange(gcloud_credential_to_json_google_auth)
 def ToJsonGoogleAuth(credentials):
   """Given google-auth credentials, return library independent json for it."""
   creds_type = CredentialTypeGoogleAuth.FromCredentials(credentials)
@@ -962,6 +971,7 @@ def ToJsonGoogleAuth(credentials):
             creds_type.key))
   return json.dumps(
       creds_dict, sort_keys=True, indent=2, separators=(',', ': '))
+# LINT.ThenChange(../../../../../cloud/helix/clients/cli/google_auth_credential_loader.py:gcloud_credential_from_json_google_auth)
 
 
 def SerializeCredsGoogleAuth(credentials):

@@ -64,35 +64,45 @@ class RevisionPrinter(cp.CustomPrinterBase):
     rev = revision.Revision(record)
     fmt = cp.Lines([
         k8s_object_printer.FormatHeader(rev),
-        k8s_object_printer.FormatLabels(rev.labels), ' ',
+        k8s_object_printer.FormatLabels(rev.labels),
+        ' ',
         self.TransformSpec(rev),
-        k8s_object_printer.FormatReadyMessage(rev)
+        k8s_object_printer.FormatReadyMessage(rev),
     ])
     return fmt
 
-  def _GetUserEnvironmentVariables(self, record):
-    return cp.Mapped(k8s_object_printer.OrderByKey(record.env_vars.literals))
+  def _GetUserEnvironmentVariables(self, container):
+    return cp.Mapped(k8s_object_printer.OrderByKey(container.env.literals))
 
-  def _GetSecrets(self, record):
+  def _GetSecrets(self, record, container):
     secrets = {}
     secrets.update(
-        {k: FormatSecretKeyRef(v) for k, v in record.env_vars.secrets.items()})
-    secrets.update({
-        k: FormatSecretVolumeSource(v)
-        for k, v in record.MountedVolumeJoin('secrets').items()
-    })
+        {k: FormatSecretKeyRef(v) for k, v in container.env.secrets.items()}
+    )
+    secrets.update(
+        {
+            k: FormatSecretVolumeSource(v)
+            for k, v in record.MountedVolumeJoin(container, 'secrets').items()
+        }
+    )
     return cp.Mapped(k8s_object_printer.OrderByKey(secrets))
 
-  def _GetConfigMaps(self, record):
+  def _GetConfigMaps(self, record, container):
     config_maps = {}
-    config_maps.update({
-        k: FormatConfigMapKeyRef(v)
-        for k, v in record.env_vars.config_maps.items()
-    })
-    config_maps.update({
-        k: FormatConfigMapVolumeSource(v)
-        for k, v in record.MountedVolumeJoin('config_maps').items()
-    })
+    config_maps.update(
+        {
+            k: FormatConfigMapKeyRef(v)
+            for k, v in container.env.config_maps.items()
+        }
+    )
+    config_maps.update(
+        {
+            k: FormatConfigMapVolumeSource(v)
+            for k, v in record.MountedVolumeJoin(
+                container, 'config_maps'
+            ).items()
+        }
+    )
     return cp.Mapped(k8s_object_printer.OrderByKey(config_maps))
 
   def _GetTimeout(self, record):
@@ -115,34 +125,57 @@ class RevisionPrinter(cp.CustomPrinterBase):
       return record.annotations.get(revision.MAX_SCALE_ANNOTATION, '')
     return None
 
-  def TransformSpec(self, record):
-    limits = collections.defaultdict(str, record.resource_limits)
+  def GetContainer(self, record, container):
+    limits = collections.defaultdict(str, container.resource_limits)
     return cp.Labeled([
-        ('Image', record.UserImage()),
-        ('Command', ' '.join(record.container.command)),
-        ('Args', ' '.join(record.container.args)),
-        ('Port', ' '.join(
-            six.text_type(p.containerPort) for p in record.container.ports)),
+        ('Image', container.image),
+        ('Command', ' '.join(container.command)),
+        ('Args', ' '.join(container.args)),
+        (
+            'Port',
+            ' '.join(six.text_type(p.containerPort) for p in container.ports),
+        ),
         ('Memory', limits['memory']),
         ('CPU', limits['cpu']),
         ('GPU', limits[revision.NVIDIA_GPU_RESOURCE]),
-        ('Service account', record.spec.serviceAccountName),
-        ('Env vars', self._GetUserEnvironmentVariables(record)),
-        ('Secrets', self._GetSecrets(record)),
-        ('Config Maps', self._GetConfigMaps(record)),
-        ('Concurrency', record.concurrency),
-        ('Initial Instances', self._GetInitInstances(record)),
-        ('Min Instances', self._GetMinInstances(record)),
-        ('Max Instances', self._GetMaxInstances(record)),
-        ('Timeout', self._GetTimeout(record)),
+        ('Env vars', self._GetUserEnvironmentVariables(container)),
+        ('Secrets', self._GetSecrets(record, container)),
+        ('Config Maps', self._GetConfigMaps(record, container)),
+    ])
+
+  def GetContainers(self, record):
+    def Containers():
+      for container in record.containers:
+        if container.name:
+          key = 'Container {name}'.format(name=container.name)
+        else:
+          key = 'Container'
+        value = self.GetContainer(record, container)
+        yield (key, value)
+
+    return cp.Mapped(Containers())
+
+  def TransformSpec(self, record):
+    return cp.Lines([
+        self.GetContainers(record),
+        cp.Labeled([
+            ('Service account', record.spec.serviceAccountName),
+            ('Concurrency', record.concurrency),
+            ('Initial Instances', self._GetInitInstances(record)),
+            ('Min Instances', self._GetMinInstances(record)),
+            ('Max Instances', self._GetMaxInstances(record)),
+            ('Timeout', self._GetTimeout(record)),
+        ]),
     ])
 
 
 def Active(record):
   """Returns True/False/None indicating the active status of the resource."""
   active_cond = [
-      x for x in record.get(kubernetes_consts.FIELD_STATUS, {}).get(
-          kubernetes_consts.FIELD_CONDITIONS, [])
+      x
+      for x in record.get(kubernetes_consts.FIELD_STATUS, {}).get(
+          kubernetes_consts.FIELD_CONDITIONS, []
+      )
       if x[kubernetes_consts.FIELD_TYPE] == kubernetes_consts.VAL_ACTIVE
   ]
   if active_cond:

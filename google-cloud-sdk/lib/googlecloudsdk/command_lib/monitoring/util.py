@@ -722,12 +722,82 @@ def ConvertPrometheusTimeStringToEvaluationDurationInSeconds(time_string):
     )
   elif seconds % 30 != 0:
     raise ValueError(
-        '{time_string} converted to {seconds}s is not a multiple of 30.'.format(
-            time_string=time_string,
-            seconds=seconds,
+        '{} converted to {}s is not a multiple of 30 seconds.'.format(
+            time_string, seconds,
         )
     )
   return _FormatDuration(seconds)
+
+
+# Regular expressions for matching common Prometheus templating language
+# constructs.
+_VALUE_VARIABLE_REGEXP = re.compile(r'\{\{ *(humanize )? *\$value *\}\}')
+_LABELS_VARIABLE_REGEXP = re.compile(r'\{\{ *(humanize )? *\$labels *\}\}')
+_LABELS_KEY_REGEXP = re.compile(
+    r'\{\{ *(humanize )? *\$labels\.([a-zA-Z_][a-zA-Z0-9_]*) *\}\}')
+
+
+def TranslatePromQLTemplateToDocumentVariables(template):
+  """Translate Prometheus templating language constructs to document variables.
+
+  TranslatePromQLTemplateToDocumentVariables translates common Prometheus
+  templating language constructs to their equivalent Cloud Alerting document
+  variables. See:
+  https://prometheus.io/docs/prometheus/latest/configuration/template_reference/
+  and https://cloud.google.com/monitoring/alerts/doc-variables.
+
+  Only the following constructs will be translated:
+
+  "{{ $value }}" will be translated to "${metric.label.value}".
+  "{{ humanize $value }}" will be translated to "${metric.label.value}".
+  "{{ $labels.<name> }}" will be translated to
+  "${metric_or_resource.label.<name>}".
+  "{{ humanize $labels.<name> }}" will be translated to
+  "${metric_or_resource.label.<name>}".
+  "{{ $labels }}" will be translated to
+  "${metric_or_resource.labels}".
+  "{{ humanize $labels }}" will be translated to
+  "${metric_or_resource.labels}".
+
+  The number of spaces inside the curly braces is immaterial.
+
+  All other Prometheus templating language constructs are not translated.
+
+  Notes:
+  1. A document variable reference that does not match a variable
+     will be rendered as "(none)".
+  2. We do not know whether a {{ $labels.<name> }} construct refers to
+     a Cloud Alerting metric or a resource label. Thus we translate it to
+     "${metric_or_resource.label.<name>}".
+     Note that a reference to a non-existent label will be rendered as "(none)".
+
+  Examples:
+  1. "[{{$labels.a}}] VALUE = {{ $value }}" will be translated to
+     "[${metric_or_resource.label.a}] VALUE = ${metric.label.value}".
+
+  2. "[{{humanize $labels.a}}] VALUE = {{ humanize $value }}"
+     will be translated to
+     "[${metric_or_resource.label.a}] VALUE = ${metric.label.value}".
+
+  Args:
+    template: String contents of the "subject" or "content" fields of an
+    AlertPolicy protoco buffer. The contents of these fields is a template
+    which may contain Prometheus templating language constructs.
+
+  Returns:
+    The translated template.
+  """
+  return _LABELS_KEY_REGEXP.sub(
+      r'${metric_or_resource.label.\2}',
+      _LABELS_VARIABLE_REGEXP.sub(
+          r'${metric_or_resource.labels}',
+          _VALUE_VARIABLE_REGEXP.sub(
+              r'${metric.label.value}', template)))
+
+
+# A regular expression matching a valid Prometheus label name.
+# See: https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels
+_VALID_LABEL_REGEXP = re.compile(r'[A-Za-z_][A-Za-z0-9_]*')
 
 
 def BuildPrometheusCondition(messages, group, rule):
@@ -741,6 +811,7 @@ def BuildPrometheusCondition(messages, group, rule):
   Raises:
     MissingRequiredFieldError: If the provided group/rule is missing an required
     field needed for translation.
+    ValueError: If the provided rule name is not a valid Prometheus label name.
 
   Returns:
      The Alert Policy condition corresponding to the Prometheus group and rule
@@ -751,14 +822,21 @@ def BuildPrometheusCondition(messages, group, rule):
       messages.PrometheusQueryLanguageCondition()
   )
   if group.get('name') is None:
-    raise MissingRequiredFieldError('Supplied rules file is missing group.name')
+    raise MissingRequiredFieldError(
+        'Missing rule group name in field group.name'
+    )
   if rule.get('alert') is None:
     raise MissingRequiredFieldError(
-        'Supplied rules file is missing group.rules.alert'
+        'Missing alert rule name in field group.rules.alert'
+    )
+  if _VALID_LABEL_REGEXP.fullmatch(rule.get('alert')) is None:
+    raise ValueError(
+        'An invalid alert rule name in field group.rules.alert '
+        '(not a valid PromQL label name)'
     )
   if rule.get('expr') is None:
     raise MissingRequiredFieldError(
-        'Supplied rules file is missing groups.rules.expr'
+        'Missing a PromQL expression in field groups.rules.expr'
     )
   condition.conditionPrometheusQueryLanguage.ruleGroup = group.get('name')
   condition.displayName = rule.get('alert')
@@ -803,13 +881,22 @@ def PrometheusMessageFromString(rule_yaml, messages, channels):
     YamlOrJsonLoadError: If the YAML file cannot be loaded.
 
   Returns:
-     The Alert Policies corresponding to the Prometheus rules YAML file
-     provided.
+     A list of the Alert Policies corresponding to the Prometheus rules YAML
+     file provided.
   """
   try:
     contents = yaml.load(rule_yaml)
+    if contents is None:
+      raise ValueError('Failed to load YAML file. Is it empty?')
+
     policies = []
+    if contents.get('groups') is None:
+      raise ValueError('No groups')
+
     for group in contents.get('groups'):
+      if group.get('rules') is None:
+        raise ValueError('No rules in group "%s"' % group.get('name'))
+
       for rule in group.get('rules'):
         condition = BuildPrometheusCondition(messages, group, rule)
         policy = messages.AlertPolicy()
@@ -817,23 +904,35 @@ def PrometheusMessageFromString(rule_yaml, messages, channels):
         if rule.get('annotations') is not None:
           policy.documentation = messages.Documentation()
           if rule.get('annotations').get('subject') is not None:
-            policy.documentation.subject = rule.get('annotations').get(
-                'subject'
-            )
+            policy.documentation.subject = (
+                TranslatePromQLTemplateToDocumentVariables(
+                    rule.get('annotations').get('subject')))
           if rule.get('annotations').get('description') is not None:
-            policy.documentation.content = rule.get('annotations').get(
-                'description'
-            )
+            policy.documentation.content = (
+                TranslatePromQLTemplateToDocumentVariables(
+                    rule.get('annotations').get('description')))
           policy.documentation.mimeType = 'text/markdown'
-        policy.displayName = '{0}/{1}'.format(
-            group.get('name'), rule.get('alert')
-        )
+
+        if _VALID_LABEL_REGEXP.fullmatch(group.get('name')) is not None:
+          # The rule group name is a valid Prometheus label name.
+          policy.displayName = '{0}/{1}'.format(
+              group.get('name'), rule.get('alert')
+          )
+        else:
+          # The rule group name is NOT a valid Prometheus label name.
+          policy.displayName = '"{0}"/{1}'.format(
+              group.get('name'), rule.get('alert')
+          )
+
         policy.combiner = arg_utils.ChoiceToEnum(
             'OR', policy.CombinerValueValuesEnum, item_type='combiner'
         )
+
         if channels is not None:
           policy.notificationChannels = channels
+
         policies.append(policy)
+
     return policies
   except Exception as exc:  # pylint: disable=broad-except
     raise YamlOrJsonLoadError('Could not parse YAML: {0}'.format(exc))

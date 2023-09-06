@@ -201,6 +201,10 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsDeleteRequest(_messag
       deletions through optimistic concurrency control. If the provided ETag
       does not match the current etag of the node pool, the request will fail
       and an ABORTED error will be returned.
+    ignoreErrors: Optional. If set to true, the deletion of AwsNodePool
+      resource will succeed even if errors occur during deleting in node pool
+      resources. Using this parameter may result in orphaned resources in the
+      node pool.
     name: Required. The resource name the AwsNodePool to delete. `AwsNodePool`
       names are formatted as
       `projects//locations//awsClusters//awsNodePools/`. See [Resource
@@ -212,8 +216,9 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsDeleteRequest(_messag
 
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
+  ignoreErrors = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
 
 
 class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsGetRequest(_messages.Message):
@@ -330,6 +335,10 @@ class GkemulticloudProjectsLocationsAwsClustersDeleteRequest(_messages.Message):
       deletions through optimistic concurrency control. If the provided etag
       does not match the current etag of the cluster, the request will fail
       and an ABORTED error will be returned.
+    ignoreErrors: Optional. If set to true, the deletion of AwsCluster
+      resource will succeed even if errors occur during deleting in cluster
+      resources. Using this parameter may result in orphaned resources in the
+      cluster.
     name: Required. The resource name the AwsCluster to delete. `AwsCluster`
       names are formatted as `projects//locations//awsClusters/`. See
       [Resource Names](https://cloud.google.com/apis/design/resource_names)
@@ -340,8 +349,9 @@ class GkemulticloudProjectsLocationsAwsClustersDeleteRequest(_messages.Message):
 
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
+  ignoreErrors = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
 
 
 class GkemulticloudProjectsLocationsAwsClustersGenerateAwsAccessTokenRequest(_messages.Message):
@@ -853,11 +863,16 @@ class GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestReques
     platformVersion: Required. The platform version for the cluster (e.g.
       `1.19.0-gke.1000`). You can list all supported versions on a given
       Google Cloud region by calling GetAttachedServerConfig.
+    proxyConfig_kubernetesSecret_name: Name of the kubernetes secret.
+    proxyConfig_kubernetesSecret_namespace: Namespace in which the kubernetes
+      secret is stored.
   """
 
   attachedClusterId = _messages.StringField(1)
   parent = _messages.StringField(2, required=True)
   platformVersion = _messages.StringField(3)
+  proxyConfig_kubernetesSecret_name = _messages.StringField(4)
+  proxyConfig_kubernetesSecret_namespace = _messages.StringField(5)
 
 
 class GkemulticloudProjectsLocationsGetAttachedServerConfigRequest(_messages.Message):
@@ -1003,6 +1018,7 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
     platformVersion: Required. The platform version for the cluster (e.g.
       `1.19.0-gke.1000`). You can list all supported versions on a given
       Google Cloud region by calling GetAttachedServerConfig.
+    proxyConfig: Optional. Proxy configuration for outbound HTTP(S) traffic.
     reconciling: Output only. If set, there are currently changes in flight to
       the cluster.
     state: Output only. The current state of the cluster.
@@ -1084,11 +1100,12 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
   name = _messages.StringField(14)
   oidcConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedOidcConfig', 15)
   platformVersion = _messages.StringField(16)
-  reconciling = _messages.BooleanField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 21)
+  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedProxyConfig', 17)
+  reconciling = _messages.BooleanField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 22)
 
 
 class GoogleCloudGkemulticloudV1AttachedClusterError(_messages.Message):
@@ -1175,6 +1192,18 @@ class GoogleCloudGkemulticloudV1AttachedPlatformVersionInfo(_messages.Message):
   """
 
   version = _messages.StringField(1)
+
+
+class GoogleCloudGkemulticloudV1AttachedProxyConfig(_messages.Message):
+  r"""Details of a proxy config.
+
+  Fields:
+    kubernetesSecret: The Kubernetes Secret resource that contains the HTTP(S)
+      proxy configuration. The secret must be a JSON encoded proxy
+      configuration as described in
+  """
+
+  kubernetesSecret = _messages.MessageField('GoogleCloudGkemulticloudV1KubernetesSecret', 1)
 
 
 class GoogleCloudGkemulticloudV1AttachedServerConfig(_messages.Message):
@@ -1783,6 +1812,8 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
     state: Output only. The lifecycle state of the node pool.
     subnetId: Required. The subnet where the node pool node run.
     uid: Output only. A globally unique identifier for the node pool.
+    updateSettings: Optional. Update settings control the speed and disruption
+      of the update.
     updateTime: Output only. The time at which this node pool was last
       updated.
     version: Required. The Kubernetes version to run on this node pool (e.g.
@@ -1859,8 +1890,9 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 11)
   subnetId = _messages.StringField(12)
   uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  version = _messages.StringField(15)
+  updateSettings = _messages.MessageField('GoogleCloudGkemulticloudV1UpdateSettings', 14)
+  updateTime = _messages.StringField(15)
+  version = _messages.StringField(16)
 
 
 class GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling(_messages.Message):
@@ -3016,6 +3048,18 @@ class GoogleCloudGkemulticloudV1Jwk(_messages.Message):
   y = _messages.StringField(9)
 
 
+class GoogleCloudGkemulticloudV1KubernetesSecret(_messages.Message):
+  r"""Information about a Kubernetes Secret
+
+  Fields:
+    name: Name of the kubernetes secret.
+    namespace: Namespace in which the kubernetes secret is stored.
+  """
+
+  name = _messages.StringField(1)
+  namespace = _messages.StringField(2)
+
+
 class GoogleCloudGkemulticloudV1ListAttachedClustersResponse(_messages.Message):
   r"""Response message for `AttachedClusters.ListAttachedClusters` method.
 
@@ -3263,6 +3307,48 @@ class GoogleCloudGkemulticloudV1SpotConfig(_messages.Message):
   """
 
   instanceTypes = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudGkemulticloudV1SurgeSettings(_messages.Message):
+  r"""SurgeSettings contains the parameters for Surge update.
+
+  Fields:
+    maxSurge: Optional. The maximum number of nodes that can be created beyond
+      the current size of the node pool during the update process.
+    maxUnavailable: Optional. The maximum number of nodes that can be
+      simultaneously unavailable during the update process. A node is
+      considered unavailable if its status is not Ready.
+  """
+
+  maxSurge = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxUnavailable = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudGkemulticloudV1UpdateSettings(_messages.Message):
+  r"""UpdateSettings control the level of parallelism and the level of
+  disruption caused during the update of a node pool. These settings are
+  applicable when the node pool update requires replacing the existing node
+  pool nodes with the updated ones. UpdateSettings are optional. When
+  UpdateSettings are not specified during the node pool creation, a default is
+  chosen based on the parent cluster's version. For clusters with minor
+  version 1.27 and later, a default surge_settings configuration with
+  max_surge = 1 and max_unavailable = 0 is used. For clusters with older
+  versions, node pool updates use the traditional rolling update mechanism of
+  updating one node at a time in a "terminate before create" fashion and
+  update_settings is not applicable. Set the surge_settings parameter to use
+  the Surge Update mechanism for the rolling update of node pool nodes. 1.
+  max_surge controls the number of additional nodes that can be created beyond
+  the current size of the node pool temporarily for the time of the update to
+  increase the number of available nodes. 2. max_unavailable controls the
+  number of nodes that can be simultaneously unavailable during the update. 3.
+  (max_surge + max_unavailable) determines the level of parallelism (i.e., the
+  number of nodes being updated at the same time).
+
+  Fields:
+    surgeSettings: Optional. Settings for surge update.
+  """
+
+  surgeSettings = _messages.MessageField('GoogleCloudGkemulticloudV1SurgeSettings', 1)
 
 
 class GoogleCloudGkemulticloudV1WorkloadIdentityConfig(_messages.Message):

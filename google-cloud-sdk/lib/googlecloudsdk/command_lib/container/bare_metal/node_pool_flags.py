@@ -318,3 +318,18 @@ def AddValidationOnly(parser: parser_arguments.ArgumentInterceptor):
           ' operation.'
       ),
   )
+
+
+def AddNodePoolVersion(parser: parser_arguments.ArgumentInterceptor):
+  """Adds a flag for node pool version field.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--version',
+      help=(
+          'Anthos version for the node pool. Defaults to the user cluster'
+          ' version.'
+      ),
+  )

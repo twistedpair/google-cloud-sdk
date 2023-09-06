@@ -6424,6 +6424,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetSecurityPolicy(self, request, global_params=None):
+      r"""Sets the Google Cloud Armor security policy for the specified instance. For more information, see Google Cloud Armor Overview.
+
+      Args:
+        request: (ComputeInstancesSetSecurityPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSecurityPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSecurityPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.setSecurityPolicy',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/setSecurityPolicy',
+        request_field='instancesSetSecurityPolicyRequest',
+        request_type_name='ComputeInstancesSetSecurityPolicyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetServiceAccount(self, request, global_params=None):
       r"""Sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.
 
@@ -11061,6 +11087,32 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='regionSetPolicyRequest',
         request_type_name='ComputeRegionBackendServicesSetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetSecurityPolicy(self, request, global_params=None):
+      r"""Sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview.
+
+      Args:
+        request: (ComputeRegionBackendServicesSetSecurityPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSecurityPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSecurityPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionBackendServices.setSecurityPolicy',
+        ordered_params=['project', 'region', 'backendService'],
+        path_params=['backendService', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/backendServices/{backendService}/setSecurityPolicy',
+        request_field='securityPolicyReference',
+        request_type_name='ComputeRegionBackendServicesSetSecurityPolicyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -17862,6 +17914,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetSecurityPolicy(self, request, global_params=None):
+      r"""Sets the Google Cloud Armor security policy for the specified target instance. For more information, see Google Cloud Armor Overview.
+
+      Args:
+        request: (ComputeTargetInstancesSetSecurityPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSecurityPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSecurityPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.targetInstances.setSecurityPolicy',
+        ordered_params=['project', 'zone', 'targetInstance'],
+        path_params=['project', 'targetInstance', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/targetInstances/{targetInstance}/setSecurityPolicy',
+        request_field='securityPolicyReference',
+        request_type_name='ComputeTargetInstancesSetSecurityPolicyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class TargetPoolsService(base_api.BaseApiService):
     """Service class for the targetPools resource."""
 
@@ -18154,6 +18232,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/targetPools/{targetPool}/setBackup',
         request_field='targetReference',
         request_type_name='ComputeTargetPoolsSetBackupRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetSecurityPolicy(self, request, global_params=None):
+      r"""Sets the Google Cloud Armor security policy for the specified target pool. For more information, see Google Cloud Armor Overview.
+
+      Args:
+        request: (ComputeTargetPoolsSetSecurityPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSecurityPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSecurityPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.targetPools.setSecurityPolicy',
+        ordered_params=['project', 'region', 'targetPool'],
+        path_params=['project', 'region', 'targetPool'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetPools/{targetPool}/setSecurityPolicy',
+        request_field='securityPolicyReference',
+        request_type_name='ComputeTargetPoolsSetSecurityPolicyRequest',
         response_type_name='Operation',
         supports_download=False,
     )

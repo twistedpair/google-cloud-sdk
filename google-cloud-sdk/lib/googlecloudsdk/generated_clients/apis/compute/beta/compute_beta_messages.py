@@ -6296,6 +6296,7 @@ class Commitment(_messages.Message):
       COMPUTE_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED_C2D: <no description>
       COMPUTE_OPTIMIZED_C3: <no description>
+      COMPUTE_OPTIMIZED_C3D: <no description>
       COMPUTE_OPTIMIZED_H3: <no description>
       GENERAL_PURPOSE: <no description>
       GENERAL_PURPOSE_E2: <no description>
@@ -6312,16 +6313,17 @@ class Commitment(_messages.Message):
     COMPUTE_OPTIMIZED = 2
     COMPUTE_OPTIMIZED_C2D = 3
     COMPUTE_OPTIMIZED_C3 = 4
-    COMPUTE_OPTIMIZED_H3 = 5
-    GENERAL_PURPOSE = 6
-    GENERAL_PURPOSE_E2 = 7
-    GENERAL_PURPOSE_N2 = 8
-    GENERAL_PURPOSE_N2D = 9
-    GENERAL_PURPOSE_T2D = 10
-    GRAPHICS_OPTIMIZED = 11
-    MEMORY_OPTIMIZED = 12
-    MEMORY_OPTIMIZED_M3 = 13
-    TYPE_UNSPECIFIED = 14
+    COMPUTE_OPTIMIZED_C3D = 5
+    COMPUTE_OPTIMIZED_H3 = 6
+    GENERAL_PURPOSE = 7
+    GENERAL_PURPOSE_E2 = 8
+    GENERAL_PURPOSE_N2 = 9
+    GENERAL_PURPOSE_N2D = 10
+    GENERAL_PURPOSE_T2D = 11
+    GRAPHICS_OPTIMIZED = 12
+    MEMORY_OPTIMIZED = 13
+    MEMORY_OPTIMIZED_M3 = 14
+    TYPE_UNSPECIFIED = 15
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -42559,6 +42561,9 @@ class InstanceGroupManager(_messages.Message):
       a get() request to retrieve an InstanceGroupManager.
     id: [Output Only] A unique identifier for this resource type. The server
       generates this identifier.
+    instanceFlexibilityPolicy: Instance flexibility allowing MIG to create VMs
+      from multiple types of machines. Instance flexibility configuration on
+      MIG overrides instance template configuration.
     instanceGroup: [Output Only] The URL of the Instance Group resource.
     instanceLifecyclePolicy: The repair policy for this managed instance
       group.
@@ -42643,23 +42648,24 @@ class InstanceGroupManager(_messages.Message):
   failoverAction = _messages.EnumField('FailoverActionValueValuesEnum', 8)
   fingerprint = _messages.BytesField(9)
   id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  instanceGroup = _messages.StringField(11)
-  instanceLifecyclePolicy = _messages.MessageField('InstanceGroupManagerInstanceLifecyclePolicy', 12)
-  instanceTemplate = _messages.StringField(13)
-  kind = _messages.StringField(14, default='compute#instanceGroupManager')
-  listManagedInstancesResults = _messages.EnumField('ListManagedInstancesResultsValueValuesEnum', 15)
-  name = _messages.StringField(16)
-  namedPorts = _messages.MessageField('NamedPort', 17, repeated=True)
-  region = _messages.StringField(18)
-  selfLink = _messages.StringField(19)
-  serviceAccount = _messages.StringField(20)
-  statefulPolicy = _messages.MessageField('StatefulPolicy', 21)
-  status = _messages.MessageField('InstanceGroupManagerStatus', 22)
-  targetPools = _messages.StringField(23, repeated=True)
-  targetSize = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 25)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 26, repeated=True)
-  zone = _messages.StringField(27)
+  instanceFlexibilityPolicy = _messages.MessageField('InstanceGroupManagerInstanceFlexibilityPolicy', 11)
+  instanceGroup = _messages.StringField(12)
+  instanceLifecyclePolicy = _messages.MessageField('InstanceGroupManagerInstanceLifecyclePolicy', 13)
+  instanceTemplate = _messages.StringField(14)
+  kind = _messages.StringField(15, default='compute#instanceGroupManager')
+  listManagedInstancesResults = _messages.EnumField('ListManagedInstancesResultsValueValuesEnum', 16)
+  name = _messages.StringField(17)
+  namedPorts = _messages.MessageField('NamedPort', 18, repeated=True)
+  region = _messages.StringField(19)
+  selfLink = _messages.StringField(20)
+  serviceAccount = _messages.StringField(21)
+  statefulPolicy = _messages.MessageField('StatefulPolicy', 22)
+  status = _messages.MessageField('InstanceGroupManagerStatus', 23)
+  targetPools = _messages.StringField(24, repeated=True)
+  targetSize = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 26)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 27, repeated=True)
+  zone = _messages.StringField(28)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -42949,6 +42955,66 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
 
   healthCheck = _messages.StringField(1)
   initialDelaySec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class InstanceGroupManagerInstanceFlexibilityPolicy(_messages.Message):
+  r"""A InstanceGroupManagerInstanceFlexibilityPolicy object.
+
+  Messages:
+    InstanceSelectionListsValue: List of instance selection options that the
+      group will use when creating new VMs.
+
+  Fields:
+    instanceSelectionLists: List of instance selection options that the group
+      will use when creating new VMs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InstanceSelectionListsValue(_messages.Message):
+    r"""List of instance selection options that the group will use when
+    creating new VMs.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        InstanceSelectionListsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        InstanceSelectionListsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InstanceSelectionListsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A
+          InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  instanceSelectionLists = _messages.MessageField('InstanceSelectionListsValue', 1)
+
+
+class InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection(_messages.Message):
+  r"""A InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection object.
+
+  Fields:
+    machineTypes: Full machine-type names, e.g. "n1-standard-16".
+    rank: Preference of this instance selection. Lower number means higher
+      preference. MIG will first try to create a VM based on the machine-type
+      with lowest rank and fallback to next rank based on availability.
+      Machine types and instance selections with the same rank have the same
+      preference.
+  """
+
+  machineTypes = _messages.StringField(1, repeated=True)
+  rank = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
@@ -62913,13 +62979,18 @@ class ReservationAffinity(_messages.Message):
         reservation, but still consume any reservation available if the
         specified reservation is not available or exhausted. Must specify key
         value fields for specifying the reservations.
+      SPECIFIC_THEN_NO_RESERVATION: Prefer to consume from a specific
+        reservation, but still consume from the on-demand pool if the
+        specified reservation is exhausted. Must specify key value fields for
+        specifying the reservations.
       UNSPECIFIED: <no description>
     """
     ANY_RESERVATION = 0
     NO_RESERVATION = 1
     SPECIFIC_RESERVATION = 2
     SPECIFIC_THEN_ANY_RESERVATION = 3
-    UNSPECIFIED = 4
+    SPECIFIC_THEN_NO_RESERVATION = 4
+    UNSPECIFIED = 5
 
   consumeReservationType = _messages.EnumField('ConsumeReservationTypeValueValuesEnum', 1)
   key = _messages.StringField(2)
@@ -63942,6 +64013,8 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
       they are not in the same low latency network.
     collocation: Specifies network collocation
     maxDistance: Specifies the number of max logical switches.
+    sliceCount: Specifies the number of slices in a multislice workload.
+    tpuTopology: Specifies the shape of the TPU slice
     vmCount: Number of VMs in this placement group. Google does not recommend
       that you use this field unless you use a compact policy and you want
       your policy to work only if it contains this exact number of VMs.
@@ -63960,7 +64033,9 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
   availabilityDomainCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   collocation = _messages.EnumField('CollocationValueValuesEnum', 2)
   maxDistance = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  vmCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  sliceCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  tpuTopology = _messages.StringField(5)
+  vmCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class ResourcePolicyHourlyCycle(_messages.Message):
@@ -70439,14 +70514,17 @@ class SourceInstanceProperties(_messages.Message):
 
 
 class SslCertificate(_messages.Message):
-  r"""Represents an SSL Certificate resource. Google Compute Engine has two
-  SSL Certificate resources: *
+  r"""Represents an SSL certificate resource. Google Compute Engine has two
+  SSL certificate resources: *
   [Global](/compute/docs/reference/rest/beta/sslCertificates) *
   [Regional](/compute/docs/reference/rest/beta/regionSslCertificates) The
-  sslCertificates are used by: - external HTTPS load balancers - SSL proxy
-  load balancers The regionSslCertificates are used by internal HTTPS load
-  balancers. Optionally, certificate file contents that you upload can contain
-  a set of up to five PEM-encoded certificates. The API call creates an object
+  global SSL certificates (sslCertificates) are used by: - Global external
+  Application Load Balancers - Classic Application Load Balancers - Proxy
+  Network Load Balancers (with target SSL proxies) The regional SSL
+  certificates (regionSslCertificates) are used by: - Regional external
+  Application Load Balancers - Regional internal Application Load Balancers
+  Optionally, certificate file contents that you upload can contain a set of
+  up to five PEM-encoded certificates. The API call creates an object
   (sslCertificate) that holds this data. You can use SSL keys and certificates
   to secure connections to a load balancer. For more information, read
   Creating and using SSL certificates, SSL certificates quotas and limits, and
@@ -72436,7 +72514,7 @@ class Subnetwork(_messages.Message):
     set to REGIONAL_MANAGED_PROXY.
 
     Values:
-      GLOBAL_MANAGED_PROXY: Subnet reserved for Global Internal HTTP(S) Load
+      GLOBAL_MANAGED_PROXY: Subnet reserved for Global Envoy-based Load
         Balancing.
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
         Balancing.
@@ -72445,8 +72523,8 @@ class Subnetwork(_messages.Message):
       PRIVATE_RFC_1918: Regular user created or automatically created subnet.
       PRIVATE_SERVICE_CONNECT: Subnetworks created for Private Service Connect
         in the producer network.
-      REGIONAL_MANAGED_PROXY: Subnetwork used for Regional Internal/External
-        HTTP(S) Load Balancing.
+      REGIONAL_MANAGED_PROXY: Subnetwork used for Regional Envoy-based Load
+        Balancing.
     """
     GLOBAL_MANAGED_PROXY = 0
     INTERNAL_HTTPS_LOAD_BALANCER = 1
@@ -73729,11 +73807,13 @@ class TargetHttpProxy(_messages.Message):
   [Global](/compute/docs/reference/rest/beta/targetHttpProxies) *
   [Regional](/compute/docs/reference/rest/beta/regionTargetHttpProxies) A
   target HTTP proxy is a component of GCP HTTP load balancers. *
-  targetHttpProxies are used by external HTTP load balancers and Traffic
-  Director. * regionTargetHttpProxies are used by internal HTTP load
-  balancers. Forwarding rules reference a target HTTP proxy, and the target
-  proxy then references a URL map. For more information, read Using Target
-  Proxies and Forwarding rule concepts.
+  targetHttpProxies are used by global external Application Load Balancers,
+  classic Application Load Balancers, cross-region internal Application Load
+  Balancers, and Traffic Director. * regionTargetHttpProxies are used by
+  regional internal Application Load Balancers and regional external
+  Application Load Balancers. Forwarding rules reference a target HTTP proxy,
+  and the target proxy then references a URL map. For more information, read
+  Using Target Proxies and Forwarding rule concepts.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -73763,10 +73843,10 @@ class TargetHttpProxy(_messages.Message):
     httpKeepAliveTimeoutSec: Specifies how long to keep a connection open,
       after completing a response, while there is no matching traffic (in
       seconds). If an HTTP keep-alive is not specified, a default value (610
-      seconds) will be used. For Global external HTTP(S) load balancer, the
-      minimum allowed value is 5 seconds and the maximum allowed value is 1200
-      seconds. For Global external HTTP(S) load balancer (classic), this
-      option is not available publicly.
+      seconds) will be used. For global external Application Load Balancers,
+      the minimum allowed value is 5 seconds and the maximum allowed value is
+      1200 seconds. For classic Application Load Balancers, this option is not
+      supported.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#targetHttpProxy for
@@ -74374,11 +74454,13 @@ class TargetHttpsProxy(_messages.Message):
   [Global](/compute/docs/reference/rest/beta/targetHttpsProxies) *
   [Regional](/compute/docs/reference/rest/beta/regionTargetHttpsProxies) A
   target HTTPS proxy is a component of GCP HTTPS load balancers. *
-  targetHttpsProxies are used by external HTTPS load balancers. *
-  regionTargetHttpsProxies are used by internal HTTPS load balancers.
-  Forwarding rules reference a target HTTPS proxy, and the target proxy then
-  references a URL map. For more information, read Using Target Proxies and
-  Forwarding rule concepts.
+  targetHttpProxies are used by global external Application Load Balancers,
+  classic Application Load Balancers, cross-region internal Application Load
+  Balancers, and Traffic Director. * regionTargetHttpProxies are used by
+  regional internal Application Load Balancers and regional external
+  Application Load Balancers. Forwarding rules reference a target HTTPS proxy,
+  and the target proxy then references a URL map. For more information, read
+  Using Target Proxies and Forwarding rule concepts.
 
   Enums:
     QuicOverrideValueValuesEnum: Specifies the QUIC override policy for this
@@ -74433,10 +74515,10 @@ class TargetHttpsProxy(_messages.Message):
     httpKeepAliveTimeoutSec: Specifies how long to keep a connection open,
       after completing a response, while there is no matching traffic (in
       seconds). If an HTTP keep-alive is not specified, a default value (610
-      seconds) will be used. For Global external HTTP(S) load balancer, the
-      minimum allowed value is 5 seconds and the maximum allowed value is 1200
-      seconds. For Global external HTTP(S) load balancer (classic), this
-      option is not available publicly.
+      seconds) will be used. For global external Application Load Balancers,
+      the minimum allowed value is 5 seconds and the maximum allowed value is
+      1200 seconds. For classic Application Load Balancers, this option is not
+      supported.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#targetHttpsProxy for
@@ -78671,7 +78753,7 @@ class UsableSubnetwork(_messages.Message):
     set to REGIONAL_MANAGED_PROXY.
 
     Values:
-      GLOBAL_MANAGED_PROXY: Subnet reserved for Global Internal HTTP(S) Load
+      GLOBAL_MANAGED_PROXY: Subnet reserved for Global Envoy-based Load
         Balancing.
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
         Balancing.
@@ -78680,8 +78762,8 @@ class UsableSubnetwork(_messages.Message):
       PRIVATE_RFC_1918: Regular user created or automatically created subnet.
       PRIVATE_SERVICE_CONNECT: Subnetworks created for Private Service Connect
         in the producer network.
-      REGIONAL_MANAGED_PROXY: Subnetwork used for Regional Internal/External
-        HTTP(S) Load Balancing.
+      REGIONAL_MANAGED_PROXY: Subnetwork used for Regional Envoy-based Load
+        Balancing.
     """
     GLOBAL_MANAGED_PROXY = 0
     INTERNAL_HTTPS_LOAD_BALANCER = 1

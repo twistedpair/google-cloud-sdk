@@ -660,3 +660,10 @@ def GetSnappedTarget(release_obj, target_id):
       break
 
   return target_obj
+
+
+def GetSkaffoldSupportState(release_obj):
+  # NOMUTANTS
+  if release_obj.condition and release_obj.condition.skaffoldSupportedCondition:
+    return release_obj.condition.skaffoldSupportedCondition.skaffoldSupportState
+  return None

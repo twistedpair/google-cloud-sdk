@@ -40,6 +40,7 @@ spec:
     syncWait: 15
     syncRev: HEAD
     gcpServiceAccountEmail:
+    metricsGcpServiceAccountEmail:
   policyController:
     enabled: false
     referentialRulesEnabled: false

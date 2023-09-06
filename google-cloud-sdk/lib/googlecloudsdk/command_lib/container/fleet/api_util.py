@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import re
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.fleet import gkehub_api_util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import waiter
@@ -129,8 +130,7 @@ def UpdateMembership(name,
       request.membership.authority.oidcJwks = oidc_jwks.encode('utf-8')
     else:
       # If oidc_jwks is None, unset membership.oidc_jwks, and let the API
-      # determine when that's an error, not the client, to avoid problems
-      # like cl/339713504 fixed (see unsetting membership.authority, below).
+      # determine when that's an error, not the client.
       request.membership.authority.oidcJwks = None
   else:  # if issuer_url is None, unset membership.authority to disable WI.
     request.membership.authority = None
@@ -500,15 +500,30 @@ def ListMembershipsFull(filter_cluster_missing=False):
     A list of locations which were unreachable.
   """
   client = core_apis.GetClientInstance('gkehub', 'v1beta1')
-  response = client.projects_locations_memberships.List(
-      client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsListRequest(
-          parent=hub_base.HubCommand.LocationResourceName(location='-')))
+  req = client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsListRequest(
+      parent=hub_base.HubCommand.LocationResourceName(location='-')
+  )
+
+  unreachable = set()
+  def _GetFieldFunc(message, attribute):
+    unreachable.update(message.unreachable)
+    return getattr(message, attribute)
+
+  result = list_pager.YieldFromList(
+      client.projects_locations_memberships,
+      req,
+      field='resources',
+      batch_size_attribute=None,
+      get_field_func=_GetFieldFunc,
+  )
 
   if filter_cluster_missing:
-    return [
-        m.name for m in response.resources if not _ClusterMissing(m.endpoint)
-    ], response.unreachable
-  return [m.name for m in response.resources], response.unreachable
+    memberships = [
+        m.name for m in result if not _ClusterMissing(m.endpoint)
+    ]
+  else:
+    memberships = [m.name for m in result]
+  return memberships, list(unreachable)
 
 
 def _ClusterMissing(m):

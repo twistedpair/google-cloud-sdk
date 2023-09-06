@@ -397,6 +397,10 @@ def AddDiagnosticConfigFlags(parser, vm_type):
       default=False,
       help=('Enables flag to copy all `/home/jupyter` folder contents'),
       required=False)
+  parser.add_argument(
+      '--timeout-minutes',
+      help=('Maximum amount of time in minutes before the operation times out'),
+      required=False)
 
 
 def AddCreateInstanceFlags(api_version, parser):

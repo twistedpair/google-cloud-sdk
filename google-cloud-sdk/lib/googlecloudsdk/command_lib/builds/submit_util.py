@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import hashlib
 import os
+import re
 import uuid
 
 from apitools.base.py import encoding
@@ -355,6 +356,8 @@ def SetSource(
     no_source,
     source,
     gcs_source_staging_dir,
+    arg_dir,
+    arg_revision,
     arg_git_source_dir,
     arg_git_source_revision,
     ignore_file,
@@ -395,6 +398,18 @@ def SetSource(
               url=source,
               dir=arg_git_source_dir,
               revision=arg_git_source_revision,
+          )
+      )
+      return build_config
+
+    if re.match(
+        r'projects/.*/locations/.*/connections/.*/repositories/.*', source
+    ):
+      build_config.source = messages.Source(
+          connectedRepository=messages.ConnectedRepository(
+              repository=source,
+              dir=arg_dir,
+              revision=arg_revision,
           )
       )
       return build_config
@@ -665,6 +680,8 @@ def CreateBuildConfig(
     arg_machine_type,
     arg_disk_size,
     arg_worker_pool,
+    arg_dir,
+    arg_revision,
     arg_git_source_dir,
     arg_git_source_revision,
     buildpack,
@@ -696,6 +713,8 @@ def CreateBuildConfig(
         no_source,
         source,
         gcs_source_staging_dir,
+        arg_dir,
+        arg_revision,
         arg_git_source_dir,
         arg_git_source_revision,
         ignore_file,
@@ -729,6 +748,8 @@ def CreateBuildConfigAlpha(
     arg_memory,
     arg_vcpu_count,
     arg_worker_pool,
+    arg_dir,
+    arg_revision,
     arg_git_source_dir,
     arg_git_source_revision,
     buildpack,
@@ -760,6 +781,8 @@ def CreateBuildConfigAlpha(
         no_source,
         source,
         gcs_source_staging_dir,
+        arg_dir,
+        arg_revision,
         arg_git_source_dir,
         arg_git_source_revision,
         ignore_file,

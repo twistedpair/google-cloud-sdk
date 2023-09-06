@@ -1160,10 +1160,12 @@ class ArgList(usage_text.ArgTypeUsage, ArgType):
     else:
       return '{0}{1}...{1}[...]'.format(metavar, delim_char)
 
-  def GetUsageHelpText(self):
+  def GetUsageExample(self, shorthand):
+    del shorthand  # Unused arguments
     return None
 
-  def GetUsageExample(self):
+  def GetUsageHelpText(self, field_name, required, flag_name=None):
+    del field_name, required, flag_name  # Unused arguments
     return None
 
 
@@ -1217,6 +1219,7 @@ class ArgDict(ArgList):
     if spec and value_type:
       raise ValueError('cannot have both spec and sub_type')
     self.key_type = key_type
+    self.value_type = value_type
     self.spec = spec
     self.allow_key_only = allow_key_only
     self.required_keys = required_keys or []
@@ -1329,10 +1332,47 @@ class ArgDict(ArgList):
     msg = '[' + '],['.join(msg_list) + ']'
     return msg
 
-  def GetUsageHelpText(self):
-    return None
+  def GetUsageExample(self, shorthand):
+    """Returns a string of usage examples.
 
-  def GetUsageExample(self):
+    Generates an example of expected user input.
+    For example, an ArgDict with spec={'x': int, 'y': str} will generate
+
+      x=int,y=string
+
+    An ArgDict with key_type=str and value_type=str will generate
+
+      string=string
+
+    Args:
+      shorthand: unused bool, whether to display in shorthand (ArgDict is
+        always parsed as shorthand)
+
+    Returns:
+      str, example text of usage
+    """
+    del shorthand  # Unused arguments
+
+    if self.spec:
+      return ','.join(
+          usage_text.GetNestedKeyValueExample(key, value, shorthand=True)
+          for key, value in sorted(self.spec.items()))
+
+    # keys are parsed as string by default in ArgDict
+    # However, values can be None if allow_key_only
+    if self.allow_key_only:
+      value_type = self.value_type
+    else:
+      value_type = self.value_type or str
+
+    return usage_text.GetNestedKeyValueExample(
+        key_type=self.key_type or str,
+        value_type=value_type,
+        shorthand=True
+    )
+
+  def GetUsageHelpText(self, field_name, required, flag_name=None):
+    del field_name, required, flag_name  # Unused arguments
     return None
 
 
@@ -1392,7 +1432,7 @@ class ArgObject(ArgDict):
 
   IV. If we need to create nested objects, set value_type to another ArgObject
   type. ArgDict syntax is automatically disabled for the nested ArgObject type
-  with enable_arg_dict=False
+  with enable_shorthand=False
 
   For example, with the following flag defintion:
 
@@ -1401,7 +1441,7 @@ class ArgObject(ArgDict):
         type=arg_parsers.ArgObject(
             key_type=str,
             value_type=arg_parsers.ArgObject(
-                key_type=str, value_type=int, enable_arg_dict=False)))
+                key_type=str, value_type=int, enable_shorthand=False)))
 
   a caller can retrieve {"foo": {"bar": 1}} by specifying any
   of the following on the command line.
@@ -1411,18 +1451,27 @@ class ArgObject(ArgDict):
     (3) --inputs=path_to_json.(json|yaml)
   """
 
+  def _DisableShorthand(self, arg_type):
+    if isinstance(arg_type, ArgObject) and arg_type.enable_shorthand:
+      arg_type.enable_shorthand = False
+
   def __init__(self, key_type=None, value_type=None, spec=None,
-               required_keys=None, repeated=False, enable_arg_dict=True):
+               required_keys=None, help_text=None, repeated=False,
+               enable_shorthand=True):
     # Disable arg_dict syntax for nested values
-    if isinstance(value_type, ArgObject) and value_type._enable_arg_dict:
-      value_type._enable_arg_dict = False
+    if value_type:
+      self._DisableShorthand(value_type)
+    elif spec:
+      for value in spec.values():
+        self._DisableShorthand(value)
 
     super(ArgObject, self).__init__(
         key_type=key_type, value_type=value_type, spec=spec,
         required_keys=required_keys, includes_json=True)
+    self.help_text = help_text
     self.repeated = repeated
     self._keyed_values = key_type is not None or spec is not None
-    self._enable_arg_dict = enable_arg_dict
+    self.enable_shorthand = enable_shorthand
 
     if self.required_keys and not self._keyed_values:
       raise InvalidTypeError(
@@ -1431,8 +1480,8 @@ class ArgObject(ArgDict):
           'provided to the ArgObject type.'.format(self.required_keys))
 
   @property
-  def enable_arg_dict(self):
-    return self._enable_arg_dict and self._keyed_values
+  def parse_as_arg_dict(self):
+    return self.enable_shorthand and self._keyed_values
 
   def _Map(self, arg_value, callback):
     """Applies callback for arg_value.
@@ -1527,7 +1576,7 @@ class ArgObject(ArgDict):
 
     ops = self.operators.keys()
     arg_dict_pattern = '({})'.format('|'.join(ops))
-    if re.search(arg_dict_pattern, arg_value) and self.enable_arg_dict:
+    if re.search(arg_dict_pattern, arg_value) and self.parse_as_arg_dict:
       # parse as arg_dict
       value = super(ArgObject, self).__call__(arg_value)
     else:
@@ -1545,13 +1594,123 @@ class ArgObject(ArgDict):
       return super(ArgObject, self).GetUsageMetavar(is_custom_metavar, metavar)
     return metavar
 
-  def GetUsageExample(self):
-    # TODO(b/294248333): Implement UsageExample for ArgObject
-    return None
+  def GetUsageExample(self, shorthand):
+    """Returns a string of usage examples.
 
-  def GetUsageHelpText(self):
-    # TODO(b/294248333): Implement minimal help text required for ArgObject
-    return None
+    Recursively generates an example of expected user input.
+    For example, an ArgObject with spec={'x': int, 'y': str} will generate...
+
+      x=int,y=string (shorthand) and
+      {"x": int, "y": "string"} (non-shorthand)
+
+    An ArgObject with key_type=str and value_type=str will generate...
+
+      string=string (shorthand) and
+      {"string": "string"} (non-shorthand)
+
+    Args:
+      shorthand: bool, whether to display in shorthand
+
+    Returns:
+      str, example text of usage
+    """
+    shorthand_enabled = shorthand and self.enable_shorthand
+    is_json_obj = not shorthand_enabled and self._keyed_values
+    is_array = not shorthand_enabled and self.repeated
+
+    if self.spec:
+      comma = ',' if shorthand_enabled else ', '
+      usage = comma.join(
+          usage_text.GetNestedKeyValueExample(key, value, shorthand_enabled)
+          for key, value in sorted(self.spec.items()))
+    else:
+      # Keys can be None but values are parsed as string
+      # by default in ArgObject
+      usage = usage_text.GetNestedKeyValueExample(
+          self.key_type, self.value_type or str, shorthand_enabled)
+
+    if is_json_obj:
+      usage = '{' + usage + '}'
+    if is_array:
+      usage = '[' + usage + ']'
+
+    return usage
+
+  def _GetCodeExamples(self, flag_name):
+    """Returns a string of user input examples."""
+    shorthand_example = usage_text.FormatCodeSnippet(
+        arg_name=flag_name,
+        arg_value=self.GetUsageExample(shorthand=True),
+        append=self.repeated)
+
+    json_example = usage_text.FormatCodeSnippet(
+        arg_name=flag_name, arg_value=self.GetUsageExample(shorthand=False))
+
+    file_example = usage_text.FormatCodeSnippet(
+        arg_name=flag_name, arg_value='path_to_file.(yaml|json)')
+
+    return ('*Shorthand Example:*\n\n{}\n\n'
+            '*JSON Example:*\n\n{}\n\n'
+            '*File Example:*\n\n{}').format(
+                shorthand_example, json_example, file_example)
+
+  def GetUsageHelpText(self, field_name, required, flag_name=None):
+    """Returns a string of usage help text.
+
+    Recursively generates usage help text to provide the user with
+    more information on valid flag values and the general schema.
+    For example, ArgObject with...
+
+      spec={
+          'x': int,
+          'y': arg_parsers.ArgObject(help_text='Y help.', spec={'z': str}),
+      }
+
+    will generate the following by default...
+
+      ```
+      *x*
+        Sets `z` value.
+
+      *y*
+        Y help.
+
+        *z*
+          Sets `z` value.
+      ```
+
+    Args:
+      field_name: str | None, field the flag of this type is setting
+      required: bool, whether the flag of this type is required
+      flag_name: str | None, the name of the flag. If not none, will generate
+        code examples.
+
+    Returns:
+      str, help text with schema and examples
+    """
+    result = []
+    result.append(usage_text.FormatHelpText(
+        field_name, required, help_text=self.help_text))
+
+    if self.spec:
+      items = (
+          usage_text.GetNestedUsageHelpText(key, val, key in self.required_keys)
+          for key, val in sorted(self.spec.items()))
+      result.extend(items)
+
+    elif self.key_type:
+      # Keys can be None but values are parsed as string
+      # by default in ArgObject
+      result.append(
+          usage_text.GetNestedUsageHelpText('KEY', self.key_type))
+      result.append(
+          usage_text.GetNestedUsageHelpText('VALUE', self.value_type or str))
+
+    if flag_name:
+      # Reset indentation back to root level
+      result.append(usage_text.ASCII_INDENT + self._GetCodeExamples(flag_name))
+
+    return '\n\n'.join(result)
 
 
 class UpdateAction(argparse.Action):

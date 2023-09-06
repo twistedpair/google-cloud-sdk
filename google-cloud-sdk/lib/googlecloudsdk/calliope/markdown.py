@@ -619,7 +619,9 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     if arg.help or arg.is_mutex or arg.is_required:
       if arg.help:
         heading.append(arg.help)
-      if len(args) == 1 or args[0].is_required:
+      if arg.disable_default_heading:
+        pass
+      elif len(args) == 1 or args[0].is_required:
         if arg.is_required:
           heading.append('This must be specified.')
       elif arg.is_mutex:

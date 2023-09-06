@@ -33,12 +33,14 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import arg_parsers_usage_text
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import parser_arguments
+from googlecloudsdk.calliope.concepts import util as format_util
 import six
 
 LINE_WIDTH = 80
 HELP_INDENT = 25
 # Used to offset second-line indentation of arg choices in markdown.
 _CHOICE_OFFSET = 3
+_ARG_DETAILS_OFFSET = 1
 
 
 class HelpInfo(object):
@@ -338,6 +340,20 @@ def GetArgDetails(arg, depth=0):
             metavar=metavar,
             one_of=one_of,
             choices=', '.join(['*{0}*'.format(x) for x in choices])))
+
+  arg_type = getattr(arg, 'type', None)
+  if isinstance(arg_type, arg_parsers_usage_text.ArgTypeUsage):
+    arg_name = arg.option_strings[0] if arg.option_strings else None
+    field_name = arg_name and format_util.NamespaceFormat(arg_name)
+    type_help_text = arg.type.GetUsageHelpText(
+        field_name=field_name,
+        required=arg.is_required,
+        flag_name=arg_name)
+    if type_help_text:
+      extra_help.append(
+          arg_parsers_usage_text.IndentAsciiDoc(
+              type_help_text, depth + _ARG_DETAILS_OFFSET)
+      )
 
   if extra_help:
     help_message = help_message.rstrip()

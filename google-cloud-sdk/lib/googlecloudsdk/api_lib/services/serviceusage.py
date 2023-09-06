@@ -39,6 +39,8 @@ _PROJECT_SERVICE_RESOURCE = 'projects/%s/services/%s'
 _FOLDER_SERVICE_RESOURCE = 'folders/%s/services/%s'
 _ORG_SERVICE_RESOURCE = 'organizations/%s/services/%s'
 _SERVICE_RESOURCE = 'services/%s'
+# TODO(b/274633761) Switch to '/groups/dependencies' after b/292271220 is done.
+_DEPENDENCY_GROUP = '/groups/suv1-dependencies'
 _REVERSE_CLOSURE = '/reverseClosure'
 _CONSUMER_SERVICE_RESOURCE = '%s/services/%s'
 _CONSUMER_POLICY_DEFAULT = '/consumerPolicies/default'
@@ -177,6 +179,155 @@ def GetReverseClosure(resource, service):
     )
 
 
+def ListFlattenedMembers(resource, service_group):
+  """Make API call to list flattened members of a specific service group.
+
+  Args:
+    resource: The target resource.
+    service_group: Service group which owns this collection of flattened
+      members, for example,
+      'services/compute.googleapis.com/groups/suv1-dependencies'.
+
+  Raises:
+    exceptions.ListFlattenedMembersPermissionDeniedException: when listing
+      flattened members fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Flattened members in the given service group.
+  """
+  client = _GetClientInstance('v2')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageServicesGroupsFlattenedMembersListRequest(
+      parent=resource + '/' + service_group
+  )
+
+  try:
+    return client.services_groups_flattenedMembers.List(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.ListFlattenedMembersPermissionDeniedException
+    )
+
+
+def ListGroupMembers(resource, service_group):
+  """Make API call to list group members of a specific service group.
+
+  Args:
+    resource: The target resource.
+    service_group: Service group which owns a collection of group members, for
+      example, 'services/compute.googleapis.com/groups/suv1-dependencies'.
+
+  Raises:
+    exceptions.ListGroupMembersPermissionDeniedException: when listing
+      group members fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Group members in the given service group.
+  """
+  client = _GetClientInstance('v2')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageServicesGroupsMembersListRequest(
+      parent=resource + '/' + service_group
+  )
+
+  try:
+    return client.services_groups_members.List(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.ListGroupMembersPermissionDeniedException
+    )
+
+
+def AddEnableRule(services, project, folder=None, organization=None):
+  """Make API call to enable a specific service.
+
+  Args:
+    services: The identifier of the service to enable, for example
+      'serviceusage.googleapis.com'.
+    project: The project for which to enable the service.
+    folder: The folder for which to enable the service.
+    organization: The organization for which to enable the service.
+
+  Raises:
+    exceptions.EnableServicePermissionDeniedException: when enabling API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The result of the operation
+  """
+  client = _GetClientInstance('v2')
+  messages = client.MESSAGES_MODULE
+
+  resource_name = _PROJECT_RESOURCE % project
+
+  if folder:
+    resource_name = _FOLDER_RESOURCE % folder
+
+  if organization:
+    resource_name = _ORGANIZATION_RESOURCE % organization
+
+  policy_name = resource_name + _CONSUMER_POLICY_DEFAULT
+
+  try:
+    policy = GetConsumerPolicy(policy_name)
+
+    services_to_enabled = set()
+
+    for service in services:
+      services_to_enabled.add(_SERVICE_RESOURCE % service)
+      list_flatterned_members = ListFlattenedMembers(
+          resource_name, _SERVICE_RESOURCE % service + _DEPENDENCY_GROUP
+      )
+      for member in list_flatterned_members.flattenedMembers:
+        services_to_enabled.add(member.name)
+
+    if policy.enableRules:
+      policy.enableRules[0].values.extend(list(services_to_enabled))
+    else:
+      policy.enableRules.append(
+          messages.EnableRule(values=list(services_to_enabled))
+      )
+
+    return UpdateConsumerPolicy(policy, policy_name)
+  except (
+      exceptions.GetConsumerPolicyPermissionDeniedException,
+      exceptions.UpdateConsumerPolicyPermissionDeniedException,
+      exceptions.ListFlattenedMembersPermissionDeniedException,
+  ):
+    try:
+      values = []
+      for service in services:
+        values.append(_SERVICE_RESOURCE % service + _DEPENDENCY_GROUP)
+      add_enable_request = (
+          messages.ServiceusageConsumerPoliciesAddEnableRulesRequest(
+              parent=policy_name,
+              addEnableRulesRequest=messages.AddEnableRulesRequest(
+                  values=values,
+                  flattenGroups=True,
+              ),
+          )
+      )
+
+      return client.consumerPolicies.AddEnableRules(request=add_enable_request)
+    except (
+        apitools_exceptions.HttpForbiddenError,
+        apitools_exceptions.HttpNotFoundError,
+    ) as e:
+      exceptions.ReraiseError(
+          e, exceptions.EnableServicePermissionDeniedException
+      )
+
+
 def RemoveEnableRule(
     project, service, force=False, folder=None, organization=None
 ):
@@ -203,8 +354,6 @@ def RemoveEnableRule(
   client = _GetClientInstance('v2')
   messages = client.MESSAGES_MODULE
 
-  # TODO(b/274633761): ADD --project,--folder, --orgnaization as mutually
-  # exclusive flags so only one resource is accepted.
   resource_name = _PROJECT_RESOURCE % project
 
   if folder:

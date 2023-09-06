@@ -318,7 +318,8 @@ class FilestoreClient(object):
                                  instance_config,
                                  description=None,
                                  labels=None,
-                                 file_share=None):
+                                 file_share=None,
+                                 clear_nfs_export_options=False):
     """Parses updates into an instance config.
 
     Args:
@@ -326,6 +327,7 @@ class FilestoreClient(object):
       description: str, a new description, if any.
       labels: LabelsValue message, the new labels value, if any.
       file_share: dict representing a new file share config, if any.
+      clear_nfs_export_options: bool, whether to clear the NFS export options.
 
     Raises:
       InvalidCapacityError, if an invalid capacity value is provided.
@@ -338,7 +340,8 @@ class FilestoreClient(object):
         instance_config,
         description=description,
         labels=labels,
-        file_share=file_share)
+        file_share=file_share,
+        clear_nfs_export_options=clear_nfs_export_options)
     return instance
 
   def UpdateInstance(self, instance_ref, instance_config, update_mask, async_):
@@ -384,10 +387,16 @@ class FilestoreClient(object):
     if nfs_export_options is None:
       return []
     for nfs_export_option in nfs_export_options:
-      access_mode = messages.NfsExportOptions.AccessModeValueValuesEnum.lookup_by_name(
-          nfs_export_option.get('access-mode', read_write))
-      squash_mode = messages.NfsExportOptions.SquashModeValueValuesEnum.lookup_by_name(
-          nfs_export_option.get('squash-mode', no_root_squash))
+      access_mode = (
+          messages.NfsExportOptions.AccessModeValueValuesEnum.lookup_by_name(
+              nfs_export_option.get('access-mode', read_write)
+          )
+      )
+      squash_mode = (
+          messages.NfsExportOptions.SquashModeValueValuesEnum.lookup_by_name(
+              nfs_export_option.get('squash-mode', no_root_squash)
+          )
+      )
       if nfs_export_option.get('squash-mode', None) == root_squash:
         anon_uid = nfs_export_option.get('anon_uid', anonimous_uid)
         anon_gid = nfs_export_option.get('anon_gid', anonimous_gid)
@@ -430,10 +439,16 @@ class FilestoreClient(object):
     if nfs_export_options is None:
       return []
     for nfs_export_option in nfs_export_options:
-      access_mode = messages.NfsExportOptions.AccessModeValueValuesEnum.lookup_by_name(
-          nfs_export_option.get('access-mode', read_write))
-      squash_mode = messages.NfsExportOptions.SquashModeValueValuesEnum.lookup_by_name(
-          nfs_export_option.get('squash-mode', no_root_squash))
+      access_mode = (
+          messages.NfsExportOptions.AccessModeValueValuesEnum.lookup_by_name(
+              nfs_export_option.get('access-mode', read_write)
+          )
+      )
+      squash_mode = (
+          messages.NfsExportOptions.SquashModeValueValuesEnum.lookup_by_name(
+              nfs_export_option.get('squash-mode', no_root_squash)
+          )
+      )
       if nfs_export_option.get('squash-mode', None) == root_squash:
         anon_uid = nfs_export_option.get('anon_uid', anonimous_uid)
         anon_gid = nfs_export_option.get('anon_gid', anonimous_gid)
@@ -493,43 +508,52 @@ class AlphaFilestoreAdapter(object):
       ]
       if 'source-snapshot' in file_share:
         project = properties.VALUES.core.project.Get(required=True)
-        location = (file_share.get('source-snapshot-region') or instance_zone)
+        location = file_share.get('source-snapshot-region') or instance_zone
         source_snapshot = snapshot_util.SNAPSHOT_NAME_TEMPLATE.format(
-            project, location, file_share.get('source-snapshot'))
+            project, location, file_share.get('source-snapshot')
+        )
       if 'source-backup' in file_share:
         project = properties.VALUES.core.project.Get(required=True)
         location = file_share.get('source-backup-region')
         source_backup = backup_util.BACKUP_NAME_TEMPLATE.format(
-            project, location, file_share.get('source-backup'))
+            project, location, file_share.get('source-backup')
+        )
 
       if None not in [source_snapshot, source_backup]:
         raise InvalidArgumentError(
-            "At most one of ['source-snapshot', 'source-backup'] can be specified."
+            "At most one of ['source-snapshot', 'source-backup'] can be"
+            ' specified.'
         )
       if source_backup is not None and location is None:
         raise InvalidArgumentError(
-            "If 'source-backup' is specified, 'source-backup-region' must also be specified."
+            "If 'source-backup' is specified, 'source-backup-region' must also"
+            ' be specified.'
         )
 
       nfs_export_options = FilestoreClient.MakeNFSExportOptionsMsg(
-          self.messages, file_share.get('nfs-export-options', []))
+          self.messages, file_share.get('nfs-export-options', [])
+      )
       file_share_config = self.messages.FileShareConfig(
           name=file_share.get('name'),
           capacityGb=utils.BytesToGb(file_share.get('capacity')),
           sourceSnapshot=source_snapshot,
           sourceBackup=source_backup,
-          nfsExportOptions=nfs_export_options)
+          nfsExportOptions=nfs_export_options,
+      )
       instance.fileShares.append(file_share_config)
 
   def FileSharesFromInstance(self, instance):
     """Get file share configs from instance message."""
     return instance.fileShares
 
-  def ParseUpdatedInstanceConfig(self,
-                                 instance_config,
-                                 description=None,
-                                 labels=None,
-                                 file_share=None):
+  def ParseUpdatedInstanceConfig(
+      self,
+      instance_config,
+      description=None,
+      labels=None,
+      file_share=None,
+      clear_nfs_export_options=False,
+  ):
     """Parse update information into an updated Instance message."""
     if description:
       instance_config.description = description
@@ -537,7 +561,28 @@ class AlphaFilestoreAdapter(object):
       instance_config.labels = labels
     if file_share:
       self.ValidateFileShareForUpdate(instance_config, file_share)
+      orig_nfs_export_options = []
+      if (
+          instance_config.fileShares[0]
+          and instance_config.fileShares[0].nfsExportOptions
+      ):
+        orig_nfs_export_options = instance_config.fileShares[0].nfsExportOptions
       self.ParseFileShareIntoInstance(instance_config, file_share)
+
+      # If NfsExportOptions is left empty, we assume it was not specified
+      # and we override with the NfsExportOptions from the original instance.
+      # This will ensure that not specifying or changing the NfsExportOptions as
+      # part of the `flags-file` will not cause the NfsExportOptions to later
+      # get cleared by the server. To clear the NfsExportOptions, specify
+      # `--clear-nfs-export-options` flag.
+      if not instance_config.fileShares[0].nfsExportOptions:
+        instance_config.fileShares[0].nfsExportOptions = orig_nfs_export_options
+
+      # If the clear-nfs-export-options flag is set, then clear the
+      # NfsExportOptions. Note that the server in turn, will set the
+      # NfSExportOptions to their defaults.
+      if clear_nfs_export_options:
+        instance_config.fileShares[0].nfsExportOptions = []
     return instance_config
 
   def ValidateFileShareForUpdate(self, instance_config, file_share):
@@ -562,26 +607,34 @@ class AlphaFilestoreAdapter(object):
       raise InvalidNameError(
           'Must update an existing file share. Existing file share is named '
           '[{}]. Requested update had name [{}].'.format(
-              existing_file_share.name, file_share.get('name')))
+              existing_file_share.name, file_share.get('name')
+          )
+      )
 
   def UpdateInstance(self, instance_ref, instance_config, update_mask):
     """Send a Patch request for the Cloud Filestore instance."""
     update_request = self.messages.FileProjectsLocationsInstancesPatchRequest(
         instance=instance_config,
         name=instance_ref.RelativeName(),
-        updateMask=update_mask)
+        updateMask=update_mask,
+    )
     update_op = self.client.projects_locations_instances.Patch(update_request)
     return update_op
 
   def ParseConnectMode(self, network_config, key):
     """Parse and match the supplied connection mode."""
     try:
-      value = self.messages.NetworkConfig.ConnectModeValueValuesEnum.lookup_by_name(
-          key)
+      value = (
+          self.messages.NetworkConfig.ConnectModeValueValuesEnum.lookup_by_name(
+              key
+          )
+      )
     except KeyError:
-      raise InvalidArgumentError('[{}] is not a valid connect-mode. '
-                                 'Must be one of DIRECT_PEERING or '
-                                 'PRIVATE_SERVICE_ACCESS.'.format(key))
+      raise InvalidArgumentError(
+          '[{}] is not a valid connect-mode. '
+          'Must be one of DIRECT_PEERING or '
+          'PRIVATE_SERVICE_ACCESS.'.format(key)
+      )
     else:
       network_config.connectMode = value
 
@@ -654,18 +707,21 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
         location = file_share.get('source-backup-region')
         if location is None:
           raise InvalidArgumentError(
-              "If 'source-backup' is specified, 'source-backup-region' must also "
-              'be specified.')
+              "If 'source-backup' is specified, 'source-backup-region' must"
+              ' also be specified.'
+          )
 
       source_backup = self._ParseSourceBackupFromFileshare(file_share)
 
       nfs_export_options = FilestoreClient.MakeNFSExportOptionsMsgBeta(
-          self.messages, file_share.get('nfs-export-options', []))
+          self.messages, file_share.get('nfs-export-options', [])
+      )
       file_share_config = self.messages.FileShareConfig(
           name=file_share.get('name'),
           capacityGb=utils.BytesToGb(file_share.get('capacity')),
           sourceBackup=source_backup,
-          nfsExportOptions=nfs_export_options)
+          nfsExportOptions=nfs_export_options,
+      )
       instance.fileShares.append(file_share_config)
 
   def FileSharesFromInstance(self, instance):

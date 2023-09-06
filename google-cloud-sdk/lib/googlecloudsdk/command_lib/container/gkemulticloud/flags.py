@@ -782,6 +782,53 @@ def GetAdminUsers(args):
   return [properties.VALUES.core.account.GetOrFail()]
 
 
+def AddAdminGroupsForUpdate(parser):
+  """Adds admin group configuration flags for update.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+
+  group = parser.add_group('Admin groups', mutex=True)
+  AddAdminGroups(group)
+  AddClearAdminGroups(group)
+
+
+def AddAdminGroups(parser):
+  help_txt = """
+Groups of users that can perform operations as a cluster administrator.
+"""
+
+  parser.add_argument(
+      '--admin-groups',
+      type=arg_parsers.ArgList(),
+      metavar='GROUP',
+      required=False,
+      help=help_txt)
+
+
+def AddClearAdminGroups(parser):
+  """Adds the --clear-admin-groups.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+  parser.add_argument(
+      '--clear-admin-groups',
+      action='store_true',
+      default=None,
+      help='Clear the admin groups associated with the cluster',
+  )
+
+
+def GetAdminGroups(args):
+  if not hasattr(args, 'admin_groups'):
+    return None
+  if args.admin_groups:
+    return args.admin_groups
+  return None
+
+
 def AddLogging(parser, allow_disabled=False):
   """Adds the --logging flag."""
   help_text = """
@@ -1066,7 +1113,6 @@ def AddBinauthzEvaluationMode(parser):
           _ToSnakeCaseUpper(c) for c in _BINAUTHZ_EVAL_MODE_ENUM_MAPPER.choices
       ],
       default=None,
-      hidden=True,
       help='Set Binary Authorization evaluation mode for this cluster.',
   )
 

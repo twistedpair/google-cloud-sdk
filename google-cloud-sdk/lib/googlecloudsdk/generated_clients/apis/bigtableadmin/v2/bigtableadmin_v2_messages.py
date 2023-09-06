@@ -1060,13 +1060,14 @@ class BigtableadminProjectsInstancesTablesViewsCreateRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesViewsCreateRequest object.
 
   Fields:
-    createViewRequest: A CreateViewRequest resource to be passed as the
-      request body.
     parent: A string attribute.
+    view: A View resource to be passed as the request body.
+    viewId: A string attribute.
   """
 
-  createViewRequest = _messages.MessageField('CreateViewRequest', 1)
-  parent = _messages.StringField(2, required=True)
+  parent = _messages.StringField(1, required=True)
+  view = _messages.MessageField('View', 2)
+  viewId = _messages.StringField(3)
 
 
 class BigtableadminProjectsInstancesTablesViewsDeleteRequest(_messages.Message):
@@ -1762,18 +1763,6 @@ class CreateTableRequest(_messages.Message):
   initialSplits = _messages.MessageField('Split', 1, repeated=True)
   table = _messages.MessageField('Table', 2)
   tableId = _messages.StringField(3)
-
-
-class CreateViewRequest(_messages.Message):
-  r"""The request for CreateView
-
-  Fields:
-    view: A View attribute.
-    viewId: A string attribute.
-  """
-
-  view = _messages.MessageField('View', 1)
-  viewId = _messages.StringField(2)
 
 
 class DropRowRangeRequest(_messages.Message):

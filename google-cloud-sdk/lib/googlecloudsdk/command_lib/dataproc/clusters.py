@@ -119,12 +119,26 @@ def ArgsForClusterRef(
           'server-specified.'
       ),
   )
-  worker_group.add_argument(
+
+  min_workers = worker_group.add_argument_group(mutex=True)
+  min_workers.add_argument(
       '--min-num-workers',
       type=int,
       help=(
-          'The minimum number of workers nodes to provision for cluster'
-          ' create operations to succeed.'
+          'Minimum number of primary worker nodes to provision for cluster'
+          ' creation to succeed.'
+      ),
+  )
+  min_workers.add_argument(
+      '--min-worker-fraction',
+      type=float,
+      hidden=True,
+      metavar='[0-1]',
+      help=(
+          'Minimum fraction of worker nodes required to create the cluster.'
+          ' If it is not met, cluster creation will fail. Must be a decimal'
+          ' value between 0 and 1. The number of required workers will be'
+          ' calcualted by ceil(min-worker-fraction * num_workers).'
       ),
   )
   worker_group.add_argument(
@@ -983,6 +997,13 @@ def GetClusterConfig(
         'count', 1
     )
 
+  if args.min_worker_fraction and (
+      args.min_worker_fraction < 0 or args.min_worker_fraction > 1
+  ):
+    raise exceptions.ArgumentError(
+        '--min-worker-fraction must be between 0 and 1'
+    )
+
   if hasattr(args, 'driver_pool_accelerator') and args.driver_pool_accelerator:
     if 'type' in args.driver_pool_accelerator.keys():
       driver_pool_accelerator_type = args.driver_pool_accelerator['type']
@@ -1176,6 +1197,11 @@ def GetClusterConfig(
       initializationActions=init_actions,
       softwareConfig=software_config,
   )
+
+  if args.min_worker_fraction:
+    cluster_config.workerConfig.startupConfig = dataproc.messages.StartupConfig(
+        requiredRegistrationFraction=args.min_worker_fraction,
+    )
 
   if (
       args.kerberos_config_file

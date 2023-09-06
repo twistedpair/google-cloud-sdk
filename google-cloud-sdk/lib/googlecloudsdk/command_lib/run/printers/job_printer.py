@@ -86,7 +86,7 @@ class JobPrinter(cp.CustomPrinterBase):
             'Env vars',
             container_util.GetUserEnvironmentVariables(record.template),
         ),
-        ('Secrets', container_util.GetSecrets(record.template)),
+        ('Secrets', container_util.GetSecrets(record.template.container)),
         ('VPC access', k8s_util.GetVpcNetwork(job_spec_annotations)),
         (
             'SQL connections',
@@ -154,13 +154,21 @@ class TaskPrinter(cp.CustomPrinterBase):
         ('Args', ' '.join(record.container.args)),
         ('Memory', limits['memory']),
         ('CPU', limits['cpu']),
-        ('Timeout', '{}s'.format(record.spec.timeoutSeconds)
-         if record.spec.timeoutSeconds else None),
-        ('Max Retries', '{}'.format(record.spec.maxRetries)
-         if record.spec.maxRetries is not None else None),
+        (
+            'Timeout',
+            '{}s'.format(record.spec.timeoutSeconds)
+            if record.spec.timeoutSeconds
+            else None,
+        ),
+        (
+            'Max Retries',
+            '{}'.format(record.spec.maxRetries)
+            if record.spec.maxRetries is not None
+            else None,
+        ),
         ('Service account', record.service_account),
         ('Env vars', container_util.GetUserEnvironmentVariables(record)),
-        ('Secrets', container_util.GetSecrets(record)),
+        ('Secrets', container_util.GetSecrets(record.container)),
         ('VPC access', k8s_util.GetVpcNetwork(record.annotations)),
         ('SQL connections', k8s_util.GetCloudSqlInstances(record.annotations)),
     ])
@@ -222,7 +230,7 @@ class ExecutionPrinter(cp.CustomPrinterBase):
             'Env vars',
             container_util.GetUserEnvironmentVariables(record.template),
         ),
-        ('Secrets', container_util.GetSecrets(record.template)),
+        ('Secrets', container_util.GetSecrets(record.template.container)),
         ('VPC access', k8s_util.GetVpcNetwork(record.annotations)),
         ('SQL connections', k8s_util.GetCloudSqlInstances(record.annotations)),
     ])

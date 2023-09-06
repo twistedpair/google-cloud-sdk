@@ -155,7 +155,6 @@ def AddBackupFlag(parser):
       '--backup',
       metavar='BACKUP',
       required=True,
-      hidden=True,
       type=str,
       help="""
       The backup to operate on.
@@ -177,7 +176,6 @@ def AddBackupScheduleFlag(parser):
       '--backup-schedule',
       metavar='BACKUP_SCHEDULE',
       required=True,
-      hidden=True,
       type=str,
       help="""
       The backup schedule to operate on.
@@ -199,7 +197,6 @@ def AddRetentionFlag(parser, required=False):
   parser.add_argument(
       '--retention',
       metavar='RETENTION',
-      hidden=True,
       required=required,
       type=arg_parsers.Duration(),
       help=textwrap.dedent("""\
@@ -223,7 +220,6 @@ def AddRecurrenceFlag(parser):
   group = parser.add_group(
       help='Recurrence settings of a backup schedule.',
       required=True,
-      hidden=True,
   )
   help_text = """\
       The recurrence settings of a backup schedule.
@@ -237,9 +233,7 @@ def AddRecurrenceFlag(parser):
 
         $ {command} --recurrence=weekly --day-of-week=MON
   """
-  group.add_argument(
-      '--recurrence', type=str, help=help_text, required=True, hidden=True
-  )
+  group.add_argument('--recurrence', type=str, help=help_text, required=True)
 
   help_text = """\
      The day of week (UTC time zone) of when backups are created.
@@ -255,5 +249,4 @@ def AddRecurrenceFlag(parser):
       type=arg_parsers.DayOfWeek.Parse,
       help=help_text,
       required=False,
-      hidden=True,
   )

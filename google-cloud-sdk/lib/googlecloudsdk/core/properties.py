@@ -3427,6 +3427,33 @@ class _SectionStorage(_Section):
         'process. When process_count and thread_count are both 1, commands use '
         'sequential execution.')
 
+    self.parallel_composite_upload_component_prefix = self._Add(
+        'parallel_composite_upload_component_prefix',
+        default=(
+            '/gcloud/tmp/parallel_composite_uploads/'
+            'see_gcloud_storage_cp_help_for_details/'
+        ),
+        hidden=True,
+        help_text=(
+            'The prefix used when naming temporary components created by'
+            ' composite uploads. If the prefix begins with a `/`, the temporary'
+            ' components are uploaded relative to the bucket name. If the'
+            ' prefix does not begin with a `/`, the temporary components are'
+            ' uploaded relative to the prefix portion of the destination object'
+            ' name. For example, consider an upload that will create a final'
+            ' object named `gs://bucket/dir1/dir2/object`. Using a prefix of'
+            ' `/prefix` means temporary components use names like'
+            ' `gs://bucket/prefix/COMPONENT_NAME`. Using a prefix of `prefix`'
+            ' means temporary components use names like'
+            ' `gs://bucket/dir1/dir2/prefix/COMPONENT_NAME`. If this property'
+            ' is not specified, gcloud storage uses the prefix'
+            ' `/gcloud/tmp/parallel_composite_uploads/see_gcloud_storage_cp_help_for_details/`.'
+            ' If a chosen prefix results in temporary component names longer'
+            ' than the maximum length Cloud Storage allows, gcloud storage'
+            ' performs a non-composite upload.'
+        ),
+    )
+
     self.parallel_composite_upload_component_size = self._Add(
         'parallel_composite_upload_component_size',
         default='50M',

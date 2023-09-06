@@ -26,7 +26,7 @@ from googlecloudsdk.api_lib.functions.v2 import client as client_v2
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.eventarc import flags as eventarc_flags
@@ -298,7 +298,7 @@ def AddBuildpackStackFlag(parser):
   parser.add_argument('--buildpack-stack', type=str, help=help_text)
 
 
-def AddGen2Flag(parser, operates_on_existing_function=True):
+def AddGen2Flag(parser, operates_on_existing_function=True, hidden=False):
   """Add the --gen2 flag."""
   help_text = (
       'If enabled, this command will use Cloud Functions (Second generation).'
@@ -316,6 +316,7 @@ def AddGen2Flag(parser, operates_on_existing_function=True):
       default=False,
       action=actions.StoreBooleanProperty(properties.VALUES.functions.gen2),
       help=help_text,
+      hidden=hidden,
   )
 
 
@@ -439,7 +440,7 @@ def AddStageBucketFlag(parser):
   )
 
 
-def AddRuntimeFlag(parser, choices=None):
+def AddRuntimeFlag(parser):
   parser.add_argument(
       '--runtime',
       help="""\
@@ -450,7 +451,6 @@ def AddRuntimeFlag(parser, choices=None):
 
           For a list of available runtimes, run `gcloud functions runtimes list`.
           """,
-      choices=choices,
   )
 
 
@@ -723,7 +723,7 @@ class RegionFallthrough(deps.PropertyFallthrough):
       return super(RegionFallthrough, self)._Call(parsed_args)
 
     if not console_io.CanPrompt():
-      raise calliope_exceptions.RequiredArgumentException(
+      raise exceptions.RequiredArgumentException(
           'region',
           (
               'You must specify a region. Either use the flag `--region` or set'
@@ -1073,6 +1073,6 @@ def _ValidateJsonOrRaiseError(data, arg_name):
     json.loads(data)
     return data
   except ValueError as e:
-    raise calliope_exceptions.InvalidArgumentException(
+    raise exceptions.InvalidArgumentException(
         arg_name, 'Is not a valid JSON: ' + six.text_type(e)
     )

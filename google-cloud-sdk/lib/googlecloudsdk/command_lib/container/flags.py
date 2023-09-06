@@ -2038,6 +2038,84 @@ for examples.
   )
 
 
+def AddResourceManagerTagsFlag(parser, help_text):
+  """Adds a --resource-manager-tags to the given parser."""
+  parser.add_argument(
+      '--resource-manager-tags',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help=help_text,
+      hidden=True,
+  )
+
+
+def AddResourceManagerTagsCreate(parser, for_node_pool=False):
+  """Adds a --resource-manager-tags to the given parser on create."""
+  if for_node_pool:
+    help_text = """\
+Applies the given resource manager tags with GCE_FIREWALL purpose
+(comma separated) on all nodes in the new node-pool.
+
+Examples:
+
+  $ {command} example-node-pool --resource-manager-tags=tagKeys/1234=tagValues/2345
+  $ {command} example-node-pool --resource-manager-tags=my-project/key1=value1
+  $ {command} example-node-pool --resource-manager-tags=12345/key1=value1,23456/key2=value2
+  $ {command} example-node-pool --resource-manager-tags=
+
+New nodes, including ones created by resize or recreate, will have these tags
+on the Compute Engine API instance object and can be used in network firewall
+policy rules.
+See https://cloud.google.com/firewall/docs/use-tags-for-firewalls
+for examples.
+"""
+  else:
+    help_text = """\
+Applies the given resource manager tags with GCE_FIREWALL purpose
+(comma separated) on all nodes in the new default nodepool(s) of a new cluster.
+
+Examples:
+
+  $ {command} example-cluster --resource-manager-tags=tagKeys/1234=tagValues/2345
+  $ {command} example-cluster --resource-manager-tags=my-project/key1=value1
+  $ {command} example-cluster --resource-manager-tags=12345/key1=value1,23456/key2=value2
+  $ {command} example-cluster --resource-manager-tags=
+
+New nodes, including ones created by resize or recreate, will have these tags
+on the Compute Engine API instance object and can be used in network firewall
+policy rules.
+See https://cloud.google.com/firewall/docs/use-tags-for-firewalls
+for examples.
+"""
+  AddResourceManagerTagsFlag(parser, help_text)
+
+
+def AddResourceManagerTagsNodePoolUpdate(parser):
+  """Adds a --resource-manager-tags to the given parser on nodepool update."""
+  # TODO(b/295603848): Clarify if this field can be specified for
+  # autoprovisioning node pools.
+  AddResourceManagerTagsFlag(
+      parser,
+      """\
+Replaces all the user specified resource manager tags on all nodes in an
+existing node pool with the given tags (comma separated).
+
+Examples:
+
+  $ {command} example-node-pool --resource-manager-tags=tagKeys/1234=tagValues/2345
+  $ {command} example-node-pool --resource-manager-tags=my-project/key1=value1
+  $ {command} example-node-pool --resource-manager-tags=12345/key1=value1,23456/key2=value2
+  $ {command} example-node-pool --resource-manager-tags=
+
+New nodes, including ones created by resize or recreate, will have these tags
+on the Compute Engine API instance object and can be used in network firewall
+policy rules.
+See https://cloud.google.com/firewall/docs/use-tags-for-firewalls
+for examples.
+""",
+  )
+
+
 def AddMasterAuthorizedNetworksFlags(parser, enable_group_for_update=None):
   """Adds Master Authorized Networks related flags to parser.
 
@@ -2147,16 +2225,22 @@ def AddILBSubsettingFlags(parser, hidden=False):
   )
 
 
-def AddClusterDNSFlags(parser, hidden=False):
+def AddClusterDNSFlags(
+    parser, release_track=base.ReleaseTrack.GA, hidden=False
+):
   """Adds flags related to clusterDNS to parser.
 
   This includes:
   --cluster-dns={clouddns|kubedns|default},
   --cluster-dns-scope={cluster|vpc},
   --cluster-dns-domain=string
+  --enable-additive-vpc-scope,
+  --additive-vpc-scope-dns-domain=string,
+  --disable-additive-vpc-scope
 
   Args:
     parser: A given parser.
+    release_track: Release track the flags are being added to.
     hidden: Indicates that the flags are hidden.
   """
   group = parser.add_argument_group('ClusterDNS', hidden=hidden)
@@ -2185,6 +2269,38 @@ def AddClusterDNSFlags(parser, hidden=False):
             """,
       hidden=hidden,
   )
+  if release_track != base.ReleaseTrack.GA:
+    mutex = group.add_argument_group(
+        'ClusterDNS_AdditiveVPCScope_EnabledDisable', hidden=True, mutex=True
+    )
+    mutex.add_argument(
+        '--enable-additive-vpc-scope',
+        default=None,
+        action='store_true',
+        hidden=True,
+        help=textwrap.dedent("""\
+        Enables Additive VPC Scope.
+
+        Default value is false. Only works with Cluster Scope.
+        """),
+    )
+    mutex.add_argument(
+        '--disable-additive-vpc-scope',
+        default=None,
+        action='store_true',
+        hidden=True,
+        help='Disables Additive VPC Scope.',
+    )
+
+    group.add_argument(
+        '--additive-vpc-scope-dns-domain',
+        default=None,
+        hidden=True,
+        help=(
+            'The domain used in Additive VPC scope. Only works with Cluster'
+            ' Scope.'
+        ),
+    )
 
 
 def AddPrivateClusterFlags(parser, default=None, with_deprecated=False):
@@ -3585,7 +3701,18 @@ def AddWorkloadConfigAuditFlag(parser):
   parser.add_argument(
       '--enable-workload-config-audit',
       default=None,
-      action='store_true',
+      action=actions.DeprecationAction(
+          '--enable-workload-config-audit',
+          show_message=lambda val: val,
+          warn=(
+              '`--enable-workload-config-audit` is deprecated and will be '
+              'removed in an upcoming release. Please use '
+              '`--security-posture=standard` to enable workload config audit. '
+              'For more details, please read: '
+              'https://cloud.google.com/kubernetes-engine/docs/how-to/protect-workload-configuration.'
+          ),
+          action='store_true',
+      ),
       hidden=True,
       help=textwrap.dedent("""\
       Enables Protect API's workload configuration auditing.
@@ -3601,7 +3728,18 @@ def AddWorkloadVulnScanningFlag(parser):
   parser.add_argument(
       '--enable-workload-vulnerability-scanning',
       default=None,
-      action='store_true',
+      action=actions.DeprecationAction(
+          '--enable-workload-vulnerability-scanning',
+          show_message=lambda val: val,
+          warn=(
+              '`--enable-workload-vulnerability-scanning` is deprecated and '
+              'will be removed in an upcoming release. Please use '
+              '`--workload-vulnerability-scanning=standard` to enable workload '
+              'vulnerability scanning. For more details, please read: '
+              'https://cloud.google.com/kubernetes-engine/docs/how-to/security-posture-vulnerability-scanning.'
+          ),
+          action='store_true',
+      ),
       hidden=True,
       help=textwrap.dedent("""\
       Enables Protect API's workload vulnerability scanning.
@@ -3617,7 +3755,18 @@ def AddSecurityPostureFlag(parser):
   parser.add_argument(
       '--enable-security-posture',
       default=None,
-      action='store_true',
+      action=actions.DeprecationAction(
+          '--enable-security-posture',
+          show_message=lambda val: val,
+          warn=(
+              '`--enable-security-posture` is deprecated and will be '
+              'removed in an upcoming release. Please use '
+              '`--security-posture=standard` to enable GKE Security Posture. '
+              'For more details, please read: '
+              'https://cloud.google.com/kubernetes-engine/docs/how-to/protect-workload-configuration.'
+          ),
+          action='store_true',
+      ),
       hidden=True,
       help=textwrap.dedent("""\
       Enables the GKE Security Posture API's features.
@@ -3628,11 +3777,15 @@ def AddSecurityPostureFlag(parser):
   )
 
 
-def AddWorkloadVulnScanningEnumFlag(parser):
+def AddWorkloadVulnScanningEnumFlag(parser, release_track=base.ReleaseTrack.GA):
   """Adds Kubernetes Security Posture's Workload Vulnerability Scanning flag to the parser."""
+  choices = ['disabled', 'standard']
+  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
+    choices.append('enterprise')
+
   parser.add_argument(
       '--workload-vulnerability-scanning',
-      choices=['disabled', 'standard'],
+      choices=choices,
       default=None,
       hidden=False,
       help=textwrap.dedent("""\
@@ -4746,6 +4899,33 @@ allocated hugepage of 2m and 1g should not exceed 8GB * 0.6 = 4.8GB.
 c3, m2, c2d, c3d, h3, m3, a2, a3, g2.
 
 Note, updating the system configuration of an existing node pool requires recreation of the nodes which which might cause a disruption.
+""",
+  )
+
+
+def AddContainerdConfigFlag(parser, hidden=True):
+  """Adds --containerd-config-from-file flag to the given parser."""
+  parser.add_argument(
+      '--containerd-config-from-file',
+      type=arg_parsers.FileContents(),
+      hidden=hidden,
+      # TODO(b/290786967): Update with proper documentation link.
+      help="""
+Path of the YAML/JSON file that contains the containerd configuration, including private registry access config.
+
+Example:
+    privateRegistryAccessConfig:
+      enabled: true
+      certificateAuthorityDomainConfig:
+        - gcpSecretManagerCertificateConfig:
+            secretURI: "projects/1234567890/secrets/my-cert/versions/2"
+          fqdns:
+            - "my.custom.domain"
+            - "10.2.3.4"
+
+For detailed information on the configuration usage, please refer to DOC_LINK.
+
+Note: updating the containerd configuration of an existing cluster/node-pool requires recreation of the nodes which which might cause a disruption.
 """,
   )
 

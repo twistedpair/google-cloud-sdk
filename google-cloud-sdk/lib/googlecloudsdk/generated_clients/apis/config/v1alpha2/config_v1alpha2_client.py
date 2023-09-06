@@ -57,7 +57,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Resource.
+      r"""Gets details about a Resource deployed by Infra Manager.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsRevisionsResourcesGetRequest) input message
@@ -121,7 +121,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
           }
 
     def ExportState(self, request, global_params=None):
-      r"""Export state file from a given revision or deployment.
+      r"""Exports Terraform state file from a given revision.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsRevisionsExportStateRequest) input message
@@ -148,7 +148,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Revision.
+      r"""Gets details about a Revision.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsRevisionsGetRequest) input message
@@ -175,7 +175,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Revisions in a given project and location.
+      r"""Lists Revisions of a deployment.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsRevisionsListRequest) input message
@@ -212,7 +212,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Deployment in a given project and location.
+      r"""Creates a Deployment.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsCreateRequest) input message
@@ -239,7 +239,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Deployment.
+      r"""Deletes a Deployment.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsDeleteRequest) input message
@@ -266,7 +266,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
     )
 
     def DeleteState(self, request, global_params=None):
-      r"""Delete state file in a given deployment.
+      r"""Deletes Terraform state file in a given deployment.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsDeleteStateRequest) input message
@@ -293,7 +293,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
     )
 
     def ExportLock(self, request, global_params=None):
-      r"""Export lock info on locked state.
+      r"""Exports the lock info on a locked deployment.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsExportLockRequest) input message
@@ -320,7 +320,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
     )
 
     def ExportState(self, request, global_params=None):
-      r"""Export state file from a given deployment.
+      r"""Exports Terraform state file from a given deployment.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsExportStateRequest) input message
@@ -347,7 +347,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Deployment.
+      r"""Gets details about a Deployment.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsGetRequest) input message
@@ -401,7 +401,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
     )
 
     def ImportState(self, request, global_params=None):
-      r"""Import state file in a given deployment.
+      r"""Imports Terraform state file in a given deployment. The state file does not take effect until the Deployment has been unlocked.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsImportStateRequest) input message
@@ -455,7 +455,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
     )
 
     def Lock(self, request, global_params=None):
-      r"""Lock deployment.
+      r"""Locks a deployment.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsLockRequest) input message
@@ -482,7 +482,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a single Deployment.
+      r"""Updates a Deployment.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsPatchRequest) input message
@@ -563,7 +563,7 @@ class ConfigV1alpha2(base_api.BaseApiClient):
     )
 
     def Unlock(self, request, global_params=None):
-      r"""Unlock deployment.
+      r"""Unlocks a locked deployment.
 
       Args:
         request: (ConfigProjectsLocationsDeploymentsUnlockRequest) input message

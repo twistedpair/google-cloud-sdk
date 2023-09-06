@@ -97,12 +97,12 @@ def add_preserve_acl_flag(parser, hidden=False):
       action=arg_parsers.StoreTrueFalseAction,
       hidden=hidden,
       help=(
-          'Preserves ACLs when copying in the cloud. This option is Google'
-          ' Cloud Storage-only, and you need OWNER access to all copied'
-          ' objects. If all objects in the destination bucket should have the'
-          ' same ACL, you can also set a default object ACL on that bucket'
-          ' instead of using this flag.\nPreserving ACLs is the default'
-          ' behavior for updating existing objects.'
+          'Preserves ACLs when copying in the cloud. This option is Cloud'
+          ' Storage-only, and you need OWNER access to all copied objects. If'
+          ' all objects in the destination bucket should have the same ACL, you'
+          ' can also set a default object ACL on that bucket instead of using'
+          ' this flag.\nPreserving ACLs is the default behavior for updating'
+          ' existing objects.'
       ),
   )
 
@@ -114,7 +114,11 @@ def add_acl_modifier_flags(parser):
       '--acl-file',
       help=(
           'Path to a local JSON or YAML formatted file containing a valid'
-          ' policy. The output of `gcloud storage [buckets|objects] describe`'
+          ' policy. See the'
+          ' [ObjectAccessControls resource](https://cloud.google.com/storage'
+          '/docs/json_api/v1/objectAccessControls) for a representation of'
+          ' JSON formatted files. The output of'
+          ' `gcloud storage [buckets|objects] describe`'
           ' `--format="multi(acl:format=json)"` is a valid file and can be'
           ' edited for more fine-grained control.'
       ),
@@ -126,7 +130,7 @@ def add_acl_modifier_flags(parser):
       type=arg_parsers.ArgDict(),
       help=(
           'Key-value pairs mirroring the JSON accepted by your cloud provider.'
-          ' For example, for Google Cloud Storage,'
+          ' For example, for Cloud Storage,'
           '`--add-acl-grant=entity=user-tim@gmail.com,role=OWNER`'
       ),
   )
@@ -135,7 +139,7 @@ def add_acl_modifier_flags(parser):
       action='append',
       help=(
           'Key-value pairs mirroring the JSON accepted by your cloud provider.'
-          ' For example, for Google Cloud Storage, `--remove-acl-grant=ENTITY`,'
+          ' For example, for Cloud Storage, `--remove-acl-grant=ENTITY`,'
           ' where `ENTITY` has a valid ACL entity format,'
           ' such as `user-tim@gmail.com`,'
           ' `group-admins`, `allUsers`, etc.'
@@ -186,7 +190,7 @@ def add_object_metadata_flags(parser, allow_patch=False):
   metadata_group.add_argument(
       '--custom-time',
       type=arg_parsers.Datetime.Parse,
-      help='Custom time for Google Cloud Storage objects in RFC 3339 format.')
+      help='Custom time for Cloud Storage objects in RFC 3339 format.')
 
   # TODO(b/238631069): Refactor to make use of command_lib/util/args/map_util.py
   custom_metadata_group = metadata_group.add_mutually_exclusive_group()
@@ -302,7 +306,7 @@ def add_encryption_flags(parser,
       hidden=hidden,
       help=('A comma-separated list of customer-supplied encryption keys'
             ' (RFC 4648 section 4 base64-encoded AES256 strings) that will'
-            ' be used to decrypt Google Cloud Storage objects. Data encrypted'
+            ' be used to decrypt Cloud Storage objects. Data encrypted'
             ' with a customer-managed encryption key (CMEK) is decrypted'
             ' automatically, so CMEKs do not need to be listed here.'))
   if allow_patch:

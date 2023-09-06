@@ -2462,6 +2462,95 @@ class InvalidateCacheResponse(_messages.Message):
   r"""The response used by the `InvalidateCache` method."""
 
 
+class LbRouteExtension(_messages.Message):
+  r"""Message describing LbRouteExtension object
+
+  Enums:
+    LoadBalancingSchemeValueValuesEnum: Required. All backend services and
+      forwarding rules referenced by this extension must share the same load
+      balancing scheme. Supported values: INTERNAL_MANAGED, EXTERNAL_MANAGED.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      LbRouteExtension resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    extensionChains: Required. A set of ordered extension chains that contain
+      the match conditions and extensions that will be executed. Match
+      conditions for each extension chain are evaluated in sequence for a
+      given request. The first extension chain that has a condition that
+      matches the request will execute. Any subsequent extension chains will
+      not execute.
+    forwardingRules: Required. A list of references to the Forwarding Rules to
+      which this service extension will attach to in format:
+      projects/{project}/global/forwardingRules/{forwarding_rule} or
+      projects/{project}/regions/{region}/forwardingRules/{forwarding_rule}.
+      At least one forwarding rule is required. There can be only one
+      LbRouteExtension resource per Forwarding Rule.
+    labels: Optional. Set of label tags associated with the LbRouteExtension
+      resource.
+    loadBalancingScheme: Required. All backend services and forwarding rules
+      referenced by this extension must share the same load balancing scheme.
+      Supported values: INTERNAL_MANAGED, EXTERNAL_MANAGED.
+    name: Required. Name of the LbRouteExtension resource. It matches pattern
+      `projects/{project}/locations/{location}/lbRouteExtensions/{lb_route_ext
+      ension}`.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
+    r"""Required. All backend services and forwarding rules referenced by this
+    extension must share the same load balancing scheme. Supported values:
+    INTERNAL_MANAGED, EXTERNAL_MANAGED.
+
+    Values:
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Should not be used.
+      INTERNAL_MANAGED: Signifies that this will be used for Internal HTTP(S)
+        Load Balancing.
+      EXTERNAL_MANAGED: Signifies that this will be used for External Managed
+        HTTP(S) Load Balancing.
+    """
+    LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
+    INTERNAL_MANAGED = 1
+    EXTERNAL_MANAGED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the LbRouteExtension
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  extensionChains = _messages.MessageField('ExtensionChain', 3, repeated=True)
+  forwardingRules = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
 class LbServiceSteeringExtension(_messages.Message):
   r"""Message describing LbServiceSteeringExtension object
 
@@ -2766,6 +2855,21 @@ class ListHttpRoutesResponse(_messages.Message):
 
   httpRoutes = _messages.MessageField('HttpRoute', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListLbRouteExtensionsResponse(_messages.Message):
+  r"""Message for response to listing LbRouteExtensions
+
+  Fields:
+    lbRouteExtensions: The list of LbRouteExtension
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  lbRouteExtensions = _messages.MessageField('LbRouteExtension', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLbServiceSteeringExtensionsResponse(_messages.Message):
@@ -4828,6 +4932,119 @@ class NetworkservicesProjectsLocationsHttpRoutesTestIamPermissionsRequest(_messa
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest object.
+
+  Fields:
+    lbRouteExtension: A LbRouteExtension resource to be passed as the request
+      body.
+    lbRouteExtensionId: Required. User-provided ID of the LbRouteExtension
+      resource to be created.
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  lbRouteExtension = _messages.MessageField('LbRouteExtension', 1)
+  lbRouteExtensionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsLbRouteExtensionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsLbRouteExtensionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListLbRouteExtensionsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest object.
+
+  Fields:
+    lbRouteExtension: A LbRouteExtension resource to be passed as the request
+      body.
+    name: Required. Name of the LbRouteExtension resource. It matches pattern
+      `projects/{project}/locations/{location}/lbRouteExtensions/{lb_route_ext
+      ension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the LbRouteExtension resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  lbRouteExtension = _messages.MessageField('LbRouteExtension', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworkservicesProjectsLocationsLbServiceSteeringExtensionsCreateRequest(_messages.Message):
@@ -7834,6 +8051,10 @@ class TlsRoute(_messages.Message):
   r"""TlsRoute defines how traffic should be routed based on SNI and other
   matching L3 attributes.
 
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the TlsRoute
+      resource.
+
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
@@ -7842,6 +8063,7 @@ class TlsRoute(_messages.Message):
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
       `projects/*/locations/global/gateways/`
+    labels: Optional. Set of label tags associated with the TlsRoute resource.
     meshes: Optional. Meshes defines a list of meshes this TlsRoute is
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
@@ -7856,14 +8078,39 @@ class TlsRoute(_messages.Message):
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the TlsRoute resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   gateways = _messages.StringField(3, repeated=True)
-  meshes = _messages.StringField(4, repeated=True)
-  name = _messages.StringField(5)
-  rules = _messages.MessageField('TlsRouteRouteRule', 6, repeated=True)
-  selfLink = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 4)
+  meshes = _messages.StringField(5, repeated=True)
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('TlsRouteRouteRule', 7, repeated=True)
+  selfLink = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class TlsRouteRouteAction(_messages.Message):

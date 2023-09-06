@@ -1917,6 +1917,8 @@ class ServerlessOperations(object):
     tracker.StartStage(stages.UPLOAD_SOURCE)
     tracker.UpdateHeaderMessage('Uploading sources.')
     build_messages = cloudbuild_util.GetMessagesModule()
+    # force disable Kaniko since we don't support customizing the build here.
+    properties.VALUES.builds.use_kaniko.Set(False)
     build_config = submit_util.CreateBuildConfig(
         build_image,
         no_cache=False,
@@ -1932,7 +1934,9 @@ class ServerlessOperations(object):
         arg_machine_type=None,
         arg_disk_size=None,
         arg_worker_pool=None,
-        arg_git_source_dir=None,
+        arg_dir=None,
+        arg_revision=None,
+                arg_git_source_dir=None,
         arg_git_source_revision=None,
         buildpack=build_pack,
         hide_logs=True,

@@ -483,9 +483,6 @@ class _BaseInstances(object):
           sql_messages, args.active_directory_domain
       )
 
-    if not IsBetaOrNewer(release_track):
-      args.password_policy_disallow_compromised_credentials = None
-
     settings.passwordValidationPolicy = reducers.PasswordPolicy(
         sql_messages,
         password_policy_min_length=args.password_policy_min_length,
@@ -619,9 +616,6 @@ class _BaseInstances(object):
       settings.activeDirectoryConfig = reducers.ActiveDirectoryConfig(
           sql_messages, args.active_directory_domain
       )
-
-    if not IsBetaOrNewer(release_track):
-      args.password_policy_disallow_compromised_credentials = None
 
     settings.passwordValidationPolicy = reducers.PasswordPolicy(
         sql_messages,

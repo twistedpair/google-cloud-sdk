@@ -70,12 +70,14 @@ class Argument(object):
     sort_args: bool, Whether to sort the arguments in this group when displaying
       help/usage text. Applies only to this arg group (does not propagate to
       nested groups).
+    disable_default_heading: bool, The default help heading text is hidden.
   """
 
   # pylint: disable=redefined-builtin, Python can't keep help to itself
   def __init__(self, arguments=None, hidden=False, is_group=False,
                is_global=False, mutex=False, required=False,
-               help=None, category=None, sort_args=True):
+               help=None, category=None, sort_args=True,
+               disable_default_heading=False):
     self.arguments = arguments or []
     self.is_group = is_group or arguments
     self.is_global = is_global
@@ -86,6 +88,7 @@ class Argument(object):
     self.help = help
     self.category = category
     self._sort_args = sort_args
+    self.disable_default_heading = disable_default_heading
 
   @property
   def is_hidden(self):

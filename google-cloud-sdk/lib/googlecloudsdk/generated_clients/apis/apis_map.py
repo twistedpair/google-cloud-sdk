@@ -2315,18 +2315,6 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
-    'managedkafka': {
-        'v1alpha':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.managedkafka.v1alpha',
-                    client_classpath='managedkafka_v1alpha_client.ManagedkafkaV1alpha',
-                    base_url='https://managedkafka.googleapis.com/',
-                    messages_modulepath='managedkafka_v1alpha_messages'),
-                default_version=True,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-    },
     'marketplacesolutions': {
         'v1alpha1':
             APIDef(
@@ -2712,16 +2700,6 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
-        'v1alpha2':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.osconfig.v1alpha2',
-                    client_classpath='osconfig_v1alpha2_client.OsconfigV1alpha2',
-                    base_url='https://osconfig.googleapis.com/',
-                    messages_modulepath='osconfig_v1alpha2_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2859,6 +2837,16 @@ MAP = {
                     client_classpath='policytroubleshooter_v2alpha1_client.PolicytroubleshooterV2alpha1',
                     base_url='https://policytroubleshooter.googleapis.com/',
                     messages_modulepath='policytroubleshooter_v2alpha1_messages'),
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v3':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.policytroubleshooter.v3',
+                    client_classpath='policytroubleshooter_v3_client.PolicytroubleshooterV3',
+                    base_url='',
+                    messages_modulepath='policytroubleshooter_v3_messages'),
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
@@ -3215,7 +3203,7 @@ MAP = {
                 apitools=ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.securityposture.v1alpha',
                     client_classpath='securityposture_v1alpha_client.SecuritypostureV1alpha',
-                    base_url='',
+                    base_url='https://securityposture.googleapis.com/',
                     messages_modulepath='securityposture_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,

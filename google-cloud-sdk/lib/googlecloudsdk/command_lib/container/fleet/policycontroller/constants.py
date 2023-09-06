@@ -18,7 +18,27 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+
 MONITORING_BACKENDS = {
-    "prometheus": "PROMETHEUS",
-    "cloudmonitoring": "CLOUD_MONITORING",
+    'prometheus': 'PROMETHEUS',
+    'cloudmonitoring': 'CLOUD_MONITORING',
 }
+
+INSTALL_SPEC_LABEL_MAP = {
+    'INSTALL_SPEC_ENABLED': 'ENABLED',
+    'INSTALL_SPEC_NOT_INSTALLED': 'NOT_INSTALLED',
+    'INSTALL_SPEC_SUSPENDED': 'SUSPENDED',
+    'INSTALL_SPEC_UNSPECIFIED': 'UNSPECIFIED',
+}
+
+ENFORCEMENT_ACTION_LABEL_MAP = {
+    'ENFORCEMENT_ACTION_UNSPECIFIED': 'UNSPECIFIED',
+    'ENFORCEMENT_ACTION_DENY': 'DENY',
+    'ENFORCEMENT_ACTION_DRYRUN': 'DRYRUN',
+    'ENFORCEMENT_ACTION_WARN': 'WARN',
+}
+
+
+def get_enforcement_action_label(enforcement_action):
+  return ENFORCEMENT_ACTION_LABEL_MAP.get(enforcement_action,
+                                          'ENFORCEMENT_ACTION_UNSPECIFIED')

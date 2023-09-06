@@ -33,13 +33,23 @@ def MakeReservationMessageFromArgs(messages, args, reservation_ref, resources):
   local_ssds = MakeLocalSsds(messages, getattr(args, 'local_ssd', None))
   share_settings = MakeShareSettingsWithArgs(
       messages, args, getattr(args, 'share_setting', None))
+  source_instance_template_ref = (
+      ResolveSourceInstanceTemplate(args, resources)
+      if args.IsKnownAndSpecified('source_instance_template')
+      else None
+  )
   specific_reservation = MakeSpecificSKUReservationMessage(
-      messages, resources, args.vm_count, accelerators, local_ssds,
-      args.machine_type, args.min_cpu_platform,
+      messages,
+      args.vm_count,
+      accelerators,
+      local_ssds,
+      args.machine_type,
+      args.min_cpu_platform,
       getattr(args, 'location_hint', None),
       getattr(args, 'maintenance_freeze_duration', None),
       getattr(args, 'maintenance_interval', None),
-      getattr(args, 'source_instance_template', None))
+      source_instance_template_ref,
+  )
   resource_policies = MakeResourcePolicies(
       messages, reservation_ref, getattr(args, 'resource_policies', None),
       resources)
@@ -54,6 +64,18 @@ def MakeReservationMessageFromArgs(messages, args, reservation_ref, resources):
       reservation_ref.zone,
       getattr(args, 'delete_at_time', None),
       getattr(args, 'delete_after_duration', None),
+  )
+
+
+def ResolveSourceInstanceTemplate(args, resources):
+  return compute_flags.ResourceArgument(
+      '--source-instance-template',
+      resource_name='instance template',
+      scope_flags_usage=compute_flags.ScopeFlagsUsage.DONT_USE_SCOPE_FLAGS,
+      global_collection='compute.instanceTemplates',
+      regional_collection='compute.regionInstanceTemplates',
+  ).ResolveAsResource(
+      args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL
   )
 
 
@@ -200,26 +222,27 @@ def MakeShareSettingsWithDict(messages, dictionary, setting_configs):
     return None
 
 
-def MakeSpecificSKUReservationMessage(messages,
-                                      resources,
-                                      vm_count,
-                                      accelerators,
-                                      local_ssds,
-                                      machine_type,
-                                      min_cpu_platform,
-                                      location_hint=None,
-                                      freeze_duration=None,
-                                      freeze_interval=None,
-                                      source_instance_template=None):
+def MakeSpecificSKUReservationMessage(
+    messages,
+    vm_count,
+    accelerators,
+    local_ssds,
+    machine_type,
+    min_cpu_platform,
+    location_hint=None,
+    freeze_duration=None,
+    freeze_interval=None,
+    source_instance_template_ref=None,
+):
   """Constructs a single specific sku reservation message object."""
   prop_msgs = (
       messages.AllocationSpecificSKUAllocationReservedInstanceProperties)
-  if source_instance_template:
+  if source_instance_template_ref:
     return messages.AllocationSpecificSKUReservation(
         count=vm_count,
-        sourceInstanceTemplate=MakeInstanceTemplateUrl(source_instance_template,
-                                                       resources),
-        instanceProperties=None)
+        sourceInstanceTemplate=source_instance_template_ref.SelfLink(),
+        instanceProperties=None,
+    )
   else:
     instance_properties = prop_msgs(
         guestAccelerators=accelerators,
@@ -299,20 +322,6 @@ def MakeResourcePolicies(messages, reservation_ref, resource_policy_dictionary,
           key=key, value=MakeUrl(resources, value, reservation_ref))
       for key, value in sorted(six.iteritems(resource_policy_dictionary))
   ])
-
-
-def MakeInstanceTemplateUrl(template, resources):
-  """Builds the URL of the provided Global Instance Template."""
-  reservation_instance_template_resolver = (
-      compute_flags.ResourceResolver.FromMap(
-          'instance template',
-          {compute_scope.ScopeEnum.GLOBAL: 'compute.instanceTemplates'}))
-
-  instance_template_ref = (
-      reservation_instance_template_resolver.ResolveResources(
-          [str(template)], compute_scope.ScopeEnum.GLOBAL, None, resources)[0])
-
-  return instance_template_ref.SelfLink()
 
 
 def MakeUrl(resources, value, reservation_ref):

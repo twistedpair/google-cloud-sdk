@@ -1150,3 +1150,19 @@ def AddUpdateAnnotations(parser: parser_arguments.ArgumentInterceptor):
       type=arg_parsers.ArgDict(),
       help='Replace all the current annotations',
   )
+
+
+def AddIgnoreErrors(parser: parser_arguments.ArgumentInterceptor):
+  """Adds a flag for ignore_errors field.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--ignore-errors',
+      help=(
+          'If set, the unenrollment of a bare metal standalone cluster'
+          ' resource will succeed even if errors occur during unenrollment.'
+      ),
+      action='store_true',
+  )

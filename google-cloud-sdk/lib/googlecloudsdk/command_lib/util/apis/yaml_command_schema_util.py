@@ -544,7 +544,7 @@ class ArgObject(arg_utils.ArgObjectType):
     value_type = self._GetFieldType(additional_props_field.type, value_spec)
 
     arg_obj = arg_parsers.ArgObject(
-        key_type=key_type, value_type=value_type, enable_arg_dict=is_root)
+        key_type=key_type, value_type=value_type, enable_shorthand=is_root)
     map_type = _MapFieldType(
         arg_obj, additional_props_field.type, key_spec, value_spec)
 
@@ -576,7 +576,7 @@ class ArgObject(arg_utils.ArgObjectType):
     required = [f.arg_name for f in field_specs if f.required]
     arg_obj = arg_parsers.ArgObject(spec=spec, required_keys=required,
                                     repeated=field.repeated,
-                                    enable_arg_dict=is_root)
+                                    enable_shorthand=is_root)
 
     return _MessageFieldType(arg_obj, field.type, field_specs)
 
@@ -595,7 +595,7 @@ class ArgObject(arg_utils.ArgObjectType):
     field_spec = SpecField.FromField(field)
     arg_obj = arg_parsers.ArgObject(value_type=field_type,
                                     repeated=field_spec.repeated,
-                                    enable_arg_dict=False)
+                                    enable_shorthand=False)
     return _FieldType(arg_obj, field, field_spec)
 
   def GenerateType(self, field, is_root=True):

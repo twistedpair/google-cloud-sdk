@@ -57,6 +57,19 @@ def Args():
               hide_custom_remotes,
           ),
       ),
+      base.Argument(
+          "--remote-username",
+          help="Remote Repository upstream registry username.",
+          hidden=True,
+      ),
+      base.Argument(
+          "--remote-password-secret-version",
+          help="""\
+          Secret Manager secret version that contains password for the
+          remote repository upstream.
+          """,
+          hidden=True,
+      ),
   ]
 
 
@@ -72,6 +85,17 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
   """Adds remote repository config to CreateRepositoryRequest or UpdateRepositoryRequest."""
   remote_cfg = messages.RemoteRepositoryConfig()
   remote_cfg.description = repo_args.remote_repo_config_desc
+  # Credentials
+  username = repo_args.remote_username
+  secret = repo_args.remote_password_secret_version
+  if username or secret:
+    creds = messages.UpstreamCredentials()
+    creds.usernamePasswordCredentials = messages.UsernamePasswordCredentials()
+    if username:
+      creds.usernamePasswordCredentials.username = username
+    if secret:
+      creds.usernamePasswordCredentials.passwordSecretVersion = secret
+    remote_cfg.upstreamCredentials = creds
 
   # MAVEN
   if repo_args.remote_mvn_repo:

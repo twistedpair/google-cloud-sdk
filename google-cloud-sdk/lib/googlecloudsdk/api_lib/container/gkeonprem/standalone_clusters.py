@@ -1019,6 +1019,7 @@ class StandaloneClustersClient(_BareMetalStandaloneClusterClient):
     kwargs = {
         'name': self._standalone_cluster_name(args),
         'allowMissing': getattr(args, 'allow_missing', None),
+        'ignoreErrors': getattr(args, 'ignore_errors', None),
     }
     req = messages.GkeonpremProjectsLocationsBareMetalStandaloneClustersUnenrollRequest(
         **kwargs

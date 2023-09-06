@@ -37,26 +37,43 @@ def MakeUpdateReservations(args, messages, resources):
   if args.IsSpecified('reservations_from_file'):
     return _MakeReservationsFromFile(messages, args, resources)
   elif args.IsSpecified('source_reservation'):
-    return MakeSourceDestReservations(args, messages, resources)
+    return MakeSourceDestReservations(args, messages)
   else:
     return []
 
 
-def MakeSourceDestReservations(args, messages, resources):
+def MakeSourceDestReservations(args, messages):
   """Return messages required for update-reservations command."""
-  source_msg = ReservationArgToMessage('source_reservation',
-                                       'source_accelerator', 'source_local_ssd',
-                                       'source_share_setting',
-                                       'source_share_with', args, messages,
-                                       resources)
+  source_msg = ReservationArgToMessage(
+      'source_reservation',
+      'source_accelerator',
+      'source_local_ssd',
+      'source_share_setting',
+      'source_share_with',
+      args,
+      messages,
+  )
   destination_msg = ReservationArgToMessage(
-      'dest_reservation', 'dest_accelerator', 'dest_local_ssd',
-      'dest_share_setting', 'dest_share_with', args, messages, resources)
+      'dest_reservation',
+      'dest_accelerator',
+      'dest_local_ssd',
+      'dest_share_setting',
+      'dest_share_with',
+      args,
+      messages,
+  )
   return [source_msg, destination_msg]
 
 
-def ReservationArgToMessage(reservation, accelerator, local_ssd, share_setting,
-                            share_with, args, messages, resources):
+def ReservationArgToMessage(
+    reservation,
+    accelerator,
+    local_ssd,
+    share_setting,
+    share_with,
+    args,
+    messages,
+):
   """Convert single reservation argument into a message."""
   accelerators = util.MakeGuestAccelerators(messages,
                                             getattr(args, accelerator,
@@ -67,10 +84,13 @@ def ReservationArgToMessage(reservation, accelerator, local_ssd, share_setting,
       messages, args, getattr(args, share_setting, None), share_with)
   reservation = getattr(args, reservation, None)
   specific_allocation = util.MakeSpecificSKUReservationMessage(
-      messages, resources, reservation.get('vm-count', None),
-      accelerators, local_ssds,
+      messages,
+      reservation.get('vm-count', None),
+      accelerators,
+      local_ssds,
       reservation.get('machine-type', None),
-      reservation.get('min-cpu-platform', None))
+      reservation.get('min-cpu-platform', None),
+  )
   a_msg = util.MakeReservationMessage(
       messages, reservation.get('reservation', None),
       share_settings, specific_allocation,
@@ -103,8 +123,13 @@ def _ConvertYAMLToMessage(messages, reservations_yaml, resources):
         messages, a, a.get('resource_policies', None), resources)
 
     specific_allocation = util.MakeSpecificSKUReservationMessage(
-        messages, resources, a.get('vm_count', None), accelerators, local_ssds,
-        a.get('machine_type', None), a.get('min_cpu_platform', None))
+        messages,
+        a.get('vm_count', None),
+        accelerators,
+        local_ssds,
+        a.get('machine_type', None),
+        a.get('min_cpu_platform', None),
+    )
     a_msg = util.MakeReservationMessage(
         messages, a.get('reservation', None), share_settings,
         specific_allocation, resource_policies,

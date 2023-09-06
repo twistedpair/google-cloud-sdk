@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 
 import json
 import textwrap
+from typing import Mapping
 
 from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import k8s_object
@@ -39,11 +40,15 @@ def FormatReadyMessage(record):
   if record.ready_condition and record.ready_condition['message']:
     symbol, color = record.ReadySymbolAndColor()
     return console_attr.GetConsoleAttr().Colorize(
-        textwrap.fill('{} {}'.format(
-            symbol, record.ready_condition['message']), 100), color)
+        textwrap.fill(
+            '{} {}'.format(symbol, record.ready_condition['message']), 100
+        ),
+        color,
+    )
   elif record.status is None:
     return console_attr.GetConsoleAttr().Colorize(
-        'Error getting status information', 'red')
+        'Error getting status information', 'red'
+    )
   else:
     return ''
 
@@ -70,11 +75,14 @@ def GetLabels(labels):
   if not labels:
     return ''
   return ' '.join(
-      sorted([
-          '{}:{}'.format(k, v)
-          for k, v in labels.items()
-          if not k.startswith(k8s_object.INTERNAL_GROUPS)
-      ]))
+      sorted(
+          [
+              '{}:{}'.format(k, v)
+              for k, v in labels.items()
+              if not k.startswith(k8s_object.INTERNAL_GROUPS)
+          ]
+      )
+  )
 
 
 def BuildHeader(record):
@@ -84,8 +92,9 @@ def BuildHeader(record):
     place = 'region ' + record.region
   except KeyError:
     place = 'namespace ' + record.namespace
-  return con.Emphasize('{} {} {} in {}'.format(status, record.Kind(),
-                                               record.name, place))
+  return con.Emphasize(
+      '{} {} {} in {}'.format(status, record.Kind(), record.name, place)
+  )
 
 
 def GetCloudSqlInstances(record):
@@ -152,15 +161,22 @@ def GetExecutionEnvironment(record):
   return record.annotations.get(k8s_object.EXECUTION_ENVIRONMENT_ANNOTATION, '')
 
 
-def GetStartupProbe(record):
+def GetStartupProbe(
+    container: container_resource.Container,
+    labels: Mapping[str, str],
+    is_primary: bool,
+) -> str:
+  probe_type = ''
+  if is_primary:
+    probe_type = labels.get('run.googleapis.com/startupProbeType', '')
   return _GetProbe(
-      record.container.startupProbe,
-      record.labels.get('run.googleapis.com/startupProbeType', ''),
+      container.startupProbe,
+      probe_type,
   )
 
 
-def GetLivenessProbe(record):
-  return _GetProbe(record.container.livenessProbe)
+def GetLivenessProbe(container: container_resource.Container) -> str:
+  return _GetProbe(container.livenessProbe)
 
 
 def _GetProbe(probe, probe_type=''):

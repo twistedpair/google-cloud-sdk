@@ -39,7 +39,7 @@ class ApphubProjectsLocationsGetTopologyRequest(_messages.Message):
 
   Fields:
     name: Required. The full resource name of the topology object in the
-      format of: "projects/{project}/locations/{location}/topology"
+      format of: "projects/{project}/locations/global/topology"
   """
 
   name = _messages.StringField(1, required=True)
@@ -135,7 +135,7 @@ class ApphubProjectsLocationsUpdateTopologyRequest(_messages.Message):
 
   Fields:
     name: The full resource name of the topology object in the format of:
-      "projects/{project}/locations/{location}/topology"
+      "projects/{project}/locations/global/topology"
     topology: A Topology resource to be passed as the request body.
     updateMask: Optional. The mask to control which fields of the topology get
       updated. If the mask is not present, all fields will be updated.
@@ -518,7 +518,7 @@ class Telemetry(_messages.Message):
   r"""Message describing Telemetry object.
 
   Fields:
-    monitoringEnabled: Enablement status of the telemetry monitoring
+    monitoringEnabled: Optional. Enablement status of the telemetry monitoring
       configuration.
     name: The full resource name of the telemetry object in the format of:
       "projects/{project}/locations/global/telemetry".
@@ -535,9 +535,9 @@ class Topology(_messages.Message):
   r"""Message describing Topology object
 
   Fields:
-    enabled: Whether or not Topology is enabled for the project
+    enabled: Optional. Whether or not Topology is enabled for the project
     name: The full resource name of the topology object in the format of:
-      "projects/{project}/locations/{location}/topology"
+      "projects/{project}/locations/global/topology"
     project: Output only. Project number which the topology configuration is
       associated with Format: projects/{project}
   """

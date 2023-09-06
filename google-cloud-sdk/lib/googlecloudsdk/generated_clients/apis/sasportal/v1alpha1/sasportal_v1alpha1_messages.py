@@ -910,6 +910,24 @@ class SasPortalSetPolicyRequest(_messages.Message):
   resource = _messages.StringField(3)
 
 
+class SasPortalSetupSasAnalyticsMetadata(_messages.Message):
+  r"""Metadata returned by the long running operation for the
+  SetupSasAnalytics rpc.
+  """
+
+
+
+class SasPortalSetupSasAnalyticsRequest(_messages.Message):
+  r"""Request for the SetupSasAnalytics rpc."""
+
+
+class SasPortalSetupSasAnalyticsResponse(_messages.Message):
+  r"""Response returned by the long running operation for the
+  SetupSasAnalytics rpc.
+  """
+
+
+
 class SasPortalSignDeviceRequest(_messages.Message):
   r"""Request for SignDevice.
 

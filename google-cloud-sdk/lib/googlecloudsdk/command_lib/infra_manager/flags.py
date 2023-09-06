@@ -236,8 +236,7 @@ def AddServiceAccountFlag(parser, hidden=False):
       help=(
           'User-specified Service Account (SA) to be used as credential to'
           ' manage resources. Format:'
-          ' `projects/{projectID}/serviceAccounts/{serviceAccount}`The default'
-          ' Cloud Build SA will be used initially if this field is not set.'
+          ' `projects/{projectID}/serviceAccounts/{serviceAccount}`'
       ),
   )
 

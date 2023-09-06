@@ -437,7 +437,7 @@ def Apply(
       applied_deployment.state
       == messages.Deployment.StateValueValuesEnum.FAILED
   ):
-    log.error(applied_deployment.stateDetail)
+    raise errors.OperationFailedError(applied_deployment.stateDetail)
 
   return applied_deployment
 
@@ -655,7 +655,7 @@ def LockDeployment(messages, async_, deployment_full_name):
       lock_response.lockState
       == messages.Deployment.LockStateValueValuesEnum.LOCK_FAILED
   ):
-    log.error('Lock deployment operation failed.')
+    raise errors.OperationFailedError('Lock deployment operation failed.')
 
   return ExportLock(deployment_full_name)
 
@@ -665,7 +665,6 @@ def UnlockDeployment(
     async_,
     deployment_full_name,
     lock_id,
-    disable_validate_update=False,
 ):
   """Unlocks the deployment.
 
@@ -677,9 +676,6 @@ def UnlockDeployment(
     deployment_full_name: string, the fully qualified name of the deployment,
       e.g. "projects/p/locations/l/deployments/d".
     lock_id: Lock ID of the deployment to be unlocked.
-    disable_validate_update: If this flag is set to true, the unlock mechanism
-      will only unlock the deployment instead of validating the state file and
-      triggering an update deployment workflow.
 
   Returns:
     A deployment resource or, in case async_ is True, a
@@ -687,7 +683,6 @@ def UnlockDeployment(
   """
 
   unlock_deployment_request = messages.UnlockDeploymentRequest(
-      disableValidateAndUpdate=disable_validate_update,
       lockId=int(lock_id),
   )
 
@@ -722,6 +717,6 @@ def UnlockDeployment(
       unlock_response.lockState
       == messages.Deployment.LockStateValueValuesEnum.UNLOCK_FAILED
   ):
-    log.error('Unlock deployment operation failed.')
+    raise errors.OperationFailedError('Unlock deployment operation failed.')
 
   return unlock_response

@@ -460,7 +460,17 @@ class _BareMetalAdminClusterClient(client.ClientBase):
           messages.ClusterUser(username=admin_user)
           for admin_user in admin_users
       ]
-    return cluster_user_messages
+
+    # On create, client side default admin user to the current gcloud user.
+    gcloud_config_core_account = properties.VALUES.core.account.Get()
+    if gcloud_config_core_account:
+      default_admin_user_message = messages.ClusterUser(
+          username=gcloud_config_core_account
+      )
+      cluster_user_messages.append(default_admin_user_message)
+      return cluster_user_messages
+
+    return None
 
   def _authorization(self, args: parser_extensions.Namespace):
     """Constructs proto message Authorization."""

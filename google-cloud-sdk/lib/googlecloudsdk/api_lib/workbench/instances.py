@@ -406,11 +406,11 @@ def CreateInstanceDiagnoseRequest(args, messages):
   if args.IsSpecified('relative_path'):
     diagnostic_config.relativePath = args.relative_path
   if args.IsSpecified('enable_repair'):
-    diagnostic_config.repairFlagEnabled = True
+    diagnostic_config.enableRepairFlag = True
   if args.IsSpecified('enable_packet_capture'):
-    diagnostic_config.packetCaptureFlagEnabled = True
+    diagnostic_config.enablePacketCaptureFlag = True
   if args.IsSpecified('enable_copy_home_files'):
-    diagnostic_config.copyHomeFilesFlagEnabled = True
+    diagnostic_config.enableCopyHomeFilesFlag = True
   return messages.NotebooksProjectsLocationsInstancesDiagnoseRequest(
       name=instance, diagnoseInstanceRequest=messages.DiagnoseInstanceRequest(
           diagnosticConfig=diagnostic_config))

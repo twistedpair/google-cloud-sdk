@@ -191,6 +191,7 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
         'nodePoolConfig': self._node_pool_config(args),
         'displayName': getattr(args, 'display_name', None),
         'annotations': self._annotations(args),
+        'bareMetalVersion': getattr(args, 'version', None),
     }
 
     return messages.BareMetalNodePool(**kwargs)

@@ -541,8 +541,9 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest(_mess
       10,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
-    parent: The name of the parent package whose tags will be listed. Example:
-      "projects/p1/locations/us-central1/repositories/repo1/packages/pkg1
+    parent: The name of the parent package whose tags will be listed. For
+      example: `projects/p1/locations/us-
+      central1/repositories/repo1/packages/pkg1`.
   """
 
   filter = _messages.StringField(1)
@@ -939,6 +940,7 @@ class CleanupPolicyCondition(_messages.Message):
     TagStateValueValuesEnum: Match versions by tag status.
 
   Fields:
+    moreStaleThan: Match versions that have not been pulled in the duration.
     newerThan: Match versions newer than a duration.
     olderThan: Match versions older than a duration.
     packageNamePrefixes: Match versions by package prefix. Applied on any
@@ -964,13 +966,14 @@ class CleanupPolicyCondition(_messages.Message):
     UNTAGGED = 2
     ANY = 3
 
-  newerThan = _messages.StringField(1)
-  olderThan = _messages.StringField(2)
-  packageNamePrefixes = _messages.StringField(3, repeated=True)
-  tagPrefixes = _messages.StringField(4, repeated=True)
-  tagState = _messages.EnumField('TagStateValueValuesEnum', 5)
-  versionAge = _messages.StringField(6)
-  versionNamePrefixes = _messages.StringField(7, repeated=True)
+  moreStaleThan = _messages.StringField(1)
+  newerThan = _messages.StringField(2)
+  olderThan = _messages.StringField(3)
+  packageNamePrefixes = _messages.StringField(4, repeated=True)
+  tagPrefixes = _messages.StringField(5, repeated=True)
+  tagState = _messages.EnumField('TagStateValueValuesEnum', 6)
+  versionAge = _messages.StringField(7)
+  versionNamePrefixes = _messages.StringField(8, repeated=True)
 
 
 class CleanupPolicyMostRecentVersions(_messages.Message):
@@ -985,6 +988,17 @@ class CleanupPolicyMostRecentVersions(_messages.Message):
 
   keepCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   packageNamePrefixes = _messages.StringField(2, repeated=True)
+
+
+class CustomRepository(_messages.Message):
+  r"""Custom Go remote repository.
+
+  Fields:
+    uri: An http/https uri reference to the upstream remote repository, Must
+      be the URI of a version control system. For example: https://github.com.
+  """
+
+  uri = _messages.StringField(1)
 
 
 class DockerImage(_messages.Message):
@@ -1157,6 +1171,16 @@ class GoModule(_messages.Message):
   version = _messages.StringField(4)
 
 
+class GoRepository(_messages.Message):
+  r"""Configuration for a Go remote repository.
+
+  Fields:
+    customRepository: One of the publicly available Go repositories.
+  """
+
+  customRepository = _messages.MessageField('CustomRepository', 1)
+
+
 class GoogetArtifact(_messages.Message):
   r"""A detailed representation of a GooGet artifact.
 
@@ -1264,7 +1288,7 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryCust
 
   Fields:
     uri: An http/https uri reference to the custom remote repository, for ex:
-      "https://registry-1.docker.io/v2".
+      "https://registry-1.docker.io".
   """
 
   uri = _messages.StringField(1)
@@ -1960,8 +1984,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1983,7 +2007,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -2022,9 +2046,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -2094,7 +2118,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -2102,15 +2126,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     bindings: Associates a list of `members`, or principals, with a `role`.
@@ -2254,21 +2278,30 @@ class RemoteRepositoryConfig(_messages.Message):
 
   Fields:
     aptRepository: Specific settings for an Apt remote repository.
+    deleteNotFoundCacheFiles: Optional. If files are removed from the remote
+      host, should they also be removed from the Artifact Registry repository
+      when requested? Only supported for docker, maven, and python
     description: The description of the remote source.
     dockerRepository: Specific settings for a Docker remote repository.
+    goRepository: Specific settings for a Go remote repository.
     mavenRepository: Specific settings for a Maven remote repository.
     npmRepository: Specific settings for an Npm remote repository.
     pythonRepository: Specific settings for a Python remote repository.
+    upstreamCredentials: Optional. The credentials used to access the remote
+      repository.
     yumRepository: Specific settings for a Yum remote repository.
   """
 
   aptRepository = _messages.MessageField('AptRepository', 1)
-  description = _messages.StringField(2)
-  dockerRepository = _messages.MessageField('DockerRepository', 3)
-  mavenRepository = _messages.MessageField('MavenRepository', 4)
-  npmRepository = _messages.MessageField('NpmRepository', 5)
-  pythonRepository = _messages.MessageField('PythonRepository', 6)
-  yumRepository = _messages.MessageField('YumRepository', 7)
+  deleteNotFoundCacheFiles = _messages.BooleanField(2)
+  description = _messages.StringField(3)
+  dockerRepository = _messages.MessageField('DockerRepository', 4)
+  goRepository = _messages.MessageField('GoRepository', 5)
+  mavenRepository = _messages.MessageField('MavenRepository', 6)
+  npmRepository = _messages.MessageField('NpmRepository', 7)
+  pythonRepository = _messages.MessageField('PythonRepository', 8)
+  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 9)
+  yumRepository = _messages.MessageField('YumRepository', 10)
 
 
 class Repository(_messages.Message):
@@ -2369,11 +2402,14 @@ class Repository(_messages.Message):
         more sources.
       REMOTE_REPOSITORY: A remote repository to serve artifacts from a remote
         source.
+      AOSS_REPOSITORY: An AOSS repository provides artifacts from AOSS
+        upstreams.
     """
     MODE_UNSPECIFIED = 0
     STANDARD_REPOSITORY = 1
     VIRTUAL_REPOSITORY = 2
     REMOTE_REPOSITORY = 3
+    AOSS_REPOSITORY = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CleanupPoliciesValue(_messages.Message):
@@ -2854,10 +2890,21 @@ class UploadYumArtifactResponse(_messages.Message):
   is contained in the Operation and available to users.
 
   Fields:
-    yumArtifacts: The Apt artifacts updated.
+    yumArtifacts: The Yum artifacts updated.
   """
 
   yumArtifacts = _messages.MessageField('YumArtifact', 1, repeated=True)
+
+
+class UpstreamCredentials(_messages.Message):
+  r"""The credentials to access the remote repository.
+
+  Fields:
+    usernamePasswordCredentials: Use username and password to access the
+      remote repository.
+  """
+
+  usernamePasswordCredentials = _messages.MessageField('UsernamePasswordCredentials', 1)
 
 
 class UpstreamPolicy(_messages.Message):
@@ -2874,6 +2921,20 @@ class UpstreamPolicy(_messages.Message):
   id = _messages.StringField(1)
   priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   repository = _messages.StringField(3)
+
+
+class UsernamePasswordCredentials(_messages.Message):
+  r"""Username and password credentials.
+
+  Fields:
+    passwordSecretVersion: The Secret Manager key version that holds the
+      password to access the remote repository. Must be in the format of
+      `projects/{project}/secrets/{secret}/versions/{version}`.
+    username: The username to access the remote repository.
+  """
+
+  passwordSecretVersion = _messages.StringField(1)
+  username = _messages.StringField(2)
 
 
 class VPCSCConfig(_messages.Message):

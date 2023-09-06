@@ -28,6 +28,7 @@ from googlecloudsdk.core import log
 # locations from the back end.
 BINAUTHZ_ENFORCER_REGIONS = [
     'global',
+    'africa-south1',
     'asia-east1',
     'asia-east2',
     'asia-northeast1',
@@ -43,6 +44,7 @@ BINAUTHZ_ENFORCER_REGIONS = [
     'europe-north1',
     'europe-southwest1',
     'europe-west1',
+    'europe-west10',
     'europe-west12',
     'europe-west2',
     'europe-west3',
@@ -52,6 +54,7 @@ BINAUTHZ_ENFORCER_REGIONS = [
     'europe-west8',
     'europe-west9',
     'me-central1',
+    'me-central2',
     'me-west1',
     'northamerica-northeast1',
     'northamerica-northeast2',
@@ -68,6 +71,7 @@ BINAUTHZ_ENFORCER_REGIONS = [
     'us-west2',
     'us-west3',
     'us-west4',
+    'us-west8',
 ]
 
 

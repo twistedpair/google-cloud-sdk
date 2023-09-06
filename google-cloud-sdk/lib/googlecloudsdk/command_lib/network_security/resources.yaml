@@ -226,3 +226,39 @@ partnerSSERealm:
     parameter_name: partnerSSERealmsId
     attribute_name: partner_sse_realm
     help: Id of the partner SSE realm.
+
+sseGateway:
+  name: SSE gateway
+  collection: networksecurity.projects.locations.sseGateways
+  request_id_field: sseGatewayId
+  attributes:
+  - *project
+  - *location
+  - &sseGateway
+    parameter_name: sseGatewaysId
+    attribute_name: sse_gateway
+    help: Id of the SSE gateway.
+
+sseGatewayReference:
+  name: SSE gateway reference
+  collection: networksecurity.projects.locations.sseGatewayReferences
+  request_id_field: sseGatewayReferenceId
+  attributes:
+  - *project
+  - *location
+  - &sseGatewayReference
+    parameter_name: sseGatewayReferencesId
+    attribute_name: sse_gateway_reference
+    help: Id of the SSE gateway reference.
+
+partnerSSEGateway:
+  name: partner SSE gateway
+  collection: networksecurity.projects.locations.partnerSSEGateways
+  request_id_field: partnerSseGatewayId
+  attributes:
+  - *project
+  - *location
+  - &partnerSSEGateway
+    parameter_name: partnerSSEGatewaysId
+    attribute_name: partner_sse_gateway
+    help: Id of the partner SSE gateway.

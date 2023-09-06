@@ -134,6 +134,7 @@ class HubsClient(object):
     self.client = networkconnectivity_util.GetClientInstance(release_track)
     self.messages = networkconnectivity_util.GetMessagesModule(release_track)
     self.hub_service = self.client.projects_locations_global_hubs
+    self.operation_service = self.client.projects_locations_operations
 
   def ListHubSpokes(
       self,
@@ -167,3 +168,52 @@ class HubsClient(object):
         batch_size_attribute='pageSize',
         method='ListSpokes'
     )
+
+  def AcceptSpoke(self, hub_ref, spoke):
+    """Call API to accept a spoke into a hub."""
+    accept_hub_spoke_req = self.messages.AcceptHubSpokeRequest(
+        spokeUri=spoke)
+    accept_req = (
+        self.messages.NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeRequest(
+            name=hub_ref.RelativeName(), acceptHubSpokeRequest=accept_hub_spoke_req))
+    return self.hub_service.AcceptSpoke(accept_req)
+
+  def RejectSpoke(self, hub_ref, spoke, details):
+    """Call API to reject a spoke from a hub."""
+    reject_hub_spoke_req = self.messages.RejectHubSpokeRequest(spokeUri=spoke, details=details)
+    reject_req = (
+        self.messages.NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeRequest(
+            name=hub_ref.RelativeName(), rejectHubSpokeRequest=reject_hub_spoke_req))
+    return self.hub_service.RejectSpoke(reject_req)
+
+
+class GroupsClient(object):
+  """Client for group service in network connectivity API."""
+
+  def __init__(self, release_track=base.ReleaseTrack.GA):
+    self.release_track = release_track
+    self.client = networkconnectivity_util.GetClientInstance(release_track)
+    self.messages = networkconnectivity_util.GetMessagesModule(release_track)
+    self.group_service = self.client.projects_locations_global_hubs_groups
+    self.operation_service = self.client.projects_locations_operations
+
+  def UpdateGroup(self, group_ref, group, update_mask, request_id=None):
+    """Call API to update an existing group."""
+    name = group_ref.RelativeName()
+    update_mask_string = ','.join(update_mask)
+
+    update_req = (
+        self.messages.NetworkconnectivityProjectsLocationsGlobalHubsGroupsPatchRequest(
+            name=name,
+            requestId=request_id,
+            group=group,
+            updateMask=update_mask_string))
+    return self.group_service.Patch(update_req)
+
+  def Get(self, group_ref):
+    """Call API to get an existing group."""
+    get_req = (
+        self.messages.NetworkconnectivityProjectsLocationsGlobalHubsGroupsGetRequest(
+            name=group_ref.RelativeName()))
+    return self.group_service.Get(get_req)
+

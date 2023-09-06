@@ -176,7 +176,7 @@ def SetFieldInMessage(message, field_path, value):
     value = encoding.PyValueToMessage(field_type, value)
   if isinstance(value, list):
     for i, item in enumerate(value):
-      if isinstance(item, dict):
+      if isinstance(field_type, type) and not isinstance(item, field_type):
         value[i] = encoding.PyValueToMessage(field_type, item)
   setattr(message, fields[-1], value)
 

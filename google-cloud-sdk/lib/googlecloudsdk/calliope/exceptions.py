@@ -477,7 +477,9 @@ def _IsSocketError(exc):
   # specific exceptions in favor of builtin exceptions like OSError. Good
   # for some things, bad for others. For instance, this brittle errno check
   # for "network" errors. We use names because errnos are system dependent.
-  return errno.errorcode.get(exc.errno) in _SOCKET_ERRNO_NAMES
+  return any(
+      getattr(errno, name, -1) == exc.errno for name in _SOCKET_ERRNO_NAMES
+  )
 
 
 def ConvertKnownError(exc):

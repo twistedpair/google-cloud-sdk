@@ -18,19 +18,19 @@ class ApplyResults(_messages.Message):
   r"""Outputs and artifacts from applying a deployment.
 
   Messages:
-    OutputsValue: Map of output name to output information.
+    OutputsValue: Map of output name to output info.
 
   Fields:
-    artifacts: Location of apply artifacts in Google Cloud Storage. Format:
-      `gs://{bucket}/{object}`
-    content: Location of generated manifests in Google Cloud Storage. Format:
-      `gs://{bucket}/{object}`
-    outputs: Map of output name to output information.
+    artifacts: Location of artifacts (e.g. logs) in Google Cloud Storage.
+      Format: `gs://{bucket}/{object}`
+    content: Location of a blueprint copy and other manifests in Google Cloud
+      Storage. Format: `gs://{bucket}/{object}`
+    outputs: Map of output name to output info.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class OutputsValue(_messages.Message):
-    r"""Map of output name to output information.
+    r"""Map of output name to output info.
 
     Messages:
       AdditionalProperty: An additional property for a OutputsValue object.
@@ -189,7 +189,7 @@ class ConfigProjectsLocationsDeploymentsCreateRequest(_messages.Message):
 
   Fields:
     deployment: A Deployment resource to be passed as the request body.
-    deploymentId: Required. The ID of the deplotment.
+    deploymentId: Required. The Deployment ID.
     parent: Required. The parent in whose context the Deployment is created.
       The parent value is in the format:
       'projects/{project_id}/locations/{location}'.
@@ -250,8 +250,9 @@ class ConfigProjectsLocationsDeploymentsDeleteRequest(_messages.Message):
     Values:
       DELETE_POLICY_UNSPECIFIED: Unspecified policy, resources will be
         deleted.
-      DELETE: Delete resources actuated by the deployment.
-      ABANDON: Abandon resources and only delete deployment metadata.
+      DELETE: Deletes resources actuated by the deployment.
+      ABANDON: Abandons resources and only deletes the deployment and its
+        metadata.
     """
     DELETE_POLICY_UNSPECIFIED = 0
     DELETE = 1
@@ -333,7 +334,7 @@ class ConfigProjectsLocationsDeploymentsGetRequest(_messages.Message):
   r"""A ConfigProjectsLocationsDeploymentsGetRequest object.
 
   Fields:
-    name: Required. The name of the deployment in the format:
+    name: Required. The name of the deployment. Format:
       'projects/{project_id}/locations/{location}/deployments/{deployment}'.
   """
 
@@ -359,7 +360,7 @@ class ConfigProjectsLocationsDeploymentsListRequest(_messages.Message):
   r"""A ConfigProjectsLocationsDeploymentsListRequest object.
 
   Fields:
-    filter: Lists the Deplyoments that match the filter expression.A filter
+    filter: Lists the Deployments that match the filter expression. A filter
       expression filters the resources listed in the response. The expression
       must be of the form '{field} {operator} {value}' where operators: '<',
       '>', '<=', '>=', '!=', '=', ':' are supported (colon ':' represents a
@@ -371,7 +372,7 @@ class ConfigProjectsLocationsDeploymentsListRequest(_messages.Message):
       have a key called 'foo' whose value is 'bar' labels.foo = bar - Filter
       by state: - Deployments in CREATING state. state=CREATING
     orderBy: Field to use to sort the list.
-    pageSize: When requesting a 'page' of resources, 'page_size' specifies
+    pageSize: When requesting a page of resources, 'page_size' specifies
       number of resources to return. If unspecified or set to 0, all resources
       will be returned.
     pageToken: Token returned by previous call to 'ListDeployments' which
@@ -421,7 +422,7 @@ class ConfigProjectsLocationsDeploymentsPatchRequest(_messages.Message):
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Optional. Field mask is used to specify the fields to be
+    updateMask: Optional. Field mask used to specify the fields to be
       overwritten in the Deployment resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
@@ -477,7 +478,7 @@ class ConfigProjectsLocationsDeploymentsRevisionsListRequest(_messages.Message):
       - Resources that have a key called 'foo' whose value is 'bar' labels.foo
       = bar - Filter by state: - Revisions in CREATING state. state=CREATING
     orderBy: Field to use to sort the list.
-    pageSize: When requesting a 'page' of resources, 'page_size' specifies
+    pageSize: When requesting a page of resources, `page_size` specifies
       number of resources to return. If unspecified or set to 0, all resources
       will be returned.
     pageToken: Token returned by previous call to 'ListRevisions' which
@@ -522,7 +523,7 @@ class ConfigProjectsLocationsDeploymentsRevisionsResourcesListRequest(_messages.
       "projects/foo/locations/us-
       central1/deployments/dep/revisions/bar/resources/baz
     orderBy: Field to use to sort the list.
-    pageSize: When requesting a 'page' of resources, 'page_size' specifies
+    pageSize: When requesting a page of resources, 'page_size' specifies
       number of resources to return. If unspecified or set to 0, all resources
       will be returned.
     pageToken: Token returned by previous call to 'ListResources' which
@@ -669,19 +670,20 @@ class DeleteStatefileRequest(_messages.Message):
   r"""A request to delete a state file passed to a 'DeleteStatefile' call.
 
   Fields:
-    lockId: Required. Lock ID of the lock file to verify person importing owns
-      lock.
+    lockId: Required. Lock ID of the lock file to verify that the user who is
+      deleting the state file previously locked the Deployment.
   """
 
   lockId = _messages.IntegerField(1)
 
 
 class Deployment(_messages.Message):
-  r"""A Deployment object.
+  r"""A Deployment is a group of resources and configs managed and provisioned
+  by Infra Manager.
 
   Enums:
-    ErrorCodeValueValuesEnum: Output only. Code describing any errors that may
-      have occurred.
+    ErrorCodeValueValuesEnum: Output only. Error code describing errors that
+      may have occurred.
     LockStateValueValuesEnum: Output only. Current lock state of the
       deployment.
     StateValueValuesEnum: Output only. Current state of the deployment.
@@ -690,31 +692,33 @@ class Deployment(_messages.Message):
     LabelsValue: User-defined metadata for the deployment.
 
   Fields:
-    artifactsGcsBucket: Optional. User-defined location of Cloud Build logs,
-      artifacts, and Terraform state files in Google Cloud Storage. Format:
-      `gs://{bucket}/{folder}` A default bucket will be bootstrapped if the
-      field is not set or empty Default Bucket Format: `gs://--blueprint-
-      config` Constraints: - The bucket needs to be in the same project as the
-      deployment - The path cannot be within the path of `gcs_source` - The
-      field cannot be updated, including changing its presence
-    createTime: Output only. Time the deployment was created.
+    artifactsGcsBucket: Optional. User-defined location of Cloud Build logs
+      and artifacts in Google Cloud Storage. Format: `gs://{bucket}/{folder}`
+      A default bucket will be bootstrapped if the field is not set or empty.
+      Default bucket format: `gs://--blueprint-config` Constraints: - The
+      bucket needs to be in the same project as the deployment - The path
+      cannot be within the path of `gcs_source` - The field cannot be updated,
+      including changing its presence
+    createTime: Output only. Time when the deployment was created.
     deleteBuild: Output only. Cloud Build instance UUID associated with
       deleting this deployment.
     deleteLogs: Output only. Location of Cloud Build logs in Google Cloud
       Storage, populated when deleting this deployment. Format:
       `gs://{bucket}/{object}`.
-    deleteResults: Output only. Locations of outputs from delete operation.
-    errorCode: Output only. Code describing any errors that may have occurred.
-    errorLogs: Output only. Link to tf-error.ndjson file, which contains the
-      full list of the errors encountered while deleting a Terraform
-      deployment. Format: `gs://{bucket}/{object}`.
+    deleteResults: Output only. Location of artifacts from a DeleteDeployment
+      operation.
+    errorCode: Output only. Error code describing errors that may have
+      occurred.
+    errorLogs: Output only. Location of Terraform error logs in Google Cloud
+      Storage. Format: `gs://{bucket}/{object}`.
     importExistingResources: By default, Infra Manager will return a failure
       when Terraform encounters a 409 code (resource conflict error) during
       actuation. If this flag is set to true, Infra Manager will instead
       attempt to automatically import the resource into the Terraform state
-      (for supported resource types) and continue actuation.
+      (for supported resource types) and continue actuation. Not all resource
+      types are supported, refer to documentation.
     labels: User-defined metadata for the deployment.
-    latestRevision: Output only. Revision that was most recently applied.
+    latestRevision: Output only. Revision name that was most recently applied.
       Format:
       `projects/{project}/locations/{location}/deployments/{deployment}/
       revisions/{revision}`
@@ -723,42 +727,39 @@ class Deployment(_messages.Message):
       `projects/{project}/locations/{location}/deployments/{deployment}`
     serviceAccount: Optional. User-specified Service Account (SA) credentials
       to be used when actuating resources. Format:
-      `projects/{projectID}/serviceAccounts/{serviceAccount}` The default
-      Cloud Build SA will be used initially if this field is not set during
-      deployment creation; however, once users start to use their own SA to
-      manage a deployment, they must always provide a valid SA to manage the
-      same deployment later and can not fall back to default Cloud Build SA.
+      `projects/{projectID}/serviceAccounts/{serviceAccount}`
     state: Output only. Current state of the deployment.
     stateDetail: Output only. Additional information regarding the current
       state.
-    terraformBlueprint: The terraform blueprint to deploy.
-    tfErrors: Output only. Summary of errors encountered during deleting
-      Terraform deployment. It has a size limit of 10, i.e. only top 10 errors
-      will be summarized here.
-    updateTime: Output only. Time the deployment was last modified.
-    workerPool: Optional. The User-specified Worker Pool resource in which the
-      Cloud Build job will execute. Format
-      projects/{project}/locations/{location}/workerPools/{workerPoolId} If
+    terraformBlueprint: A blueprint described using Terraform's HashiCorp
+      Configuration Language as a root module.
+    tfErrors: Output only. Errors encountered when deleting this deployment.
+      Errors are truncated to 10 entries, see `delete_results` and
+      `error_logs` for full details.
+    updateTime: Output only. Time when the deployment was last modified.
+    workerPool: Optional. The user-specified Cloud Build worker pool resource
+      in which the Cloud Build job will execute. Format:
+      `projects/{project}/locations/{location}/workerPools/{workerPoolId}`. If
       this field is unspecified, the default Cloud Build worker pool will be
       used.
   """
 
   class ErrorCodeValueValuesEnum(_messages.Enum):
-    r"""Output only. Code describing any errors that may have occurred.
+    r"""Output only. Error code describing errors that may have occurred.
 
     Values:
       ERROR_CODE_UNSPECIFIED: No error code was specified.
-      REVISION_FAILED: The revision failed (check its error code).
-      CLOUD_BUILD_PERMISSION_DENIED: Cloud Build failed due to a permissions
+      REVISION_FAILED: The revision failed. See Revision for more details.
+      CLOUD_BUILD_PERMISSION_DENIED: Cloud Build failed due to a permission
         issue.
-      DELETE_BUILD_API_FAILED: The deletion Cloud Build failed before logs
-        could be generated.
-      DELETE_BUILD_RUN_FAILED: The deletion Cloud Build failed after logs
-        could be generated.
-      BUCKET_CREATION_PERMISSION_DENIED: A Cloud Storage bucket failed to
-        create due to a permissions issue.
-      BUCKET_CREATION_FAILED: A Cloud Storage bucket failed for a non-
-        permissions-related issue.
+      DELETE_BUILD_API_FAILED: Cloud Build job associated with a deployment
+        deletion could not be started.
+      DELETE_BUILD_RUN_FAILED: Cloud Build job associated with a deployment
+        deletion was started but failed.
+      BUCKET_CREATION_PERMISSION_DENIED: Cloud Storage bucket creation failed
+        due to a permission issue.
+      BUCKET_CREATION_FAILED: Cloud Storage bucket creation failed due to an
+        issue unrelated to permissions.
     """
     ERROR_CODE_UNSPECIFIED = 0
     REVISION_FAILED = 1
@@ -866,7 +867,7 @@ class DeploymentOperationMetadata(_messages.Message):
     StepValueValuesEnum: The current step the deployment operation is running.
 
   Fields:
-    applyResults: Locations of outputs from config application.
+    applyResults: Outputs and artifacts from applying a deployment.
     build: Output only. Cloud Build instance UUID associated with this
       operation.
     logs: Output only. Location of Deployment operations logs in
@@ -878,18 +879,23 @@ class DeploymentOperationMetadata(_messages.Message):
     r"""The current step the deployment operation is running.
 
     Values:
-      DEPLOYMENT_STEP_UNSPECIFIED: When we do not have a step triggered
-      PREPARING_STORAGE_BUCKET: This is where we are determining if there is a
-        Cloud Storage bucket and creating one if there isn't
-      DOWNLOADING_BLUEPRINT: When the config is being uploaded to the bucket
-      RUNNING_TF_INIT: This is when Terraform is being initializing
-      RUNNING_TF_PLAN: This is when terraform plan is called
-      RUNNING_TF_APPLY: This is when terraform apply is called
-      RUNNING_TF_DESTROY: This is when terraform destroy is called
-      RUNNING_TF_VALIDATE: For unlocking deployment; This is when validate is
-        called
-      UNLOCKING_DEPLOYMENT: For unlocking deployment; This is when deployment
-        is unlocked
+      DEPLOYMENT_STEP_UNSPECIFIED: Unspecified deployment step
+      PREPARING_STORAGE_BUCKET: Infra Manager is creating a Google Cloud
+        Storage bucket to store artifacts and metadata about the deployment
+        and revision
+      DOWNLOADING_BLUEPRINT: Downloading the blueprint onto the Google Cloud
+        Storage bucket
+      RUNNING_TF_INIT: Initializing Terraform using `terraform init`
+      RUNNING_TF_PLAN: Running `terraform plan`
+      RUNNING_TF_APPLY: Actuating resources using Terraform using `terraform
+        apply`
+      RUNNING_TF_DESTROY: Destroying resources using Terraform using
+        `terraform destroy`
+      RUNNING_TF_VALIDATE: Validating the uploaded TF state file when
+        unlocking a deployment
+      UNLOCKING_DEPLOYMENT: Unlocking a deployment
+      SUCCEEDED: Operation was successful
+      FAILED: Operation failed
     """
     DEPLOYMENT_STEP_UNSPECIFIED = 0
     PREPARING_STORAGE_BUCKET = 1
@@ -900,6 +906,8 @@ class DeploymentOperationMetadata(_messages.Message):
     RUNNING_TF_DESTROY = 6
     RUNNING_TF_VALIDATE = 7
     UNLOCKING_DEPLOYMENT = 8
+    SUCCEEDED = 9
+    FAILED = 10
 
   applyResults = _messages.MessageField('ApplyResults', 1)
   build = _messages.StringField(2)
@@ -913,6 +921,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class ExportDeploymentStatefileRequest(_messages.Message):
@@ -932,6 +941,7 @@ class ExportRevisionStatefileRequest(_messages.Message):
   r"""A request to export a state file passed to a 'ExportRevisionStatefile'
   call.
   """
+
 
 
 class Expr(_messages.Message):
@@ -976,7 +986,7 @@ class GitSource(_messages.Message):
   Fields:
     directory: Optional. Subdirectory inside the repository. Example:
       'staging/my-package'
-    ref: Optional. Git branch or tag.
+    ref: Optional. Git reference (e.g. branch or tag).
     repo: Optional. Repository URL. Example:
       'https://github.com/kubernetes/examples.git'
   """
@@ -990,8 +1000,8 @@ class ImportStatefileRequest(_messages.Message):
   r"""A request to import a state file passed to a 'ImportStatefile' call.
 
   Fields:
-    lockId: Required. Lock ID of the lock file to verify person importing owns
-      lock.
+    lockId: Required. Lock ID of the lock file to verify that the user who is
+      importing the state file previously locked the Deployment.
   """
 
   lockId = _messages.IntegerField(1)
@@ -1002,7 +1012,8 @@ class ListDeploymentsResponse(_messages.Message):
 
   Fields:
     deployments: List of Deployments.
-    nextPageToken: A string attribute.
+    nextPageToken: Token to be supplied to the next ListDeployments request
+      via `page_token` to obtain the next set of results.
     unreachable: Locations that could not be reached.
   """
 
@@ -1154,7 +1165,7 @@ class LockDeploymentRequest(_messages.Message):
 
 
 class LockInfo(_messages.Message):
-  r"""Lock information.
+  r"""Details about the lock which locked the deployment.
 
   Fields:
     createTime: Time that the lock was taken.
@@ -1184,8 +1195,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1207,7 +1218,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1246,9 +1257,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -1287,10 +1298,10 @@ class OperationMetadata(_messages.Message):
 
   Fields:
     apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. Time the operation was created.
+    createTime: Output only. Time when the operation was created.
     deploymentMetadata: Output only. Metadata about the deployment operation
       state.
-    endTime: Output only. Time the operation finished running.
+    endTime: Output only. Time when the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
       successfully been cancelled have Operation.error value with a
@@ -1325,7 +1336,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -1333,15 +1344,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -1391,9 +1402,8 @@ class Policy(_messages.Message):
 
 
 class Resource(_messages.Message):
-  r"""A child resource of a Revision generated by a 'CreateDeployment' or
-  'UpdateDeployment' call. Each Resource represents a resource actuated in a
-  given Revision.
+  r"""Resource represents a Google Cloud Platform resource actuated by IM.
+  Resources are child resources of Revisions.
 
   Enums:
     IntentValueValuesEnum: Output only. Intent of the resource.
@@ -1401,19 +1411,20 @@ class Resource(_messages.Message):
 
   Messages:
     CaiAssetsValue: Output only. Map of Cloud Asset Inventory (CAI) type to
-      CAI information like ID. CAI type format follows
+      CAI info (e.g. CAI ID). CAI type format follows
       https://cloud.google.com/asset-inventory/docs/supported-asset-types
 
   Fields:
     caiAssets: Output only. Map of Cloud Asset Inventory (CAI) type to CAI
-      information like ID. CAI type format follows
+      info (e.g. CAI ID). CAI type format follows
       https://cloud.google.com/asset-inventory/docs/supported-asset-types
     intent: Output only. Intent of the resource.
-    name: Output only. Resource name of the Resource. Format: `projects/{proje
-      ct}/locations/{location}/deployments/{deployment}/revisions/{revision}/r
-      esources/{resource}`
+    name: Output only. Resource name. Format: `projects/{project}/locations/{l
+      ocation}/deployments/{deployment}/revisions/{revision}/resources/{resour
+      ce}`
     state: Output only. Current state of the resource.
-    terraformInfo: Output only. Terraform specific information.
+    terraformInfo: Output only. Terraform-specific info if this resource was
+      created using Terraform.
   """
 
   class IntentValueValuesEnum(_messages.Enum):
@@ -1422,11 +1433,11 @@ class Resource(_messages.Message):
     Values:
       INTENT_UNSPECIFIED: The default value. This value is used if the intent
         is omitted.
-      CREATE: Resource expected to be created.
-      UPDATE: Resource expected to be updated.
-      DELETE: Resource expected to be deleted.
-      RECREATE: Resource expected to be recreated.
-      UNCHANGED: Resource expected to be untouched.
+      CREATE: Infra Manager will create this Resource.
+      UPDATE: Infra Manager will update this Resource.
+      DELETE: Infra Manager will delete this Resource.
+      RECREATE: Infra Manager will destroy and recreate this Resource.
+      UNCHANGED: Infra Manager will leave this Resource untouched.
     """
     INTENT_UNSPECIFIED = 0
     CREATE = 1
@@ -1454,9 +1465,9 @@ class Resource(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CaiAssetsValue(_messages.Message):
-    r"""Output only. Map of Cloud Asset Inventory (CAI) type to CAI
-    information like ID. CAI type format follows
-    https://cloud.google.com/asset-inventory/docs/supported-asset-types
+    r"""Output only. Map of Cloud Asset Inventory (CAI) type to CAI info (e.g.
+    CAI ID). CAI type format follows https://cloud.google.com/asset-
+    inventory/docs/supported-asset-types
 
     Messages:
       AdditionalProperty: An additional property for a CaiAssetsValue object.
@@ -1486,10 +1497,10 @@ class Resource(_messages.Message):
 
 
 class ResourceCAIInfo(_messages.Message):
-  r"""CAI information of a Resource.
+  r"""CAI info of a Resource.
 
   Fields:
-    fullResourceName: CAI resource name of form
+    fullResourceName: CAI resource name in the format following
       https://cloud.google.com/apis/design/resource_names#full_resource_name
   """
 
@@ -1497,13 +1508,13 @@ class ResourceCAIInfo(_messages.Message):
 
 
 class ResourceTerraformInfo(_messages.Message):
-  r"""Terraform information of a Resource.
+  r"""Terraform info of a Resource.
 
   Fields:
-    address: TF Resource address that uniquely identifies this resource within
-      config
+    address: TF resource address that uniquely identifies this resource within
+      this deployment.
     id: ID attribute of the TF resource
-    type: TF resource type for this resource
+    type: TF resource type
   """
 
   address = _messages.StringField(1)
@@ -1513,66 +1524,63 @@ class ResourceTerraformInfo(_messages.Message):
 
 class Revision(_messages.Message):
   r"""A child resource of a Deployment generated by a 'CreateDeployment' or
-
-  'UpdateDeployment' call. Each Revision contains artifacts pertaining to a
-  snapshot of a particular Deployment including transformed configs and logs.
+  'UpdateDeployment' call. Each Revision contains metadata pertaining to a
+  snapshot of a particular Deployment.
 
   Enums:
-    ActionValueValuesEnum: Output only. The type of action that this revision
-      represents.
+    ActionValueValuesEnum: Output only. The action which created this revision
     ErrorCodeValueValuesEnum: Output only. Code describing any errors that may
       have occurred.
     StateValueValuesEnum: Output only. Current state of the revision.
 
   Fields:
-    action: Output only. The type of action that this revision represents.
-    applyResults: Output only. Locations of outputs from config application.
+    action: Output only. The action which created this revision
+    applyResults: Output only. Outputs and artifacts from applying a
+      deployment.
     build: Output only. Cloud Build instance UUID associated with this
       revision.
-    createTime: Output only. Time the revision was created.
+    createTime: Output only. Time when the revision was created.
     errorCode: Output only. Code describing any errors that may have occurred.
-    errorLogs: Output only. Link to tf-error.ndjson file, which contains the
-      full list of the errors encountered while deleting a Terraform
-      deployment. Format: `gs://{bucket}/{object}`.
+    errorLogs: Output only. Location of Terraform error logs in Google Cloud
+      Storage. Format: `gs://{bucket}/{object}`.
     importExistingResources: Output only. By default, Infra Manager will
       return a failure when Terraform encounters a 409 code (resource conflict
       error) during actuation. If this flag is set to true, Infra Manager will
       instead attempt to automatically import the resource into the Terraform
-      state (for supported resource types) and continue actuation.
+      state (for supported resource types) and continue actuation. Not all
+      resource types are supported, refer to documentation.
     logs: Output only. Location of Revision operation logs in
       `gs://{bucket}/{object}` format.
-    name: Resource name of the revision. Format:
+    name: Revision name. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}/
       revisions/{revision}`
     serviceAccount: Output only. User-specified Service Account (SA) to be
       used as credential to manage resources. Format:
-      `projects/{projectID}/serviceAccounts/{serviceAccount}` The default
-      Cloud Build SA will be used initially if this field is not set.
+      `projects/{projectID}/serviceAccounts/{serviceAccount}`
     state: Output only. Current state of the revision.
-    stateDetail: Output only. Additional information regarding the current
-      state.
-    terraformBlueprint: Output only. The terraform blueprint that was
-      deployed.
-    tfErrors: Output only. Summary of errors encountered during actuation
-      using Terraform. It has a size limit of 10, i.e. only top 10 errors will
-      be summarized here.
-    updateTime: Output only. Time the revision was last modified.
-    workerPool: Output only. The User-specified Worker Pool resource in which
-      the Cloud Build job will execute. Format
-      projects/{project}/locations/{location}/workerPools/{workerPoolId} If
+    stateDetail: Output only. Additional info regarding the current state.
+    terraformBlueprint: Output only. A blueprint described using Terraform's
+      HashiCorp Configuration Language as a root module.
+    tfErrors: Output only. Errors encountered when creating or updating this
+      deployment. Errors are truncated to 10 entries, see `delete_results` and
+      `error_logs` for full details.
+    updateTime: Output only. Time when the revision was last modified.
+    workerPool: Output only. The user-specified Cloud Build worker pool
+      resource in which the Cloud Build job will execute. Format:
+      `projects/{project}/locations/{location}/workerPools/{workerPoolId}`. If
       this field is unspecified, the default Cloud Build worker pool will be
       used.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    r"""Output only. The type of action that this revision represents.
+    r"""Output only. The action which created this revision
 
     Values:
       ACTION_UNSPECIFIED: The default value. This value is used if the action
         is omitted.
       CREATE: The revision was generated by creating a deployment.
       UPDATE: The revision was generated by updating a deployment.
-      DELETE: The revision was generated by deleting a deployment.
+      DELETE: The revision was deleted.
     """
     ACTION_UNSPECIFIED = 0
     CREATE = 1
@@ -1584,12 +1592,12 @@ class Revision(_messages.Message):
 
     Values:
       ERROR_CODE_UNSPECIFIED: No error code was specified.
-      CLOUD_BUILD_PERMISSION_DENIED: Cloud Build failed due to a permissions
+      CLOUD_BUILD_PERMISSION_DENIED: Cloud Build failed due to a permission
         issue.
-      APPLY_BUILD_API_FAILED: The apply Cloud Build failed before logs could
-        be generated.
-      APPLY_BUILD_RUN_FAILED: The apply Cloud Build failed after logs could be
-        generated.
+      APPLY_BUILD_API_FAILED: Cloud Build job associated with creating or
+        updating a deployment could not be started.
+      APPLY_BUILD_RUN_FAILED: Cloud Build job associated with creating or
+        updating a deployment was started but failed.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CLOUD_BUILD_PERMISSION_DENIED = 1
@@ -1710,11 +1718,11 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Statefile(_messages.Message):
-  r"""Contains a signed Cloud Storage URL.
+  r"""Contains info about a Terraform state file
 
   Fields:
-    signedUri: Output only. Cloud Storage Signed URL used for accessing the
-      state file.
+    signedUri: Output only. Cloud Storage signed URI used for downloading or
+      uploading the state file.
   """
 
   signedUri = _messages.StringField(1)
@@ -1772,7 +1780,8 @@ class Status(_messages.Message):
 
 
 class TerraformBlueprint(_messages.Message):
-  r"""Contains details surrounding source configurations to be deployed.
+  r"""TerraformBlueprint describes the source of a Terraform root module which
+  describes the resources and configs to be deployed.
 
   Messages:
     InputValuesValue: Input variable values for the Terraform blueprint.
@@ -1781,7 +1790,7 @@ class TerraformBlueprint(_messages.Message):
     gcsSource: Required. URI of an object in Google Cloud Storage. Format:
       `gs://{bucket}/{object}` URI may also specify an object version for
       zipped objects. Format: `gs://{bucket}/{object}#{version}`
-    gitSource: Required. A set of files in a Git repository.
+    gitSource: Required. URI of a public Git repo.
     inputValues: Input variable values for the Terraform blueprint.
   """
 
@@ -1820,10 +1829,10 @@ class TerraformError(_messages.Message):
 
   Fields:
     error: Original error response from underlying Google API, if available.
-    errorDescription: A human-readable error description
-    httpResponseCode: HTTP response code returned from GCP APIs when Terraform
-      fails to provision the resource. If unset or 0, there was no HTTP
-      response code returned by Terraform.
+    errorDescription: A human-readable error description.
+    httpResponseCode: HTTP response code returned from Google Cloud Platform
+      APIs when Terraform fails to provision the resource. If unset or 0, no
+      HTTP response code was returned by Terraform.
     resourceAddress: Address of the resource associated with the error, e.g.
       `google_compute_network.vpc_network`.
   """
@@ -1885,14 +1894,10 @@ class UnlockDeploymentRequest(_messages.Message):
   r"""A request to unlock a state file passed to a 'UnlockDeployment' call.
 
   Fields:
-    disableValidateAndUpdate: Optional. If this flag is set to true, the
-      unlock mechanism will only unlock the deployment instead of validating
-      the state file and triggering an update deployment workflow.
     lockId: Required. Lock ID of the lock file to be unlocked.
   """
 
-  disableValidateAndUpdate = _messages.BooleanField(1)
-  lockId = _messages.IntegerField(2)
+  lockId = _messages.IntegerField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

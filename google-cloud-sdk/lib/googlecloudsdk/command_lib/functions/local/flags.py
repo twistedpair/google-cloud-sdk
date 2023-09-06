@@ -32,7 +32,8 @@ def AddPortFlag(parser):
   parser.add_argument(
       '--port',
       default=8080,
-      help='Port for the deployment to run on.',
+      help='Port for the deployment to run on. The default port is 8080 '
+      + 'for new local deployments.',
   )
 
 

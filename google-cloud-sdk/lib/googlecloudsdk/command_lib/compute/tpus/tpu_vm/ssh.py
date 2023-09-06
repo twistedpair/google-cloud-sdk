@@ -52,7 +52,9 @@ Please check the following:
 """
 
 
-def AddTPUSSHArgs(parser, enable_iap, enable_batching=False):
+def AddTPUSSHArgs(
+    parser, enable_iap, enable_batching=False, enable_batching_default='all'
+):
   """Arguments that are common and specific to both TPU VM/QR SSH and SCP."""
   parser.add_argument(
       '--worker',
@@ -71,10 +73,10 @@ def AddTPUSSHArgs(parser, enable_iap, enable_batching=False):
   if enable_batching:
     parser.add_argument(
         '--batch-size',
-        default='all',
+        default=enable_batching_default,
         help="""\
-            Batch size for simultaneous command execution. When using a
-            comma-separated list (e.g. '1,4,6') or a range (e.g. '1-3') or
+            Batch size for simultaneous command execution on the client's side.
+            When using a comma-separated list (e.g. '1,4,6') or a range (e.g. '1-3') or
             ``all`` keyword in `--worker` flag, it executes the command
             concurrently in groups of the batch size. This flag takes a
             value greater than 0 to specify the batch size to control the
@@ -84,7 +86,8 @@ def AddTPUSSHArgs(parser, enable_iap, enable_batching=False):
             Maximum value of this flag should not be more than the number of
             specified workers, otherwise the value will be treated as
             ``--batch-size=all``.
-            """)
+            """,
+    )
   if enable_iap:
     routing_group = parser.add_mutually_exclusive_group()
     routing_group.add_argument(
@@ -325,7 +328,7 @@ def TpuHasOsLoginEnabled(node):
   node_dict = encoding_helper.MessageToDict(node)
   if 'metadata' in node_dict and 'enable-oslogin' in node_dict['metadata']:
     return node_dict['metadata']['enable-oslogin'].upper() == 'TRUE'
-  return False
+  return None
 
 
 def _MetadataHasSSHKey(metadata, public_key):
@@ -752,7 +755,7 @@ def SSHIntoPreppedNodes(
 
   log.status.Print(
       'Using ssh batch size of {}.'
-      'Attempting to SSH into {} nodes with a total of'
+      ' Attempting to SSH into {} nodes with a total of'
       ' {} workers.'.format(total_ssh_batch_size, len(prepped_nodes), num_ips)
   )
   for prepped_node in prepped_nodes:

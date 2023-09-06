@@ -63,7 +63,6 @@ class PocoFlags:
         '--audit-interval',
         type=int,
         help='How often Policy Controller will audit resources, in seconds.',
-        default=60,
     )
 
   def add_constraint_violation_limit(self):
@@ -75,7 +74,6 @@ class PocoFlags:
             'The number of violations stored on the constraint resource. Must'
             ' be greater than 0.'
         ),
-        default=20,
     )
 
   def add_exemptable_namespaces(self):
@@ -119,10 +117,10 @@ class PocoFlags:
         group,
         plural=True,
         membership_help=(
-            'The membership names to {}, separated by commas if multiple '
+            'The membership names to act on, separated by commas if multiple '
             'are supplied. Ignored if --all-memberships is supplied; if '
             'neither is supplied, a prompt will appear with all available '
-            'memberships.'.format(self.display_name)
+            'memberships.'
         ),
     )
 
@@ -130,8 +128,8 @@ class PocoFlags:
         '--all-memberships',
         action='store_true',
         help=(
-            'If supplied, {} all Policy Controllers memberships in the fleet.'
-            .format(self.display_name)
+            'If supplied, apply to all Policy Controllers memberships in the'
+            ' fleet.'
         ),
         default=False,
     )
@@ -204,7 +202,11 @@ class PocoFlags:
 
 
 class PocoFlagParser:
-  """Takes PocoFlag arguments and uses them to modify membership specs."""
+  """Takes PocoFlag arguments and uses them to modify membership specs.
+
+  hub_cfg references the PolicyControllerHubConfig object in:
+  third_party/py/googlecloudsdk/generated_clients/apis/gkehub/v1alpha/gkehub_v1alpha_messages.py
+  """
 
   def __init__(self, args: parser_extensions.Namespace, msgs):
     self.args = args
