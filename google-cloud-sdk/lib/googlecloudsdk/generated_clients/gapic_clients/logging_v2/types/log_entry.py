@@ -179,8 +179,7 @@ class LogEntry(proto.Message):
             data is stored in the Cloud project "my-trace-project" and
             if the service that is creating the log entry receives a
             trace header that includes the trace ID "12345", then the
-            service should use
-            "projects/my-tracing-project/traces/12345".
+            service should use "projects/my-trace-project/traces/12345".
 
             The ``trace`` field provides the link between logs and
             traces. By using this field, you can navigate from a log
@@ -222,15 +221,13 @@ class LogEntry(proto.Message):
             -  ``0000f00300090021``
             -  ``d39223e101960076``
         trace_sampled (bool):
-            Optional. The sampling decision of the trace associated with
-            the log entry.
-
-            True means that the trace resource name in the ``trace``
-            field was sampled for storage in a trace backend. False
-            means that the trace was not sampled for storage when this
-            log entry was written, or the sampling decision was unknown
-            at the time. A non-sampled ``trace`` value is still useful
-            as a request correlation identifier. The default is False.
+            Optional. The sampling decision of the span associated with
+            the log entry at the time the log entry was created. This
+            field corresponds to `the sampled flag in the W3C
+            trace-context
+            specification <https://www.w3.org/TR/trace-context/#sampled-flag>`__.
+            A non-sampled ``trace`` value is still useful as a request
+            correlation identifier. The default is False.
         source_location (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogEntrySourceLocation):
             Optional. Source code location information
             associated with the log entry, if any.

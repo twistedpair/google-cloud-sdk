@@ -69,7 +69,15 @@ ROLE_STORAGE_OBJECT_ADMIN = 'roles/storage.objectAdmin'
 ROLE_COMPUTE_ADMIN = 'roles/compute.admin'
 ROLE_IAM_SERVICE_ACCOUNT_USER = 'roles/iam.serviceAccountUser'
 ROLE_IAM_SERVICE_ACCOUNT_TOKEN_CREATOR = 'roles/iam.serviceAccountTokenCreator'
+ROLE_STORAGE_ADMIN = 'roles/storage.admin'
 ROLE_EDITOR = 'roles/editor'
+CLOUD_BUILD_STORAGE_PERMISSIONS = frozenset({
+    'storage.buckets.list',
+    'storage.buckets.get',
+    'storage.objects.create',
+    'storage.objects.delete',
+    'storage.objects.get',
+})
 
 IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT = (
     ROLE_COMPUTE_STORAGE_ADMIN,
@@ -233,9 +241,13 @@ class ImageOperation(object):
   EXPORT = 'export'
 
 
-def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
-                         compute_service_account_roles,
-                         custom_compute_service_account=''):
+def _CheckIamPermissions(
+    project_id,
+    cloudbuild_service_account_roles,
+    compute_service_account_roles,
+    custom_cloudbuild_service_account='',
+    custom_compute_service_account='',
+):
   """Check for needed IAM permissions and prompt to add if missing.
 
   Args:
@@ -244,6 +256,7 @@ def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
       service account.
     compute_service_account_roles: A set of roles required for compute service
       account.
+    custom_cloudbuild_service_account: Custom cloudbuild service account
     custom_compute_service_account: Custom compute service account
   """
   project = projects_api.Get(project_id)
@@ -273,6 +286,10 @@ def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
 
   build_account = 'serviceAccount:{0}@cloudbuild.gserviceaccount.com'.format(
       project.projectNumber)
+  if custom_cloudbuild_service_account:
+    build_account = 'serviceAccount:{0}'.format(
+        custom_cloudbuild_service_account
+    )
   # https://cloud.google.com/compute/docs/access/service-accounts#default_service_account
   compute_account = (
       'serviceAccount:{0}-compute@developer.gserviceaccount.com'.format(
@@ -293,6 +310,17 @@ def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
                            compute_account, compute_service_account_roles))
     return
 
+  # TODO(b/298174304): This is a workaround to check storage permissions
+  # for now. Ideally we should check only for necessary permissions list
+  # and apply predefined roles accordingly.
+  if custom_cloudbuild_service_account:
+    _VerifyCloudBuildStoragePermissions(
+        project_id,
+        build_account,
+        _CurrentRolesForAccount(policy, build_account),
+        CLOUD_BUILD_STORAGE_PERMISSIONS,
+    )
+
   _VerifyRolesAndPromptIfMissing(project_id, build_account,
                                  _CurrentRolesForAccount(policy, build_account),
                                  frozenset(cloudbuild_service_account_roles))
@@ -307,6 +335,97 @@ def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
     _VerifyRolesAndPromptIfMissing(
         project_id, compute_account, current_compute_account_roles,
         compute_service_account_roles)
+
+
+def _VerifyCloudBuildStoragePermissions(
+    project_id, account, applied_roles, required_storage_permissions
+):
+  """Check for IAM permissions for an account and prompt to add if missing.
+
+  Args:
+    project_id: A string with the id of the project.
+    account: A string with the identifier of an account.
+    applied_roles: A set of strings containing the current roles for the
+      account.
+    required_storage_permissions: A set of strings containing the required
+      storage permissions for the account. If a permissions isn't found, then
+      the user is prompted to add these permissions in a custom role manually or
+      accept adding the storage administrator role automatically.
+  """
+  # missing_storage_permission is a set of unique permissions that are
+  # missing from the aggregate permissions of all the roles applied to
+  # the service account
+  try:
+    missing_storage_permission = _FindMissingStoragePermissions(
+        applied_roles, required_storage_permissions
+    )
+  except apitools_exceptions.HttpForbiddenError:
+    missing_storage_permission = required_storage_permissions
+
+  if not missing_storage_permission:
+    return
+
+  storage_admin_role = ROLE_STORAGE_ADMIN
+
+  ep_table = [
+      '{0} {1}'.format(permission, account)
+      for permission in sorted(missing_storage_permission)
+  ]
+  prompt_message = (
+      'The following IAM permissions are needed for this operation:\n'
+      '[{0}]\n'.format('\n'.join(ep_table))
+  )
+  add_storage_admin = console_io.PromptContinue(
+      message=prompt_message,
+      prompt_string=(
+          'You can add the cloud build service account to a custom role with'
+          ' these permissions or to the predefined role: {0}. Would you like to'
+          ' add it to {0}'.format(storage_admin_role)
+      ),
+      throw_if_unattended=True,
+  )
+
+  if not add_storage_admin:
+    return
+  log.info('Adding [{0}] to [{1}]'.format(account, storage_admin_role))
+  try:
+    projects_api.AddIamPolicyBinding(project_id, account, storage_admin_role)
+  except apitools_exceptions.HttpForbiddenError:
+    log.warning(
+        'Your account does not have permission to add roles to the '
+        'service account {0}. If import fails, '
+        'ensure "{0}" has the roles "{1}" before retrying.'.format(
+            account, storage_admin_role
+        )
+    )
+    return
+
+
+def _FindMissingStoragePermissions(applied_roles, required_storage_permissions):
+  """Check which required storage permissions were not covered by given permissions.
+
+  Args:
+    applied_roles: A set of strings containing the current roles for the
+      account.
+    required_storage_permissions: A set of strings containing the required cloud
+      storage permissions for the account.
+
+  Returns:
+    A set of missing storage permissions that is not covered.
+  """
+  iam_messages = apis.GetMessagesModule('iam', 'v1')
+  applied_permissions = set()
+
+  for applied_role in sorted(applied_roles):
+    request = iam_messages.IamRolesGetRequest(name=applied_role)
+    applied_role_permissions = set(
+        apis.GetClientInstance('iam', 'v1')
+        .roles.Get(request)
+        .includedPermissions
+    )
+    applied_permissions = applied_permissions.union(applied_role_permissions)
+
+  return required_storage_permissions - applied_permissions
 
 
 def _VerifyRolesAndPromptIfMissing(project_id, account, applied_roles,
@@ -892,11 +1011,15 @@ def RunImageCloudBuild(args, builder, builder_args, tags, output_filter,
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(project_id,
-                       frozenset(cloudbuild_service_account_roles),
-                       frozenset(compute_service_account_roles),
-                       args.compute_service_account
-                       if 'compute_service_account' in args else '')
+  _CheckIamPermissions(
+      project_id,
+      frozenset(cloudbuild_service_account_roles),
+      frozenset(compute_service_account_roles),
+      args.cloudbuild_service_account
+      if 'cloudbuild_service_account' in args
+      else '',
+      args.compute_service_account if 'compute_service_account' in args else '',
+  )
 
   return _RunCloudBuild(args, builder, builder_args,
                         ['gce-daisy'] + tags, output_filter, args.log_location,
@@ -972,6 +1095,21 @@ def _RunCloudBuild(args,
     else:
       build_config.logsBucket = 'gs://{0}'.format(gcs_log_ref.bucket)
 
+  if (
+      hasattr(args, 'cloudbuild_service_account')
+      and args.cloudbuild_service_account
+  ):
+    if not build_config.logsBucket:
+      raise calliope_exceptions.RequiredArgumentException(
+          '--log-location',
+          'Log Location  is required when service account is provided for cloud'
+          ' build',
+      )
+    build_config.serviceAccount = 'projects/{0}/serviceAccounts/{1}'.format(
+        properties.VALUES.core.project.Get(),
+        args.cloudbuild_service_account,
+    )
+
   if build_region and build_region in AR_TO_CLOUD_BUILD_REGIONS:
     build_region = AR_TO_CLOUD_BUILD_REGIONS[build_region]
 
@@ -1006,12 +1144,38 @@ def _RunCloudBuild(args,
 
 
 def RunInstanceOVFImportBuild(
-    args, compute_client, instance_name, source_uri, no_guest_environment,
-    can_ip_forward, deletion_protection, description, labels, machine_type,
-    network, network_tier, subnet, private_network_ip, no_restart_on_failure,
-    os, tags, zone, project, output_filter, release_track, hostname, no_address,
-    byol, compute_service_account, service_account, no_service_account, scopes,
-    no_scopes, uefi_compatible):
+    args,
+    compute_client,
+    instance_name,
+    source_uri,
+    no_guest_environment,
+    can_ip_forward,
+    deletion_protection,
+    description,
+    labels,
+    machine_type,
+    network,
+    network_tier,
+    subnet,
+    private_network_ip,
+    no_restart_on_failure,
+    os,
+    tags,
+    zone,
+    project,
+    output_filter,
+    release_track,
+    hostname,
+    no_address,
+    byol,
+    compute_service_account,
+    cloudbuild_service_account,
+    service_account,
+    no_service_account,
+    scopes,
+    no_scopes,
+    uefi_compatible,
+):
   """Run a OVF into VM instance import build on Google Cloud Build.
 
   Args:
@@ -1051,6 +1215,8 @@ def RunInstanceOVFImportBuild(
     byol: Specifies that you want to import an image with an existing license.
     compute_service_account: Compute service account to be used for worker
       instances.
+    cloudbuild_service_account: CloudBuild service account to be used for
+      running cloud builds.
     service_account: Service account to be assigned to the VM instance or
       machine image.
     no_service_account: No service account is assigned to the VM instance or
@@ -1070,10 +1236,13 @@ def RunInstanceOVFImportBuild(
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(project_id,
-                       frozenset(IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT),
-                       frozenset(IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT),
-                       compute_service_account)
+  _CheckIamPermissions(
+      project_id,
+      frozenset(IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT),
+      frozenset(IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT),
+      cloudbuild_service_account,
+      compute_service_account,
+  )
 
   ovf_importer_args = []
   AppendArg(ovf_importer_args, 'instance-names', instance_name)
@@ -1162,9 +1331,14 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track, messages):
       properties.VALUES.core.project.GetOrFail())
 
   _CheckIamPermissions(
-      project_id, frozenset(IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT),
+      project_id,
+      frozenset(IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT),
       frozenset(IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT),
-      args.compute_service_account if 'compute_service_account' in args else '')
+      args.cloudbuild_service_account
+      if 'cloudbuild_service_account' in args
+      else '',
+      args.compute_service_account if 'compute_service_account' in args else '',
+  )
 
   machine_type = None
   if args.machine_type or args.custom_cpu or args.custom_memory:
@@ -1589,8 +1763,8 @@ def AddComputeServiceAccountArg(parser, operation, roles):
         {operation} on the temporary instance uses the project's default Compute
         Engine service account.
 
-        At minimum, the specified Compute Engine service account needs to have
-        the following roles assigned:
+        At a minimum, you need to grant the following roles to the
+        specified Cloud Build service account:
         """
   help_text_pattern += '\n'
   for role in roles:
@@ -1600,6 +1774,40 @@ def AddComputeServiceAccountArg(parser, operation, roles):
       '--compute-service-account',
       help=help_text_pattern.format(
           operation=operation, operation_capitalized=operation.capitalize()),
+  )
+
+
+def AddCloudBuildServiceAccountArg(parser, operation, roles):
+  """Adds Cloud Build service account arg."""
+  help_text_pattern = """\
+        Image import amd export tools use Cloud Build to import and export images
+        to and from your project.
+        Cloud Build uses a specific service account to execute builds on your
+        behalf.
+        The Cloud Build service account generates access token for other service
+        accounts and it is also used for authentication when building the artifacts
+        for the image import tool.
+
+        Use this flag to to specify a custom Cloud Build service account for
+        image import and export. If you don't specify this flag, Cloud Build
+        runs using your project's default Cloud Build service account.
+        To set this option, specify the email address corresponding to the
+        required Cloud Build service account.
+        Note: You must specify the `--logs-location` flag when
+        you set the custom Cloud Build service account.
+
+        At minimum, the specified Cloud Build service account needs to have
+        the following roles assigned:
+        """
+  help_text_pattern += '\n'
+  for role in roles:
+    help_text_pattern += '        * ' + role + '\n'
+
+  parser.add_argument(
+      '--cloudbuild-service-account',
+      help=help_text_pattern.format(
+          operation=operation, operation_capitalized=operation.capitalize()
+      ),
   )
 
 

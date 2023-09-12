@@ -16,6 +16,32 @@ from apitools.base.py import extra_types
 package = 'iam'
 
 
+class GoogleCloudCommonOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    cancelRequested: Output only. Identifies whether the user has requested
+      cancellation of the operation. Operations that have been cancelled
+      successfully have Operation.error value with a google.rpc.Status.code of
+      1, corresponding to `Code.CANCELLED`.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    statusDetail: Output only. Human-readable status of the operation, if any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  cancelRequested = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  statusDetail = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class GoogleIamAdminV1AuditData(_messages.Message):
   r"""Audit log information specific to Cloud IAM admin APIs. This message is
   serialized as an `Any` type in the `ServiceData` message of an `AuditLog`
@@ -444,8 +470,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -467,7 +493,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -506,9 +532,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is

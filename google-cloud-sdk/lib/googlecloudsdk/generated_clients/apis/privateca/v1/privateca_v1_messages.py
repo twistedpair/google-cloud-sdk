@@ -3113,7 +3113,7 @@ class SubjectConfig(_messages.Message):
   alternative name fields in an X.509 certificate.
 
   Fields:
-    subject: Required. Contains distinguished name fields such as the common
+    subject: Optional. Contains distinguished name fields such as the common
       name, location and organization.
     subjectAltName: Optional. The subject alternative name fields.
   """

@@ -6,6 +6,97 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
+## 446.0.0 (2023-09-12)
+
+### AlloyDB
+
+* Added the ability to specify a backup or source cluster using its full
+  resource path when creating a restored cluster. This enables restoring across
+  projects.
+
+### Anthos Multi-Cloud
+
+*   Added `--instance-type` flag to `gcloud container aws node-pools update` to
+    update the EC2 instance type of node pool nodes.
+
+### BigQuery
+
+* Added `--external_source` flag for dataset creation.
+ * Updated `bq show` to display tags on a table.
+ * Fixed an issue where a command could fail with little to no messaging. Other
+   uncaught cases will need `--debug_mode` to get more information.
+ * Fixed a bug when updating `kms_key_name` on a connection.
+ * Improved logging for discovery doc load and authentication.
+ * Utilized new python features with breaking changes for python 2.
+
+### Certificate Manager
+
+* Promoted `gcloud certificate-manager trust-configs delete` to GA.
+* Promoted `gcloud certificate-manager trust-configs describe` to GA.
+* Promoted `gcloud certificate-manager trust-configs export` to GA.
+* Promoted `gcloud certificate-manager trust-configs import` to GA.
+* Promoted `gcloud certificate-manager trust-configs list` to GA.
+
+### Cloud Billing
+
+*   Added `filter-resource-ancestors` flag to `gcloud billing budget CLI` to include folders and organizations filter.
+
+### Cloud Composer
+
+* Added maintenance window flags for environment update:
+  - `--maintenance-window-start`
+  - `--maintenance-window-end`
+  - `--maintenance-window-recurrence`
+  - `--clear-maintenance-window`.
+
+### Cloud Dataplex
+
+* Added snake case support for dataplex datascans spec file.
+
+### Cloud Filestore
+
+* Updated `--capacity` flag description with High Scale tier capacity range.
+
+### Cloud Monitoring
+
+* Updated the format of `gcloud beta monitoring metrics-scopes list <PROJECT_ID>`
+  to `gcloud beta monitoring metrics-scopes list projects/<PROJECT_ID>`.
+* Updated the format of `gcloud beta monitoring metrics-scopes create <PROJECT_ID>`
+  to `gcloud beta monitoring metrics-scopes create projects/<PROJECT_ID>`.
+* Updated the format of `gcloud beta monitoring metrics-scopes delete <PROJECT_ID>`
+  to `gcloud beta monitoring metrics-scopes delete projects/<PROJECT_ID>`.
+
+### Cloud NetApp
+
+* Add Standard service level to `gcloud (alpha|beta) netapp storage-pools` command group.
+* Removed explicit check on `--volume` in `gcloud netapp volumes replications stop` command.
+
+### Compute Engine
+
+* Added support for `--cloudbuild-service-account` flag for:
+  * `gcloud compute images import` in GA;
+  * `gcloud compute instances import` in GA;
+  * `gcloud compute machine_images import` in GA.
+
+* Added `alpha` and `beta` versions of a new API named snapshot settings.
+  Documentation of this feature will be available at <https://cloud.google.com/compute/docs/disks/snapshot-settings>
+  following shortly after the release of this version of `gcloud` CLI.
+
+### Distributed Cloud Edge
+
+* Added `--version` and `--release-channel` flags to `gcloud edge-cloud container clusters create` command to allow specifying the cluster version and release channel.
+* Promoted `--system-addons-confg`, `--external-lb-ipv4-address-pools`, `--control-plane-node-count`, `--control-plane-machine-filter`, `--control-plane-shared-deployment-policy`, `--version`, and `--release-channel` flags from ALPHA to GA.
+
+### Network Security
+
+* Promoted `gcloud network-security server-tls-policies delete` to GA.
+* Promoted `gcloud network-security server-tls-policies describe` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on September 26th, 2023.
+
 ## 445.0.0 (2023-09-06)
 
 ### Breaking Changes
@@ -140,7 +231,7 @@ custom timeout for the diagnose operation.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
-Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+Note: Support for Python 3.5-3.7 will be deprecated on September 26th, 2023.
 
 ## 444.0.0 (2023-08-22)
 
@@ -238,7 +329,7 @@ a cluster to the following commands:
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
-Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+Note: Support for Python 3.5-3.7 will be deprecated on September 26th, 2023.
 
 ## 443.0.0 (2023-08-15)
 

@@ -1599,6 +1599,69 @@ class PickTimeSeriesFilter(_messages.Message):
   rankingMethod = _messages.EnumField('RankingMethodValueValuesEnum', 3)
 
 
+class PieChart(_messages.Message):
+  r"""A widget that displays timeseries data as a pie or a donut.
+
+  Enums:
+    ChartTypeValueValuesEnum: Required. Indicates the visualization type for
+      the PieChart.
+
+  Fields:
+    chartType: Required. Indicates the visualization type for the PieChart.
+    dataSets: Required. The queries for the chart's data.
+    showLabels: Optional. Indicates whether or not the pie chart should show
+      slices' labels
+    showTotal: Optional. Indicates whether or not donut chart should show the
+      total in the middle
+    sliceAggregatedThreshold: Optional. If slices's values are smaller than
+      this value, they will be combined into other category
+  """
+
+  class ChartTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Indicates the visualization type for the PieChart.
+
+    Values:
+      PIE_CHART_TYPE_UNSPECIFIED: The zero value. No type specified. Do not
+        use.
+      PIE: A Pie type PieChart.
+      DONUT: Similar to PIE, but the DONUT type PieChart has a hole in the
+        middle.
+    """
+    PIE_CHART_TYPE_UNSPECIFIED = 0
+    PIE = 1
+    DONUT = 2
+
+  chartType = _messages.EnumField('ChartTypeValueValuesEnum', 1)
+  dataSets = _messages.MessageField('PieChartDataSet', 2, repeated=True)
+  showLabels = _messages.BooleanField(3)
+  showTotal = _messages.BooleanField(4)
+  sliceAggregatedThreshold = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+
+
+class PieChartDataSet(_messages.Message):
+  r"""Groups a time series query definition.
+
+  Fields:
+    minAlignmentPeriod: Optional. The lower bound on data point frequency for
+      this data set, implemented by specifying the minimum alignment period to
+      use in a time series query. For example, if the data is published once
+      every 10 minutes, the min_alignment_period should be at least 10
+      minutes. It would not make sense to fetch and align data at one minute
+      intervals.
+    sliceNameTemplate: Optional. A template for the name of the slice. This
+      name will be displayed in the legend and the tooltip of the pie chart.
+      It replaces the auto-generated names for the slices. For example, if the
+      template is set to ${resource.labels.zone}, the zone's value will be
+      used for the name instead of the default name.
+    timeSeriesQuery: Required. The query for the PieChart. See,
+      google.monitoring.dashboard.v1.TimeSeriesQuery.
+  """
+
+  minAlignmentPeriod = _messages.StringField(1)
+  sliceNameTemplate = _messages.StringField(2)
+  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 3)
+
+
 class QueryExemplarsRequest(_messages.Message):
   r"""QueryExemplarsRequest holds all parameters of the Prometheus upstream
   API for querying exemplars.
@@ -2418,6 +2481,7 @@ class Widget(_messages.Message):
       widgets.
     incidentList: A widget that shows list of incidents.
     logsPanel: A widget that shows a stream of logs.
+    pieChart: A widget that displays timeseries data as a pie chart.
     scorecard: A scorecard summarizing time series data.
     text: A raw string or markdown displaying textual content.
     timeSeriesTable: A widget that displays time series data in a tabular
@@ -2431,11 +2495,12 @@ class Widget(_messages.Message):
   collapsibleGroup = _messages.MessageField('CollapsibleGroup', 3)
   incidentList = _messages.MessageField('IncidentList', 4)
   logsPanel = _messages.MessageField('LogsPanel', 5)
-  scorecard = _messages.MessageField('Scorecard', 6)
-  text = _messages.MessageField('Text', 7)
-  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 8)
-  title = _messages.StringField(9)
-  xyChart = _messages.MessageField('XyChart', 10)
+  pieChart = _messages.MessageField('PieChart', 6)
+  scorecard = _messages.MessageField('Scorecard', 7)
+  text = _messages.MessageField('Text', 8)
+  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 9)
+  title = _messages.StringField(10)
+  xyChart = _messages.MessageField('XyChart', 11)
 
 
 class XyChart(_messages.Message):

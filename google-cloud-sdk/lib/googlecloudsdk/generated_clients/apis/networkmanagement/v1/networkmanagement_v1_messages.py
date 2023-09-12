@@ -367,6 +367,10 @@ class ConnectivityTest(_messages.Message):
     labels: Resource labels to represent user-provided metadata.
     name: Required. Unique name of the resource using the form:
       `projects/{project_id}/locations/global/connectivityTests/{test_id}`
+    probingDetails: Output only. The probing details of this test from the
+      latest run, present for applicable tests only. The details are updated
+      when creating a new test, updating an existing test, or triggering a
+      one-time rerun of an existing test.
     protocol: IP Protocol of the test. When not provided, "TCP" is assumed.
     reachabilityDetails: Output only. The reachability details of this test
       from the latest run. The details are updated when creating a new test,
@@ -422,11 +426,12 @@ class ConnectivityTest(_messages.Message):
   displayName = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  protocol = _messages.StringField(7)
-  reachabilityDetails = _messages.MessageField('ReachabilityDetails', 8)
-  relatedProjects = _messages.StringField(9, repeated=True)
-  source = _messages.MessageField('Endpoint', 10)
-  updateTime = _messages.StringField(11)
+  probingDetails = _messages.MessageField('ProbingDetails', 7)
+  protocol = _messages.StringField(8)
+  reachabilityDetails = _messages.MessageField('ReachabilityDetails', 9)
+  relatedProjects = _messages.StringField(10, repeated=True)
+  source = _messages.MessageField('Endpoint', 11)
+  updateTime = _messages.StringField(12)
 
 
 class DeliverInfo(_messages.Message):
@@ -459,6 +464,7 @@ class DeliverInfo(_messages.Message):
       PSC_VPC_SC: Target is a VPC-SC that uses [Private Service
         Connect](https://cloud.google.com/vpc/docs/configure-private-service-
         connect-apis).
+      SERVERLESS_NEG: Target is a serverless network endpoint group.
     """
     TARGET_UNSPECIFIED = 0
     INSTANCE = 1
@@ -469,6 +475,7 @@ class DeliverInfo(_messages.Message):
     PSC_PUBLISHED_SERVICE = 6
     PSC_GOOGLE_API = 7
     PSC_VPC_SC = 8
+    SERVERLESS_NEG = 9
 
   resourceUri = _messages.StringField(1)
   target = _messages.EnumField('TargetValueValuesEnum', 2)
@@ -638,6 +645,17 @@ class DropInfo(_messages.Message):
   resourceUri = _messages.StringField(2)
 
 
+class EdgeLocation(_messages.Message):
+  r"""Representation of a network edge location as per
+  https://cloud.google.com/vpc/docs/edge-locations.
+
+  Fields:
+    metropolitanArea: Name of the metropolitan area.
+  """
+
+  metropolitanArea = _messages.StringField(1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -651,6 +669,10 @@ class Endpoint(_messages.Message):
   r"""Source or destination of the Connectivity Test.
 
   Enums:
+    ForwardingRuleTargetValueValuesEnum: Output only. Specifies the type of
+      the target of the forwarding rule.
+    LoadBalancerTypeValueValuesEnum: Output only. Type of the load balancer
+      the forwarding rule points to.
     NetworkTypeValueValuesEnum: Type of the network where the endpoint is
       located. Applicable only to source endpoint, as destination network type
       can be inferred from the source.
@@ -672,14 +694,20 @@ class Endpoint(_messages.Message):
       the control plane. Format:
       projects/{project}/global/forwardingRules/{id} or
       projects/{project}/regions/{region}/forwardingRules/{id}
+    forwardingRuleTarget: Output only. Specifies the type of the target of the
+      forwarding rule.
     gkeMasterCluster: A cluster URI for [Google Kubernetes Engine
       master](https://cloud.google.com/kubernetes-
       engine/docs/concepts/cluster-architecture).
     instance: A Compute Engine instance URI.
     ipAddress: The IP address of the endpoint, which can be an external or
       internal IP. An IPv6 address is only allowed when the test's destination
-      is a [global load balancer VIP](/load-balancing/docs/load-balancing-
-      overview).
+      is a [global load balancer VIP](https://cloud.google.com/load-
+      balancing/docs/load-balancing-overview).
+    loadBalancerId: Output only. ID of the load balancer the forwarding rule
+      points to. Empty for forwarding rules not related to load balancers.
+    loadBalancerType: Output only. Type of the load balancer the forwarding
+      rule points to.
     network: A Compute Engine network URI.
     networkType: Type of the network where the endpoint is located. Applicable
       only to source endpoint, as destination network type can be inferred
@@ -694,6 +722,54 @@ class Endpoint(_messages.Message):
       provide is from the service project. In this case, the network that the
       IP address resides in is defined in the host project.
   """
+
+  class ForwardingRuleTargetValueValuesEnum(_messages.Enum):
+    r"""Output only. Specifies the type of the target of the forwarding rule.
+
+    Values:
+      FORWARDING_RULE_TARGET_UNSPECIFIED: Forwarding rule target is unknown.
+      INSTANCE: Compute Engine instance for protocol forwarding.
+      LOAD_BALANCER: Load Balancer. The specific type can be found from
+        load_balancer_type.
+      VPN_GATEWAY: Classic Cloud VPN Gateway.
+      PSC: Forwarding Rule is a Private Service Connect endpoint.
+    """
+    FORWARDING_RULE_TARGET_UNSPECIFIED = 0
+    INSTANCE = 1
+    LOAD_BALANCER = 2
+    VPN_GATEWAY = 3
+    PSC = 4
+
+  class LoadBalancerTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of the load balancer the forwarding rule points to.
+
+    Values:
+      LOAD_BALANCER_TYPE_UNSPECIFIED: Forwarding rule points to a different
+        target than a load balancer or a load balancer type is unknown.
+      HTTPS_ADVANCED_LOAD_BALANCER: Global external HTTP(S) load balancer.
+      HTTPS_LOAD_BALANCER: Global external HTTP(S) load balancer (classic)
+      REGIONAL_HTTPS_LOAD_BALANCER: Regional external HTTP(S) load balancer.
+      INTERNAL_HTTPS_LOAD_BALANCER: Internal HTTP(S) load balancer.
+      SSL_PROXY_LOAD_BALANCER: External SSL proxy load balancer.
+      TCP_PROXY_LOAD_BALANCER: External TCP proxy load balancer.
+      INTERNAL_TCP_PROXY_LOAD_BALANCER: Internal regional TCP proxy load
+        balancer.
+      NETWORK_LOAD_BALANCER: External TCP/UDP Network load balancer.
+      LEGACY_NETWORK_LOAD_BALANCER: Target-pool based external TCP/UDP Network
+        load balancer.
+      TCP_UDP_INTERNAL_LOAD_BALANCER: Internal TCP/UDP load balancer.
+    """
+    LOAD_BALANCER_TYPE_UNSPECIFIED = 0
+    HTTPS_ADVANCED_LOAD_BALANCER = 1
+    HTTPS_LOAD_BALANCER = 2
+    REGIONAL_HTTPS_LOAD_BALANCER = 3
+    INTERNAL_HTTPS_LOAD_BALANCER = 4
+    SSL_PROXY_LOAD_BALANCER = 5
+    TCP_PROXY_LOAD_BALANCER = 6
+    INTERNAL_TCP_PROXY_LOAD_BALANCER = 7
+    NETWORK_LOAD_BALANCER = 8
+    LEGACY_NETWORK_LOAD_BALANCER = 9
+    TCP_UDP_INTERNAL_LOAD_BALANCER = 10
 
   class NetworkTypeValueValuesEnum(_messages.Enum):
     r"""Type of the network where the endpoint is located. Applicable only to
@@ -717,13 +793,16 @@ class Endpoint(_messages.Message):
   cloudRunRevision = _messages.MessageField('CloudRunRevisionEndpoint', 3)
   cloudSqlInstance = _messages.StringField(4)
   forwardingRule = _messages.StringField(5)
-  gkeMasterCluster = _messages.StringField(6)
-  instance = _messages.StringField(7)
-  ipAddress = _messages.StringField(8)
-  network = _messages.StringField(9)
-  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 10)
-  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  projectId = _messages.StringField(12)
+  forwardingRuleTarget = _messages.EnumField('ForwardingRuleTargetValueValuesEnum', 6)
+  gkeMasterCluster = _messages.StringField(7)
+  instance = _messages.StringField(8)
+  ipAddress = _messages.StringField(9)
+  loadBalancerId = _messages.StringField(10)
+  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 11)
+  network = _messages.StringField(12)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 13)
+  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(15)
 
 
 class EndpointInfo(_messages.Message):
@@ -736,6 +815,8 @@ class EndpointInfo(_messages.Message):
     destinationNetworkUri: URI of the network where this packet is sent to.
     destinationPort: Destination port. Only valid when protocol is TCP or UDP.
     protocol: IP protocol in string format, for example: "TCP", "UDP", "ICMP".
+    sourceAgentUri: URI of the source telemetry agent this packet originates
+      from.
     sourceIp: Source IP address.
     sourceNetworkUri: URI of the network where this packet originates from.
     sourcePort: Source port. Only valid when protocol is TCP or UDP.
@@ -745,9 +826,10 @@ class EndpointInfo(_messages.Message):
   destinationNetworkUri = _messages.StringField(2)
   destinationPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   protocol = _messages.StringField(4)
-  sourceIp = _messages.StringField(5)
-  sourceNetworkUri = _messages.StringField(6)
-  sourcePort = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  sourceAgentUri = _messages.StringField(5)
+  sourceIp = _messages.StringField(6)
+  sourceNetworkUri = _messages.StringField(7)
+  sourcePort = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
 class Expr(_messages.Message):
@@ -836,6 +918,10 @@ class FirewallInfo(_messages.Message):
         details, see [Network firewall
         policies](https://cloud.google.com/vpc/docs/network-firewall-
         policies).
+      NETWORK_REGIONAL_FIREWALL_POLICY_RULE: Regional network firewall policy
+        rule. For details, see [Regional network firewall
+        policies](https://cloud.google.com/firewall/docs/regional-firewall-
+        policies).
     """
     FIREWALL_RULE_TYPE_UNSPECIFIED = 0
     HIERARCHICAL_FIREWALL_POLICY_RULE = 1
@@ -843,6 +929,7 @@ class FirewallInfo(_messages.Message):
     IMPLIED_VPC_FIREWALL_RULE = 3
     SERVERLESS_VPC_ACCESS_MANAGED_FIREWALL_RULE = 4
     NETWORK_FIREWALL_POLICY_RULE = 5
+    NETWORK_REGIONAL_FIREWALL_POLICY_RULE = 6
 
   action = _messages.StringField(1)
   direction = _messages.StringField(2)
@@ -1001,6 +1088,30 @@ class InstanceInfo(_messages.Message):
   networkUri = _messages.StringField(6)
   serviceAccount = _messages.StringField(7)
   uri = _messages.StringField(8)
+
+
+class LatencyDistribution(_messages.Message):
+  r"""Describes measured latency distribution.
+
+  Fields:
+    latencyPercentiles: Representative latency percentiles.
+  """
+
+  latencyPercentiles = _messages.MessageField('LatencyPercentile', 1, repeated=True)
+
+
+class LatencyPercentile(_messages.Message):
+  r"""Latency percentile rank and value.
+
+  Fields:
+    latencyMicros: percent-th percentile of latency observed, in microseconds.
+      Fraction of percent/100 of samples have latency lower or equal to the
+      value of this field.
+    percent: Percentage of samples this data point applies to.
+  """
+
+  latencyMicros = _messages.IntegerField(1)
+  percent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class ListConnectivityTestsResponse(_messages.Message):
@@ -1697,6 +1808,79 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class ProbingDetails(_messages.Message):
+  r"""Results of active probing from the last run of the test.
+
+  Enums:
+    AbortCauseValueValuesEnum: The reason probing was aborted.
+    ResultValueValuesEnum: The overall result of active probing.
+
+  Fields:
+    abortCause: The reason probing was aborted.
+    destinationEgressLocation: The EdgeLocation from which a packet destined
+      for/originating from the internet will egress/ingress the Google
+      network. This will only be populated for a connectivity test which has
+      an internet destination/source address. The absence of this field *must
+      not* be used as an indication that the destination/source is part of the
+      Google network.
+    endpointInfo: The source and destination endpoints derived from the test
+      input and used for active probing.
+    error: Details about an internal failure or the cancellation of active
+      probing.
+    probingLatency: Latency as measured by active probing in one direction:
+      from the source to the destination endpoint.
+    result: The overall result of active probing.
+    sentProbeCount: Number of probes sent.
+    successfulProbeCount: Number of probes that reached the destination.
+    verifyTime: The time that reachability was assessed through active
+      probing.
+  """
+
+  class AbortCauseValueValuesEnum(_messages.Enum):
+    r"""The reason probing was aborted.
+
+    Values:
+      PROBING_ABORT_CAUSE_UNSPECIFIED: No reason was specified.
+      PERMISSION_DENIED: The user lacks permission to access some of the
+        network resources required to run the test.
+      NO_SOURCE_LOCATION: No valid source endpoint could be derived from the
+        request.
+    """
+    PROBING_ABORT_CAUSE_UNSPECIFIED = 0
+    PERMISSION_DENIED = 1
+    NO_SOURCE_LOCATION = 2
+
+  class ResultValueValuesEnum(_messages.Enum):
+    r"""The overall result of active probing.
+
+    Values:
+      PROBING_RESULT_UNSPECIFIED: No result was specified.
+      REACHABLE: At least 95% of packets reached the destination.
+      UNREACHABLE: No packets reached the destination.
+      REACHABILITY_INCONSISTENT: Less than 95% of packets reached the
+        destination.
+      UNDETERMINED: Reachability could not be determined. Possible reasons
+        are: * The user lacks permission to access some of the network
+        resources required to run the test. * No valid source endpoint could
+        be derived from the request. * An internal error occurred.
+    """
+    PROBING_RESULT_UNSPECIFIED = 0
+    REACHABLE = 1
+    UNREACHABLE = 2
+    REACHABILITY_INCONSISTENT = 3
+    UNDETERMINED = 4
+
+  abortCause = _messages.EnumField('AbortCauseValueValuesEnum', 1)
+  destinationEgressLocation = _messages.MessageField('EdgeLocation', 2)
+  endpointInfo = _messages.MessageField('EndpointInfo', 3)
+  error = _messages.MessageField('Status', 4)
+  probingLatency = _messages.MessageField('LatencyDistribution', 5)
+  result = _messages.EnumField('ResultValueValuesEnum', 6)
+  sentProbeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  successfulProbeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  verifyTime = _messages.StringField(9)
 
 
 class ReachabilityDetails(_messages.Message):

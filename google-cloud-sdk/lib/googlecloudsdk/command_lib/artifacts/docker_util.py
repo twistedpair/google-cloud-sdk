@@ -922,3 +922,30 @@ def DockerUrlToVersion(url):
   _ValidateDockerRepo(image.docker_repo.GetRepositoryName())
   docker_version = _ValidateAndGetDockerVersion(version_or_tag)
   return image, docker_version
+
+
+def DockerUrlToImage(url):
+  """Converts docker url to image.
+
+  If a version or tag is present, validate it, transform tags to versions, and
+  return it.  Otherwise, none will be returned in place of version.  This
+  function is similar to DockerUrlToVersion with some differences like strict
+  parsing and only validating if version or tag is none.
+
+  Args:
+    url: Url of a docker image, which could have version or tag.
+
+  Returns:
+    A DockerImage, and a DockerVersion.  DockerVersion can be None.
+
+  Raises:
+    ar_exceptions.InvalidInputValueError: If user input is invalid.
+  """
+  image, version_or_tag = _ParseDockerImage(
+      url, _INVALID_IMAGE_ERROR, strict=True
+  )
+  _ValidateDockerRepo(image.docker_repo.GetRepositoryName())
+  if version_or_tag is None:
+    return image, None
+  docker_version = _ValidateAndGetDockerVersion(version_or_tag)
+  return image, docker_version

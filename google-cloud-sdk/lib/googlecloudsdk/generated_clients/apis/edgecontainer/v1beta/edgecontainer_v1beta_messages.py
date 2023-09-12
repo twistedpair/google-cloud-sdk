@@ -1494,6 +1494,16 @@ class Remote(_messages.Message):
 
 
 
+class SdsOperator(_messages.Message):
+  r"""Config for the SDS Operator add-on which installs Robin CNS.
+
+  Fields:
+    version: Optional. SDS Operator version.
+  """
+
+  version = _messages.StringField(1)
+
+
 class ServerConfig(_messages.Message):
   r"""Server configuration for supported versions and release channels.
 
@@ -1655,9 +1665,11 @@ class SystemAddonsConfig(_messages.Message):
 
   Fields:
     ingress: Optional. Config for Ingress.
+    sdsOperator: Optional. Config for SDS Operator.
   """
 
   ingress = _messages.MessageField('Ingress', 1)
+  sdsOperator = _messages.MessageField('SdsOperator', 2)
 
 
 class TimeWindow(_messages.Message):

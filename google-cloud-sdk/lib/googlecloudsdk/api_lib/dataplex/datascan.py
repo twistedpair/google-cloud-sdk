@@ -46,7 +46,7 @@ def GenerateDataQualitySpec(args):
     dataqualityspec = dataplex_api.ReadObject(args.data_quality_spec_file)
     if dataqualityspec is not None:
       dataqualityspec = messages_util.DictToMessageWithErrorCheck(
-          dataqualityspec,
+          dataplex_api.SnakeToCamelDict(dataqualityspec),
           module.GoogleCloudDataplexV1DataQualitySpec,
       )
   else:

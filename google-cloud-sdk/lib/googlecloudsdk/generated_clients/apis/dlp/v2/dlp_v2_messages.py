@@ -5191,6 +5191,48 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
   versions = _messages.MessageField('GooglePrivacyDlpV2VersionDescription', 7, repeated=True)
 
 
+class GooglePrivacyDlpV2InfoTypeLikelihood(_messages.Message):
+  r"""Configuration to control custom minimum likelihoods per infotype. Used
+  when certain infotypes need to return with higher or lower precision than
+  the baseline, i.e. when wanting PERSON_NAME to return all possible names
+  without lowering the precision of other infotypes.
+
+  Enums:
+    MinLikelihoodValueValuesEnum: Only returns findings equal or above this
+      threshold. This field is required or else the configuration fails.
+
+  Fields:
+    infoType: Type of information the likelihood threshold applies to. Only
+      one likelihood per info_type should be provided. If InfoTypeLikelihood
+      does not have an info_type, the configuration fails.
+    minLikelihood: Only returns findings equal or above this threshold. This
+      field is required or else the configuration fails.
+  """
+
+  class MinLikelihoodValueValuesEnum(_messages.Enum):
+    r"""Only returns findings equal or above this threshold. This field is
+    required or else the configuration fails.
+
+    Values:
+      LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
+      VERY_UNLIKELY: Highest chance of a false positive.
+      UNLIKELY: High chance of a false positive.
+      POSSIBLE: Some matching signals. The default value.
+      LIKELY: Low chance of a false positive.
+      VERY_LIKELY: Confidence level is high. Lowest chance of a false
+        positive.
+    """
+    LIKELIHOOD_UNSPECIFIED = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 1)
+  minLikelihood = _messages.EnumField('MinLikelihoodValueValuesEnum', 2)
+
+
 class GooglePrivacyDlpV2InfoTypeLimit(_messages.Message):
   r"""Max findings configuration per infoType, per content item or long
   running DlpJob.
@@ -5302,6 +5344,10 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
     minLikelihood: Only returns findings equal or above this threshold. The
       default is POSSIBLE. See https://cloud.google.com/dlp/docs/likelihood to
       learn more.
+    minLikelihoodPerInfoType: Per infotype likelihoods. For each infotype, a
+      user can specify a minimum likelihood, and only return that infotype if
+      it is above that threshold. If an infotype is not included, it uses the
+      InspectConfig min_likelihood.
     ruleSet: Set of rules to apply to the findings for this InspectConfig.
       Exclusion rules, contained in the set are executed in the end, other
       rules are executed in the order they are specified for each info type.
@@ -5346,7 +5392,8 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
   infoTypes = _messages.MessageField('GooglePrivacyDlpV2InfoType', 5, repeated=True)
   limits = _messages.MessageField('GooglePrivacyDlpV2FindingLimits', 6)
   minLikelihood = _messages.EnumField('MinLikelihoodValueValuesEnum', 7)
-  ruleSet = _messages.MessageField('GooglePrivacyDlpV2InspectionRuleSet', 8, repeated=True)
+  minLikelihoodPerInfoType = _messages.MessageField('GooglePrivacyDlpV2InfoTypeLikelihood', 8, repeated=True)
+  ruleSet = _messages.MessageField('GooglePrivacyDlpV2InspectionRuleSet', 9, repeated=True)
 
 
 class GooglePrivacyDlpV2InspectContentRequest(_messages.Message):

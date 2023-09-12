@@ -1021,6 +1021,33 @@ class SpannerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def BatchWrite(self, request, global_params=None):
+      r"""Batches the supplied mutation groups in a collection of efficient transactions. All mutations in a group are committed atomically. However, mutations across groups can be committed non-atomically in an unspecified order and thus, they must be independent of each other. Partial failure is possible, i.e., some groups may have been committed successfully, while some may have failed. The results of individual batches are streamed into the response as the batches are applied.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesSessionsBatchWriteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BatchWriteResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchWrite')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchWrite.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:batchWrite',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.batchWrite',
+        ordered_params=['session'],
+        path_params=['session'],
+        query_params=[],
+        relative_path='v1/{+session}:batchWrite',
+        request_field='batchWriteRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsBatchWriteRequest',
+        response_type_name='BatchWriteResponse',
+        supports_download=False,
+    )
+
     def BeginTransaction(self, request, global_params=None):
       r"""Begins a new transaction. This step can often be skipped: Read, ExecuteSql and Commit can begin a new transaction as a side-effect.
 

@@ -3077,6 +3077,33 @@ class DialogflowV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def SearchKnowledge(self, request, global_params=None):
+      r"""Get answers for the given query based on knowledge documents.
+
+      Args:
+        request: (GoogleCloudDialogflowV2SearchKnowledgeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SearchKnowledgeResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchKnowledge')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchKnowledge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/suggestions:searchKnowledge',
+        http_method='POST',
+        method_id='dialogflow.projects.conversations.suggestions.searchKnowledge',
+        ordered_params=['conversation'],
+        path_params=['conversation'],
+        query_params=[],
+        relative_path='v2/{+conversation}/suggestions:searchKnowledge',
+        request_field='<request>',
+        request_type_name='GoogleCloudDialogflowV2SearchKnowledgeRequest',
+        response_type_name='GoogleCloudDialogflowV2SearchKnowledgeResponse',
+        supports_download=False,
+    )
+
     def SuggestConversationSummary(self, request, global_params=None):
       r"""Suggests summary for a conversation based on specific historical messages. The range of the messages to be used for summary can be specified in the request.
 
@@ -6334,6 +6361,33 @@ class DialogflowV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def SearchKnowledge(self, request, global_params=None):
+      r"""Get answers for the given query based on knowledge documents.
+
+      Args:
+        request: (GoogleCloudDialogflowV2SearchKnowledgeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SearchKnowledgeResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchKnowledge')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchKnowledge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/suggestions:searchKnowledge',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversations.suggestions.searchKnowledge',
+        ordered_params=['conversation'],
+        path_params=['conversation'],
+        query_params=[],
+        relative_path='v2/{+conversation}/suggestions:searchKnowledge',
+        request_field='<request>',
+        request_type_name='GoogleCloudDialogflowV2SearchKnowledgeRequest',
+        response_type_name='GoogleCloudDialogflowV2SearchKnowledgeResponse',
+        supports_download=False,
+    )
+
     def SuggestConversationSummary(self, request, global_params=None):
       r"""Suggests summary for a conversation based on specific historical messages. The range of the messages to be used for summary can be specified in the request.
 
@@ -6978,6 +7032,33 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SearchKnowledge(self, request, global_params=None):
+      r"""Get answers for the given query based on knowledge documents.
+
+      Args:
+        request: (GoogleCloudDialogflowV2SearchKnowledgeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SearchKnowledgeResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchKnowledge')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchKnowledge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/suggestions:searchKnowledge',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.suggestions.searchKnowledge',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/suggestions:searchKnowledge',
+        request_field='<request>',
+        request_type_name='GoogleCloudDialogflowV2SearchKnowledgeRequest',
+        response_type_name='GoogleCloudDialogflowV2SearchKnowledgeResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
@@ -7248,6 +7329,33 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='googleCloudDialogflowV2GenerateStatelessSummaryRequest',
         request_type_name='DialogflowProjectsSuggestionsGenerateStatelessSummaryRequest',
         response_type_name='GoogleCloudDialogflowV2GenerateStatelessSummaryResponse',
+        supports_download=False,
+    )
+
+    def SearchKnowledge(self, request, global_params=None):
+      r"""Get answers for the given query based on knowledge documents.
+
+      Args:
+        request: (GoogleCloudDialogflowV2SearchKnowledgeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SearchKnowledgeResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchKnowledge')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchKnowledge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/suggestions:searchKnowledge',
+        http_method='POST',
+        method_id='dialogflow.projects.suggestions.searchKnowledge',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/suggestions:searchKnowledge',
+        request_field='<request>',
+        request_type_name='GoogleCloudDialogflowV2SearchKnowledgeRequest',
+        response_type_name='GoogleCloudDialogflowV2SearchKnowledgeResponse',
         supports_download=False,
     )
 

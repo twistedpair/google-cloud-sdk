@@ -79,6 +79,7 @@ app_profile:
 view:
   name: view
   collection: bigtableadmin.projects.instances.tables.views
+  request_id_field: viewId
   attributes:
   - *project
   - *instance

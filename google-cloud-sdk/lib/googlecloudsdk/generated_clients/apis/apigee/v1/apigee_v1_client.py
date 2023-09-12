@@ -71,6 +71,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_endpointAttachments = self.OrganizationsEndpointAttachmentsService(self)
     self.organizations_envgroups_attachments = self.OrganizationsEnvgroupsAttachmentsService(self)
     self.organizations_envgroups = self.OrganizationsEnvgroupsService(self)
+    self.organizations_environments_addonsConfig = self.OrganizationsEnvironmentsAddonsConfigService(self)
     self.organizations_environments_analytics_admin = self.OrganizationsEnvironmentsAnalyticsAdminService(self)
     self.organizations_environments_analytics_exports = self.OrganizationsEnvironmentsAnalyticsExportsService(self)
     self.organizations_environments_analytics = self.OrganizationsEnvironmentsAnalyticsService(self)
@@ -947,6 +948,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Update(self, request, global_params=None):
+      r"""Update key value entry scoped to an organization, environment, or API proxy for an existing key.
+
+      Args:
+        request: (GoogleCloudApigeeV1KeyValueEntry) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueEntry) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apis/{apisId}/keyvaluemaps/{keyvaluemapsId}/entries/{entriesId}',
+        http_method='PUT',
+        method_id='apigee.organizations.apis.keyvaluemaps.entries.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        response_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        supports_download=False,
+    )
+
   class OrganizationsApisKeyvaluemapsService(base_api.BaseApiService):
     """Service class for the organizations_apis_keyvaluemaps resource."""
 
@@ -1622,7 +1650,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an AppGroup. Once created, user can register apps under the AppGroup to obtain secret key and password. At creation time, the AppGroup's state is set as `active`. The attribute `Attribute` with key `attribute_name` as `__apigee_reserved__developer_details` can be used to store developers and their roles. The JSON format expected is: [ { "developer_id":"", "roles":[ "" ] } ] and is dealt in base64encoded format. Etag will be available in attribute `Attribute` with key `attribute_name` as `__apigee_reserved__developer_details_etag` for that AppGroup.
+      r"""Creates an AppGroup. Once created, user can register apps under the AppGroup to obtain secret key and password. At creation time, the AppGroup's state is set as `active`.
 
       Args:
         request: (ApigeeOrganizationsAppgroupsCreateRequest) input message
@@ -1730,7 +1758,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an appGroup. This API replaces the existing appGroup details with those specified in the request. Include or exclude any existing details that you want to retain or delete, respectively. Note that the state of the AppGroup should be updated using `action`, and not via AppGroup. The custom attribute limit is 1000, and is how `__apigee_reserved__developer_details` can be updated. **Note**: OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (current default). Any custom attributes associated with these entities are cached for at least 180 seconds after the entity is accessed at runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds.
+      r"""Updates an appGroup. This API replaces the existing appGroup details with those specified in the request. Include or exclude any existing details that you want to retain or delete, respectively. Note that the state of the AppGroup should be updated using `action`, and not via AppGroup. **Note**: OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (current default). Any custom attributes associated with these entities are cached for at least 180 seconds after the entity is accessed at runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds.
 
       Args:
         request: (ApigeeOrganizationsAppgroupsUpdateRequest) input message
@@ -3553,6 +3581,43 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsEnvironmentsAddonsConfigService(base_api.BaseApiService):
+    """Service class for the organizations_environments_addonsConfig resource."""
+
+    _NAME = 'organizations_environments_addonsConfig'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsEnvironmentsAddonsConfigService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def SetAddonEnablement(self, request, global_params=None):
+      r"""Updates an add-on enablement status of an environment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsAddonsConfigSetAddonEnablementRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('SetAddonEnablement')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetAddonEnablement.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/addonsConfig:setAddonEnablement',
+        http_method='POST',
+        method_id='apigee.organizations.environments.addonsConfig.setAddonEnablement',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}/addonsConfig:setAddonEnablement',
+        request_field='googleCloudApigeeV1SetAddonEnablementRequest',
+        request_type_name='ApigeeOrganizationsEnvironmentsAddonsConfigSetAddonEnablementRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class OrganizationsEnvironmentsAnalyticsAdminService(base_api.BaseApiService):
     """Service class for the organizations_environments_analytics_admin resource."""
 
@@ -4793,6 +4858,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Update(self, request, global_params=None):
+      r"""Update key value entry scoped to an organization, environment, or API proxy for an existing key.
+
+      Args:
+        request: (GoogleCloudApigeeV1KeyValueEntry) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueEntry) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/keyvaluemaps/{keyvaluemapsId}/entries/{entriesId}',
+        http_method='PUT',
+        method_id='apigee.organizations.environments.keyvaluemaps.entries.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        response_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        supports_download=False,
+    )
+
   class OrganizationsEnvironmentsKeyvaluemapsService(base_api.BaseApiService):
     """Service class for the organizations_environments_keyvaluemaps resource."""
 
@@ -5484,6 +5576,33 @@ class ApigeeV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def BatchUpdate(self, request, global_params=None):
+      r"""BatchUpdateSecurityIncident updates multiple existing security incidents.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityIncidentsBatchUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1BatchUpdateSecurityIncidentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchUpdate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchUpdate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityIncidents:batchUpdate',
+        http_method='POST',
+        method_id='apigee.organizations.environments.securityIncidents.batchUpdate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/securityIncidents:batchUpdate',
+        request_field='googleCloudApigeeV1BatchUpdateSecurityIncidentsRequest',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityIncidentsBatchUpdateRequest',
+        response_type_name='GoogleCloudApigeeV1BatchUpdateSecurityIncidentsResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""GetSecurityIncident gets the specified security incident. Returns NOT_FOUND if security incident is not present for the specified organization and environment.
 
@@ -5535,6 +5654,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsEnvironmentsSecurityIncidentsListRequest',
         response_type_name='GoogleCloudApigeeV1ListSecurityIncidentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""UpdateSecurityIncidents updates an existing security incident.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityIncidentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityIncident) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityIncidents/{securityIncidentsId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.environments.securityIncidents.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1SecurityIncident',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityIncidentsPatchRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityIncident',
         supports_download=False,
     )
 
@@ -6283,6 +6429,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsEnvironmentsGetRequest',
         response_type_name='GoogleCloudApigeeV1Environment',
+        supports_download=False,
+    )
+
+    def GetAddonsConfig(self, request, global_params=None):
+      r"""Gets the add-ons config of an environment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsGetAddonsConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1AddonsConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetAddonsConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAddonsConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/addonsConfig',
+        http_method='GET',
+        method_id='apigee.organizations.environments.getAddonsConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}/addonsConfig',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsGetAddonsConfigRequest',
+        response_type_name='GoogleCloudApigeeV1AddonsConfig',
         supports_download=False,
     )
 
@@ -7659,6 +7832,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsKeyvaluemapsEntriesListRequest',
         response_type_name='GoogleCloudApigeeV1ListKeyValueEntriesResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update key value entry scoped to an organization, environment, or API proxy for an existing key.
+
+      Args:
+        request: (GoogleCloudApigeeV1KeyValueEntry) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueEntry) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/keyvaluemaps/{keyvaluemapsId}/entries/{entriesId}',
+        http_method='PUT',
+        method_id='apigee.organizations.keyvaluemaps.entries.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        response_type_name='GoogleCloudApigeeV1KeyValueEntry',
         supports_download=False,
     )
 

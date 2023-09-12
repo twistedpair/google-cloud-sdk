@@ -58,6 +58,7 @@ class _AwsClientBase(client.ClientBase):
         'management': self._NodeManagement(args),
         'name': node_pool_ref.awsNodePoolsId,
         'subnetId': flags.GetSubnetID(args),
+        'updateSettings': self._UpdateSettings(args),
         'version': flags.GetNodeVersion(args),
     }
     return (
@@ -232,6 +233,27 @@ class _AwsClientBase(client.ClientBase):
     }
     return (
         self._messages.GoogleCloudGkemulticloudV1AwsNodeManagement(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
+
+  def _UpdateSettings(self, args):
+    kwargs = {
+        'surgeSettings': self._SurgeSettings(args),
+    }
+    return (
+        self._messages.GoogleCloudGkemulticloudV1UpdateSettings(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
+
+  def _SurgeSettings(self, args):
+    kwargs = {
+        'maxSurge': flags.GetMaxSurgeUpdate(args),
+        'maxUnavailable': flags.GetMaxUnavailableUpdate(args),
+    }
+    return (
+        self._messages.GoogleCloudGkemulticloudV1SurgeSettings(**kwargs)
         if any(kwargs.values())
         else None
     )

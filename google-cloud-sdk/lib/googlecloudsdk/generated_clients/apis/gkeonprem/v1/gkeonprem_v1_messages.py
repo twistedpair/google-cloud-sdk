@@ -5756,6 +5756,8 @@ class UpgradeDependency(_messages.Message):
   Fields:
     currentVersion: Current version of the dependency e.g. 1.15.0.
     localName: Local name of the dependency.
+    membership: Membership names are formatted as
+      `projects//locations//memberships/`.
     resourceName: Resource name of the dependency.
     targetVersion: Target version of the dependency e.g. 1.16.1. This is the
       version the dependency needs to be upgraded to before a resource can be
@@ -5764,8 +5766,9 @@ class UpgradeDependency(_messages.Message):
 
   currentVersion = _messages.StringField(1)
   localName = _messages.StringField(2)
-  resourceName = _messages.StringField(3)
-  targetVersion = _messages.StringField(4)
+  membership = _messages.StringField(3)
+  resourceName = _messages.StringField(4)
+  targetVersion = _messages.StringField(5)
 
 
 class ValidationCheck(_messages.Message):
@@ -6207,6 +6210,7 @@ class VmwareAdminSeesawConfig(_messages.Message):
       name: seesaw-for-[cluster_name].
     ipBlocks: The IP Blocks to be used by the Seesaw load balancer
     masterIp: MasterIP is the IP announced by the master of Seesaw group.
+    stackdriverName: Name to be used by Stackdriver.
     vms: Names of the VMs created for this Seesaw group.
   """
 
@@ -6214,7 +6218,8 @@ class VmwareAdminSeesawConfig(_messages.Message):
   group = _messages.StringField(2)
   ipBlocks = _messages.MessageField('VmwareIpBlock', 3, repeated=True)
   masterIp = _messages.StringField(4)
-  vms = _messages.StringField(5, repeated=True)
+  stackdriverName = _messages.StringField(5)
+  vms = _messages.StringField(6, repeated=True)
 
 
 class VmwareAdminVCenterConfig(_messages.Message):
@@ -6336,6 +6341,7 @@ class VmwareCluster(_messages.Message):
     deleteTime: Output only. The time at which VMware user cluster was
       deleted.
     description: A human readable description of this VMware user cluster.
+    disableBundledIngress: Disable bundled ingress.
     enableControlPlaneV2: Enable control plane V2. Default to false.
     endpoint: Output only. The DNS name of VMware user cluster's API server.
     etag: This checksum is computed by the server based on the value of other
@@ -6369,8 +6375,8 @@ class VmwareCluster(_messages.Message):
     upgradePolicy: Specifies upgrade policy for the cluster.
     validationCheck: Output only. ValidationCheck represents the result of the
       preflight check job.
-    vcenter: Output only. VmwareVCenterConfig specifies vCenter config for the
-      user cluster. Inherited from the admin cluster.
+    vcenter: VmwareVCenterConfig specifies vCenter config for the user
+      cluster. Inherited from the admin cluster.
     vmTrackingEnabled: Enable VM tracking.
   """
 
@@ -6443,25 +6449,26 @@ class VmwareCluster(_messages.Message):
   dataplaneV2 = _messages.MessageField('VmwareDataplaneV2Config', 10)
   deleteTime = _messages.StringField(11)
   description = _messages.StringField(12)
-  enableControlPlaneV2 = _messages.BooleanField(13)
-  endpoint = _messages.StringField(14)
-  etag = _messages.StringField(15)
-  fleet = _messages.MessageField('Fleet', 16)
-  loadBalancer = _messages.MessageField('VmwareLoadBalancerConfig', 17)
-  localName = _messages.StringField(18)
-  name = _messages.StringField(19)
-  networkConfig = _messages.MessageField('VmwareNetworkConfig', 20)
-  onPremVersion = _messages.StringField(21)
-  reconciling = _messages.BooleanField(22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  status = _messages.MessageField('ResourceStatus', 24)
-  storage = _messages.MessageField('VmwareStorageConfig', 25)
-  uid = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
-  upgradePolicy = _messages.MessageField('VmwareClusterUpgradePolicy', 28)
-  validationCheck = _messages.MessageField('ValidationCheck', 29)
-  vcenter = _messages.MessageField('VmwareVCenterConfig', 30)
-  vmTrackingEnabled = _messages.BooleanField(31)
+  disableBundledIngress = _messages.BooleanField(13)
+  enableControlPlaneV2 = _messages.BooleanField(14)
+  endpoint = _messages.StringField(15)
+  etag = _messages.StringField(16)
+  fleet = _messages.MessageField('Fleet', 17)
+  loadBalancer = _messages.MessageField('VmwareLoadBalancerConfig', 18)
+  localName = _messages.StringField(19)
+  name = _messages.StringField(20)
+  networkConfig = _messages.MessageField('VmwareNetworkConfig', 21)
+  onPremVersion = _messages.StringField(22)
+  reconciling = _messages.BooleanField(23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  status = _messages.MessageField('ResourceStatus', 25)
+  storage = _messages.MessageField('VmwareStorageConfig', 26)
+  uid = _messages.StringField(27)
+  updateTime = _messages.StringField(28)
+  upgradePolicy = _messages.MessageField('VmwareClusterUpgradePolicy', 29)
+  validationCheck = _messages.MessageField('ValidationCheck', 30)
+  vcenter = _messages.MessageField('VmwareVCenterConfig', 31)
+  vmTrackingEnabled = _messages.BooleanField(32)
 
 
 class VmwareClusterUpgradePolicy(_messages.Message):
@@ -6614,13 +6621,15 @@ class VmwareLoadBalancerConfig(_messages.Message):
     f5Config: Configuration for F5 Big IP typed load balancers.
     manualLbConfig: Manually configured load balancers.
     metalLbConfig: Configuration for MetalLB typed load balancers.
+    seesawConfig: Output only. Configuration for Seesaw typed load balancers.
     vipConfig: The VIPs used by the load balancer.
   """
 
   f5Config = _messages.MessageField('VmwareF5BigIpConfig', 1)
   manualLbConfig = _messages.MessageField('VmwareManualLbConfig', 2)
   metalLbConfig = _messages.MessageField('VmwareMetalLbConfig', 3)
-  vipConfig = _messages.MessageField('VmwareVipConfig', 4)
+  seesawConfig = _messages.MessageField('VmwareSeesawConfig', 4)
+  vipConfig = _messages.MessageField('VmwareVipConfig', 5)
 
 
 class VmwareManualLbConfig(_messages.Message):
@@ -6936,6 +6945,45 @@ class VmwarePlatformConfig(_messages.Message):
   status = _messages.MessageField('ResourceStatus', 4)
 
 
+class VmwareSeesawConfig(_messages.Message):
+  r"""VmwareSeesawConfig represents configuration parameters for an already
+  existing Seesaw load balancer. IMPORTANT: Please note that the Anthos On-
+  Prem API will not generate or update Seesaw configurations it can only bind
+  a pre-existing configuration to a new user cluster. IMPORTANT: When
+  attempting to create a user cluster with a pre-existing Seesaw load balancer
+  you will need to follow some preparation steps before calling the
+  'CreateVmwareCluster' API method. First you will need to create the user
+  cluster's namespace via kubectl. The namespace will need to use the
+  following naming convention : -gke-onprem-mgmt or -gke-onprem-mgmt depending
+  on whether you used the 'VmwareCluster.local_name' to disambiguate
+  collisions; for more context see the documentation of
+  'VmwareCluster.local_name'. Once the namespace is created you will need to
+  create a secret resource via kubectl. This secret will contain copies of
+  your Seesaw credentials. The Secret must be called 'user-cluster-creds' and
+  contain Seesaw's SSH and Cert credentials. The credentials must be keyed
+  with the following names: 'seesaw-ssh-private-key', 'seesaw-ssh-public-key',
+  'seesaw-ssh-ca-key', 'seesaw-ssh-ca-cert'.
+
+  Fields:
+    enableHa: Enable two load balancer VMs to achieve a highly-available
+      Seesaw load balancer.
+    group: Required. In general the following format should be used for the
+      Seesaw group name: seesaw-for-[cluster_name].
+    ipBlocks: Required. The IP Blocks to be used by the Seesaw load balancer
+    masterIp: Required. MasterIP is the IP announced by the master of Seesaw
+      group.
+    stackdriverName: Name to be used by Stackdriver.
+    vms: Names of the VMs created for this Seesaw group.
+  """
+
+  enableHa = _messages.BooleanField(1)
+  group = _messages.StringField(2)
+  ipBlocks = _messages.MessageField('VmwareIpBlock', 3, repeated=True)
+  masterIp = _messages.StringField(4)
+  stackdriverName = _messages.StringField(5)
+  vms = _messages.StringField(6, repeated=True)
+
+
 class VmwareStaticIpConfig(_messages.Message):
   r"""Represents the network configuration required for the VMware user
   clusters with Static IP configurations.
@@ -6964,7 +7012,7 @@ class VmwareVCenterConfig(_messages.Message):
   r"""Represents configuration for the VMware VCenter for the user cluster.
 
   Fields:
-    address: The vCenter IP address.
+    address: Output only. The vCenter IP address.
     caCertData: Contains the vCenter CA certificate public key for SSL
       verification.
     cluster: The name of the vCenter cluster for the user cluster.

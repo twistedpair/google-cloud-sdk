@@ -357,6 +357,8 @@ class Consumer(_messages.Message):
   available ID: 5
 
   Fields:
+    endpointLocation: Output only. The location of the endpoint URI. Format:
+      projects/{project}/locations/{location}.
     endpointUri: Output only. The URI of the endpoint used to access the
       metastore service.
     subnetwork: Immutable. The subnetwork of the customer project from which
@@ -368,8 +370,9 @@ class Consumer(_messages.Message):
       n_id}/subnetworks/{subnetwork_id}
   """
 
-  endpointUri = _messages.StringField(1)
-  subnetwork = _messages.StringField(2)
+  endpointLocation = _messages.StringField(1)
+  endpointUri = _messages.StringField(2)
+  subnetwork = _messages.StringField(3)
 
 
 class DatabaseDump(_messages.Message):

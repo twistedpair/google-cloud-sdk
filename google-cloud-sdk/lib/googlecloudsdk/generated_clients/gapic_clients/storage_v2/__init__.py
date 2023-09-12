@@ -21,6 +21,8 @@ __version__ = package_version.__version__
 from .services.storage import StorageClient
 from .services.storage import StorageAsyncClient
 
+from .types.storage import BidiWriteObjectRequest
+from .types.storage import BidiWriteObjectResponse
 from .types.storage import Bucket
 from .types.storage import BucketAccessControl
 from .types.storage import CancelResumableWriteRequest
@@ -78,6 +80,8 @@ from .types.storage import WriteObjectSpec
 
 __all__ = (
     'StorageAsyncClient',
+'BidiWriteObjectRequest',
+'BidiWriteObjectResponse',
 'Bucket',
 'BucketAccessControl',
 'CancelResumableWriteRequest',

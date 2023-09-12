@@ -318,6 +318,7 @@ class SecurityKey(_messages.Message):
   r"""The credential information for a Google registered security key.
 
   Fields:
+    deviceNickname: The security key nickname explicitly set by the user.
     privateKey: Hardware-backed private key text in SSH format.
     publicKey: Public key text in SSH format, defined by
       [RFC4253]("https://www.ietf.org/rfc/rfc4253.txt") section 6.6.
@@ -325,10 +326,11 @@ class SecurityKey(_messages.Message):
     webAuthn: The Web Authentication protocol type.
   """
 
-  privateKey = _messages.StringField(1)
-  publicKey = _messages.StringField(2)
-  universalTwoFactor = _messages.MessageField('UniversalTwoFactor', 3)
-  webAuthn = _messages.MessageField('WebAuthn', 4)
+  deviceNickname = _messages.StringField(1)
+  privateKey = _messages.StringField(2)
+  publicKey = _messages.StringField(3)
+  universalTwoFactor = _messages.MessageField('UniversalTwoFactor', 4)
+  webAuthn = _messages.MessageField('WebAuthn', 5)
 
 
 class SignSshPublicKeyRequest(_messages.Message):

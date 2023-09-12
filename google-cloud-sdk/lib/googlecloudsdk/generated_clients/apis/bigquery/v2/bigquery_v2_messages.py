@@ -528,11 +528,15 @@ class BigqueryDatasetsGetRequest(_messages.Message):
 
   Fields:
     datasetId: Dataset ID of the requested dataset
+    datasetView: Specifies the view that determines which dataset information
+      is returned. By default, metadata and ACL information are returned.
+      Allowed values: METADATA, ACL, FULL.
     projectId: Project ID of the requested dataset
   """
 
   datasetId = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
+  datasetView = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
 
 
 class BigqueryDatasetsInsertRequest(_messages.Message):
@@ -1792,6 +1796,9 @@ class Dataset(_messages.Message):
       property.
     description: [Optional] A user-friendly description of the dataset.
     etag: [Output-only] A hash of the resource.
+    externalDatasetReference: [Optional] Information about the external
+      metadata storage where the dataset is defined. Filled out when the
+      dataset type is EXTERNAL.
     friendlyName: [Optional] A descriptive name for the dataset.
     id: [Output-only] The fully-qualified unique name of the dataset in the
       format projectId:datasetId. The dataset name without the project name is
@@ -1924,18 +1931,19 @@ class Dataset(_messages.Message):
   defaultTableExpirationMs = _messages.IntegerField(8)
   description = _messages.StringField(9)
   etag = _messages.StringField(10)
-  friendlyName = _messages.StringField(11)
-  id = _messages.StringField(12)
-  isCaseInsensitive = _messages.BooleanField(13)
-  kind = _messages.StringField(14, default='bigquery#dataset')
-  labels = _messages.MessageField('LabelsValue', 15)
-  lastModifiedTime = _messages.IntegerField(16)
-  location = _messages.StringField(17)
-  maxTimeTravelHours = _messages.IntegerField(18)
-  satisfiesPzs = _messages.BooleanField(19)
-  selfLink = _messages.StringField(20)
-  storageBillingModel = _messages.StringField(21)
-  tags = _messages.MessageField('TagsValueListEntry', 22, repeated=True)
+  externalDatasetReference = _messages.MessageField('ExternalDatasetReference', 11)
+  friendlyName = _messages.StringField(12)
+  id = _messages.StringField(13)
+  isCaseInsensitive = _messages.BooleanField(14)
+  kind = _messages.StringField(15, default='bigquery#dataset')
+  labels = _messages.MessageField('LabelsValue', 16)
+  lastModifiedTime = _messages.IntegerField(17)
+  location = _messages.StringField(18)
+  maxTimeTravelHours = _messages.IntegerField(19)
+  satisfiesPzs = _messages.BooleanField(20)
+  selfLink = _messages.StringField(21)
+  storageBillingModel = _messages.StringField(22)
+  tags = _messages.MessageField('TagsValueListEntry', 23, repeated=True)
 
 
 class DatasetAccessEntry(_messages.Message):
@@ -2498,6 +2506,20 @@ class ExternalDataConfiguration(_messages.Message):
   schema = _messages.MessageField('TableSchema', 18)
   sourceFormat = _messages.StringField(19)
   sourceUris = _messages.StringField(20, repeated=True)
+
+
+class ExternalDatasetReference(_messages.Message):
+  r"""A ExternalDatasetReference object.
+
+  Fields:
+    connection: [Required] The connection id that is used to access the
+      external_source. Format: projects/{project_id}/locations/{location_id}/c
+      onnections/{connection_id}
+    externalSource: [Required] External source that backs this dataset.
+  """
+
+  connection = _messages.StringField(1)
+  externalSource = _messages.StringField(2)
 
 
 class FeatureValue(_messages.Message):
@@ -3633,7 +3655,7 @@ class JobStatistics2(_messages.Message):
       target. Example case: the query is CREATE OR REPLACE TABLE, and the
       table already exists. "DROP": The query deleted the DDL target.
     ddlTargetDataset: [Output only] The DDL target dataset. Present only for
-      CREATE/ALTER/DROP SCHEMA queries.
+      CREATE/ALTER/DROP/UNDROP SCHEMA queries.
     ddlTargetRoutine: The DDL target routine. Present only for CREATE/DROP
       FUNCTION/PROCEDURE queries.
     ddlTargetRowAccessPolicy: [Output only] [Preview] The DDL target row
@@ -4483,6 +4505,7 @@ class QueryRequest(_messages.Message):
       if the query is valid, BigQuery returns statistics about the job such as
       how many bytes would be processed. If the query is invalid, an error
       returns. The default value is false.
+    jobCreationMode: This field is for internal use only.
     kind: The resource type of the request.
     labels: The labels associated with this job. You can use these to organize
       and group your jobs. Label keys and values can be no longer than 63
@@ -4583,19 +4606,20 @@ class QueryRequest(_messages.Message):
   createSession = _messages.BooleanField(3)
   defaultDataset = _messages.MessageField('DatasetReference', 4)
   dryRun = _messages.BooleanField(5)
-  kind = _messages.StringField(6, default='bigquery#queryRequest')
-  labels = _messages.MessageField('LabelsValue', 7)
-  location = _messages.StringField(8)
-  maxResults = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
-  maximumBytesBilled = _messages.IntegerField(10)
-  parameterMode = _messages.StringField(11)
-  preserveNulls = _messages.BooleanField(12)
-  query = _messages.StringField(13)
-  queryParameters = _messages.MessageField('QueryParameter', 14, repeated=True)
-  requestId = _messages.StringField(15)
-  timeoutMs = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
-  useLegacySql = _messages.BooleanField(17, default=True)
-  useQueryCache = _messages.BooleanField(18, default=True)
+  jobCreationMode = _messages.StringField(6)
+  kind = _messages.StringField(7, default='bigquery#queryRequest')
+  labels = _messages.MessageField('LabelsValue', 8)
+  location = _messages.StringField(9)
+  maxResults = _messages.IntegerField(10, variant=_messages.Variant.UINT32)
+  maximumBytesBilled = _messages.IntegerField(11)
+  parameterMode = _messages.StringField(12)
+  preserveNulls = _messages.BooleanField(13)
+  query = _messages.StringField(14)
+  queryParameters = _messages.MessageField('QueryParameter', 15, repeated=True)
+  requestId = _messages.StringField(16)
+  timeoutMs = _messages.IntegerField(17, variant=_messages.Variant.UINT32)
+  useLegacySql = _messages.BooleanField(18, default=True)
+  useQueryCache = _messages.BooleanField(19, default=True)
 
 
 class QueryResponse(_messages.Message):
@@ -4866,9 +4890,11 @@ class Routine(_messages.Message):
   r"""A user-defined function or a stored procedure.
 
   Enums:
-    DataGovernanceTypeValueValuesEnum: Optional. Data governance specific
-      option, if the value is DATA_MASKING, the function will be validated as
-      masking functions.
+    DataGovernanceTypeValueValuesEnum: Optional. If set to `DATA_MASKING`, the
+      function is validated and made available as a masking function. For more
+      information, see [Create custom masking
+      routines](https://cloud.google.com/bigquery/docs/user-defined-
+      functions#custom-mask).
     DeterminismLevelValueValuesEnum: Optional. The determinism level of the
       JavaScript UDF, if defined.
     LanguageValueValuesEnum: Optional. Defaults to "SQL" if
@@ -4879,9 +4905,11 @@ class Routine(_messages.Message):
     arguments: Optional.
     creationTime: Output only. The time when this routine was created, in
       milliseconds since the epoch.
-    dataGovernanceType: Optional. Data governance specific option, if the
-      value is DATA_MASKING, the function will be validated as masking
-      functions.
+    dataGovernanceType: Optional. If set to `DATA_MASKING`, the function is
+      validated and made available as a masking function. For more
+      information, see [Create custom masking
+      routines](https://cloud.google.com/bigquery/docs/user-defined-
+      functions#custom-mask).
     definitionBody: Required. The body of the routine. For functions, this is
       the expression in the AS clause. If language=SQL, it is the substring
       inside (but excluding) the parentheses. For example, for the function
@@ -4936,11 +4964,14 @@ class Routine(_messages.Message):
   """
 
   class DataGovernanceTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. Data governance specific option, if the value is
-    DATA_MASKING, the function will be validated as masking functions.
+    r"""Optional. If set to `DATA_MASKING`, the function is validated and made
+    available as a masking function. For more information, see [Create custom
+    masking routines](https://cloud.google.com/bigquery/docs/user-defined-
+    functions#custom-mask).
 
     Values:
-      DATA_GOVERNANCE_TYPE_UNSPECIFIED: Unspecified data governance type.
+      DATA_GOVERNANCE_TYPE_UNSPECIFIED: The data governance type is
+        unspecified.
       DATA_MASKING: The data governance type is data masking.
     """
     DATA_GOVERNANCE_TYPE_UNSPECIFIED = 0
@@ -5878,6 +5909,10 @@ class TableFieldSchema(_messages.Message):
     CategoriesValue: [Optional] The categories attached to this field, used
       for field-level access control.
     PolicyTagsValue: A PolicyTagsValue object.
+    RangeElementTypeValue: Optional. The subtype of the RANGE, if the type of
+      this field is RANGE. If the type is RANGE, this field is required.
+      Possible values for the field element type of a RANGE include: - DATE -
+      DATETIME - TIMESTAMP
 
   Fields:
     categories: [Optional] The categories attached to this field, used for
@@ -5927,6 +5962,10 @@ class TableFieldSchema(_messages.Message):
       be equal to zero): - If type = "NUMERIC": 1 \u2264 precision \u2264 29.
       - If type = "BIGNUMERIC": 1 \u2264 precision \u2264 38. If scale is
       specified but not precision, then it is invalid.
+    rangeElementType: Optional. The subtype of the RANGE, if the type of this
+      field is RANGE. If the type is RANGE, this field is required. Possible
+      values for the field element type of a RANGE include: - DATE - DATETIME
+      - TIMESTAMP
     roundingMode: Optional. Rounding Mode specification of the field. It only
       can be set on NUMERIC or BIGNUMERIC type fields.
     scale: [Optional] See documentation for precision.
@@ -5960,6 +5999,17 @@ class TableFieldSchema(_messages.Message):
 
     names = _messages.StringField(1, repeated=True)
 
+  class RangeElementTypeValue(_messages.Message):
+    r"""Optional. The subtype of the RANGE, if the type of this field is
+    RANGE. If the type is RANGE, this field is required. Possible values for
+    the field element type of a RANGE include: - DATE - DATETIME - TIMESTAMP
+
+    Fields:
+      type: The field element type of a RANGE
+    """
+
+    type = _messages.StringField(1)
+
   categories = _messages.MessageField('CategoriesValue', 1)
   collation = _messages.StringField(2)
   defaultValueExpression = _messages.StringField(3)
@@ -5970,9 +6020,10 @@ class TableFieldSchema(_messages.Message):
   name = _messages.StringField(8)
   policyTags = _messages.MessageField('PolicyTagsValue', 9)
   precision = _messages.IntegerField(10)
-  roundingMode = _messages.StringField(11)
-  scale = _messages.IntegerField(12)
-  type = _messages.StringField(13)
+  rangeElementType = _messages.MessageField('RangeElementTypeValue', 11)
+  roundingMode = _messages.StringField(12)
+  scale = _messages.IntegerField(13)
+  type = _messages.StringField(14)
 
 
 class TableList(_messages.Message):

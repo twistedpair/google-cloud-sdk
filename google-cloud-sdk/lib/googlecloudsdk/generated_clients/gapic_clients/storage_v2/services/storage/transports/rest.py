@@ -416,6 +416,19 @@ class StorageRestTransport(StorageTransport):
         self._interceptor = interceptor or StorageRestInterceptor()
         self._prep_wrapped_messages(client_info)
 
+    class _BidiWriteObject(StorageRestStub):
+        def __hash__(self):
+            return hash("BidiWriteObject")
+
+        def __call__(self,
+                request: storage.BidiWriteObjectRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> rest_streaming.ResponseIterator:
+            raise NotImplementedError(
+                "Method BidiWriteObject is not available over REST transport"
+            )
     class _CancelResumableWrite(StorageRestStub):
         def __hash__(self):
             return hash("CancelResumableWrite")
@@ -1009,6 +1022,14 @@ class StorageRestTransport(StorageTransport):
             raise NotImplementedError(
                 "Method WriteObject is not available over REST transport"
             )
+
+    @property
+    def bidi_write_object(self) -> Callable[
+            [storage.BidiWriteObjectRequest],
+            storage.BidiWriteObjectResponse]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._BidiWriteObject(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def cancel_resumable_write(self) -> Callable[

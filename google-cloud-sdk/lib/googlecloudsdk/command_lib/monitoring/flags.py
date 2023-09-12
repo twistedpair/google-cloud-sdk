@@ -302,14 +302,17 @@ def AddUpdateLabelsFlags(labels_name, parser, group_text='',
       labels_name=labels_name).AddToParser(remove_group)
 
 
-def GetMonitoredProjectIDNumberFlag(verb):
-  """Flag for managing a monitored project."""
+def GetMonitoredResourceContainerNameFlag(verb):
+  """Flag for managing a monitored resource container."""
   return base.Argument(
-      'monitored_project',
-      metavar='MONITORED_PROJECT_ID_OR_NUMBER',
-      completer=completers.MonitoredProjectCompleter,
-      help='Monitored project ID or number for the project you want to {0}.'
-      .format(verb))
+      'monitored_resource_container_name',
+      metavar='MONITORED_RESOURCE_CONTAINER_NAME',
+      completer=completers.MonitoredResourceContainerCompleter,
+      help=(
+          'Monitored resource container (example - projects/PROJECT_ID) project'
+          ' you want to {0}.'.format(verb)
+      ),
+  )
 
 
 def AddCriteriaPoliciesFlag(parser, resource):

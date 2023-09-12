@@ -628,7 +628,7 @@ class GoogleIamAdminV1WorkforcePoolProviderSaml(_messages.Message):
       the following constraints: 1) Must contain an Identity Provider Entity
       ID. 2) Must contain at least one non-expired signing key certificate. 3)
       For each signing key: a) Valid from should be no more than 7 days from
-      now. b) Valid to should be no more than 14 years in the future. 4) Up to
+      now. b) Valid to should be no more than 15 years in the future. 4) Up to
       3 IdP signing keys are allowed in the metadata xml. When updating the
       provider's metadata xml, at least one non-expired signing key must
       overlap with the existing metadata. This requirement is skipped if there
@@ -1611,11 +1611,10 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesCreateRequest(_messages
     workloadIdentityPoolNamespace: A WorkloadIdentityPoolNamespace resource to
       be passed as the request body.
     workloadIdentityPoolNamespaceId: Required. The ID to use for the
-      namespace. Must conform to the SPIFFE spec which limits characters to
-      letters, numbers, dots, dashes, and underscores [a-zA-Z0-9.-_] (it
-      cannot include only periods) and sets a maximum length of the full
-      canonical identifier at 2048 bytes. The prefix "gcp-" will be reserved
-      for future uses.
+      namespace. This value must: * contain at most 63 characters * contain
+      only lowercase alphanumeric characters or `-` * start with an
+      alphanumeric character * end with an alphanumeric character The prefix
+      "gcp-" will be reserved for future uses.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1674,11 +1673,10 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesCreate
     workloadIdentityPoolManagedIdentity: A WorkloadIdentityPoolManagedIdentity
       resource to be passed as the request body.
     workloadIdentityPoolManagedIdentityId: Required. The ID to use for the
-      managed identity. Must conform to the SPIFFE spec which limits
-      characters to letters, numbers, dots, dashes, and underscores
-      [a-zA-Z0-9.-_] (it cannot include only periods) and sets a maximum
-      length of the full canonical identifier at 2048 bytes. The prefix "gcp-"
-      will be reserved for future uses.
+      managed identity. This value must: * contain at most 63 characters *
+      contain only lowercase alphanumeric characters or `-` * start with an
+      alphanumeric character * end with an alphanumeric character The prefix
+      "gcp-" will be reserved for future uses.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1780,8 +1778,10 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorklo
     workloadSource: A WorkloadSource resource to be passed as the request
       body.
     workloadSourceId: Required. The ID to use for the workload source, which
-      becomes the final component of the resource name. This should be in the
-      format of `project-`.
+      becomes the final component of the resource name. If ID of the
+      WorkloadSource resource determines which workloads may be matched. The
+      following formats are supported: - `project-{project_number}` matches
+      workloads within the referenced Google Cloud project.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1848,8 +1848,10 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorklo
   rkloadSourcesPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the workload source. The format
-      should be one of: * /workloadSources/ * /workloadSources/
+    name: Output only. The resource name of the workload source. If ID of the
+      WorkloadSource resource determines which workloads may be matched. The
+      following formats are supported: - `project-{project_number}` matches
+      workloads within the referenced Google Cloud project.
     updateMask: Required. The list of fields to update.
     workloadSource: A WorkloadSource resource to be passed as the request
       body.
@@ -1912,8 +1914,10 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesCreateRe
     workloadSource: A WorkloadSource resource to be passed as the request
       body.
     workloadSourceId: Required. The ID to use for the workload source, which
-      becomes the final component of the resource name. This should be in the
-      format of `project-`.
+      becomes the final component of the resource name. If ID of the
+      WorkloadSource resource determines which workloads may be matched. The
+      following formats are supported: - `project-{project_number}` matches
+      workloads within the referenced Google Cloud project.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1981,8 +1985,10 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesPatchReq
   hRequest object.
 
   Fields:
-    name: Output only. The resource name of the workload source. The format
-      should be one of: * /workloadSources/ * /workloadSources/
+    name: Output only. The resource name of the workload source. If ID of the
+      WorkloadSource resource determines which workloads may be matched. The
+      following formats are supported: - `project-{project_number}` matches
+      workloads within the referenced Google Cloud project.
     updateMask: Required. The list of fields to update.
     workloadSource: A WorkloadSource resource to be passed as the request
       body.
@@ -3735,6 +3741,32 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    cancelRequested: Output only. Identifies whether the user has requested
+      cancellation of the operation. Operations that have been cancelled
+      successfully have Operation.error value with a google.rpc.Status.code of
+      1, corresponding to `Code.CANCELLED`.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    statusDetail: Output only. Human-readable status of the operation, if any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  cancelRequested = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  statusDetail = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class PatchServiceAccountRequest(_messages.Message):
   r"""The service account patch request. You can patch only the `display_name`
   and `description` fields. You must use the `update_mask` field to specify
@@ -4091,7 +4123,7 @@ class Saml(_messages.Message):
       the following constraints: 1) Must contain an Identity Provider Entity
       ID. 2) Must contain at least one non-expired signing key certificate. 3)
       For each signing key: a) Valid from should be no more than 7 days from
-      now. b) Valid to should be no more than 14 years in the future. 4) Upto
+      now. b) Valid to should be no more than 15 years in the future. 4) Upto
       3 IdP signing keys are allowed in the metadata xml. When updating the
       provider's metadata xml, at lease one non-expired signing key must
       overlap with the existing metadata. This requirement is skipped if there
@@ -5029,11 +5061,11 @@ class WorkforcePoolProviderKey(_messages.Message):
 
 
 class WorkloadIdentityPool(_messages.Message):
-  r"""Represents a collection of external workload identities. You can define
-  IAM policies to grant these identities access to Google Cloud resources.
+  r"""Represents a collection of workload identities. You can define IAM
+  policies to grant these identities access to Google Cloud resources.
 
   Enums:
-    IdentityModeValueValuesEnum: Immutable. The identity mode of the pool.
+    IdentityModeValueValuesEnum: Immutable. The mode the pool is operating in.
     StateValueValuesEnum: Output only. The state of the pool.
 
   Fields:
@@ -5044,7 +5076,7 @@ class WorkloadIdentityPool(_messages.Message):
     displayName: A display name for the pool. Cannot exceed 32 characters.
     expireTime: Output only. Time after which the workload identity pool will
       be permanently purged and cannot be recovered.
-    identityMode: Immutable. The identity mode of the pool.
+    identityMode: Immutable. The mode the pool is operating in.
     name: Output only. The resource name of the pool.
     sessionDuration: Overrides the lifespan of access tokens issued when
       federating using this pool. If not set, the lifespan of issued access
@@ -5060,23 +5092,24 @@ class WorkloadIdentityPool(_messages.Message):
   """
 
   class IdentityModeValueValuesEnum(_messages.Enum):
-    r"""Immutable. The identity mode of the pool.
+    r"""Immutable. The mode the pool is operating in.
 
     Values:
-      IDENTITY_MODE_UNSPECIFIED: Existing pools will be in this mode. For
-        existing worklod identity pools created through the public API, they
-        will act as if they are set to FEDERATION_ONLY.
-      FEDERATION_ONLY: With FEDERATION_ONLY mode, providers can be created at
-        the root level within the pool. Attribute mappings must specify a
-        "google.subject" claim that specifies the identity of the federation
-        workload. Namespace or any sub-namespace resources is not allowed with
-        this mode.
-      TRUST_DOMAIN: With TRUST_DOMAIN mode, providers can be created at the
-        root level within the pool. Attribute mappings must specify the
-        "google.namespace" and "google.workload_identifier" claims that,
-        respectively, specify the namespace and individual sub-namespace
-        identifier for the workload. Namespaces and sub-Namespace resources
-        are allowed.
+      IDENTITY_MODE_UNSPECIFIED: State unspecified. New pools should not use
+        this mode. Pools with an unspecified mode will operate as if they are
+        in FEDERATION_ONLY mode.
+      FEDERATION_ONLY: FEDERATION_ONLY mode pools can only be used for
+        federating external workload identities into Google Cloud. Unless
+        otherwise noted, no structure or format constraints are applied to
+        workload identities in a FEDERATION_ONLY mode pool, and you may not
+        create any resources within the pool besides providers.
+      TRUST_DOMAIN: TRUST_DOMAIN mode pools can be used to assign identities
+        to either external workloads or those hosted on Google Cloud. All
+        identities within a TRUST_DOMAIN mode pool must consist of a single
+        namespace and individual workload identifier. The subject identifier
+        for all identities must conform to the following format: `ns//sa/`
+        WorkloadIdentityPoolProviders cannot be created within TRUST_DOMAIN
+        mode pools.
     """
     IDENTITY_MODE_UNSPECIFIED = 0
     FEDERATION_ONLY = 1
@@ -5120,10 +5153,8 @@ class WorkloadIdentityPoolManagedIdentity(_messages.Message):
     description: A description of the managed identity. Cannot exceed 256
       characters.
     disabled: Whether the managed identity is disabled. If disabled,
-      credentials may no longer be issued for this identity and this identity
-      will no longer be able to access Google Cloud APIs. Existing credentials
-      may continue to be accepted by third party APIs and workloads until they
-      expire.
+      credentials may no longer be issued for the identity, however existing
+      credentials will still be accepted until they expire.
     expireTime: Output only. Time after which the managed identity will be
       permanently purged and cannot be recovered.
     name: Output only. The resource name of the managed identity.
@@ -5154,7 +5185,8 @@ class WorkloadIdentityPoolManagedIdentity(_messages.Message):
 
 
 class WorkloadIdentityPoolNamespace(_messages.Message):
-  r"""Represents a namespace for a workload identity pool.
+  r"""Represents a namespace for a workload identity pool. Namespaces are used
+  to segment identities within the pool.
 
   Enums:
     StateValueValuesEnum: Output only. The state of the namespace.
@@ -5162,10 +5194,8 @@ class WorkloadIdentityPoolNamespace(_messages.Message):
   Fields:
     description: A description of the namespace. Cannot exceed 256 characters.
     disabled: Whether the namespace is disabled. If disabled, credentials may
-      no longer be issued for identities within this namespace (including
-      federated identities) and they will no longer be able to access Google
-      Cloud APIs. Existing credentials may continue to be accepted by third
-      party APIs and workloads until they expire.
+      no longer be issued for identities within this namespace, however
+      existing credentials will still be accepted until they expire.
     expireTime: Output only. Time after which the namespace will be
       permanently purged and cannot be recovered.
     name: Output only. The resource name of the namespace.
@@ -5206,7 +5236,7 @@ class WorkloadIdentityPoolProvider(_messages.Message):
     StateValueValuesEnum: Output only. The state of the provider.
 
   Messages:
-    AttributeMappingValue: Maps attributes from authentication credentials
+    AttributeMappingValue:  Maps attributes from authentication credentials
       issued by an external identity provider to Google Cloud attributes, such
       as `subject` and `segment`. Each key must be a string specifying the
       Google Cloud IAM attribute to map to. The following keys are supported:
@@ -5263,7 +5293,7 @@ class WorkloadIdentityPoolProvider(_messages.Message):
       valid authentication credential are accepted. The following example
       shows how to only allow credentials with a mapped `google.groups` value
       of `admins`: ``` "'admins' in google.groups" ```
-    attributeMapping: Maps attributes from authentication credentials issued
+    attributeMapping:  Maps attributes from authentication credentials issued
       by an external identity provider to Google Cloud attributes, such as
       `subject` and `segment`. Each key must be a string specifying the Google
       Cloud IAM attribute to map to. The following keys are supported: *
@@ -5337,7 +5367,7 @@ class WorkloadIdentityPoolProvider(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributeMappingValue(_messages.Message):
-    r"""Maps attributes from authentication credentials issued by an external
+    r""" Maps attributes from authentication credentials issued by an external
     identity provider to Google Cloud attributes, such as `subject` and
     `segment`. Each key must be a string specifying the Google Cloud IAM
     attribute to map to. The following keys are supported: * `google.subject`:
@@ -5467,17 +5497,20 @@ class WorkloadIdentityPoolProviderKey(_messages.Message):
 
 
 class WorkloadSource(_messages.Message):
-  r"""Represents a workload source for a namespace or a managed identity. A
-  workload source is used to determine whether a workload can attest an
-  identity based on the conditions.
+  r"""Defines which workloads can attest an identity within a pool. When a
+  WorkloadSource is defined under a namespace, matching workloads may receive
+  any identity within that namespace. When a WorkloadSource is defined under a
+  managed identity, matching workloads may receive that specific identity.
 
   Fields:
-    conditionSet: Required. A set of allowlisted attribute values. Applicable
-      if you are using a Google Cloud workload source, such as projects/.
-    etag: Optional. The etag for this workload source. If this is provided on
-      update, it must match the server's etag.
-    name: Output only. The resource name of the workload source. The format
-      should be one of: * /workloadSources/ * /workloadSources/
+    conditionSet: The set of conditions that workloads must attest to be
+      matched by the policy.
+    etag: Optional. The etag for this resource. If this is provided on update,
+      it must match the server's etag.
+    name: Output only. The resource name of the workload source. If ID of the
+      WorkloadSource resource determines which workloads may be matched. The
+      following formats are supported: - `project-{project_number}` matches
+      workloads within the referenced Google Cloud project.
   """
 
   conditionSet = _messages.MessageField('WorkloadSourceConditionSet', 1)
@@ -5486,18 +5519,20 @@ class WorkloadSource(_messages.Message):
 
 
 class WorkloadSourceCondition(_messages.Message):
-  r"""Defines the attribute-value pair that will be used as a matching
-  condition for a Google Cloud workload source.
+  r"""Defines a single condition under which a workload will match the policy.
 
   Fields:
-    attribute: Required. The attribute key that will be matched. Supported
-      attributes are `resource` and `attached_service_account`.
+    attribute: Required. The attribute key that will be matched. The following
+      attributes are supported: - `attached_service_account` matches workloads
+      with the references Google Cloud service account attached. The service
+      account should be referenced using its either its email address
+      (example: `service-account-id@project-id.iam.gserviceaccount.com`) or
+      unique ID (example: `123456789012345678901`). Service account email
+      addresses can be reused over time. You should use the service account's
+      unique ID if you don't want to match a service account that is deleted,
+      and then a new service account is created with the same name.
     value: Required. The value that should exactly match the attribute of the
-      workload. Supported values are: * Arbitrary string representing a
-      resource or a service account * "ALL" The value "ALL" can be used to
-      indicate that any workload source is allowed. However, it can only be
-      used when the attribute is "resource". For example, the following
-      condition would allow all workload sources: .
+      workload.
   """
 
   attribute = _messages.StringField(1)
@@ -5505,13 +5540,14 @@ class WorkloadSourceCondition(_messages.Message):
 
 
 class WorkloadSourceConditionSet(_messages.Message):
-  r"""A set of WorkloadSourceConditions used to match the container workload
-  source. The workload is considered to match the policy if at least one
-  condition matches the workload. The maximum number of conditions is
-  restricted to 50 WorkloadSourceConditions.
+  r"""The set of conditions that workloads must attest to be matched by the
+  policy.
 
   Fields:
-    conditions: Required. A list of WorkloadSourceConditions.
+    conditions: Required. The set of conditions that a workload must attest to
+      be matched by the policy. The workload is considered to match the policy
+      if at least one condition matches the workload. Each WorkloadSource may
+      set at most 50 conditions.
   """
 
   conditions = _messages.MessageField('WorkloadSourceCondition', 1, repeated=True)

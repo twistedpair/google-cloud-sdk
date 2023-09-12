@@ -675,6 +675,8 @@ class DatabaseInstance(_messages.Message):
       proactive database wellness job for OutOfDisk issues. * Writers: * the
       proactive database wellness job for OOD. * Readers: * the proactive
       database wellness job
+    primaryDnsName: Output only. The dns name of the primary instance in a
+      replication group.
     project: The project ID of the project containing the Cloud SQL instance.
       The Google apps domain is prefixed if applicable.
     pscServiceAttachmentLink: Output only. The link to service attachment of
@@ -1037,22 +1039,23 @@ class DatabaseInstance(_messages.Message):
   name = _messages.StringField(22)
   onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 23)
   outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 24)
-  project = _messages.StringField(25)
-  pscServiceAttachmentLink = _messages.StringField(26)
-  region = _messages.StringField(27)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 28)
-  replicaNames = _messages.StringField(29, repeated=True)
-  rootPassword = _messages.StringField(30)
-  satisfiesPzs = _messages.BooleanField(31)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 32)
-  secondaryGceZone = _messages.StringField(33)
-  selfLink = _messages.StringField(34)
-  serverCaCert = _messages.MessageField('SslCert', 35)
-  serviceAccountEmailAddress = _messages.StringField(36)
-  settings = _messages.MessageField('Settings', 37)
-  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 38)
-  state = _messages.EnumField('StateValueValuesEnum', 39)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 40, repeated=True)
+  primaryDnsName = _messages.StringField(25)
+  project = _messages.StringField(26)
+  pscServiceAttachmentLink = _messages.StringField(27)
+  region = _messages.StringField(28)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 29)
+  replicaNames = _messages.StringField(30, repeated=True)
+  rootPassword = _messages.StringField(31)
+  satisfiesPzs = _messages.BooleanField(32)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 33)
+  secondaryGceZone = _messages.StringField(34)
+  selfLink = _messages.StringField(35)
+  serverCaCert = _messages.MessageField('SslCert', 36)
+  serviceAccountEmailAddress = _messages.StringField(37)
+  settings = _messages.MessageField('Settings', 38)
+  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 39)
+  state = _messages.EnumField('StateValueValuesEnum', 40)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 41, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):

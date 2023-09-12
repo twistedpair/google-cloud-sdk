@@ -396,6 +396,17 @@ class BufferTaskResponse(_messages.Message):
   task = _messages.MessageField('Task', 1)
 
 
+class CloudtasksProjectsLocationsGetCmekConfigRequest(_messages.Message):
+  r"""A CloudtasksProjectsLocationsGetCmekConfigRequest object.
+
+  Fields:
+    name: Required. The config resource name. For example:
+      projects/PROJECT_ID/locations/LOCATION_ID/cmekConfig`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudtasksProjectsLocationsGetRequest(_messages.Message):
   r"""A CloudtasksProjectsLocationsGetRequest object.
 
@@ -793,6 +804,40 @@ class CloudtasksProjectsLocationsQueuesTestIamPermissionsRequest(_messages.Messa
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class CloudtasksProjectsLocationsUpdateCmekConfigRequest(_messages.Message):
+  r"""A CloudtasksProjectsLocationsUpdateCmekConfigRequest object.
+
+  Fields:
+    cmekConfig: A CmekConfig resource to be passed as the request body.
+    locationsId: A string attribute.
+    projectsId: A string attribute.
+    updateMask: List of fields to be updated in this request.
+  """
+
+  cmekConfig = _messages.MessageField('CmekConfig', 1)
+  locationsId = _messages.StringField(2, required=True)
+  projectsId = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
+
+
+class CmekConfig(_messages.Message):
+  r"""CMEK, or Customer Managed Encryption Keys, enables GCP products to put
+  control over encryption and key management in their customer's hands.
+
+  Fields:
+    kmsKey: Resource name of the Cloud KMS key, of the form `projects/PROJECT_
+      ID/locations/LOCATION_ID/keyRings/KEY_RING_ID/cryptoKeys/KEY_ID`, that
+      will be used to encrypt the Queues & Tasks in the region. Setting this
+      as blank will turn off CMEK encryption.
+    name: Output only. The config resource name which includes the project and
+      location and must end in 'cmekConfig', in the format
+      projects/PROJECT_ID/locations/LOCATION_ID/cmekConfig`
+  """
+
+  kmsKey = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class CreateTaskRequest(_messages.Message):
@@ -1618,21 +1663,29 @@ class Queue(_messages.Message):
       order to receive the statistics the caller should include this field in
       the FieldMask.
     taskTtl: The maximum amount of time that a task will be retained in this
-      queue. Queues created by Cloud Tasks have a default `task_ttl` of 31
-      days. After a task has lived for `task_ttl`, the task will be deleted
-      regardless of whether it was dispatched or not. The `task_ttl` for
-      queues created via queue.yaml/xml is equal to the maximum duration
-      because there is a [storage
+      queue. After a task has lived for `task_ttl`, the task will be deleted
+      regardless of whether it was dispatched or not. The minimum value is 10
+      days. The maximum value is 10 years. The value must be given as a string
+      that indicates the length of time (in seconds) followed by `s` (for
+      "seconds"). For more information on the format, see the documentation
+      for [Duration](https://protobuf.dev/reference/protobuf/google.protobuf/#
+      duration). Queues created by Cloud Tasks have a default `task_ttl` of 31
+      days. . Queues created by queue.yaml/xml have a fixed `task_ttl` of the
+      maximum duration, because there is a [storage
       quota](https://cloud.google.com/appengine/quotas#Task_Queue) for these
-      queues. To view the maximum valid duration, see the documentation for
-      Duration.
+      queues.
     tombstoneTtl: The task tombstone time to live (TTL). After a task is
       deleted or executed, the task's tombstone is retained for the length of
       time specified by `tombstone_ttl`. The tombstone is used by task de-
       duplication; another task with the same name can't be created until the
       tombstone has expired. For more information about task de-duplication,
-      see the documentation for CreateTaskRequest. Queues created by Cloud
-      Tasks have a default `tombstone_ttl` of 1 hour.
+      see the documentation for CreateTaskRequest. The minimum value is 1
+      hour. The maximum value is 9 days. The value must be given as a string
+      that indicates the length of time (in seconds) followed by `s` (for
+      "seconds"). For more information on the format, see the documentation
+      for [Duration](https://protobuf.dev/reference/protobuf/google.protobuf/#
+      duration). Queues created by Cloud Tasks have a default `tombstone_ttl`
+      of 1 hour.
     type: Immutable. The type of a queue (push or pull). `Queue.type` is an
       immutable property of the queue that is set at the queue creation time.
       When left unspecified, the default value of `PUSH` is selected.
@@ -1792,10 +1845,14 @@ class RetryConfig(_messages.Message):
     maxBackoff: A task will be scheduled for retry between min_backoff and
       max_backoff duration after it fails, if the queue's RetryConfig
       specifies that the task should be retried. If unspecified when the queue
-      is created, Cloud Tasks will pick the default. `max_backoff` will be
-      truncated to the nearest second. This field has the same meaning as
-      [max_backoff_seconds in queue.yaml/xml](https://cloud.google.com/appengi
-      ne/docs/standard/python/config/queueref#retry_parameters).
+      is created, Cloud Tasks will pick the default. The value must be given
+      as a string that indicates the length of time (in seconds) followed by
+      `s` (for "seconds"). For more information on the format, see the
+      documentation for [Duration](https://protobuf.dev/reference/protobuf/goo
+      gle.protobuf/#duration). `max_backoff` will be truncated to the nearest
+      second. This field has the same meaning as [max_backoff_seconds in queue
+      .yaml/xml](https://cloud.google.com/appengine/docs/standard/python/confi
+      g/queueref#retry_parameters).
     maxDoublings: The time between retries will double `max_doublings` times.
       A task's retry interval starts at min_backoff, then doubles
       `max_doublings` times, then increases linearly, and finally retries at
@@ -1815,17 +1872,25 @@ class RetryConfig(_messages.Message):
       been attempted max_attempts times, no further attempts will be made and
       the task will be deleted. If zero, then the task age is unlimited. If
       unspecified when the queue is created, Cloud Tasks will pick the
-      default. `max_retry_duration` will be truncated to the nearest second.
-      This field has the same meaning as [task_age_limit in queue.yaml/xml](ht
-      tps://cloud.google.com/appengine/docs/standard/python/config/queueref#re
-      try_parameters).
+      default. The value must be given as a string that indicates the length
+      of time (in seconds) followed by `s` (for "seconds"). For the maximum
+      possible value or the format, see the documentation for [Duration](https
+      ://protobuf.dev/reference/protobuf/google.protobuf/#duration).
+      `max_retry_duration` will be truncated to the nearest second. This field
+      has the same meaning as [task_age_limit in queue.yaml/xml](https://cloud
+      .google.com/appengine/docs/standard/python/config/queueref#retry_paramet
+      ers).
     minBackoff: A task will be scheduled for retry between min_backoff and
       max_backoff duration after it fails, if the queue's RetryConfig
       specifies that the task should be retried. If unspecified when the queue
-      is created, Cloud Tasks will pick the default. `min_backoff` will be
-      truncated to the nearest second. This field has the same meaning as
-      [min_backoff_seconds in queue.yaml/xml](https://cloud.google.com/appengi
-      ne/docs/standard/python/config/queueref#retry_parameters).
+      is created, Cloud Tasks will pick the default. The value must be given
+      as a string that indicates the length of time (in seconds) followed by
+      `s` (for "seconds"). For more information on the format, see the
+      documentation for [Duration](https://protobuf.dev/reference/protobuf/goo
+      gle.protobuf/#duration). `min_backoff` will be truncated to the nearest
+      second. This field has the same meaning as [min_backoff_seconds in queue
+      .yaml/xml](https://cloud.google.com/appengine/docs/standard/python/confi
+      g/queueref#retry_parameters).
   """
 
   maxAttempts = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2061,8 +2126,12 @@ class Task(_messages.Message):
       setting the `dispatch_deadline` to at most a few seconds more than the
       app handler's timeout. For more information see
       [Timeouts](https://cloud.google.com/tasks/docs/creating-appengine-
-      handlers#timeouts). `dispatch_deadline` will be truncated to the nearest
-      millisecond. The deadline is an approximate deadline.
+      handlers#timeouts). The value must be given as a string that indicates
+      the length of time (in seconds) followed by `s` (for "seconds"). For
+      more information on the format, see the documentation for [Duration](htt
+      ps://protobuf.dev/reference/protobuf/google.protobuf/#duration).
+      `dispatch_deadline` will be truncated to the nearest millisecond. The
+      deadline is an approximate deadline.
     firstAttempt: Output only. The status of the task's first attempt. Only
       dispatch_time will be set. The other Attempt information is not retained
       by Cloud Tasks.

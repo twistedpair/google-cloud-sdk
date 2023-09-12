@@ -39,17 +39,14 @@ class NetworkservicesV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_locations_edgeCacheServices = self.ProjectsLocationsEdgeCacheServicesService(self)
     self.projects_locations_endpointPolicies = self.ProjectsLocationsEndpointPoliciesService(self)
     self.projects_locations_gateways = self.ProjectsLocationsGatewaysService(self)
     self.projects_locations_grpcRoutes = self.ProjectsLocationsGrpcRoutesService(self)
     self.projects_locations_httpRoutes = self.ProjectsLocationsHttpRoutesService(self)
+    self.projects_locations_lbRouteExtensions = self.ProjectsLocationsLbRouteExtensionsService(self)
+    self.projects_locations_lbServiceSteeringExtensions = self.ProjectsLocationsLbServiceSteeringExtensionsService(self)
+    self.projects_locations_lbTrafficExtensions = self.ProjectsLocationsLbTrafficExtensionsService(self)
     self.projects_locations_meshes = self.ProjectsLocationsMeshesService(self)
-    self.projects_locations_multicastConsumerAssociations = self.ProjectsLocationsMulticastConsumerAssociationsService(self)
-    self.projects_locations_multicastDomainActivations = self.ProjectsLocationsMulticastDomainActivationsService(self)
-    self.projects_locations_multicastDomains = self.ProjectsLocationsMulticastDomainsService(self)
-    self.projects_locations_multicastGroupDefinitions = self.ProjectsLocationsMulticastGroupDefinitionsService(self)
-    self.projects_locations_multicastGroups = self.ProjectsLocationsMulticastGroupsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_serviceBindings = self.ProjectsLocationsServiceBindingsService(self)
     self.projects_locations_serviceLbPolicies = self.ProjectsLocationsServiceLbPoliciesService(self)
@@ -57,43 +54,6 @@ class NetworkservicesV1beta1(base_api.BaseApiClient):
     self.projects_locations_tlsRoutes = self.ProjectsLocationsTlsRoutesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class ProjectsLocationsEdgeCacheServicesService(base_api.BaseApiService):
-    """Service class for the projects_locations_edgeCacheServices resource."""
-
-    _NAME = 'projects_locations_edgeCacheServices'
-
-    def __init__(self, client):
-      super(NetworkservicesV1beta1.ProjectsLocationsEdgeCacheServicesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def InvalidateCache(self, request, global_params=None):
-      r"""Sends a cache invalidation request.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (InvalidateCacheResponse) The response message.
-      """
-      config = self.GetMethodConfig('InvalidateCache')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    InvalidateCache.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/edgeCacheServices/{edgeCacheServicesId}:invalidateCache',
-        http_method='POST',
-        method_id='networkservices.projects.locations.edgeCacheServices.invalidateCache',
-        ordered_params=['edgeCacheService'],
-        path_params=['edgeCacheService'],
-        query_params=[],
-        relative_path='v1beta1/{+edgeCacheService}:invalidateCache',
-        request_field='invalidateCacheRequest',
-        request_type_name='NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest',
-        response_type_name='InvalidateCacheResponse',
-        supports_download=False,
-    )
 
   class ProjectsLocationsEndpointPoliciesService(base_api.BaseApiService):
     """Service class for the projects_locations_endpointPolicies resource."""
@@ -837,6 +797,441 @@ class NetworkservicesV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsLbRouteExtensionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_lbRouteExtensions resource."""
+
+    _NAME = 'projects_locations_lbRouteExtensions'
+
+    def __init__(self, client):
+      super(NetworkservicesV1beta1.ProjectsLocationsLbRouteExtensionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new LbRouteExtension in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbRouteExtensions',
+        http_method='POST',
+        method_id='networkservices.projects.locations.lbRouteExtensions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['lbRouteExtensionId', 'requestId'],
+        relative_path='v1beta1/{+parent}/lbRouteExtensions',
+        request_field='lbRouteExtension',
+        request_type_name='NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single LbRouteExtension.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbRouteExtensions/{lbRouteExtensionsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.lbRouteExtensions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single LbRouteExtension.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbRouteExtensionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LbRouteExtension) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbRouteExtensions/{lbRouteExtensionsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.lbRouteExtensions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsLbRouteExtensionsGetRequest',
+        response_type_name='LbRouteExtension',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists LbRouteExtensions in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbRouteExtensionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLbRouteExtensionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbRouteExtensions',
+        http_method='GET',
+        method_id='networkservices.projects.locations.lbRouteExtensions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/lbRouteExtensions',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsLbRouteExtensionsListRequest',
+        response_type_name='ListLbRouteExtensionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single LbRouteExtension.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbRouteExtensions/{lbRouteExtensionsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.lbRouteExtensions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='lbRouteExtension',
+        request_type_name='NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsLbServiceSteeringExtensionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_lbServiceSteeringExtensions resource."""
+
+    _NAME = 'projects_locations_lbServiceSteeringExtensions'
+
+    def __init__(self, client):
+      super(NetworkservicesV1beta1.ProjectsLocationsLbServiceSteeringExtensionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new LbServiceSteeringExtension in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbServiceSteeringExtensionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbServiceSteeringExtensions',
+        http_method='POST',
+        method_id='networkservices.projects.locations.lbServiceSteeringExtensions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['lbServiceSteeringExtensionId', 'requestId'],
+        relative_path='v1beta1/{+parent}/lbServiceSteeringExtensions',
+        request_field='lbServiceSteeringExtension',
+        request_type_name='NetworkservicesProjectsLocationsLbServiceSteeringExtensionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single LbServiceSteeringExtension.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbServiceSteeringExtensionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbServiceSteeringExtensions/{lbServiceSteeringExtensionsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.lbServiceSteeringExtensions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsLbServiceSteeringExtensionsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single LbServiceSteeringExtension.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbServiceSteeringExtensionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LbServiceSteeringExtension) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbServiceSteeringExtensions/{lbServiceSteeringExtensionsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.lbServiceSteeringExtensions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsLbServiceSteeringExtensionsGetRequest',
+        response_type_name='LbServiceSteeringExtension',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists LbServiceSteeringExtensions in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbServiceSteeringExtensionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLbServiceSteeringExtensionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbServiceSteeringExtensions',
+        http_method='GET',
+        method_id='networkservices.projects.locations.lbServiceSteeringExtensions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/lbServiceSteeringExtensions',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsLbServiceSteeringExtensionsListRequest',
+        response_type_name='ListLbServiceSteeringExtensionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single LbServiceSteeringExtension.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbServiceSteeringExtensionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbServiceSteeringExtensions/{lbServiceSteeringExtensionsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.lbServiceSteeringExtensions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='lbServiceSteeringExtension',
+        request_type_name='NetworkservicesProjectsLocationsLbServiceSteeringExtensionsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsLbTrafficExtensionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_lbTrafficExtensions resource."""
+
+    _NAME = 'projects_locations_lbTrafficExtensions'
+
+    def __init__(self, client):
+      super(NetworkservicesV1beta1.ProjectsLocationsLbTrafficExtensionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new LbTrafficExtension in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbTrafficExtensionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbTrafficExtensions',
+        http_method='POST',
+        method_id='networkservices.projects.locations.lbTrafficExtensions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['lbTrafficExtensionId', 'requestId'],
+        relative_path='v1beta1/{+parent}/lbTrafficExtensions',
+        request_field='lbTrafficExtension',
+        request_type_name='NetworkservicesProjectsLocationsLbTrafficExtensionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single LbTrafficExtension.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbTrafficExtensionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbTrafficExtensions/{lbTrafficExtensionsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.lbTrafficExtensions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsLbTrafficExtensionsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single LbTrafficExtension.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbTrafficExtensionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LbTrafficExtension) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbTrafficExtensions/{lbTrafficExtensionsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.lbTrafficExtensions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsLbTrafficExtensionsGetRequest',
+        response_type_name='LbTrafficExtension',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists LbTrafficExtensions in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbTrafficExtensionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLbTrafficExtensionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbTrafficExtensions',
+        http_method='GET',
+        method_id='networkservices.projects.locations.lbTrafficExtensions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/lbTrafficExtensions',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsLbTrafficExtensionsListRequest',
+        response_type_name='ListLbTrafficExtensionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single LbTrafficExtension.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/lbTrafficExtensions/{lbTrafficExtensionsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.lbTrafficExtensions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='lbTrafficExtension',
+        request_type_name='NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsMeshesService(base_api.BaseApiService):
     """Service class for the projects_locations_meshes resource."""
 
@@ -1060,731 +1455,6 @@ class NetworkservicesV1beta1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsMulticastConsumerAssociationsService(base_api.BaseApiService):
-    """Service class for the projects_locations_multicastConsumerAssociations resource."""
-
-    _NAME = 'projects_locations_multicastConsumerAssociations'
-
-    def __init__(self, client):
-      super(NetworkservicesV1beta1.ProjectsLocationsMulticastConsumerAssociationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new MulticastConsumerAssociation in a given project and location.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastConsumerAssociationsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastConsumerAssociations',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastConsumerAssociations.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['multicastConsumerAssociationId', 'requestId'],
-        relative_path='v1beta1/{+parent}/multicastConsumerAssociations',
-        request_field='multicastConsumerAssociation',
-        request_type_name='NetworkservicesProjectsLocationsMulticastConsumerAssociationsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single MulticastConsumerAssociation.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastConsumerAssociationsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastConsumerAssociations/{multicastConsumerAssociationsId}',
-        http_method='DELETE',
-        method_id='networkservices.projects.locations.multicastConsumerAssociations.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastConsumerAssociationsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single MulticastConsumerAssociation.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (MulticastConsumerAssociation) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastConsumerAssociations/{multicastConsumerAssociationsId}',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastConsumerAssociations.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetRequest',
-        response_type_name='MulticastConsumerAssociation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists MulticastConsumerAssociations in a given project and location.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastConsumerAssociationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListMulticastConsumerAssociationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastConsumerAssociations',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastConsumerAssociations.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1beta1/{+parent}/multicastConsumerAssociations',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastConsumerAssociationsListRequest',
-        response_type_name='ListMulticastConsumerAssociationsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single MulticastConsumerAssociation.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastConsumerAssociations/{multicastConsumerAssociationsId}',
-        http_method='PATCH',
-        method_id='networkservices.projects.locations.multicastConsumerAssociations.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1beta1/{+name}',
-        request_field='multicastConsumerAssociation',
-        request_type_name='NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsMulticastDomainActivationsService(base_api.BaseApiService):
-    """Service class for the projects_locations_multicastDomainActivations resource."""
-
-    _NAME = 'projects_locations_multicastDomainActivations'
-
-    def __init__(self, client):
-      super(NetworkservicesV1beta1.ProjectsLocationsMulticastDomainActivationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new MulticastDomainActivation in a given project and location.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastDomainActivations',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastDomainActivations.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['multicastDomainActivationId', 'requestId'],
-        relative_path='v1beta1/{+parent}/multicastDomainActivations',
-        request_field='multicastDomainActivation',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single MulticastDomainActivation.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainActivationsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastDomainActivations/{multicastDomainActivationsId}',
-        http_method='DELETE',
-        method_id='networkservices.projects.locations.multicastDomainActivations.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainActivationsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single MulticastDomainActivation.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainActivationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (MulticastDomainActivation) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastDomainActivations/{multicastDomainActivationsId}',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastDomainActivations.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainActivationsGetRequest',
-        response_type_name='MulticastDomainActivation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists MulticastDomainActivations in a given project and location.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainActivationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListMulticastDomainActivationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastDomainActivations',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastDomainActivations.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1beta1/{+parent}/multicastDomainActivations',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainActivationsListRequest',
-        response_type_name='ListMulticastDomainActivationsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single MulticastDomainActivation.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastDomainActivations/{multicastDomainActivationsId}',
-        http_method='PATCH',
-        method_id='networkservices.projects.locations.multicastDomainActivations.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1beta1/{+name}',
-        request_field='multicastDomainActivation',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsMulticastDomainsService(base_api.BaseApiService):
-    """Service class for the projects_locations_multicastDomains resource."""
-
-    _NAME = 'projects_locations_multicastDomains'
-
-    def __init__(self, client):
-      super(NetworkservicesV1beta1.ProjectsLocationsMulticastDomainsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new MulticastDomain in a given project and location.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastDomains',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastDomains.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['multicastDomainId', 'requestId'],
-        relative_path='v1beta1/{+parent}/multicastDomains',
-        request_field='multicastDomain',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single MulticastDomain.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastDomains/{multicastDomainsId}',
-        http_method='DELETE',
-        method_id='networkservices.projects.locations.multicastDomains.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single MulticastDomain.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (MulticastDomain) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastDomains/{multicastDomainsId}',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastDomains.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainsGetRequest',
-        response_type_name='MulticastDomain',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists MulticastDomains in a given project and location.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListMulticastDomainsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastDomains',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastDomains.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1beta1/{+parent}/multicastDomains',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainsListRequest',
-        response_type_name='ListMulticastDomainsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single MulticastDomain.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastDomainsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastDomains/{multicastDomainsId}',
-        http_method='PATCH',
-        method_id='networkservices.projects.locations.multicastDomains.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1beta1/{+name}',
-        request_field='multicastDomain',
-        request_type_name='NetworkservicesProjectsLocationsMulticastDomainsPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsMulticastGroupDefinitionsService(base_api.BaseApiService):
-    """Service class for the projects_locations_multicastGroupDefinitions resource."""
-
-    _NAME = 'projects_locations_multicastGroupDefinitions'
-
-    def __init__(self, client):
-      super(NetworkservicesV1beta1.ProjectsLocationsMulticastGroupDefinitionsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new MulticastGroupDefinition in a given project and location.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastGroupDefinitions',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastGroupDefinitions.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['multicastGroupDefinitionId', 'requestId'],
-        relative_path='v1beta1/{+parent}/multicastGroupDefinitions',
-        request_field='multicastGroupDefinition',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single MulticastGroupDefinition.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupDefinitionsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastGroupDefinitions/{multicastGroupDefinitionsId}',
-        http_method='DELETE',
-        method_id='networkservices.projects.locations.multicastGroupDefinitions.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupDefinitionsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single MulticastGroupDefinition.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (MulticastGroupDefinition) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastGroupDefinitions/{multicastGroupDefinitionsId}',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastGroupDefinitions.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetRequest',
-        response_type_name='MulticastGroupDefinition',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists MulticastGroupDefinitions in a given project and location.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupDefinitionsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListMulticastGroupDefinitionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastGroupDefinitions',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastGroupDefinitions.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1beta1/{+parent}/multicastGroupDefinitions',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupDefinitionsListRequest',
-        response_type_name='ListMulticastGroupDefinitionsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single MulticastGroupDefinition.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastGroupDefinitions/{multicastGroupDefinitionsId}',
-        http_method='PATCH',
-        method_id='networkservices.projects.locations.multicastGroupDefinitions.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1beta1/{+name}',
-        request_field='multicastGroupDefinition',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsMulticastGroupsService(base_api.BaseApiService):
-    """Service class for the projects_locations_multicastGroups resource."""
-
-    _NAME = 'projects_locations_multicastGroups'
-
-    def __init__(self, client):
-      super(NetworkservicesV1beta1.ProjectsLocationsMulticastGroupsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new MulticastGroup in a given project and location.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastGroups',
-        http_method='POST',
-        method_id='networkservices.projects.locations.multicastGroups.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['multicastGroupId', 'requestId'],
-        relative_path='v1beta1/{+parent}/multicastGroups',
-        request_field='multicastGroup',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single MulticastGroup.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastGroups/{multicastGroupsId}',
-        http_method='DELETE',
-        method_id='networkservices.projects.locations.multicastGroups.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single MulticastGroup.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (MulticastGroup) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastGroups/{multicastGroupsId}',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastGroups.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupsGetRequest',
-        response_type_name='MulticastGroup',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists MulticastGroups in a given project and location.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListMulticastGroupsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastGroups',
-        http_method='GET',
-        method_id='networkservices.projects.locations.multicastGroups.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1beta1/{+parent}/multicastGroups',
-        request_field='',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupsListRequest',
-        response_type_name='ListMulticastGroupsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single MulticastGroup.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsMulticastGroupsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/multicastGroups/{multicastGroupsId}',
-        http_method='PATCH',
-        method_id='networkservices.projects.locations.multicastGroups.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1beta1/{+name}',
-        request_field='multicastGroup',
-        request_type_name='NetworkservicesProjectsLocationsMulticastGroupsPatchRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2048,33 +1718,6 @@ class NetworkservicesV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworkservicesProjectsLocationsServiceBindingsListRequest',
         response_type_name='ListServiceBindingsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single ServiceBinding.
-
-      Args:
-        request: (NetworkservicesProjectsLocationsServiceBindingsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/serviceBindings/{serviceBindingsId}',
-        http_method='PATCH',
-        method_id='networkservices.projects.locations.serviceBindings.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask'],
-        relative_path='v1beta1/{+name}',
-        request_field='serviceBinding',
-        request_type_name='NetworkservicesProjectsLocationsServiceBindingsPatchRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2704,7 +2347,7 @@ class NetworkservicesV1beta1(base_api.BaseApiClient):
         method_id='networkservices.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1beta1/{+name}/locations',
         request_field='',
         request_type_name='NetworkservicesProjectsLocationsListRequest',

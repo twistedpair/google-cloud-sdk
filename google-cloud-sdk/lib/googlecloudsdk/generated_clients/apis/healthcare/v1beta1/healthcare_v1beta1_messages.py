@@ -14,6 +14,54 @@ from apitools.base.py import extra_types
 package = 'healthcare'
 
 
+class AccessDeterminationLogConfig(_messages.Message):
+  r"""Configures consent audit log config for FHIR create, read, update, and
+  delete (CRUD) operations. Cloud audit log for healthcare API must be
+  [enabled](https://cloud.google.com/logging/docs/audit/configure-data-
+  access#config-console-enable). The consent-related logs are included as part
+  of `protoPayload.metadata`.
+
+  Enums:
+    LogLevelValueValuesEnum: Optional. Controls the amount of detail to
+      include as part of the audit logs.
+
+  Fields:
+    logLevel: Optional. Controls the amount of detail to include as part of
+      the audit logs.
+  """
+
+  class LogLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. Controls the amount of detail to include as part of the
+    audit logs.
+
+    Values:
+      LOG_LEVEL_UNSPECIFIED: No log level specified. This value is unused.
+      DISABLED: No additional consent-related logging is added to audit logs.
+      MINIMUM: The following information is included: - One of the following
+        [`consentMode`](https://cloud.google.com/healthcare-
+        api/private/docs/how-tos/fhir-consent#audit_logs) fields:
+        (`off`|`emptyScope`|`enforced`|`btg`|`bypass`). - The accessor's
+        request headers - The `log_level` of the [AccessDeterminationLogConfig
+        ](google.cloud.healthcare.v1beta1.fhir.FhirStore.ConsentConfig.AccessD
+        eterminationLogConfig) - The final consent evaluation (`PERMIT`,
+        `DENY`, or `NO_CONSENT`) - A human-readable summary of the evaluation
+      VERBOSE: Includes `MINIMUM` and, for each resource owner, returns: - The
+        resource owner's name - Most specific part of the `X-Consent-Scope`
+        resulting in consensual determination - Timestamp of the applied
+        enforcement leading to the decision - Enforcement version at the time
+        the applicable consents were applied - The Consent resource name - The
+        timestamp of the Consent resource used for enforcement - Policy type
+        (PATIENT or ADMIN) Note that this mode adds some overhead to CRUD
+        operations.
+    """
+    LOG_LEVEL_UNSPECIFIED = 0
+    DISABLED = 1
+    MINIMUM = 2
+    VERBOSE = 3
+
+  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 1)
+
+
 class Action(_messages.Message):
   r"""Specifies a selection of tags and an `Action` to apply to each one.
 
@@ -71,6 +119,21 @@ class ActivateConsentRequest(_messages.Message):
   consentArtifact = _messages.StringField(1)
   expireTime = _messages.StringField(2)
   ttl = _messages.StringField(3)
+
+
+class AdminConsents(_messages.Message):
+  r"""List of admin Consent resources to be applied.
+
+  Fields:
+    names: The versioned names of the admin Consent resource(s), in the format
+      `projects/{project_id}/locations/{location}/datasets/{dataset_id}/fhirSt
+      ores/{fhir_store_id}/fhir/Consent/{resource_id}/_history/{version_id}`.
+      For FHIR stores with `disable_resource_versioning=true`, the format is `
+      projects/{project_id}/locations/{location}/datasets/{dataset_id}/fhirSto
+      res/{fhir_store_id}/fhir/Consent/{resource_id}`.
+  """
+
+  names = _messages.StringField(1, repeated=True)
 
 
 class AnalyzeEntitiesRequest(_messages.Message):
@@ -285,6 +348,116 @@ class AnnotationStore(_messages.Message):
 
   labels = _messages.MessageField('LabelsValue', 1)
   name = _messages.StringField(2)
+
+
+class ApplyAdminConsentsRequest(_messages.Message):
+  r"""Request to apply the admin Consent resources for the specified FHIR
+  store.
+
+  Fields:
+    newConsentsList: A new list of admin Consent resources to be applied. Any
+      existing enforced Consents, which are specified in
+      `consent_config.enforced_admin_consents` of the FhirStore, that are not
+      part of this list will be disabled. An empty list is equivalent to
+      clearing or disabling all Consents enforced on the FHIR store. When a
+      FHIR store has `disable_resource_versioning=true` and this list contains
+      a Consent resource that exists in
+      `consent_config.enforced_admin_consents`, the method enforces any
+      updates to the existing resource since the last enforcement. If the
+      existing resource hasn't been updated since the last enforcement, the
+      resource is unaffected. After the method finishes, the resulting consent
+      enforcement model is determined by the contents of the Consent
+      resource(s) when the method was called: * When
+      `disable_resource_versioning=true`, the result is identical to the
+      current resource(s) in the FHIR store. * When
+      `disable_resource_versioning=false`, the result is based on the
+      historical version(s) of the Consent resource(s) at the point in time
+      when the method was called. At most 200 Consents can be specified.
+    validateOnly: If true, the method only validates Consent resources to make
+      sure they are supported. Otherwise, the method applies the aggregate
+      consent information to update the enforcement model and reindex the FHIR
+      resources. If all Consent resources can be applied successfully, the
+      ApplyAdminConsentsResponse is returned containing the following fields:
+      * `consent_apply_success` to indicate the number of Consent resources
+      applied. * `affected_resources` to indicate the number of resources that
+      might have had their consent access changed. If, however, one or more
+      Consent resources are unsupported or cannot be applied, the method fails
+      and ApplyAdminConsentsErrorDetail is is returned with details about the
+      unsupported Consent resources.
+  """
+
+  newConsentsList = _messages.MessageField('AdminConsents', 1)
+  validateOnly = _messages.BooleanField(2)
+
+
+class ApplyAdminConsentsResponse(_messages.Message):
+  r"""Response when all admin Consent resources in scope were processed and
+  all affected resources were reindexed successfully. This structure will be
+  included in the response when the operation finishes successfully.
+
+  Fields:
+    affectedResources: The number of resources (including the Consent
+      resources) that may have consent access change.
+    consentApplySuccess: If `validate_only=false` in
+      ApplyAdminConsentsRequest, this counter contains the number of Consent
+      resources that were successfully applied. Otherwise, it is the number of
+      Consent resources that are supported.
+    failedResources: The number of resources (including the Consent resources)
+      that ApplyAdminConsents failed to re-index.
+  """
+
+  affectedResources = _messages.IntegerField(1)
+  consentApplySuccess = _messages.IntegerField(2)
+  failedResources = _messages.IntegerField(3)
+
+
+class ApplyConsentsRequest(_messages.Message):
+  r"""Request to apply the Consent resources for the specified FHIR store.
+
+  Fields:
+    patientScope: Optional. Scope down to a list of patients.
+    timeRange: Optional. Scope down to patients whose most recent consent
+      changes are in the time range. Can only be used with a versioning store
+      (i.e. when disable_resource_versioning is set to false).
+    validateOnly: Optional. If true, the method only validates Consent
+      resources to make sure they are supported. When the operation completes,
+      ApplyConsentsResponse is returned where `consent_apply_success` and
+      `consent_apply_failure` indicate supported and unsupported (or invalid)
+      Consent resources, respectively. Otherwise, the method propagates the
+      aggregate consensual information to the patient's resources. Upon
+      success, `affected_resources` in the ApplyConsentsResponse indicates the
+      number of resources that may have consensual access changed.
+  """
+
+  patientScope = _messages.MessageField('PatientScope', 1)
+  timeRange = _messages.MessageField('TimeRange', 2)
+  validateOnly = _messages.BooleanField(3)
+
+
+class ApplyConsentsResponse(_messages.Message):
+  r"""Response when all Consent resources in scope were processed and all
+  affected resources were reindexed successfully. This structure is included
+  in the response when the operation finishes successfully.
+
+  Fields:
+    affectedResources: The number of resources (including the Consent
+      resources) that may have consensual access change.
+    consentApplyFailure: If `validate_only = false` in ApplyConsentsRequest,
+      this counter is the number of Consent resources that were failed to
+      apply. Otherwise, it is the number of Consent resources that are not
+      supported or invalid.
+    consentApplySuccess: If `validate_only = false` in ApplyConsentsRequest,
+      this counter is the number of Consent resources that were successfully
+      applied. Otherwise, it is the number of Consent resources that are
+      supported.
+    failedResources: The number of resources (including the Consent resources)
+      that ApplyConsents failed to re-index.
+  """
+
+  affectedResources = _messages.IntegerField(1)
+  consentApplyFailure = _messages.IntegerField(2)
+  consentApplySuccess = _messages.IntegerField(3)
+  failedResources = _messages.IntegerField(4)
 
 
 class ArchiveUserDataMappingRequest(_messages.Message):
@@ -528,7 +701,7 @@ class CharacterMaskConfig(_messages.Message):
 class CharacterMaskField(_messages.Message):
   r"""Replace field value with masking character. Supported
   [types](https://www.hl7.org/fhir/datatypes.html): Code, Decimal, HumanName,
-  Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml
+  Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml.
   """
 
 
@@ -665,16 +838,16 @@ class CleanDescriptorsOption(_messages.Message):
   of the tags marked for removal (action codes D, Z, X, and U) in the [Basic P
   rofile](http://dicom.nema.org/medical/dicom/2018e/output/chtml/part15/chapte
   r_E.html). These contextual phrases are replaced with the token "[CTX]".
-  This option uses an additional `InfoType` during inspection.
+  This option uses an additional infoType during inspection.
   """
 
 
 
 class CleanTextField(_messages.Message):
-  r"""Inspect text and transform sensitive text. Configure using `TextConfig`.
+  r"""Inspect text and transform sensitive text. Configure using TextConfig.
   Supported [types](https://www.hl7.org/fhir/datatypes.html): Code, Date,
   DateTime, Decimal, HumanName, Id, LanguageCode, Markdown, Oid, String, Uri,
-  Uuid, Xhtml
+  Uuid, Xhtml.
   """
 
 
@@ -891,6 +1064,64 @@ class ConsentArtifact(_messages.Message):
   witnessSignature = _messages.MessageField('Signature', 8)
 
 
+class ConsentConfig(_messages.Message):
+  r"""Configures whether to enforce consent for the FHIR store and which
+  consent enforcement version is being used.
+
+  Enums:
+    VersionValueValuesEnum: Required. Specifies which consent enforcement
+      version is being used for this FHIR store. This field can only be set
+      once by either CreateFhirStore or UpdateFhirStore. After that, you must
+      call ApplyConsents to change the version.
+
+  Fields:
+    accessDeterminationLogConfig: Optional. Specifies how the server logs the
+      consent-aware requests. If not specified, the
+      `AccessDeterminationLogConfig.LogLevel.MINIMUM` option is used.
+    accessEnforced: Optional. If set to true, when accessing FHIR resources,
+      the consent headers provided using [SMART-on-
+      FHIR](https://cloud.google.com/healthcare/private/docs/how-tos/smart-on-
+      fhir) will be verified against consents given by patients. See the
+      ConsentEnforcementVersion for the supported consent headers.
+    consentHeaderHandling: Optional. Different options to configure the
+      behaviour of the server when handling the `X-Consent-Scope` header.
+    enforcedAdminConsents: The versioned names of the enforced admin Consent
+      resource(s), in the format `projects/{project_id}/locations/{location}/d
+      atasets/{dataset_id}/fhirStores/{fhir_store_id}/fhir/Consent/{resource_i
+      d}/_history/{version_id}`. For FHIR stores with
+      `disable_resource_versioning=true`, the format is `projects/{project_id}
+      /locations/{location}/datasets/{dataset_id}/fhirStores/{fhir_store_id}/f
+      hir/Consent/{resource_id}`. This field can only be updated using
+      ApplyAdminConsents.
+    version: Required. Specifies which consent enforcement version is being
+      used for this FHIR store. This field can only be set once by either
+      CreateFhirStore or UpdateFhirStore. After that, you must call
+      ApplyConsents to change the version.
+  """
+
+  class VersionValueValuesEnum(_messages.Enum):
+    r"""Required. Specifies which consent enforcement version is being used
+    for this FHIR store. This field can only be set once by either
+    CreateFhirStore or UpdateFhirStore. After that, you must call
+    ApplyConsents to change the version.
+
+    Values:
+      CONSENT_ENFORCEMENT_VERSION_UNSPECIFIED: Users must specify an
+        enforcement version or an error is returned.
+      V1: Enforcement version 1. See the [FHIR Consent resources in the Cloud
+        Healthcare API](https://cloud.google.com/healthcare-
+        api/private/docs/how-tos/fhir-consent) guide for more details.
+    """
+    CONSENT_ENFORCEMENT_VERSION_UNSPECIFIED = 0
+    V1 = 1
+
+  accessDeterminationLogConfig = _messages.MessageField('AccessDeterminationLogConfig', 1)
+  accessEnforced = _messages.BooleanField(2)
+  consentHeaderHandling = _messages.MessageField('ConsentHeaderHandling', 3)
+  enforcedAdminConsents = _messages.StringField(4, repeated=True)
+  version = _messages.EnumField('VersionValueValuesEnum', 5)
+
+
 class ConsentEvaluation(_messages.Message):
   r"""The detailed evaluation of a particular Consent.
 
@@ -927,6 +1158,47 @@ class ConsentEvaluation(_messages.Message):
     HAS_SATISFIED_POLICY = 4
 
   evaluationResult = _messages.EnumField('EvaluationResultValueValuesEnum', 1)
+
+
+class ConsentHeaderHandling(_messages.Message):
+  r"""How the server handles the consent header.
+
+  Enums:
+    ProfileValueValuesEnum: Optional. Specifies the default server behavior
+      when the header is empty. If not specified, the
+      `ScopeProfile.PERMIT_EMPTY_SCOPE` option is used.
+
+  Fields:
+    profile: Optional. Specifies the default server behavior when the header
+      is empty. If not specified, the `ScopeProfile.PERMIT_EMPTY_SCOPE` option
+      is used.
+  """
+
+  class ProfileValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the default server behavior when the header is
+    empty. If not specified, the `ScopeProfile.PERMIT_EMPTY_SCOPE` option is
+    used.
+
+    Values:
+      SCOPE_PROFILE_UNSPECIFIED: If not specified, the default value
+        `PERMIT_EMPTY_SCOPE` is used.
+      PERMIT_EMPTY_SCOPE: When no consent scopes are provided (for example, if
+        there's an empty or missing header), then consent check is disabled,
+        similar to when `access_enforced` is `false`. You can use audit logs
+        to differentiate these two cases by looking at the value of
+        `protopayload.metadata.consentMode`. If consents scopes are present,
+        they must be valid and within the allowed limits, otherwise the
+        request will be rejected with a `4xx` code.
+      REQUIRED_ON_READ: The consent header must be non-empty when performing
+        read and search operations, otherwise the request is rejected with a
+        `4xx` code. Additionally, invalid consent scopes or scopes exceeding
+        the allowed limits are rejected.
+    """
+    SCOPE_PROFILE_UNSPECIFIED = 0
+    PERMIT_EMPTY_SCOPE = 1
+    REQUIRED_ON_READ = 2
+
+  profile = _messages.EnumField('ProfileValueValuesEnum', 1)
 
 
 class ConsentList(_messages.Message):
@@ -1015,11 +1287,12 @@ class ConsentStore(_messages.Message):
 
 
 class ContextualDeidConfig(_messages.Message):
-  r"""The fields that aren't marked `Keep` or `CleanText` in the `BASIC`
-  profile are collected into a contextual phrase list. For fields marked
-  `CleanText`, the process attempts to transform phrases matching these
-  contextual entries. These contextual phrases are replaced with the token
-  "[CTX]". This feature uses an additional InfoType during inspection.
+  r"""Fields that don't match a KeepField or CleanTextField `action` in the
+  BASIC profile are collected into a contextual phrase list. For fields that
+  match a CleanTextField `action` in FieldMetadata or ProfileType, the process
+  attempts to transform phrases matching these contextual entries. These
+  contextual phrases are replaced with the token "[CTX]". This feature uses an
+  additional InfoType during inspection.
   """
 
 
@@ -1042,9 +1315,9 @@ class CryptoHashConfig(_messages.Message):
   Fields:
     cryptoKey: An AES 128/192/256 bit key. Causes the hash to be computed
       based on this key. A default key is generated for each Deidentify
-      operation and is used when neither `crypto_key` nor `kms_wrapped` is
-      specified. Must not be set if `kms_wrapped` is set.
-    kmsWrapped: KMS wrapped key. Must not be set if `crypto_key` is set.
+      operation and is used when neither crypto_key nor kms_wrapped is
+      specified. Must not be set if kms_wrapped is set.
+    kmsWrapped: KMS wrapped key. Must not be set if crypto_key is set.
   """
 
   cryptoKey = _messages.BytesField(1)
@@ -1054,7 +1327,7 @@ class CryptoHashConfig(_messages.Message):
 class CryptoHashField(_messages.Message):
   r"""Replace field value with a hash of that value. Supported
   [types](https://www.hl7.org/fhir/datatypes.html): Code, Decimal, HumanName,
-  Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml
+  Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml.
   """
 
 
@@ -1086,13 +1359,13 @@ class DateShiftConfig(_messages.Message):
     cryptoKey: An AES 128/192/256 bit key. The date shift is computed based on
       this key and the patient ID. If the patient ID is empty for a DICOM
       resource, the date shift is computed based on this key and the study
-      instance UID. If `crypto_key` is not set, then `kms_wrapped` is used to
+      instance UID. If crypto_key is not set, then kms_wrapped is used to
       calculate the date shift. If neither is set, a default key is generated
-      for each de-identify operation. Must not be set if `kms_wrapped` is set.
-    kmsWrapped: KMS wrapped key. If `kms_wrapped` is not set, then
-      `crypto_key` is used to calculate the date shift. If neither is set, a
-      default key is generated for each de-identify operation. Must not be set
-      if `crypto_key` is set.
+      for each de-identify operation. Must not be set if kms_wrapped is set.
+    kmsWrapped: KMS wrapped key. If kms_wrapped is not set, then crypto_key is
+      used to calculate the date shift. If neither is set, a default key is
+      generated for each de-identify operation. Must not be set if crypto_key
+      is set.
   """
 
   cryptoKey = _messages.BytesField(1)
@@ -1103,7 +1376,7 @@ class DateShiftField(_messages.Message):
   r"""Shift the date by a randomized number of days. See [date
   shifting](https://cloud.google.com/dlp/docs/concepts-date-shifting) for more
   information. Supported [types](https://www.hl7.org/fhir/datatypes.html):
-  Date, DateTime
+  Date, DateTime.
   """
 
 
@@ -2052,12 +2325,13 @@ class FhirFieldConfig(_messages.Message):
 
   Fields:
     fieldMetadataList: Specifies FHIR paths to match and how to transform
-      them. Any field that is not matched by a `FieldMetadata` is passed
-      through to the output dataset unmodified. All extensions will be
-      processed according to `keep_extensions`. If a field can be matched by
-      more than one `FieldMetadata`, the first `FieldMetadata.Action` is
-      applied. Overrides `options` and `profile`.
-    options: Specifies additional options, overriding the base `profile`.
+      them. Any field that is not matched by a FieldMetadata `action` is
+      passed through to the output dataset unmodified. All extensions will be
+      processed according to keep_extensions. If a field can be matched by
+      more than one FieldMetadata `action`, the first `action` option is
+      applied. Overrides options and the union field `profile` in
+      FhirFieldConfig.
+    options: Specifies additional options, overriding the base ProfileType.
     profileType: Base profile type for handling FHIR fields.
   """
 
@@ -2066,12 +2340,13 @@ class FhirFieldConfig(_messages.Message):
 
     Values:
       PROFILE_TYPE_UNSPECIFIED: No profile provided. Same as `BASIC`.
-      KEEP_ALL: `Keep` all fields.
-      BASIC: Transforms known HIPAA 18 fields and cleans known unstructured
-        text fields.
+      KEEP_ALL: Keep all fields.
+      BASIC: Transforms known [HIPAA 18](https://www.hhs.gov/hipaa/for-
+        professionals/privacy/special-topics/de-
+        identification/index.html#standard)
       CLEAN_ALL: Cleans all supported tags. Applies to types: Code, Date,
         DateTime, Decimal, HumanName, Id, LanguageCode, Markdown, Oid, String,
-        Uri, Uuid, Xhtml
+        Uri, Uuid, Xhtml.
     """
     PROFILE_TYPE_UNSPECIFIED = 0
     KEEP_ALL = 1
@@ -2195,6 +2470,9 @@ class FhirStore(_messages.Message):
       ENABLED after a notification period. Warning: turning on this flag
       causes processing existing resources to fail if they contain references
       to non-existent resources.
+    consentConfig: Optional. Specifies whether this store has consent
+      enforcement. Not available for DSTU2 FHIR version due to absence of
+      Consent resources.
     defaultSearchHandlingStrict: If true, overrides the default search
       behavior for this FHIR store to `handling=strict` which returns an error
       for unrecognized search parameters. If false, uses the FHIR
@@ -2341,18 +2619,19 @@ class FhirStore(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   complexDataTypeReferenceParsing = _messages.EnumField('ComplexDataTypeReferenceParsingValueValuesEnum', 1)
-  defaultSearchHandlingStrict = _messages.BooleanField(2)
-  disableReferentialIntegrity = _messages.BooleanField(3)
-  disableResourceVersioning = _messages.BooleanField(4)
-  enableUpdateCreate = _messages.BooleanField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  notificationConfig = _messages.MessageField('NotificationConfig', 8)
-  notificationConfigs = _messages.MessageField('FhirNotificationConfig', 9, repeated=True)
-  searchConfig = _messages.MessageField('SearchConfig', 10)
-  streamConfigs = _messages.MessageField('StreamConfig', 11, repeated=True)
-  validationConfig = _messages.MessageField('ValidationConfig', 12)
-  version = _messages.EnumField('VersionValueValuesEnum', 13)
+  consentConfig = _messages.MessageField('ConsentConfig', 2)
+  defaultSearchHandlingStrict = _messages.BooleanField(3)
+  disableReferentialIntegrity = _messages.BooleanField(4)
+  disableResourceVersioning = _messages.BooleanField(5)
+  enableUpdateCreate = _messages.BooleanField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  notificationConfig = _messages.MessageField('NotificationConfig', 9)
+  notificationConfigs = _messages.MessageField('FhirNotificationConfig', 10, repeated=True)
+  searchConfig = _messages.MessageField('SearchConfig', 11)
+  streamConfigs = _messages.MessageField('StreamConfig', 12, repeated=True)
+  validationConfig = _messages.MessageField('ValidationConfig', 13)
+  version = _messages.EnumField('VersionValueValuesEnum', 14)
 
 
 class FhirStoreMetric(_messages.Message):
@@ -2713,37 +2992,39 @@ class GoogleCloudHealthcareV1beta1DeidentifyFieldMetadata(_messages.Message):
     characterMaskField: Replace the field's value with a masking character.
       Supported [types](https://www.hl7.org/fhir/datatypes.html): Code,
       Decimal, HumanName, Id, LanguageCode, Markdown, Oid, String, Uri, Uuid,
-      Xhtml
+      Xhtml.
     cleanTextField: Inspect the field's text and transform sensitive text.
-      Configure using `TextConfig`. Supported
+      Configure using TextConfig. Supported
       [types](https://www.hl7.org/fhir/datatypes.html): Code, Date, DateTime,
       Decimal, HumanName, Id, LanguageCode, Markdown, Oid, String, Uri, Uuid,
-      Xhtml
+      Xhtml.
     cryptoHashField: Replace field value with a hash of that value. Supported
       [types](https://www.hl7.org/fhir/datatypes.html): Code, Decimal,
-      HumanName, Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml
+      HumanName, Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml.
     dateShiftField: Shift the date by a randomized number of days. See [date
       shifting](https://cloud.google.com/dlp/docs/concepts-date-shifting) for
       more information. Supported
-      [types](https://www.hl7.org/fhir/datatypes.html): Date, DateTime
+      [types](https://www.hl7.org/fhir/datatypes.html): Date, DateTime.
     keepField: Keep the field unchanged.
     paths: List of paths to FHIR fields to redact. Each path is a period-
-      separated list where each component is either a field name or FHIR type
-      name. All types begin with an upper case letter. For example, the
-      resource field "Patient.Address.city", which uses a string type, can be
-      matched by "Patient.Address.String". Path also supports partialkk
-      matching. For example, "Patient.Address.city" can be matched by
-      "Address.city" (Patient omitted). Partial matching and type matching can
-      be combined, for example "Patient.Address.city" can be matched by
-      "Address.String". For "choice" types (those defined in the FHIR spec
-      with the form: field[x]), use two separate components. For example,
-      "deceasedAge.unit" is matched by "Deceased.Age.unit". Supported
-      [types](https://www.hl7.org/fhir/datatypes.html) are:
-      AdministrativeGenderCode, Base64Binary, Boolean, Code, Date, DateTime,
-      Decimal, HumanName, Id, Instant, Integer, LanguageCode, Markdown, Oid,
-      PositiveInt, String, UnsignedInt, Uri, Uuid, Xhtml. The sub-type for
-      HumanName (for example HumanName.given, HumanName.family) can be
-      omitted.
+      separated list where each component is either a field name or FHIR
+      [type](https://www.hl7.org/fhir/datatypes.html) name. All types begin
+      with an upper case letter. For example, the resource field
+      `Patient.Address.city`, which uses a
+      [string](https://www.hl7.org/fhir/datatypes-
+      definitions.html#Address.city) type, can be matched by
+      `Patient.Address.String`. Partial matching is supported. For example,
+      `Patient.Address.city` can be matched by `Address.city` (with `Patient`
+      omitted). Partial matching and type matching can be combined, for
+      example `Patient.Address.city` can be matched by `Address.String`. For
+      "choice" types (those defined in the FHIR spec with the format
+      `field[x]`), use two separate components. For example,
+      `deceasedAge.unit` is matched by `Deceased.Age.unit`. The following
+      types are supported: AdministrativeGenderCode, Base64Binary, Boolean,
+      Code, Date, DateTime, Decimal, HumanName, Id, Instant, Integer,
+      LanguageCode, Markdown, Oid, PositiveInt, String, UnsignedInt, Uri,
+      Uuid, Xhtml. The sub-type for HumanName (for example `HumanName.given`,
+      `HumanName.family`) can be omitted.
     removeField: Remove the field.
   """
 
@@ -2757,16 +3038,13 @@ class GoogleCloudHealthcareV1beta1DeidentifyFieldMetadata(_messages.Message):
 
 
 class GoogleCloudHealthcareV1beta1DeidentifyOptions(_messages.Message):
-  r"""Specifies additional options to apply to the base `profile`.
+  r"""Specifies additional options to apply to the base ProfileType.
 
   Fields:
-    characterMaskConfig: Character mask config for `CharacterMaskField`
-      `FieldMetadatas`.
+    characterMaskConfig: Character mask config for CharacterMaskField.
     contextualDeid: Configure contextual de-id.
-    cryptoHashConfig: Crypo hash config for `CharacterMaskField`
-      `FieldMetadatas`.
-    dateShiftConfig: Date shifting config for `CharacterMaskField`
-      `FieldMetadatas`.
+    cryptoHashConfig: Crypto hash config for CharacterMaskField.
+    dateShiftConfig: Date shifting config for CharacterMaskField.
     keepExtensions: Configure keeping extensions by default.
   """
 
@@ -4665,6 +4943,38 @@ class HealthcareProjectsLocationsDatasetsDicomStoresTestIamPermissionsRequest(_m
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresApplyAdminConsentsRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresApplyAdminConsentsRequest
+  object.
+
+  Fields:
+    applyAdminConsentsRequest: A ApplyAdminConsentsRequest resource to be
+      passed as the request body.
+    name: The name of the FHIR store to enforce, in the format `projects/{proj
+      ect_id}/locations/{location_id}/datasets/{dataset_id}/fhirStores/{fhir_s
+      tore_id}`.
+  """
+
+  applyAdminConsentsRequest = _messages.MessageField('ApplyAdminConsentsRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresApplyConsentsRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresApplyConsentsRequest
+  object.
+
+  Fields:
+    applyConsentsRequest: A ApplyConsentsRequest resource to be passed as the
+      request body.
+    name: Required. The name of the FHIR store to enforce, in the format `proj
+      ects/{project_id}/locations/{location_id}/datasets/{dataset_id}/fhirStor
+      es/{fhir_store_id}`.
+  """
+
+  applyConsentsRequest = _messages.MessageField('ApplyConsentsRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresConfigureSearchRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresConfigureSearchRequest
   object.
@@ -4853,6 +5163,19 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalUpdateRequest(
   type = _messages.StringField(3, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirConsentEnforcementStatusRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirConsentEnforcementSta
+  tusRequest object.
+
+  Fields:
+    name: Required. The name of the consent resource to find enforcement
+      status, in the format `projects/{project_id}/locations/{location_id}/dat
+      asets/{dataset_id}/fhirStores/{fhir_store_id}/fhir/Consent/{consent_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateRequest object.
 
@@ -4951,6 +5274,29 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatchRequest(_messages.Me
 
   httpBody = _messages.MessageField('HttpBody', 1)
   name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientConsentEnforcementStatusRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientConsentEnforce
+  mentStatusRequest object.
+
+  Fields:
+    _count: Optional. The maximum number of results on a page. If not
+      specified, 100 is used. May not be larger than 1000.
+    _page_token: Optional. Used to retrieve the first, previous, next, or last
+      page of consent enforcement statuses when using pagination. Value should
+      be set to the value of `_page_token` set in next or previous page links'
+      URLs. Next and previous page are returned in the response bundle's links
+      field, where `link.relation` is "previous" or "next". Omit `_page_token`
+      if no previous request has been made.
+    name: Required. The name of the patient to find enforcement statuses, in
+      the format `projects/{project_id}/locations/{location_id}/datasets/{data
+      set_id}/fhirStores/{fhir_store_id}/fhir/Patient/{patient_id}`
+  """
+
+  _count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  _page_token = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(_messages.Message):
@@ -6451,7 +6797,7 @@ class IngestMessageResponse(_messages.Message):
 
 
 class KeepExtensionsConfig(_messages.Message):
-  r"""The behaviour for handling FHIR extensions that aren't otherwise
+  r"""The behavior for handling FHIR extensions that aren't otherwise
   specified for de-identification. If provided, all extensions are preserved
   during de-identification by default. If unspecified, all extensions are
   removed during de-identification by default.
@@ -7024,11 +7370,14 @@ class OperationMetadata(_messages.Message):
       operation.
     counter: A ProgressCounter attribute.
     createTime: The time at which the operation was created by the API.
-    endTime: The time at which execution was completed.
+    endTime: The time at which execution workloads were completed. Some tasks
+      will complete after this time such as logging audit logs.
     logsUrl: A link to audit and error logs in the log viewer. Error logs are
       generated only by some operations, listed at [Viewing error logs in
       Cloud Logging](https://cloud.google.com/healthcare/docs/how-
-      tos/logging).
+      tos/logging). The `end_time` specified in this URL may not match the end
+      time on the metadata because logs are written asynchronously from
+      execution.
   """
 
   apiMethodName = _messages.StringField(1)
@@ -7155,6 +7504,18 @@ class PatientId(_messages.Message):
   value = _messages.StringField(2)
 
 
+class PatientScope(_messages.Message):
+  r"""Apply consents given by a list of patients.
+
+  Fields:
+    patientIds: Optional. The list of patient IDs whose Consent resources will
+      be enforced. At most 10,000 patients can be specified. An empty list is
+      equivalent to all patients (meaning the entire FHIR store).
+  """
+
+  patientIds = _messages.StringField(1, repeated=True)
+
+
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -7239,12 +7600,18 @@ class ProgressCounter(_messages.Message):
   Fields:
     failure: The number of units that failed in the operation.
     pending: The number of units that are pending in the operation.
+    secondaryFailure: The number of secondary units that failed in the
+      operation.
+    secondarySuccess: The number of secondary units that succeeded in the
+      operation.
     success: The number of units that succeeded in the operation.
   """
 
   failure = _messages.IntegerField(1)
   pending = _messages.IntegerField(2)
-  success = _messages.IntegerField(3)
+  secondaryFailure = _messages.IntegerField(3)
+  secondarySuccess = _messages.IntegerField(4)
+  success = _messages.IntegerField(5)
 
 
 class PubsubDestination(_messages.Message):
@@ -8133,10 +8500,10 @@ class TextConfig(_messages.Message):
     r"""Base profile type for text transformation.
 
     Values:
-      PROFILE_TYPE_UNSPECIFIED: Same as BASIC.
+      PROFILE_TYPE_UNSPECIFIED: No profile provided. Same as BASIC.
       EMPTY: Empty profile which does not perform any transformations.
-      BASIC: Basic profile applies: DATE -> DateShift Default ->
-        ReplaceWithInfoType
+      BASIC: Automatically converts "DATE" infoTypes using a DateShiftConfig,
+        and all other infoTypes using a ReplaceWithInfoTypeConfig.
     """
     PROFILE_TYPE_UNSPECIFIED = 0
     EMPTY = 1
@@ -8190,6 +8557,25 @@ class TimePartitioning(_messages.Message):
 
   expirationMs = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class TimeRange(_messages.Message):
+  r"""Apply consents given by patients whose most recent consent changes are
+  in the time range. Note that after identifying these patients, the server
+  applies all Consent resources given by those patients, not just the Consent
+  resources within the timestamp in the range.
+
+  Fields:
+    end: Optional. The latest consent change time, in format YYYY-MM-
+      DDThh:mm:ss.sss+zz:zz If not specified, the system uses the time when
+      ApplyConsents was called.
+    start: Optional. The earliest consent change time, in format YYYY-MM-
+      DDThh:mm:ss.sss+zz:zz If not specified, the system uses the FHIR store
+      creation time.
+  """
+
+  end = _messages.StringField(1)
+  start = _messages.StringField(2)
 
 
 class Type(_messages.Message):

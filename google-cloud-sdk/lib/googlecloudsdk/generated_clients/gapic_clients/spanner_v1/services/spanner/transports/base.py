@@ -271,6 +271,11 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
                 default_timeout=30.0,
                 client_info=client_info,
             ),
+            self.batch_write: gapic_v1.method.wrap_method(
+                self.batch_write,
+                default_timeout=None,
+                client_info=client_info,
+            ),
          }
 
     def close(self):
@@ -414,6 +419,15 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             Union[
                 spanner.PartitionResponse,
                 Awaitable[spanner.PartitionResponse]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def batch_write(self) -> Callable[
+            [spanner.BatchWriteRequest],
+            Union[
+                spanner.BatchWriteResponse,
+                Awaitable[spanner.BatchWriteResponse]
             ]]:
         raise NotImplementedError()
 

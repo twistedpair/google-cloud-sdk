@@ -1582,7 +1582,7 @@ class UploadYumArtifactResponse(_messages.Message):
   is contained in the Operation and available to users.
 
   Fields:
-    yumArtifacts: The Apt artifacts updated.
+    yumArtifacts: The Yum artifacts updated.
   """
 
   yumArtifacts = _messages.MessageField('YumArtifact', 1, repeated=True)

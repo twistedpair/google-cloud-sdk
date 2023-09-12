@@ -1041,7 +1041,7 @@ class ClouddeployV1(base_api.BaseApiClient):
     )
 
     def RollbackTarget(self, request, global_params=None):
-      r"""Creates a `Rollout` to rollback the specified target of the `Delivery Pipeline`.
+      r"""Creates a `Rollout` to roll back the specified target.
 
       Args:
         request: (ClouddeployProjectsLocationsDeliveryPipelinesRollbackTargetRequest) input message

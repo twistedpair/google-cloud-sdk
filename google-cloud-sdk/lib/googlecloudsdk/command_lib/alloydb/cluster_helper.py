@@ -153,16 +153,21 @@ def ConstructCreateRequestFromArgsAlpha(alloydb_messages, location_ref, args):
   )
 
 
-def _ConstructBackupSourceForRestoreRequest(alloydb_messages, resource_parser,
-                                            args):
+def _ConstructBackupSourceForRestoreRequest(
+    alloydb_messages, resource_parser, args
+):
   """Returns the backup source for restore request."""
-  backup_ref = resource_parser.Create(
-      'alloydb.projects.locations.backups',
-      projectsId=properties.VALUES.core.project.GetOrFail,
-      locationsId=args.region,
-      backupsId=args.backup)
+  backup_ref = resource_parser.Parse(
+      collection='alloydb.projects.locations.backups',
+      line=args.backup,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'locationsId': args.region,
+      },
+  )
   backup_source = alloydb_messages.BackupSource(
-      backupName=backup_ref.RelativeName())
+      backupName=backup_ref.RelativeName()
+  )
   return backup_source
 
 
@@ -195,11 +200,14 @@ def ConstructRestoreRequestFromArgsGA(alloydb_messages, location_ref,
     backup_source = _ConstructBackupSourceForRestoreRequest(
         alloydb_messages, resource_parser, args)
   else:
-    cluster_ref = resource_parser.Create(
-        'alloydb.projects.locations.clusters',
-        projectsId=properties.VALUES.core.project.GetOrFail,
-        locationsId=args.region,
-        clustersId=args.source_cluster)
+    cluster_ref = resource_parser.Parse(
+        collection='alloydb.projects.locations.clusters',
+        line=args.source_cluster,
+        params={
+            'projectsId': properties.VALUES.core.project.GetOrFail,
+            'locationsId': args.region,
+        },
+    )
     continuous_backup_source = alloydb_messages.ContinuousBackupSource(
         cluster=cluster_ref.RelativeName(),
         pointInTime=args.point_in_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),

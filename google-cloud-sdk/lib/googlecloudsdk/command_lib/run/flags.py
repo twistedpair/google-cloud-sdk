@@ -932,22 +932,28 @@ def AddEgressSettingsFlag(parser):
   parser.add_argument(
       '--vpc-egress',
       help=(
-          'The outbound traffic to send through the VPC connector'
-          ' for this resource. This resource must have a VPC connector to set'
-          ' VPC egress.'
+          'Specify which of the outbound traffic to send through Direct VPC'
+          ' egress or the VPC connector for this resource. This resource must'
+          ' have Direct VPC egress enabled or a VPC connector to set this flag.'
       ),
       choices={
           container_resource.EGRESS_SETTINGS_PRIVATE_RANGES_ONLY: (
-              'Default option. Sends outbound traffic to private IP addresses '
-              'defined by RFC1918 through the VPC connector.'
+              'Default option. Sends outbound traffic to private IP addresses'
+              ' (RFC 1918 and Private Google Access IPs) through Direct VPC'
+              ' egress or the VPC connector.\n\nTraffic to other Cloud Run'
+              ' services might require additional configuration. See'
+              ' https://cloud.google.com/run/docs/securing/private-networking#send_requests_to_other_services_and_services'
+              ' for more information.'
           ),
           container_resource.EGRESS_SETTINGS_ALL_TRAFFIC: (
-              'Sends all outbound traffic through the VPC connector.'
+              'Sends all outbound traffic through Direct VPC egress or the VPC'
+              ' connector.'
           ),
           container_resource.EGRESS_SETTINGS_ALL: (
-              '(DEPRECATED) Sends all outbound traffic through the VPC '
-              "connector. Provides the same functionality as '{all_traffic}'."
-              " Prefer to use '{all_traffic}' instead.".format(
+              '(DEPRECATED) Sends all outbound traffic through Direct VPC'
+              ' egress or the VPC connector. Provides the same functionality'
+              " as '{all_traffic}'. Prefer to use '{all_traffic}'"
+              ' instead.'.format(
                   all_traffic=container_resource.EGRESS_SETTINGS_ALL_TRAFFIC
               )
           ),

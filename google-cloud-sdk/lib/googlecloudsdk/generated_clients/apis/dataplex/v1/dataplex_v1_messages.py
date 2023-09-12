@@ -3558,7 +3558,8 @@ class GoogleCloudDataplexV1DataProfileSpecPostScanActionsBigQueryExport(_message
 
   Fields:
     resultsTable: Optional. The BigQuery table to export DataProfileScan
-      results to. Format: projects/{project}/datasets/{dataset}/tables/{table}
+      results to. Format: //bigquery.googleapis.com/projects/PROJECT_ID/datase
+      ts/DATASET_ID/tables/TABLE_ID
   """
 
   resultsTable = _messages.StringField(1)
@@ -3995,7 +3996,8 @@ class GoogleCloudDataplexV1DataQualitySpecPostScanActionsBigQueryExport(_message
 
   Fields:
     resultsTable: Optional. The BigQuery table to export DataQualityScan
-      results to. Format: projects/{project}/datasets/{dataset}/tables/{table}
+      results to. Format: //bigquery.googleapis.com/projects/PROJECT_ID/datase
+      ts/DATASET_ID/tables/TABLE_ID
   """
 
   resultsTable = _messages.StringField(1)

@@ -588,14 +588,33 @@ def AddRestoreClusterSourceFlags(parser):
   group = parser.add_group(
       mutex=True, required=True, help='RestoreCluster source types.'
   )
-  group.add_argument('--backup', type=str, help='AlloyDB backup ID')
+  group.add_argument(
+      '--backup',
+      type=str,
+      help=(
+          'The AlloyDB backup to restore from. This must either be the full'
+          ' backup name'
+          ' (projects/myProject/locations/us-central1/backups/myBackup) or the'
+          ' backup ID (myBackup). In the second case, the project and location'
+          ' are assumed to be the same as the restored cluster that is being'
+          ' created.'
+      ),
+  )
 
   continuous_backup_source_group = group.add_group(
       help='Restore a cluster from a source cluster at a given point in time.')
   continuous_backup_source_group.add_argument(
       '--source-cluster',
       required=True,
-      help=('Source cluster name.'))
+      help=(
+          'The AlloyDB source cluster to restore from. This must either be the'
+          ' full cluster name'
+          ' (projects/myProject/locations/us-central1/backups/myCluster) or the'
+          ' cluster ID (myCluster). In the second case, the project and'
+          ' location are assumed to be the same as the restored cluster that is'
+          ' being created.'
+      ),
+  )
   continuous_backup_source_group.add_argument(
       '--point-in-time',
       type=arg_parsers.Datetime.Parse,

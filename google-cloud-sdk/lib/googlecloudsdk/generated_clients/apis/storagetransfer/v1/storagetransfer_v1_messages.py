@@ -105,6 +105,9 @@ class AwsS3Data(_messages.Message):
     bucketName: Required. S3 Bucket name (see [Creating a
       bucket](https://docs.aws.amazon.com/AmazonS3/latest/dev/create-bucket-
       get-location-example.html)).
+    cloudfrontDomain: Optional. Cloudfront domain name pointing to this bucket
+      (as origin), to use when fetching. Format: `https://{id}.cloudfront.net`
+      or any valid custom domain `https://...`
     credentialsSecret: Optional. The Resource name of a secret in Secret
       Manager. The Azure SAS token must be stored in Secret Manager in JSON
       format: { "sas_token" : "SAS_TOKEN" } GoogleServiceAccount must be
@@ -129,9 +132,10 @@ class AwsS3Data(_messages.Message):
 
   awsAccessKey = _messages.MessageField('AwsAccessKey', 1)
   bucketName = _messages.StringField(2)
-  credentialsSecret = _messages.StringField(3)
-  path = _messages.StringField(4)
-  roleArn = _messages.StringField(5)
+  cloudfrontDomain = _messages.StringField(3)
+  credentialsSecret = _messages.StringField(4)
+  path = _messages.StringField(5)
+  roleArn = _messages.StringField(6)
 
 
 class AzureBlobStorageData(_messages.Message):

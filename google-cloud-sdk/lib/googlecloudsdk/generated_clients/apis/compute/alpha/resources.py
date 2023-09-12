@@ -551,6 +551,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'securityPolicy', 'securityPolicyRule'],
       True
   )
+  REGIONSNAPSHOTS = (
+      'regionSnapshots',
+      'projects/{project}/regions/{region}/snapshots/{snapshot}',
+      {},
+      ['project', 'region', 'snapshot'],
+      True
+  )
   REGIONSSLCERTIFICATES = (
       'regionSslCertificates',
       'projects/{project}/regions/{region}/sslCertificates/{sslCertificate}',

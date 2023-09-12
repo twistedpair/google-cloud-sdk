@@ -178,17 +178,32 @@ class ChildStatusReference(_messages.Message):
   r"""ChildStatusReference is used to point to the statuses of individual
   TaskRuns and Runs within this PipelineRun.
 
+  Enums:
+    TypeValueValuesEnum: Output only. Type of the child reference.
+
   Fields:
     name: Name is the name of the TaskRun or Run this is referencing.
     pipelineTaskName: PipelineTaskName is the name of the PipelineTask this is
       referencing.
+    type: Output only. Type of the child reference.
     whenExpressions: WhenExpressions is the list of checks guarding the
       execution of the PipelineTask
   """
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of the child reference.
+
+    Values:
+      TYPE_UNSPECIFIED: Default enum type; should not be used.
+      TASK_RUN: TaskRun.
+    """
+    TYPE_UNSPECIFIED = 0
+    TASK_RUN = 1
+
   name = _messages.StringField(1)
   pipelineTaskName = _messages.StringField(2)
-  whenExpressions = _messages.MessageField('WhenExpression', 3, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  whenExpressions = _messages.MessageField('WhenExpression', 4, repeated=True)
 
 
 class CloudbuildProjectsLocationsConnectionsCreateRequest(_messages.Message):
@@ -2083,6 +2098,9 @@ class PipelineSpec(_messages.Message):
     finallyTasks: List of Tasks that execute just before leaving the Pipeline
       i.e. either after all Tasks are finished executing successfully or after
       a failure which would result in ending the Pipeline.
+    generatedYaml: Output only. auto-generated yaml that is output only for
+      display purpose for workflows using pipeline_spec, used by UI/gcloud cli
+      for Workflows.
     params: List of parameters.
     tasks: List of Tasks that execute when this Pipeline is run.
     workspaces: Workspaces declares a set of named workspaces that are
@@ -2090,9 +2108,10 @@ class PipelineSpec(_messages.Message):
   """
 
   finallyTasks = _messages.MessageField('PipelineTask', 1, repeated=True)
-  params = _messages.MessageField('ParamSpec', 2, repeated=True)
-  tasks = _messages.MessageField('PipelineTask', 3, repeated=True)
-  workspaces = _messages.MessageField('PipelineWorkspaceDeclaration', 4, repeated=True)
+  generatedYaml = _messages.StringField(2)
+  params = _messages.MessageField('ParamSpec', 3, repeated=True)
+  tasks = _messages.MessageField('PipelineTask', 4, repeated=True)
+  workspaces = _messages.MessageField('PipelineWorkspaceDeclaration', 5, repeated=True)
 
 
 class PipelineTask(_messages.Message):
@@ -2831,12 +2850,10 @@ class TaskRef(_messages.Message):
   PipelineRef can be used to refer to a specific instance of a Pipeline.
 
   Enums:
-    CustomTaskValueValuesEnum: Optional. The CustomTask definition to use.
     ResolverValueValuesEnum: Resolver is the name of the resolver that should
       perform resolution of the referenced Tekton resource.
 
   Fields:
-    customTask: Optional. The CustomTask definition to use.
     name: Name of the task.
     params: Params contains the parameters used to identify the referenced
       Tekton resource. Example entries might include "repo" or "path" but the
@@ -2844,16 +2861,6 @@ class TaskRef(_messages.Message):
     resolver: Resolver is the name of the resolver that should perform
       resolution of the referenced Tekton resource.
   """
-
-  class CustomTaskValueValuesEnum(_messages.Enum):
-    r"""Optional. The CustomTask definition to use.
-
-    Values:
-      CUSTOM_TASK_UNSPECIFIED: Default value. This value is unused.
-      DOCKER: Sets up a Docker Daemon.
-    """
-    CUSTOM_TASK_UNSPECIFIED = 0
-    DOCKER = 1
 
   class ResolverValueValuesEnum(_messages.Enum):
     r"""Resolver is the name of the resolver that should perform resolution of
@@ -2872,10 +2879,9 @@ class TaskRef(_messages.Message):
     GCB_REPO = 2
     GIT = 3
 
-  customTask = _messages.EnumField('CustomTaskValueValuesEnum', 1)
-  name = _messages.StringField(2)
-  params = _messages.MessageField('Param', 3, repeated=True)
-  resolver = _messages.EnumField('ResolverValueValuesEnum', 4)
+  name = _messages.StringField(1)
+  params = _messages.MessageField('Param', 2, repeated=True)
+  resolver = _messages.EnumField('ResolverValueValuesEnum', 3)
 
 
 class TaskResult(_messages.Message):
@@ -3299,6 +3305,7 @@ class Workflow(_messages.Message):
     params: List of parameters.
     pipelineSpec: Fields from both the Workflow and the PipelineSpec will be
       used to form the full PipelineRun.
+    pipelineSpecYaml: PipelineSpec in yaml format.
     ref: PipelineRef refer to a specific instance of a Pipeline.
     resources: Resources referenceable within a workflow.
     secrets: Pairs a secret environment variable with a SecretVersion in
@@ -3371,14 +3378,15 @@ class Workflow(_messages.Message):
   options = _messages.MessageField('WorkflowOptions', 6)
   params = _messages.MessageField('ParamSpec', 7, repeated=True)
   pipelineSpec = _messages.MessageField('PipelineSpec', 8)
-  ref = _messages.MessageField('PipelineRef', 9)
-  resources = _messages.MessageField('ResourcesValue', 10)
-  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 11, repeated=True)
-  serviceAccount = _messages.StringField(12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  workflowTriggers = _messages.MessageField('WorkflowTrigger', 15, repeated=True)
-  workspaces = _messages.MessageField('WorkspaceBinding', 16, repeated=True)
+  pipelineSpecYaml = _messages.StringField(9)
+  ref = _messages.MessageField('PipelineRef', 10)
+  resources = _messages.MessageField('ResourcesValue', 11)
+  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 12, repeated=True)
+  serviceAccount = _messages.StringField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  workflowTriggers = _messages.MessageField('WorkflowTrigger', 16, repeated=True)
+  workspaces = _messages.MessageField('WorkspaceBinding', 17, repeated=True)
 
 
 class WorkflowOptions(_messages.Message):

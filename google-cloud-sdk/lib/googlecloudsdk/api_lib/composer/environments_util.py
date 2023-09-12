@@ -173,6 +173,10 @@ class CreateEnvironmentFlags:
     composer_internal_ipv4_cidr_block: str or None. The IP range in CIDR
       notation to use internally by Cloud Composer. Can be specified only in
       Composer 3.
+    enable_private_builds_only: bool or None, whether to enable the
+      support for private only builds.
+    disable_private_builds_only: bool or None, whether to disable the
+      support for private only builds.
     storage_bucket: str or None. An existing Cloud Storage bucket to be used by
       the environment.
   """
@@ -256,6 +260,8 @@ class CreateEnvironmentFlags:
       dag_processor_memory_gb=None,
       dag_processor_storage_gb=None,
       composer_internal_ipv4_cidr_block=None,
+      enable_private_builds_only=None,
+      disable_private_builds_only=None,
       storage_bucket=None,
   ):
     self.node_count = node_count
@@ -332,6 +338,8 @@ class CreateEnvironmentFlags:
     self.dag_processor_memory_gb = dag_processor_memory_gb
     self.dag_processor_count = dag_processor_count
     self.composer_internal_ipv4_cidr_block = composer_internal_ipv4_cidr_block
+    self.enable_private_builds_only = enable_private_builds_only
+    self.disable_private_builds_only = disable_private_builds_only
     self.storage_bucket = storage_bucket
 
 
@@ -479,7 +487,11 @@ def _CreateConfig(messages, flags, is_composer_v1):
             snapshotLocation=flags.snapshot_location,
             timeZone=flags.snapshot_schedule_timezone))
 
-  if flags.private_environment:
+  if (
+      flags.private_environment
+      or flags.enable_private_builds_only
+      or flags.disable_private_builds_only
+  ):
     # Adds a PrivateClusterConfig, if necessary.
     private_cluster_config = None
     networking_config = None
@@ -521,6 +533,10 @@ def _CreateConfig(messages, flags, is_composer_v1):
     if flags.connection_subnetwork is not None:
       private_env_config_args[
           'cloudComposerConnectionSubnetwork'] = flags.connection_subnetwork
+    if flags.enable_private_builds_only or flags.disable_private_builds_only:
+      private_env_config_args['enablePrivateBuildsOnly'] = (
+          True if flags.enable_private_builds_only else False
+      )
     config.privateEnvironmentConfig = messages.PrivateEnvironmentConfig(
         **private_env_config_args)
 

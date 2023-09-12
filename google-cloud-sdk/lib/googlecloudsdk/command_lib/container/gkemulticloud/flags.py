@@ -1124,3 +1124,57 @@ def GetBinauthzEvaluationMode(args):
   return _BINAUTHZ_EVAL_MODE_ENUM_MAPPER.GetEnumForChoice(
       _ToHyphenCase(evaluation_mode)
   )
+
+
+def AddMaxSurgeUpdate(parser):
+  """Adds --max-surge-update flag to parser."""
+  help_text = """\
+Maximum number of extra (surge) nodes to be created beyond the current size of
+the node pool during its update process. Use --max-unavailable-update as well,
+if needed, to control the overall surge settings.
+
+To create an extra node each time the node pool is rolling updated, run:
+
+  $ {command} --max-surge-update=1 --max-unavailable-update=0
+"""
+  parser.add_argument(
+      '--max-surge-update', type=int, default=None, help=help_text
+  )
+
+
+def GetMaxSurgeUpdate(args):
+  return getattr(args, 'max_surge_update', None)
+
+
+def AddMaxUnavailableUpdate(parser, for_create=False):
+  """Adds --max-unavailable-update flag to parser."""
+  if for_create:
+    help_text = """\
+Maximum number of nodes that can be simultaneously unavailable during this node
+pool's update process. Use --max-surge-update as well, if needed, to control the
+overall surge settings.
+
+To update 3 nodes in parallel (1 + 2), but keep at least 4 nodes (6 - 2)
+available each time the node pool is rolling updated, run:
+
+  $ {command} --min-nodes=6 --max-surge-update=1 --max-unavailable-update=2
+"""
+  else:
+    help_text = """\
+Maximum number of nodes that can be simultaneously unavailable during this node
+pool's update process. Use --max-surge-update as well, if needed, to control the
+overall surge settings.
+
+To modify a node pool with 6 nodes such that, 3 nodes are updated in parallel
+(1 + 2), but keep at least 4 nodes (6 - 2) available each time this
+node pool is rolling updated, run:
+
+  $ {command} --max-surge-update=1 --max-unavailable-update=2
+"""
+  parser.add_argument(
+      '--max-unavailable-update', type=int, default=None, help=help_text
+  )
+
+
+def GetMaxUnavailableUpdate(args):
+  return getattr(args, 'max_unavailable_update', None)

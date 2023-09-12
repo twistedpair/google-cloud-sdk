@@ -1974,8 +1974,9 @@ class PropertyReference(_messages.Message):
   r"""A reference to a property relative to the kind expressions.
 
   Fields:
-    name: The name of the property. If name includes "."s, it may be
-      interpreted as a property name path.
+    name: A reference to a property. Requires: * MUST be a dot-delimited (`.`)
+      string of segments, where each segment conforms to entity property name
+      limitations.
   """
 
   name = _messages.StringField(1)

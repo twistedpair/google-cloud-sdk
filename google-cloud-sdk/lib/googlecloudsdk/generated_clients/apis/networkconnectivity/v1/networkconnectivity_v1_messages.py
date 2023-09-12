@@ -706,8 +706,8 @@ class Group(_messages.Message):
       group.
 
   Messages:
-    LabelsValue: Optional. Labels in key:value format. For more information
-      about labels, see [Requirements for
+    LabelsValue: Optional. Labels in key-value pair format. For more
+      information about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-
       managing-labels#requirements).
 
@@ -715,9 +715,10 @@ class Group(_messages.Message):
     autoAccept: Optional. The auto-accept setting for this group.
     createTime: Output only. The time the group was created.
     description: Optional. The description of the group.
-    labels: Optional. Labels in key:value format. For more information about
-      labels, see [Requirements for labels](https://cloud.google.com/resource-
-      manager/docs/creating-managing-labels#requirements).
+    labels: Optional. Labels in key-value pair format. For more information
+      about labels, see [Requirements for
+      labels](https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels#requirements).
     name: Immutable. The name of the group. Group names must be unique. They
       use the following form: `projects/{project_number}/locations/global/hubs
       /{hub}/groups/{group_id}`
@@ -763,7 +764,7 @@ class Group(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels in key:value format. For more information about
+    r"""Optional. Labels in key-value pair format. For more information about
     labels, see [Requirements for labels](https://cloud.google.com/resource-
     manager/docs/creating-managing-labels#requirements).
 
@@ -820,17 +821,18 @@ class Hub(_messages.Message):
       hub.
 
   Messages:
-    LabelsValue: Optional labels in key:value format. For more information
-      about labels, see [Requirements for
+    LabelsValue: Optional labels in key-value pair format. For more
+      information about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-
       managing-labels#requirements).
 
   Fields:
     createTime: Output only. The time the hub was created.
     description: An optional description of the hub.
-    labels: Optional labels in key:value format. For more information about
-      labels, see [Requirements for labels](https://cloud.google.com/resource-
-      manager/docs/creating-managing-labels#requirements).
+    labels: Optional labels in key-value pair format. For more information
+      about labels, see [Requirements for
+      labels](https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels#requirements).
     name: Immutable. The name of the hub. Hub names must be unique. They use
       the following form:
       `projects/{project_number}/locations/global/hubs/{hub_id}`
@@ -930,7 +932,7 @@ class Hub(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional labels in key:value format. For more information about
+    r"""Optional labels in key-value pair format. For more information about
     labels, see [Requirements for labels](https://cloud.google.com/resource-
     manager/docs/creating-managing-labels#requirements).
 
@@ -1182,11 +1184,14 @@ class LinkedVpcNetwork(_messages.Message):
   Fields:
     excludeExportRanges: Optional. IP ranges encompassing the subnets to be
       excluded from peering.
+    includeExportRanges: Optional. IP ranges allowed to be included from
+      peering.
     uri: Required. The URI of the VPC network resource.
   """
 
   excludeExportRanges = _messages.StringField(1, repeated=True)
-  uri = _messages.StringField(2)
+  includeExportRanges = _messages.StringField(2, repeated=True)
+  uri = _messages.StringField(3)
 
 
 class LinkedVpnTunnels(_messages.Message):
@@ -3603,8 +3608,8 @@ class Route(_messages.Message):
       by the properties of its IP address range.
 
   Messages:
-    LabelsValue: Optional labels in key:value format. For more information
-      about labels, see [Requirements for
+    LabelsValue: Optional labels in key-value pair format. For more
+      information about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-
       managing-labels#requirements).
 
@@ -3612,9 +3617,10 @@ class Route(_messages.Message):
     createTime: Output only. The time the route was created.
     description: An optional description of the route.
     ipCidrRange: The destination IP address range.
-    labels: Optional labels in key:value format. For more information about
-      labels, see [Requirements for labels](https://cloud.google.com/resource-
-      manager/docs/creating-managing-labels#requirements).
+    labels: Optional labels in key-value pair format. For more information
+      about labels, see [Requirements for
+      labels](https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels#requirements).
     location: Output only. The location of the route. Uses the following form:
       "projects/{project}/locations/{location}" Example:
       projects/1234/locations/us-central1
@@ -3681,7 +3687,7 @@ class Route(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional labels in key:value format. For more information about
+    r"""Optional labels in key-value pair format. For more information about
     labels, see [Requirements for labels](https://cloud.google.com/resource-
     manager/docs/creating-managing-labels#requirements).
 
@@ -3727,17 +3733,18 @@ class RouteTable(_messages.Message):
       route table.
 
   Messages:
-    LabelsValue: Optional labels in key:value format. For more information
-      about labels, see [Requirements for
+    LabelsValue: Optional labels in key-value pair format. For more
+      information about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-
       managing-labels#requirements).
 
   Fields:
     createTime: Output only. The time the route table was created.
     description: An optional description of the route table.
-    labels: Optional labels in key:value format. For more information about
-      labels, see [Requirements for labels](https://cloud.google.com/resource-
-      manager/docs/creating-managing-labels#requirements).
+    labels: Optional labels in key-value pair format. For more information
+      about labels, see [Requirements for
+      labels](https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels#requirements).
     name: Immutable. The name of the route table. Route table names must be
       unique. They use the following form: `projects/{project_number}/location
       s/global/hubs/{hub}/routeTables/{route_table_id}`
@@ -3780,7 +3787,7 @@ class RouteTable(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional labels in key:value format. For more information about
+    r"""Optional labels in key-value pair format. For more information about
     labels, see [Requirements for labels](https://cloud.google.com/resource-
     manager/docs/creating-managing-labels#requirements).
 
@@ -4167,8 +4174,8 @@ class Spoke(_messages.Message):
       spoke.
 
   Messages:
-    LabelsValue: Optional labels in key:value format. For more information
-      about labels, see [Requirements for
+    LabelsValue: Optional labels in key-value pair format. For more
+      information about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-
       managing-labels#requirements).
 
@@ -4177,9 +4184,10 @@ class Spoke(_messages.Message):
     description: An optional description of the spoke.
     group: Optional. The name of the group that this spoke is associated with.
     hub: Immutable. The name of the hub that this spoke is attached to.
-    labels: Optional labels in key:value format. For more information about
-      labels, see [Requirements for labels](https://cloud.google.com/resource-
-      manager/docs/creating-managing-labels#requirements).
+    labels: Optional labels in key-value pair format. For more information
+      about labels, see [Requirements for
+      labels](https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels#requirements).
     linkedInterconnectAttachments: VLAN attachments that are associated with
       the spoke.
     linkedRouterApplianceInstances: Router appliance instances that are
@@ -4247,7 +4255,7 @@ class Spoke(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional labels in key:value format. For more information about
+    r"""Optional labels in key-value pair format. For more information about
     labels, see [Requirements for labels](https://cloud.google.com/resource-
     manager/docs/creating-managing-labels#requirements).
 

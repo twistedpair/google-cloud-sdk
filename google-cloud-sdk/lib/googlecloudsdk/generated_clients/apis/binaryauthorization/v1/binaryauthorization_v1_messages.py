@@ -38,8 +38,8 @@ class AdmissionRule(_messages.Message):
       `projects/*/attestors/*`. Each attestor must exist before a policy can
       reference it. To add an attestor to a policy the principal issuing the
       policy change request must be able to read the attestor resource. Note:
-      this field must be non-empty when the evaluation_mode field specifies
-      REQUIRE_ATTESTATION, otherwise it must be empty.
+      this field must be non-empty when the `evaluation_mode` field specifies
+      `REQUIRE_ATTESTATION`, otherwise it must be empty.
   """
 
   class EnforcementModeValueValuesEnum(_messages.Enum):
@@ -63,7 +63,7 @@ class AdmissionRule(_messages.Message):
 
     Values:
       EVALUATION_MODE_UNSPECIFIED: Do not use.
-      ALWAYS_ALLOW: This rule allows all all pod creations.
+      ALWAYS_ALLOW: This rule allows all pod creations.
       REQUIRE_ATTESTATION: This rule allows a pod creation if all the
         attestors listed in `require_attestations_by` have valid attestations
         for all of the images in the pod spec.
@@ -129,7 +129,7 @@ class AttestationAuthenticator(_messages.Message):
 
   Fields:
     displayName: Optional. A user-provided name for this
-      AttestationAuthenticator. This field has no effect on the policy
+      `AttestationAuthenticator`. This field has no effect on the policy
       evaluation behavior except to improve readability of messages in
       evaluation results.
     pkixPublicKeySet: Optional. A set of raw PKIX SubjectPublicKeyInfo format
@@ -178,8 +178,8 @@ class AttestationSource(_messages.Message):
   r"""Specifies the locations for fetching the provenance attestations.
 
   Fields:
-    containerAnalysisAttestationProjects: The ids of the GCP projects storing
-      the SLSA attestations as container analysis Occurrences.
+    containerAnalysisAttestationProjects: The IDs of the GCP projects storing
+      the SLSA attestations as Container Analysis Occurrences.
   """
 
   containerAnalysisAttestationProjects = _messages.StringField(1, repeated=True)
@@ -217,15 +217,15 @@ class AttestorPublicKey(_messages.Message):
     asciiArmoredPgpPublicKey: ASCII-armored representation of a PGP public
       key, as the entire output by the command `gpg --export --armor
       foo@example.com` (either LF or CRLF line endings). When using this
-      field, `id` should be left blank. The BinAuthz API handlers will
-      calculate the ID and fill it in automatically. BinAuthz computes this ID
-      as the OpenPGP RFC4880 V4 fingerprint, represented as upper-case hex. If
-      `id` is provided by the caller, it will be overwritten by the API-
-      calculated ID.
+      field, `id` should be left blank. The Binary Authorization API handlers
+      will calculate the ID and fill it in automatically. Binary Authorization
+      computes this ID as the OpenPGP RFC4880 V4 fingerprint, represented as
+      upper-case hex. If `id` is provided by the caller, it will be
+      overwritten by the API-calculated ID.
     comment: Optional. A descriptive comment. This field may be updated.
-    id: The ID of this public key. Signatures verified by BinAuthz must
-      include the ID of the public key that can be used to verify them, and
-      that ID must match the contents of this field exactly. Additional
+    id: The ID of this public key. Signatures verified by Binary Authorization
+      must include the ID of the public key that can be used to verify them,
+      and that ID must match the contents of this field exactly. Additional
       restrictions on this field can be imposed based on which public key type
       is encapsulated. See the documentation on `public_key` cases below for
       details.
@@ -601,18 +601,18 @@ class Binding(_messages.Message):
 
 class Check(_messages.Message):
   r"""A single check to perform against a Pod. Checks are grouped into
-  CheckSets, which are defined by the top-level policy.
+  `CheckSet` objects, which are defined by the top-level policy.
 
   Fields:
     alwaysDeny: Optional. A special-case check that always denies. Note that
-      this still only applies when the scope of the CheckSet applies and the
+      this still only applies when the scope of the `CheckSet` applies and the
       image isn't exempted by an image allowlist. This check is primarily
       useful for testing, or to set the default behavior for all unmatched
       scopes to "deny".
-    displayName: Optional. A user-provided name for this Check. This field has
+    displayName: Optional. A user-provided name for this check. This field has
       no effect on the policy evaluation behavior except to improve
       readability of messages in evaluation results.
-    imageAllowlist: Optional. Images exempted from this Check. If any of the
+    imageAllowlist: Optional. Images exempted from this check. If any of the
       patterns match the image url, the check will not be evaluated.
     imageApprovalAttestationCheck: Optional. TO BE DEPRECATED!!! Use
       SimpleSigningAttestationCheck instead! Require an ImageApproval-type
@@ -622,9 +622,9 @@ class Check(_messages.Message):
     simpleSigningAttestationCheck: Optional. Require a SimpleSigning-type
       attestation for every image in the deployment.
     slsaCheck: Optional. Require that an image was built by a trusted builder
-      (such as Google Cloud Build or GitHub), meets requirements for Supply
-      chain Levels for Software Artifacts (SLSA), and was built from a trusted
-      source code repostitory.
+      (such as Google Cloud Build), meets requirements for Supply chain Levels
+      for Software Artifacts (SLSA), and was built from a trusted source code
+      repostitory.
     trustedDirectoryCheck: Optional. Require that an image lives in a trusted
       directory.
     vulnerabilityCheck: Optional. Require that an image does not contain
@@ -677,25 +677,25 @@ class CheckResults(_messages.Message):
 
 class CheckSet(_messages.Message):
   r"""A conjunction of policy checks, scoped to a particular namespace or
-  Kubernetes service account. In order for evaluation of a CheckSet to return
-  "allowed" for a given image in a given Pod, one of the following conditions
-  must be satisfied: * The image is explicitly exempted by an entry in
-  `image_allowlist`, OR * ALL of the `checks` evaluate to "allowed".
+  Kubernetes service account. In order for evaluation of a `CheckSet` to
+  return "allowed" for a given image in a given Pod, one of the following
+  conditions must be satisfied: * The image is explicitly exempted by an entry
+  in `image_allowlist`, OR * ALL of the `checks` evaluate to "allowed".
 
   Fields:
     checks: Optional. The checks to apply. The ultimate result of evaluating
-      the check set will be "allow" if and only if every check in 'checks'
+      the check set will be "allow" if and only if every check in `checks`
       evaluates to "allow". If `checks` is empty, the default behavior is
       "always allow".
-    displayName: Optional. A user-provided name for this CheckSet. This field
-      has no effect on the policy evaluation behavior except to improve
+    displayName: Optional. A user-provided name for this `CheckSet`. This
+      field has no effect on the policy evaluation behavior except to improve
       readability of messages in evaluation results.
-    imageAllowlist: Optional. Images exempted from this CheckSet. If any of
-      the patterns match the image being evaluated, no checks in the CheckSet
-      will be evaluated.
-    scope: Optional. The scope to which this CheckSet applies. If unset or an
-      empty string (the default), applies to all namespaces and service
-      accounts. See the Scope message documentation for details on scoping
+    imageAllowlist: Optional. Images exempted from this `CheckSet`. If any of
+      the patterns match the image being evaluated, no checks in the
+      `CheckSet` will be evaluated.
+    scope: Optional. The scope to which this `CheckSet` applies. If unset or
+      an empty string (the default), applies to all namespaces and service
+      accounts. See the `Scope` message documentation for details on scoping
       rules.
   """
 
@@ -930,23 +930,24 @@ class GkePolicy(_messages.Message):
   policy that can occur as a `PlatformPolicy`.
 
   Fields:
-    checkSets: Optional. The CheckSets to apply, scoped by namespace or
-      namespace and service account. Exactly one CheckSet will be evaluated
-      for a given Pod (unless the list is empty, in which case the behavior is
-      "always allow"). If multiple CheckSets have scopes that match the
-      namespace and service account of the Pod being evaluated, only the
-      CheckSet with the MOST SPECIFIC scope will match. CheckSets must be
-      listed in order of decreasing specificity, i.e. if a scope matches a
-      given service account (which must include the namespace), it must come
-      before a CheckSet with a scope matching just that namespace. This
-      property is enforced by server-side validation. The purpose of this
-      restriction is to ensure that if more than one CheckSet matches a given
-      Pod, the CheckSet that will be evaluated will always be the first in the
-      list to match (because if any other matches, it must be less specific).
-      If `check_sets` is empty, the default behavior is to allow all images.
-      If `check_sets` is non-empty, the last `check_sets` entry must always be
-      a CheckSet with no scope set, i.e. a catchall to handle any situation
-      not caught by the preceding CheckSets.
+    checkSets: Optional. The `CheckSet` objects to apply, scoped by namespace
+      or namespace and service account. Exactly one `CheckSet` will be
+      evaluated for a given Pod (unless the list is empty, in which case the
+      behavior is "always allow"). If multiple `CheckSet` objects have scopes
+      that match the namespace and service account of the Pod being evaluated,
+      only the `CheckSet` with the MOST SPECIFIC scope will match. `CheckSet`
+      objects must be listed in order of decreasing specificity, i.e. if a
+      scope matches a given service account (which must include the
+      namespace), it must come before a `CheckSet` with a scope matching just
+      that namespace. This property is enforced by server-side validation. The
+      purpose of this restriction is to ensure that if more than one
+      `CheckSet` matches a given Pod, the `CheckSet` that will be evaluated
+      will always be the first in the list to match (because if any other
+      matches, it must be less specific). If `check_sets` is empty, the
+      default behavior is to allow all images. If `check_sets` is non-empty,
+      the last `check_sets` entry must always be a `CheckSet` with no scope
+      set, i.e. a catchall to handle any situation not caught by the preceding
+      `CheckSet` objects.
     imageAllowlist: Optional. Images exempted from this policy. If any of the
       patterns match the image being evaluated, the rest of the policy will
       not be evaluated.
@@ -1188,7 +1189,7 @@ class Jwt(_messages.Message):
 
 
 class ListAttestorsResponse(_messages.Message):
-  r"""Response message for BinauthzManagementService.ListAttestors.
+  r"""Response message for BinauthzManagementServiceV1.ListAttestors.
 
   Fields:
     attestors: The list of attestors.
@@ -1232,9 +1233,9 @@ class ListPlatformsResponse(_messages.Message):
 
 
 class PkixPublicKey(_messages.Message):
-  r"""A public key in the PkixPublicKey format (see
-  https://tools.ietf.org/html/rfc5280#section-4.1.2.7 for details). Public
-  keys of this type are typically textually encoded using the PEM format.
+  r"""A public key in the PkixPublicKey
+  [format](https://tools.ietf.org/html/rfc5280#section-4.1.2.7). Public keys
+  of this type are typically textually encoded using the PEM format.
 
   Enums:
     SignatureAlgorithmValueValuesEnum: The signature algorithm used to verify
@@ -1244,17 +1245,17 @@ class PkixPublicKey(_messages.Message):
       key).
 
   Fields:
-    keyId: Optional. The ID of this public key. Signatures verified by
-      BinAuthz must include the ID of the public key that can be used to
+    keyId: Optional. The ID of this public key. Signatures verified by Binary
+      Authorization must include the ID of the public key that can be used to
       verify them, and that ID must match the contents of this field exactly.
       This may be explicitly provided by the caller, but it MUST be a valid
-      RFC3986 URI. If `key_id` is left blank and this PkixPublicKey is not
+      RFC3986 URI. If `key_id` is left blank and this `PkixPublicKey` is not
       used in the context of a wrapper (see next paragraph), a default key ID
       will be computed based on the digest of the DER encoding of the public
-      key. If this PkixPublicKey is used in the context of a wrapper that has
-      its own notion of key ID (e.g. AttestorPublicKey), then this field can
-      either: * Match that value exactly. * Or be left blank, in which case it
-      behaves exactly as though it is equal to that wrapper value.
+      key. If this `PkixPublicKey` is used in the context of a wrapper that
+      has its own notion of key ID (e.g. `AttestorPublicKey`), then this field
+      can either: * Match that value exactly. * Or be left blank, in which
+      case it behaves exactly as though it is equal to that wrapper value.
     publicKeyPem: A PEM-encoded public key, as described in
       https://tools.ietf.org/html/rfc7468#section-13
     signatureAlgorithm: The signature algorithm used to verify a message
@@ -1322,8 +1323,8 @@ class PkixPublicKey(_messages.Message):
 class PkixPublicKeySet(_messages.Message):
   r"""A bundle of PKIX public keys, used to authenticate attestation
   signatures. Generally, a signature is considered to be authenticated by a
-  PkixPublicKeySet if any of the public keys verify it (i.e. it is an "OR" of
-  the keys).
+  `PkixPublicKeySet` if any of the public keys verify it (i.e. it is an "OR"
+  of the keys).
 
   Fields:
     pkixPublicKeys: Required. `pkix_public_keys` must have at least one entry.
@@ -1352,8 +1353,8 @@ class PlatformPolicy(_messages.Message):
     cloudRunPolicy: Optional. Cloud Run platform-specific policy.
     description: Optional. A description comment about the policy.
     gkePolicy: Optional. GKE platform-specific policy.
-    name: Output only. The relative resource name of the BinAuthz platform
-      policy, in the form of `projects/*/platforms/*/policies/*`.
+    name: Output only. The relative resource name of the Binary Authorization
+      platform policy, in the form of `projects/*/platforms/*/policies/*`.
     updateTime: Output only. Time when the policy was last updated.
   """
 
@@ -1473,7 +1474,7 @@ class Policy(_messages.Message):
     setting has no effect when specified inside a global admission policy.
 
     Values:
-      GLOBAL_POLICY_EVALUATION_MODE_UNSPECIFIED: Not specified: DISABLE is
+      GLOBAL_POLICY_EVALUATION_MODE_UNSPECIFIED: Not specified: `DISABLE` is
         assumed.
       ENABLE: Enables system policy evaluation.
       DISABLE: Disables system policy evaluation.
@@ -1612,14 +1613,14 @@ class Policy(_messages.Message):
 
 
 class Scope(_messages.Message):
-  r"""A scope specifier for CheckSets.
+  r"""A scope specifier for `CheckSet` objects.
 
   Fields:
     kubernetesNamespace: Optional. Matches all Kubernetes service accounts in
       the provided namespace, unless a more specific
       `kubernetes_service_account` scope already matched.
     kubernetesServiceAccount: Optional. Matches a single Kubernetes service
-      account, e.g. 'my-namespace:my-service-account'.
+      account, e.g. `my-namespace:my-service-account`.
       `kubernetes_service_account` scope is always more specific than
       `kubernetes_namespace` scope for the same namespace.
   """
@@ -1829,21 +1830,22 @@ class TrustedDirectoryCheck(_messages.Message):
   Fields:
     trustedDirPatterns: Required. List of trusted directory patterns. A
       pattern is in the form "registry/path/to/directory". The registry domain
-      part is defined as two or more dot-separated words, e.g., us.pkg.dev, or
-      gcr.io. Additionally, * can be used in three ways as wildcards: 1.
-      leading * to match varying prefixes in registry subdomain (useful for
-      location prefixes); 2. trailing * after registry/ to match varying
-      endings; 3. trailing ** after registry/ to match "/" as well. For
-      example: -- gcr.io/my-project/my-repo is valid to match a single
-      directory -- *-docker.pkg.dev/my-project/my-repo or *.gcr.io/my-project
-      are valid to match varying prefixes -- gcr.io/my-project/* will match
-      all direct directories in my-project -- gcr.io/my-project/** would match
-      all directories in my-project -- gcr.i* is not allowed since the
-      registry is not completely specified -- sub*domain.gcr.io/nginx is not
-      valid because only leading * or trailing * are allowed. -- *pkg.dev/my-
-      project/my-repo is not valid because leading * can only match subdomain
-      -- **-docker.pkg.dev is not valid because one leading * is allowed, and
-      that it cannot match "/"
+      part is defined as two or more dot-separated words, e.g., `us.pkg.dev`,
+      or `gcr.io`. Additionally, `*` can be used in three ways as wildcards:
+      1. leading `*` to match varying prefixes in registry subdomain (useful
+      for location prefixes); 2. trailing `*` after registry/ to match varying
+      endings; 3. trailing `**` after registry/ to match "/" as well. For
+      example: -- `gcr.io/my-project/my-repo` is valid to match a single
+      directory -- `*-docker.pkg.dev/my-project/my-repo` or `*.gcr.io/my-
+      project` are valid to match varying prefixes -- `gcr.io/my-project/*`
+      will match all direct directories in `my-project` -- `gcr.io/my-
+      project/**` would match all directories in `my-project` -- `gcr.i*` is
+      not allowed since the registry is not completely specified --
+      `sub*domain.gcr.io/nginx` is not valid because only leading `*` or
+      trailing `*` are allowed. -- `*pkg.dev/my-project/my-repo` is not valid
+      because leading `*` can only match subdomain -- `**-docker.pkg.dev` is
+      not valid because one leading `*` is allowed, and that it cannot match
+      `/`
   """
 
   trustedDirPatterns = _messages.StringField(1, repeated=True)
@@ -1855,12 +1857,12 @@ class UserOwnedGrafeasNote(_messages.Message):
 
   Fields:
     delegationServiceAccountEmail: Output only. This field will contain the
-      service account email address that this Attestor will use as the
+      service account email address that this attestor will use as the
       principal when querying Container Analysis. Attestor administrators must
       grant this service account the IAM role needed to read attestations from
       the note_reference in Container Analysis
       (`containeranalysis.notes.occurrences.viewer`). This email address is
-      fixed for the lifetime of the Attestor, but callers should not make any
+      fixed for the lifetime of the attestor, but callers should not make any
       other assumptions about the service account email; future versions may
       use an email based on a different naming pattern.
     noteReference: Required. The Grafeas resource name of a
@@ -1887,9 +1889,9 @@ class ValidateAttestationOccurrenceRequest(_messages.Message):
 
   Fields:
     attestation: Required. An AttestationOccurrence to be checked that it can
-      be verified by the Attestor. It does not have to be an existing entity
+      be verified by the `Attestor`. It does not have to be an existing entity
       in Container Analysis. It must otherwise be a valid
-      AttestationOccurrence.
+      `AttestationOccurrence`.
     occurrenceNote: Required. The resource name of the Note to which the
       containing Occurrence is associated.
     occurrenceResourceUri: Required. The URI of the artifact (e.g. container
@@ -1949,7 +1951,7 @@ class VerificationRule(_messages.Message):
     attestationSource: Specifies where to fetch the provenances attestations
       generated by the builder (group).
     configBasedBuildRequired: If true, require the image to be built from a
-      top-level configuration. trusted_source_repo patterns specifies the
+      top-level configuration. `trusted_source_repo_patterns` specifies the
       repositories containing this configuration.
     trustedBuilder: Each verification rule is used for evaluation against
       provenances generated by a specific builder (group). For some of the
@@ -1958,19 +1960,19 @@ class VerificationRule(_messages.Message):
       can automatically fetch them based on the builder (group).
     trustedSourceRepoPatterns: List of trusted source code repository URL
       patterns. These patterns match the full repository URL without its
-      scheme (e.g. "https://"). The patterns must not include schemes. For
-      example, the pattern "source.cloud.google.com/my-project/my-repo-name"
-      matches the following URLs: - "source.cloud.google.com/my-project/my-
-      repo-name" - "git+ssh://source.cloud.google.com/my-project/my-repo-name"
-      - "https://source.cloud.google.com/my-project/my-repo-name" A pattern
-      matches a URL either exactly or with * wildcards. * can be used in only
-      two ways: 1. trailing * after hosturi/ to match varying endings; 2.
-      trailing ** after hosturi/ to match "/" as well. * and ** can only be
-      used as wildcards and can only occur at the end of the pattern after a
-      /. (So it's not possible to match a URL that contains literal *.) For
-      example: - "github.com/my-project/my-repo" is valid to match a single
-      repo - "github.com/my-project/*" will match all direct repos in my-
-      project - "github.com/**" matches all repos in GitHub
+      scheme (e.g. `https://`). The patterns must not include schemes. For
+      example, the pattern `source.cloud.google.com/my-project/my-repo-name`
+      matches the following URLs: - `source.cloud.google.com/my-project/my-
+      repo-name` - `git+ssh://source.cloud.google.com/my-project/my-repo-name`
+      - `https://source.cloud.google.com/my-project/my-repo-name` A pattern
+      matches a URL either exactly or with `*` wildcards. `*` can be used in
+      only two ways: 1. trailing `*` after hosturi/ to match varying endings;
+      2. trailing `**` after hosturi/ to match `/` as well. `*` and `**` can
+      only be used as wildcards and can only occur at the end of the pattern
+      after a `/`. (So it's not possible to match a URL that contains literal
+      `*`.) For example: - `github.com/my-project/my-repo` is valid to match a
+      single repo - `github.com/my-project/*` will match all direct repos in
+      `my-project` - `github.com/**` matches all repos in GitHub
   """
 
   class TrustedBuilderValueValuesEnum(_messages.Enum):
@@ -2008,16 +2010,16 @@ class VulnerabilityCheck(_messages.Message):
 
   Fields:
     allowedCves: Optional. A list of specific CVEs to ignore even if the
-      vulnerability level violates maximumUnfixableSeverity or
-      maximumFixableSeverity. CVEs are listed in the format of Container
+      vulnerability level violates `maximumUnfixableSeverity` or
+      `maximumFixableSeverity`. CVEs are listed in the format of Container
       Analysis note id. For example: - CVE-2021-20305 - CVE-2020-10543 The
       CVEs are applicable regardless of note provider project, e.g., an entry
       of `CVE-2021-20305` will allow vulnerabilities with a note name of
       either `projects/goog-vulnz/notes/CVE-2021-20305` or `projects/CUSTOM-
       PROJECT/notes/CVE-2021-20305`.
     blockedCves: Optional. A list of specific CVEs to always raise warnings
-      about even if the vulnerability level meets maximumUnfixableSeverity or
-      maximumFixableSeverity. CVEs are listed in the format of Container
+      about even if the vulnerability level meets `maximumUnfixableSeverity`
+      or `maximumFixableSeverity`. CVEs are listed in the format of Container
       Analysis note id. For example: - CVE-2021-20305 - CVE-2020-10543 The
       CVEs are applicable regardless of note provider project, e.g., an entry
       of `CVE-2021-20305` will block vulnerabilities with a note name of
@@ -2026,10 +2028,11 @@ class VulnerabilityCheck(_messages.Message):
     containerAnalysisVulnerabilityProjects: Optional. The projects where
       vulnerabilities are stored as Container Analysis Occurrences. Each
       project is expressed in the resource format of `projects/[PROJECT_ID]`,
-      e.g., projects/my-gcp-project. An attempt will be made for each project
-      to fetch vulnerabilities, and all valid vulnerabilities will be used to
-      check against the vulnerability policy. If no valid scan is found in all
-      projects configured here, an error will be returned for the check.
+      e.g., `projects/my-gcp-project`. An attempt will be made for each
+      project to fetch vulnerabilities, and all valid vulnerabilities will be
+      used to check against the vulnerability policy. If no valid scan is
+      found in all projects configured here, an error will be returned for the
+      check.
     maximumFixableSeverity: Required. The threshold for severity for which a
       fix is currently available. This field is required and must be set.
     maximumUnfixableSeverity: Required. The threshold for severity for which a

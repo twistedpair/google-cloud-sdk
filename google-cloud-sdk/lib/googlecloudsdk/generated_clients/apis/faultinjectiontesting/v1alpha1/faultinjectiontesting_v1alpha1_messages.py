@@ -601,10 +601,12 @@ class Job(_messages.Message):
 
   Fields:
     createTime: Output only. [Output only] Create time stamp
+    deleteTime: Output only. [Output only] delete time stamp
     description: End user description of the job.
     experiment: Required. Immutable. experiment that job will run.
     experimentSnapshot: Output only. Snapshot of the experiment configuration
       at the time of job creation.
+    expireTime: Output only. [Output only] expire time stamp
     faultPepStatuses: List of fault configurations and their PEP statuses for
       the job.
     faultTargets: Required. Fault targets passed to this job run
@@ -632,15 +634,17 @@ class Job(_messages.Message):
     ERRORED = 4
 
   createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  experiment = _messages.StringField(3)
-  experimentSnapshot = _messages.MessageField('Experiment', 4)
-  faultPepStatuses = _messages.MessageField('FaultPepStatus', 5, repeated=True)
-  faultTargets = _messages.MessageField('FaultInjectionTargetMatcher', 6, repeated=True)
-  jobState = _messages.EnumField('JobStateValueValuesEnum', 7)
-  name = _messages.StringField(8)
-  runStatus = _messages.MessageField('Status', 9)
-  timeWindow = _messages.MessageField('TimeWindow', 10)
+  deleteTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  experiment = _messages.StringField(4)
+  experimentSnapshot = _messages.MessageField('Experiment', 5)
+  expireTime = _messages.StringField(6)
+  faultPepStatuses = _messages.MessageField('FaultPepStatus', 7, repeated=True)
+  faultTargets = _messages.MessageField('FaultInjectionTargetMatcher', 8, repeated=True)
+  jobState = _messages.EnumField('JobStateValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  runStatus = _messages.MessageField('Status', 11)
+  timeWindow = _messages.MessageField('TimeWindow', 12)
 
 
 class ListExperimentsResponse(_messages.Message):

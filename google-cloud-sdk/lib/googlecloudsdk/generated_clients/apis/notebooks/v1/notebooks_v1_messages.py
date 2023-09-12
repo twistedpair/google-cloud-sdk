@@ -744,7 +744,7 @@ class GuestOsFeature(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""The definition of a notebook instance. Next tag: 43
+  r"""The definition of a notebook instance.
 
   Enums:
     BootDiskTypeValueValuesEnum: Input only. The type of the boot disk
@@ -1057,7 +1057,7 @@ class InstanceConfig(_messages.Message):
 
 class InstanceMigrationEligibility(_messages.Message):
   r"""InstanceMigrationEligibility represents the feasibility information of a
-  migration from UmN to WbI. Next tag: 3
+  migration from UmN to WbI.
 
   Enums:
     ErrorsValueListEntryValuesEnum:
@@ -1723,6 +1723,9 @@ class NotebooksProjectsLocationsInstancesListRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesListRequest object.
 
   Fields:
+    filter: Optional. List filter.
+    orderBy: Optional. Sort results. Supported values are "name", "name desc"
+      or "" (unsorted).
     pageSize: Maximum return size of the list call.
     pageToken: A previous returned page token that can be used to continue
       listing from the last result.
@@ -1730,9 +1733,11 @@ class NotebooksProjectsLocationsInstancesListRequest(_messages.Message):
       `parent=projects/{project_id}/locations/{location}`
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class NotebooksProjectsLocationsInstancesRegisterRequest(_messages.Message):
@@ -2132,6 +2137,9 @@ class NotebooksProjectsLocationsRuntimesListRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsRuntimesListRequest object.
 
   Fields:
+    filter: Optional. List filter.
+    orderBy: Optional. Sort results. Supported values are "name", "name desc"
+      or "" (unsorted).
     pageSize: Maximum return size of the list call.
     pageToken: A previous returned page token that can be used to continue
       listing from the last result.
@@ -2139,9 +2147,11 @@ class NotebooksProjectsLocationsRuntimesListRequest(_messages.Message):
       `parent=projects/{project_id}/locations/{location}`
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class NotebooksProjectsLocationsRuntimesPatchRequest(_messages.Message):
@@ -3032,7 +3042,7 @@ class RuntimeMetrics(_messages.Message):
 
 class RuntimeMigrationEligibility(_messages.Message):
   r"""RuntimeMigrationEligibility represents the feasibility information of a
-  migration from GmN to WbI. Next tag: 3
+  migration from GmN to WbI.
 
   Enums:
     ErrorsValueListEntryValuesEnum:

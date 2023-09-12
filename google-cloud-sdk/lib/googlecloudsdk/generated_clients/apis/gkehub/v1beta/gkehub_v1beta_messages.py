@@ -1709,7 +1709,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -2308,12 +2307,10 @@ class FleetObservabilityMembershipSpec(_messages.Message):
   """
 
 
-
 class FleetObservabilityMembershipState(_messages.Message):
   r"""**FleetObservability**: Membership-specific Feature state for
   fleetobservability.
   """
-
 
 
 class FleetObservabilityRoutingConfig(_messages.Message):
@@ -3768,7 +3765,6 @@ class HelloWorldFeatureState(_messages.Message):
   """
 
 
-
 class HelloWorldFeatureTest(_messages.Message):
   r"""Represents message used in feature e2e create/mutate testing.
 
@@ -3895,7 +3891,6 @@ class HelloWorldMembershipState(_messages.Message):
   """
 
 
-
 class HelloWorldScopeSpec(_messages.Message):
   r"""**Hello World**: The scope-specific input for HelloWorld feature.
 
@@ -3914,7 +3909,6 @@ class HelloWorldScopeState(_messages.Message):
   r"""**Hello World**: An empty state left as an example scope-specific
   Feature state.
   """
-
 
 
 class IdentityServiceAuthMethod(_messages.Message):
@@ -3947,6 +3941,8 @@ class IdentityServiceAzureADConfig(_messages.Message):
     clientSecret: Input only. Unencrypted AzureAD client secret will be passed
       to the GKE Hub CLH.
     encryptedClientSecret: Output only. Encrypted AzureAD client secret.
+    groupFormat: Optional. Format of the AzureAD groups that the client wants
+    for auth.
     kubectlRedirectUri: The redirect URL that kubectl uses for authorization.
     tenant: Kind of Azure AD account to be authenticated. Supported values are
       or for accounts belonging to a specific tenant.
@@ -3957,9 +3953,10 @@ class IdentityServiceAzureADConfig(_messages.Message):
   clientId = _messages.StringField(1)
   clientSecret = _messages.StringField(2)
   encryptedClientSecret = _messages.BytesField(3)
-  kubectlRedirectUri = _messages.StringField(4)
-  tenant = _messages.StringField(5)
-  userClaim = _messages.StringField(6)
+  groupFormat = _messages.StringField(4)
+  kubectlRedirectUri = _messages.StringField(5)
+  tenant = _messages.StringField(6)
+  userClaim = _messages.StringField(7)
 
 
 class IdentityServiceGoogleConfig(_messages.Message):
@@ -6716,7 +6713,6 @@ class WorkloadMigrationFeatureSpec(_messages.Message):
   r"""**WorkloadMigration**: The Hub-wide input for the WorkloadMigration
   feature. This is currently empty, but is used to restrict API visibility.
   """
-
 
 
 encoding.AddCustomJsonFieldMapping(

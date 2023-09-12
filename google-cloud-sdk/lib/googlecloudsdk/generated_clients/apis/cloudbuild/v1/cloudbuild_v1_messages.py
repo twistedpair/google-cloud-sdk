@@ -4397,7 +4397,7 @@ class Results(_messages.Message):
       in the order corresponding to build step indices. [Cloud
       Builders](https://cloud.google.com/cloud-build/docs/cloud-builders) can
       produce this output by writing to `$BUILDER_OUTPUT/output`. Only the
-      first 4KB of data is stored.
+      first 50KB of data is stored.
     images: Container images that were built as a part of the build.
     mavenArtifacts: Maven artifacts uploaded to Artifact Registry at the end
       of the build.
@@ -4565,8 +4565,8 @@ class Source(_messages.Message):
   r"""Location of the source in a supported storage service.
 
   Fields:
-    connectedRepository: If provided, get the source from this 2nd-gen Google
-      Cloud Build repository resource.
+    connectedRepository: Optional. If provided, get the source from this 2nd-
+      gen Google Cloud Build repository resource.
     gitSource: If provided, get the source from this Git repository.
     repoSource: If provided, get the source from this location in a Cloud
       Source Repository.
@@ -4770,6 +4770,10 @@ class Status(_messages.Message):
 class StorageSource(_messages.Message):
   r"""Location of the source in an archive file in Cloud Storage.
 
+  Enums:
+    SourceFetcherValueValuesEnum: Optional. Option to specify the tool to
+      fetch the source file for the build.
+
   Fields:
     bucket: Cloud Storage bucket containing the source (see [Bucket Name
       Requirements](https://cloud.google.com/storage/docs/bucket-
@@ -4779,11 +4783,28 @@ class StorageSource(_messages.Message):
     object: Cloud Storage object containing the source. This object must be a
       zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing source to
       build.
+    sourceFetcher: Optional. Option to specify the tool to fetch the source
+      file for the build.
   """
+
+  class SourceFetcherValueValuesEnum(_messages.Enum):
+    r"""Optional. Option to specify the tool to fetch the source file for the
+    build.
+
+    Values:
+      SOURCE_FETCHER_UNSPECIFIED: Unspecified defaults to GSUTIL.
+      GSUTIL: Use the "gsutil" tool to download the source file.
+      GCS_FETCHER: Use the Cloud Storage Fetcher tool to download the source
+        file.
+    """
+    SOURCE_FETCHER_UNSPECIFIED = 0
+    GSUTIL = 1
+    GCS_FETCHER = 2
 
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
+  sourceFetcher = _messages.EnumField('SourceFetcherValueValuesEnum', 4)
 
 
 class StorageSourceManifest(_messages.Message):

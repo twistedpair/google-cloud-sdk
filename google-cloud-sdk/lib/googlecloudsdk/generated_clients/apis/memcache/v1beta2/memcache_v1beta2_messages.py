@@ -213,17 +213,17 @@ class GoogleCloudMemcacheV1beta2UpgradeInstanceRequest(_messages.Message):
   r"""Request for UpgradeInstance.
 
   Enums:
-    MemcacheVersionValueValuesEnum: Required. Speciefies the target version of
-      memcached engine to upgrade to
+    MemcacheVersionValueValuesEnum: Required. Specifies the target version of
+      memcached engine to upgrade to.
 
   Fields:
-    memcacheVersion: Required. Speciefies the target version of memcached
-      engine to upgrade to
+    memcacheVersion: Required. Specifies the target version of memcached
+      engine to upgrade to.
   """
 
   class MemcacheVersionValueValuesEnum(_messages.Enum):
-    r"""Required. Speciefies the target version of memcached engine to upgrade
-    to
+    r"""Required. Specifies the target version of memcached engine to upgrade
+    to.
 
     Values:
       MEMCACHE_VERSION_UNSPECIFIED: Memcache version is not specified by
@@ -902,7 +902,7 @@ class Instance(_messages.Message):
       PERFORMING_MAINTENANCE: Memcached instance is going through maintenance,
         e.g. data plane rollout.
       MEMCACHE_VERSION_UPGRADING: Memcached instance is undergoing memcached
-        engine version upgrade
+        engine version upgrade.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1474,8 +1474,8 @@ class MemcacheProjectsLocationsInstancesUpgradeRequest(_messages.Message):
       GoogleCloudMemcacheV1beta2UpgradeInstanceRequest resource to be passed
       as the request body.
     name: Required. Memcache instance resource name using the form:
-      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
-      where `location_id` refers to a GCP region.
+      `projects/{project}/locations/{location}/instances/{instance}` where
+      `location_id` refers to a GCP region.
   """
 
   googleCloudMemcacheV1beta2UpgradeInstanceRequest = _messages.MessageField('GoogleCloudMemcacheV1beta2UpgradeInstanceRequest', 1)

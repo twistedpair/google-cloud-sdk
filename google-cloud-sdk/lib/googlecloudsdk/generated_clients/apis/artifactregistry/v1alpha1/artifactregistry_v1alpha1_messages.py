@@ -622,7 +622,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactResponse(_messages.
   is contained in the Operation and available to users.
 
   Fields:
-    yumArtifacts: The Apt artifacts updated.
+    yumArtifacts: The Yum artifacts updated.
   """
 
   yumArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1YumArtifact', 1, repeated=True)

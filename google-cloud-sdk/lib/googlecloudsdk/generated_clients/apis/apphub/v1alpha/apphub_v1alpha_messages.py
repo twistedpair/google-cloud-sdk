@@ -13,6 +13,349 @@ from apitools.base.py import extra_types
 package = 'apphub'
 
 
+class ApphubProjectsLocationsDirectoriesCreateRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesCreateRequest object.
+
+  Fields:
+    directory: A Directory resource to be passed as the request body.
+    directoryId: Required. The directory identifier
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  directory = _messages.MessageField('Directory', 1)
+  directoryId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ApphubProjectsLocationsDirectoriesDeleteRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesDeleteRequest object.
+
+  Fields:
+    force: Optional. Directory is a parent resource and requires an optional
+      force field per https://linter.aip.dev/135/force-field.
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ApphubProjectsLocationsDirectoriesGetRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApphubProjectsLocationsDirectoriesListRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListDirectoriesRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ApphubProjectsLocationsDirectoriesPatchRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesPatchRequest object.
+
+  Fields:
+    directory: A Directory resource to be passed as the request body.
+    name: Full resource identifier of a Directory in the format of
+      projects//locations/global/directories /
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Directory resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  directory = _messages.MessageField('Directory', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class ApphubProjectsLocationsDirectoriesServicesCreateRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesServicesCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    service: A Service resource to be passed as the request body.
+    serviceId: Required. The service identifier
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  service = _messages.MessageField('Service', 3)
+  serviceId = _messages.StringField(4)
+
+
+class ApphubProjectsLocationsDirectoriesServicesDeleteRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesServicesDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class ApphubProjectsLocationsDirectoriesServicesGetRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesServicesGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApphubProjectsLocationsDirectoriesServicesListRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesServicesListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListServicesRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ApphubProjectsLocationsDirectoriesServicesPatchRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesServicesPatchRequest object.
+
+  Fields:
+    name: Full resource identifier of a Service in the format of
+      projects//locations/global/directories //services/
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    service: A Service resource to be passed as the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Service resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then the fields provided in the request will be
+      overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  service = _messages.MessageField('Service', 3)
+  updateMask = _messages.StringField(4)
+
+
+class ApphubProjectsLocationsDirectoriesWorkloadsCreateRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesWorkloadsCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    workload: A Workload resource to be passed as the request body.
+    workloadId: Required. The workload identifier
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  workload = _messages.MessageField('Workload', 3)
+  workloadId = _messages.StringField(4)
+
+
+class ApphubProjectsLocationsDirectoriesWorkloadsDeleteRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesWorkloadsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class ApphubProjectsLocationsDirectoriesWorkloadsGetRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesWorkloadsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApphubProjectsLocationsDirectoriesWorkloadsListRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesWorkloadsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListWorkloadsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ApphubProjectsLocationsDirectoriesWorkloadsPatchRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDirectoriesWorkloadsPatchRequest object.
+
+  Fields:
+    name: Full resource identifier of a Workload in the format of
+      projects//locations/global/directories //workloads/
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Workload resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then the fields provided in the request will be
+      overwritten.
+    workload: A Workload resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  updateMask = _messages.StringField(3)
+  workload = _messages.MessageField('Workload', 4)
+
+
+class ApphubProjectsLocationsGetHostProjectRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsGetHostProjectRequest object.
+
+  Fields:
+    name: Required. Host Project resource name with format:
+      "projects/{project_id}/locations/global/hostProject".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApphubProjectsLocationsGetRequest(_messages.Message):
   r"""A ApphubProjectsLocationsGetRequest object.
 
@@ -114,6 +457,85 @@ class ApphubProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class ApphubProjectsLocationsServiceProjectsCreateRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsServiceProjectsCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    serviceProject: A ServiceProject resource to be passed as the request
+      body.
+    serviceProjectId: Required. The service project number.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  serviceProject = _messages.MessageField('ServiceProject', 3)
+  serviceProjectId = _messages.StringField(4)
+
+
+class ApphubProjectsLocationsServiceProjectsDeleteRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsServiceProjectsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class ApphubProjectsLocationsServiceProjectsGetRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsServiceProjectsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApphubProjectsLocationsServiceProjectsListRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsServiceProjectsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListServiceProjectsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class ApphubProjectsLocationsUpdateTelemetryRequest(_messages.Message):
   r"""A ApphubProjectsLocationsUpdateTelemetryRequest object.
 
@@ -150,6 +572,36 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class ComponentReference(_messages.Message):
+  r"""Message represents a reference to the discovered component
+
+  Fields:
+    uuid: Immutable. Unique identifier of the discovered component in App Hub
+      Directory.
+  """
+
+  uuid = _messages.IntegerField(1)
+
+
+class Directory(_messages.Message):
+  r"""Directory manages ownership and access to services and workloads.
+
+  Fields:
+    createTime: Output only. Directory creation time.
+    description: Optional. User-provided description of a directory.
+    displayName: Optional. Human-friendly display name.
+    name: Full resource identifier of a Directory in the format of
+      projects//locations/global/directories /
+    updateTime: Output only. Directory update time.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -157,6 +609,35 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class HostProject(_messages.Message):
+  r"""Message represents a host project.
+
+  Fields:
+    hostProject: Output only. Host project number with format:
+      projects/{project}
+    name: Required. Host Project resource name with format:
+      "projects/{service-project-id}/locations/global/hostProject".
+  """
+
+  hostProject = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class ListDirectoriesResponse(_messages.Message):
+  r"""Message for response to listing Directories.
+
+  Fields:
+    directories: The list of Directories
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  directories = _messages.MessageField('Directory', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -183,6 +664,51 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListServiceProjectsResponse(_messages.Message):
+  r"""Message for response to listing service projects.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    serviceProjects: The list of service projects
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceProjects = _messages.MessageField('ServiceProject', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListServicesResponse(_messages.Message):
+  r"""Message for response to listing Services
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    services: The list of Services
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  services = _messages.MessageField('Service', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListWorkloadsResponse(_messages.Message):
+  r"""Message for response to listing Workloads
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+    workloads: The list of Telemetry
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  workloads = _messages.MessageField('Workload', 3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -400,6 +926,42 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class Service(_messages.Message):
+  r"""Message represents a registered service under directory
+
+  Fields:
+    components: Required. List of discovered component identifiers that this
+      service registers together. This can only include discovered components
+      of type Service.
+    createTime: Output only. Service registration time.
+    description: Optional. User-provided description of a service.
+    displayName: Optional. Human-friendly display name
+    name: Full resource identifier of a Service in the format of
+      projects//locations/global/directories //services/
+    updateTime: Output only. Service registration update time.
+  """
+
+  components = _messages.MessageField('ComponentReference', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class ServiceProject(_messages.Message):
+  r"""Message represents a service project.
+
+  Fields:
+    createTime: Output only. Service project registration time.
+    name: Full resource identifier of a service project in the format of
+      projects//locations/global/serviceProjects/
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -545,6 +1107,29 @@ class Topology(_messages.Message):
   enabled = _messages.BooleanField(1)
   name = _messages.StringField(2)
   project = _messages.StringField(3)
+
+
+class Workload(_messages.Message):
+  r"""Message represents a registered workload under directory.
+
+  Fields:
+    components: Required. List of discovered component identifiers that this
+      workload registers together. This can only include discovered components
+      of type Workload.
+    createTime: Output only. Workload registration time.
+    description: Optional. User-provided description of a workload.
+    displayName: Optional. Human-friendly display name
+    name: Full resource identifier of a Workload in the format of
+      projects//locations/global/directories //workloads/
+    updateTime: Output only. Workload registration update time.
+  """
+
+  components = _messages.MessageField('ComponentReference', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 encoding.AddCustomJsonFieldMapping(

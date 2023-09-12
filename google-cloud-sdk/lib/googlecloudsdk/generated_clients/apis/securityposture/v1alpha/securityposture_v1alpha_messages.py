@@ -219,6 +219,19 @@ class ListPostureDeploymentsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListPostureRevisionsResponse(_messages.Message):
+  r"""Message for response to listing PostureRevisions.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    revisions: The list of Posture revisions.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  revisions = _messages.MessageField('Posture', 2, repeated=True)
+
+
 class ListPostureTemplatesResponse(_messages.Message):
   r"""Message for response to listing PostureTemplates.
 
@@ -1088,12 +1101,10 @@ class SecuritypostureOrganizationsLocationsPosturesDeleteRequest(_messages.Messa
   Fields:
     etag: Optional. Etag value of the Posture to be deleted.
     name: Required. Name of the resource.
-    revisionId: Required. revision_id of the Posture that needs to be deleted.
   """
 
   etag = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
-  revisionId = _messages.StringField(3)
 
 
 class SecuritypostureOrganizationsLocationsPosturesExtractRequest(_messages.Message):
@@ -1135,6 +1146,23 @@ class SecuritypostureOrganizationsLocationsPosturesListRequest(_messages.Message
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class SecuritypostureOrganizationsLocationsPosturesListRevisionsRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsPosturesListRevisionsRequest
+  object.
+
+  Fields:
+    name: Required. Name value for ListPostureRevisionsRequest.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick 100 as default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class SecuritypostureOrganizationsLocationsPosturesPatchRequest(_messages.Message):

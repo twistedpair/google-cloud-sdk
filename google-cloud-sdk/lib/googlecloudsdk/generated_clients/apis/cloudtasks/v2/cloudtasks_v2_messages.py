@@ -1446,10 +1446,14 @@ class RetryConfig(_messages.Message):
     maxBackoff: A task will be scheduled for retry between min_backoff and
       max_backoff duration after it fails, if the queue's RetryConfig
       specifies that the task should be retried. If unspecified when the queue
-      is created, Cloud Tasks will pick the default. `max_backoff` will be
-      truncated to the nearest second. This field has the same meaning as
-      [max_backoff_seconds in queue.yaml/xml](https://cloud.google.com/appengi
-      ne/docs/standard/python/config/queueref#retry_parameters).
+      is created, Cloud Tasks will pick the default. The value must be given
+      as a string that indicates the length of time (in seconds) followed by
+      `s` (for "seconds"). For more information on the format, see the
+      documentation for [Duration](https://protobuf.dev/reference/protobuf/goo
+      gle.protobuf/#duration). `max_backoff` will be truncated to the nearest
+      second. This field has the same meaning as [max_backoff_seconds in queue
+      .yaml/xml](https://cloud.google.com/appengine/docs/standard/python/confi
+      g/queueref#retry_parameters).
     maxDoublings: The time between retries will double `max_doublings` times.
       A task's retry interval starts at min_backoff, then doubles
       `max_doublings` times, then increases linearly, and finally retries at
@@ -1469,17 +1473,25 @@ class RetryConfig(_messages.Message):
       been attempted max_attempts times, no further attempts will be made and
       the task will be deleted. If zero, then the task age is unlimited. If
       unspecified when the queue is created, Cloud Tasks will pick the
-      default. `max_retry_duration` will be truncated to the nearest second.
-      This field has the same meaning as [task_age_limit in queue.yaml/xml](ht
-      tps://cloud.google.com/appengine/docs/standard/python/config/queueref#re
-      try_parameters).
+      default. The value must be given as a string that indicates the length
+      of time (in seconds) followed by `s` (for "seconds"). For the maximum
+      possible value or the format, see the documentation for [Duration](https
+      ://protobuf.dev/reference/protobuf/google.protobuf/#duration).
+      `max_retry_duration` will be truncated to the nearest second. This field
+      has the same meaning as [task_age_limit in queue.yaml/xml](https://cloud
+      .google.com/appengine/docs/standard/python/config/queueref#retry_paramet
+      ers).
     minBackoff: A task will be scheduled for retry between min_backoff and
       max_backoff duration after it fails, if the queue's RetryConfig
       specifies that the task should be retried. If unspecified when the queue
-      is created, Cloud Tasks will pick the default. `min_backoff` will be
-      truncated to the nearest second. This field has the same meaning as
-      [min_backoff_seconds in queue.yaml/xml](https://cloud.google.com/appengi
-      ne/docs/standard/python/config/queueref#retry_parameters).
+      is created, Cloud Tasks will pick the default. The value must be given
+      as a string that indicates the length of time (in seconds) followed by
+      `s` (for "seconds"). For more information on the format, see the
+      documentation for [Duration](https://protobuf.dev/reference/protobuf/goo
+      gle.protobuf/#duration). `min_backoff` will be truncated to the nearest
+      second. This field has the same meaning as [min_backoff_seconds in queue
+      .yaml/xml](https://cloud.google.com/appengine/docs/standard/python/confi
+      g/queueref#retry_parameters).
   """
 
   maxAttempts = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1715,8 +1727,12 @@ class Task(_messages.Message):
       setting the `dispatch_deadline` to at most a few seconds more than the
       app handler's timeout. For more information see
       [Timeouts](https://cloud.google.com/tasks/docs/creating-appengine-
-      handlers#timeouts). `dispatch_deadline` will be truncated to the nearest
-      millisecond. The deadline is an approximate deadline.
+      handlers#timeouts). The value must be given as a string that indicates
+      the length of time (in seconds) followed by `s` (for "seconds"). For
+      more information on the format, see the documentation for [Duration](htt
+      ps://protobuf.dev/reference/protobuf/google.protobuf/#duration).
+      `dispatch_deadline` will be truncated to the nearest millisecond. The
+      deadline is an approximate deadline.
     firstAttempt: Output only. The status of the task's first attempt. Only
       dispatch_time will be set. The other Attempt information is not retained
       by Cloud Tasks.

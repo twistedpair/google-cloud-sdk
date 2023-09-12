@@ -1251,10 +1251,13 @@ class Exfiltration(_messages.Message):
       and each table would be considered a source.
     targets: If there are multiple targets, each target would get a complete
       copy of the "joined" source data.
+    totalExfiltratedBytes: Total exfiltrated bytes processed for the entire
+      job.
   """
 
   sources = _messages.MessageField('ExfilResource', 1, repeated=True)
   targets = _messages.MessageField('ExfilResource', 2, repeated=True)
+  totalExfiltratedBytes = _messages.IntegerField(3)
 
 
 class Expr(_messages.Message):
@@ -1935,16 +1938,16 @@ class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
   Fields:
     assignees: References primary/secondary etc assignees in the external
       system.
-    externalSystemUpdateTime: The most recent time when the corresponding
-      finding's ticket/tracker was updated in the external system.
-    externalUid: Identifier that's used to track the given finding in the
-      external system.
+    externalSystemUpdateTime: The time when the case was last updated, as
+      reported by the external system.
+    externalUid: The identifier that's used to track the finding's
+      corresponding case in the external system.
     name: Full resource name of the external system, for example:
       "organizations/1234/sources/5678/findings/123456/externalSystems/jira",
       "folders/1234/sources/5678/findings/123456/externalSystems/jira",
       "projects/1234/sources/5678/findings/123456/externalSystems/jira"
-    status: Most recent status of the corresponding finding's ticket/tracker
-      in the external system.
+    status: The most recent status of the finding's corresponding case, as
+      reported by the external system.
   """
 
   assignees = _messages.StringField(1, repeated=True)

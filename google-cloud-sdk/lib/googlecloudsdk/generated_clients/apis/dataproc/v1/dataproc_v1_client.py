@@ -528,7 +528,7 @@ class DataprocV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create an session template, synchronously.
+      r"""Create a session template synchronously.
 
       Args:
         request: (DataprocProjectsLocationsSessionTemplatesCreateRequest) input message
@@ -636,7 +636,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the session template, synchronously.Disable check for update_mask, because all updates will be full replacements.
+      r"""Updates the session template synchronously.
 
       Args:
         request: (SessionTemplate) input message
@@ -700,7 +700,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the interactive session resource. If the session is not in terminal state, it will be terminated and deleted afterwards.
+      r"""Deletes the interactive session resource. If the session is not in terminal state, it is terminated, and then deleted.
 
       Args:
         request: (DataprocProjectsLocationsSessionsDeleteRequest) input message

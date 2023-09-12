@@ -315,16 +315,12 @@ class _TriggersClient(_BaseTriggersClient):
 
   def BuildHTTPEndpointDestinationMessage(
       self,
-      destination_http_endpoint_forward_dns_requests,
       destination_http_endpoint_uri,
       network_attachment
   ):
     """Builds a HTTP Endpoint Destination message with the given data.
 
     Args:
-      destination_http_endpoint_forward_dns_requests: Default to false. If the
-        http endpoint uses a private DNS name, enable this flag for Eventarc to
-        forward DNS requests to the target VPC.
       destination_http_endpoint_uri: str or None, the Trigger's destination uri.
       network_attachment: str or None, the Trigger's destination
         network attachment.
@@ -333,7 +329,6 @@ class _TriggersClient(_BaseTriggersClient):
       A Destination message with a HTTP Endpoint destination.
     """
     http_endpoint_message = self._messages.HttpEndpoint(
-        forwardDnsRequests=destination_http_endpoint_forward_dns_requests,
         uri=destination_http_endpoint_uri,
     )
     network_config_message = self._messages.NetworkConfig(

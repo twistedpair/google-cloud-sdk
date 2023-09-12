@@ -39,6 +39,47 @@ class AssuredworkloadsOrganizationsLocationsOperationsListRequest(_messages.Mess
   pageToken = _messages.StringField(4)
 
 
+class AssuredworkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest(_messages.Message):
+  r"""A
+  AssuredworkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest
+  object.
+
+  Fields:
+    assetTypes: Optional. List of asset types to be analyzed, including and
+      under the source resource. If empty, all assets are analyzed. The
+      complete list of asset types is available
+      [here](https://cloud.google.com/asset-inventory/docs/supported-asset-
+      types#searchable_asset_types).
+    pageSize: Optional. Page size. If a value is not specified, the default
+      value of 10 is used.
+    pageToken: Optional. The page token from the previous response. It needs
+      to be passed in the second and following requests.
+    project: The source type is a project. Specify the project's relative
+      resource name, formatted as either a project number or a project ID:
+      "projects/{PROJECT_NUMBER}" or "projects/{PROJECT_ID}" For example:
+      "projects/951040570662" when specifying a project number, or
+      "projects/my-project-123" when specifying a project ID.
+    source: The source type is a project-based workload. Specify the
+      workloads's relative resource name, formatted as: "organizations/{ORGANI
+      ZATION_ID}/locations/{LOCATION_ID}/workloads/{WORKLOAD_ID}" For example:
+      "organizations/123/locations/us-east1/workloads/assured-workload-1".
+      This option is no longer supported.
+    target: Required. The resource ID of the folder-based destination
+      workload. This workload is where the source resource will hypothetically
+      be moved to. Specify the workload's relative resource name, formatted
+      as: "organizations/{ORGANIZATION_ID}/locations/{LOCATION_ID}/workloads/{
+      WORKLOAD_ID}" For example: "organizations/123/locations/us-
+      east1/workloads/assured-workload-2"
+  """
+
+  assetTypes = _messages.StringField(1, repeated=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4)
+  source = _messages.StringField(5)
+  target = _messages.StringField(6, required=True)
+
+
 class AssuredworkloadsOrganizationsLocationsWorkloadsCreateRequest(_messages.Message):
   r"""A AssuredworkloadsOrganizationsLocationsWorkloadsCreateRequest object.
 
@@ -209,43 +250,6 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest(_mess
   parent = _messages.StringField(6, required=True)
 
 
-class AssuredworkloadsProjectsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest(_messages.Message):
-  r"""A AssuredworkloadsProjectsOrganizationsLocationsWorkloadsAnalyzeWorkload
-  MoveRequest object.
-
-  Fields:
-    analyzeChildAssets: Optional. Indicates if all child assets of the source
-      resource should also be analyzed in addition to the source.
-    pageSize: Optional. Page size. If a value is not specified, the default
-      value of 10 is used.
-    pageToken: Optional. The page token from the previous response. It needs
-      to be passed in the second and following requests.
-    project: The source type is a project. Specify the project's relative
-      resource name, formatted as either a project number or a project ID:
-      "projects/{PROJECT_NUMBER}" or "projects/{PROJECT_ID}" For example:
-      "projects/951040570662" when specifying a project number, or
-      "projects/my-project-123" when specifying a project ID.
-    source: The source type is a project-based workload. Specify the
-      workloads's relative resource name, formatted as: "organizations/{ORGANI
-      ZATION_ID}/locations/{LOCATION_ID}/workloads/{WORKLOAD_ID}" For example:
-      "organizations/123/locations/us-east1/workloads/assured-workload-1" This
-      option is now deprecated.
-    target: Required. The resource ID of the folder-based destination
-      workload. This workload is where the source resource will hypothetically
-      be moved to. Specify the workload's relative resource name, formatted
-      as: "organizations/{ORGANIZATION_ID}/locations/{LOCATION_ID}/workloads/{
-      WORKLOAD_ID}" For example: "organizations/123/locations/us-
-      east1/workloads/assured-workload-2"
-  """
-
-  analyzeChildAssets = _messages.BooleanField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
-  source = _messages.StringField(5)
-  target = _messages.StringField(6, required=True)
-
-
 class GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationRequest(_messages.Message):
   r"""Request for acknowledging the violation Next Id: 5
 
@@ -295,7 +299,7 @@ class GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse(_messages.Me
     assetMoveAnalyses: List of analysis results for each asset in scope.
     blockers: A list of blockers that should be addressed before moving the
       source project or project-based workload to the destination folder-based
-      workload. This field is now deprecated.
+      workload. This field is now deprecated and will not be populated.
     nextPageToken: The next page token. Is empty if the last page is reached.
   """
 
@@ -366,6 +370,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
       IL5: Information protection as per DoD IL5 requirements.
+      JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -384,6 +389,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
     ISR_REGIONS_AND_SUPPORT = 14
     CA_PROTECTED_B = 15
     IL5 = 16
+    JP_REGIONS_AND_SUPPORT = 17
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -504,7 +510,7 @@ class GoogleCloudAssuredworkloadsV1beta1RestrictAllowedResourcesResponse(_messag
 
 
 class GoogleCloudAssuredworkloadsV1beta1Violation(_messages.Message):
-  r"""Workload monitoring Violation. Next Id: 27
+  r"""Workload monitoring Violation. Next Id: 28
 
   Enums:
     StateValueValuesEnum: Output only. State of the violation
@@ -829,6 +835,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
       IL5: Information protection as per DoD IL5 requirements.
+      JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -847,6 +854,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     ISR_REGIONS_AND_SUPPORT = 14
     CA_PROTECTED_B = 15
     IL5 = 16
+    JP_REGIONS_AND_SUPPORT = 17
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given

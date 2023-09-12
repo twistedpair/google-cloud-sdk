@@ -2504,6 +2504,16 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.networkconnectivity.v1beta',
+                    client_classpath='networkconnectivity_v1beta_client.NetworkconnectivityV1beta',
+                    base_url='https://networkconnectivity.googleapis.com/',
+                    messages_modulepath='networkconnectivity_v1beta_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
     },
     'networkmanagement': {
         'v1':
@@ -2845,7 +2855,7 @@ MAP = {
                 apitools=ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.policytroubleshooter.v3',
                     client_classpath='policytroubleshooter_v3_client.PolicytroubleshooterV3',
-                    base_url='',
+                    base_url='https://policytroubleshooter.googleapis.com/',
                     messages_modulepath='policytroubleshooter_v3_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -3474,18 +3484,6 @@ MAP = {
                     client_classpath='telcoautomation_v1alpha1_client.TelcoautomationV1alpha1',
                     base_url='https://telcoautomation.googleapis.com/',
                     messages_modulepath='telcoautomation_v1alpha1_messages'),
-                default_version=True,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-    },
-    'telecomdatafabric': {
-        'v1alpha':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.telecomdatafabric.v1alpha',
-                    client_classpath='telecomdatafabric_v1alpha_client.TelecomdatafabricV1alpha',
-                    base_url='https://telecomdatafabric.googleapis.com/',
-                    messages_modulepath='telecomdatafabric_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

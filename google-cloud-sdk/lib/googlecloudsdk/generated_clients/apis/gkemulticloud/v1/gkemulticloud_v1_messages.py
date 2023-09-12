@@ -147,10 +147,12 @@ class GkemulticloudProjectsLocationsAttachedClustersPatchRequest(_messages.Messa
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AttachedCluster: * `annotations`. *
-      `authorization.admin_users`. * `binary_authorization.evaluation_mode`. *
-      `description`. * `logging_config.component_config.enable_components`. *
+      `authorization.admin_groups`. * `authorization.admin_users`. *
+      `binary_authorization.evaluation_mode`. * `description`. *
+      `logging_config.component_config.enable_components`. *
       `monitoring_config.managed_prometheus_config.enabled`. *
-      `platform_version`.
+      `platform_version`. * `proxy_config.kubernetes_secret.name`. *
+      `proxy_config.kubernetes_secret.namespace`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -287,7 +289,7 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
       `config.autoscaling_metrics_collection`. *
       `config.autoscaling_metrics_collection.granularity`. *
       `config.autoscaling_metrics_collection.metrics`. *
-      `config.instance_type`.
+      `config.instance_type`. * `management.auto_repair`. * `management`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """
@@ -432,7 +434,8 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AwsCluster: * `description`. *
       `annotations`. * `control_plane.version`. * `authorization.admin_users`.
-      * `binary_authorization.evaluation_mode`. *
+      * `authorization.admin_groups`. *
+      `binary_authorization.evaluation_mode`. *
       `control_plane.aws_services_authentication.role_arn`. *
       `control_plane.aws_services_authentication.role_session_name`. *
       `control_plane.config_encryption.kms_key_arn`. *
@@ -666,7 +669,8 @@ class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsPatchRequest(_mes
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AzureNodePool: *. `annotations`. *
       `version`. * `autoscaling.min_node_count`. *
-      `autoscaling.max_node_count`. * `config.ssh_config.authorized_key`.
+      `autoscaling.max_node_count`. * `config.ssh_config.authorized_key`. *
+      `management.auto_repair`. * `management`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """
@@ -810,8 +814,9 @@ class GkemulticloudProjectsLocationsAzureClustersPatchRequest(_messages.Message)
       only include these fields from AzureCluster: * `description`. *
       `azureClient`. * `control_plane.version`. * `control_plane.vm_size`. *
       `annotations`. * `authorization.admin_users`. *
-      `control_plane.root_volume.size_gib`. * `azure_services_authentication`.
-      * `azure_services_authentication.tenant_id`. *
+      `authorization.admin_groups`. * `control_plane.root_volume.size_gib`. *
+      `azure_services_authentication`. *
+      `azure_services_authentication.tenant_id`. *
       `azure_services_authentication.application_id`. *
       `control_plane.proxy_config`. *
       `control_plane.proxy_config.resource_group_id`. *

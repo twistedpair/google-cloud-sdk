@@ -814,6 +814,8 @@ class Instance(_messages.Message):
     type: Required. Instance type.
     updateTime: Output only. The time the instance was last updated.
     version: Current version of Data Fusion.
+    workforceIdentityServiceEndpoint: Output only. Endpoint on which the Data
+      Fusion UI is accessible to third-party users.
     zone: Name of the zone in which the Data Fusion instance will be created.
       Only DEVELOPER instances use this field.
   """
@@ -960,7 +962,8 @@ class Instance(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 28)
   updateTime = _messages.StringField(29)
   version = _messages.StringField(30)
-  zone = _messages.StringField(31)
+  workforceIdentityServiceEndpoint = _messages.StringField(31)
+  zone = _messages.StringField(32)
 
 
 class ListAvailableVersionsResponse(_messages.Message):

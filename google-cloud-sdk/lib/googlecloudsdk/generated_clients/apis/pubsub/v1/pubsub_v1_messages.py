@@ -556,9 +556,15 @@ class MessageStoragePolicy(_messages.Message):
       running outside of GCP altogether) will be routed for storage in one of
       the allowed regions. An empty list means that no regions are allowed,
       and is not a valid configuration.
+    enforceInTransit: Optional. If true, `allowed_persistence_regions` is also
+      used to enforce in-transit guarantees for messages. That is, Pub/Sub
+      will fail Publish operations on this topic and subscribe operations on
+      any subscription attached to this topic in any region that is not in
+      `allowed_persistence_regions`.
   """
 
   allowedPersistenceRegions = _messages.StringField(1, repeated=True)
+  enforceInTransit = _messages.BooleanField(2)
 
 
 class ModifyAckDeadlineRequest(_messages.Message):
@@ -714,6 +720,11 @@ class PubSubExportConfig(_messages.Message):
       whether or not the subscription can receive messages.
 
   Fields:
+    region: Optional. The GCP region to which messages will be published. If
+      this is different from the region that messages were published, egress
+      fees will be incurred. If the region is not specified, Pub/Sub will use
+      the region to which the messages were originally published on a best-
+      effort basis.
     state: Output only. An output-only field that indicates whether or not the
       subscription can receive messages.
     topic: Optional. The name of the topic to which to write data, of the form
@@ -739,8 +750,9 @@ class PubSubExportConfig(_messages.Message):
     NOT_FOUND = 3
     SCHEMA_MISMATCH = 4
 
-  state = _messages.EnumField('StateValueValuesEnum', 1)
-  topic = _messages.StringField(2)
+  region = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  topic = _messages.StringField(3)
 
 
 class PubSubLiteExportConfig(_messages.Message):

@@ -2117,7 +2117,7 @@ class CloudbuildV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new `BuildTrigger`. This API is experimental.
+      r"""Creates a new `BuildTrigger`.
 
       Args:
         request: (CloudbuildProjectsLocationsTriggersCreateRequest) input message
@@ -2144,7 +2144,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a `BuildTrigger` by its project ID and trigger ID. This API is experimental.
+      r"""Deletes a `BuildTrigger` by its project ID and trigger ID.
 
       Args:
         request: (CloudbuildProjectsLocationsTriggersDeleteRequest) input message
@@ -2171,7 +2171,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns information about a `BuildTrigger`. This API is experimental.
+      r"""Returns information about a `BuildTrigger`.
 
       Args:
         request: (CloudbuildProjectsLocationsTriggersGetRequest) input message
@@ -2198,7 +2198,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists existing `BuildTrigger`s. This API is experimental.
+      r"""Lists existing `BuildTrigger`s.
 
       Args:
         request: (CloudbuildProjectsLocationsTriggersListRequest) input message
@@ -2225,7 +2225,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a `BuildTrigger` by its project ID and trigger ID. This API is experimental.
+      r"""Updates a `BuildTrigger` by its project ID and trigger ID.
 
       Args:
         request: (CloudbuildProjectsLocationsTriggersPatchRequest) input message
@@ -2471,7 +2471,7 @@ class CloudbuildV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new `BuildTrigger`. This API is experimental.
+      r"""Creates a new `BuildTrigger`.
 
       Args:
         request: (CloudbuildProjectsTriggersCreateRequest) input message
@@ -2497,7 +2497,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a `BuildTrigger` by its project ID and trigger ID. This API is experimental.
+      r"""Deletes a `BuildTrigger` by its project ID and trigger ID.
 
       Args:
         request: (CloudbuildProjectsTriggersDeleteRequest) input message
@@ -2523,7 +2523,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns information about a `BuildTrigger`. This API is experimental.
+      r"""Returns information about a `BuildTrigger`.
 
       Args:
         request: (CloudbuildProjectsTriggersGetRequest) input message
@@ -2549,7 +2549,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists existing `BuildTrigger`s. This API is experimental.
+      r"""Lists existing `BuildTrigger`s.
 
       Args:
         request: (CloudbuildProjectsTriggersListRequest) input message
@@ -2575,7 +2575,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a `BuildTrigger` by its project ID and trigger ID. This API is experimental.
+      r"""Updates a `BuildTrigger` by its project ID and trigger ID.
 
       Args:
         request: (CloudbuildProjectsTriggersPatchRequest) input message

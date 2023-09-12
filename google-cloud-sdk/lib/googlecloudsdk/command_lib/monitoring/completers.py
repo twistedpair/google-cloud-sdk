@@ -21,11 +21,12 @@ from __future__ import unicode_literals
 from googlecloudsdk.command_lib.util import completers
 
 
-class MonitoredProjectCompleter(completers.ResourceParamCompleter):
-  """The monitored project completer."""
+class MonitoredResourceContainerCompleter(completers.ResourceParamCompleter):
+  """The monitored resource container completer."""
 
   def __init__(self, **kwargs):
-    super(MonitoredProjectCompleter, self).__init__(
+    super(MonitoredResourceContainerCompleter, self).__init__(
         collection='monitoring.locations.global.metricsScopes',
-        param='monitoredProjectId',
-        **kwargs)
+        param='monitoredResourceContainerName',
+        **kwargs
+    )

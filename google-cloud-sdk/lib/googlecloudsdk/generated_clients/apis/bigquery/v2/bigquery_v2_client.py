@@ -102,7 +102,7 @@ class BigqueryV2(base_api.BaseApiClient):
         method_id='bigquery.datasets.get',
         ordered_params=['projectId', 'datasetId'],
         path_params=['datasetId', 'projectId'],
-        query_params=[],
+        query_params=['datasetView'],
         relative_path='projects/{projectId}/datasets/{datasetId}',
         request_field='',
         request_type_name='BigqueryDatasetsGetRequest',

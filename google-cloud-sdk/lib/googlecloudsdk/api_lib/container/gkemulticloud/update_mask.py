@@ -112,6 +112,9 @@ AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
     'enable_autorepair': 'management.auto_repair',
     'node_labels': 'config.labels',
     'clear_node_labels': 'config.labels',
+    'instance_type': 'config.instance_type',
+    'max_surge_update': 'update_settings.surge_settings.max_surge',
+    'max_unavailable_update': 'update_settings.surge_settings.max_unavailable',
 }
 
 AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {

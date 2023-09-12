@@ -1165,7 +1165,7 @@ class AppengineV1beta(base_api.BaseApiClient):
         method_id='appengine.apps.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['includeExtraData'],
         relative_path='v1beta/{+name}',
         request_field='',
         request_type_name='AppengineAppsGetRequest',

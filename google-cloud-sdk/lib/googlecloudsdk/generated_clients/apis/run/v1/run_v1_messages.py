@@ -1383,6 +1383,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
+      `run.googleapis.com/disable-default-uri`: Service. *
       `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
@@ -1417,6 +1418,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
+      `run.googleapis.com/disable-default-uri`: Service. *
       `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
@@ -1478,11 +1480,11 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/container-dependencies`: Revision. *
     `run.googleapis.com/cpu-throttling`: Revision. *
     `run.googleapis.com/custom-audiences`: Service. *
-    `run.googleapis.com/description`: Service. *
-    `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
-    `run.googleapis.com/encryption-key`: Revision, Execution. *
-    `run.googleapis.com/execution-environment`: Revision, Execution. *
-    `run.googleapis.com/gc-traffic-tags`: Service. *
+    `run.googleapis.com/description`: Service. * `run.googleapis.com/disable-
+    default-uri`: Service. * `run.googleapis.com/encryption-key-shutdown-
+    hours`: Revision * `run.googleapis.com/encryption-key`: Revision,
+    Execution. * `run.googleapis.com/execution-environment`: Revision,
+    Execution. * `run.googleapis.com/gc-traffic-tags`: Service. *
     `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
     stage`: Service, Job. * `run.googleapis.com/network-interfaces`: Revision,
     Execution. * `run.googleapis.com/post-key-revocation-action-type`:
@@ -2026,8 +2028,8 @@ class RouteStatus(_messages.Message):
       appears in the spec, this will hold the LatestReadyRevisionName that was
       last observed.
     url: URL holds the url that will distribute traffic over the provided
-      traffic targets. It generally has the form: https://{route-
-      hash}-{project-hash}-{cluster-level-suffix}.a.run.app
+      traffic targets. It generally has the form: `https://{route-
+      hash}-{project-hash}-{cluster-level-suffix}.a.run.app`
   """
 
   address = _messages.MessageField('Addressable', 1)
@@ -2107,9 +2109,9 @@ class RunJobRequest(_messages.Message):
   r"""Request message for creating a new execution of a job.
 
   Fields:
-    overrides: Optional. Private preview feature. Currently only available by
-      invitation. Overrides specification for a given execution of a job. The
-      specified values update the specification of the created execution.
+    overrides: Optional. Overrides existing job configuration for one specific
+      new job execution only, using the specified values to update the job
+      configuration for the new execution.
   """
 
   overrides = _messages.MessageField('Overrides', 1)
@@ -3499,9 +3501,10 @@ class Service(_messages.Message):
       Service.metadata.annotations. * `run.googleapis.com/binary-
       authorization-breakglass` * `run.googleapis.com/binary-authorization` *
       `run.googleapis.com/client-name` * `run.googleapis.com/custom-audiences`
-      * `run.googleapis.com/description` * `run.googleapis.com/gc-traffic-
-      tags` * `run.googleapis.com/ingress` * `run.googleapis.com/ingress` sets
-      the ingress settings for the Service. See [the ingress settings
+      * `run.googleapis.com/description` * `run.googleapis.com/disable-
+      default-uri` * `run.googleapis.com/gc-traffic-tags` *
+      `run.googleapis.com/ingress` * `run.googleapis.com/ingress` sets the
+      ingress settings for the Service. See [the ingress settings
       documentation](/run/docs/securing/ingress) for details on configuring
       ingress settings. * `run.googleapis.com/ingress-status` is output-only
       and contains the currently active ingress settings for the Service.
@@ -3564,8 +3567,8 @@ class ServiceStatus(_messages.Message):
       in the spec, this will hold the LatestReadyRevisionName that we last
       observed.
     url: URL that will distribute traffic over the provided traffic targets.
-      It generally has the form https://{route-hash}-{project-hash}-{cluster-
-      level-suffix}.a.run.app
+      It generally has the form `https://{route-hash}-{project-hash}-{cluster-
+      level-suffix}.a.run.app`
   """
 
   address = _messages.MessageField('Addressable', 1)

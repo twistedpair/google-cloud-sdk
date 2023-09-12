@@ -18,8 +18,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.calliope.exceptions import InvalidArgumentException
-from googlecloudsdk.core import properties
+from googlecloudsdk.calliope import exceptions
 
 
 def validate_single_location(_, args, req):
@@ -27,31 +26,36 @@ def validate_single_location(_, args, req):
   if args.storage_location_names is None:
     pass
   elif len(args.storage_location_names) != 1:
-    raise InvalidArgumentException("only a single location name is permitted")
+    raise exceptions.InvalidArgumentException(
+        "only a single location name is permitted"
+    )
 
   return req
 
 
-def maybe_add_locations(_, args, req):
+def maybe_add_locations(version):
   """Adds locations to the request if they are specified."""
-  if not args.storage_location_names:
+  messages = _get_message_module(version)
+
+  def _maybe_add_locations(_, args, req):
+    if not args.storage_location_names:
+      return req
+
+    locations_msg = (
+        messages.SnapshotSettingsStorageLocationSettings.LocationsValue(
+            additionalProperties=[
+                _wrap_location_name(location, messages)
+                for location in args.storage_location_names
+            ]
+        )
+    )
+
+    _ensure_location_field(req, messages)
+
+    req.snapshotSettings.storageLocation.locations = locations_msg
     return req
 
-  messages = _get_message_module()
-
-  locations_msg = (
-      messages.SnapshotSettingsStorageLocationSettings.LocationsValue(
-          additionalProperties=[
-              _wrap_location_name(location, messages)
-              for location in args.storage_location_names
-          ]
-      )
-  )
-
-  _ensure_location_field(req, messages)
-
-  req.snapshotSettings.storageLocation.locations = locations_msg
-  return req
+  return _maybe_add_locations
 
 
 def _wrap_location_name(location, messages):
@@ -65,11 +69,11 @@ def _wrap_location_name(location, messages):
   )
 
 
-def _get_message_module():
+def _get_message_module(version):
   """Returns the message module for the Compute API."""
 
   return apis.GetMessagesModule(
-      "compute", properties.VALUES.api_client_overrides.compute.Get() or "v1"
+      "compute", apis.ResolveVersion("compute", version)
   )
 
 
@@ -101,7 +105,6 @@ def adjust_storage_location_update_mask(_, args, req):
 
   Returns:
     the request message with modified update mask.
-
   """
   if args.storage_location_policy:
     # if policy is specified, then whatever that is stored in storageLocation

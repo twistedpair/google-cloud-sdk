@@ -614,7 +614,11 @@ class Job(_messages.Message):
       `16:15`. A scheduled start time will be delayed if the previous
       execution has not ended when its scheduled time occurs. If retry_count >
       0 and a job attempt fails, the job will be tried a total of retry_count
-      times, with exponential backoff, until the next scheduled start time.
+      times, with exponential backoff, until the next scheduled start time. If
+      retry_count is 0, a job attempt will not be retried if it fails. Instead
+      the Cloud Scheduler system will wait for the next scheduled execution
+      time. Setting retry_count to 0 does not prevent failed jobs from running
+      according to schedule after the failure.
     scheduleTime: Output only. The next time the job is scheduled. Note that
       this may be a retry of a previously failed attempt or the next execution
       time according to the schedule.
@@ -979,13 +983,14 @@ class RetryConfig(_messages.Message):
       job after it fails. The default value of this field is 5 seconds.
     retryCount: The number of attempts that the system will make to run a job
       using the exponential backoff procedure described by max_doublings. The
-      default value of retry_count is zero. If retry_count is zero, a job
-      attempt will *not* be retried if it fails. Instead the Cloud Scheduler
-      system will wait for the next scheduled execution time. If retry_count
-      is set to a non-zero number then Cloud Scheduler will retry failed
-      attempts, using exponential backoff, retry_count times, or until the
-      next scheduled execution time, whichever comes first. Values greater
-      than 5 and negative values are not allowed.
+      default value of retry_count is zero. If retry_count is 0, a job attempt
+      will not be retried if it fails. Instead the Cloud Scheduler system will
+      wait for the next scheduled execution time. Setting retry_count to 0
+      does not prevent failed jobs from running according to schedule after
+      the failure. If retry_count is set to a non-zero number then Cloud
+      Scheduler will retry failed attempts, using exponential backoff,
+      retry_count times, or until the next scheduled execution time, whichever
+      comes first. Values greater than 5 and negative values are not allowed.
   """
 
   maxBackoffDuration = _messages.StringField(1)

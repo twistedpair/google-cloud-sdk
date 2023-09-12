@@ -763,8 +763,9 @@ class ApigeeOrganizationsAppgroupsListRequest(_messages.Message):
 
   Fields:
     filter: The filter expression to be used to get the list of AppGroups,
-      where filtering can be done on name, correlationID or channelID of the
-      app group. Example: filter = "name = foobar"
+      where filtering can be done on status, channelId or channelUri of the
+      app group. Examples: filter=status=active", filter=channelId=,
+      filter=channelUri=
     pageSize: Count of AppGroups a single page can have in the response. If
       unspecified, at most 1000 AppGroups will be returned. The maximum value
       is 1000; values above 1000 will be coerced to 1000.
@@ -819,7 +820,7 @@ class ApigeeOrganizationsAppsListRequest(_messages.Message):
       of apps for the organization. Defaults to `false`.
     filter: Optional. The filter expression to be used to get the list of
       apps, where filtering can be done on developerEmail, apiProduct,
-      consumerKey, status, appId, appName and appType. Examples:
+      consumerKey, status, appId, appName, appType and appGroup. Examples:
       "developerEmail=foo@bar.com", "appType=AppGroup", or "appType=Developer"
       "filter" is supported from ver 1.10.0 and above.
     ids: Optional. Comma-separated list of app IDs on which to filter.
@@ -1797,6 +1798,22 @@ class ApigeeOrganizationsEnvgroupsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class ApigeeOrganizationsEnvironmentsAddonsConfigSetAddonEnablementRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsAddonsConfigSetAddonEnablementRequest
+  object.
+
+  Fields:
+    googleCloudApigeeV1SetAddonEnablementRequest: A
+      GoogleCloudApigeeV1SetAddonEnablementRequest resource to be passed as
+      the request body.
+    name: Required. Name of the add-ons config. Must be in the format of
+      `/organizations/{org}/environments/{env}/addonsConfig`
+  """
+
+  googleCloudApigeeV1SetAddonEnablementRequest = _messages.MessageField('GoogleCloudApigeeV1SetAddonEnablementRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ApigeeOrganizationsEnvironmentsAnalyticsAdminGetSchemav2Request(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsAnalyticsAdminGetSchemav2Request
   object.
@@ -1965,10 +1982,9 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDeployRequest(_messages.Messag
       necessary if the new deployment will be capturing traffic from another
       environment under a shared environment group or if traffic will be
       rerouted to a different environment due to a base path removal. The
-      [generateDeployChangeReport API](generateDeployChangeReport) may be used
-      to examine routing changes before issuing the deployment request, and
-      its response will indicate if a sequenced rollout is recommended for the
-      deployment.
+      generateDeployChangeReport API may be used to examine routing changes
+      before issuing the deployment request, and its response will indicate if
+      a sequenced rollout is recommended for the deployment.
     serviceAccount: Google Cloud IAM service account. The service account
       represents the identity of the deployed proxy, and determines what
       permissions it has. The format must be
@@ -2035,10 +2051,10 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsUndeployRequest(_messages.Mess
       runtime. This is likely to be a rare use case; it is only needed when
       the intended effect of undeploying this proxy is to cause the traffic it
       currently handles to be rerouted to some other existing proxy in the
-      environment group. The [GenerateUndeployChangeReport
-      API](GenerateUndeployChangeReport) may be used to examine routing
-      changes before issuing the undeployment request, and its response will
-      indicate if a sequenced rollout is recommended for the undeployment.
+      environment group. The GenerateUndeployChangeReport API may be used to
+      examine routing changes before issuing the undeployment request, and its
+      response will indicate if a sequenced rollout is recommended for the
+      undeployment.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2243,6 +2259,17 @@ class ApigeeOrganizationsEnvironmentsFlowhooksGetRequest(_messages.Message):
   Fields:
     name: Required. Name of the flow hook in the following format:
       `organizations/{org}/environments/{env}/flowhooks/{flowhook}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsGetAddonsConfigRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsGetAddonsConfigRequest object.
+
+  Fields:
+    name: Required. Name of the add-ons config. Must be in the format of
+      `/organizations/{org}/environments/{env}/addonsConfig`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2969,6 +2996,24 @@ class ApigeeOrganizationsEnvironmentsSecurityActionsListRequest(_messages.Messag
   parent = _messages.StringField(4, required=True)
 
 
+class ApigeeOrganizationsEnvironmentsSecurityIncidentsBatchUpdateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityIncidentsBatchUpdateRequest
+  object.
+
+  Fields:
+    googleCloudApigeeV1BatchUpdateSecurityIncidentsRequest: A
+      GoogleCloudApigeeV1BatchUpdateSecurityIncidentsRequest resource to be
+      passed as the request body.
+    parent: Optional. The parent resource shared by all security incidents
+      being updated. If this is set, the parent field in the
+      UpdateSecurityIncidentRequest messages must either be empty or match
+      this field.
+  """
+
+  googleCloudApigeeV1BatchUpdateSecurityIncidentsRequest = _messages.MessageField('GoogleCloudApigeeV1BatchUpdateSecurityIncidentsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class ApigeeOrganizationsEnvironmentsSecurityIncidentsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsSecurityIncidentsGetRequest object.
 
@@ -2989,11 +3034,12 @@ class ApigeeOrganizationsEnvironmentsSecurityIncidentsListRequest(_messages.Mess
     filter: The filter expression to be used to get the list of security
       incidents, where filtering can be done on API Proxies. Example: filter =
       "api_proxy = /", "first_detected_time >", "last_detected_time <"
-    pageSize: The maximum number of incidents to return. The service may
-      return fewer than this value. If unspecified, at most 50 incidents will
-      be returned.
-    pageToken: A page token, received from a previous `ListSecurityIncident`
-      call. Provide this to retrieve the subsequent page.
+    pageSize: Optional. The maximum number of incidents to return. The service
+      may return fewer than this value. If unspecified, at most 50 incidents
+      will be returned.
+    pageToken: Optional. A page token, received from a previous
+      `ListSecurityIncident` call. Provide this to retrieve the subsequent
+      page.
     parent: Required. For a specific organization, list of all the security
       incidents. Format: `organizations/{org}/environments/{environment}`
   """
@@ -3002,6 +3048,26 @@ class ApigeeOrganizationsEnvironmentsSecurityIncidentsListRequest(_messages.Mess
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsSecurityIncidentsPatchRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityIncidentsPatchRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityIncident: A GoogleCloudApigeeV1SecurityIncident
+      resource to be passed as the request body.
+    name: Immutable. Name of the security incident resource. Format: organizat
+      ions/{org}/environments/{environment}/securityIncidents/{incident}
+      Example: organizations/apigee-
+      org/environments/dev/securityIncidents/1234-5678-9101-1111
+    updateMask: Required. The list of fields to update. Allowed fields are:
+      LINT.IfChange(allowed_update_fields_comment) - observability
+      LINT.ThenChange()
+  """
+
+  googleCloudApigeeV1SecurityIncident = _messages.MessageField('GoogleCloudApigeeV1SecurityIncident', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ApigeeOrganizationsEnvironmentsSecurityReportsCreateRequest(_messages.Message):
@@ -4301,8 +4367,8 @@ class ApigeeOrganizationsSecurityProfilesCreateRequest(_messages.Message):
     parent: Required. Name of organization. Format: organizations/{org}
     securityProfileId: Required. The ID to use for the SecurityProfile, which
       will become the final component of the action's resource name. This
-      value should be 4-63 characters, and valid characters are
-      /(^[a-z]([a-z0-9-]{\u200b0,61}[a-z0-9])?$/.
+      value should be 1-63 characters and validated by
+      "(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$)".
   """
 
   googleCloudApigeeV1SecurityProfile = _messages.MessageField('GoogleCloudApigeeV1SecurityProfile', 1)
@@ -4435,15 +4501,15 @@ class ApigeeOrganizationsSecurityincidentenvironmentsListRequest(_messages.Messa
   r"""A ApigeeOrganizationsSecurityincidentenvironmentsListRequest object.
 
   Fields:
-    filter: Filter list security incident stats per environment by time range
-      "first_detected_time >", "last_detected_time <"
-    orderBy: Field to sort by. See https://google.aip.dev/132#ordering for
-      more details. If not specified, the results will be sorted in the
-      default order.
-    pageSize: The maximum number of environments to return. The service may
-      return fewer than this value. If unspecified, at most 50 environments
-      will be returned.
-    pageToken: A page token, received from a previous
+    filter: Optional. Filter list security incident stats per environment by
+      time range "first_detected_time >", "last_detected_time <"
+    orderBy: Optional. Field to sort by. See
+      https://google.aip.dev/132#ordering for more details. If not specified,
+      the results will be sorted in the default order.
+    pageSize: Optional. The maximum number of environments to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      environments will be returned.
+    pageToken: Optional. A page token, received from a previous
       `ListSecurityIncidentEnvironments` call. Provide this to retrieve the
       subsequent page.
     parent: Required. For a specific organization, list all environments with
@@ -5855,6 +5921,27 @@ class GoogleCloudApigeeV1Attributes(_messages.Message):
   """
 
   attribute = _messages.MessageField('GoogleCloudApigeeV1Attribute', 1, repeated=True)
+
+
+class GoogleCloudApigeeV1BatchUpdateSecurityIncidentsRequest(_messages.Message):
+  r"""Request for BatchUpdateSecurityIncident.
+
+  Fields:
+    requests: Optional. Required. The request message specifying the resources
+      to update. A maximum of 1000 can be modified in a batch.
+  """
+
+  requests = _messages.MessageField('GoogleCloudApigeeV1UpdateSecurityIncidentRequest', 1, repeated=True)
+
+
+class GoogleCloudApigeeV1BatchUpdateSecurityIncidentsResponse(_messages.Message):
+  r"""Response for BatchUpdateSecurityIncident.
+
+  Fields:
+    securityIncidents: Output only. Updated security incidents
+  """
+
+  securityIncidents = _messages.MessageField('GoogleCloudApigeeV1SecurityIncident', 1, repeated=True)
 
 
 class GoogleCloudApigeeV1CanaryEvaluation(_messages.Message):
@@ -10250,10 +10337,12 @@ class GoogleCloudApigeeV1RuntimeAnalyticsConfig(_messages.Message):
   r"""Runtime configuration for the Analytics add-on.
 
   Fields:
+    billingPipelineEnabled: If Runtime should send billing data to AX or not.
     enabled: If the Analytics is enabled or not.
   """
 
-  enabled = _messages.BooleanField(1)
+  billingPipelineEnabled = _messages.BooleanField(1)
+  enabled = _messages.BooleanField(2)
 
 
 class GoogleCloudApigeeV1RuntimeApiSecurityConfig(_messages.Message):
@@ -10670,24 +10759,43 @@ class GoogleCloudApigeeV1SecurityIncident(_messages.Message):
   r"""Represents an SecurityIncident resource.
 
   Enums:
+    ObservabilityValueValuesEnum: Optional. Indicates if the user archived
+      this incident.
     RiskLevelValueValuesEnum: Output only. Risk level of the incident.
 
   Fields:
     detectionTypes: Output only. Detection types which are part of the
       incident. Examples: Flooder, OAuth Abuser, Static Content Scraper,
       Anomaly Detection.
-    displayName: Display name of the security incident.
+    displayName: Optional. Display name of the security incident.
     firstDetectedTime: Output only. The time when events associated with the
       incident were first detected.
     lastDetectedTime: Output only. The time when events associated with the
       incident were last detected.
+    lastObservabilityChangeTime: Output only. The time when the incident
+      observability was last changed.
     name: Immutable. Name of the security incident resource. Format: organizat
       ions/{org}/environments/{environment}/securityIncidents/{incident}
       Example: organizations/apigee-
       org/environments/dev/securityIncidents/1234-5678-9101-1111
+    observability: Optional. Indicates if the user archived this incident.
     riskLevel: Output only. Risk level of the incident.
     trafficCount: Total traffic detected as part of the incident.
   """
+
+  class ObservabilityValueValuesEnum(_messages.Enum):
+    r"""Optional. Indicates if the user archived this incident.
+
+    Values:
+      OBSERVABILITY_UNSPECIFIED: The incident observability is unspecified.
+      ACTIVE: The incident is currently active. Can change to this status from
+        archived.
+      ARCHIVED: The incident is currently archived and was archived by the
+        customer.
+    """
+    OBSERVABILITY_UNSPECIFIED = 0
+    ACTIVE = 1
+    ARCHIVED = 2
 
   class RiskLevelValueValuesEnum(_messages.Enum):
     r"""Output only. Risk level of the incident.
@@ -10707,9 +10815,11 @@ class GoogleCloudApigeeV1SecurityIncident(_messages.Message):
   displayName = _messages.StringField(2)
   firstDetectedTime = _messages.StringField(3)
   lastDetectedTime = _messages.StringField(4)
-  name = _messages.StringField(5)
-  riskLevel = _messages.EnumField('RiskLevelValueValuesEnum', 6)
-  trafficCount = _messages.IntegerField(7)
+  lastObservabilityChangeTime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  observability = _messages.EnumField('ObservabilityValueValuesEnum', 7)
+  riskLevel = _messages.EnumField('RiskLevelValueValuesEnum', 8)
+  trafficCount = _messages.IntegerField(9)
 
 
 class GoogleCloudApigeeV1SecurityIncidentEnvironment(_messages.Message):
@@ -10790,9 +10900,7 @@ class GoogleCloudApigeeV1SecurityProfileEnvironmentAssociation(_messages.Message
   Fields:
     attachTime: Output only. The time when environment was attached to the
       security profile.
-    name: Immutable. Name of the profile-environment association resource.
-      Format:
-      organizations/{org}/securityProfiles/{profile}/environments/{env}
+    name: Immutable. Name of the environment that the profile is attached to.
     securityProfileRevisionId: Revision ID of the security profile.
   """
 
@@ -11014,6 +11122,19 @@ class GoogleCloudApigeeV1Session(_messages.Message):
 
   id = _messages.StringField(1)
   timestampMs = _messages.IntegerField(2)
+
+
+class GoogleCloudApigeeV1SetAddonEnablementRequest(_messages.Message):
+  r"""Request for SetAddonEnablement.
+
+  Fields:
+    analyticsEnabled: If the Analytics should be enabled in the environment.
+    apiSecurityEnabled: If the API Security should be enabled in the
+      environment.
+  """
+
+  analyticsEnabled = _messages.BooleanField(1)
+  apiSecurityEnabled = _messages.BooleanField(2)
 
 
 class GoogleCloudApigeeV1SetAddonsRequest(_messages.Message):
@@ -11671,6 +11792,21 @@ class GoogleCloudApigeeV1UpdateError(_messages.Message):
   message = _messages.StringField(2)
   resource = _messages.StringField(3)
   type = _messages.StringField(4)
+
+
+class GoogleCloudApigeeV1UpdateSecurityIncidentRequest(_messages.Message):
+  r"""Request for UpdateSecurityIncident.
+
+  Fields:
+    securityIncident: Required. The security incident to update. Must contain
+      all existing populated fields of the current incident.
+    updateMask: Required. The list of fields to update. Allowed fields are:
+      LINT.IfChange(allowed_update_fields_comment) - observability
+      LINT.ThenChange()
+  """
+
+  securityIncident = _messages.MessageField('GoogleCloudApigeeV1SecurityIncident', 1)
+  updateMask = _messages.StringField(2)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):

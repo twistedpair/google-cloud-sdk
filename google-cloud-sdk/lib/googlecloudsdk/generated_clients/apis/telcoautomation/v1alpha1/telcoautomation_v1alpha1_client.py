@@ -928,7 +928,7 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         method_id='telcoautomation.projects.locations.orchestrationClusters.deployments.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsGetRequest',
@@ -1013,6 +1013,33 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='deployment',
         request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsPatchRequest',
+        response_type_name='Deployment',
+        supports_download=False,
+    )
+
+    def Rollback(self, request, global_params=None):
+      r"""Rollback the active deployment to the given past approved deployment revision.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsRollbackRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Deployment) The response message.
+      """
+      config = self.GetMethodConfig('Rollback')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rollback.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/deployments/{deploymentsId}:rollback',
+        http_method='POST',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.deployments.rollback',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:rollback',
+        request_field='rollbackDeploymentRequest',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsRollbackRequest',
         response_type_name='Deployment',
         supports_download=False,
     )
@@ -1171,6 +1198,33 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
       super(TelcoautomationV1alpha1.ProjectsLocationsPublicBlueprintsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Get(self, request, global_params=None):
+      r"""Returns the requested public blueprint.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsPublicBlueprintsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PublicBlueprint) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/publicBlueprints/{publicBlueprintsId}',
+        http_method='GET',
+        method_id='telcoautomation.projects.locations.publicBlueprints.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='TelcoautomationProjectsLocationsPublicBlueprintsGetRequest',
+        response_type_name='PublicBlueprint',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       r"""Lists the blueprints in TNA's public catalog. Default page size = 20, Max Page Size = 100.

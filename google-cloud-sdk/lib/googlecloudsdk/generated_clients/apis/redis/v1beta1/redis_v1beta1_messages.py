@@ -143,10 +143,13 @@ class DiscoveryEndpoint(_messages.Message):
       clients to connect to the service. The address could be either IP or
       hostname.
     port: Output only. The port number of the exposed Redis endpoint.
+    pscConfig: Output only. Customer configuration for where the endpoint is
+      created and accessed from.
   """
 
   address = _messages.StringField(1)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pscConfig = _messages.MessageField('PscConfig', 3)
 
 
 class Empty(_messages.Message):
@@ -818,21 +821,42 @@ class Location(_messages.Message):
 class MaintenancePolicy(_messages.Message):
   r"""Maintenance policy for an instance.
 
+  Enums:
+    NotificationLeadtimeValueValuesEnum: Optional. Notification scheduling
+      lead time.
+
   Fields:
     createTime: Output only. The time when the policy was created.
     description: Optional. Description of what this policy is for.
       Create/Update methods return INVALID_ARGUMENT if the length is greater
       than 512.
+    notificationLeadtime: Optional. Notification scheduling lead time.
     updateTime: Output only. The time when the policy was last updated.
     weeklyMaintenanceWindow: Optional. Maintenance window that is applied to
       resources covered by this policy. Minimum 1. For the current version,
       the maximum number of weekly_window is expected to be one.
   """
 
+  class NotificationLeadtimeValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification scheduling lead time.
+
+    Values:
+      NOTIFICATION_LEAD_TIME_UNSPECIFIED: Not set.
+      WEEK1: WEEK1 == EARLIER with minimum 7d advanced notification. {7d, 14d}
+      WEEK2: WEEK2 == LATER with minimum 14d advanced notification {14d, 21d}.
+      WEEK5: WEEK5 == 40d support. minimum 35d advanced notification {35d,
+        42d}.
+    """
+    NOTIFICATION_LEAD_TIME_UNSPECIFIED = 0
+    WEEK1 = 1
+    WEEK2 = 2
+    WEEK5 = 3
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  updateTime = _messages.StringField(3)
-  weeklyMaintenanceWindow = _messages.MessageField('WeeklyMaintenanceWindow', 4, repeated=True)
+  notificationLeadtime = _messages.EnumField('NotificationLeadtimeValueValuesEnum', 3)
+  updateTime = _messages.StringField(4)
+  weeklyMaintenanceWindow = _messages.MessageField('WeeklyMaintenanceWindow', 5, repeated=True)
 
 
 class MaintenanceSchedule(_messages.Message):
@@ -1135,6 +1159,8 @@ class PscConnection(_messages.Message):
       east1/forwardingRules/{resourceId}.
     network: The consumer network where the IP address resides, in the form of
       projects/{project_id}/global/networks/{network_id}.
+    projectId: Output only. The consumer project_id where the forwarding rule
+      is created from.
     pscConnectionId: Output only. The PSC connection id of the forwarding rule
       connected to the service attachment.
   """
@@ -1142,7 +1168,8 @@ class PscConnection(_messages.Message):
   address = _messages.StringField(1)
   forwardingRule = _messages.StringField(2)
   network = _messages.StringField(3)
-  pscConnectionId = _messages.StringField(4)
+  projectId = _messages.StringField(4)
+  pscConnectionId = _messages.StringField(5)
 
 
 class ReconciliationOperationMetadata(_messages.Message):

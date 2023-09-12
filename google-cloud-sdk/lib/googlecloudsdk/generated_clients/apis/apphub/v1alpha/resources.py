@@ -41,6 +41,39 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DIRECTORIES = (
+      'projects.locations.directories',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/directories/'
+              '{directoriesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DIRECTORIES_SERVICES = (
+      'projects.locations.directories.services',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/directories/'
+              '{directoriesId}/services/{servicesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DIRECTORIES_WORKLOADS = (
+      'projects.locations.directories.workloads',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/directories/'
+              '{directoriesId}/workloads/{workloadsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -48,6 +81,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SERVICEPROJECTS = (
+      'projects.locations.serviceProjects',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/serviceProjects/'
+              '{serviceProjectsId}',
       },
       ['name'],
       True

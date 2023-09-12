@@ -560,6 +560,33 @@ class CloudtasksV2beta3(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetCmekConfig(self, request, global_params=None):
+      r"""Gets the CMEK config. Gets the Customer Managed Encryption Key configured with the Cloud Tasks lcoation. By default there is no kms_key configured.
+
+      Args:
+        request: (CloudtasksProjectsLocationsGetCmekConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CmekConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetCmekConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetCmekConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta3/projects/{projectsId}/locations/{locationsId}/cmekConfig',
+        http_method='GET',
+        method_id='cloudtasks.projects.locations.getCmekConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2beta3/{+name}',
+        request_field='',
+        request_type_name='CloudtasksProjectsLocationsGetCmekConfigRequest',
+        response_type_name='CmekConfig',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.
 
@@ -584,6 +611,32 @@ class CloudtasksV2beta3(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudtasksProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+    def UpdateCmekConfig(self, request, global_params=None):
+      r"""Creates or Updates a CMEK config. Updates the Customer Managed Encryption Key assotiated with the Cloud Tasks location (Creates if the key does not already exist). All new tasks created in the location will be encrypted at-rest with the KMS-key provided in the config.
+
+      Args:
+        request: (CloudtasksProjectsLocationsUpdateCmekConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CmekConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateCmekConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateCmekConfig.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='cloudtasks.projects.locations.updateCmekConfig',
+        ordered_params=['projectsId', 'locationsId'],
+        path_params=['locationsId', 'projectsId'],
+        query_params=['updateMask'],
+        relative_path='v2beta3/projects/{projectsId}/locations/{locationsId}/cmekConfig',
+        request_field='cmekConfig',
+        request_type_name='CloudtasksProjectsLocationsUpdateCmekConfigRequest',
+        response_type_name='CmekConfig',
         supports_download=False,
     )
 

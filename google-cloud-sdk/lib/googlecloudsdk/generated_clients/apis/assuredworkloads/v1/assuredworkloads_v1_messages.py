@@ -277,6 +277,7 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
       IL5: Information protection as per DoD IL5 requirements.
+      JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -295,6 +296,7 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
     ISR_REGIONS_AND_SUPPORT = 14
     CA_PROTECTED_B = 15
     IL5 = 16
+    JP_REGIONS_AND_SUPPORT = 17
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -386,7 +388,7 @@ class GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesResponse(_messages.Me
 
 
 class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
-  r"""Workload monitoring Violation. Next Id: 27
+  r"""Workload monitoring Violation. Next Id: 28
 
   Enums:
     StateValueValuesEnum: Output only. State of the violation
@@ -507,14 +509,12 @@ class GoogleCloudAssuredworkloadsV1ViolationRemediation(_messages.Message):
         for list org policy which have denied values in the monitoring rule
       REMEDIATION_RESTRICT_CMEK_CRYPTO_KEY_PROJECTS_ORG_POLICY_VIOLATION:
         Remediation type for gcp.restrictCmekCryptoKeyProjects
-      REMEDIATION_RESOURCE_VIOLATION: Remediation type for resource violation.
     """
     REMEDIATION_TYPE_UNSPECIFIED = 0
     REMEDIATION_BOOLEAN_ORG_POLICY_VIOLATION = 1
     REMEDIATION_LIST_ALLOWED_VALUES_ORG_POLICY_VIOLATION = 2
     REMEDIATION_LIST_DENIED_VALUES_ORG_POLICY_VIOLATION = 3
     REMEDIATION_RESTRICT_CMEK_CRYPTO_KEY_PROJECTS_ORG_POLICY_VIOLATION = 4
-    REMEDIATION_RESOURCE_VIOLATION = 5
 
   compliantValues = _messages.StringField(1, repeated=True)
   instructions = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationRemediationInstructions', 2)
@@ -670,6 +670,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
       IL5: Information protection as per DoD IL5 requirements.
+      JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -688,6 +689,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
     ISR_REGIONS_AND_SUPPORT = 14
     CA_PROTECTED_B = 15
     IL5 = 16
+    JP_REGIONS_AND_SUPPORT = 17
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given

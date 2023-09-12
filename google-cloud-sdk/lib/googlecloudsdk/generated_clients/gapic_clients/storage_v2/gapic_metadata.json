@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "StorageClient",
           "rpcs": {
+            "BidiWriteObject": {
+              "methods": [
+                "bidi_write_object"
+              ]
+            },
             "CancelResumableWrite": {
               "methods": [
                 "cancel_resumable_write"
@@ -165,6 +170,11 @@
         "grpc-async": {
           "libraryClient": "StorageAsyncClient",
           "rpcs": {
+            "BidiWriteObject": {
+              "methods": [
+                "bidi_write_object"
+              ]
+            },
             "CancelResumableWrite": {
               "methods": [
                 "cancel_resumable_write"
@@ -320,6 +330,11 @@
         "rest": {
           "libraryClient": "StorageClient",
           "rpcs": {
+            "BidiWriteObject": {
+              "methods": [
+                "bidi_write_object"
+              ]
+            },
             "CancelResumableWrite": {
               "methods": [
                 "cancel_resumable_write"

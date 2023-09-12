@@ -112,6 +112,11 @@ class CloudApi(object):
   # that do not support compose_objects.
   MAX_OBJECTS_PER_COMPOSE_CALL = 1
 
+  # All supported APIs currently limit object names to 1024 UTF-8 encoded bytes.
+  # S3: https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
+  # GCS: https://cloud.google.com/storage/docs/objects#naming
+  MAX_OBJECT_NAME_LENGTH = 1024
+
   def create_bucket(self, bucket_resource, request_config, fields_scope=None):
     """Creates a new bucket with the specified metadata.
 

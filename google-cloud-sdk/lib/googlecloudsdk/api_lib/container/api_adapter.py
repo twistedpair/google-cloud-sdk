@@ -1288,7 +1288,8 @@ class CreateNodePoolOptions(object):
                host_maintenance_interval=None,
                enable_insecure_kubelet_readonly_port=None,
                resource_manager_tags=None,
-               containerd_config_from_file=None):
+               containerd_config_from_file=None,
+               secondary_boot_disks=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1373,6 +1374,7 @@ class CreateNodePoolOptions(object):
         enable_insecure_kubelet_readonly_port)
     self.resource_manager_tags = resource_manager_tags
     self.containerd_config_from_file = containerd_config_from_file
+    self.secondary_boot_disks = secondary_boot_disks
 
 
 class UpdateNodePoolOptions(object):
@@ -1415,7 +1417,8 @@ class UpdateNodePoolOptions(object):
                windows_os_version=None,
                enable_insecure_kubelet_readonly_port=None,
                resource_manager_tags=None,
-               containerd_config_from_file=None):
+               containerd_config_from_file=None,
+               secondary_boot_disks=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1454,6 +1457,7 @@ class UpdateNodePoolOptions(object):
         enable_insecure_kubelet_readonly_port)
     self.resource_manager_tags = resource_manager_tags
     self.containerd_config_from_file = containerd_config_from_file
+    self.secondary_boot_disks = secondary_boot_disks
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -4252,6 +4256,30 @@ class APIAdapter(object):
               options.sole_tenant_node_affinity_file, self.messages
           )
       )
+
+    if options.secondary_boot_disks is not None:
+      mode_enum = self.messages.SecondaryBootDisk.ModeValueValuesEnum
+      mode_map = {
+          'CONTAINER_IMAGE_CACHE': mode_enum.CONTAINER_IMAGE_CACHE,
+      }
+      node_config.secondaryBootDisks = []
+      for disk_config in options.secondary_boot_disks:
+        disk_image = disk_config['disk-image']
+
+        # convert mode string to corresponding enum value
+        mode = None
+        if 'mode' in disk_config:
+          if disk_config['mode'] in mode_map:
+            mode = mode_map[disk_config['mode']]
+          else:
+            mode = mode_enum.MODE_UNSPECIFIED
+
+        node_config.secondaryBootDisks.append(
+            self.messages.SecondaryBootDisk(
+                diskImage=disk_image,
+                mode=mode,
+            )
+        )
 
     return pool
 

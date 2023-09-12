@@ -825,8 +825,9 @@ class ListMeta(_messages.Message):
       this object that can be used by clients to determine when objects have
       changed. Value must be treated as opaque by clients and passed
       unmodified back to the server. Populated by the system. Read-only. More
-      info: https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#concurrency-control-and-consistency +optional
+      info: https://github.com/kubernetes/community/blob/master/contributors/d
+      evel/sig-architecture/api-conventions.md#concurrency-control-and-
+      consistency +optional
     selfLink: SelfLink is a URL representing this object. Populated by the
       system. Read-only. +optional
   """
@@ -868,7 +869,8 @@ class ObjectMeta(_messages.Message):
     LabelsValue: (Optional) Map of string keys and values that can be used to
       organize and categorize (scope and select) objects. May match selectors
       of replication controllers and routes. More info:
-      http://kubernetes.io/docs/user-guide/labels
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/labels/
 
   Fields:
     annotations: (Optional) Annotations is an unstructured key value map
@@ -885,9 +887,9 @@ class ObjectMeta(_messages.Message):
       representing the server time when this object was created. It is not
       guaranteed to be set in happens-before order across separate operations.
       Clients may not set this value. It is represented in RFC3339 form and is
-      in UTC. Populated by the system. Read-only. Null for lists. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#metadata
+      in UTC. Populated by the system. Read-only. Null for lists. More info: h
+      ttps://github.com/kubernetes/community/blob/master/contributors/devel/si
+      g-architecture/api-conventions.md#metadata
     deletionGracePeriodSeconds: (Optional) Cloud Run fully managed: not
       supported Cloud Run for Anthos: supported Number of seconds allowed for
       this object to gracefully terminate before it will be removed from the
@@ -912,8 +914,8 @@ class ObjectMeta(_messages.Message):
       timestamp, until an administrator or automated process can determine the
       resource is fully terminated. If not set, graceful deletion of the
       object has not been requested. Populated by the system when a graceful
-      deletion is requested. Read-only. More info:
-      https://git.k8s.io/community/contributors/devel/api-
+      deletion is requested. Read-only. More info: https://github.com/kubernet
+      es/community/blob/master/contributors/devel/sig-architecture/api-
       conventions.md#metadata
     finalizers: (Optional) Cloud Run fully managed: not supported Cloud Run
       for Anthos: supported Must be empty before the object is deleted from
@@ -933,21 +935,23 @@ class ObjectMeta(_messages.Message):
       will either return 201 Created or 500 with Reason ServerTimeout
       indicating a unique name could not be found in the time allotted, and
       the client should retry (optionally after the time indicated in the
-      Retry-After header). Applied only if Name is not specified. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#idempotency string generateName = 2;
+      Retry-After header). Applied only if Name is not specified. More info: h
+      ttps://github.com/kubernetes/community/blob/master/contributors/devel/si
+      g-architecture/api-conventions.md#idempotency string generateName = 2;
     generation: (Optional) A sequence number representing a specific
       generation of the desired state. Populated by the system. Read-only.
     labels: (Optional) Map of string keys and values that can be used to
       organize and categorize (scope and select) objects. May match selectors
       of replication controllers and routes. More info:
-      http://kubernetes.io/docs/user-guide/labels
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/labels/
     name: Name must be unique within a namespace, within a Cloud Run region.
       Is required when creating resources, although some resources may allow a
       client to request the generation of an appropriate name automatically.
       Name is primarily intended for creation idempotence and configuration
       definition. Cannot be updated. More info:
-      http://kubernetes.io/docs/user-guide/identifiers#names +optional
+      https://kubernetes.io/docs/concepts/overview/working-with-objects/names/
+      +optional
     namespace: Namespace defines the space within each name must be unique,
       within a Cloud Run region. In Cloud Run the namespace must be equal to
       either the project ID or project number.
@@ -962,16 +966,17 @@ class ObjectMeta(_messages.Message):
       Clients must treat these values as opaque and passed unmodified back to
       the server. They may only be valid for a particular resource or set of
       resources. Populated by the system. Read-only. Value must be treated as
-      opaque by clients and . More info:
-      https://git.k8s.io/community/contributors/devel/api-
+      opaque by clients and . More info: https://github.com/kubernetes/communi
+      ty/blob/master/contributors/devel/sig-architecture/api-
       conventions.md#concurrency-control-and-consistency
     selfLink: (Optional) SelfLink is a URL representing this object. Populated
       by the system. Read-only. string selfLink = 4;
     uid: (Optional) UID is the unique in time and space value for this object.
       It is typically generated by the server on successful creation of a
       resource and is not allowed to change on PUT operations. Populated by
-      the system. Read-only. More info: http://kubernetes.io/docs/user-
-      guide/identifiers#uids
+      the system. Read-only. More info:
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/names/#uids
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1007,7 +1012,7 @@ class ObjectMeta(_messages.Message):
     r"""(Optional) Map of string keys and values that can be used to organize
     and categorize (scope and select) objects. May match selectors of
     replication controllers and routes. More info:
-    http://kubernetes.io/docs/user-guide/labels
+    https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1065,14 +1070,15 @@ class ObjectReference(_messages.Message):
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#types-kinds +optional
     name: Name of the referent. More info:
-      https://kubernetes.io/docs/concepts/overview/working-with-
-      objects/names/#names +optional
+      https://kubernetes.io/docs/concepts/overview/working-with-objects/names/
+      +optional
     namespace: Namespace of the referent. More info:
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/namespaces/ +optional
     resourceVersion: Specific resourceVersion to which this reference is made,
-      if any. More info: https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#concurrency-control-and-consistency +optional
+      if any. More info: https://github.com/kubernetes/community/blob/master/c
+      ontributors/devel/sig-architecture/api-conventions.md#concurrency-
+      control-and-consistency +optional
     uid: UID of the referent. More info:
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/names/#uids +optional
@@ -1104,10 +1110,11 @@ class OwnerReference(_messages.Message):
     kind: Kind of the referent. More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#types-kinds
-    name: Name of the referent. More info: http://kubernetes.io/docs/user-
-      guide/identifiers#names
-    uid: UID of the referent. More info: http://kubernetes.io/docs/user-
-      guide/identifiers#uids
+    name: Name of the referent. More info:
+      https://kubernetes.io/docs/concepts/overview/working-with-objects/names/
+    uid: UID of the referent. More info:
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/names/#uids
   """
 
   apiVersion = _messages.StringField(1)

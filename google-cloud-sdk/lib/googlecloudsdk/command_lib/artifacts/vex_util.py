@@ -87,7 +87,9 @@ def ParseVexFile(filename, image, version):
   )
 
   uri_without_tag_or_digest = image.GetDockerString()
-  uri_with_digest = version.GetDockerString()
+  generic_uri = uri_without_tag_or_digest
+  if version is not None:
+    generic_uri = version.GetDockerString()
 
   productid_to_product_proto_map = {}
   for product_info in vex['product_tree']['branches']:
@@ -97,11 +99,11 @@ def ParseVexFile(filename, image, version):
       continue
     product = product_info['product']
     product_id = product['product_id']
-    uri_with_digest = 'https://{}'.format(uri_with_digest)
+    generic_uri = 'https://{}'.format(generic_uri)
     product_proto = ca_messages.Product(
         name=product['name'],
         id=product_id,
-        genericUri=uri_with_digest,
+        genericUri=generic_uri,
     )
     productid_to_product_proto_map[product_id] = product_proto
 
@@ -121,7 +123,7 @@ def ParseVexFile(filename, image, version):
             )
         )
         notes.append(note)
-  return notes, uri_with_digest
+  return notes, generic_uri
 
 
 def _Validate(vex):

@@ -2862,18 +2862,18 @@ class GoogleIdentityAccesscontextmanagerV1AccessPolicy(_messages.Message):
     parent: Required. The parent of this `AccessPolicy` in the Cloud Resource
       Hierarchy. Currently immutable once created. Format:
       `organizations/{organization_id}`
-    scopes: The scopes of a policy define which resources an ACM policy can
-      restrict, and where ACM resources can be referenced. For example, a
-      policy with scopes=["folders/123"] has the following behavior: - vpcsc
-      perimeters can only restrict projects within folders/123 - access levels
-      can only be referenced by resources within folders/123. If empty, there
-      are no limitations on which resources can be restricted by an ACM
-      policy, and there are no limitations on where ACM resources can be
-      referenced. Only one policy can include a given scope (attempting to
-      create a second policy which includes "folders/123" will result in an
-      error). Currently, scopes cannot be modified after a policy is created.
-      Currently, policies can only have a single scope. Format: list of
-      `folders/{folder_number}` or `projects/{project_number}`
+    scopes: The scopes of the AccessPolicy. Scopes define which resources a
+      policy can restrict and where its resources can be referenced. For
+      example, policy A with `scopes=["folders/123"]` has the following
+      behavior: - ServicePerimeter can only restrict projects within
+      `folders/123`. - ServicePerimeter within policy A can only reference
+      access levels defined within policy A. - Only one policy can include a
+      given scope; thus, attempting to create a second policy which includes
+      `folders/123` will result in an error. If no scopes are provided, then
+      any resource within the organization can be restricted. Scopes cannot be
+      modified after a policy is created. Policies can only have a single
+      scope. Format: list of `folders/{folder_number}` or
+      `projects/{project_number}`
     title: Required. Human readable title. Does not affect behavior.
   """
 
@@ -4710,6 +4710,15 @@ class ResourceSearchResult(_messages.Message):
       `DISK_TO_NETWORK`, `INSTANCE_TO_INSTANCEGROUP`. See [supported
       relationship types](https://cloud.google.com/asset-
       inventory/docs/supported-asset-types#supported_relationship_types).
+    SccSecurityMarksValue: The actual content of Security Command Center
+      security marks associated with the asset. Note that both staging & prod
+      SecurityMarks are attached on prod resources. In CAS preprod/prod, both
+      staging & prod SecurityMarks are ingested and returned in the following
+      `security_marks` map. In that case, the prefix "staging." will be added
+      to the keys of all the staging marks. To search against SCC
+      SecurityMarks field: * Use a field query: - query by a given key value
+      pair. Example: `sccSecurityMarks.foo=bar` - query by a given key's
+      existence. Example: `sccSecurityMarks.foo:*`
 
   Fields:
     additionalAttributes: The additional searchable attributes of this
@@ -4833,6 +4842,15 @@ class ResourceSearchResult(_messages.Message):
       `DISK_TO_NETWORK`, `INSTANCE_TO_INSTANCEGROUP`. See [supported
       relationship types](https://cloud.google.com/asset-
       inventory/docs/supported-asset-types#supported_relationship_types).
+    sccSecurityMarks: The actual content of Security Command Center security
+      marks associated with the asset. Note that both staging & prod
+      SecurityMarks are attached on prod resources. In CAS preprod/prod, both
+      staging & prod SecurityMarks are ingested and returned in the following
+      `security_marks` map. In that case, the prefix "staging." will be added
+      to the keys of all the staging marks. To search against SCC
+      SecurityMarks field: * Use a field query: - query by a given key value
+      pair. Example: `sccSecurityMarks.foo=bar` - query by a given key's
+      existence. Example: `sccSecurityMarks.foo:*`
     state: The state of this resource. Different resources types have
       different state definitions that are mapped from various fields of
       different resource types. This field is available only when the
@@ -4979,6 +4997,40 @@ class ResourceSearchResult(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SccSecurityMarksValue(_messages.Message):
+    r"""The actual content of Security Command Center security marks
+    associated with the asset. Note that both staging & prod SecurityMarks are
+    attached on prod resources. In CAS preprod/prod, both staging & prod
+    SecurityMarks are ingested and returned in the following `security_marks`
+    map. In that case, the prefix "staging." will be added to the keys of all
+    the staging marks. To search against SCC SecurityMarks field: * Use a
+    field query: - query by a given key value pair. Example:
+    `sccSecurityMarks.foo=bar` - query by a given key's existence. Example:
+    `sccSecurityMarks.foo:*`
+
+    Messages:
+      AdditionalProperty: An additional property for a SccSecurityMarksValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        SccSecurityMarksValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SccSecurityMarksValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   additionalAttributes = _messages.MessageField('AdditionalAttributesValue', 1)
   assetType = _messages.StringField(2)
   attachedResources = _messages.MessageField('AttachedResource', 3, repeated=True)
@@ -4997,12 +5049,13 @@ class ResourceSearchResult(_messages.Message):
   parentFullResourceName = _messages.StringField(16)
   project = _messages.StringField(17)
   relationships = _messages.MessageField('RelationshipsValue', 18)
-  state = _messages.StringField(19)
-  tagKeys = _messages.StringField(20, repeated=True)
-  tagValueIds = _messages.StringField(21, repeated=True)
-  tagValues = _messages.StringField(22, repeated=True)
-  updateTime = _messages.StringField(23)
-  versionedResources = _messages.MessageField('VersionedResource', 24, repeated=True)
+  sccSecurityMarks = _messages.MessageField('SccSecurityMarksValue', 19)
+  state = _messages.StringField(20)
+  tagKeys = _messages.StringField(21, repeated=True)
+  tagValueIds = _messages.StringField(22, repeated=True)
+  tagValues = _messages.StringField(23, repeated=True)
+  updateTime = _messages.StringField(24)
+  versionedResources = _messages.MessageField('VersionedResource', 25, repeated=True)
 
 
 class ResourceSelector(_messages.Message):

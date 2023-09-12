@@ -100,6 +100,16 @@ _PUBSUB_NOTICE_URL = (
 )
 
 
+def _DefaultToFastUpdate():
+  # TODO(b/153353954): Roll this out everywhere; limited to internal users
+  # initially.
+  return (
+      (encoding.GetEncodedValue(os.environ,
+                                'CLOUDSDK_INTERNAL_USER_FAST_UPDATE') == 'true')
+      or config.INSTALLATION_CONFIG.IsAlternateReleaseChannel()
+  )
+
+
 def Stringize(value):
   if isinstance(value, six.string_types):
     return value
@@ -1316,7 +1326,6 @@ class _SectionApiEndpointOverrides(_Section):
         'storageinsights', command='gcloud storage insights', hidden=True)
     self.stream = self._Add('stream', hidden=True)
     self.telcoautomation = self._Add('telcoautomation', hidden=True)
-    self.telecomdatafabric = self._Add('telecomdatafabric', hidden=True)
     self.testing = self._Add('testing', command='gcloud firebase test')
     self.toolresults = self._Add('toolresults', hidden=True)
     self.tpu = self._Add('tpu', hidden=True)
@@ -2536,7 +2545,7 @@ class _SectionExperimental(_Section):
     super(_SectionExperimental, self).__init__('experimental', hidden=True)
     self.fast_component_update = self._AddBool(
         'fast_component_update',
-        callbacks=[config.INSTALLATION_CONFIG.IsAlternateReleaseChannel])
+        callbacks=[_DefaultToFastUpdate])
 
 
 class _SectionFilestore(_Section):

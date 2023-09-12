@@ -59,7 +59,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an attestor, and returns a copy of the new attestor. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the attestor already exists.
+      r"""Creates an attestor, and returns a copy of the new attestor. Returns `NOT_FOUND` if the project does not exist, `INVALID_ARGUMENT` if the request is malformed, `ALREADY_EXISTS` if the attestor already exists.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsCreateRequest) input message
@@ -86,7 +86,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an attestor. Returns NOT_FOUND if the attestor does not exist.
+      r"""Deletes an attestor. Returns `NOT_FOUND` if the attestor does not exist.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsDeleteRequest) input message
@@ -113,7 +113,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an attestor. Returns NOT_FOUND if the attestor does not exist.
+      r"""Gets an attestor. Returns `NOT_FOUND` if the attestor does not exist.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsGetRequest) input message
@@ -167,7 +167,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists attestors. Returns INVALID_ARGUMENT if the project does not exist.
+      r"""Lists attestors. Returns `INVALID_ARGUMENT` if the project does not exist.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsListRequest) input message
@@ -248,7 +248,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an attestor. Returns NOT_FOUND if the attestor does not exist.
+      r"""Updates an attestor. Returns `NOT_FOUND` if the attestor does not exist.
 
       Args:
         request: (Attestor) input message
@@ -275,7 +275,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def ValidateAttestationOccurrence(self, request, global_params=None):
-      r"""Returns whether the given Attestation for the given image URI was signed by the given Attestor.
+      r"""Returns whether the given `Attestation` for the given image URI was signed by the given `Attestor`.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsValidateAttestationOccurrenceRequest) input message
@@ -359,7 +359,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a platform policy, and returns a copy of it. Returns NOT_FOUND if the project or platform doesn't exist, INVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the policy already exists, and INVALID_ARGUMENT if the policy contains a platform-specific policy that does not match the platform value specified in the URL.
+      r"""Creates a platform policy, and returns a copy of it. Returns `NOT_FOUND` if the project or platform doesn't exist, `INVALID_ARGUMENT` if the request is malformed, `ALREADY_EXISTS` if the policy already exists, and `INVALID_ARGUMENT` if the policy contains a platform-specific policy that does not match the platform value specified in the URL.
 
       Args:
         request: (BinaryauthorizationProjectsPlatformsPoliciesCreateRequest) input message
@@ -386,7 +386,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a platform policy. Returns NOT_FOUND if the policy doesn't exist.
+      r"""Deletes a platform policy. Returns `NOT_FOUND` if the policy doesn't exist.
 
       Args:
         request: (BinaryauthorizationProjectsPlatformsPoliciesDeleteRequest) input message
@@ -413,7 +413,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a platform policy. Returns NOT_FOUND if the policy doesn't exist.
+      r"""Gets a platform policy. Returns `NOT_FOUND` if the policy doesn't exist.
 
       Args:
         request: (BinaryauthorizationProjectsPlatformsPoliciesGetRequest) input message
@@ -440,7 +440,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists platform policies owned by a project in the specified platform. Returns INVALID_ARGUMENT if the project or the platform doesn't exist.
+      r"""Lists platform policies owned by a project in the specified platform. Returns `INVALID_ARGUMENT` if the project or the platform doesn't exist.
 
       Args:
         request: (BinaryauthorizationProjectsPlatformsPoliciesListRequest) input message
@@ -467,7 +467,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def ReplacePlatformPolicy(self, request, global_params=None):
-      r"""Replaces a platform policy. Returns NOT_FOUND if the policy doesn't exist.
+      r"""Replaces a platform policy. Returns `NOT_FOUND` if the policy doesn't exist.
 
       Args:
         request: (PlatformPolicy) input message
@@ -659,7 +659,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def UpdatePolicy(self, request, global_params=None):
-      r"""Creates or updates a project's policy, and returns a copy of the new policy. A policy is always updated as a whole, to avoid race conditions with concurrent policy enforcement (or management!) requests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT if the request is malformed.
+      r"""Creates or updates a project's policy, and returns a copy of the new policy. A policy is always updated as a whole, to avoid race conditions with concurrent policy enforcement (or management!) requests. Returns `NOT_FOUND` if the project does not exist, `INVALID_ARGUMENT` if the request is malformed.
 
       Args:
         request: (Policy) input message

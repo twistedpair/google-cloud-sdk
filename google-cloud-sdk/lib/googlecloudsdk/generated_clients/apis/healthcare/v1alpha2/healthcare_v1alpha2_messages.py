@@ -743,8 +743,8 @@ class CryptoHashConfig(_messages.Message):
   Fields:
     cryptoKey: An AES 128/192/256 bit key. Causes the hash to be computed
       based on this key. A default key is generated for each Deidentify
-      operation and is used when neither `crypto_key` nor `kms_wrapped` is
-      specified. Must not be set if `kms_wrapped` is set.
+      operation and is used when neither crypto_key nor kms_wrapped is
+      specified. Must not be set if kms_wrapped is set.
   """
 
   cryptoKey = _messages.BytesField(1)
@@ -777,9 +777,9 @@ class DateShiftConfig(_messages.Message):
     cryptoKey: An AES 128/192/256 bit key. The date shift is computed based on
       this key and the patient ID. If the patient ID is empty for a DICOM
       resource, the date shift is computed based on this key and the study
-      instance UID. If `crypto_key` is not set, then `kms_wrapped` is used to
+      instance UID. If crypto_key is not set, then kms_wrapped is used to
       calculate the date shift. If neither is set, a default key is generated
-      for each de-identify operation. Must not be set if `kms_wrapped` is set.
+      for each de-identify operation. Must not be set if kms_wrapped is set.
   """
 
   cryptoKey = _messages.BytesField(1)
@@ -3956,69 +3956,6 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class HealthcareProjectsLocationsServicesDataEnclaveEnclavesGetIamPolicyRequest(_messages.Message):
-  r"""A
-  HealthcareProjectsLocationsServicesDataEnclaveEnclavesGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class HealthcareProjectsLocationsServicesDataEnclaveEnclavesSetIamPolicyRequest(_messages.Message):
-  r"""A
-  HealthcareProjectsLocationsServicesDataEnclaveEnclavesSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class HealthcareProjectsLocationsServicesDataEnclaveEnclavesTestIamPermissionsRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsServicesDataEnclaveEnclavesTestIamPermissio
-  nsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class HealthcareProjectsLocationsServicesDeidentifyDeidentifyDicomInstanceRequest(_messages.Message):
   r"""A
   HealthcareProjectsLocationsServicesDeidentifyDeidentifyDicomInstanceRequest
@@ -4281,7 +4218,7 @@ class ImageConfig(_messages.Message):
         (action codes D, Z, X, and U) in the [Basic Profile] (https://dicom.ne
         ma.org/medical/dicom/2018e/output/chtml/part15/chapter_E.html). These
         contextual phrases are replaced with the token "[CTX]". This mode uses
-        an additional InfoType during inspection.
+        an additional infoType during inspection.
     """
     TEXT_REDACTION_MODE_UNSPECIFIED = 0
     REDACT_ALL_TEXT = 1
@@ -4872,7 +4809,8 @@ class OperationMetadata(_messages.Message):
     apiMethodName: The name of the API method that initiated the operation.
     counter: A ProgressCounter attribute.
     createTime: The time at which the operation was created by the API.
-    endTime: The time at which execution was completed.
+    endTime: The time at which execution workloads were completed. Some tasks
+      will complete after this time such as logging audit logs.
   """
 
   apiMethodName = _messages.StringField(1)

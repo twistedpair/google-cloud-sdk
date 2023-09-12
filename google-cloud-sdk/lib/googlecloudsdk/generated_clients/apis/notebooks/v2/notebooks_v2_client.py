@@ -235,7 +235,7 @@ class NotebooksV2(base_api.BaseApiClient):
         method_id='notebooks.projects.locations.instances.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/instances',
         request_field='',
         request_type_name='NotebooksProjectsLocationsInstancesListRequest',

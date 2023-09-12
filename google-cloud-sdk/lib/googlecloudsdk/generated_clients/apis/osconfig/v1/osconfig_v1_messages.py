@@ -924,7 +924,6 @@ class OSPolicy(_messages.Message):
       compliant even if the policy has nothing to validate or enforce.
     description: Policy description. Length of the description is limited to
       1024 characters.
-    fingerprint: OSPolicy fingerprint (checksum)
     id: Required. The id of the OS policy with the following restrictions: *
       Must contain only lowercase letters, numbers, and hyphens. * Must start
       with a letter. * Must be between 1-63 characters. * Must end with a
@@ -957,10 +956,9 @@ class OSPolicy(_messages.Message):
 
   allowNoResourceGroupMatch = _messages.BooleanField(1)
   description = _messages.StringField(2)
-  fingerprint = _messages.StringField(3)
-  id = _messages.StringField(4)
-  mode = _messages.EnumField('ModeValueValuesEnum', 5)
-  resourceGroups = _messages.MessageField('OSPolicyResourceGroup', 6, repeated=True)
+  id = _messages.StringField(3)
+  mode = _messages.EnumField('ModeValueValuesEnum', 4)
+  resourceGroups = _messages.MessageField('OSPolicyResourceGroup', 5, repeated=True)
 
 
 class OSPolicyAssignment(_messages.Message):

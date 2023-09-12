@@ -159,6 +159,35 @@ class BatchCreateSessionsResponse(_messages.Message):
   session = _messages.MessageField('Session', 1, repeated=True)
 
 
+class BatchWriteRequest(_messages.Message):
+  r"""The request for BatchWrite.
+
+  Fields:
+    mutationGroups: Required. The groups of mutations to be applied.
+    requestOptions: Common options for this request.
+  """
+
+  mutationGroups = _messages.MessageField('MutationGroup', 1, repeated=True)
+  requestOptions = _messages.MessageField('RequestOptions', 2)
+
+
+class BatchWriteResponse(_messages.Message):
+  r"""The result of applying a batch of mutations.
+
+  Fields:
+    commitTimestamp: The commit timestamp of the transaction that applied this
+      batch. Present if `status` is `OK`, absent otherwise.
+    indexes: The mutation groups applied in this batch. The values index into
+      the `mutation_groups` field in the corresponding `BatchWriteRequest`.
+    status: An `OK` status indicates success. Any other status indicates a
+      failure.
+  """
+
+  commitTimestamp = _messages.StringField(1)
+  indexes = _messages.IntegerField(2, repeated=True, variant=_messages.Variant.INT32)
+  status = _messages.MessageField('Status', 3)
+
+
 class BeginTransactionRequest(_messages.Message):
   r"""The request for BeginTransaction.
 
@@ -2458,6 +2487,18 @@ class Mutation(_messages.Message):
   update = _messages.MessageField('Write', 5)
 
 
+class MutationGroup(_messages.Message):
+  r"""A group of mutations to be committed together. Related mutations should
+  be placed in a group. For example, two mutations inserting rows with the
+  same primary key prefix in both parent and child tables are related.
+
+  Fields:
+    mutations: Required. The mutations in this group.
+  """
+
+  mutations = _messages.MessageField('Mutation', 1, repeated=True)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -4635,6 +4676,19 @@ class SpannerProjectsInstancesDatabasesSessionsBatchCreateRequest(_messages.Mess
 
   batchCreateSessionsRequest = _messages.MessageField('BatchCreateSessionsRequest', 1)
   database = _messages.StringField(2, required=True)
+
+
+class SpannerProjectsInstancesDatabasesSessionsBatchWriteRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesSessionsBatchWriteRequest object.
+
+  Fields:
+    batchWriteRequest: A BatchWriteRequest resource to be passed as the
+      request body.
+    session: Required. The session in which the batch request is to be run.
+  """
+
+  batchWriteRequest = _messages.MessageField('BatchWriteRequest', 1)
+  session = _messages.StringField(2, required=True)
 
 
 class SpannerProjectsInstancesDatabasesSessionsBeginTransactionRequest(_messages.Message):

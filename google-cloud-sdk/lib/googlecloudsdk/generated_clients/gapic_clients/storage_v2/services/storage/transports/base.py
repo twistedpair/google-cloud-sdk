@@ -220,6 +220,11 @@ class StorageTransport(abc.ABC):
                 default_timeout=None,
                 client_info=client_info,
             ),
+            self.bidi_write_object: gapic_v1.method.wrap_method(
+                self.bidi_write_object,
+                default_timeout=None,
+                client_info=client_info,
+            ),
             self.list_objects: gapic_v1.method.wrap_method(
                 self.list_objects,
                 default_timeout=None,
@@ -458,6 +463,15 @@ class StorageTransport(abc.ABC):
             Union[
                 storage.WriteObjectResponse,
                 Awaitable[storage.WriteObjectResponse]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def bidi_write_object(self) -> Callable[
+            [storage.BidiWriteObjectRequest],
+            Union[
+                storage.BidiWriteObjectResponse,
+                Awaitable[storage.BidiWriteObjectResponse]
             ]]:
         raise NotImplementedError()
 

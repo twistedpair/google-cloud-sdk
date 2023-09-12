@@ -191,14 +191,16 @@ def GetVolumeResourceSpec(positional=True):
       resource_name='volume',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
-      volumesId=GetVolumeAttributeConfig(positional=positional))
+      volumesId=GetVolumeAttributeConfig(positional=positional),
+  )
 
 
-def GetSnapshotResourceSpec(revert_op=False, positional=True):
+def GetSnapshotResourceSpec(source_snapshot_op=False, positional=True):
   """Gets the Resource Spec for Snapshot.
 
   Args:
-    revert_op: Boolean on whether operation is revert or not.
+    source_snapshot_op: Boolean on whether operation uses snapshot as source or
+      not.
     positional: Boolean on whether resource is positional arg ornot
 
   Returns:
@@ -206,8 +208,9 @@ def GetSnapshotResourceSpec(revert_op=False, positional=True):
   """
   location_attribute_config = GetLocationAttributeConfig()
   volume_attribute_config = GetVolumeAttributeConfig(positional=False)
-  if revert_op:
-    # if revert op, we don't want volume attribute to have any fallthroughs
+  if source_snapshot_op:
+    # if revert op or backup op (create, update) that is a source snapshot op,
+    # we don't want volume attribute to have any fallthroughs
     # (--volume arg) since volume is positional in revert.
     volume_attribute_config.fallthroughs = []
   if not positional:
@@ -268,6 +271,7 @@ def GetBackupVaultResourceSpec(positional=True):
 
 
 def GetBackupResourceSpec():
+  location_attribute_config = GetLocationAttributeConfig()
   backup_vault_attribute_config = GetBackupVaultAttributeConfig(
       positional=False
   )
@@ -276,7 +280,7 @@ def GetBackupResourceSpec():
       resource_name='backup',
       api_version=constants.BETA_API_VERSION,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=GetLocationAttributeConfig(),
+      locationsId=location_attribute_config,
       backupVaultsId=backup_vault_attribute_config,
       backupsId=GetBackupAttributeConfig(),
   )

@@ -1295,19 +1295,19 @@ def CreateInstanceLifecyclePolicy(messages, args):
 
 
 def CreateStandbyPolicy(
-    messages, initial_delay_sec=None, standby_pool_mode=None
+    messages, initial_delay_sec=None, standby_policy_mode=None
 ):
   """Creates standby policy from args."""
   # pylint: disable=g-explicit-bool-comparison
-  if initial_delay_sec is None and standby_pool_mode is None:
+  if initial_delay_sec is None and standby_policy_mode is None:
     return None
   standby_policy = messages.InstanceGroupManagerStandbyPolicy()
   if initial_delay_sec:
     standby_policy.initialDelaySec = initial_delay_sec
-  if standby_pool_mode:
+  if standby_policy_mode:
     standby_policy.mode = (
         messages.InstanceGroupManagerStandbyPolicy.ModeValueValuesEnum(
-            standby_pool_mode
+            standby_policy_mode
         )
     )
   return standby_policy

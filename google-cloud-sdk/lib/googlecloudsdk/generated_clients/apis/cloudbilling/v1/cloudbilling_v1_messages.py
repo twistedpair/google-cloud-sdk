@@ -270,10 +270,10 @@ class CloudbillingBillingAccountsListRequest(_messages.Message):
   r"""A CloudbillingBillingAccountsListRequest object.
 
   Fields:
-    filter: Options for how to filter the returned billing accounts. Currently
-      this only supports filtering for
+    filter: Options for how to filter the returned billing accounts. This only
+      supports filtering for
       [subaccounts](https://cloud.google.com/billing/docs/concepts) under a
-      single provided reseller billing account. (e.g.
+      single provided parent billing account. (e.g.
       "master_billing_account=billingAccounts/012345-678901-ABCDEF"). Boolean
       algebra and other fields are not currently supported.
     pageSize: Requested page size. The maximum page size is 100; this is also

@@ -148,6 +148,7 @@ def ConstructPatch(is_composer_v1,
                    snapshot_creation_schedule=None,
                    cloud_data_lineage_integration_enabled=None,
                    support_web_server_plugins=None,
+                   support_private_builds_only=None,
                    dag_processor_cpu=None,
                    dag_processor_count=None,
                    dag_processor_memory_gb=None,
@@ -255,6 +256,8 @@ def ConstructPatch(is_composer_v1,
       should be enabled
     support_web_server_plugins: bool or None, whether to enable/disable the
       support for web server plugins
+    support_private_builds_only: bool or None, whether to enable/disable the
+      support for private only builds
     dag_processor_cpu: float or None, CPU allocated to Airflow dag processor.
       Can be specified only in Composer 3.
     dag_processor_count: int or None, number of Airflow dag processors. Can be
@@ -350,6 +353,12 @@ def ConstructPatch(is_composer_v1,
                                             snapshot_location,
                                             snapshot_schedule_timezone,
                                             release_track)
+
+  if support_private_builds_only is not None:
+    return _ConstructPrivateBuildsOnlyPatch(
+        support_private_builds_only, release_track
+    )
+
   if support_web_server_plugins is not None:
     return _ConstructWebServerPluginsModePatch(
         support_web_server_plugins, release_track
@@ -449,6 +458,38 @@ def _ConstructPrivateEnvironmentPatch(
   update_mask = 'config.private_environment_config.enable_private_environment'
   private_environment_config.enablePrivateEnvironment = bool(
       enable_private_environment
+  )
+
+  return (
+      update_mask,
+      messages.Environment(config=config),
+  )
+
+
+def _ConstructPrivateBuildsOnlyPatch(
+    support_private_builds_only,
+    release_track=base.ReleaseTrack.GA,
+):
+  """Constructs an environment patch to enable/disable private builds only.
+
+  Args:
+    support_private_builds_only: bool or None, defines whether the internet
+      access is disabled during builds. Can be specified only in
+      Composer 3.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Composer client library will be used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  private_environment_config = messages.PrivateEnvironmentConfig()
+  config = messages.EnvironmentConfig(
+      privateEnvironmentConfig=private_environment_config
+  )
+  update_mask = 'config.private_environment_config.enable_private_builds_only'
+  private_environment_config.enablePrivateBuildsOnly = bool(
+      support_private_builds_only
   )
 
   return (

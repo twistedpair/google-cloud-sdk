@@ -428,7 +428,6 @@ def _AddCreateHTTPEndpointDestinationArgs(parser, required=False, hidden=False):
       hidden=hidden,
       help='Flags for specifying a HTTP Endpoint destination.')
   _AddDestinationHTTPEndpointUriArg(http_endpoint_group, required=True)
-  _AddDestinationHTTPEndpointForwardDnsRequestsArg(http_endpoint_group)
   _AddCreateNetworkConfigDestinationArgs(http_endpoint_group, hidden=True)
 
 
@@ -646,20 +645,6 @@ def _AddDestinationHTTPEndpointUriArg(parser, required=False):
       '--destination-http-endpoint-uri',
       required=required,
       help='URI that the destination HTTP Endpoint is connecting to.')
-
-
-def _AddDestinationHTTPEndpointForwardDnsRequestsArg(parser, required=False):
-  """Adds an argument to toggle forward DNS requests for a trigger's HTTP endpoint destination"."""
-  parser.add_argument(
-      '--destination-http-endpoint-forward-dns-requests',
-      required=required,
-      type=bool,
-      help=(
-          'Default to false. If the http endpoint uses a private DNS name,'
-          ' enable this flag for Eventarc to forward DNS requests to the target'
-          ' VPC. '
-      ),
-  )
 
 
 def _AddNetworkAttachmentArg(parser, required=False):

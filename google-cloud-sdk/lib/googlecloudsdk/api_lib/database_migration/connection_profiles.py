@@ -316,6 +316,15 @@ class ConnectionProfilesClient(object):
     else:
       return None
 
+  def _GetDataCacheConfig(self, args):
+    if args.IsKnownAndSpecified('enable_data_cache'):
+      data_cache_config_obj = self.messages.DataCacheConfig
+      return data_cache_config_obj(
+          dataCacheEnabled=args.enable_data_cache
+      )
+    else:
+      return None
+
   def _GetCloudSqlSettings(self, args):
     """Creates a Cloud SQL connection profile according to the given args.
 
@@ -358,6 +367,7 @@ class ConnectionProfilesClient(object):
       )
       cloud_sql_settings.secondaryZone = args.secondary_zone
       cloud_sql_settings.edition = self._GetEdition(args)
+      cloud_sql_settings.dataCacheConfig = self._GetDataCacheConfig(args)
     if (
         self._release_track == base.ReleaseTrack.GA
         and args.CONCEPTS.cmek_key.Parse() is not None

@@ -111,6 +111,31 @@ class AddressGroup(_messages.Message):
   updateTime = _messages.StringField(9)
 
 
+class AttachAppVPCRequest(_messages.Message):
+  r"""Request used by the AttachAppVPC method.
+
+  Fields:
+    peerNetwork: Required. URL of the peer network to attach. It can be either
+      full URL or partial URL. The peer network may belong to a different
+      project. If the partial URL does not contain project, it is assumed that
+      the peer network is in the same project as the current network.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  peerNetwork = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class AuthorizationPolicy(_messages.Message):
   r"""AuthorizationPolicy is a resource that specifies how a server should
   authorize incoming connections. This resource in itself does not change the
@@ -321,6 +346,31 @@ class Destination(_messages.Message):
   ports = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.UINT32)
 
 
+class DetachAppVPCRequest(_messages.Message):
+  r"""Request used by the DetachAppVPC method.
+
+  Fields:
+    peerNetwork: Required. URL of the peer network to detach. It can be either
+      full URL or partial URL. The peer network may belong to a different
+      project. If the partial URL does not contain project, it is assumed that
+      the peer network is in the same project as the current network.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  peerNetwork = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -448,7 +498,7 @@ class FirewallEndpoint(_messages.Message):
     StateValueValuesEnum: Output only. Current state of the endpoint.
 
   Messages:
-    LabelsValue: Labels as key value pairs
+    LabelsValue: Optional. Labels as key value pairs
 
   Fields:
     associatedNetworks: Output only. List of networks that are associated with
@@ -457,7 +507,7 @@ class FirewallEndpoint(_messages.Message):
       only appear in this list after traffic routing is fully configured.
       Format: projects/{project}/global/networks/{name}.
     createTime: Output only. Create time stamp
-    labels: Labels as key value pairs
+    labels: Optional. Labels as key value pairs
     name: Output only. name of resource
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
@@ -483,7 +533,7 @@ class FirewallEndpoint(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Optional. Labels as key value pairs
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -521,13 +571,13 @@ class FirewallEndpointAssociation(_messages.Message):
     StateValueValuesEnum: Output only. Current state of the association.
 
   Messages:
-    LabelsValue: Labels as key value pairs
+    LabelsValue: Optional. Labels as key value pairs
 
   Fields:
     createTime: Output only. Create time stamp
     firewallEndpoint: Required. The URL of the FirewallEndpoint that is being
       associated.
-    labels: Labels as key value pairs
+    labels: Optional. Labels as key value pairs
     name: Output only. name of resource
     network: Required. The URL of the network that is being associated.
     reconciling: Output only. Whether reconciling is in progress, recommended
@@ -556,7 +606,7 @@ class FirewallEndpointAssociation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Optional. Labels as key value pairs
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1683,10 +1733,10 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsListRequest(_message
   object.
 
   Fields:
-    filter: Filtering results
+    filter: Optional. Filtering results
     orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
     parent: Required. Parent value for ListEndpointsRequest
   """
@@ -2684,10 +2734,10 @@ class NetworksecurityProjectsLocationsFirewallEndpointAssociationsListRequest(_m
   object.
 
   Fields:
-    filter: Filtering results
+    filter: Optional. Filtering results
     orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
     parent: Required. Parent value for ListAssociationsRequest
   """
@@ -3502,6 +3552,20 @@ class NetworksecurityProjectsLocationsSseGatewayReferencesListRequest(_messages.
   parent = _messages.StringField(5, required=True)
 
 
+class NetworksecurityProjectsLocationsSseGatewaysAttachAppVpcRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseGatewaysAttachAppVpcRequest object.
+
+  Fields:
+    attachAppVPCRequest: A AttachAppVPCRequest resource to be passed as the
+      request body.
+    name: Required. A name of the SSEGateway to add VPC to. Must be in the
+      format `projects/*/locations/{location}/sseGateways/*`.
+  """
+
+  attachAppVPCRequest = _messages.MessageField('AttachAppVPCRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class NetworksecurityProjectsLocationsSseGatewaysCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsSseGatewaysCreateRequest object.
 
@@ -3550,6 +3614,20 @@ class NetworksecurityProjectsLocationsSseGatewaysDeleteRequest(_messages.Message
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsSseGatewaysDetachAppVpcRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseGatewaysDetachAppVpcRequest object.
+
+  Fields:
+    detachAppVPCRequest: A DetachAppVPCRequest resource to be passed as the
+      request body.
+    name: Required. A name of the SSEGateway to detach VPC from. Must be in
+      the format `projects/*/locations/{location}/sseGateways/*`.
+  """
+
+  detachAppVPCRequest = _messages.MessageField('DetachAppVPCRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetworksecurityProjectsLocationsSseGatewaysGetRequest(_messages.Message):
@@ -3973,14 +4051,11 @@ class PartnerSSEGateway(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    bgpPeerRnAsn: Required. ASN of RN BGP peer
-    bgpPeerScAsn: Required. ASN of SC BGP peer
-    cloudRegion: Required. region of the resource
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
     name: Immutable. name of resource
-    partnerRnIlbIp: Required. Partner's RN ILB IP
-    partnerScIlbIp: Required. Partner's SC ILB IP
+    partnerRnIlbIp: Optional. Partner's RN ILB IP
+    partnerScIlbIp: Optional. Partner's SC ILB IP
     partnerSseRealm: Output only. [Output Only] name of PartnerSSERealm owning
       the PartnerSSEGateway
     partnerVpcSubnetRange: Required. Subnet range of the partner_vpc
@@ -3988,8 +4063,8 @@ class PartnerSSEGateway(_messages.Message):
     sseBgpIps: Output only. [Output Only] IP of SSE BGP
     sseGatewayReferenceId: Required. ID of the SSEGatewayReference that pairs
       with this PartnerSSEGateway
-    sseVpcSubnetRange: Required. Subnet range of the subnet where the partner
-      traffic should be routed to
+    sseVpcSubnetRange: Output only. [Output Only] Subnet range of the subnet
+      where partner traffic is routed.
     sseVpcTargetIp: Output only. [Output Only] This is the IP where the
       partner traffic should be routed to.
     updateTime: Output only. [Output only] Update time stamp
@@ -4019,22 +4094,19 @@ class PartnerSSEGateway(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  bgpPeerRnAsn = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  bgpPeerScAsn = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  cloudRegion = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  partnerRnIlbIp = _messages.StringField(7)
-  partnerScIlbIp = _messages.StringField(8)
-  partnerSseRealm = _messages.StringField(9)
-  partnerVpcSubnetRange = _messages.StringField(10)
-  sseBgpAsn = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  sseBgpIps = _messages.StringField(12, repeated=True)
-  sseGatewayReferenceId = _messages.StringField(13)
-  sseVpcSubnetRange = _messages.StringField(14)
-  sseVpcTargetIp = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  partnerRnIlbIp = _messages.StringField(4)
+  partnerScIlbIp = _messages.StringField(5)
+  partnerSseRealm = _messages.StringField(6)
+  partnerVpcSubnetRange = _messages.StringField(7)
+  sseBgpAsn = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  sseBgpIps = _messages.StringField(9, repeated=True)
+  sseGatewayReferenceId = _messages.StringField(10)
+  sseVpcSubnetRange = _messages.StringField(11)
+  sseVpcTargetIp = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class PartnerSSERealm(_messages.Message):
@@ -4166,10 +4238,10 @@ class SSEGateway(_messages.Message):
       app traffic should be routed to.
     appTrafficVpc: Output only. [Output only] This is the name of the VPC the
       app_vpc should peer with.
-    appTrafficVpcSubnetRange: Required. Subnet range of the subnet where the
-      app traffic will be routed to
-    appVpc: Required. name of VPC where the app runs
-    cloudRegion: Required. region of the resource
+    appTrafficVpcSubnetRange: Output only. [Output Only] Subnet range of the
+      subnet where app traffic is routed.
+    appVpc: Optional. name of VPC where the app runs
+    appVpcs: Optional. name of VPCs where the app runs
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
     name: Immutable. name of resource
@@ -4181,8 +4253,8 @@ class SSEGateway(_messages.Message):
       customer traffic should be routed to.
     userTrafficVpc: Output only. [Output only] This is the name of the VPC the
       user_vpc should peer with.
-    userTrafficVpcSubnetRange: Required. Subnet range of the subnet where the
-      customer traffic will be routed to
+    userTrafficVpcSubnetRange: Output only. [Output Only] Subnet range of the
+      subnet where user traffic is routed.
     userVpc: Required. name of VPC owned by the customer
   """
 
@@ -4214,7 +4286,7 @@ class SSEGateway(_messages.Message):
   appTrafficVpc = _messages.StringField(2)
   appTrafficVpcSubnetRange = _messages.StringField(3)
   appVpc = _messages.StringField(4)
-  cloudRegion = _messages.StringField(5)
+  appVpcs = _messages.StringField(5, repeated=True)
   createTime = _messages.StringField(6)
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
@@ -4234,7 +4306,6 @@ class SSEGatewayReference(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    cloudRegion: Required. region where this reference resides
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
     name: Immutable. name of resource
@@ -4267,12 +4338,11 @@ class SSEGatewayReference(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  cloudRegion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  partnerSseRealm = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  partnerSseRealm = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class SSERealm(_messages.Message):

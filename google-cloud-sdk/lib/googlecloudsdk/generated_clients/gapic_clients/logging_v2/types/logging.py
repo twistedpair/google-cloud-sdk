@@ -266,10 +266,11 @@ class ListLogEntriesRequest(proto.Message):
             values.
         page_size (int):
             Optional. The maximum number of results to return from this
-            request. Default is 50. If the value is negative or exceeds
-            1000, the request is rejected. The presence of
-            ``next_page_token`` in the response indicates that more
-            results might be available.
+            request. Default is 50. If the value is negative, the
+            request is rejected.
+
+            The presence of ``next_page_token`` in the response
+            indicates that more results might be available.
         page_token (str):
             Optional. If present, then retrieve the next batch of
             results from the preceding call to this method.

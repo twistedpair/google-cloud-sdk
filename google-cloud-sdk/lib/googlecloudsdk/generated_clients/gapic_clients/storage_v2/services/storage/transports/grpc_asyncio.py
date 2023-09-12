@@ -394,9 +394,8 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
 
         Gets the IAM policy for a specified bucket or object. The
         ``resource`` field in the request should be
-        projects/\ */buckets/<bucket_name> for a bucket or
-        projects/*/buckets/<bucket_name>/objects/<object_name> for an
-        object.
+        ``projects/_/buckets/{bucket}`` for a bucket or
+        ``projects/_/buckets/{bucket}/objects/{object}`` for an object.
 
         Returns:
             Callable[[~.GetIamPolicyRequest],
@@ -424,9 +423,8 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
 
         Updates an IAM policy for the specified bucket or object. The
         ``resource`` field in the request should be
-        projects/\ */buckets/<bucket_name> for a bucket or
-        projects/*/buckets/<bucket_name>/objects/<object_name> for an
-        object.
+        ``projects/_/buckets/{bucket}`` for a bucket or
+        ``projects/_/buckets/{bucket}/objects/{object}`` for an object.
 
         Returns:
             Callable[[~.SetIamPolicyRequest],
@@ -454,9 +452,9 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
 
         Tests a set of permissions on the given bucket or object to see
         which, if any, are held by the caller. The ``resource`` field in
-        the request should be projects/\ */buckets/<bucket_name> for a
-        bucket or projects/*/buckets/<bucket_name>/objects/<object_name>
-        for an object.
+        the request should be ``projects/_/buckets/{bucket}`` for a
+        bucket or ``projects/_/buckets/{bucket}/objects/{object}`` for
+        an object.
 
         Returns:
             Callable[[~.TestIamPermissionsRequest],
@@ -852,6 +850,10 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
         an OK status, with a WriteObjectResponse containing the
         finalized object's metadata.
 
+        Alternatively, the BidiWriteObject operation may be used to
+        write an object with controls over flushing and the ability to
+        fetch the ability to determine the current persisted size.
+
         Returns:
             Callable[[~.WriteObjectRequest],
                     Awaitable[~.WriteObjectResponse]]:
@@ -869,6 +871,48 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
                 response_deserializer=storage.WriteObjectResponse.deserialize,
             )
         return self._stubs['write_object']
+
+    @property
+    def bidi_write_object(self) -> Callable[
+            [storage.BidiWriteObjectRequest],
+            Awaitable[storage.BidiWriteObjectResponse]]:
+        r"""Return a callable for the bidi write object method over gRPC.
+
+        Stores a new object and metadata.
+
+        This is similar to the WriteObject call with the added support
+        for manual flushing of persisted state, and the ability to
+        determine current persisted size without closing the stream.
+
+        The client may specify one or both of the ``state_lookup`` and
+        ``flush`` fields in each BidiWriteObjectRequest. If ``flush`` is
+        specified, the data written so far will be persisted to storage.
+        If ``state_lookup`` is specified, the service will respond with
+        a BidiWriteObjectResponse that contains the persisted size. If
+        both ``flush`` and ``state_lookup`` are specified, the flush
+        will always occur before a ``state_lookup``, so that both may be
+        set in the same request and the returned state will be the state
+        of the object post-flush. When the stream is closed, a
+        BidiWriteObjectResponse will always be sent to the client,
+        regardless of the value of ``state_lookup``.
+
+        Returns:
+            Callable[[~.BidiWriteObjectRequest],
+                    Awaitable[~.BidiWriteObjectResponse]]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'bidi_write_object' not in self._stubs:
+            self._stubs['bidi_write_object'] = self.grpc_channel.stream_stream(
+                '/google.storage.v2.Storage/BidiWriteObject',
+                request_serializer=storage.BidiWriteObjectRequest.serialize,
+                response_deserializer=storage.BidiWriteObjectResponse.deserialize,
+            )
+        return self._stubs['bidi_write_object']
 
     @property
     def list_objects(self) -> Callable[

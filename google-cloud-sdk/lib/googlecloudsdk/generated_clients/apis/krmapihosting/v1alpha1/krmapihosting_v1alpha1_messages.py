@@ -246,6 +246,12 @@ class FullManagementConfig(_messages.Message):
   r"""Configuration of the full (Autopilot) cluster management
 
   Fields:
+    bootDiskKmsKey: Optional. The Customer Managed Encryption Key used to
+      encrypt the boot disk attached to each node in the cluster. This should
+      be of the form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[
+      RING_NAME]/cryptoKeys/[KEY_NAME]. For more information about protecting
+      resources with Cloud KMS Keys please see:
+      https://cloud.google.com/compute/docs/disks/customer-managed-encryption
     clusterCidrBlock: The IP address range for the cluster pod IPs. Set to
       blank to have a range chosen with the default size. Set to /netmask
       (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
@@ -279,15 +285,16 @@ class FullManagementConfig(_messages.Message):
       specified network.
   """
 
-  clusterCidrBlock = _messages.StringField(1)
-  clusterNamedRange = _messages.StringField(2)
-  manBlock = _messages.StringField(3)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 4)
-  masterIpv4CidrBlock = _messages.StringField(5)
-  network = _messages.StringField(6)
-  servicesCidrBlock = _messages.StringField(7)
-  servicesNamedRange = _messages.StringField(8)
-  subnet = _messages.StringField(9)
+  bootDiskKmsKey = _messages.StringField(1)
+  clusterCidrBlock = _messages.StringField(2)
+  clusterNamedRange = _messages.StringField(3)
+  manBlock = _messages.StringField(4)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 5)
+  masterIpv4CidrBlock = _messages.StringField(6)
+  network = _messages.StringField(7)
+  servicesCidrBlock = _messages.StringField(8)
+  servicesNamedRange = _messages.StringField(9)
+  subnet = _messages.StringField(10)
 
 
 class KrmApiHost(_messages.Message):
@@ -1045,6 +1052,12 @@ class StandardManagementConfig(_messages.Message):
   r"""Configuration of the standard (GKE) cluster management
 
   Fields:
+    bootDiskKmsKey: Optional. The Customer Managed Encryption Key used to
+      encrypt the boot disk attached to each node in the cluster. This should
+      be of the form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[
+      RING_NAME]/cryptoKeys/[KEY_NAME]. For more information about protecting
+      resources with Cloud KMS Keys please see:
+      https://cloud.google.com/compute/docs/disks/customer-managed-encryption
     clusterCidrBlock: The IP address range for the cluster pod IPs. Set to
       blank to have a range chosen with the default size. Set to /netmask
       (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
@@ -1078,15 +1091,16 @@ class StandardManagementConfig(_messages.Message):
       specified network.
   """
 
-  clusterCidrBlock = _messages.StringField(1)
-  clusterNamedRange = _messages.StringField(2)
-  manBlock = _messages.StringField(3)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 4)
-  masterIpv4CidrBlock = _messages.StringField(5)
-  network = _messages.StringField(6)
-  servicesCidrBlock = _messages.StringField(7)
-  servicesNamedRange = _messages.StringField(8)
-  subnet = _messages.StringField(9)
+  bootDiskKmsKey = _messages.StringField(1)
+  clusterCidrBlock = _messages.StringField(2)
+  clusterNamedRange = _messages.StringField(3)
+  manBlock = _messages.StringField(4)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 5)
+  masterIpv4CidrBlock = _messages.StringField(6)
+  network = _messages.StringField(7)
+  servicesCidrBlock = _messages.StringField(8)
+  servicesNamedRange = _messages.StringField(9)
+  subnet = _messages.StringField(10)
 
 
 class StandardQueryParameters(_messages.Message):

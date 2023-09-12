@@ -72,9 +72,31 @@ class CustomClass(_messages.Message):
   CustomClass items can be substituted into placeholders that you set in
   PhraseSet phrases.
 
+  Enums:
+    StateValueValuesEnum: Output only. The CustomClass lifecycle state. This
+      field is not used.
+
+  Messages:
+    AnnotationsValue: Output only. Allows users to store small amounts of
+      arbitrary data. Both the key and the value must be 63 characters or less
+      each. At most 100 annotations. This field is not used.
+
   Fields:
+    annotations: Output only. Allows users to store small amounts of arbitrary
+      data. Both the key and the value must be 63 characters or less each. At
+      most 100 annotations. This field is not used.
     customClassId: If this custom class is a resource, the custom_class_id is
       the resource id of the CustomClass. Case sensitive.
+    deleteTime: Output only. The time at which this resource was requested for
+      deletion. This field is not used.
+    displayName: Output only. User-settable, human-readable name for the
+      CustomClass. Must be 63 characters or less. This field is not used.
+    etag: Output only. This checksum is computed by the server based on the
+      value of other fields. This may be sent on update, undelete, and delete
+      requests to ensure the client has an up-to-date value before proceeding.
+      This field is not used.
+    expireTime: Output only. The time at which this resource will be purged.
+      This field is not used.
     items: A collection of class items.
     kmsKeyName: Output only. The [KMS key
       name](https://cloud.google.com/kms/docs/resource-hierarchy#keys) with
@@ -87,13 +109,67 @@ class CustomClass(_messages.Message):
       `projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/
       {crypto_key}/cryptoKeyVersions/{crypto_key_version}`.
     name: The resource name of the custom class.
+    reconciling: Output only. Whether or not this CustomClass is in the
+      process of being updated. This field is not used.
+    state: Output only. The CustomClass lifecycle state. This field is not
+      used.
+    uid: Output only. System-assigned unique identifier for the CustomClass.
+      This field is not used.
   """
 
-  customClassId = _messages.StringField(1)
-  items = _messages.MessageField('ClassItem', 2, repeated=True)
-  kmsKeyName = _messages.StringField(3)
-  kmsKeyVersionName = _messages.StringField(4)
-  name = _messages.StringField(5)
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The CustomClass lifecycle state. This field is not used.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state. This is only used/useful for
+        distinguishing unset values.
+      ACTIVE: The normal and active state.
+      DELETED: This CustomClass has been deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Output only. Allows users to store small amounts of arbitrary data.
+    Both the key and the value must be 63 characters or less each. At most 100
+    annotations. This field is not used.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  customClassId = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  expireTime = _messages.StringField(6)
+  items = _messages.MessageField('ClassItem', 7, repeated=True)
+  kmsKeyName = _messages.StringField(8)
+  kmsKeyVersionName = _messages.StringField(9)
+  name = _messages.StringField(10)
+  reconciling = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
 
 
 class Empty(_messages.Message):
@@ -381,7 +457,19 @@ class PhraseSet(_messages.Message):
   r"""Provides "hints" to the speech recognizer to favor specific words and
   phrases in the results.
 
+  Enums:
+    StateValueValuesEnum: Output only. The CustomClass lifecycle state. This
+      field is not used.
+
+  Messages:
+    AnnotationsValue: Output only. Allows users to store small amounts of
+      arbitrary data. Both the key and the value must be 63 characters or less
+      each. At most 100 annotations. This field is not used.
+
   Fields:
+    annotations: Output only. Allows users to store small amounts of arbitrary
+      data. Both the key and the value must be 63 characters or less each. At
+      most 100 annotations. This field is not used.
     boost: Hint Boost. Positive value will increase the probability that a
       specific phrase will be recognized over other similar sounding phrases.
       The higher the boost, the higher the chance of false positive
@@ -392,6 +480,16 @@ class PhraseSet(_messages.Message):
       recommend using a binary search approach to finding the optimal value
       for your use case as well as adding phrases both with and without boost
       to your requests.
+    deleteTime: Output only. The time at which this resource was requested for
+      deletion. This field is not used.
+    displayName: Output only. User-settable, human-readable name for the
+      PhraseSet. Must be 63 characters or less. This field is not used.
+    etag: Output only. This checksum is computed by the server based on the
+      value of other fields. This may be sent on update, undelete, and delete
+      requests to ensure the client has an up-to-date value before proceeding.
+      This field is not used.
+    expireTime: Output only. The time at which this resource will be purged.
+      This field is not used.
     kmsKeyName: Output only. The [KMS key
       name](https://cloud.google.com/kms/docs/resource-hierarchy#keys) with
       which the content of the PhraseSet is encrypted. The expected format is
@@ -404,13 +502,67 @@ class PhraseSet(_messages.Message):
       {crypto_key}/cryptoKeyVersions/{crypto_key_version}`.
     name: The resource name of the phrase set.
     phrases: A list of word and phrases.
+    reconciling: Output only. Whether or not this PhraseSet is in the process
+      of being updated. This field is not used.
+    state: Output only. The CustomClass lifecycle state. This field is not
+      used.
+    uid: Output only. System-assigned unique identifier for the PhraseSet.
+      This field is not used.
   """
 
-  boost = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  kmsKeyName = _messages.StringField(2)
-  kmsKeyVersionName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  phrases = _messages.MessageField('Phrase', 5, repeated=True)
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The CustomClass lifecycle state. This field is not used.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state. This is only used/useful for
+        distinguishing unset values.
+      ACTIVE: The normal and active state.
+      DELETED: This CustomClass has been deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Output only. Allows users to store small amounts of arbitrary data.
+    Both the key and the value must be 63 characters or less each. At most 100
+    annotations. This field is not used.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  boost = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  expireTime = _messages.StringField(6)
+  kmsKeyName = _messages.StringField(7)
+  kmsKeyVersionName = _messages.StringField(8)
+  name = _messages.StringField(9)
+  phrases = _messages.MessageField('Phrase', 10, repeated=True)
+  reconciling = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
 
 
 class RecognitionAudio(_messages.Message):

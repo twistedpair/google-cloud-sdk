@@ -6091,6 +6091,10 @@ class TlsRoute(_messages.Message):
   r"""TlsRoute defines how traffic should be routed based on SNI and other
   matching L3 attributes.
 
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the TlsRoute
+      resource.
+
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
@@ -6099,6 +6103,7 @@ class TlsRoute(_messages.Message):
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
       `projects/*/locations/global/gateways/`
+    labels: Optional. Set of label tags associated with the TlsRoute resource.
     meshes: Optional. Meshes defines a list of meshes this TlsRoute is
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
@@ -6113,14 +6118,39 @@ class TlsRoute(_messages.Message):
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the TlsRoute resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   gateways = _messages.StringField(3, repeated=True)
-  meshes = _messages.StringField(4, repeated=True)
-  name = _messages.StringField(5)
-  rules = _messages.MessageField('TlsRouteRouteRule', 6, repeated=True)
-  selfLink = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 4)
+  meshes = _messages.StringField(5, repeated=True)
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('TlsRouteRouteRule', 7, repeated=True)
+  selfLink = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class TlsRouteRouteAction(_messages.Message):

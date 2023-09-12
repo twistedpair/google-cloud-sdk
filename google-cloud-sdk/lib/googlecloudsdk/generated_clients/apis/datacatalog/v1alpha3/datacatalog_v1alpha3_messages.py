@@ -971,6 +971,7 @@ class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
       CLOUD_BIGTABLE: Cloud Bigtable
       CLOUD_SQL: Cloud Sql
       LOOKER: Looker
+      VERTEX_AI: Vertex AI
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
@@ -981,6 +982,7 @@ class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
     CLOUD_BIGTABLE = 6
     CLOUD_SQL = 7
     LOOKER = 8
+    VERTEX_AI = 9
 
   dataCatalogEntry = _messages.StringField(1)
   fullyQualifiedName = _messages.StringField(2)
@@ -1034,6 +1036,17 @@ class GoogleCloudDatacatalogV1DataplexTableSpec(_messages.Message):
   userManaged = _messages.BooleanField(3)
 
 
+class GoogleCloudDatacatalogV1DatasetSpec(_messages.Message):
+  r"""Specification that applies to a dataset. Valid only for entries with the
+  `DATASET` type.
+
+  Fields:
+    vertexDatasetSpec: Vertex AI Dataset specific fields
+  """
+
+  vertexDatasetSpec = _messages.MessageField('GoogleCloudDatacatalogV1VertexDatasetSpec', 1)
+
+
 class GoogleCloudDatacatalogV1DumpItem(_messages.Message):
   r"""Wrapper for any item that can be contained in the dump.
 
@@ -1083,6 +1096,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       type.
     databaseTableSpec: Specification that applies to a table resource. Valid
       only for entries with the `TABLE` or `EXPLORE` type.
+    datasetSpec: Specification that applies to a dataset.
     description: Entry description that can consist of several sentences or
       paragraphs that describe entry contents. The description must not
       contain Unicode non-characters as well as C0 and C1 control codes except
@@ -1119,6 +1133,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       maximum size is 200 bytes when encoded in UTF-8.
     lookerSystemSpec: Specification that applies to Looker sysstem. Only
       settable when `user_specified_system` is equal to `LOOKER`
+    modelSpec: Model specification.
     name: Output only. The resource name of an entry in URL format. Note: The
       entry itself and its child resources might not be stored in the location
       specified in its name.
@@ -1169,6 +1184,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       CLOUD_BIGTABLE: Cloud Bigtable
       CLOUD_SQL: Cloud Sql
       LOOKER: Looker
+      VERTEX_AI: Vertex AI
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
@@ -1179,6 +1195,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     CLOUD_BIGTABLE = 6
     CLOUD_SQL = 7
     LOOKER = 8
+    VERTEX_AI = 9
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the entry. For details, see [`EntryType`](#entrytype).
@@ -1260,26 +1277,28 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
   dataSource = _messages.MessageField('GoogleCloudDatacatalogV1DataSource', 5)
   dataSourceConnectionSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataSourceConnectionSpec', 6)
   databaseTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatabaseTableSpec', 7)
-  description = _messages.StringField(8)
-  displayName = _messages.StringField(9)
-  filesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1FilesetSpec', 10)
-  fullyQualifiedName = _messages.StringField(11)
-  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 12)
-  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  linkedResource = _messages.StringField(15)
-  lookerSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1LookerSystemSpec', 16)
-  name = _messages.StringField(17)
-  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 18)
-  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 19)
-  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 20)
-  serviceSpec = _messages.MessageField('GoogleCloudDatacatalogV1ServiceSpec', 21)
-  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 22)
-  sqlDatabaseSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1SqlDatabaseSystemSpec', 23)
-  type = _messages.EnumField('TypeValueValuesEnum', 24)
-  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 25)
-  userSpecifiedSystem = _messages.StringField(26)
-  userSpecifiedType = _messages.StringField(27)
+  datasetSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatasetSpec', 8)
+  description = _messages.StringField(9)
+  displayName = _messages.StringField(10)
+  filesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1FilesetSpec', 11)
+  fullyQualifiedName = _messages.StringField(12)
+  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 13)
+  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  linkedResource = _messages.StringField(16)
+  lookerSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1LookerSystemSpec', 17)
+  modelSpec = _messages.MessageField('GoogleCloudDatacatalogV1ModelSpec', 18)
+  name = _messages.StringField(19)
+  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 20)
+  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 21)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 22)
+  serviceSpec = _messages.MessageField('GoogleCloudDatacatalogV1ServiceSpec', 23)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 24)
+  sqlDatabaseSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1SqlDatabaseSystemSpec', 25)
+  type = _messages.EnumField('TypeValueValuesEnum', 26)
+  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 27)
+  userSpecifiedSystem = _messages.StringField(28)
+  userSpecifiedType = _messages.StringField(29)
 
 
 class GoogleCloudDatacatalogV1EntryOverview(_messages.Message):
@@ -1427,6 +1446,17 @@ class GoogleCloudDatacatalogV1LookerSystemSpec(_messages.Message):
   parentModelId = _messages.StringField(4)
   parentViewDisplayName = _messages.StringField(5)
   parentViewId = _messages.StringField(6)
+
+
+class GoogleCloudDatacatalogV1ModelSpec(_messages.Message):
+  r"""Specification that applies to a model. Valid only for entries with the
+  `MODEL` type.
+
+  Fields:
+    vertexModelSpec: Specification for vertex model resources.
+  """
+
+  vertexModelSpec = _messages.MessageField('GoogleCloudDatacatalogV1VertexModelSpec', 1)
 
 
 class GoogleCloudDatacatalogV1PersonalDetails(_messages.Message):
@@ -1976,6 +2006,111 @@ class GoogleCloudDatacatalogV1UsageStats(_messages.Message):
   totalCompletions = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   totalExecutionTimeForCompletionsMillis = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   totalFailures = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudDatacatalogV1VertexDatasetSpec(_messages.Message):
+  r"""Specification for vertex dataset resources.
+
+  Enums:
+    DataTypeValueValuesEnum: Type of the dataset.
+
+  Fields:
+    dataItemCount: The number of DataItems in this Dataset. Only apply for
+      non-structured Dataset.
+    dataType: Type of the dataset.
+  """
+
+  class DataTypeValueValuesEnum(_messages.Enum):
+    r"""Type of the dataset.
+
+    Values:
+      DATA_TYPE_UNSPECIFIED: Should not be used.
+      TABLE: Structured data dataset.
+      IMAGE: Image dataset which supports ImageClassification,
+        ImageObjectDetection and ImageSegmentation problems.
+      TEXT: Document dataset which supports TextClassification, TextExtraction
+        and TextSentiment problems.
+      VIDEO: Video dataset which supports VideoClassification,
+        VideoObjectTracking and VideoActionRecognition problems.
+      CONVERSATION: Conversation dataset which supports conversation problems.
+      TIME_SERIES: TimeSeries dataset.
+      DOCUMENT: Document dataset which supports DocumentAnnotation problems.
+      TEXT_TO_SPEECH: TextToSpeech dataset which supports TextToSpeech
+        problems.
+      TRANSLATION: Translation dataset which supports Translation problems.
+      STORE_VISION: Store Vision dataset which is used for HITL integration.
+      ENTERPRISE_KNOWLEDGE_GRAPH: Enterprise Knowledge Graph dataset which is
+        used for HITL labeling integration.
+      TEXT_PROMPT: Text prompt dataset which supports Large Language Models.
+    """
+    DATA_TYPE_UNSPECIFIED = 0
+    TABLE = 1
+    IMAGE = 2
+    TEXT = 3
+    VIDEO = 4
+    CONVERSATION = 5
+    TIME_SERIES = 6
+    DOCUMENT = 7
+    TEXT_TO_SPEECH = 8
+    TRANSLATION = 9
+    STORE_VISION = 10
+    ENTERPRISE_KNOWLEDGE_GRAPH = 11
+    TEXT_PROMPT = 12
+
+  dataItemCount = _messages.IntegerField(1)
+  dataType = _messages.EnumField('DataTypeValueValuesEnum', 2)
+
+
+class GoogleCloudDatacatalogV1VertexModelSourceInfo(_messages.Message):
+  r"""Detail description of the source information of a Vertex model.
+
+  Enums:
+    SourceTypeValueValuesEnum: Type of the model source.
+
+  Fields:
+    copy: If this Model is copy of another Model. If true then source_type
+      pertains to the original.
+    sourceType: Type of the model source.
+  """
+
+  class SourceTypeValueValuesEnum(_messages.Enum):
+    r"""Type of the model source.
+
+    Values:
+      MODEL_SOURCE_TYPE_UNSPECIFIED: Should not be used.
+      AUTOML: The Model is uploaded by automl training pipeline.
+      CUSTOM: The Model is uploaded by user or custom training pipeline.
+      BQML: The Model is registered and sync'ed from BigQuery ML.
+      MODEL_GARDEN: The Model is saved or tuned from Model Garden.
+    """
+    MODEL_SOURCE_TYPE_UNSPECIFIED = 0
+    AUTOML = 1
+    CUSTOM = 2
+    BQML = 3
+    MODEL_GARDEN = 4
+
+  copy = _messages.BooleanField(1)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 2)
+
+
+class GoogleCloudDatacatalogV1VertexModelSpec(_messages.Message):
+  r"""Specification for vertex model resources.
+
+  Fields:
+    containerImageUri: URI of the Docker image to be used as the custom
+      container for serving predictions.
+    versionAliases: User provided version aliases so that a model version can
+      be referenced via alias
+    versionDescription: The description of this version.
+    versionId: The version ID of the model.
+    vertexModelSourceInfo: Source of a Vertex model.
+  """
+
+  containerImageUri = _messages.StringField(1)
+  versionAliases = _messages.StringField(2, repeated=True)
+  versionDescription = _messages.StringField(3)
+  versionId = _messages.StringField(4)
+  vertexModelSourceInfo = _messages.MessageField('GoogleCloudDatacatalogV1VertexModelSourceInfo', 5)
 
 
 class GoogleCloudDatacatalogV1ViewSpec(_messages.Message):

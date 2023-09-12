@@ -194,6 +194,35 @@ class GoogleCloudMemcacheV1OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class GoogleCloudMemcacheV1UpgradeInstanceRequest(_messages.Message):
+  r"""Request for UpgradeInstance.
+
+  Enums:
+    MemcacheVersionValueValuesEnum: Required. Specifies the target version of
+      memcached engine to upgrade to.
+
+  Fields:
+    memcacheVersion: Required. Specifies the target version of memcached
+      engine to upgrade to.
+  """
+
+  class MemcacheVersionValueValuesEnum(_messages.Enum):
+    r"""Required. Specifies the target version of memcached engine to upgrade
+    to.
+
+    Values:
+      MEMCACHE_VERSION_UNSPECIFIED: Memcache version is not specified by
+        customer
+      MEMCACHE_1_5: Memcached 1.5 version.
+      MEMCACHE_1_6_15: Memcached 1.6.15 version.
+    """
+    MEMCACHE_VERSION_UNSPECIFIED = 0
+    MEMCACHE_1_5 = 1
+    MEMCACHE_1_6_15 = 2
+
+  memcacheVersion = _messages.EnumField('MemcacheVersionValueValuesEnum', 1)
+
+
 class GoogleCloudMemcacheV1ZoneMetadata(_messages.Message):
   r"""A GoogleCloudMemcacheV1ZoneMetadata object."""
 
@@ -838,9 +867,11 @@ class Instance(_messages.Message):
       MEMCACHE_VERSION_UNSPECIFIED: Memcache version is not specified by
         customer
       MEMCACHE_1_5: Memcached 1.5 version.
+      MEMCACHE_1_6_15: Memcached 1.6.15 version.
     """
     MEMCACHE_VERSION_UNSPECIFIED = 0
     MEMCACHE_1_5 = 1
+    MEMCACHE_1_6_15 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of this Memcached instance.
@@ -854,6 +885,8 @@ class Instance(_messages.Message):
       DELETING: Memcached instance is being deleted.
       PERFORMING_MAINTENANCE: Memcached instance is going through maintenance,
         e.g. data plane rollout.
+      MEMCACHE_VERSION_UPGRADING: Memcached instance is undergoing memcached
+        engine version upgrade.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -861,6 +894,7 @@ class Instance(_messages.Message):
     UPDATING = 3
     DELETING = 4
     PERFORMING_MAINTENANCE = 5
+    MEMCACHE_VERSION_UPGRADING = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1401,6 +1435,22 @@ class MemcacheProjectsLocationsInstancesUpdateParametersRequest(_messages.Messag
   updateParametersRequest = _messages.MessageField('UpdateParametersRequest', 2)
 
 
+class MemcacheProjectsLocationsInstancesUpgradeRequest(_messages.Message):
+  r"""A MemcacheProjectsLocationsInstancesUpgradeRequest object.
+
+  Fields:
+    googleCloudMemcacheV1UpgradeInstanceRequest: A
+      GoogleCloudMemcacheV1UpgradeInstanceRequest resource to be passed as the
+      request body.
+    name: Required. Memcache instance resource name using the form:
+      `projects/{project}/locations/{location}/instances/{instance}` where
+      `location_id` refers to a GCP region.
+  """
+
+  googleCloudMemcacheV1UpgradeInstanceRequest = _messages.MessageField('GoogleCloudMemcacheV1UpgradeInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class MemcacheProjectsLocationsListRequest(_messages.Message):
   r"""A MemcacheProjectsLocationsListRequest object.
 
@@ -1474,11 +1524,17 @@ class Node(_messages.Message):
   r"""A Node object.
 
   Enums:
+    MemcacheVersionValueValuesEnum: Output only. Major version of memcached
+      server running on this node, e.g. MEMCACHE_1_5
     StateValueValuesEnum: Output only. Current state of the Memcached node.
 
   Fields:
     host: Output only. Hostname or IP address of the Memcached node used by
       the clients to connect to the Memcached server on this node.
+    memcacheFullVersion: Output only. The full version of memcached server
+      running on this node. e.g. - memcached-1.5.16
+    memcacheVersion: Output only. Major version of memcached server running on
+      this node, e.g. MEMCACHE_1_5
     nodeId: Output only. Identifier of the Memcached node. The node id does
       not include project or location like the Memcached instance name.
     parameters: User defined parameters currently applied to the node.
@@ -1486,6 +1542,20 @@ class Node(_messages.Message):
     state: Output only. Current state of the Memcached node.
     zone: Output only. Location (GCP Zone) for the Memcached node.
   """
+
+  class MemcacheVersionValueValuesEnum(_messages.Enum):
+    r"""Output only. Major version of memcached server running on this node,
+    e.g. MEMCACHE_1_5
+
+    Values:
+      MEMCACHE_VERSION_UNSPECIFIED: Memcache version is not specified by
+        customer
+      MEMCACHE_1_5: Memcached 1.5 version.
+      MEMCACHE_1_6_15: Memcached 1.6.15 version.
+    """
+    MEMCACHE_VERSION_UNSPECIFIED = 0
+    MEMCACHE_1_5 = 1
+    MEMCACHE_1_6_15 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the Memcached node.
@@ -1504,11 +1574,13 @@ class Node(_messages.Message):
     UPDATING = 4
 
   host = _messages.StringField(1)
-  nodeId = _messages.StringField(2)
-  parameters = _messages.MessageField('MemcacheParameters', 3)
-  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  zone = _messages.StringField(6)
+  memcacheFullVersion = _messages.StringField(2)
+  memcacheVersion = _messages.EnumField('MemcacheVersionValueValuesEnum', 3)
+  nodeId = _messages.StringField(4)
+  parameters = _messages.MessageField('MemcacheParameters', 5)
+  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  zone = _messages.StringField(8)
 
 
 class NodeConfig(_messages.Message):

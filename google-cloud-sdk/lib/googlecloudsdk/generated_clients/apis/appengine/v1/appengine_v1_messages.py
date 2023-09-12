@@ -405,11 +405,30 @@ class AppengineAppsFirewallIngressRulesPatchRequest(_messages.Message):
 class AppengineAppsGetRequest(_messages.Message):
   r"""A AppengineAppsGetRequest object.
 
+  Enums:
+    IncludeExtraDataValueValuesEnum: Options to include extra data
+
   Fields:
+    includeExtraData: Options to include extra data
     name: Name of the Application resource to get. Example: apps/myapp.
   """
 
-  name = _messages.StringField(1, required=True)
+  class IncludeExtraDataValueValuesEnum(_messages.Enum):
+    r"""Options to include extra data
+
+    Values:
+      INCLUDE_EXTRA_DATA_UNSPECIFIED: Unspecified: No extra data will be
+        returned
+      INCLUDE_EXTRA_DATA_NONE: Do not return any extra data
+      INCLUDE_GOOGLE_GENERATED_METADATA: Return GGCM associated with the
+        resources
+    """
+    INCLUDE_EXTRA_DATA_UNSPECIFIED = 0
+    INCLUDE_EXTRA_DATA_NONE = 1
+    INCLUDE_GOOGLE_GENERATED_METADATA = 2
+
+  includeExtraData = _messages.EnumField('IncludeExtraDataValueValuesEnum', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class AppengineAppsLocationsGetRequest(_messages.Message):
@@ -726,6 +745,11 @@ class Application(_messages.Message):
       Datastore database associated with this application.
     ServingStatusValueValuesEnum: Serving status of this application.
 
+  Messages:
+    GeneratedCustomerMetadataValue: Additional Google Generated Customer
+      Metadata, this field won't be provided by default and can be requested
+      by setting the IncludeExtraData field in GetApplicationRequest
+
   Fields:
     authDomain: Google Apps authentication domain that controls which users
       can access this application.Defaults to open access for any Google
@@ -748,6 +772,9 @@ class Application(_messages.Message):
       application.
     gcrDomain: Output only. The Google Container Registry domain used for
       storing managed build docker images for this application.
+    generatedCustomerMetadata: Additional Google Generated Customer Metadata,
+      this field won't be provided by default and can be requested by setting
+      the IncludeExtraData field in GetApplicationRequest
     iap: A IdentityAwareProxy attribute.
     id: Identifier of the Application resource. This identifier is equivalent
       to the project ID of the Google Cloud Platform project where you want to
@@ -794,6 +821,34 @@ class Application(_messages.Message):
     USER_DISABLED = 2
     SYSTEM_DISABLED = 3
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class GeneratedCustomerMetadataValue(_messages.Message):
+    r"""Additional Google Generated Customer Metadata, this field won't be
+    provided by default and can be requested by setting the IncludeExtraData
+    field in GetApplicationRequest
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        GeneratedCustomerMetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a GeneratedCustomerMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   authDomain = _messages.StringField(1)
   codeBucket = _messages.StringField(2)
   databaseType = _messages.EnumField('DatabaseTypeValueValuesEnum', 3)
@@ -803,12 +858,13 @@ class Application(_messages.Message):
   dispatchRules = _messages.MessageField('UrlDispatchRule', 7, repeated=True)
   featureSettings = _messages.MessageField('FeatureSettings', 8)
   gcrDomain = _messages.StringField(9)
-  iap = _messages.MessageField('IdentityAwareProxy', 10)
-  id = _messages.StringField(11)
-  locationId = _messages.StringField(12)
-  name = _messages.StringField(13)
-  serviceAccount = _messages.StringField(14)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 15)
+  generatedCustomerMetadata = _messages.MessageField('GeneratedCustomerMetadataValue', 10)
+  iap = _messages.MessageField('IdentityAwareProxy', 11)
+  id = _messages.StringField(12)
+  locationId = _messages.StringField(13)
+  name = _messages.StringField(14)
+  serviceAccount = _messages.StringField(15)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 16)
 
 
 class AuthorizedCertificate(_messages.Message):
@@ -3446,7 +3502,7 @@ class VpcAccessConnector(_messages.Message):
   Fields:
     egressSetting: The egress setting for the connector, controlling what
       traffic is diverted through it.
-    name: Full Serverless VPC Access Connector name e.g. /projects/my-
+    name: Full Serverless VPC Access Connector name e.g. projects/my-
       project/locations/us-central1/connectors/c1.
   """
 

@@ -233,6 +233,25 @@ class Backup(_messages.Message):
   volumeUsageBytes = _messages.IntegerField(9)
 
 
+class BackupConfig(_messages.Message):
+  r"""BackupConfig contains backup related config on a volume.
+
+  Fields:
+    backupPolicies: Optional. When specified, schedule backups will be created
+      based on the policy configuration.
+    backupVault: Optional. Name of backup vault. Format:
+      projects/{project_id}/locations/{location}/backupVaults/{backup_vault_id
+      }
+    scheduledBackupEnabled: Optional. When set to true, scheduled backup is
+      enabled on the volume. This field should be nil when there's no backup
+      policy attached.
+  """
+
+  backupPolicies = _messages.StringField(1, repeated=True)
+  backupVault = _messages.StringField(2)
+  scheduledBackupEnabled = _messages.BooleanField(3)
+
+
 class BackupPolicy(_messages.Message):
   r"""Backup Policy.
 
@@ -2011,11 +2030,14 @@ class RestoreParameters(_messages.Message):
   r"""The RestoreParameters if volume is created from a snapshot or backup.
 
   Fields:
+    sourceBackup: Full name of the backup resource. Format: projects/{project}
+      /locations/{location}/backupVaults/{backup_vault_id}/backups/{backup_id}
     sourceSnapshot: Full name of the snapshot resource. Format: projects/{proj
       ect}/locations/{location}/volumes/{volume}/snapshots/{snapshot}
   """
 
-  sourceSnapshot = _messages.StringField(1)
+  sourceBackup = _messages.StringField(1)
+  sourceSnapshot = _messages.StringField(2)
 
 
 class ResumeReplicationRequest(_messages.Message):
@@ -2524,6 +2546,7 @@ class Volume(_messages.Message):
   Fields:
     activeDirectory: Output only. Specifies the ActiveDirectory name of a SMB
       volume.
+    backupConfig: BackupConfig of the volume.
     capacityGib: Required. Capacity in GIB of the volume
     createTime: Output only. Create time of the volume
     description: Optional. Description of the volume
@@ -2708,35 +2731,36 @@ class Volume(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   activeDirectory = _messages.StringField(1)
-  capacityGib = _messages.IntegerField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 5)
-  exportPolicy = _messages.MessageField('ExportPolicy', 6)
-  hasReplication = _messages.BooleanField(7)
-  kerberosEnabled = _messages.BooleanField(8)
-  kmsConfig = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  ldapEnabled = _messages.BooleanField(11)
-  mountOptions = _messages.MessageField('MountOption', 12, repeated=True)
-  name = _messages.StringField(13)
-  network = _messages.StringField(14)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 15, repeated=True)
-  psaRange = _messages.StringField(16)
-  restoreParameters = _messages.MessageField('RestoreParameters', 17)
-  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 18, repeated=True)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 19)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 20)
-  shareName = _messages.StringField(21)
-  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 22, repeated=True)
-  snapReserve = _messages.FloatField(23)
-  snapshotDirectory = _messages.BooleanField(24)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  stateDetails = _messages.StringField(27)
-  storagePool = _messages.StringField(28)
-  unixPermissions = _messages.StringField(29)
-  usedGib = _messages.IntegerField(30)
+  backupConfig = _messages.MessageField('BackupConfig', 2)
+  capacityGib = _messages.IntegerField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 6)
+  exportPolicy = _messages.MessageField('ExportPolicy', 7)
+  hasReplication = _messages.BooleanField(8)
+  kerberosEnabled = _messages.BooleanField(9)
+  kmsConfig = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  ldapEnabled = _messages.BooleanField(12)
+  mountOptions = _messages.MessageField('MountOption', 13, repeated=True)
+  name = _messages.StringField(14)
+  network = _messages.StringField(15)
+  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 16, repeated=True)
+  psaRange = _messages.StringField(17)
+  restoreParameters = _messages.MessageField('RestoreParameters', 18)
+  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 19, repeated=True)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 20)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 21)
+  shareName = _messages.StringField(22)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 23, repeated=True)
+  snapReserve = _messages.FloatField(24)
+  snapshotDirectory = _messages.BooleanField(25)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  stateDetails = _messages.StringField(28)
+  storagePool = _messages.StringField(29)
+  unixPermissions = _messages.StringField(30)
+  usedGib = _messages.IntegerField(31)
 
 
 class WeeklySchedule(_messages.Message):

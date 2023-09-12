@@ -40,9 +40,6 @@ class Blueprint(_messages.Message):
   Enums:
     ApprovalStateValueValuesEnum: Output only. Approval state of the blueprint
       (DRAFT, PROPOSED, APPROVED)
-    DeploymentLevelValueValuesEnum: Output only. DeploymentLevel of a
-      blueprint signifies where the blueprint will be applied. e.g.
-      [HYDRATION, DEPLOYMENT]
 
   Messages:
     LabelsValue: Optional. Labels are key-value attributes that can be set on
@@ -52,8 +49,6 @@ class Blueprint(_messages.Message):
     approvalState: Output only. Approval state of the blueprint (DRAFT,
       PROPOSED, APPROVED)
     createTime: Output only. Blueprint creation time.
-    deploymentLevel: Output only. DeploymentLevel of a blueprint signifies
-      where the blueprint will be applied. e.g. [HYDRATION, DEPLOYMENT]
     displayName: Optional. Human readable name of a Blueprint.
     files: Optional. Files present in a blueprint. When invoking
       UpdateBlueprint API, only the modified files should be included in this.
@@ -72,6 +67,8 @@ class Blueprint(_messages.Message):
       new revision is committed whenever a blueprint is approved.
     sourceBlueprint: Required. Immutable. The public blueprint ID from which
       this blueprint was created.
+    sourceProvider: Output only. Source provider is the author of a public
+      blueprint, from which this blueprint is created.
     updateTime: Output only. The timestamp when the blueprint was updated.
   """
 
@@ -96,25 +93,6 @@ class Blueprint(_messages.Message):
     DRAFT = 1
     PROPOSED = 2
     APPROVED = 3
-
-  class DeploymentLevelValueValuesEnum(_messages.Enum):
-    r"""Output only. DeploymentLevel of a blueprint signifies where the
-    blueprint will be applied. e.g. [HYDRATION, DEPLOYMENT]
-
-    Values:
-      DEPLOYMENT_LEVEL_UNSPECIFIED: Default unspecified deployment level.
-      HYDRATION: Blueprints at HYDRATION level cannot be used to create a
-        Deployment (A user cannot manually initate deployment of these
-        blueprints on orchestration or workload cluster). These blueprints
-        stay in a user's private catalog and are configured and deployed by
-        TNA automation.
-      DEPLOYMENT: Blueprints at DEPLOYMENT level can be a) Modified in private
-        catalog. b) Used to create a deployment on orchestration cluster by
-        the user, once approved.
-    """
-    DEPLOYMENT_LEVEL_UNSPECIFIED = 0
-    HYDRATION = 1
-    DEPLOYMENT = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -143,15 +121,15 @@ class Blueprint(_messages.Message):
 
   approvalState = _messages.EnumField('ApprovalStateValueValuesEnum', 1)
   createTime = _messages.StringField(2)
-  deploymentLevel = _messages.EnumField('DeploymentLevelValueValuesEnum', 3)
-  displayName = _messages.StringField(4)
-  files = _messages.MessageField('File', 5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  repository = _messages.StringField(8)
-  revisionCreateTime = _messages.StringField(9)
-  revisionId = _messages.StringField(10)
-  sourceBlueprint = _messages.StringField(11)
+  displayName = _messages.StringField(3)
+  files = _messages.MessageField('File', 4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  repository = _messages.StringField(7)
+  revisionCreateTime = _messages.StringField(8)
+  revisionId = _messages.StringField(9)
+  sourceBlueprint = _messages.StringField(10)
+  sourceProvider = _messages.StringField(11)
   updateTime = _messages.StringField(12)
 
 
@@ -206,6 +184,8 @@ class Deployment(_messages.Message):
       new revision is committed whenever a change in deployment is applied.
     sourceBlueprintRevision: Required. Immutable. The blueprint revision from
       which this deployment was created.
+    sourceProvider: Output only. Source provider is the author of a public
+      blueprint, from which this deployment is created.
     state: Output only. State of the deployment (DRAFT, APPLIED).
     updateTime: Output only. The timestamp when the deployment was updated.
   """
@@ -264,8 +244,9 @@ class Deployment(_messages.Message):
   revisionCreateTime = _messages.StringField(7)
   revisionId = _messages.StringField(8)
   sourceBlueprintRevision = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  sourceProvider = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class DeploymentStatusResponse(_messages.Message):
@@ -647,13 +628,12 @@ class ListOrchestrationClustersResponse(_messages.Message):
 
 
 class ListPublicBlueprintsResponse(_messages.Message):
-  r"""Message for the response to list all the blueprints from the public
-  catalog.
+  r"""Response object for `ListPublicBlueprints`.
 
   Fields:
     nextPageToken: Output only. A token identifying a page of results the
       server should return.
-    publicBlueprints: The List of blueprints in the public catalog.
+    publicBlueprints: The list of public blueprints to return.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -978,22 +958,24 @@ class ProposeBlueprintRequest(_messages.Message):
 
 
 class PublicBlueprint(_messages.Message):
-  r"""Message for blueprint from the public catalog.
+  r"""A Blueprint contains a collection of kubernetes resources in the form of
+  YAML files. The file contents of a blueprint are collectively known as
+  package. Public blueprint is a TNA provided blueprint that in present in
+  TNA's public catalog. A user can copy the public blueprint to their private
+  catalog for further modifications.
 
   Enums:
     DeploymentLevelValueValuesEnum: DeploymentLevel of a blueprint signifies
       where the blueprint will be applied. e.g. [HYDRATION, DEPLOYMENT]
 
   Fields:
-    branch: Branch in the repo where the blueprint is available.
-    commitId: A commit ID which can be used as a version identifier.
     deploymentLevel: DeploymentLevel of a blueprint signifies where the
       blueprint will be applied. e.g. [HYDRATION, DEPLOYMENT]
     description: The description of the public blueprint.
-    displayName: The name which will be displayed in the UI.
-    id: Unique ID for this blueprint.
-    path: Directory in the repo where the blueprint is available.
-    repo: The repository of the blueprint.
+    displayName: The display name of the public blueprint.
+    name: Name of the public blueprint.
+    sourceProvider: Source provider is the author of a public blueprint. e.g.
+      Google, vendors
   """
 
   class DeploymentLevelValueValuesEnum(_messages.Enum):
@@ -1015,14 +997,11 @@ class PublicBlueprint(_messages.Message):
     HYDRATION = 1
     DEPLOYMENT = 2
 
-  branch = _messages.StringField(1)
-  commitId = _messages.StringField(2)
-  deploymentLevel = _messages.EnumField('DeploymentLevelValueValuesEnum', 3)
-  description = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  id = _messages.StringField(6)
-  path = _messages.StringField(7)
-  repo = _messages.StringField(8)
+  deploymentLevel = _messages.EnumField('DeploymentLevelValueValuesEnum', 1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  sourceProvider = _messages.StringField(5)
 
 
 class RejectBlueprintRequest(_messages.Message):
@@ -1071,6 +1050,16 @@ class ResourceStatusDetail(_messages.Message):
 
   resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 1)
   status = _messages.EnumField('StatusValueValuesEnum', 2)
+
+
+class RollbackDeploymentRequest(_messages.Message):
+  r"""Request object for `RollbackDeployment`.
+
+  Fields:
+    revisionId: Required. The revision id of deployment to roll back to.
+  """
+
+  revisionId = _messages.StringField(1)
 
 
 class StandardManagementConfig(_messages.Message):
@@ -1460,7 +1449,9 @@ class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteReque
   object.
 
   Fields:
-    name: Required. The name of blueprint to delete.
+    name: Required. The name of blueprint to delete. Blueprint name should be
+      in the format {blueprint_id}, if {blueprint_id}@{revision_id} is passed
+      then the API throws invalid argument.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1518,8 +1509,8 @@ class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsGetRequest(
 
     Values:
       BLUEPRINT_VIEW_UNSPECIFIED: Unspecified enum value.
-      BLUEPRINT_VIEW_BASIC: Blueprint view which only contains metadata.
-      BLUEPRINT_VIEW_FULL: Blueprint view which contains metadata and files it
+      BLUEPRINT_VIEW_BASIC: View which only contains metadata.
+      BLUEPRINT_VIEW_FULL: View which contains metadata and files it
         encapsulates.
     """
     BLUEPRINT_VIEW_UNSPECIFIED = 0
@@ -1757,15 +1748,36 @@ class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsGetRequest
   TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsGetRequest
   object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. Defines the type of view of the deployment.
+      When field is not present VIEW_BASIC is considered as default.
+
   Fields:
     name: Required. The name of the deployment. Case 1: If the name provided
       in the request is {deployment_id}@{revision_id}, then the revision with
       revision_id will be returned. Case 2: If the name provided in the
       request is {deployment}, then the current state of the deployment is
       returned.
+    view: Optional. Defines the type of view of the deployment. When field is
+      not present VIEW_BASIC is considered as default.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Defines the type of view of the deployment. When field is
+    not present VIEW_BASIC is considered as default.
+
+    Values:
+      DEPLOYMENT_VIEW_UNSPECIFIED: Unspecified enum value.
+      DEPLOYMENT_VIEW_BASIC: View which only contains metadata.
+      DEPLOYMENT_VIEW_FULL: View which contains metadata and files it
+        encapsulates.
+    """
+    DEPLOYMENT_VIEW_UNSPECIFIED = 0
+    DEPLOYMENT_VIEW_BASIC = 1
+    DEPLOYMENT_VIEW_FULL = 2
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsHydratedDeploymentsApplyRequest(_messages.Message):
@@ -1889,6 +1901,20 @@ class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsPatchReque
   updateMask = _messages.StringField(3)
 
 
+class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsRollbackRequest(_messages.Message):
+  r"""A TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsRollba
+  ckRequest object.
+
+  Fields:
+    name: Required. Name of the deployment.
+    rollbackDeploymentRequest: A RollbackDeploymentRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rollbackDeploymentRequest = _messages.MessageField('RollbackDeploymentRequest', 2)
+
+
 class TelcoautomationProjectsLocationsOrchestrationClustersGetRequest(_messages.Message):
   r"""A TelcoautomationProjectsLocationsOrchestrationClustersGetRequest
   object.
@@ -1952,6 +1978,16 @@ class TelcoautomationProjectsLocationsOrchestrationClustersPatchRequest(_message
   updateMask = _messages.StringField(4)
 
 
+class TelcoautomationProjectsLocationsPublicBlueprintsGetRequest(_messages.Message):
+  r"""A TelcoautomationProjectsLocationsPublicBlueprintsGetRequest object.
+
+  Fields:
+    name: Required. The name of the public blueprint.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class TelcoautomationProjectsLocationsPublicBlueprintsListRequest(_messages.Message):
   r"""A TelcoautomationProjectsLocationsPublicBlueprintsListRequest object.
 
@@ -1960,7 +1996,8 @@ class TelcoautomationProjectsLocationsPublicBlueprintsListRequest(_messages.Mess
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListPublicBlueprintsRequest
+    parent: Required. Parent value of public blueprint. Format should be -
+      "projects/{project_id}/locations/{location_name}".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

@@ -389,7 +389,7 @@ def AddVolumeRevertSnapshotArg(parser, required=True):
   """Adds the --snapshot arg to the arg parser."""
   concept_parsers.ConceptParser.ForResource(
       '--snapshot',
-      flags.GetSnapshotResourceSpec(revert_op=True, positional=False),
+      flags.GetSnapshotResourceSpec(source_snapshot_op=True, positional=False),
       required=required,
       flag_name_overrides={'location': '',
                            'volume': ''},
@@ -401,7 +401,7 @@ def AddVolumeSourceSnapshotArg(parser):
   """Adds the --source-snapshot arg to the arg parser."""
   concept_parsers.ConceptParser.ForResource(
       '--source-snapshot',
-      flags.GetSnapshotResourceSpec(revert_op=True, positional=False),
+      flags.GetSnapshotResourceSpec(source_snapshot_op=True, positional=False),
       flag_name_overrides={'location': '',
                            'volume': ''},
       group_help='The source Snapshot to create the Volume from.').AddToParser(

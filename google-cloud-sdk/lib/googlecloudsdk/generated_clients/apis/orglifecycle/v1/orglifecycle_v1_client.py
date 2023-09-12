@@ -154,7 +154,7 @@ class OrglifecycleV1(base_api.BaseApiClient):
         method_id='orglifecycle.organizations.locations.managedOrganizations.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'showDeleted'],
         relative_path='v1/{+parent}/managedOrganizations',
         request_field='',
         request_type_name='OrglifecycleOrganizationsLocationsManagedOrganizationsListRequest',
@@ -185,6 +185,33 @@ class OrglifecycleV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='managedOrganization',
         request_type_name='OrglifecycleOrganizationsLocationsManagedOrganizationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a single ManagedOrganization, as long as it was deleted fewer than 30 days ago.
+
+      Args:
+        request: (OrglifecycleOrganizationsLocationsManagedOrganizationsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/managedOrganizations/{managedOrganizationsId}:undelete',
+        http_method='POST',
+        method_id='orglifecycle.organizations.locations.managedOrganizations.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:undelete',
+        request_field='undeleteManagedOrganizationRequest',
+        request_type_name='OrglifecycleOrganizationsLocationsManagedOrganizationsUndeleteRequest',
         response_type_name='Operation',
         supports_download=False,
     )

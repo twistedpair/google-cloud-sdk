@@ -180,21 +180,19 @@ def BuildCondition(messages, condition=None, display_name=None,
     display_name: str, the display name for the condition.
     aggregations: list[Aggregation], list of Aggregation messages for the
       condition.
-    trigger_count: int, corresponds to the count field of the condition
+    trigger_count: int, corresponds to the count field of the condition trigger.
+    trigger_percent: float, corresponds to the percent field of the condition
       trigger.
-    trigger_percent: float, corresponds to the percent field of the
-      condition trigger.
-    duration: int, The amount of time that a time series must fail to report
-      new data to be considered failing.
+    duration: int, The amount of time that a time series must fail to report new
+      data to be considered failing.
     condition_filter: str, A filter that identifies which time series should be
       compared with the threshold.
     if_value: tuple[str, float] or None, a tuple containing a string value
-      corresponding to the comparison value enum and a float with the
-      condition threshold value. None indicates that this should be an
-      Absence condition.
+      corresponding to the comparison value enum and a float with the condition
+      threshold value. None indicates that this should be an Absence condition.
 
   Returns:
-    Condition, a condition with it's fields populated from the args
+    Condition, a condition with its fields populated from the args
   """
   if not condition:
     condition = messages.Condition()
@@ -458,7 +456,7 @@ def ProcessUpdateLabels(args, labels_name, labels_cls, orig_labels):
   return labels_diff.Apply(labels_cls, orig_labels).GetOrNone()
 
 
-def ParseMonitoredProject(monitored_project_name):
+def ParseMonitoredProject(monitored_project_name, project_fallback):
   """Returns the metrics scope and monitored project.
 
   Parse the specified monitored project name and return the metrics scope and
@@ -466,6 +464,8 @@ def ParseMonitoredProject(monitored_project_name):
 
   Args:
     monitored_project_name: The name of the monitored project to create/delete.
+    project_fallback: When set, allows monitored_project_name to be just a
+      project id or number.
 
   Raises:
     MonitoredProjectNameError: If an invalid monitored project name is
@@ -478,7 +478,7 @@ def ParseMonitoredProject(monitored_project_name):
   matched = re.match(
       'locations/global/metricsScopes/([a-z0-9:\\-]+)/projects/([a-z0-9:\\-]+)',
       monitored_project_name)
-  if bool(matched):
+  if matched:
     if matched.group(0) != monitored_project_name:
       raise MonitoredProjectNameError(
           'Invalid monitored project name has been specified.')
@@ -488,8 +488,72 @@ def ParseMonitoredProject(monitored_project_name):
   else:
     metrics_scope_def = projects_util.ParseProject(
         properties.VALUES.core.project.Get(required=True))
-    monitored_project_def = projects_util.ParseProject(monitored_project_name)
+    monitored_resource_container_matched = re.match(
+        'projects/([a-z0-9:\\-]+)', monitored_project_name
+    )
+    if monitored_resource_container_matched:
+      monitored_project_def = projects_util.ParseProject(
+          monitored_resource_container_matched.group(1)
+      )
+    elif project_fallback:
+      log.warning(
+          'Received an incorrectly formatted project name. Expected '
+          '"projects/{identifier}" received "{identifier}". Assuming '
+          'given resource is a project.'.format(
+              identifier=monitored_project_name
+          )
+      )
+      monitored_project_def = projects_util.ParseProject(monitored_project_name)
+    else:
+      raise MonitoredProjectNameError(
+          'Invalid monitored project name has been specified.'
+      )
   return metrics_scope_def, monitored_project_def
+
+
+def ParseMonitoredResourceContainer(
+    monitored_resource_container_name, project_fallback
+):
+  """Returns the monitored resource container identifier.
+
+  Parse the specified monitored_resource_container_name and return the
+  identifier.
+
+  Args:
+    monitored_resource_container_name: The monitored resource container. Ex -
+      projects/12345.
+    project_fallback: When set, allows monitored_resource_container_name to be
+      just a project id or number.
+
+  Raises:
+    MonitoredProjectNameError: If an invalid monitored project name is
+    specified.
+
+  Returns:
+     resource_type, monitored_resource_container_identifier: Monitored resource
+     container type and identifier
+  """
+  matched = re.match(
+      '(projects)/([a-z0-9:\\-]+)', monitored_resource_container_name
+  )
+  if matched:
+    return matched.group(1), matched.group(2)
+  elif project_fallback:
+    log.warning(
+        'Received an incorrectly formatted project name. Expected '
+        '"projects/{identifier}" received "{identifier}". Assuming '
+        'given resource is a project.'.format(
+            identifier=monitored_resource_container_name
+        )
+    )
+    return (
+        'projects',
+        projects_util.ParseProject(monitored_resource_container_name).Name(),
+    )
+  else:
+    raise MonitoredProjectNameError(
+        'Invalid monitored project name has been specified.'
+    )
 
 
 def ParseSnooze(snooze_name, project=None):

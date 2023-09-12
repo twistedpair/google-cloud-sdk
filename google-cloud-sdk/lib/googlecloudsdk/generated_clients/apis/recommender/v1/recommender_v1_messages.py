@@ -1406,7 +1406,7 @@ class RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkDismisse
     googleCloudRecommenderV1MarkRecommendationDismissedRequest: A
       GoogleCloudRecommenderV1MarkRecommendationDismissedRequest resource to
       be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1MarkRecommendationDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1MarkRecommendationDismissedRequest', 1)
@@ -1600,7 +1600,7 @@ class RecommenderFoldersLocationsRecommendersRecommendationsMarkDismissedRequest
     googleCloudRecommenderV1MarkRecommendationDismissedRequest: A
       GoogleCloudRecommenderV1MarkRecommendationDismissedRequest resource to
       be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1MarkRecommendationDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1MarkRecommendationDismissedRequest', 1)
@@ -1830,7 +1830,7 @@ class RecommenderOrganizationsLocationsRecommendersRecommendationsMarkDismissedR
     googleCloudRecommenderV1MarkRecommendationDismissedRequest: A
       GoogleCloudRecommenderV1MarkRecommendationDismissedRequest resource to
       be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1MarkRecommendationDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1MarkRecommendationDismissedRequest', 1)
@@ -2076,7 +2076,7 @@ class RecommenderProjectsLocationsRecommendersRecommendationsMarkDismissedReques
     googleCloudRecommenderV1MarkRecommendationDismissedRequest: A
       GoogleCloudRecommenderV1MarkRecommendationDismissedRequest resource to
       be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1MarkRecommendationDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1MarkRecommendationDismissedRequest', 1)

@@ -47,6 +47,8 @@ class AdvanceRolloutOperation(_messages.Message):
   Fields:
     destinationPhase: Output only. The phase to which the rollout will be
       advanced to.
+    initialPhase: Output only. The phase of a deployment that initiated the
+      operation.
     rollout: Output only. The name of the rollout that initiates the
       `AutomationRun`.
     sourcePhase: Output only. The phase of a deployment that initiated the
@@ -55,9 +57,10 @@ class AdvanceRolloutOperation(_messages.Message):
   """
 
   destinationPhase = _messages.StringField(1)
-  rollout = _messages.StringField(2)
-  sourcePhase = _messages.StringField(3)
-  wait = _messages.StringField(4)
+  initialPhase = _messages.StringField(2)
+  rollout = _messages.StringField(3)
+  sourcePhase = _messages.StringField(4)
+  wait = _messages.StringField(5)
 
 
 class AdvanceRolloutRequest(_messages.Message):
@@ -452,6 +455,8 @@ class AutomationRun(_messages.Message):
       stage that initiates the `AutomationRun`. The value of this field is the
       last segment of a target name.
     updateTime: Output only. Time at which the automationRun was updated.
+    waitUntilTime: Output only. Earliest time the `AutomationRun` will attempt
+      to resume. Wait-time is configured by `wait` in automation rule.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -487,6 +492,7 @@ class AutomationRun(_messages.Message):
   stateDescription = _messages.StringField(13)
   targetId = _messages.StringField(14)
   updateTime = _messages.StringField(15)
+  waitUntilTime = _messages.StringField(16)
 
 
 class Binding(_messages.Message):
@@ -1540,7 +1546,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesRollbackTargetRequest(_messag
   object.
 
   Fields:
-    name: Required. The `DeliveryPipeline` in which the rollback `Rollout`
+    name: Required. The `DeliveryPipeline` for which the rollback `Rollout`
       should be created. Format should be projects/{project_id}/locations/{loc
       ation_name}/deliveryPipelines/{pipeline_name}.
     rollbackTargetRequest: A RollbackTargetRequest resource to be passed as
@@ -4507,7 +4513,7 @@ class RetryJobResponse(_messages.Message):
 
 
 class RollbackTargetConfig(_messages.Message):
-  r"""Congs for the Rollback rollout.
+  r"""Configs for the Rollback rollout.
 
   Fields:
     rollout: Optional. The rollback `Rollout` to create.
@@ -4525,7 +4531,7 @@ class RollbackTargetRequest(_messages.Message):
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
       projects/{project}/ locations/{location}/deployPolicies/{deploy_policy}.
-    releaseId: Optional. ID of the `Release` to rollback to. If this isn't
+    releaseId: Optional. ID of the `Release` to roll back to. If this isn't
       specified, the previous successful `Rollout` to the specified target
       will be used to determine the `Release`.
     rollbackConfig: Optional. Configs for the rollback `Rollout`.

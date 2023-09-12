@@ -582,7 +582,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Posture resource. If the revision_id is not provided along with Posture name then all revisions are deleted. A posture or its revisions can only be deleted when they are in DEPRECATED state and not deployed to any workload Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the Posture does not exist.
+      r"""Deletes all the revisions of a resource. A posture can only be deleted when none of the revisions are deployed to any workload.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPosturesDeleteRequest) input message
@@ -600,7 +600,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
         method_id='securityposture.organizations.locations.postures.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['etag', 'revisionId'],
+        query_params=['etag'],
         relative_path='v1alpha/{+name}',
         request_field='',
         request_type_name='SecuritypostureOrganizationsLocationsPosturesDeleteRequest',
@@ -686,6 +686,33 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritypostureOrganizationsLocationsPosturesListRequest',
         response_type_name='ListPosturesResponse',
+        supports_download=False,
+    )
+
+    def ListRevisions(self, request, global_params=None):
+      r"""Lists revisions of a Posture in a given organization and location.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsPosturesListRevisionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPostureRevisionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListRevisions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListRevisions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/postures/{posturesId}:listRevisions',
+        http_method='GET',
+        method_id='securityposture.organizations.locations.postures.listRevisions',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+name}:listRevisions',
+        request_field='',
+        request_type_name='SecuritypostureOrganizationsLocationsPosturesListRevisionsRequest',
+        response_type_name='ListPostureRevisionsResponse',
         supports_download=False,
     )
 

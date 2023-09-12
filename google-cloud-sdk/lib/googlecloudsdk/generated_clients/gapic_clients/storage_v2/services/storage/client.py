@@ -986,9 +986,8 @@ class StorageClient(metaclass=StorageClientMeta):
             ) -> policy_pb2.Policy:
         r"""Gets the IAM policy for a specified bucket or object. The
         ``resource`` field in the request should be
-        projects/\ */buckets/<bucket_name> for a bucket or
-        projects/*/buckets/<bucket_name>/objects/<object_name> for an
-        object.
+        ``projects/_/buckets/{bucket}`` for a bucket or
+        ``projects/_/buckets/{bucket}/objects/{object}`` for an object.
 
         .. code-block:: python
 
@@ -1154,9 +1153,8 @@ class StorageClient(metaclass=StorageClientMeta):
             ) -> policy_pb2.Policy:
         r"""Updates an IAM policy for the specified bucket or object. The
         ``resource`` field in the request should be
-        projects/\ */buckets/<bucket_name> for a bucket or
-        projects/*/buckets/<bucket_name>/objects/<object_name> for an
-        object.
+        ``projects/_/buckets/{bucket}`` for a bucket or
+        ``projects/_/buckets/{bucket}/objects/{object}`` for an object.
 
         .. code-block:: python
 
@@ -1323,9 +1321,9 @@ class StorageClient(metaclass=StorageClientMeta):
             ) -> iam_policy_pb2.TestIamPermissionsResponse:
         r"""Tests a set of permissions on the given bucket or object to see
         which, if any, are held by the caller. The ``resource`` field in
-        the request should be projects/\ */buckets/<bucket_name> for a
-        bucket or projects/*/buckets/<bucket_name>/objects/<object_name>
-        for an object.
+        the request should be ``projects/_/buckets/{bucket}`` for a
+        bucket or ``projects/_/buckets/{bucket}/objects/{object}`` for
+        an object.
 
         .. code-block:: python
 
@@ -2764,6 +2762,10 @@ class StorageClient(metaclass=StorageClientMeta):
         an OK status, with a WriteObjectResponse containing the
         finalized object's metadata.
 
+        Alternatively, the BidiWriteObject operation may be used to
+        write an object with controls over flushing and the ability to
+        fetch the ability to determine the current persisted size.
+
         .. code-block:: python
 
             # This snippet has been automatically generated and should be regarded as a
@@ -2818,6 +2820,98 @@ class StorageClient(metaclass=StorageClientMeta):
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.write_object]
+
+        # Send the request.
+        response = rpc(
+            requests,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    def bidi_write_object(self,
+            requests: Optional[Iterator[storage.BidiWriteObjectRequest]] = None,
+            *,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> Iterable[storage.BidiWriteObjectResponse]:
+        r"""Stores a new object and metadata.
+
+        This is similar to the WriteObject call with the added support
+        for manual flushing of persisted state, and the ability to
+        determine current persisted size without closing the stream.
+
+        The client may specify one or both of the ``state_lookup`` and
+        ``flush`` fields in each BidiWriteObjectRequest. If ``flush`` is
+        specified, the data written so far will be persisted to storage.
+        If ``state_lookup`` is specified, the service will respond with
+        a BidiWriteObjectResponse that contains the persisted size. If
+        both ``flush`` and ``state_lookup`` are specified, the flush
+        will always occur before a ``state_lookup``, so that both may be
+        set in the same request and the returned state will be the state
+        of the object post-flush. When the stream is closed, a
+        BidiWriteObjectResponse will always be sent to the client,
+        regardless of the value of ``state_lookup``.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import storage_v2
+
+            def sample_bidi_write_object():
+                # Create a client
+                client = storage_v2.StorageClient()
+
+                # Initialize request argument(s)
+                request = storage_v2.BidiWriteObjectRequest(
+                    upload_id="upload_id_value",
+                    write_offset=1297,
+                )
+
+                # This method expects an iterator which contains
+                # 'storage_v2.BidiWriteObjectRequest' objects
+                # Here we create a generator that yields a single `request` for
+                # demonstrative purposes.
+                requests = [request]
+
+                def request_generator():
+                    for request in requests:
+                        yield request
+
+                # Make the request
+                stream = client.bidi_write_object(requests=request_generator())
+
+                # Handle the response
+                for response in stream:
+                    print(response)
+
+        Args:
+            requests (Iterator[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiWriteObjectRequest]):
+                The request object iterator. Request message for BidiWriteObject.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            Iterable[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiWriteObjectResponse]:
+                Response message for BidiWriteObject.
+        """
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.bidi_write_object]
 
         # Send the request.
         response = rpc(

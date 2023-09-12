@@ -39,9 +39,448 @@ class ApphubV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_directories_services = self.ProjectsLocationsDirectoriesServicesService(self)
+    self.projects_locations_directories_workloads = self.ProjectsLocationsDirectoriesWorkloadsService(self)
+    self.projects_locations_directories = self.ProjectsLocationsDirectoriesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_serviceProjects = self.ProjectsLocationsServiceProjectsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsDirectoriesServicesService(base_api.BaseApiService):
+    """Service class for the projects_locations_directories_services resource."""
+
+    _NAME = 'projects_locations_directories_services'
+
+    def __init__(self, client):
+      super(ApphubV1alpha.ProjectsLocationsDirectoriesServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreateService registers a service in App Hub Directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesServicesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories/{directoriesId}/services',
+        http_method='POST',
+        method_id='apphub.projects.locations.directories.services.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'serviceId'],
+        relative_path='v1alpha/{+parent}/services',
+        request_field='service',
+        request_type_name='ApphubProjectsLocationsDirectoriesServicesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteService deletes a service in App Hub Directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesServicesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories/{directoriesId}/services/{servicesId}',
+        http_method='DELETE',
+        method_id='apphub.projects.locations.directories.services.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDirectoriesServicesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetService gets a service from App Hub Directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Service) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories/{directoriesId}/services/{servicesId}',
+        http_method='GET',
+        method_id='apphub.projects.locations.directories.services.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDirectoriesServicesGetRequest',
+        response_type_name='Service',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListServices lists services for a given host project, location and directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories/{directoriesId}/services',
+        http_method='GET',
+        method_id='apphub.projects.locations.directories.services.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/services',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDirectoriesServicesListRequest',
+        response_type_name='ListServicesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""UpdateService updates a service in App Hub Directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesServicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories/{directoriesId}/services/{servicesId}',
+        http_method='PATCH',
+        method_id='apphub.projects.locations.directories.services.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='service',
+        request_type_name='ApphubProjectsLocationsDirectoriesServicesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDirectoriesWorkloadsService(base_api.BaseApiService):
+    """Service class for the projects_locations_directories_workloads resource."""
+
+    _NAME = 'projects_locations_directories_workloads'
+
+    def __init__(self, client):
+      super(ApphubV1alpha.ProjectsLocationsDirectoriesWorkloadsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreateWorkload registers a workload in App Hub Directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesWorkloadsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories/{directoriesId}/workloads',
+        http_method='POST',
+        method_id='apphub.projects.locations.directories.workloads.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'workloadId'],
+        relative_path='v1alpha/{+parent}/workloads',
+        request_field='workload',
+        request_type_name='ApphubProjectsLocationsDirectoriesWorkloadsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteWorkload unregisters a workload in App Hub Directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesWorkloadsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories/{directoriesId}/workloads/{workloadsId}',
+        http_method='DELETE',
+        method_id='apphub.projects.locations.directories.workloads.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDirectoriesWorkloadsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetWorkload gets a workload from App Hub Directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesWorkloadsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Workload) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories/{directoriesId}/workloads/{workloadsId}',
+        http_method='GET',
+        method_id='apphub.projects.locations.directories.workloads.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDirectoriesWorkloadsGetRequest',
+        response_type_name='Workload',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListWorkloads lists workloads for a given host project, location and directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesWorkloadsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkloadsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories/{directoriesId}/workloads',
+        http_method='GET',
+        method_id='apphub.projects.locations.directories.workloads.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/workloads',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDirectoriesWorkloadsListRequest',
+        response_type_name='ListWorkloadsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""UpdateWorkload updates a workload in App Hub Directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesWorkloadsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories/{directoriesId}/workloads/{workloadsId}',
+        http_method='PATCH',
+        method_id='apphub.projects.locations.directories.workloads.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='workload',
+        request_type_name='ApphubProjectsLocationsDirectoriesWorkloadsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDirectoriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_directories resource."""
+
+    _NAME = 'projects_locations_directories'
+
+    def __init__(self, client):
+      super(ApphubV1alpha.ProjectsLocationsDirectoriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreateDirectory registers a directory in App Hub Directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories',
+        http_method='POST',
+        method_id='apphub.projects.locations.directories.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['directoryId', 'requestId'],
+        relative_path='v1alpha/{+parent}/directories',
+        request_field='directory',
+        request_type_name='ApphubProjectsLocationsDirectoriesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteDirectory deletes a Directory in App Hub Directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories/{directoriesId}',
+        http_method='DELETE',
+        method_id='apphub.projects.locations.directories.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force', 'requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDirectoriesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetDirectory gets a Directory from App Hub Directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Directory) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories/{directoriesId}',
+        http_method='GET',
+        method_id='apphub.projects.locations.directories.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDirectoriesGetRequest',
+        response_type_name='Directory',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListDirectories lists directories for a given host project and location.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDirectoriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories',
+        http_method='GET',
+        method_id='apphub.projects.locations.directories.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/directories',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDirectoriesListRequest',
+        response_type_name='ListDirectoriesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""UpdateDirectory updates a Directory in App Hub Directory.
+
+      Args:
+        request: (ApphubProjectsLocationsDirectoriesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/directories/{directoriesId}',
+        http_method='PATCH',
+        method_id='apphub.projects.locations.directories.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='directory',
+        request_type_name='ApphubProjectsLocationsDirectoriesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
@@ -161,6 +600,124 @@ class ApphubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsServiceProjectsService(base_api.BaseApiService):
+    """Service class for the projects_locations_serviceProjects resource."""
+
+    _NAME = 'projects_locations_serviceProjects'
+
+    def __init__(self, client):
+      super(ApphubV1alpha.ProjectsLocationsServiceProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreateServiceProject attaches a service project to a host project.
+
+      Args:
+        request: (ApphubProjectsLocationsServiceProjectsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceProjects',
+        http_method='POST',
+        method_id='apphub.projects.locations.serviceProjects.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'serviceProjectId'],
+        relative_path='v1alpha/{+parent}/serviceProjects',
+        request_field='serviceProject',
+        request_type_name='ApphubProjectsLocationsServiceProjectsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteServiceProject detaches a service project from a host project.
+
+      Args:
+        request: (ApphubProjectsLocationsServiceProjectsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceProjects/{serviceProjectsId}',
+        http_method='DELETE',
+        method_id='apphub.projects.locations.serviceProjects.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsServiceProjectsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetServiceProject gets a service project for a host project.
+
+      Args:
+        request: (ApphubProjectsLocationsServiceProjectsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceProject) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceProjects/{serviceProjectsId}',
+        http_method='GET',
+        method_id='apphub.projects.locations.serviceProjects.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsServiceProjectsGetRequest',
+        response_type_name='ServiceProject',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListServiceProjects lists service projects for a host project.
+
+      Args:
+        request: (ApphubProjectsLocationsServiceProjectsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceProjectsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceProjects',
+        http_method='GET',
+        method_id='apphub.projects.locations.serviceProjects.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/serviceProjects',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsServiceProjectsListRequest',
+        response_type_name='ListServiceProjectsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
@@ -195,6 +752,33 @@ class ApphubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApphubProjectsLocationsGetRequest',
         response_type_name='Location',
+        supports_download=False,
+    )
+
+    def GetHostProject(self, request, global_params=None):
+      r"""GetHostProject gets a HostProject resource. This is a passthrough method.
+
+      Args:
+        request: (ApphubProjectsLocationsGetHostProjectRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HostProject) The response message.
+      """
+      config = self.GetMethodConfig('GetHostProject')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetHostProject.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/hostProject',
+        http_method='GET',
+        method_id='apphub.projects.locations.getHostProject',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsGetHostProjectRequest',
+        response_type_name='HostProject',
         supports_download=False,
     )
 

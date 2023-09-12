@@ -21,6 +21,14 @@ from __future__ import unicode_literals
 from googlecloudsdk.core import exceptions
 
 
+class InvalidMonitoringBackendError(exceptions.Error):
+  """For when the API message for the monitoring backend isn't available.
+
+  This may be due to a mismatch between what the API proto supports and what
+  the gcloud SDK expects to support (constants.MONITORING_BACKEND).
+  """
+
+
 class InvalidPocoMembershipError(exceptions.Error):
   """For when the Policy Controller feature is not enabled for a membership."""
 
@@ -33,9 +41,18 @@ class MutexError(exceptions.Error):
   """For when two mutually exclusive flags are specified."""
 
 
-class InvalidMonitoringBackendError(exceptions.Error):
-  """For when the API message for the monitoring backend isn't available.
+class NoSuchContentError(exceptions.Error):
+  """For when trying to configure unsupported or missing content.
 
-  This may be due to a mismatch between what the API proto supports and what
-  the gcloud SDK expects to support (constants.MONITORING_BACKEND).
+  For instance, if the user attempts to install a bundle that doesn't exist or
+  isn't supported, this error should be thrown.
+  """
+
+
+class SafetyError(exceptions.Error):
+  """For when a safety check is required, but redundent.
+
+  If this is thrown it means some other check failed. For example, a required
+  argparse argument should never be None - argparse should throw an error if it
+  is not passed - but safety requires we rule out the None value in later code.
   """

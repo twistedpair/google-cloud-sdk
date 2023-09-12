@@ -1234,9 +1234,9 @@ class ValidateAttestationOccurrenceRequest(_messages.Message):
 
   Fields:
     attestation: Required. An AttestationOccurrence to be checked that it can
-      be verified by the Attestor. It does not have to be an existing entity
+      be verified by the `Attestor`. It does not have to be an existing entity
       in Container Analysis. It must otherwise be a valid
-      AttestationOccurrence.
+      `AttestationOccurrence`.
     occurrenceNote: Required. The resource name of the Note to which the
       containing Occurrence is associated.
     occurrenceResourceUri: Required. The URI of the artifact (e.g. container

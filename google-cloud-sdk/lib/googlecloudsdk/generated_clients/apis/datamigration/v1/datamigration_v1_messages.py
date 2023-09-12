@@ -411,6 +411,7 @@ class CloudSqlSettings(_messages.Message):
       from more than one zone in a region (it is highly available).
     cmekKeyName: The KMS key name used for the csql instance.
     collation: The Cloud SQL default instance level collation.
+    dataCacheConfig: Optional. Configuration for data cache.
     dataDiskSizeGb: The storage capacity available to the database, in GB. The
       minimum (and default) size is 10GB.
     dataDiskType: The type of storage: `PD_SSD` (default) or `PD_HDD`.
@@ -588,20 +589,21 @@ class CloudSqlSettings(_messages.Message):
   availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 3)
   cmekKeyName = _messages.StringField(4)
   collation = _messages.StringField(5)
-  dataDiskSizeGb = _messages.IntegerField(6)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 7)
-  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 8)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 9)
-  edition = _messages.EnumField('EditionValueValuesEnum', 10)
-  ipConfig = _messages.MessageField('SqlIpConfig', 11)
-  rootPassword = _messages.StringField(12)
-  rootPasswordSet = _messages.BooleanField(13)
-  secondaryZone = _messages.StringField(14)
-  sourceId = _messages.StringField(15)
-  storageAutoResizeLimit = _messages.IntegerField(16)
-  tier = _messages.StringField(17)
-  userLabels = _messages.MessageField('UserLabelsValue', 18)
-  zone = _messages.StringField(19)
+  dataCacheConfig = _messages.MessageField('DataCacheConfig', 6)
+  dataDiskSizeGb = _messages.IntegerField(7)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 8)
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 9)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 10)
+  edition = _messages.EnumField('EditionValueValuesEnum', 11)
+  ipConfig = _messages.MessageField('SqlIpConfig', 12)
+  rootPassword = _messages.StringField(13)
+  rootPasswordSet = _messages.BooleanField(14)
+  secondaryZone = _messages.StringField(15)
+  sourceId = _messages.StringField(16)
+  storageAutoResizeLimit = _messages.IntegerField(17)
+  tier = _messages.StringField(18)
+  userLabels = _messages.MessageField('UserLabelsValue', 19)
+  zone = _messages.StringField(20)
 
 
 class ColumnEntity(_messages.Message):
@@ -1055,6 +1057,17 @@ class ConvertRowIdToColumn(_messages.Message):
   """
 
   onlyIfNoPrimaryKey = _messages.BooleanField(1)
+
+
+class DataCacheConfig(_messages.Message):
+  r"""Data cache configurations.
+
+  Fields:
+    dataCacheEnabled: Optional. Whether data cache is enabled for the
+      instance.
+  """
+
+  dataCacheEnabled = _messages.BooleanField(1)
 
 
 class DatabaseEngineInfo(_messages.Message):

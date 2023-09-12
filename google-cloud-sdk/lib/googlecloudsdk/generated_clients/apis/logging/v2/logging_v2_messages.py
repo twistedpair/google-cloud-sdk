@@ -487,9 +487,23 @@ class Dimension(_messages.Message):
   Fields:
     column: Required. The column name within the output of the previous step
       to use.
-    integerBinSize: Optional. Used for an integer column.
-    limit: Optional. If this value is nonzero, the number of bins to generate.
-      If zero, all possible bins will be generated.
+    columnType: Optional. The type of the dimension column. This is relevant
+      only if one of the bin_size fields is set. If it is empty, the type
+      TIMESTAMP or INT64 will be assumed based on which bin_size field is set.
+      If populated, this should be set to one of the following types: DATE,
+      TIME, DATETIME, TIMESTAMP, BIGNUMERIC, INT64, NUMERIC, FLOAT64. We also
+      accept all the documented aliases from
+      https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
+      types#numeric_types as well as FLOAT (as an alias for FLOAT64).
+    floatBinSize: Optional. Used for a floating-point column: FLOAT64.
+    integerBinSize: Optional. Used for an integer column: INT64, NUMERIC, or
+      BIGNUMERIC.
+    limit: Optional. If set, any bins beyond this number will be dropped.
+    limitPlusOther: Optional. If set, up to this many bins will be generated
+      plus one optional additional bin. The extra bin will be named "Other"
+      and will contain the sum of the (aggregated) measure points from all
+      remaining bins. Setting this field will cause the dimension column type
+      to be coerced to STRING if it is not already that type.
     sortColumn: Optional. The column name to sort on. This may be set to this
       dimension column or any measure column. If the field is empty, it will
       sort on the dimension column. If sort_order is SORT_ORDER_NONE, this
@@ -499,7 +513,10 @@ class Dimension(_messages.Message):
       limit is not zero, this may not be set to SORT_ORDER_NONE.Note that this
       will not control the ordering of the rows in the result table in any
       useful way. Use the top-level sort ordering for that purpose.
-    timeBinSize: Optional. Used for a Timestamp column.
+    timeBinSize: Optional. Used for a time or date column: DATE, TIME,
+      DATETIME, or TIMESTAMP. If column_type is DATE, this must be a multiple
+      of 1 day. If column_type is TIME, this must be less than or equal to 24
+      hours.
   """
 
   class SortOrderValueValuesEnum(_messages.Enum):
@@ -520,11 +537,14 @@ class Dimension(_messages.Message):
     SORT_ORDER_DESCENDING = 3
 
   column = _messages.StringField(1)
-  integerBinSize = _messages.IntegerField(2)
-  limit = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  sortColumn = _messages.StringField(4)
-  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 5)
-  timeBinSize = _messages.StringField(6)
+  columnType = _messages.StringField(2)
+  floatBinSize = _messages.FloatField(3)
+  integerBinSize = _messages.IntegerField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  limitPlusOther = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  sortColumn = _messages.StringField(7)
+  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 8)
+  timeBinSize = _messages.StringField(9)
 
 
 class Empty(_messages.Message):
@@ -932,9 +952,9 @@ class ListLogEntriesRequest(_messages.Message):
       in order of decreasing timestamps (newest first). Entries with equal
       timestamps are returned in order of their insert_id values.
     pageSize: Optional. The maximum number of results to return from this
-      request. Default is 50. If the value is negative or exceeds 1000, the
-      request is rejected. The presence of next_page_token in the response
-      indicates that more results might be available.
+      request. Default is 50. If the value is negative, the request is
+      rejected.The presence of next_page_token in the response indicates that
+      more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
       from the preceding call to this method. page_token must be the value of
       next_page_token from the previous response. The values of other method
@@ -1439,15 +1459,15 @@ class LogEntry(_messages.Message):
       log entry. For example, if your trace data is stored in the Cloud
       project "my-trace-project" and if the service that is creating the log
       entry receives a trace header that includes the trace ID "12345", then
-      the service should use "projects/my-tracing-project/traces/12345".The
+      the service should use "projects/my-trace-project/traces/12345".The
       trace field provides the link between logs and traces. By using this
       field, you can navigate from a log entry to a trace.
-    traceSampled: Optional. The sampling decision of the trace associated with
-      the log entry.True means that the trace resource name in the trace field
-      was sampled for storage in a trace backend. False means that the trace
-      was not sampled for storage when this log entry was written, or the
-      sampling decision was unknown at the time. A non-sampled trace value is
-      still useful as a request correlation identifier. The default is False.
+    traceSampled: Optional. The sampling decision of the span associated with
+      the log entry at the time the log entry was created. This field
+      corresponds to the sampled flag in the W3C trace-context specification
+      (https://www.w3.org/TR/trace-context/#sampled-flag). A non-sampled trace
+      value is still useful as a request correlation identifier. The default
+      is False.
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
@@ -7145,15 +7165,11 @@ class RedactLogEntriesImpact(_messages.Message):
       the requested filter.
     sqlQuery: The equivalent SQL query to the Logging Query Language filter
       provided by the user. Only populated for analytics-enabled buckets.
-    userApprovalTime: The time the user's approval of the impact assessment
-      was received. Empty if the impact assessment has not yet finished or the
-      user's approval has not yet been given.
   """
 
   endTime = _messages.StringField(1)
   logEntriesCount = _messages.IntegerField(2)
   sqlQuery = _messages.StringField(3)
-  userApprovalTime = _messages.StringField(4)
 
 
 class RedactLogEntriesMetadata(_messages.Message):

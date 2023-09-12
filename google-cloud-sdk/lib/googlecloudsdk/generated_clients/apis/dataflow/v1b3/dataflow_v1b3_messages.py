@@ -5099,6 +5099,10 @@ class ParameterMetadata(_messages.Message):
   Fields:
     customMetadata: Optional. Additional metadata for describing this
       parameter.
+    defaultValue: Optional. The default values will pre-populate the parameter
+      with the given value from the proto. If default_value is left empty, the
+      parameter will be populated with a default of the relevant type, e.g.
+      false for a boolean.
     enumOptions: Optional. The options shown when ENUM ParameterType is
       specified.
     groupName: Optional. Specifies a group name for this parameter to be
@@ -5202,16 +5206,17 @@ class ParameterMetadata(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   customMetadata = _messages.MessageField('CustomMetadataValue', 1)
-  enumOptions = _messages.MessageField('ParameterMetadataEnumOption', 2, repeated=True)
-  groupName = _messages.StringField(3)
-  helpText = _messages.StringField(4)
-  isOptional = _messages.BooleanField(5)
-  label = _messages.StringField(6)
-  name = _messages.StringField(7)
-  paramType = _messages.EnumField('ParamTypeValueValuesEnum', 8)
-  parentName = _messages.StringField(9)
-  parentTriggerValues = _messages.StringField(10, repeated=True)
-  regexes = _messages.StringField(11, repeated=True)
+  defaultValue = _messages.StringField(2)
+  enumOptions = _messages.MessageField('ParameterMetadataEnumOption', 3, repeated=True)
+  groupName = _messages.StringField(4)
+  helpText = _messages.StringField(5)
+  isOptional = _messages.BooleanField(6)
+  label = _messages.StringField(7)
+  name = _messages.StringField(8)
+  paramType = _messages.EnumField('ParamTypeValueValuesEnum', 9)
+  parentName = _messages.StringField(10)
+  parentTriggerValues = _messages.StringField(11, repeated=True)
+  regexes = _messages.StringField(12, repeated=True)
 
 
 class ParameterMetadataEnumOption(_messages.Message):

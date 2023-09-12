@@ -286,9 +286,10 @@ class BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest(_messages
       be set when `service_account_name` is used to update the transfer
       config.
     name: The resource name of the transfer config. Transfer config names have
-      the form
-      `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
-      Where `config_id` is usually a uuid, even though it is not guaranteed or
+      the form either
+      `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`
+      or `projects/{project_id}/transferConfigs/{config_id}`, where
+      `config_id` is usually a UUID, even though it is not guaranteed or
       required. The name is ignored when creating a transfer config.
     serviceAccountName: Optional service account email. If this field is set,
       the transfer config will be created with this service account's
@@ -605,9 +606,10 @@ class BigquerydatatransferProjectsTransferConfigsPatchRequest(_messages.Message)
       be set when `service_account_name` is used to update the transfer
       config.
     name: The resource name of the transfer config. Transfer config names have
-      the form
-      `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
-      Where `config_id` is usually a uuid, even though it is not guaranteed or
+      the form either
+      `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`
+      or `projects/{project_id}/transferConfigs/{config_id}`, where
+      `config_id` is usually a UUID, even though it is not guaranteed or
       required. The name is ignored when creating a transfer config.
     serviceAccountName: Optional service account email. If this field is set,
       the transfer config will be created with this service account's
@@ -1462,9 +1464,10 @@ class TransferConfig(_messages.Message):
       key if it is present, or otherwise try to apply project default keys if
       it is absent.
     name: The resource name of the transfer config. Transfer config names have
-      the form
-      `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
-      Where `config_id` is usually a uuid, even though it is not guaranteed or
+      the form either
+      `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`
+      or `projects/{project_id}/transferConfigs/{config_id}`, where
+      `config_id` is usually a UUID, even though it is not guaranteed or
       required. The name is ignored when creating a transfer config.
     nextRunTime: Output only. Next time when data transfer will run.
     notificationPubsubTopic: Pub/Sub topic where notifications will be sent

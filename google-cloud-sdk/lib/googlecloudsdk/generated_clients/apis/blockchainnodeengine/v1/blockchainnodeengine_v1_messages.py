@@ -34,6 +34,8 @@ class BlockchainNode(_messages.Message):
     labels: User-provided key-value pairs.
     name: Output only. The fully qualified name of the blockchain node. e.g.
       `projects/my-project/locations/us-central1/blockchainNodes/my-node`.
+    polygonDetails: Polygon-specific blockchain node details.
+    pscOnly: Optional. This can only be accessed through the private ip.
     state: Output only. A status representing the state of the node.
     updateTime: Output only. The timestamp at which the blockchain node was
       last updated.
@@ -46,9 +48,11 @@ class BlockchainNode(_messages.Message):
       BLOCKCHAIN_TYPE_UNSPECIFIED: Blockchain type has not been specified, but
         should be.
       ETHEREUM: The blockchain type is Ethereum.
+      POLYGON: The blockchain type is Matic/Polygon.
     """
     BLOCKCHAIN_TYPE_UNSPECIFIED = 0
     ETHEREUM = 1
+    POLYGON = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. A status representing the state of the node.
@@ -104,8 +108,10 @@ class BlockchainNode(_messages.Message):
   ethereumDetails = _messages.MessageField('EthereumDetails', 4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  polygonDetails = _messages.MessageField('PolygonDetails', 7)
+  pscOnly = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class BlockchainnodeengineProjectsLocationsBlockchainNodesCreateRequest(_messages.Message):
@@ -316,9 +322,13 @@ class ConnectionInfo(_messages.Message):
   Fields:
     endpointInfo: Output only. The endpoint information through which to
       interact with a blockchain node.
+    serviceAttachment: Output only. A service attachment that exposes a node,
+      and has the following format: projects/{project}/regions/{region}/servic
+      eAttachments/{service_attachment_name}
   """
 
   endpointInfo = _messages.MessageField('EndpointInfo', 1)
+  serviceAttachment = _messages.StringField(2)
 
 
 class EndpointInfo(_messages.Message):
@@ -752,6 +762,93 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class PolygonDetails(_messages.Message):
+  r"""Polygon-specific blockchain node details.
+
+  Enums:
+    BlockProducerClientValueValuesEnum: Immutable. The block producer client.
+    NetworkValueValuesEnum: Immutable. The Polygon environment being accessed.
+    NodeTypeValueValuesEnum: Immutable. The type of Polygon node.
+    ValidationClientValueValuesEnum: Immutable. The validation client.
+
+  Fields:
+    additionalEndpoints: Output only. Polygon-specific endpoint information.
+    blockProducerClient: Immutable. The block producer client.
+    network: Immutable. The Polygon environment being accessed.
+    nodeType: Immutable. The type of Polygon node.
+    validationClient: Immutable. The validation client.
+  """
+
+  class BlockProducerClientValueValuesEnum(_messages.Enum):
+    r"""Immutable. The block producer client.
+
+    Values:
+      BLOCK_PRODUCER_CLIENT_UNSPECIFIED: Block producer client (BPC) has not
+        been specified, but should be.
+      ERIGON: An implementation of POLYGON (execution client), on the
+        efficiency frontier, written in Go. See [Erigon on
+        GitHub](https://github.com/maticnetwork/erigon#erigon) for details.
+    """
+    BLOCK_PRODUCER_CLIENT_UNSPECIFIED = 0
+    ERIGON = 1
+
+  class NetworkValueValuesEnum(_messages.Enum):
+    r"""Immutable. The Polygon environment being accessed.
+
+    Values:
+      NETWORK_UNSPECIFIED: The network has not been specified, but should be.
+      MAINNET: The MATIC Mainnet.
+      TESTNET_MUMBAI: The polygon test net.
+    """
+    NETWORK_UNSPECIFIED = 0
+    MAINNET = 1
+    TESTNET_MUMBAI = 2
+
+  class NodeTypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The type of Polygon node.
+
+    Values:
+      NODE_TYPE_UNSPECIFIED: Node type has not been specified, but should be.
+      SENTRY_FULL: Sentry Polygon nodes that's pruned. This is equivalent to
+        FULL node in ethereum
+      SENTRY_ARCHIVE: Archive Polygon nodes are designed to store information
+        about the network state and smart contracts.
+    """
+    NODE_TYPE_UNSPECIFIED = 0
+    SENTRY_FULL = 1
+    SENTRY_ARCHIVE = 2
+
+  class ValidationClientValueValuesEnum(_messages.Enum):
+    r"""Immutable. The validation client.
+
+    Values:
+      VALIDATION_CLIENT_UNSPECIFIED: Validation client has not been specified,
+        but should be.
+      HEIMDALL: Consensus client implementation written in Rust, maintained by
+        Sigma Prime. See [Heimdall](https://wiki.polygon.technology) for
+        details.
+    """
+    VALIDATION_CLIENT_UNSPECIFIED = 0
+    HEIMDALL = 1
+
+  additionalEndpoints = _messages.MessageField('PolygonEndpoints', 1)
+  blockProducerClient = _messages.EnumField('BlockProducerClientValueValuesEnum', 2)
+  network = _messages.EnumField('NetworkValueValuesEnum', 3)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 4)
+  validationClient = _messages.EnumField('ValidationClientValueValuesEnum', 5)
+
+
+class PolygonEndpoints(_messages.Message):
+  r"""Contains endpoint information specific to Polygon nodes.
+
+  Fields:
+    blockProducerClientMetricsApiEndpoint: Output only. The assigned URL for
+      the node's block producer client's Prometheus metrics endpoint.
+  """
+
+  blockProducerClientMetricsApiEndpoint = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):

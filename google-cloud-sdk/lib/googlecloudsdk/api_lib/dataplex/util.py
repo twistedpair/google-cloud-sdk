@@ -100,6 +100,31 @@ def ReadObject(object_url, storage_client=None):
     ) from e
 
 
+def SnakeToCamel(arg_str):
+  """Converts snake case string to camel case."""
+  return ''.join(
+      word.capitalize() if ind > 0 else word
+      for ind, word in enumerate(arg_str.split('_'))
+  )
+
+
+def SnakeToCamelDict(arg_type):
+  """Reccursive method to convert all nested snake case dictionary keys to camel case."""
+  if isinstance(arg_type, list):
+    return [
+        SnakeToCamelDict(list_val)
+        if isinstance(list_val, (dict, list))
+        else list_val
+        for list_val in arg_type
+    ]
+  return {
+      SnakeToCamel(key): (
+          SnakeToCamelDict(value) if isinstance(value, (dict, list)) else value
+      )
+      for key, value in arg_type.items()
+  }
+
+
 def FetchExecutionSpecArgs(args_map_as_list):
   """Returns Dataplex task execution spec args as a map of key,value pairs from an input list of strings of format key=value."""
   execution_args_map = dict()

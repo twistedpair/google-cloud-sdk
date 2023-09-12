@@ -798,10 +798,10 @@ class DatastreamProjectsLocationsStreamsPatchRequest(_messages.Message):
   r"""A DatastreamProjectsLocationsStreamsPatchRequest object.
 
   Fields:
-    cdcStrategy_specificStartPosition_mysqlLogPosition_logFile: The binary log
-      file name.
-    cdcStrategy_specificStartPosition_mysqlLogPosition_logPosition: The
-      position within the binary log file. Default is head of file.
+    cdcStrategy_specificStartPosition_mysqlLogPosition_logFile: Required. The
+      binary log file name.
+    cdcStrategy_specificStartPosition_mysqlLogPosition_logPosition: Optional.
+      The position within the binary log file. Default is head of file.
     force: Optional. Update the stream without validating it.
     name: Output only. The stream's name.
     requestId: Optional. A request ID to identify requests. Specify a unique
@@ -1310,9 +1310,9 @@ class MysqlLogPosition(_messages.Message):
   r"""MySQL log position
 
   Fields:
-    logFile: The binary log file name.
-    logPosition: The position within the binary log file. Default is head of
-      file.
+    logFile: Required. The binary log file name.
+    logPosition: Optional. The position within the binary log file. Default is
+      head of file.
   """
 
   logFile = _messages.StringField(1)
@@ -1613,6 +1613,7 @@ class OracleProfile(_messages.Message):
     connectionAttributes: Connection string attributes
     databaseService: Required. Database for the Oracle connection.
     hostname: Required. Hostname for the Oracle connection.
+    oracleSslConfig: Optional. SSL configuration for the Oracle connection.
     password: Required. Password for the Oracle connection.
     port: Port for the Oracle connection, default value is 1521.
     username: Required. Username for the Oracle connection.
@@ -1647,9 +1648,10 @@ class OracleProfile(_messages.Message):
   connectionAttributes = _messages.MessageField('ConnectionAttributesValue', 1)
   databaseService = _messages.StringField(2)
   hostname = _messages.StringField(3)
-  password = _messages.StringField(4)
-  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  username = _messages.StringField(6)
+  oracleSslConfig = _messages.MessageField('OracleSslConfig', 4)
+  password = _messages.StringField(5)
+  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  username = _messages.StringField(7)
 
 
 class OracleRdbms(_messages.Message):
@@ -1697,6 +1699,20 @@ class OracleSourceConfig(_messages.Message):
   maxConcurrentBackfillTasks = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   maxConcurrentCdcTasks = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   streamLargeObjects = _messages.MessageField('StreamLargeObjects', 6)
+
+
+class OracleSslConfig(_messages.Message):
+  r"""Oracle SSL configuration information.
+
+  Fields:
+    caCertificate: Input only. PEM-encoded certificate of the CA that signed
+      the source database server's certificate.
+    caCertificateSet: Output only. Indicates whether the ca_certificate field
+      has been set for this Connection-Profile.
+  """
+
+  caCertificate = _messages.StringField(1)
+  caCertificateSet = _messages.BooleanField(2)
 
 
 class OracleTable(_messages.Message):

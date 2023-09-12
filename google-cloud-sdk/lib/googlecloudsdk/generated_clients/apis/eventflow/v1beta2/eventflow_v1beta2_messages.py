@@ -388,9 +388,9 @@ class ObjectMeta(_messages.Message):
       treat these values as opaque and passed unmodified back to the server.
       They may only be valid for a particular resource or set of resources.
       Populated by the system. Read-only. Value must be treated as opaque by
-      clients and . More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#concurrency-control-and-consistency +optional
+      clients and . More info: https://github.com/kubernetes/community/blob/ma
+      ster/contributors/devel/sig-architecture/api-conventions.md#concurrency-
+      control-and-consistency +optional
     selfLink: SelfLink is a URL representing this object. Populated by the
       system. Read-only. +optional string selfLink = 4;
     uid: UID is the unique in time and space value for this object. It is

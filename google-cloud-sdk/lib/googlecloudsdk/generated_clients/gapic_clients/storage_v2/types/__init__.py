@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 from .storage import (
+    BidiWriteObjectRequest,
+    BidiWriteObjectResponse,
     Bucket,
     BucketAccessControl,
     CancelResumableWriteRequest,
@@ -71,6 +73,8 @@ from .storage import (
 )
 
 __all__ = (
+    'BidiWriteObjectRequest',
+    'BidiWriteObjectResponse',
     'Bucket',
     'BucketAccessControl',
     'CancelResumableWriteRequest',

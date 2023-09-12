@@ -1804,7 +1804,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all WorkloadSources in a namespace or managed identity.
+      r"""Lists all WorkloadSources for a WorkloadIdentityPoolNamespace or WorkloadIdentityPoolManagedIdentity.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorkloadSourcesListRequest) input message
@@ -2195,7 +2195,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all WorkloadSources in a namespace or managed identity.
+      r"""Lists all WorkloadSources for a WorkloadIdentityPoolNamespace or WorkloadIdentityPoolManagedIdentity.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesListRequest) input message

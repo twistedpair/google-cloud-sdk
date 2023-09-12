@@ -271,7 +271,7 @@ class BinaryauthorizationV1beta1(base_api.BaseApiClient):
     )
 
     def ValidateAttestationOccurrence(self, request, global_params=None):
-      r"""Returns whether the given Attestation for the given image URI was signed by the given Attestor.
+      r"""Returns whether the given `Attestation` for the given image URI was signed by the given `Attestor`.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsValidateAttestationOccurrenceRequest) input message

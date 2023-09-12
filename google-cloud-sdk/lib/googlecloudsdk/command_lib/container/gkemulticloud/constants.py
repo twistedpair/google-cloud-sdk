@@ -76,6 +76,19 @@ AWS_NODEPOOLS_FORMAT = """\
     autoscaling.maxNodeCount:label=MAX_NODES,
     state)"""
 
+AWS_SERVER_CONFIG_FORMAT = """\
+  multi(
+    supportedAwsRegions:format="table(.:label=SUPPORTED_AWS_REGIONS)",
+    validVersions:format="table(
+      version,
+      enabled.yesno(no=False),
+      releaseDate.date(format='%Y-%m-%d'),
+      endOfLifeDate.date(format='%Y-%m-%d'),
+      endOfLife.yesno(no=False)
+    )"
+  )"""
+
+
 AZURE_CLUSTERS_FORMAT = """
   table(
     name.segment(-1):label=NAME,
@@ -101,3 +114,15 @@ AZURE_NODE_POOL_FORMAT = """
     autoscaling.maxNodeCount:label=MAX_NODES,
     state)
 """
+
+AZURE_SERVER_CONFIG_FORMAT = """\
+  multi(
+    supportedAzureRegions:format="table(.:label=SUPPORTED_AZURE_REGIONS)",
+    validVersions:format="table(
+      version,
+      enabled.yesno(no=False),
+      releaseDate.date(format='%Y-%m-%d'),
+      endOfLifeDate.date(format='%Y-%m-%d'),
+      endOfLife.yesno(no=False)
+    )"
+  )"""

@@ -85,6 +85,39 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_LBROUTEEXTENSIONS = (
+      'projects.locations.lbRouteExtensions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'lbRouteExtensions/{lbRouteExtensionsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_LBSERVICESTEERINGEXTENSIONS = (
+      'projects.locations.lbServiceSteeringExtensions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'lbServiceSteeringExtensions/{lbServiceSteeringExtensionsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_LBTRAFFICEXTENSIONS = (
+      'projects.locations.lbTrafficExtensions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'lbTrafficExtensions/{lbTrafficExtensionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MESHES = (
       'projects.locations.meshes',
       '{+name}',
@@ -92,62 +125,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/meshes/'
               '{meshesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_MULTICASTCONSUMERASSOCIATIONS = (
-      'projects.locations.multicastConsumerAssociations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'multicastConsumerAssociations/'
-              '{multicastConsumerAssociationsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_MULTICASTDOMAINACTIVATIONS = (
-      'projects.locations.multicastDomainActivations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'multicastDomainActivations/{multicastDomainActivationsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_MULTICASTDOMAINS = (
-      'projects.locations.multicastDomains',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'multicastDomains/{multicastDomainsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_MULTICASTGROUPDEFINITIONS = (
-      'projects.locations.multicastGroupDefinitions',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'multicastGroupDefinitions/{multicastGroupDefinitionsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_MULTICASTGROUPS = (
-      'projects.locations.multicastGroups',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/multicastGroups/'
-              '{multicastGroupsId}',
       },
       ['name'],
       True

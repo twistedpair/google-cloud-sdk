@@ -801,7 +801,7 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Entitlement resources that the user has access to, within the scope of the parent resource.
+      r"""Lists Entitlement resources that the user has access to, within the scope of the parent resource. This includes all Entitlements that are either parented by a billing account associated with the parent (project) and or the project is a consumer of an Order.
 
       Args:
         request: (CloudcommerceconsumerprocurementProjectsEntitlementsListRequest) input message

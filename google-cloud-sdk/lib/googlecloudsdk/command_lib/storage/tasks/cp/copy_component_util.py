@@ -42,16 +42,43 @@ _PARALLEL_UPLOAD_TEMPORARY_NAMESPACE = (
     'see_gcloud_storage_cp_help_for_details/')
 
 
-def _get_temporary_component_name(source_resource, random_prefix, component_id):
+def _ensure_truthy_path_ends_with_single_delimiter(string, delimiter):
+  if not string:
+    return ''
+  return string.rstrip(delimiter) + delimiter
+
+
+def _get_temporary_component_name(
+    source_resource, destination_resource, random_prefix, component_id
+):
   """Gets a temporary object name for a component of source_resource."""
   source_name = source_resource.storage_url.object_name
   salted_name = _PARALLEL_UPLOAD_STATIC_SALT + source_name
-
   sha1_hash = hashlib.sha1(salted_name.encode('utf-8'))
 
-  return '{}{}_{}_{}'.format(_PARALLEL_UPLOAD_TEMPORARY_NAMESPACE,
-                             random_prefix, sha1_hash.hexdigest(),
-                             str(component_id))
+  component_prefix = (
+      properties.VALUES.storage.parallel_composite_upload_component_prefix.Get()
+  )
+
+  delimiter = destination_resource.storage_url.delimiter
+  if component_prefix.startswith(delimiter):
+    prefix = component_prefix.lstrip(delimiter)
+  else:
+    destination_object_name = destination_resource.storage_url.object_name
+    destination_prefix, _, _ = destination_object_name.rpartition(delimiter)
+    prefix = (
+        _ensure_truthy_path_ends_with_single_delimiter(
+            destination_prefix, delimiter
+        )
+        + component_prefix
+    )
+
+  return '{}{}_{}_{}'.format(
+      _ensure_truthy_path_ends_with_single_delimiter(prefix, delimiter),
+      random_prefix,
+      sha1_hash.hexdigest(),
+      str(component_id),
+  )
 
 
 def create_file_if_needed(source_resource, destination_resource):
@@ -94,9 +121,9 @@ def get_temporary_component_resource(source_resource, destination_resource,
     A resource_reference.UnknownResource representing the component's
     destination.
   """
-  component_object_name = _get_temporary_component_name(source_resource,
-                                                        random_prefix,
-                                                        component_id)
+  component_object_name = _get_temporary_component_name(
+      source_resource, destination_resource, random_prefix, component_id
+  )
 
   destination_url = destination_resource.storage_url
   component_url = storage_url.CloudUrl(destination_url.scheme,

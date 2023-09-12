@@ -1601,12 +1601,16 @@ class ArgObject(ArgDict):
     For example, an ArgObject with spec={'x': int, 'y': str} will generate...
 
       x=int,y=string (shorthand) and
-      {"x": int, "y": "string"} (non-shorthand)
+      {"x": int, "y": "string"} (json)
 
     An ArgObject with key_type=str and value_type=str will generate...
 
       string=string (shorthand) and
-      {"string": "string"} (non-shorthand)
+      {"string": "string"} (json)
+
+    An ArgObject with value_type=str will always generate...
+
+      string (shorthand and json)
 
     Args:
       shorthand: bool, whether to display in shorthand
@@ -1618,16 +1622,20 @@ class ArgObject(ArgDict):
     is_json_obj = not shorthand_enabled and self._keyed_values
     is_array = not shorthand_enabled and self.repeated
 
+    # Default to formatting single values as shorthand in example.
+    # See method descriptor above.
+    format_as_shorthand = not (is_json_obj or is_array)
+
     if self.spec:
-      comma = ',' if shorthand_enabled else ', '
+      comma = ',' if format_as_shorthand else ', '
       usage = comma.join(
-          usage_text.GetNestedKeyValueExample(key, value, shorthand_enabled)
+          usage_text.GetNestedKeyValueExample(key, value, format_as_shorthand)
           for key, value in sorted(self.spec.items()))
     else:
       # Keys can be None but values are parsed as string
       # by default in ArgObject
       usage = usage_text.GetNestedKeyValueExample(
-          self.key_type, self.value_type or str, shorthand_enabled)
+          self.key_type, self.value_type or str, format_as_shorthand)
 
     if is_json_obj:
       usage = '{' + usage + '}'
@@ -1649,10 +1657,14 @@ class ArgObject(ArgDict):
     file_example = usage_text.FormatCodeSnippet(
         arg_name=flag_name, arg_value='path_to_file.(yaml|json)')
 
-    return ('*Shorthand Example:*\n\n{}\n\n'
-            '*JSON Example:*\n\n{}\n\n'
-            '*File Example:*\n\n{}').format(
-                shorthand_example, json_example, file_example)
+    if shorthand_example == json_example:
+      return ('*Input Example:*\n\n{}\n\n'
+              '*File Example:*\n\n{}').format(shorthand_example, file_example)
+    else:
+      return ('*Shorthand Example:*\n\n{}\n\n'
+              '*JSON Example:*\n\n{}\n\n'
+              '*File Example:*\n\n{}').format(
+                  shorthand_example, json_example, file_example)
 
   def GetUsageHelpText(self, field_name, required, flag_name=None):
     """Returns a string of usage help text.

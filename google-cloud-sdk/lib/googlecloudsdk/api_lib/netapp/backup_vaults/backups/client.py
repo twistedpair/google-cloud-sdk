@@ -113,11 +113,11 @@ class BackupsClient(object):
     backup.labels = labels
     return backup
 
-  def ListBackups(self, location_ref, limit=None):
+  def ListBackups(self, backupvault_ref, limit=None):
     """Make API calls to List Cloud NetApp Backups.
 
     Args:
-      location_ref: The parsed location of the listed NetApp Backup Vaults.
+      backupvault_ref: The parsed Backup Vault of the listed NetApp Backups.
       limit: The number of Cloud NetApp Backups to limit the results to.
         This limit is passed to the server and the server does the limiting.
 
@@ -126,7 +126,7 @@ class BackupsClient(object):
     """
     request = (
         self.messages.NetappProjectsLocationsBackupVaultsBackupsListRequest(
-            parent=location_ref
+            parent=backupvault_ref
         )
     )
     # Check for unreachable locations.
@@ -166,7 +166,7 @@ class BackupsClient(object):
     if async_:
       return delete_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        delete_op.name, collection=netapp_util.OPERATIONS_COLLECTION
+        delete_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 
@@ -190,7 +190,7 @@ class BackupsClient(object):
     if async_:
       return update_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        update_op.name, collection=netapp_util.OPERATIONS_COLLECTION
+        update_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 

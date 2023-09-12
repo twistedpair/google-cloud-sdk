@@ -150,9 +150,17 @@ class Location(_messages.Message):
 class ManagedOrganization(_messages.Message):
   r"""This organization managed by GCP resellers.
 
+  Enums:
+    StateValueValuesEnum: Output only. The state of the managed organization
+      and cloudresourcemanager.googleapis.com/Organization created on behalf
+      of the customer.
+
   Fields:
     admins: Optional. List of organization admins.
-    createTime: Output only. Timestamp when the organization was created.
+    createTime: Output only. The timestamp for the managed organization was
+      created.
+    deleteTime: Output only. The timestamp that the managed organization was
+      soft deleted.
     name: Output only. The resource name of the managed organization. Format:
       organizations/{organization_id}/locations/{location}/managedOrganization
       s/{managed_organization_id}
@@ -162,13 +170,46 @@ class ManagedOrganization(_messages.Message):
     organizationNumber: Output only. System generated ID for the
       cloudresourcemanager.googleapis.com/Organization created on behalf of
       the customer.
+    purgeTime: Output only. Time after which the managed organization will be
+      permanently purged and cannot be recovered.
+    state: Output only. The state of the managed organization and
+      cloudresourcemanager.googleapis.com/Organization created on behalf of
+      the customer.
+    updateTime: Output only. The timestamp for the last update of the managed
+      organization.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the managed organization and
+    cloudresourcemanager.googleapis.com/Organization created on behalf of the
+    customer.
+
+    Values:
+      STATE_UNSPECIFIED: State unspecified.
+      ACTIVE: The organization of the
+        cloudresourcemanager.googleapis.com/Organization created on behalf of
+        the customer is soft-deleted.
+      DELETED: The organization of the
+        cloudresourcemanager.googleapis.com/Organization created on behalf of
+        the customer is soft-deleted. Soft-deleted organization are
+        permanently deleted after approximately 30 days. You can restore a
+        soft-deleted organization using
+        [Orglifecycle.UndeleteManagedOrganization]. You cannot reuse the ID of
+        a soft-deleted organization until it is permanently deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
 
   admins = _messages.MessageField('OrganizationAdmin', 1, repeated=True)
   createTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  organizationDisplayName = _messages.StringField(4)
-  organizationNumber = _messages.IntegerField(5)
+  deleteTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  organizationDisplayName = _messages.StringField(5)
+  organizationNumber = _messages.IntegerField(6)
+  purgeTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class Operation(_messages.Message):
@@ -411,6 +452,8 @@ class OrglifecycleOrganizationsLocationsManagedOrganizationsListRequest(_message
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Parent value for ListManagedOrganizationsRequest
+    showDeleted: Optional. Whether to return soft-deleted managed
+      organizations. Default value will be false.
   """
 
   filter = _messages.StringField(1)
@@ -418,6 +461,7 @@ class OrglifecycleOrganizationsLocationsManagedOrganizationsListRequest(_message
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+  showDeleted = _messages.BooleanField(6)
 
 
 class OrglifecycleOrganizationsLocationsManagedOrganizationsPatchRequest(_messages.Message):
@@ -439,6 +483,22 @@ class OrglifecycleOrganizationsLocationsManagedOrganizationsPatchRequest(_messag
   managedOrganization = _messages.MessageField('ManagedOrganization', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class OrglifecycleOrganizationsLocationsManagedOrganizationsUndeleteRequest(_messages.Message):
+  r"""A OrglifecycleOrganizationsLocationsManagedOrganizationsUndeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the ManagedOrganization to delete. Format: org
+      anizations/{organization_id}/locations/*/managedOrganizations/{managed_o
+      rganization_id}
+    undeleteManagedOrganizationRequest: A UndeleteManagedOrganizationRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteManagedOrganizationRequest = _messages.MessageField('UndeleteManagedOrganizationRequest', 2)
 
 
 class OrglifecycleOrganizationsLocationsOperationsCancelRequest(_messages.Message):
@@ -602,6 +662,10 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class UndeleteManagedOrganizationRequest(_messages.Message):
+  r"""Message for undeleting a ManagedOrganization"""
 
 
 encoding.AddCustomJsonFieldMapping(

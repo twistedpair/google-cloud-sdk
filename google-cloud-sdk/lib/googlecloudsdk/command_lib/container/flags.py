@@ -6029,3 +6029,32 @@ def AddSoleTenantNodeAffinityFileFlag(parser, hidden=False):
       affinity label values of the Node resource.
       """,
   )
+
+
+def AddSecondaryBootDisksArgs(
+    parser,
+    hidden=False,
+):
+  """Adds args for secondary boot disk."""
+
+  spec = {
+      'mode': str,
+      'disk-image': str,
+  }
+
+  parser.add_argument(
+      '--secondary-boot-disk',
+      hidden=hidden,
+      action='append',
+      type=arg_parsers.ArgDict(
+          spec=spec, required_keys=['disk-image'], max_length=len(spec)
+      ),
+      metavar='disk-image=DISK_IMAGE,[mode=MODE]',
+      help="""\
+      Attaches secondary boot disks to all nodes.
+
+      *disk-image*::: (Required) The full resource path to the source disk image to create the secondary boot disks from.
+
+      *mode*::: (Optional) The configuration mode for the secondary boot disks. The default value is "CONTAINER_IMAGE_CACHE."
+      """,
+  )

@@ -415,8 +415,8 @@ class Config(_messages.Message):
     config: A byte array encapsulating the contents of the application config.
       This can be of any type of supported config (Simple Yaml, multi-file in-
       app config, etc.)
-    resourceList: The list of resources defined using the type-agnostic
-      Resource definitions.
+    resourceList: Optional. The list of resources defined using the type-
+      agnostic Resource definitions.
     resources: The map of resource configs where the key is the name of
       resources and the value is the resource config.
   """
@@ -591,6 +591,10 @@ class DeploymentStatus(_messages.Message):
     StateValueValuesEnum: The state associated with the deployment.
 
   Fields:
+    error: Output only. Error status of the deployment if the deployment
+      failed. The error.details field will contain the same information as the
+      Deployment LRO error_details field in adherence to
+      https://google.aip.dev/193.
     errorMessage: The error message associated with a failed deployment state,
       if applicable.
     jobDetails: Details of each deploy job.
@@ -613,10 +617,11 @@ class DeploymentStatus(_messages.Message):
     SUCCEEDED = 2
     IN_PROGRESS = 3
 
-  errorMessage = _messages.StringField(1)
-  jobDetails = _messages.MessageField('JobDetails', 2, repeated=True)
-  resourceStatus = _messages.MessageField('ResourceDeploymentStatus', 3, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  error = _messages.MessageField('Status', 1)
+  errorMessage = _messages.StringField(2)
+  jobDetails = _messages.MessageField('JobDetails', 3, repeated=True)
+  resourceStatus = _messages.MessageField('ResourceDeploymentStatus', 4, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class DomainConfig(_messages.Message):
@@ -1147,7 +1152,7 @@ class RedisInstanceConfig(_messages.Message):
 
 
 class Resource(_messages.Message):
-  r"""Resource defines a Stacks resource.
+  r"""Resource defines a Stacks resource. Next tag: 6
 
   Messages:
     ConfigValue: Configuration is the typekit-specified set of fields that
@@ -1163,6 +1168,9 @@ class Resource(_messages.Message):
       the resource. The configuration has an associated typekit-specified
       JSONSchema (https://json-schema.org/) that defines the expected shape.
     id: Resource ID describes the resource that's bound.
+    latestDeployment: Output only. The deployment name for the most recent
+      deployment that has been triggered for a given resource. If a resource
+      was never deployed then this field will be empty.
     subresources: Subresources is the set of subresources within this
       resource. Support for this field depends on the type of the Resource and
       is defined by the corresponding Typekit.
@@ -1197,7 +1205,8 @@ class Resource(_messages.Message):
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   config = _messages.MessageField('ConfigValue', 2)
   id = _messages.MessageField('ResourceID', 3)
-  subresources = _messages.MessageField('Resource', 4, repeated=True)
+  latestDeployment = _messages.StringField(4)
+  subresources = _messages.MessageField('Resource', 5, repeated=True)
 
 
 class ResourceComponentStatus(_messages.Message):
@@ -1277,8 +1286,20 @@ class ResourceConfig(_messages.Message):
   service = _messages.MessageField('CloudRunServiceConfig', 8)
 
 
+class ResourceDeploymentError(_messages.Message):
+  r"""Message describing the error that occurred for the respective resource.
+
+  Fields:
+    errorMessage: Output only. Error details provided by deployment.
+    httpCode: Output only. HTTP error code provided by the deployment.
+  """
+
+  errorMessage = _messages.StringField(1)
+  httpCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class ResourceDeploymentStatus(_messages.Message):
-  r"""Message decribing the status of a resource being deployed. Next tag: 5
+  r"""Message decribing the status of a resource being deployed. Next tag: 7
 
   Enums:
     OperationValueValuesEnum: Operation to be performed on the resource .
@@ -1286,6 +1307,8 @@ class ResourceDeploymentStatus(_messages.Message):
 
   Fields:
     errorMessage: The error details if the state is FAILED.
+    errors: Output only. The error details if the state is FAILED.
+    id: Output only. ID of the resource.
     name: Name of the resource.
     operation: Operation to be performed on the resource .
     state: Current status of the resource.
@@ -1323,9 +1346,11 @@ class ResourceDeploymentStatus(_messages.Message):
     FAILED = 5
 
   errorMessage = _messages.StringField(1)
-  name = _messages.MessageField('TypedName', 2)
-  operation = _messages.EnumField('OperationValueValuesEnum', 3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  errors = _messages.MessageField('ResourceDeploymentError', 2, repeated=True)
+  id = _messages.MessageField('ResourceID', 3)
+  name = _messages.MessageField('TypedName', 4)
+  operation = _messages.EnumField('OperationValueValuesEnum', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class ResourceID(_messages.Message):
@@ -1632,10 +1657,13 @@ class RunappsProjectsLocationsApplicationsGetStatusRequest(_messages.Message):
   Fields:
     name: Required. Name of the resource.
     readMask: Field mask used for limiting the resources to query status on.
+    resources: Optional. Specify which resource to query status for. If not
+      provided, all resources status are queried.
   """
 
   name = _messages.StringField(1, required=True)
   readMask = _messages.StringField(2)
+  resources = _messages.StringField(3, repeated=True)
 
 
 class RunappsProjectsLocationsApplicationsListRequest(_messages.Message):

@@ -117,7 +117,7 @@ class IdentitySourcesClient(util.VmwareClientBase):
     if domain_password is not None:
       source.domainPassword = domain_password
       update_mask.append('domain_password')
-    if ssl_certificates is not None:
+    if ssl_certificates:
       source.sslCertificates = ssl_certificates
       update_mask.append('ssl_certificates')
 

@@ -480,7 +480,7 @@ class PythonVersion(object):
   MIN_SUNSET_PY3_VERSION = (3, 5)
   MAX_SUNSET_PY3_VERSION = (3, 7)
   UPCOMING_PY3_MIN_SUPPORTED_VERSION = (3, 8)
-  UPCOMING_PY3_DEPRECATION_DATE = 'August 8th, 2023'
+  UPCOMING_PY3_DEPRECATION_DATE = 'September 26th, 2023'
   ENV_VAR_MESSAGE = """\
 
 If you have a compatible Python interpreter installed, you can use it by setting

@@ -604,6 +604,35 @@ class GoogleCloudDocumentaiUiv1beta3BatchMoveDocumentsResponse(_messages.Message
   r"""Response of the batch move documents operation."""
 
 
+class GoogleCloudDocumentaiUiv1beta3BatchUpdateDocumentsMetadata(_messages.Message):
+  r"""A GoogleCloudDocumentaiUiv1beta3BatchUpdateDocumentsMetadata object.
+
+  Fields:
+    commonMetadata: The basic metadata of the long-running operation.
+    individualBatchUpdateStatuses: The list of response details of each
+      document.
+  """
+
+  commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
+  individualBatchUpdateStatuses = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3BatchUpdateDocumentsMetadataIndividualBatchUpdateStatus', 2, repeated=True)
+
+
+class GoogleCloudDocumentaiUiv1beta3BatchUpdateDocumentsMetadataIndividualBatchUpdateStatus(_messages.Message):
+  r"""The status of each individual document in the batch update process.
+
+  Fields:
+    documentId: The document id of the document.
+    status: The status of updating the document in storage.
+  """
+
+  documentId = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3DocumentId', 1)
+  status = _messages.MessageField('GoogleRpcStatus', 2)
+
+
+class GoogleCloudDocumentaiUiv1beta3BatchUpdateDocumentsResponse(_messages.Message):
+  r"""Response of the batch update documents operation."""
+
+
 class GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata(_messages.Message):
   r"""The common metadata for long running operations.
 
@@ -2865,8 +2894,8 @@ class GoogleCloudDocumentaiV1OcrConfig(_messages.Message):
       layout detection algorithm, which serves as an alternative to the
       current ML-based layout detection algorithm. Customers can choose the
       best suitable layout algorithm based on their situation.
-    computeStyleInfo: Turn on font id model and returns font style
-      information. Use PremiumFeatures.compute_style_info instead.
+    computeStyleInfo: Turn on font identification model and return font style
+      information.
     enableImageQualityScores: Enables intelligent document quality scores
       after OCR. Can help with diagnosing why OCR responses are of poor
       quality for a given input. Adds additional latency comparable to regular
@@ -3199,7 +3228,7 @@ class GoogleCloudDocumentaiV1RawDocument(_messages.Message):
     displayName: The display name of the document, it supports all Unicode
       characters except the following: `*`, `?`, `[`, `]`, `%`, `{`, `}`,`'`,
       `\"`, `,` `~`, `=` and `:` are reserved. If not specified, a default ID
-      will be generated.
+      is generated.
     mimeType: An IANA MIME type (RFC6838) indicating the nature and format of
       the content.
   """
