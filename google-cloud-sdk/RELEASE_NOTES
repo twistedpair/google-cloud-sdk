@@ -4,7 +4,18 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
-Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
+Note: Support for Python 3.5-3.7 will be deprecated on September 26th, 2023.
+
+## 446.0.1 (2023-09-14)
+
+### Cloud Run
+
+* Fixed race condition where tags could go to different Revisions than expected
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on September 26th, 2023.
 
 ## 446.0.0 (2023-09-12)
 

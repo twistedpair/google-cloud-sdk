@@ -23,8 +23,6 @@ from __future__ import unicode_literals
 
 import contextlib
 import functools
-import random
-import string
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
@@ -63,8 +61,6 @@ from googlecloudsdk.core.util import retry
 import six
 
 DEFAULT_ENDPOINT_VERSION = 'v1'
-
-_NONCE_LENGTH = 10
 
 # Wait 11 mins for each deployment. This is longer than the server timeout,
 # making it more likely to get a useful error message from the server.
@@ -395,24 +391,6 @@ class ServiceConditionPoller(ConditionPoller):
   def __init__(self, getter, tracker, dependencies=None, serv=None):
     super(ServiceConditionPoller, self).__init__(getter, tracker, dependencies)
     self._resource_fail_type = serverless_exceptions.DeploymentFailedError
-
-
-def _Nonce():
-  """Return a random string with unlikely collision to use as a nonce."""
-  return ''.join(
-      random.choice(string.ascii_lowercase) for _ in range(_NONCE_LENGTH))
-
-
-class _NewRevisionNonceChange(config_changes_mod.ConfigChanger):
-  """Forces a new revision to get created by posting a random nonce label."""
-
-  def __init__(self, nonce):
-    self._nonce = nonce
-
-  def Adjust(self, resource):
-    resource.template.labels[revision.NONCE_LABEL] = self._nonce
-    resource.template.name = None
-    return resource
 
 
 class _NewRevisionForcingChange(config_changes_mod.RevisionNameChanges):
@@ -1102,7 +1080,6 @@ class ServerlessOperations(object):
       repo_to_create=None,
       already_activated_services=False,
       dry_run=False,
-      generate_name=False,
   ):
     """Change the given service in prod using the given config_changes.
 
@@ -1132,7 +1109,6 @@ class ServerlessOperations(object):
       already_activated_services: bool. If true, skip activation prompts for
         services
       dry_run: bool. If true, only validate the configuration.
-      generate_name: bool. If true, create a revision name, otherwise add nonce.
 
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
@@ -1196,10 +1172,7 @@ class ServerlessOperations(object):
       if config_changes_mod.AdjustsTemplate(config_changes):
         # Only force a new revision if there's other template-level changes that
         # warrant a new revision.
-        if generate_name:
-          self._AddRevisionForcingChange(serv, config_changes)
-        else:
-          config_changes.append(_NewRevisionNonceChange(_Nonce()))
+        self._AddRevisionForcingChange(serv, config_changes)
         if serv and not with_image:
           # Avoid changing the running code by making the new revision by digest
           self._EnsureImageDigest(serv, config_changes)
